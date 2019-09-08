@@ -2,7 +2,7 @@
 layout: page
 title: About
 permalink: /about/
-feature-img: "assets/img/startbahn.jpg"
+feature-img: "assets/img/background/startbahn.jpg"
 tags:
 - about
 ---

@@ -1,11 +1,13 @@
 ---
 layout: post
 title: Jekyll
-feature-img: "assets/img/portfolio/blogging-this.jpg"
-img: "assets/img/portfolio/blogging-this.jpg"
+feature-img: "assets/img/background/startbahn.jpg"
+img: "assets/img/startbahn.jpg"
 date: 2019-09-07
 tags:
-- test
+- jekyll
+- blog
+- project
 ---
 
 I am experimenting with Jekyll as a blogging system, to see if I can 
