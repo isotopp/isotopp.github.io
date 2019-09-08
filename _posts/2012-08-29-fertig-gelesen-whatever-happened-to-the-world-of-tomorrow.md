@@ -9,7 +9,7 @@ tags:
 - comic
 - media
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 "Whatever happened to the World of Tomorrow?" erklärt, wieso das Versprechen
 an unsere Eltern - Jetpacks und fliegende Autos - nicht eingelöst wurde, und

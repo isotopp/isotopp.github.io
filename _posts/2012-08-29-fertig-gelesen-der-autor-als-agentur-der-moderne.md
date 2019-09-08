@@ -10,7 +10,7 @@ tags:
 - media
 - scifi
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 [Der Autor als Agentur der Moderne](http://www.amazon.de/Agentur-Moderne-Transformation-popul%C3%A4rer-Literatur/dp/3899754387),
 Frank O.  Hrachowy, EUR 49.90
