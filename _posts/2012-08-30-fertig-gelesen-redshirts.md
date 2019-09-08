@@ -10,7 +10,7 @@ tags:
 - scifi
 - star trek
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 [Redshirts](http://www.amazon.com/Redshirts-Novel-Three-Codas-ebook/dp/B0079XPUOW),
 John Scalzi, USD 11.99
