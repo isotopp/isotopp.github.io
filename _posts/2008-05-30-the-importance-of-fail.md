@@ -10,7 +10,7 @@ tags:
 - hochverfuegbarkeit
 - security
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/baellebad.jpg
 ---
 Wenn man mit Featureentwicklern spricht, dann reden sie immer gerne über tolle
 neue Dinge die sie gerade eingebaut haben.
