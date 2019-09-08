@@ -9,7 +9,7 @@ tags:
 - mysql
 - replication
 - gtid
-- lang_de
+- lang_en
 feature-img: assets/img/background/mysql.jpg
 ---
 So we tested the 5.6.7-RC. And ran into a strange problem:
