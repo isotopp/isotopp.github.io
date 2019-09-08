@@ -11,7 +11,7 @@ tags:
 - scifi
 - stross
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 In einem [Blogartikel](http://www.antipope.org/charlie/blog-static/2010/03/for-sale-first-edition-of-the.html)
 verweist Charles Stross auf das recht bald erscheinende The Laundry
