@@ -198,3 +198,22 @@ aussehen wie oben in der Theorie diskutiert.  Eine Variante dieses Graphen
 macht die einzelnen Symbole um so größer, je mehr Fehler an diesem Meßpunkt
 aufgetreten sind.  Auf diese Weise ist dann auch die Art und Weise des
 Systemversagens und der Punkt der letzten Stabilität gut erkennbar.
+
+
+**Nachtrag:** Alexander Aulbach fragte in der Diskussion zum Artikel oben:
+
+> Es wäre mal interessant zu schauen, welchem physikalischen Modell das am
+> ehesten gehorcht.
+
+Guckst Du hier:
+
+- Raj Jain, [The Art of Computer Systems Performance Analysis: Techniques for Experimental Design, Measurement, Simulation, and   Modeling](http://www.amazon.de/The-Computer-Systems-Performance-Analysis/dp/0471503363), Wiley and Sons, 1992
+- Neil J Gunter, [Analyzing Computer System Performance with Perl::PDQ](http://www.amazon.de/Analyzing-Computer-System-Performance-ebook/dp/B001FB6DP4), (Springer, Kindle Edition)
+- Neil J Gunter, [Capacity Planning: A Tactical Approach to Planning for Highly Scalable Applications and Services](https://www.amazon.de/Guerrilla-Capacity-Planning-Tactical-Applications/dp/3540261389) (Springer, 2006)
+
+Viele der Modellierungsansätze werden aber durch Testing in Production und
+das beschriebene Lasttestverfahren obsolet.  Die Modellierung kann dennoch
+sinnvoll sein, um obskure Bottlenecks oder absolute Kapazitätsgrenzen besser
+sichtbar zu machen.  In meiner Praxis habe ich sie bisher jedoch nie
+gebraucht, außer um Offensichtliches aus der Messung im Modell zu
+bestätigen.
