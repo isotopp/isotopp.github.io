@@ -9,7 +9,7 @@ tags:
 - media
 - scifi
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 [The Frozen Sky](http://www.amazon.com/The-Frozen-Sky-ebook/dp/B0047DX0UI),
 Jeff Carlson, USD 0.99
