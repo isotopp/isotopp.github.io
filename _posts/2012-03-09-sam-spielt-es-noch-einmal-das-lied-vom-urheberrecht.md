@@ -100,12 +100,10 @@ das so:
 > 1.  Weil Kopien machbar sind werden sie gemacht.  Das ist auch nicht zu
 > verhindern, ohne daß etwas ganz schreckliches entsteht, daß niemand von
 > uns will.
->
-> 2.  Weil jeder sich und seine Werke publizieren kann, fragmentiert der
+> 1.  Weil jeder sich und seine Werke publizieren kann, fragmentiert der
 > Markt.  Dazu kommt, daß viele ihre Werke kostenlos oder zu sehr niedrigen
 > Kosten publizieren.  Dadurch entsteht ein Race to the bottom.
-> 
-> 3.  Weil jeder sich publizieren kann, und die publizierten Werke teilweise
+> 1.  Weil jeder sich publizieren kann, und die publizierten Werke teilweise
 > Fragmente sind, die dann wieder weiter verarbeitet werden, ist
 > Urheberschaft teilweise ein schwer feststellbares Konzept.
 > 
