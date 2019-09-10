@@ -21,7 +21,7 @@ Eigentum" auch das dingliche Eigentum gleich mit abschaffen, wegen weil.
 
 Die Diskussion und die Argumente sind nicht neu, wir finden sie auch im
 hinteren Teil der Diskussion 
-[mit Lenafalkenhagen im November](https://plus.google.com/109379939195289805891/posts/3XQnYzbSqLA), 
+[mit Lena Falkenhagen im November](https://plus.google.com/109379939195289805891/posts/3XQnYzbSqLA), 
 die ich seinerzeit in 
 [Nicht das Urheberrecht ist das Kernthema]({% link _posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md %})
 zusammengefaßt habe.  Sicherheitshalber hat Marcel Weiss 
@@ -125,7 +125,7 @@ das so:
 und Karsten geht noch einmal auf die Eigentumsgleichsetzung ein, um die
 Erklärung zu komplettieren:
 
->Mein gedanklicher Ansatz ist ein anderer: Eine Eigentumsordnung wie die
+> Mein gedanklicher Ansatz ist ein anderer: Eine Eigentumsordnung wie die
 > unsere ist bisher auf die Verwaltung von Knappheit ausgelegt.  Wenn es nur
 > einen Apfel gibt, dann ist es fair, dass der einer konkreten Person
 > zugeordnet wird - sie kann entscheiden, was mit dem Apfel passiert.
@@ -403,7 +403,7 @@ schiebt noch ein bischen:
 > das Nischenpublikum wenden, dass einen für genau das liebt, was man macht -
 > ohne Kompromisse eingehen zu müssen.
 > 
-> [//bit.ly/shut-up-and-take-my-money](//bit.ly/shut-up-and-take-my-money)
+> [http://bit.ly/shut-up-and-take-my-money](http://bit.ly/shut-up-and-take-my-money)
 
 Und Andreas Eschbach dreht seinen Hut und fragt weiter:
 
@@ -417,11 +417,11 @@ Und Andreas Eschbach dreht seinen Hut und fragt weiter:
 Ich zücke mein Blog, denn ich habe da schon mal was vorbereitet.  Es zitiert
 übrigens Eschbach:
 
->Axel Eble  -  Ich verweise hier wieder mal auf Götz Werner und das
+> Axel Eble  -  Ich verweise hier wieder mal auf Götz Werner und das
 > Bedingungslose Grundeinkommen.  Kristian Köhntopp - Zum Thema BGE, wo das
 > Geld herkommen könnte und was das mit Andreas Eschbach zu tun hat, siehe
 > auch
-> [The pursuit of happiness]({% link > _posts/2011-12-05-the-pursuit-of-happiness.md %}).
+> [The pursuit of happiness]({% link _posts/2011-12-05-the-pursuit-of-happiness.md %}).
 >
 > Arbeit leisten bei uns seit 1980 oder so im wesentlichen Maschinen.  Ihre
 > Erträge werden effektiv kaum besteuert.
@@ -458,10 +458,10 @@ jede Form von kommerziellem Austausch.  Er schreibt:
 > (einigermassen) Zielpublikumsgerecht.  Auf Ebay finden sich andere
 > Angebote als bei Amazon.
 >
-> [http://storytude.com/](http://storytude.com/)
-> [http://www.eichelschwein.de](http://www.eichelschwein.de)
-> [http://www.meinekleinefarm.org](http://www.meinekleinefarm.org)
-> [http://prinzessinnengarten.net](http://prinzessinnengarten.net)
+> - [http://storytude.com/](http://storytude.com/)
+> - [http://www.eichelschwein.de](http://www.eichelschwein.de)
+> - [http://www.meinekleinefarm.org](http://www.meinekleinefarm.org)
+> - [http://prinzessinnengarten.net](http://prinzessinnengarten.net)
 >
 > Ich höre jetzt besser auf, sonst wird das hier noch seitenlang.  Der Punkt
 > ist jedenfalls, dass es eine Unmenge an Ideen und Geschäftsmodellen gibt,
