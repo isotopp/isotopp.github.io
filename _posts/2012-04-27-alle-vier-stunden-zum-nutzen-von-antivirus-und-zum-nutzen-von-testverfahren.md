@@ -7,13 +7,12 @@ date: 2012-04-27 21:24:02 UTC
 tags:
 - security
 - spam
-- testing
 - virus
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
 In 
-[Nur bedingt abwehrberit](http://www.faz.net/aktuell/technik-motor/computer-internet/virenschutzprogramme-nur-bedingt-abwehrbereit-11727592.html)
+[Nur bedingt abwehrbereit](http://www.faz.net/aktuell/technik-motor/computer-internet/virenschutzprogramme-nur-bedingt-abwehrbereit-11727592.html)
 schreibt Peter Welchering über die Wirksamkeit oder Unwirksamkeit von
 Antivirenprogrammen.  Dabei geht es auch um den "Schutzlevel" von
 Antivirenprogrammen, wie immer der genau definiert ist.  Ich lese unter
