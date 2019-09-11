@@ -6,8 +6,6 @@ author-id: isotopp
 date: 2011-11-09 13:18:38 UTC
 tags:
 - datenschutz
-- identity
-- internet
 - ipv6
 - politik
 - privacy
