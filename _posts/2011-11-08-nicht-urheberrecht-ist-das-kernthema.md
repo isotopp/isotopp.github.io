@@ -64,17 +64,16 @@ und zitiert
 
 Er äußert sich weiter und schreibt: 
 
->> Ich kenne keinen in der
-> Piratenpartei der Inhaltsschaffenden - seien es Musiker, Autoren, Maler,
-> Fotografen, Komponisten oder sonstwem etwas anderes als Respekt und den
-> Wunsch, dass sie ein Einkommen haben entgegenbringt. Nicht umsonst zeigen
-> immer wieder Studien, dass gerade die "Powerdownloader" in der Regel
-> überdurchschnittlich viel Geld für Medien jedweder Art ausgeben. Aber wir
-> von der Piratenpartei sehen eben auch, dass zur Durchsetzung der
-> Verwertungsrechte wie sie derzeit aussehen, man den von Kristian
-> geschilderten Fall 2 zwingend implementieren muss - und das ist etwas, was
-> wir aus bürgerrechtlicher Sicht schlicht nicht hinnehmen
-> können.
+> Ich kenne keinen in der Piratenpartei der Inhaltsschaffenden - seien es
+> Musiker, Autoren, Maler, Fotografen, Komponisten oder sonstwem etwas
+> anderes als Respekt und den Wunsch, dass sie ein Einkommen haben
+> entgegenbringt. Nicht umsonst zeigen immer wieder Studien, dass gerade die
+> "Powerdownloader" in der Regel überdurchschnittlich viel Geld für Medien
+> jedweder Art ausgeben. Aber wir von der Piratenpartei sehen eben auch,
+> dass zur Durchsetzung der Verwertungsrechte wie sie derzeit aussehen, man
+> den von Kristian geschilderten Fall 2 zwingend implementieren muss - und
+> das ist etwas, was wir aus bürgerrechtlicher Sicht schlicht nicht
+> hinnehmen können.
 
 Ich führe das in meinem eigenen Kommentar dort in  eine andere Richtung noch
 etwas weiter aus (redaktionell überarbeitet):
@@ -181,7 +180,7 @@ weiteres kostenfrei publizieren können.
 
 In einem weiteren Kommentar habe ich dazu Beispiele gebracht: 
 
-> [Kostenloskultur]({% link _posts/2010-06-30-kostenloskultur.md %})):
+> [Kostenloskultur]({% link _posts/2010-06-30-kostenloskultur.md %}):
 > Autoren von Lehrmaterial treten gegen Sal Khan an, der auf Youtube
 > unglaubliche Mengen unglaublich guter Lehrvideos zu den wildesten Themen
 > einstellt - und diesen Autoren vielfach die Geschäftsgrundlage entzieht.
@@ -218,7 +217,7 @@ In einem weiteren Kommentar habe ich dazu Beispiele gebracht:
 > motivieren.
 > 
 > Kopierschutz ist es nicht, das wissen wir schon (weil es heute Thema in
-> einer anderen Diskussion war, hier ein Satz Skype-Links zu einem einzelnen
+> einer anderen Diskussion war, hier ein Satz Links zu einem einzelnen
 > Hersteller: 
 > [Audible DRM](http://phantanews.de/dp/content/h%C3%B6rb%C3%BCcher-audiblede-und-das-drm),
 > [Audible DRM](http://blog.rince.de/archives/530-Hoerbuecher-mal-in-grauenhaft...-audible.de.html),
