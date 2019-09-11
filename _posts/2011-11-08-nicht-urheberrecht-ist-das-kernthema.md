@@ -181,7 +181,7 @@ weiteres kostenfrei publizieren können.
 
 In einem weiteren Kommentar habe ich dazu Beispiele gebracht: 
 
-> [Kostenloskultur]({%~ link _posts/2010-06-30-kostenloskultur.md %})):
+> [Kostenloskultur]({% link _posts/2010-06-30-kostenloskultur.md %})):
 > Autoren von Lehrmaterial treten gegen Sal Khan an, der auf Youtube
 > unglaubliche Mengen unglaublich guter Lehrvideos zu den wildesten Themen
 > einstellt - und diesen Autoren vielfach die Geschäftsgrundlage entzieht.
