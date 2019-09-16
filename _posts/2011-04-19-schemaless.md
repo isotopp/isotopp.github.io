@@ -9,7 +9,7 @@ tags:
 - mysql
 - nosql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 ## Die Frage:
 
