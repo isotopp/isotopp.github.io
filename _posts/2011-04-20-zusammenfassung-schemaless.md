@@ -99,7 +99,7 @@ Zu Option 1 erhielt ich dieses Anwendungsbeipiel:
 > Sortierung benutzt hat. Eigentlich ganz schön, dass das so einfach ist.
 > Nun fand die DB aber plötzlich keine Datensätze mehr, die das Feld noch
 > nicht besaßen.Auf der einen Seite richtig, auf der anderen kommt da gerne
-> auch eine Migration auf einen zu, für einen einzigen neues Key.Aber damit
+> auch eine Migration auf einen zu, für einen einzigen neues Key. Aber damit
 > kann man leben und man fällt wahrscheinlich nur einmal drauf rein und
 > beachtet dies in der Entwicklung.
 
@@ -119,10 +119,11 @@ Dies entspricht weitgehend einem prozedural auscodierten ALTER TABLE.
 
 Zu Option 3 erhielt ich dieses Anwendungsbeispiel: 
 > Umgesetzt habe ich das bisher, wie man es bei großen SQL-Datenbanken
-> letztendlich auch tun würde (wenn man die Tabelle nicht locken will):1.
-> Datensatz laden2. Gucken in welcher Version der Datensatz ist (bzw. ob
-> Daten migriert werden müssen)3. Datensatz gegf. aktualisieren[4. Datensatz
-> speichern (oder warten bis der Datensatz eh gespeichert wird)]
+> letztendlich auch tun würde (wenn man die Tabelle nicht locken will):
+> 1. Datensatz laden
+> 2. Gucken in welcher Version der Datensatz ist (bzw. ob Daten migriert werden müssen)
+> 3. Datensatz gegf. aktualisieren
+> 4. Datensatz speichern (oder warten bis der Datensatz eh gespeichert wird)
 
 Ein weiterer Beitrag: 
 > Als Anwendungsentwickler muss ich mich auf einmal in meinem Data
@@ -153,7 +154,7 @@ haben gemeinsame Eigenschaften, etwa ein Freischalt- und ein Endedatum,
 Preise, Rabatte und so weiter. Alle Produkte haben außerdem einen Typ, etwa
 DSL, weitere IP-Adresse, Webserver, Dedicated Server und so weiter. Für
 jeden Typ gibt es jetzt eine weitere Tabelle, in der Attribute gespeichert
-werdne, die für die Unterklasse spezifisch sind (also DSL-spezifisch,
+werden, die für die Unterklasse spezifisch sind (also DSL-spezifisch,
 Webserver-spezifisch und so weiter).
 
 Anwendungen arbeiten nun entweder mit der Oberklasse, etwa weil sie
@@ -225,7 +226,7 @@ und meint dann:
 > Wenn ich Daten normalisiere, bevor ich sie in einen schemalosen Store
 > schreibe, dann sehe ich auch keinen wirklichen Vorteil gegenüber einer
 > SQL-Datenbank (modulo der von Dir erwähnten table locking
-> Implementationsdetails einiger spezieller Implementationen).Das
+> Implementationsdetails einiger spezieller Implementationen). Das
 > Haupt-Feature ist also IMHO genau die Möglichkeit, erst ganz spät zu
 > normalisieren, und dann hat man möglicherweise viel mehr Kontext, was man
 > mit den Daten überhaupt anfangen will.
