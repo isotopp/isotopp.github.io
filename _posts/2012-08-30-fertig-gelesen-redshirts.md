@@ -5,7 +5,7 @@ title: 'Fertig gelesen: Redshirts'
 author-id: isotopp
 date: 2012-08-30 07:00:00 UTC
 tags:
-- book
+- buch
 - media
 - scifi
 - star trek

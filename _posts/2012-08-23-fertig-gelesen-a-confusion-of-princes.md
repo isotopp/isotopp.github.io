@@ -6,7 +6,7 @@ author-id: isotopp
 date: 2012-08-23 07:00:00 UTC
 tags:
 - lang_de
-- book
+- buch
 - media
 feature-img: assets/img/background/book.jpg
 ---

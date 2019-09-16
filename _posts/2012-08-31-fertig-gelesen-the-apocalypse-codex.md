@@ -5,7 +5,7 @@ title: 'Fertig gelesen: The Apocalypse Codex'
 author-id: isotopp
 date: 2012-08-31 07:00:00 UTC
 tags:
-- book
+- buch
 - cthulhu
 - media
 - stross
