@@ -52,3 +52,5 @@ Hintergrund erzeugt und b) Zufügen, Entfernen und Ändern von Spaltentypen
 lazy implementiert wie oben geschildert?
 
 Bitte helft mir und diskutiert in den Kommentaren.
+
+[Die Antwort]({% link _posts/2011-04-20-zusammenfassung-schemaless.md %}) in einem späteren Artikel.
