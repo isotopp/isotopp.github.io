@@ -7,8 +7,6 @@ date: 2011-02-16 14:53:04 UTC
 tags:
 - damals
 - hack
-- netzneutralität
-- post
 - security
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
