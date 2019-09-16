@@ -8,7 +8,7 @@ tags:
 - buch
 - media
 - lang_de
-feature-img: assets/img/background/buch.jpg
+feature-img: assets/img/background/book.jpg
 ---
 Nachdem ich jetzt ein wenig mit dem Lesen auf Kindle for Mac und Kindle for
 Android herumprobiert habe, kann ich sagen, daß es für mich funktioniert.
