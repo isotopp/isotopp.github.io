@@ -8,7 +8,7 @@ tags:
 - buch
 - media
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 [Der Name des Windes: Die Königsmörder-Chronik. Erster Tag](http://www.amazon.de/Name-Windes-Die-Königsmörder-Chronik-Erster/dp/3608938788/kristiankohntopp),
 Patrick Rothfuss, 16.95 EUR, 896 Seiten.
