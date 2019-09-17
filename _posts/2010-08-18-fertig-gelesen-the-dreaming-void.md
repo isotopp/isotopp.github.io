@@ -9,11 +9,10 @@ tags:
 - media
 - scifi
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
 [The Dreaming Void](http://www.amazon.de/Dreaming-Void-Trilogy/dp/034549654X),
 Peter F. Hamilton, EUR 6.50, 608 Seiten.
-
 
 ![](/uploads/void1.jpg)
 
