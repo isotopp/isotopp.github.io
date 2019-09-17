@@ -6,8 +6,7 @@ author-id: isotopp
 date: 2010-06-30 14:57:18 UTC
 tags:
 - internet
-- konsum
-- kostenloskultur
+- media
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
