@@ -9,7 +9,7 @@ tags:
 - sql
 - sqlite
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 ![](/uploads/vorsicht_mathe.png)
 
