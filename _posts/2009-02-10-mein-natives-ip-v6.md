@@ -10,22 +10,32 @@ tags:
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
-<div class="serendipity_imageComment_right" style="width: 73px"><div class="serendipity_imageComment_img"><a class='serendipity_image_link' href='http://www.amazon.de/IPv6-Practice-Unixers-Generation-Internet/dp/3540245243/'><!-- s9ymdb:4905 --><img class="serendipity_image_right" width="73" height="110"  src="/uploads/ipv6-stockebrandt.serendipityThumb.gif" alt="" /></a></div><div class="serendipity_imageComment_txt">Das Buch zum Thema.</div></div> Mein dedizierter Server in Berlin hat seit Ende Januar IP V6 nativ. Als Testkunde habe ich die Connectivity vor dem Rollout bekommen - eine IP V6 Adresse als Primäradresse und ein /56 Netz zum Spielen und durch die Gegend routen.
+Mein dedizierter Server in Berlin hat seit Ende Januar IP V6 nativ. Als
+Testkunde habe ich die Connectivity vor dem Rollout bekommen - eine IP V6
+Adresse als Primäradresse und ein /56 Netz zum Spielen und durch die Gegend
+routen.
 
-Der Dedi läuft recht schmerzfrei auf der mitgelieferten SuSE 10.2, und das Setup war sehr leicht. Stellt man in 'yast network' bei 'Besondere Einstellungen' 'Erweitert' das IP V6 an, erledigt SuSEs Systemadministration alle notwendigen Dependencies alleine. Insbesondere wird das ipv6.ko Kernelmodul geladen, aber auch alle notwendigen iptables-Module, die für eine stateless V6 Firewall notwendig sind. ip_conntrack unterstützt in 10.2 noch kein V6, leider.
+Der Dedi läuft recht schmerzfrei auf der mitgelieferten SuSE 10.2, und das
+Setup war sehr leicht. Stellt man in 'yast network' bei 'Besondere
+Einstellungen' 'Erweitert' das IP V6 an, erledigt SuSEs Systemadministration
+alle notwendigen Dependencies alleine. Insbesondere wird das ipv6.ko
+Kernelmodul geladen, aber auch alle notwendigen iptables-Module, die für
+eine stateless V6 Firewall notwendig sind. ip_conntrack unterstützt in 10.2
+noch kein V6, leider.
 
-
-
-
-Die notwendigen Konfigurationen habe ich dann jedoch zu Fuß in /etc/sysconfig/network erledigt.
-
+Die notwendigen Konfigurationen habe ich dann jedoch zu Fuß in
+/etc/sysconfig/network erledigt.
 
 {% highlight console %}
 h743107:/etc/sysconfig/network # cat ifroute-lo
 127/8
 2A01:238:40AB:CD00::/56
 {% endhighlight %}
- Die erdet mein /56, sodaß der Provider-Router und mein Dedi nicht mit den Paketen pingpong spielen. Für einzelne genutzte Adressen lege ich dann Hostrouten, um das zu aktivieren. 
+
+Die erdet mein /56, sodaß der Provider-Router und mein Dedi nicht mit den
+Paketen pingpong spielen. Für einzelne genutzte Adressen lege ich dann
+Hostrouten, um das zu aktivieren.
+
 {% highlight console %}
 h743107:/etc/sysconfig/network # cat ifcfg-eth0
 ...
@@ -44,9 +54,13 @@ h743107:/etc/sysconfig/network # cat ifroute-eth0
 2A01:238:40AB:CD00::1 fe80::1
 default fe80::1
 {% endhighlight %}
- Auch durch /etc/sysconfig/SuSEfirewall2 muß man einmal durchtoben und die entsprechenden V6-Optionen dort setzen, damit die Pakete nicht weggeworfen werden.
+
+Auch durch /etc/sysconfig/SuSEfirewall2 muß man einmal durchtoben und die
+entsprechenden V6-Optionen dort setzen, damit die Pakete nicht weggeworfen
+werden.
 
 Mit einem ping6 kann man nun schon Connectivity testen. 
+
 {% highlight console %}
  h743107:/etc/sysconfig/network # ping6 -c 3 2001:4c40:1::6667
 PING 2001:4c40:1::6667(2001:4c40:1::6667) 56 data bytes
@@ -58,11 +72,14 @@ PING 2001:4c40:1::6667(2001:4c40:1::6667) 56 data bytes
 3 packets transmitted, 3 received, 0% packet loss, time 2008ms
 rtt min/avg/max/mdev = 31.518/31.568/31.654/0.061 ms
 {% endhighlight %}
- Auch ein traceroute6 dort hin kann sehr aufschlußreich sein.
 
-<b>ssh</b>
+Auch ein traceroute6 dort hin kann sehr aufschlußreich sein.
 
-ssh sollte sofort und ohne weitere Konfiguration mit V6 funktionieren. Die /etc/ssh/sshd_config kennt 
+### ssh
+
+ssh sollte sofort und ohne weitere Konfiguration mit V6 funktionieren. Die
+/etc/ssh/sshd_config kennt
+
 {% highlight console %}
 AddressFamily
 Specifies which address family should be used by sshd(8).  Valid arguments are “any”, “inet” (use IPv4 only), 
@@ -79,11 +96,20 @@ If port is not specified, sshd will listen on the address and all prior Port opt
 The default is to listen on all local addresses.  Multiple ListenAddress options are permitted.
 Additionally, any Port options must precede this option for nonport qualified addresses.
 {% endhighlight %}
- Da insbesondere der Default 'any' ist, sollte keine Konfiguration notwendig sein. Wer ein Setup mit ListenAddress fährt, muß kurz die Config anpassen, ebenso jemand der PermitOpen verwendet um Security-Regeln zu implementieren.
 
-<b>exim</b>
+Da insbesondere der Default 'any' ist, sollte keine Konfiguration notwendig
+sein. Wer ein Setup mit ListenAddress fährt, muß kurz die Config anpassen,
+ebenso jemand der PermitOpen verwendet um Security-Regeln zu implementieren.
 
-Alle Änderungen, die ich am Exim gemacht habe sind: <ul><li><tt>disable_ipv6</tt> aus der Konfirguration entfernt und</li><li><tt>local_interfaces</tt> um die gewünschten Adressen erweitert. Literale Adressen müssen dabei in eckigen Klammern stehen.</li></ul> Der entsprechende Abschnitt in der Konfiguration sieht also wie folgt aus: 
+### exim
+
+Alle Änderungen, die ich am Exim gemacht habe sind:
+- `disable_ipv6` aus der Konfirguration entfernt und
+- `local_interfaces` um die gewünschten Adressen erweitert.
+  Literale Adressen müssen dabei in eckigen Klammern stehen.
+
+Der entsprechende Abschnitt in der Konfiguration sieht also wie folgt aus:
+
 {% highlight console %}
 #disable_ipv6
 local_interfaces = <; [85.214.35.184]:25; [85.214.35.184]:587; 
@@ -92,10 +118,12 @@ local_interfaces = <; [85.214.35.184]:25; [85.214.35.184]:587;
     [2a01:238:40ab:cd00::1]:25; [2a01:238:40ab:cd00::1]:587
 {% endhighlight %}
 
+### httpd
 
-<b>httpd</b>
+Der Apache, den ich fahre, lauscht nun ebenfalls für seine virtuellen Hosts
+aus V6-Adressen. Dazu habe ich meinen Konfigurationsgenerator wie folgt
+definiert:
 
-Der Apache, den ich fahre, lauscht nun ebenfalls für seine virtuellen Hosts aus V6-Adressen. Dazu habe ich meinen Konfigurationsgenerator wie folgt definiert: 
 {% highlight console %}
 Listen SERVERIP:80
 Listen [2a01:0238:4000:0000:0123:4567:89ab:cdef]:80
@@ -103,20 +131,35 @@ Listen [2a01:0238:4000:0000:0123:4567:89ab:cdef]:443
 
 NameVirtualHost *
 {% endhighlight %}
- Die Kombination von Listen-Anweisungen und <tt>NameVirtualHost *</tt> sorgt dafür, daß alle name based virtual Hosts auf allen diesen Interfaces zu bekommen sind. Für den 443-Port ist das natürlich sinnlos. Ich werde stattdessen also für V6 ein anderes System brauchen, das named-Setup und Apache-Setup miteinander verheiratet und in V6 grundsätzlich IP-basierende Virtual Hosts verwendet, diese dann aber grundsätzlich auf Port 443 verfügbar macht. Ob ich überhaupt noch unverschlüsseltes http auf V6 anbieten werde weiß ich nicht - die politische Situation legt nahe, daß dies Unsinn ist.
 
-<b>dovecot</b>
+Die Kombination von Listen-Anweisungen und `NameVirtualHost *` sorgt dafür,
+daß alle name based virtual Hosts auf allen diesen Interfaces zu bekommen
+sind. Für den 443-Port ist das natürlich sinnlos. Ich werde stattdessen also
+für V6 ein anderes System brauchen, das named-Setup und Apache-Setup
+miteinander verheiratet und in V6 grundsätzlich IP-basierende Virtual Hosts
+verwendet, diese dann aber grundsätzlich auf Port 443 verfügbar macht. Ob
+ich überhaupt noch unverschlüsseltes http auf V6 anbieten werde weiß ich
+nicht - die politische Situation legt nahe, daß dies Unsinn ist.
 
-Dovecot kann derzeit nur auf einem oder allen Interface lauschen. Ich muß also meine alte IP-basierte <tt>listen</tt>-Anweisung löschen und ein globales Listen einsetzen: 
+### dovecot
+
+Dovecot kann derzeit nur auf einem oder allen Interface lauschen. Ich muß
+also meine alte IP-basierte `listen`-Anweisung löschen und ein
+globales Listen einsetzen:
+
 {% highlight console %}
 #listen = 85.214.35.184
 listen = [::]
 {% endhighlight %}
- Ein * hätte alle V4-Interfaces aktiviert, ein [::] aktiviert V4 und V6.
 
-<b>irssi</b>
+Ein * hätte alle V4-Interfaces aktiviert, ein [::] aktiviert V4 und V6.
 
-Um mit V6 im Ircnet ircen zu können, muß man sich mit einem Webbrowser gegen [url=http://irc.irc6.net]einen V6-only Webserver[/url] connecten und dort freischalten lassen. Dann kann man definieren: 
+### irssi
+
+Um mit V6 im Ircnet ircen zu können, muß man sich mit einem Webbrowser gegen
+[einen V6-only Webserver](http://irc.irc6.net) connecten und dort
+freischalten lassen. Dann kann man definieren:
+
 {% highlight console %}
 servers = (
   {
@@ -129,7 +172,9 @@ servers = (
   }
 );
 {% endhighlight %}
- und von dort aus weiterarbeiten. Für Freenode ist es 
+
+und von dort aus weiterarbeiten. Für Freenode ist es 
+
 {% highlight console %}
 servers = (
   {
@@ -142,13 +187,15 @@ servers = (
   }
 );
 {% endhighlight %}
- Undernet kann noch kein V6.
 
-<b>named</b>
+Undernet kann noch kein V6.
+
+### named
 
 Bind 9 kann V6. Das reverse Lookup für die primäre IP liefert der Provider. Für das /56 habe ich eine Delegation und einen Secondary, muß die Zone also selber fahren.
 
 Vorwärts-Einträge: 
+
 {% highlight console %}
 irc                     1D IN AAAA      2A01:0238:40AB:CD00:0000:0000:0000:0001
 irc                     1D IN MX        100 smtp.koehntopp.de.
@@ -156,11 +203,10 @@ irc                     1D IN MX        100 smtp.koehntopp.de.
 smtp                    1D IN AAAA      2A01:0238:40AB:CD00:0000:0000:0000:0001
 smtp                    1D IN A         85.214.35.184
 smtp                    1D IN MX        100 smtp.koehntopp.de.
-
 {% endhighlight %}
 
-
 Und die reverse Zone: 
+
 {% highlight console %}
 h743107:/var/lib/named/master # less /etc/named.conf
 ...
@@ -183,7 +229,8 @@ zone "d.c.b.a.0.4.8.3.2.0.1.0.a.2.ip6.arpa" in {
         file "master/d.c.b.a.0.4.8.3.2.0.1.0.a.2.ip6.arpa.zone";
 };
 {% endhighlight %}
- Dann muß noch die Zone erzeugt werden. Dies geschieht wie üblich und ist nur ein Haufen Tipperei.
+
+Dann muß noch die Zone erzeugt werden. Dies geschieht wie üblich und ist nur ein Haufen Tipperei.
 
 {% highlight console %}
 h743107:/var/lib/named/master # ls -l *ip6*
