@@ -19,7 +19,7 @@ Bov Bjerg schreibt in
 > Gegengesellschaft von alten Männern, die sich kurz nach Erfindung des
 > Kugelschreibers vom technischen Fortschritt abgekoppelt haben. Reaktionär,
 > dogmatisch, unbelehrbar - und auch noch mächtig stolz darauf. 
-
+>
 > Unsere grundlegenden Werte sind ihnen fremd. Soweit sie davon auch nur
 > Kenntnis erlangen, wollen sie diese Werte zerstören. Die freie Information
 > behindern und die freie Rede bestrafen. Sie wollen über unsere Rechner
