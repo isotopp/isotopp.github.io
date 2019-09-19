@@ -11,6 +11,7 @@ tags:
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
-<object width="425" height="350"><param name="movie" value="http://www.youtube.com/v/8uuk_XFW9oA"></param><embed src="http://www.youtube.com/v/8uuk_XFW9oA" type="application/x-shockwave-flash" width="425" height="350"></embed></object>
+[Bundestrojaner vor dem Verfassungsgericht](https://www.youtube.com/watch?v=8uuk_XFW9oA)
 
-(via <a href="http://netzpolitik.org/2007/bundestrojaner-in-den-tagesthemen/">Netzpoltik.org</a>)
+(via 
+[Netzpoltik.org](http://netzpolitik.org/2007/bundestrojaner-in-den-tagesthemen/))
