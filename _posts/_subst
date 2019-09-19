@@ -1,0 +1,29 @@
+#! /usr/bin/env perl
+use strict;
+use warnings;
+
+local $/;
+my $text = <>;
+
+$text =~ s(<a href=['"](.*?)['"]>(.*?)<\/a>)(\n[$2]($1))simg;
+$text =~ s(\[url=['"]?(.*?)['"]?\](.*?)\[\/url\])(\n[$2]($1))simg;
+
+$text =~ s(<img src=['"](.*?)['"] />)(\n![]($1))simg;
+
+$text =~ s(<em>(.*?)</em>)(_$1_)simg;
+$text =~ s(<b>(.*?)</b>)(**$1**)simg;
+$text =~ s(\[b\](.*?)\[/b\])(**$1**)simg;
+
+$text =~ s(<h2>(.*?)</h2>)(## $1)simg;
+
+while ($text =~ m(<blockquote>(.*?)</blockquote>)sim) {
+  (my $content = $1) =~ s(\n)()g;
+  $text =~ s(<blockquote>(.*?)</blockquote>)(\n> $content\n)sim;
+}
+
+while ($text =~ m(\[quote\](.*?)\[/quote\])sim) {
+  (my $content = $1) =~ s(\n)()g;
+  $text =~ s(\[quote\](.*?)\[/quote\])(\n> $content\n)sim;
+}
+
+print "$text";
