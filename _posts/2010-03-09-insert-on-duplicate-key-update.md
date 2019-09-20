@@ -254,7 +254,7 @@ Hat man Code mit relativen Updates, etwa der Form 'update konto set geld =
 geld - old.betrag' in einem 'before insert' und einem 'before
 update'-Trigger, dann hat man also zweimal abgebucht, aber nur einmal
 aufgebucht. Die Zähler geraten durcheinander. Man muß bei der Konstruktion
-von Triggern also besonder Vorsicht walten lassen und diesen Fall
+von Triggern also besondere Vorsicht walten lassen und diesen Fall
 berücksichtigen.
 
 Das gilt im übrigen auch für das Partnerstatement von INSERT ON DUPLICATE
