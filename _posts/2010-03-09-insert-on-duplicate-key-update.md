@@ -7,7 +7,7 @@ date: 2010-03-09 17:51:00 UTC
 tags:
 - mysql
 - lang_de
-feature-img: assets/img/background/mysqljpg
+feature-img: assets/img/background/mysql.jpg
 ---
 Auf Yourhelpcenter.de gibt es einen Artikel mit dem irreführenden Titel
 [Update if exists else insert record](http://www.yourhelpcenter.de/2010/03/mysql-update-if-exists-else-insert-record-sql-statement/),
@@ -146,7 +146,9 @@ INSERT-Phase aber auch einen Out Of Range-Error haben?
 
 {% highlight sql %}
 root@localhost [kris]> insert into a (id,d,e) values (7,10,300) ON DUPLICATE KEY UPDATE e = 197;
-ERROR 1264 (22003): Out of range value for column 'e' at row 1root@localhost [kris]> select * from a;
+ERROR 1264 (22003): Out of range value for column 'e' at row 1
+
+root@localhost [kris]> select * from a;
 +----+---+-----+
 | id | d | e   |
 +----+---+-----+
