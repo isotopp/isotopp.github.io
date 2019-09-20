@@ -11,12 +11,24 @@ tags:
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
-<img width='110' height='110' border='0' hspace='5' align='right' src='/uploads/trolltech.serendipityThumb.jpg' alt='' /> Trolltech teilt mit, daß <a href="http://www.trolltech.com/newsroom/announcements/00000192.html">Qt4 für Windows</a> jetzt auch unter der GPL lizensiert wird.
+![](/uploads/trolltech.jpg)
 
-Der Qt3 Sourcecode für Unix-Betriebssysteme stand schon immer sowohl unter der GPL als auch wahlweise unter einer Bezahllizenz zur Verfügung, während für die Windows-Variante des Sourcetrees nur die Bezahllizenz verfügbar war. Mit Qt4 ändert Trolltech diese Strategie: Qt4 wird plattformübergreifend wahlweise unter der GPL oder einer Bezahllizenz verfügbar sein.
+Trolltech teilt mit, daß
+[Qt4 für Windows](http://www.trolltech.com/newsroom/announcements/00000192.html)
+jetzt auch unter der GPL lizensiert wird.
 
-Windows ist nach Aussage von Trolltech ganz knapp die populärste Plattform for Qt. Der Anpassungsaufwand, um Qt-Anwendungen von Unix-Plattformen auf Windows und MacOS zu portieren ist extrem gering.
+Der Qt3 Sourcecode für Unix-Betriebssysteme stand schon immer sowohl unter
+der GPL als auch wahlweise unter einer Bezahllizenz zur Verfügung, während
+für die Windows-Variante des Sourcetrees nur die Bezahllizenz verfügbar war.
+Mit Qt4 ändert Trolltech diese Strategie: Qt4 wird plattformübergreifend
+wahlweise unter der GPL oder einer Bezahllizenz verfügbar sein.
 
-Trolltech stellt eine <a href="http://www.trolltech.com/developer/faqs/duallicense.html">FAQ zu Lizenzfragen</a> zur Verfügung.
+Windows ist nach Aussage von Trolltech ganz knapp die populärste Plattform
+for Qt. Der Anpassungsaufwand, um Qt-Anwendungen von Unix-Plattformen auf
+Windows und MacOS zu portieren ist extrem gering.
 
-Inzwischen hat auch <a href="http://www.golem.de/0502/36142.html">Golem</a> einen Artikel zum Thema.<br clear='all' />
+Trolltech stellt eine 
+[FAQ zu Lizenzfragen](http://www.trolltech.com/developer/faqs/duallicense.html) zur Verfügung.
+
+Inzwischen hat auch 
+[Golem](http://www.golem.de/0502/36142.html) einen Artikel zum Thema.
