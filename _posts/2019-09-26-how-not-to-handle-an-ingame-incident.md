@@ -66,6 +66,12 @@ playing the game is literally this, so that's weird, but they what they
 decided to do is to book back the CR earned, and/or also delete any goods
 purchased with the CR earned (mostly, ships).
 
+![](uploads/elite-0cr.jpg)
+
+An Alternative Account of a player, after the deduction. Went from 51m CR to
+1.3b CR, then purchased an Anaconda. After the correction 0CR, in an
+Anaconda, and with Elite Trade Rank plus Arx earned.
+
 ### Now, that's not how any of this works.
 
 In terms of game mechanics, what happened is a trade. A trade does much more
