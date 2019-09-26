@@ -4,7 +4,7 @@ title:  "The Rockforth Fertilizer Incident"
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 category: media
-date: 2019-06-26 10:16:36 +0200
+date: 2019-09-26 10:16:36 +0200
 tags:
 - "elite dangerous"
 - gaming
