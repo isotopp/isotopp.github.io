@@ -29,13 +29,24 @@ So some people flew to
 and looked at the prices for
 [Rockforth Fertilizer](https://eddb.io/commodity/359). What they found was a
 single station buying and selling the good at the same time, and buying it
-at about 9000 CR higher than they sold it. Of course, that news made the
-rounds rather quickly, and soon a lot of people were docking large
-freighters at Marshall and bought and sold fertilizer as quickly as the game
-GUI would fill and empty their cargo bays. That is easily several million CR
-per 5s, and I know of some people who ran this for 11 billion CR (11E09 CR).
+at about 9000 CR higher than they sold it. 
 
-### That is what Frontier did.
+So here is what we have:
+
+- Fdev introduces a new tradeable good by the way of the backstory.
+- They announce that, and introductory prices in Galnet in order to alert
+  players to this fact and to lure them to Riedquat.
+- They misconfigure a station in Riedquat so that it sells and buys
+  the new good to Fdev's disadvantage.
+- Players follow the trail and … trade. A lot.
+
+Of course, that news made the rounds rather quickly, and soon a lot of
+people were docking large freighters at Marshall and bought and sold
+fertilizer as quickly as the game GUI would fill and empty their cargo bays.
+That is easily several million CR every five seconds, and I know of some
+people who ran this for 11 billion CR (11e09 CR).
+
+### That is what Frontier did to "fix".
 
 Frontier Developments became aware of the misconfigured station only after
 several hours, and the sale was available for the larger part of a day, from
@@ -43,20 +54,21 @@ around shortly before noon CEST to shortly before 7pm in the evening of the
 same day, when they fixed the trade tables.
 
 I do not know if Fdev have in-game trade dashboards that alert them to
-abnormally fast or high volume tranaction volumes or cash flows, or to
-abnormally quickly growing player budgets, but the slowness of detection
+abnormally fast or high volume transaction volumes or cash flows. Or to
+abnormally quickly growing player budgets. But the slowness of detection
 lets me suspect that their in-game monitoring maybe has potential for
 improvement.
 
 As a result of the situation, Fdev decided to correct CR volumes on a number
 of accounts on the grounds of players 'abusing game mechanics'. Well,
-playing the game is literally this, so that's weird, but they decided to
-book back the CR earned, and/or also any goods purchased with the CR earned
-(mostly, ships).
+playing the game is literally this, so that's weird, but they what they
+decided to do is to book back the CR earned, and/or also delete any goods
+purchased with the CR earned (mostly, ships).
 
 ### Now, that's not how any of this works.
 
-In terms of game mechanics, what happened is a trade. 
+In terms of game mechanics, what happened is a trade. A trade does much more
+than earn you money.
 
 Trade does 
 
@@ -81,11 +93,19 @@ They did not revise any rank gained.
 
 They did not revise any Arx earned.
 
-That, together with the slow detection, hints at badly executed ad-hoc
-non-process, and generally bad policy at handling in-game incidents. The
-Other Internet Spaceships Game has the
-[Council of Stellar Management](https://eve.fandom.com/wiki/Council_of_Stellar_Management).
-The story of its inception is
+### Evaluation.
+
+So this entire thing reeks of unprofessional execution, "as if an intern ran
+the entire thing from setting up the tradeable to misconfiguring the station
+to mishandling the aftermath". It hints at badly executed ad-hoc
+non-process, and generally bad policy at handling in-game incidents -
+whoever did this did not just set it up wrongly, but also did not understand
+the consequences of the proceedings when trying to mop up the aftermath. And
+the math was wrong.
+
+The Other Internet Spaceships Game has the 
+[Council of Stellar Management](https://eve.fandom.com/wiki/Council_of_Stellar_Management). 
+The story of its inception is 
 [rather famous](https://v1.escapistmagazine.com/articles/view/video-games/editorials/op-ed/847-Jumpgate-EVE-s-Devs-and-the-Friends-They-Keep)
 and a much larger incident than here, but the logic behind it is similar:
 The company has been handling an in-game incident badly, and a structure
