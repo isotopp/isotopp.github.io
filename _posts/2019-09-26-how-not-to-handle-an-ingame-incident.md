@@ -88,17 +88,25 @@ Trade does
   (some people went from "Pennyless" to "Elite")
 - Trading in the game is also an activity that earn you
   [Arx](https://elite-dangerous.fandom.com/wiki/ARX).
+- If you have a crew member, they will receive a variable share of
+  all money you earn in trade, so you will receive less CR in your
+  account than the trade is worth.
 
 Fdev deciced to "fix" the situation by taking away money earned in the
 Trade, but due to whatever reasons mis-calculated the values of the
 earnings, in some cases by several hundred million CR. They also took away
-good purchased with this money (deleted ships, mostly).
+goods purchased with this money (deleted ships, mostly).
 
 They did not revise any wing trade dividends.
 
 They did not revise any rank gained.
 
 They did not revise any Arx earned.
+
+They did not take crew member mechanics into account.
+
+**EDIT:** The miscalculation is probably because FDev based the money
+deducted on trade value, not taking into account Crew Member mechanics.
 
 ### Evaluation.
 
@@ -127,3 +135,5 @@ properly to handle situations like these.
 E:D has no such structure, and it seems that this might need to be addressed
 somehow, too.
 
+**EDIT:** Chris_W noted that there is also crew member mechanics. This post
+has been amended to reflect this.
