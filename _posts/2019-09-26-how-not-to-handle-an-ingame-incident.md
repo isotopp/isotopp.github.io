@@ -9,6 +9,7 @@ tags:
 - "elite dangerous"
 - gaming
 - media
+- lang_en
 ---
 So I have been playing this Internet Spaceships Game. 
 [No, the other one](https://www.frontierstore.net/games/elite-dangerous-cat.html).
