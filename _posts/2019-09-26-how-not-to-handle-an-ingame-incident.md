@@ -103,6 +103,11 @@ whoever did this did not just set it up wrongly, but also did not understand
 the consequences of the proceedings when trying to mop up the aftermath. And
 the math was wrong.
 
+Elite (1984) was one of the first games that had savegames, and progression,
+and since then the game has always been about 'state' and moving forward.
+The incident handling here basically mishandled game state at a large scale,
+at every stage of the entire proceedings.
+
 The Other Internet Spaceships Game has the 
 [Council of Stellar Management](https://eve.fandom.com/wiki/Council_of_Stellar_Management). 
 The story of its inception is 
@@ -114,3 +119,4 @@ properly to handle situations like these.
 
 E:D has no such structure, and it seems that this might need to be addressed
 somehow, too.
+
