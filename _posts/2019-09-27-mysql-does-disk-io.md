@@ -69,8 +69,28 @@ commit:
 [pid 29441] fsync(3)                    = 0
 {% endhighlight %}
 
-Checkpointing to the the doublewrite buffer, at offset 1M in the
-ibdata:
+This is the only `fsync` that contributed to commit-Latency. The write is
+now persisted to disk, and can be reconstructed using the unmodified page
+from the tablespace and the change information from the redo log during
+recovery. 
+
+The modified page is still in memory, though, and in order to reclaim redo
+log space, needs to be eventually checkpointed.
+
+This happens later, and with many more `fsync` operations. It does happen in
+batch, for many commits and multiple pages, normally, but in our easily
+traceable test setup, it's looking like a lot of overhead.
+
+During normal operations, a page often is modified in multiple commits over
+a short amount of time. Each of these commits is a separate redo log sync,
+but all these changes are being accumulated on the dirty in-memory page, and
+get persisted into the tablespace in a single checkpoint write. Also, during
+checkpointing one doublewrite buffer worth of pages gets written out in a
+single sync operation, so we do see a far better page/sync and MB/sync ratio
+then in this test setup.
+
+Anyway, this is what checkpointing to the the doublewrite buffer, at offset
+1M in the ibdata looks like:
 
 {% highlight console %}
 [pid 29181] pwrite64(10, "\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&\211\225\0\2\0\0\0\0\0\0"..., 32768, 1048576) = 32768
