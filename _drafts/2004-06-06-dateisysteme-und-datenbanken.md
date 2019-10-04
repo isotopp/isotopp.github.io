@@ -1,22 +1,21 @@
 ---
 layout: post
-published: true
-title: Dateisysteme und Datenbanken
+title: "Dateisysteme und Datenbanken"
 author-id: isotopp
-date: 2004-06-06 18:21:31 UTC
-tags:
-- computer
-- dateisysteme
-- lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
+date: 2004-06-06 14:06:40 UTC
+tags:
+- dateisysteme
+- datenbanken
+- "lang_de"
 ---
-<a href='/uploads/nameiresolver.gif'><img border='0' hspace='5' align='right' src='/uploads/nameiresolver.serendipityThumb.gif' alt='' /></a> Der Artikel <a href="http://matthias.leisi.net/archives/45_Filesysteme_sind_Datenbanken.html">Filesysteme sind Datenbanken</a> von Matthias Leisi regt mich an, hier mal ein paar Sachen aufzuschreiben, die ich schon länger vor mir her kullere.
+[<img border='0' hspace='5' align='right' src='/uploads/nameiresolver.serendipityThumb.gif' alt='' />](/uploads/nameiresolver.gif) Der Artikel 
+[Filesysteme sind Datenbanken](http://matthias.leisi.net/archives/45_Filesysteme_sind_Datenbanken.html) von Matthias Leisi regt mich an, hier mal ein paar Sachen aufzuschreiben, die ich schon länger vor mir her kullere.
 
 Die meisten Unix-Dateisysteme trennen eine "Gruppiere Blocks in Dateien"-Ebene (Blockverwaltung) und die "Gruppiere Dateien in Hierarchien"-Ebene (Namensraumverwaltung) voneinander. Die Blockverwaltung ist relativ gut verstanden und der I/O-Layer von Datenbanken überlegen. Die durch WinFS ausgelöste Diskussion findet stattdessen im Bereich Namensraumverwaltung statt.<br clear='all' />
 
 
-
-<b>Blockverwaltung und die Überlegenheit der Filesystem API</b>
+**Blockverwaltung und die Überlegenheit der Filesystem API**
 
 Die Ebene der Blockverwaltung bei Dateisystemen ist sehr hoch optimiert und muß akzeptable Performance unter extrem variablen Benutzungspatterns abliefern können. Ein einzelnes Dateisystem kann im selben Moment sehr viele kleine Dateien enthalten, wie sie zum Beispiel in einem Cyrus-Mailspool oder einem INN tradspool vorkommen, und einige wenige sehr große Dateien, wie sie zum Beispiel von einer Datenbank angelegt werden. Es muß damit zurecht kommen, daß eine Anwendung sehr viele sehr kleine Dateien in Folge öffnen will - der IMAP-Server, der durch den Mailspool tobt, und daß zeitgleich sehr viele andere Anwendungen auf einer großen Datei hin- und her seeken und zeitgleich Stücke der dieser großen Datei beschreiben und lesen wollen - die Threads der Datenbank, die auf das Datenbankfile zeitgleich einschlagen. 
 
@@ -34,27 +33,30 @@ Keine Annahmen über die Struktur erlaubt Freiheit in der Definition der Datenst
 
 Zero Copy I/O
 
-<b>Namensraumverwaltung</b>
+**Namensraumverwaltung**
 
 Man kann sich die Blockverwaltungsschicht wie ein einziges großes Verzeichnis ohne Unterverzeichnisse vorstellen, in dem alle Dateien eines Dateisystems enthalten sind, und zwar mit ihrer Inode-Nummer als Name. Die Aufgabe der Namensraumverwaltung ist nun, die Pfadnamen, die im Userland gebräuchlich sind, in Inodenummern zu übersetzen. Auf der Ebene der Blockverwaltung arbeitet Unix dann immer nur mit den Inodenummern und den daran hängenden Verwaltungsstrukturen, den Inodes. Es gibt keine Funktion openi() ("Open File by Inode number") in der Kernel-API.
 
 Über dieser Schicht liegt die Namensraumverwaltung. Die ist in unixoiden Systemen traditionell hierarchisch strukturiert und der Zugriff auf Daten erfolgt immer über Pfadnamen relativ zum aktuellen Verzeichnis eines Prozesses oder zur aktuellen Wurzel des Dateisystems eines Prozesses. Dies ist ein sehr simpler Mechanismus der Strukturbildung auf dem flachen See der Inodenummern, der viele Jahre ausgereicht hat, um Dateien zu sortieren und wiederzufinden.
 
-Zur Zeit geschieht dies immer intern im Kernel. Die Funktion, die dies macht, bekommt entweder das aktuelle Wurzelverzeichnis des aufrufenden Prozesses (wenn der Dateiname mit / anfängt) oder das aktuelle Arbeitsverzeichnis (in allen anderen Fällen) als Startwert und übersetzt den Pfadnamen dann <a href="http://kris.koehntopp.de/artikel/dateisysteme/nameiresolver.gif">Schritt für Schritt</a> rekursiv in eine Folge-Inodenummer und einen Pfadrest. 
+Zur Zeit geschieht dies immer intern im Kernel. Die Funktion, die dies macht, bekommt entweder das aktuelle Wurzelverzeichnis des aufrufenden Prozesses (wenn der Dateiname mit / anfängt) oder das aktuelle Arbeitsverzeichnis (in allen anderen Fällen) als Startwert und übersetzt den Pfadnamen dann 
+[Schritt für Schritt](http://kris.koehntopp.de/artikel/dateisysteme/nameiresolver.gif) rekursiv in eine Folge-Inodenummer und einen Pfadrest. 
 
 Wir nehmen an Gedanken aus dieser Sektion mit: Die Ansteuerung von Dateien erfolgt in Unix traditionell über den Pfad und nicht über eine ID wie die Inode-Nummer. Das Auflösen des Pfadnamens in eine Inode-Nummer erfordert weitere, über die Rechte an der Datei hinausgehende Zugriffsrechte, die vom verwendeten Pfadnamen abhängen. Für ein modernes Rechtesystem ist das weder notwendig noch wünschenswert, und es sollte möglich sein, Dateien über eine ID - die Inode-Nummer oder eine Datei-UUID anzusprechen. Windows- und Apple-Dateisysteme erlauben dies sogar schon zum Teil.
 
-<b>Andere Strukturbildner</b>
+**Andere Strukturbildner**
 
-Einige Artikel diskutieren nun andere Strukturbildner für ein Dateisystem. El Reg hat zum Beispiel ein <a href="http://www.theregister.co.uk/2002/03/29/windows_on_a_database_sliced/">Interview</a> mit den Entwicklern von BeOS über die Probleme, die sie bei der Entwicklung der BeOS "Dateisystem"-Datenbank gehabt haben. Dem Interview kann man entnehmen, daß eine Datenbank im Userland zwar keine Performance-Vorteile hat, aber die Synchronisation zwischen Datenbank und Dateisystem leichter zu realisieren ist, wenn entsprechende Synchronisationsprimitive existieren und das Interface zu diesen Funktionen ist leicher zu realisieren, wenn die Datenbank Teil des Kernels ist.
+Einige Artikel diskutieren nun andere Strukturbildner für ein Dateisystem. El Reg hat zum Beispiel ein 
+[Interview](http://www.theregister.co.uk/2002/03/29/windows_on_a_database_sliced/) mit den Entwicklern von BeOS über die Probleme, die sie bei der Entwicklung der BeOS "Dateisystem"-Datenbank gehabt haben. Dem Interview kann man entnehmen, daß eine Datenbank im Userland zwar keine Performance-Vorteile hat, aber die Synchronisation zwischen Datenbank und Dateisystem leichter zu realisieren ist, wenn entsprechende Synchronisationsprimitive existieren und das Interface zu diesen Funktionen ist leicher zu realisieren, wenn die Datenbank Teil des Kernels ist.
 
-Die Beispiele, die für BeOS gegeben werden, gehen von einer traditionellen Datenbank mit Feldern und Werten aus. Der Artikel mit dem langatmigen Titel <a href="http://www.namesys.com/whitepaper.html">Namespaces As Tools for Integration the Operating System Rather As Ends in Themselves</a> schildert die Sicht von Hans Reiser auf dieses Problem. In dem Artikel versucht Hans Reiser zu erläutern, warum er eine feste Tabellenstruktur oder RDF-Syntax für eine Abfragesprache in Dateisystemen eher für sinnlos halt. Seine Beweisführung streift schon fast das Argument "Google für Dateisysteme". Wenn er dann jedoch beginnt, eine Abfragesprache mit einer "dateinamenähnlichen" Syntax herzuleiten, erkennt man wieder Strukturen mit einer "Name=Wert"-Syntax.
+Die Beispiele, die für BeOS gegeben werden, gehen von einer traditionellen Datenbank mit Feldern und Werten aus. Der Artikel mit dem langatmigen Titel 
+[Namespaces As Tools for Integration the Operating System Rather As Ends in Themselves](http://www.namesys.com/whitepaper.html) schildert die Sicht von Hans Reiser auf dieses Problem. In dem Artikel versucht Hans Reiser zu erläutern, warum er eine feste Tabellenstruktur oder RDF-Syntax für eine Abfragesprache in Dateisystemen eher für sinnlos halt. Seine Beweisführung streift schon fast das Argument "Google für Dateisysteme". Wenn er dann jedoch beginnt, eine Abfragesprache mit einer "dateinamenähnlichen" Syntax herzuleiten, erkennt man wieder Strukturen mit einer "Name=Wert"-Syntax.
 
 Reiser geht davon aus, daß es Dateisystem-Plugins gibt, die er Klassifikatoren nennt. Diese Plugins generieren Schlüsselwerte, unter denen die Datei zu finden ist. In einem traditionellen Unix-Dateisystem stellt der Benutzer die Schlüssel bereit, indem er eine Datei unter einem Namen in einem Verzeichnis ablegt (und durch Links kann eine Datei unter mehr als einem Schlüssel abgelegt sein). In Reisers Modell werden weitere Schlüssel automatisch generiert - abhängig vom Typ der Datei. Das kann etwa ein Volltextindex sein - eine Datei ist dann unter allen in der Datei vorkommenden Worten zu finden, oder es können Schlüssel-Schlüsselwert Paare sein wie "mime-type: audio/mp3", "subject: strike" oder "from: santa".
 
 In seiner Syntax ist "/etc/passwd" die Datei passwd in der "etc"-Gruppierung, während "[dragon gandalf bilbo]" die Datei ist, die den drei genannten Schlüsselwerten zugleich genügt. Später verallgemeinert er dann den "/"-Operator zu einer "Syntax Barrier" und kommt so zu Queries mit "Funktionen" wie "case-insensitve/[computer privacy laws]", zu Security Barriers wie "[my secrets]/[love letter susan]" und zu einer Attributsyntax wie "[subject/[illegal strike] to/elves from/santa document-type/RFC822 ultimatum]". Er weist darauf hin, daß man zu einer quasi-relationalen Query gelangt, wenn man das vorhergehende Beispiel zu "[subject/strike to/elves from/santa document-type/RFC822]" vereinfacht.
 
-<b>Objektklassen und Attributsyntax</b>
+**Objektklassen und Attributsyntax**
 
 Und an dieser Stelle landet man dann bei weiterem Nachdenken bei LDAP. Während LDAP eine stark denormalisierte Datenbankstruktur ist (LDAP ist nicht einmal in erster Normalform), besteht der Wert von LDAP paradoxerweise darin, ein sehr rigides Datenmodell zu haben. LDAP definiert einige Datentypen und die für diese Datentypen zugelassenen Attribute sowie ein Vererbungssystem für Typen. Alle LDAP-Anwendungen verwenden diese Datentypen oder erben von ihnen, sodaß unterschiedliche LDAP-Storages untereinander kompatibel sind. 
 
@@ -72,7 +74,7 @@ Neben der Arbeit der Implementierung eines solches Dateisystems ist also weitere
 
 Auch an der Abfragesprache ist noch Arbeit zu leisten - die von Reiser vorgeschlagene Syntax ist einfach, aber unvollständig und definiert keine vollständige Navigation. Die Abfragesprache von LDAP ist ebenfalls unvollständig und hat eine ganze Reihe von Einschränkungen, nicht nur vom relationalen Standpunkt aus, sondern schon auf einer sehr viel niedrigeren Ebene - hier möchte man sich eher bei den Gedankenmodellen von XPath und XQuery bedienen, die eine reichere Syntax und mehr Möglichkeiten liefern. Auf diese Weise wäre auch die Adressierung von Elementen _in_ Dateien möglich.
 
-<b>Fazit</b>
+**Fazit**
 
 Wir nehmen abschließend mit: 
 
