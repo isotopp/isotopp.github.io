@@ -183,13 +183,11 @@ system:
 
 ![](/uploads/data-centers-and-energy/traditional-data-center.png)
 
-Traditional Data Centers: Dark Green - Payload. Everything else
-- Payload Support.
+Traditional Data Centers: Dark Green - Payload. Everything else - Payload Support.
 
 ![](/uploads/data-centers-and-energy/ocp-data-center.png)
 
-OCP Data Centers: Dark Green - Payload. Still around: Generator,
-Airco is now adiabatic instead of CRAC. Everything else: gone.
+OCP Data Centers: Dark Green - Payload. Still around: Generator, Airco is now adiabatic instead of CRAC. Everything else: gone.
 
 OCP data centers redesign the air flow in the data center.
 
