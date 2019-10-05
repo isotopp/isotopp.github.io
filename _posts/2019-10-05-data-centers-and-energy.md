@@ -136,7 +136,7 @@ make Germanys aging copper infrastructure capable of handling
 modern data rates, a stunning amount of signal processing is
 required.
 
-![](/uploads/data-centers-and-energy/800px-Outdoor_DSLAM.JPG)
+![](/uploads/data-centers-and-energy/outdoor_dslam.jpg)
 
 Siemens DSL DSLAM (not VDSL) as can be found in typical outdoor
 cabinets all over the city. (via [Wikipedia](https://en.wikipedia.org/wiki/Digital_subscriber_line_access_multiplexer))
