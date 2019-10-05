@@ -3,7 +3,7 @@ layout: post
 status: publish
 published: true
 title: 'PHP 7: mysql extension deprecated'
-author: isotopp
+author-id: isotopp
 date: '2017-01-23 15:13:12 +0100'
 feature-img: assets/img/background/mysql.jpg
 tags:
