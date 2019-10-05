@@ -82,6 +82,7 @@ of the potential compute already consume 50% of the power.
 Another way to think about it is Watt per Thread: 
 
 ![](/uploads/2017/07/watt-thread.jpg)
+
 Watts per Thread.
 
 A nice hockey stick. Inflection point is around 6 cores. Things are becoming
