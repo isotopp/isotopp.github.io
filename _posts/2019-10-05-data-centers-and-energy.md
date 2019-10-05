@@ -9,6 +9,7 @@ tags:
 - climate
 - data center
 - energy
+- erklaerbaer
 - 'lang_en'
 ---
 Deutsche Welle is shocked: 
