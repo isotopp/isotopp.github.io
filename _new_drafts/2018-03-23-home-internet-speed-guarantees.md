@@ -1,0 +1,24 @@
+---
+layout: post
+status: publish
+published: true
+title: Home Internet Speed Guarantees
+author: isotopp
+author_login: kris
+author_email: kristian.koehntopp@gmail.com
+wordpress_id: 3109
+wordpress_url: http://blog.koehntopp.info/?p=3109
+date: '2018-03-23 16:01:08 +0100'
+date_gmt: '2018-03-23 15:01:08 +0100'
+categories:
+- Als Deutscher in den Niederlanden
+- Nederlands
+- Networking
+- Neuland
+tags: []
+---
+<p>The Netherlands are a Central European country that guarantees network neutrality and consumer rights. So, by law, providers are sending out consumer notices in which they explain the bandwidth promises they make. Tweak sends me: [caption id="attachment\_3110" align="aligncenter" width="585"][![](http://blog.koehntopp.info/wp-content/uploads/2018/03/Screen-Shot-2018-03-23-at-15.42.39.png)](http://blog.koehntopp.info/wp-content/uploads/2018/03/Screen-Shot-2018-03-23-at-15.42.39.png) Service Guarantees[/caption] and they [link](https://zoek.officielebekendmakingen.nl/stcrt-2017-68591.html) to this to explain it.<!--more--> This documents links itself again to the&nbsp;netneutraliteitsverordening, and defines:</p>
+<p>- De ACM verstaat het volgende onder de minimale snelheid: de snelheid die een internettoegangsdienst te allen tijde moet kunnen behalen. The network speed cannot be lower than the minimale snelheid.<br />
+- De ACM verstaat het volgende onder de normaliter beschikbare snelheid: de snelheid die een internettoegangsdienst in de praktijk behaalt op een willekeurig moment van de dag. The normaliter snelheid is the internet speed at some random time of the day. They later explain that this is the speed that has to be reached in 8/10 calibrated measurements made over a week, with some spreading rules that make sure a representative set of days and hours is chosen.<br />
+- De ACM verstaat het volgende onder de maximumsnelheid: de hoogst haalbare snelheid die een internettoegangsdienst daadwerkelijk kan leveren binnen het afgesloten abonnement.&nbsp;Naar het oordeel van de ACM wordt tenminste 90% van de maximumsnelheid bij één van de tien metingen die een eindgebruiker in één week uitvoert gerealiseerd. At least 90% max speed must be reached at least once in said spread of 10 measurements.<br />
+ So the Netherlands actually has a bandwidth warranty and a set of practical measurement rules - that is, as in Germany a measurement system does not yet exist, but that does not stop the Netherlands from making measurements and seeing what the outcome is: _Op het moment van vaststelling van deze beleidsregel is een dergelijk gecertificeerd meetsysteem er nog niet. De ACM vindt het wenselijk dat eindgebruikers hun internetverbinding goed kunnen meten. Dat er nog geen gecertificeerd meetsysteem is, betekent niet dat eindgebruikers geen metingen van hun internetsnelheid kunnen doen. Ook zonder gecertificeerd meetsysteem zijn eindgebruikers in staat om dergelijke metingen te doen._ There is a bit of advice given on how to actually measure fairly, but since the measurement is not yet certified, a positive outcome is valid, and a negative outcome that is repeatable is worthy further investigation to find the root cause, which may well be a bad connection. So, use a wired connection, make sure there is no other traffic, and use modern hardware: _De eindgebruiker moet bij het meten van zijn vaste internettoegang vanaf zijn eigen apparaat de meting uitvoeren met een bedrade verbinding. In het geval van het meten van een mobiele verbinding moet de Wi-Fi verbinding eerst worden uitgezet voordat de meting wordt gestart. Bij het door de eindgebruiker laten meten van de internetsnelheid kan het voorkomen dat de meting wordt beïnvloed door onder andere:__a. het hebben van eigen verkeer dat tegelijkertijd over dezelfde verbinding gaat (cross traffic); en__b. verouderde hard- en software.__Het is niet gewenst dat de meting wordt beïnvloed door voornoemde aspecten. Eindgebruikers moeten er dan ook zorg voor dragen dat voornoemde omstandigheden zich niet voordoen._ But all in all, this is pretty relaxed compared to the discussion in Germany, where the demands of the providers basically prevented any measurement from being done in the first place. This can always be tied down more if it turns out to be problematic. It's not, for me: [caption id="attachment\_3111" align="aligncenter" width="300"][![](http://blog.koehntopp.info/wp-content/uploads/2018/03/speedtest.png)](http://blog.koehntopp.info/wp-content/uploads/2018/03/speedtest.png) No complaints from me about the [Tweak.nl](http://tweak.nl) deliverted network speed.[/caption] That was done with a remote screen session coming in, so there are a few hundred KB/s screen update traffic on top of that. Also, it may or may not be that any number of Sonoses was running. All in all, this is realistic and way within spec, so I am fine.</p>

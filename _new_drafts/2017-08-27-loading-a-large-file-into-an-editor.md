@@ -1,0 +1,20 @@
+---
+layout: post
+status: publish
+published: true
+title: Loading a large file into an editor
+author: isotopp
+author_login: kris
+author_email: kristian.koehntopp@gmail.com
+wordpress_id: 2481
+wordpress_url: http://blog.koehntopp.info/?p=2481
+date: '2017-08-27 14:13:55 +0200'
+date_gmt: '2017-08-27 12:13:55 +0200'
+categories:
+- Apple
+tags: []
+---
+<p>[caption id="attachment\_2482" align="aligncenter" width="579"][![](http://blog.koehntopp.info/wp-content/uploads/2017/08/textwrangler-3g.jpg)](https://twitter.com/ingoj/status/901753821994655745) A 3GB AmigaDOS disk dump does not load into TextWrangler[/caption] So Ingo tried to load a 3GB file into TextWrangler on MacOS, and that did not work despite him having plenty of memory left. That's of course, because TextWrangler is still a 32 Bit binary:<!--more--></p>
+<p>    $ pwd /Applications/TextWrangler.app/Contents/MacOS $ file \* /bin/ls TextWrangler: Mach-O executable i386 /bin/ls: Mach-O 64-bit executable x86\_64 {% endhighlight %} and even with a theoretical limit of 4GB in a 32 Bit application memory space, a 3GB allocation won't fit. In MacOS, you can use vmmap to look at the contents of a processes memory map: </p>
+<p>        $ ps auxwww | grep Text[W]rangler kris 349 0.0 0.1 848392 9468 ?? S 5Aug17 0:56.75 /Applications/TextWrangler.app/Contents/MacOS/TextWrangler -psn\_0\_73746 $ vmmap 349 Process: TextWrangler [349] Path: /Applications/TextWrangler.app/Contents/MacOS/TextWrangler Load Address: 0xdd000 Identifier: com.barebones.textwrangler Version: 5.5.2 (397016) Code Type: X86 Parent Process: ??? [1] Date/Time: 2017-08-27 14:07:28.908 +0200 Launch Time: 2017-08-05 16:08:34.755 +0200 OS Version: Mac OS X 10.12.3 (16D32) Report Version: 7 Analysis Tool: /Applications/Xcode.app/Contents/Developer/usr/bin/vmmap32 Analysis Tool Version: Xcode 8.3.3 (8E3004b) ---- Virtual Memory Map of process 349 (TextWrangler) Output report format: 2.4 -- 32-bit process VM page size: 4096 bytes ==== Non-writable regions for process 349 REGION TYPE START - END [VSIZE RSDNT DIRTY SWAP] PRT/MAX SHRMOD PURGE REGION DETAIL \_\_TEXT 000dd000-0066c000 [5692K 2200K 4K 8K] r-x/rwx SM=COW ...xtWrangler.app/Contents/MacOS/TextWrangler ... \_\_TEXT 9e22c000-9e248000 [112K 4K 0K 0K] r-x/r-x SM=COW /usr/lib/libCRFSuite.dylib \_\_TEXT 9e248000-9e252000 [40K 4K 0K 0K] r-x/r-x SM=COW /usr/lib/libChineseTokenizer.dylib \_\_TEXT 9e252000-9e254000 [8K 8K 0K 0K] r-x/r-x SM=COW /usr/lib/libDiagnosticMessagesClient.dylib ... \_\_TEXT 9f9d4000-9f9fb000 [156K 140K 0K 0K] r-x/r-x SM=COW /usr/lib/system/libxpc.dylib \_\_IMAGE a9419000-a949d000 [528K 4K 0K 0K] r--/r-- SM=COW ...meworks/AppKit.framework/Versions/C/AppKit \_\_UNICODE a949d000-a9528000 [556K 316K 0K 0K] r--/r-- SM=COW ...dation.framework/Versions/A/CoreFoundation \_\_GLSLBUILTINS a9528000-a97af000 [2588K 348K 0K 0K] r--/r-- SM=COW ...ons/A/Libraries/libGLProgrammability.dylib \_\_LINKEDIT a97af000-ac9b4000 [50.0M 5388K 0K 0K] r--/r-- SM=COW dyld shared cache combined \_\_LINKEDIT STACK GUARD b01a7000-b01a8000 [4K 0K 0K 0K] ---/rwx SM=NUL stack guard for thread 1 STACK GUARD bbf24000-bf724000 [56.0M 0K 0K 0K] ---/rwx SM=NUL stack guard for thread 0 shared memory ffff0000-ffff1000 [4K 4K 4K 0K] r--/r-- SM=SHM shared memory ffffe000-fffff000 [4K 4K 4K 0K] r-x/r-x SM=SHM {% endhighlight %} You can see that kernel memory is being allocated to the upper 1GB (starting at 0xc0\*), and the lower 3 GB have to accommodate a per-thread stack (in 0xb\*), and all shared, dynamically loaded code, which happens to be not very densely packed in 0x9\* and 0xa\* due to ASLR. That leaves roughly 2GB for data. [Emacs won't load a 3GB file](https://www.emacswiki.org/emacs/EmacsFileSizeLimit), either, because it does unspeakable things to address pointer bits, and even in a 64-bit build does have limitations of some 256 MB or comparable by default. vim works just fine, takes about one minute to handle this. </p>
+<p>             $ time dd if=/dev/random of=keks2 bs=1024k count=3072 3221225472 bytes transferred in 251.311621 secs (12817654 bytes/sec) $ time /usr/local/vim keks2 # homebrew ... real 1m01.322s ... {% endhighlight %}</p>
