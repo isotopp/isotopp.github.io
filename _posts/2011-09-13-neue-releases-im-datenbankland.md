@@ -10,7 +10,7 @@ tags:
 - mysql
 - postgres
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 [MongoDB 2.0](http://www.mongodb.org/display/DOCS/2.0%2BRelease%2BNotes) 
 ist draußen, und implementiert eine Reihe interessanter neuer Dinge, die ich
