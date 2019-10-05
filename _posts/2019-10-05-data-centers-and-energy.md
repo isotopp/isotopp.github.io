@@ -216,6 +216,33 @@ and what really shows is how the OCP power consumption stays the
 same at all possible air-in temperatures while legacy equipment
 consumes a lot more power because it has to turn up the fans.
 
+## PUE, Power Usage Efficiency
+
+The Power Usage Efficiency, PUE, is the ratio of total power
+consumption of a data center compared to power intake of the
+compute equipment. The overhead typically contains cooling, air
+movement, and power transformation losses.
+
+The data center built by web.de in Amalienbadstraße, Durlach
+(Karlsruhe), had a PUE of 2.0 - for each Megawatt used for
+compute, another Megawatt was required for cooling and air
+movement. The reasons for that are manifold: The building
+itself, an old factory building built by Pfaff, had low ceilings
+forcing warm air back into the machines and forcing bad
+airflows. The hardware used had a lot of loss due to badly
+designed airflows. And the location of the data center, down in
+the valley of the river rhine instead of high up in the Black
+Forest, combined high ambient air temperatures with high air
+humidity, making evoporativer and adiabatic cooling an
+inefficient option. So that compressive cooling with heat pumps
+was necessary.
+
+More modern data traditional centers can achieve a design PUE as
+low as 1.2 and an effective operational PUE of 1.6. Rigidly
+optimized OCP data centers can go below 1.1 in good conditions.
+Google published their numbers in their
+[PUE dashboard](https://www.google.com/about/datacenters/efficiency/internal/index.html).
+
 All current cloud vendors deploy OCP equipment or (in the case
 of Microsoft) self-developed equipment that is like it and
 comparable in efficiency. They also add additional special
@@ -224,9 +251,8 @@ of common functionality from the sellable cores of their
 machines, in order to maximise sellable inventory, save power
 and, of course, increase utilisation.
 
-In general, cloud hardware is 3x (or more) efficient than a traditional
-data center.
-
+Including all aspects of improved efficiency and utilisation, in general,
+cloud hardware is 3x (or more) efficient than a traditional data center.
 
 ## Summary
 
