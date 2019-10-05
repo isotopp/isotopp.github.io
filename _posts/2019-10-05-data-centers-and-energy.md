@@ -66,17 +66,17 @@ That's an amazing mix of truth and nonsense:
   fry itself. 
 - And doing this at home via Wifi will not use mobile
   infrastructure but whatever access point is in the house, so
-  relatively low power (10W total?).
+  relatively low power (10W total for AP and phone?).
 - The smartphone can indeed show Full HD, because modern smartphone
   screens are in fact 1920x1280 or larger in resolution, 
 - but you won't be able to notice that, because the pixels at 450dpi or
   higher are too small for human eyes.
-- And this is all so obvious that Netflix all knows this and
-  won't actually give you full HD for a smartphone endpoint.
-  Unless of course you are streaming from the smartphone to
-  a TV, in which case it does. You can see all this when
-  downloading and a full episode of an 1h show comes down to
-  <250MB of total storage.
+- And all this is so obvious that Netflix knows this and won't
+  actually give you full HD for a smartphone endpoint. Unless of
+  course you are streaming from the smartphone to a TV, in which
+  case it does. You can prove this by downloading, and observing
+  that a full episode of an 1h show comes down to <250 MB of
+  total storage.
 
 ## Data Center
 
@@ -106,17 +106,18 @@ they claim
 
 "We have reached CO2 neutrality in 2014 and reached our targets
 for power usage effectiveness of 1.125 for all new data centers.
-With this, we are 30% over industry average."
+With this, we are 30% better than industry average."
 
 Amazons energy page is [AWS &
 Sustainability](https://aws.amazon.com/about-aws/sustainability/)
 and they claim more than 50% power from renewables, and commit
-ot a 100% renewable goal for their global infrastructure. As all
-the other cloud providers, they also highlight the way lower PUE
-and much higher utilitzation of their servers compared to
-on-premises IT (65% vs. 15% average utilization, and 29% better
-power effectiveness, adding up to a 84% better overall power
-bilancing in their math).
+ot a 100% renewable goal for their global infrastructure. 
+
+Like all the other cloud providers, they also highlight the way
+lower PUE and much higher utilitzation of their servers compared
+to on-premises IT (65% vs. 15% average utilization, and 29%
+better power effectiveness, adding up to a 84% better overall
+power bilancing in their math).
 
 They also list their ongoing solar and wind farm builds. For the
 amount of power usage they can't yet cover from direct renewable
@@ -130,19 +131,24 @@ in these regions', making them overall CO2 neutral.
 The article from Deutsche Welle states correctly that the Last
 Mile is what counts. That is, because everything before the Last
 Mile is already fiber, and fiber lines allow extremely fast
-networking at relatively low energy. Germany, specifically, is
-wasting a lot of energy on the last mile, because in order to
-make Germanys aging copper infrastructure capable of handling
-modern data rates, a stunning amount of signal processing is
-required.
+networking at relatively low energy.
+
+Germany, specifically, is wasting a lot of energy on the last
+mile, because in order to make Germanys aging copper
+infrastructure capable of handling modern data rates, a stunning
+amount of signal processing is required.
 
 ![](/uploads/data-centers-and-energy/outdoor_dslam.jpg)
 
 Siemens DSL DSLAM (not VDSL) as can be found in typical outdoor
-cabinets all over the city. (via [Wikipedia](https://en.wikipedia.org/wiki/Digital_subscriber_line_access_multiplexer))
+cabinets all over the city. VDSL requires even more compute to
+send Megabits/s over what is hardly better than a wet cow wire
+(Image via
+[Wikipedia](https://en.wikipedia.org/wiki/Digital_subscriber_line_access_multiplexer))
 
 [Nokia](https://www.nokia.com/blog/vdsl2-and-gpon-study-finds-sweet-spots/)
-lists Fiber as 45% more efficient than VDSL2:
+lists Fiber as 45% more cost efficient and way more energy
+efficient than VDSL2:
 > Copper infrastructure maintenance is typically the most costly
 > of all network types. By comparison, GPON is significantly
 > cheaper — upwards of 45% less to operate than VDSL2.
@@ -162,9 +168,9 @@ not be fully powered to the max. German Telekom
 are being fed 48V/25A, around 1000W for the street level devices
 with four cards.
 
-Moving this to fiber will dramatically save energy here, and
-in fact, everywhere in the world outside of Germany this is
-happening right now.
+Moving this to fiber will dramatically save energy, and in fact,
+everywhere in the world outside of Germany this is happening
+right now.
 
 Mobile data networks are indeed 
 [great power sinks](https://www.lightreading.com/mobile/5g/power-consumption-5g-basestations-are-hungry-hungry-hippos/d/d-id/749979).
@@ -211,8 +217,8 @@ usually makes devices no flatter than 2 OU. Instead, horizontal
 partitions are used (3 devices in 2 OU) for a more square device
 front, minimising friction and allowing larger heat sinks. It
 also allows larger fans, with in turn allows moving the same
-volume of air with less RPM and a lot less power. Best observed
-cases I have observed were as low as 5-10W for a 350W server.
+volume of air with less RPM and a lot less power. Best cases I
+have personally observed were as low as 5-10W for a 350W server.
 
 ![](/uploads/data-centers-and-energy/ocp-server.png)
 
@@ -253,8 +259,8 @@ airflows. The hardware used had a lot of loss due to badly
 designed airflows. And the location of the data center, down in
 the valley of the river rhine instead of high up in the Black
 Forest, combined high ambient air temperatures with high air
-humidity, making evoporativer and adiabatic cooling an
-inefficient option. So that compressive cooling with heat pumps
+humidity, making evaporative or adiabatic cooling an
+inefficient option - compressive cooling with heat pumps
 was necessary.
 
 More modern data traditional centers can achieve a design PUE as
@@ -264,22 +270,22 @@ in good conditions. Google published their numbers in their
 [PUE dashboard](https://www.google.com/about/datacenters/efficiency/internal/index.html).
 
 All current cloud vendors deploy OCP equipment or (in the case
-of Microsoft) self-developed equipment that is like it and
+of Microsoft) self-developed equipment that is
 comparable in efficiency. They also add additional special
-purpose hardware to their cloud offerings that allow offloading
+purpose hardware to their cloud offerings that allows offloading
 of common functionality from the sellable cores of their
 machines, in order to maximise sellable inventory, save power
 and, of course, increase utilisation.
 
-Including all aspects of improved efficiency and utilisation, in general,
-cloud hardware is 3x (or more) efficient than a traditional data center.
+All aspects of improved efficiency and utilisation included,
+cloud hardware often is 3x (or more) efficient than a traditional data center.
 
 ## Summary
 
 Compared to technology from 10 years ago, in the data center we
 are now using a lot less energy and with cloud technology also
 have dramatically improved utilisation (ie use less hardware to
-achieve the same outcome). Savings are up to 80% in total. Also,
+achieve the same outcome). Also,
 all of this is green energy, mostly from actual green production
 and not grey-green with certificates. Cloud operators are some
 of the largest investors in Wind and Solar all over the world.
@@ -291,4 +297,5 @@ hardware which uses single digit wattages to produce results.
 Networking, especially the last mile, especially mobile
 networking, especially 5G, is a power hog. The amount of signal
 processing that goes into 5G and VDSL is amazing. If you want
-low power networking, use fiber.
+low power networking, use fiber, maybe bridge the last 5 meters
+with Wifi.
