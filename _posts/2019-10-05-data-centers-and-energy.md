@@ -13,8 +13,7 @@ tags:
 - 'lang_en'
 ---
 Deutsche Welle is shocked: 
-[Generation Greta is watching
-Netflix](https://www.dw.com/de/co2-aussto%C3%9F-von-online-video-streaming-als-klima-killer/a-49469109?maca=de-Twitter-sharing)
+[Generation Greta is watching Netflix](https://www.dw.com/de/co2-aussto%C3%9F-von-online-video-streaming-als-klima-killer/a-49469109?maca=de-Twitter-sharing)
 (Article in German Language), Netflix runs on computers, and apparently
 computers are using power.
 
@@ -126,6 +125,13 @@ sources, the page states 'AWS purchases and retires
 environmental attributes, like Renewable Energy Credits and
 Guarantees of Origin, to cover the non-renewable energy we use
 in these regions', making them overall CO2 neutral.
+
+Finally, computer power usage is not linear: Power management on
+a data center CPU turns cores on and off as needed, and thus, a
+CPU uses already circa 50% power at 10% utilisation. From a cost
+and from an environmental perspective it is best to utilise any
+CPU to the fullest. Some older [measurements of mine]({% link
+_posts/2017-07-19-threads-vs-watts.md %}) on this.
 
 ## Networking
 
