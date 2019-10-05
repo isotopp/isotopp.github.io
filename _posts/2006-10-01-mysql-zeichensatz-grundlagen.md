@@ -5,7 +5,6 @@ title: 'MySQL: Zeichensatz-Grundlagen'
 author-id: isotopp
 date: 2006-10-01 14:28:00 UTC
 tags:
-- character set
 - mysql
 - lang_de
 feature-img: assets/img/background/mysql.jpg

@@ -5,10 +5,9 @@ title: Zeichensatzärger
 author-id: isotopp
 date: 2006-08-06 19:22:14 UTC
 tags:
-- character set
 - mysql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 ![](/uploads/font.jpg)
 
