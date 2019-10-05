@@ -8,7 +8,7 @@ tags:
 - mysql
 - replication
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 Lalufu fragte in den Kommentaren von
 [Master-Master]({% link _posts/2010-08-16-master-master-und-distributed-transactions.md %}):
