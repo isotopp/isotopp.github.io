@@ -167,3 +167,82 @@ If you can use cabled networking, do so.
 
 ## Modern Data Centers and Power
 
+[John Laban](https://twitter.com/rumperedis) is an ambassador
+for the [Open Compute Project](https://www.opencompute.org/).
+Funded originally by Facebook, OCP is a project that tries to
+build more power efficient cloud data centers. In his
+[presentations](https://www.slideshare.net/JohnLaban/ocp-copenhagen-presentation-sept-2017),
+John explains how OCP achieves this by getting rid of old
+technology in the data center and making the room and the rack a
+system:
+
+OCP data centers redesign the air flow in the data center.
+
+Traditionally data centers have a raised floor, which transports
+cold air to the racks, goes through the racks and is then cooled
+again. Air-in temperatures are often as low as 17-25C, and
+humidity is tightly controlled. OCP data centers allow
+non-condensing air of up to 35-45C to go into the servers, which
+does basically away with heat pumps and air condition and allows
+ambient temperature air to go into the DC.
+
+Traditional servers have often a relatively low height ("1U",
+one rack unit), which forces the designers to use relatively
+small fans, small heat sinks (== higher air flow speed necessary
+for cooling) and produces a lot of friction for the air in the
+devices. In a 350W server, the worst case I have personally
+observed is 50W for air movement.
+
+OCP uses higher rack units ("OU", Open Compute Units) and
+usually makes devices no flatter than 2 OU. Instead, horizontal
+partitions are used (3 devices in 2 OU) for a more square device
+front, minimising friction and allowing larger heat sinks. It
+also allows larger fans, with in turn allows moving the same
+volume of air with less RPM and a lot less power. Best observed
+cases I have observed were as low as 5-10W for a 350W server.
+
+OCP also improves power consumption by centralising power
+supplies in a rack (larger power supplies are usually more
+efficient), reducing the number of power conversions in the
+total power flow, and making uninterruptible power supplies more
+efficient.
+
+Total OCP power savings vary by use-case and climate zone, but
+are usually 20-50%. South Korean Telekom tested OCP servers in a
+climate chamber with various settings
+([Testbed](https://www.youtube.com/watch?v=BBcFXAXXqRE#t=11m33s),
+[Findings](https://www.youtube.com/watch?v=BBcFXAXXqRE#t=14m30s))
+and what really shows is how the OCP power consumption stays the
+same at all possible air-in temperatures while legacy equipment
+consumes a lot more power because it has to turn up the fans.
+
+All current cloud vendors deploy OCP equipment or (in the case
+of Microsoft) self-developed equipment that is like it and
+comparable in efficiency. They also add additional special
+purpose hardware to their cloud offerings that allow offloading
+of common functionality from the sellable cores of their
+machines, in order to maximise sellable inventory, save power
+and, of course, increase utilisation.
+
+In general, cloud hardware is 3x (or more) efficient than a traditional
+data center.
+
+
+## Summary
+
+Compared to technology from 10 years ago, in the data center we
+are now using a lot less energy and with cloud technology also
+have dramatically improved utilisation (ie use less hardware to
+achieve the same outcome). Savings are up to 80% in total. Also,
+all of this is green energy, mostly from actual green production
+and not grey-green with certificates. Cloud operators are some
+of the largest investors in Wind and Solar all over the world.
+
+At home, savings are even larger, because we went from Desktop
+machines with abysmal power profiles to modern low power
+hardware which uses single digit wattages to produce results.
+
+Networking, especially the last mile, especially mobile
+networking, especially 5G, is a power hog. The amount of signal
+processing that goes into 5G and VDSL is amazing. If you want
+low power networking, use fiber.
