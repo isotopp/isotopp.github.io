@@ -136,6 +136,11 @@ make Germanys aging copper infrastructure capable of handling
 modern data rates, a stunning amount of signal processing is
 required.
 
+![](/uploads/data-centers-and-energy/800px-Outdoor_DSLAM.JPG)
+
+Siemens DSL DSLAM (not VDSL) as can be found in typical outdoor
+cabinets all over the city. (via [Wikipedia](https://en.wikipedia.org/wiki/Digital_subscriber_line_access_multiplexer))
+
 [Nokia](https://www.nokia.com/blog/vdsl2-and-gpon-study-finds-sweet-spots/)
 lists Fiber as 45% more efficient than VDSL2:
 > Copper infrastructure maintenance is typically the most costly
@@ -176,6 +181,16 @@ John explains how OCP achieves this by getting rid of old
 technology in the data center and making the room and the rack a
 system:
 
+![](/uploads/data-centers-and-energy/traditional-data-center.png)
+
+Traditional Data Centers: Dark Green - Payload. Everything else
+- Payload Support.
+
+![](/uploads/data-centers-and-energy/ocp-data-center.png)
+
+OCP Data Centers: Dark Green - Payload. Still around: Generator,
+Airco is now adiabatic instead of CRAC. Everything else: gone.
+
 OCP data centers redesign the air flow in the data center.
 
 Traditionally data centers have a raised floor, which transports
@@ -200,6 +215,13 @@ front, minimising friction and allowing larger heat sinks. It
 also allows larger fans, with in turn allows moving the same
 volume of air with less RPM and a lot less power. Best observed
 cases I have observed were as low as 5-10W for a 350W server.
+
+![](/uploads/data-centers-and-energy/ocp-server.png)
+
+OCP Server: 2 OU high, 1/3 Rack wide, less friction, larger
+coolers, no panels impeding airflow, larger fans = slower RPM =
+less energy for air movement. Can take up to 45C air-in
+('ambient air intake', no heat pump required for cooling).
 
 OCP also improves power consumption by centralising power
 supplies in a rack (larger power supplies are usually more
