@@ -7,7 +7,7 @@ date: 2010-04-21 12:49:00 UTC
 tags:
 - mysql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 Hier ist noch ein dreckiges kleines MySQL-Problem. Matthias Fiedler fragt: 
 
