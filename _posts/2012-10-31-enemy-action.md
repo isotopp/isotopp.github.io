@@ -8,7 +8,7 @@ categories: mysql
 tags:
 - mysql
 - performance
-- mysql8
+- mysql
 - "lang_en"
 layout: post
 title: "Enemy Action"

@@ -5,13 +5,8 @@ title: Alte Prospekte
 author-id: isotopp
 date: 2009-11-18 18:52:34 UTC
 tags:
-- apple
-- color genie
-- commodore
 - computer
 - damals
-- sharp
-- sirius
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---

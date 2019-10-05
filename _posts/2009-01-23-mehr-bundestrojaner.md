@@ -5,8 +5,8 @@ title: Mehr Bundestrojaner
 author-id: isotopp
 date: 2009-01-23 18:56:23 UTC
 tags:
-- Politik
-- Security
+- politik
+- security
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---

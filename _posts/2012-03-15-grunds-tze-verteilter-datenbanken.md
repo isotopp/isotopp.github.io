@@ -6,7 +6,7 @@ author-id: isotopp
 date: 2012-03-15 08:59:42 UTC
 tags:
 - cluster
-- databases
+- datenbanken
 - distributed computing
 - mysql
 - lang_de
