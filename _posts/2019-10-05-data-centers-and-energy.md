@@ -239,8 +239,8 @@ was necessary.
 
 More modern data traditional centers can achieve a design PUE as
 low as 1.2 and an effective operational PUE of 1.6. Rigidly
-optimized OCP data centers can go below 1.1 in good conditions.
-Google published their numbers in their
+optimized OCP data centers can go below 1.1 effective PUE (sic!)
+in good conditions. Google published their numbers in their 
 [PUE dashboard](https://www.google.com/about/datacenters/efficiency/internal/index.html).
 
 All current cloud vendors deploy OCP equipment or (in the case
