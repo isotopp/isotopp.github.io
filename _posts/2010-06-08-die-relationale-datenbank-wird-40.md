@@ -10,7 +10,7 @@ tags:
 - nosql
 - sql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 Nicht nur wird PHP im Juni 15 Jahre alt, sondern ein anderer, älterer
 Begleiter von PHP feiert ebenfalls ein Jubiläum:
