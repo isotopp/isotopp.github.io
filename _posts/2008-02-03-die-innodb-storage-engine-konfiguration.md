@@ -7,7 +7,7 @@ date: 2008-02-03 11:50:57 UTC
 tags:
 - mysql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 ![](/uploads/innodb-transactions.png)
 
