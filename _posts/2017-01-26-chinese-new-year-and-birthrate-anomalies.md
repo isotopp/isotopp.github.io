@@ -11,9 +11,9 @@ tags:
 - science
 - lang_en
 ---
-![](/uploads/2017/01/f9463344d3ed41479d28dcd7-150x150.jpg) 
+![](/uploads/2017/01/f9463344d3ed41479d28dcd7.jpg) 
 
-Coming up: Chinese New Year @ 28. Januar. The coming year is a
+Coming up: Chinese New Year on 28. January. The coming year is a
 [year of the Fire Rooster](http://www.chinahighlights.com/travelguide/chinese-zodiac/rooster.htm),
 and apparently these things mean a lot to a lot of people. So
 what influence does the Chinese Zodiac have? Well, one sign that
