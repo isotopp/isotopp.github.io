@@ -31,7 +31,9 @@ despite the fact that all tickets have a sell-date printed on them, they
 didn't give the seats to the people with the early tickets, but to the
 people who arrived first. So we stopped that, and that was 200 DM a week
 less for the Cinema - or maybe not, because then they would probably care
-more. And I learned a thing: 
+more. 
+
+And I learned a thing: 
 
 ## Experience does not really matter and neither does freshness.
 
@@ -57,7 +59,9 @@ I took these Rips to my friends, offered them a copy and asked if I could
 borrow their CDs, and yes, all of them. So 40GB wasn't enough, and pretty
 soon I ended up with some Terabyte or the other. 
 
-## And I learned another thing: There is no overlap.
+And I learned another thing:
+
+## There is no overlap.
 
 So the friends I had, each of them had approximately as many CDs as me, some
 more, some less, but all of them literally hundreds. After merging a dozen
@@ -148,9 +152,10 @@ the TV Mac or our Laptops. There is also a very large file server, which in
 two years time will become a tiny Raspi-like Device with a two-digit TB
 piece of Flash. There is large pile of Sonos Hardware. There's a TV with a
 Mac and DVR software. There is a FTTH connection subscription. There are
-GPMAA Family, Netflix, and Amazon Prime Subscriptions. And there is a hard
-rule to never buy any media without substantial discount, because life told
-us for multiple decades that this how it works:
+GPMAA Family, Netflix, and Amazon Prime Subscriptions. 
+
+And there is a hard rule to never buy any media without substantial
+discount, because life told us for multiple decades that this how it works:
 
 > Don't judge media by the amount of work or love that has been poured into
 > it. Judge it by what other media you can get instead for that money,
