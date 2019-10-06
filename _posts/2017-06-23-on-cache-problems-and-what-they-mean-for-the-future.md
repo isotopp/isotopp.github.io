@@ -90,7 +90,7 @@ in one form or the other more than once:
 
 > "Forget caches, just make everything fast all the time." -- Nicolai Plum
 
-## An outlook
+## Hadoop in the face of many IOPS
 
 We will see more of this, and at more levels of the system. Take Hadoop for
 example. The two core premises on which Hadoop is built are
