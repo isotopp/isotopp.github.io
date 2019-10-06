@@ -12,6 +12,8 @@ tags:
 - lang_de
 feature-img: assets/img/background/mysql.jpg
 ---
+(Diesen Artikel gibt es auch in [englischer Sprache]({% link _posts/2017-02-16-load-load-testing-and-benchmarking.md %}).)
+
 So. Du willst also wissen, was genau die Leistungsgrenzen Deines Systems
 sind.  Und dazu möchtest Du einen Lasttest fahren, um Ergebnisse zu
 ermitteln.
