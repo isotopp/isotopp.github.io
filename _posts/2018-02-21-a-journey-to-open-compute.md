@@ -3,6 +3,7 @@ layout: post
 status: publish
 published: true
 title: A Journey to Open Compute
+feature-img: assets/img/background/rijksmuseum.jpg
 author-id: isotopp
 date: '2018-02-21 09:55:07 +0100'
 tags:
