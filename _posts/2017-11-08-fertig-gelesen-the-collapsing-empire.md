@@ -5,7 +5,7 @@ published: true
 title: 'Fertig gelesen: The Collapsing Empire'
 author-id: isotopp
 feature-img: assets/img/background/book.jpg
-date: '2017-11-08 15:29:24 +0100
+date: '2017-11-08 15:29:24 +0100'
 tags:
 - media
 - book
