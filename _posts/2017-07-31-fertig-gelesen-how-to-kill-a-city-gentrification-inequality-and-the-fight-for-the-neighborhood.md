@@ -4,7 +4,7 @@ status: publish
 published: true
 title: 'Fertig gelesen: How to Kill a City, Gentrification, Inequality and the Fight for the Neighborhood'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 date: '2017-07-31 08:06:21 +0200'
 tags:
 - book
