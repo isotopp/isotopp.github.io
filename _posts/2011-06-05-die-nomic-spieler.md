@@ -6,7 +6,6 @@ author-id: isotopp
 date: 2011-06-05 10:26:13 UTC
 tags:
 - community
-- liquid
 - piraten
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg

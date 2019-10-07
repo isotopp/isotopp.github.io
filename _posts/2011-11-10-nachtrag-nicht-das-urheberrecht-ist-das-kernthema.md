@@ -10,7 +10,6 @@ tags:
 - media
 - piraten
 - politik
-- star trek
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---

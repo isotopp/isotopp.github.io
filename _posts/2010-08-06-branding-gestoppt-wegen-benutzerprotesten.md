@@ -6,7 +6,6 @@ author-id: isotopp
 date: 2010-08-06 07:49:29 UTC
 tags:
 - android
-- gadgets
 - google
 - mobiltelefon
 - lang_de

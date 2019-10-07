@@ -6,6 +6,7 @@ author-id: isotopp
 date: 2006-01-25 16:08:31 UTC
 tags:
 - copyright
+- sony
 - media
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg

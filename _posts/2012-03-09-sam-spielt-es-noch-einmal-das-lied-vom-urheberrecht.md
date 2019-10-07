@@ -5,7 +5,6 @@ title: 'Sam spielt es noch einmal: Das Lied vom Urheberrecht'
 author-id: isotopp
 date: 2012-03-09 20:40:00 UTC
 tags:
-- buch
 - copyright
 - internet
 - media

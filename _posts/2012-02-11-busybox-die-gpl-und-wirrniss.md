@@ -6,7 +6,6 @@ author-id: isotopp
 date: 2012-02-11 13:40:47 UTC
 tags:
 - free software
-- gpl
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---

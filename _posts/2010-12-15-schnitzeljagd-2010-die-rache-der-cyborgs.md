@@ -7,7 +7,6 @@ date: 2010-12-15 21:11:07 UTC
 tags:
 - community
 - cyborg
-- hotel
 - internet
 - work
 - lang_de

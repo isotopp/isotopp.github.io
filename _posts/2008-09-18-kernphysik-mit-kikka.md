@@ -6,7 +6,6 @@ author-id: isotopp
 date: 2008-09-18 20:58:16 UTC
 tags:
 - dienstag
-- irc
 - physik
 - schulung
 - lang_de

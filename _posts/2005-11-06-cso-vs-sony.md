@@ -6,6 +6,7 @@ author-id: isotopp
 date: 2005-11-06 13:11:35 UTC
 tags:
 - hack
+- sony
 - media
 - musik
 - security

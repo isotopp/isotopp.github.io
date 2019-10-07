@@ -6,7 +6,6 @@ author-id: isotopp
 date: 2011-09-14 17:59:34 UTC
 tags:
 - datenschutz
-- datenschutztheater
 - politik
 - privacy
 - spackeria

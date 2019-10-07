@@ -7,7 +7,6 @@ date: 2008-05-30 07:47:55 UTC
 tags:
 - architektur
 - computer
-- hochverfuegbarkeit
 - security
 - lang_de
 feature-img: assets/img/background/baellebad.jpg

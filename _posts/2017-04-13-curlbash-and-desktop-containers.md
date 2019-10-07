@@ -7,8 +7,8 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-04-13 10:05:43 +0200'
 tags:
-- hackerterrorcybercyber
-- containers
+- security
+- container
 - lang_en
 ---
 I was having two independent discussions recently, which started with some

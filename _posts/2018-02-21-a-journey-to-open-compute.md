@@ -7,7 +7,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 author-id: isotopp
 date: '2018-02-21 09:55:07 +0100'
 tags:
-- data centers
+- data center
 - energy
 - erklaerbaer
 - talk

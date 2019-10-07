@@ -6,10 +6,8 @@ author-id: isotopp
 date: 2011-05-10 13:15:38 UTC
 tags:
 - computer
-- gui
 - linux
 - wayland
-- x11
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---

@@ -5,7 +5,7 @@ title: Kulturelles Defizit
 author-id: isotopp
 date: 2010-02-28 08:37:53 UTC
 tags:
-- consulting
+- work
 - piraten
 - politik
 - reisen

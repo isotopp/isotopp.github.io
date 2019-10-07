@@ -5,7 +5,7 @@ title: Internet und Produktivität aus der Sicht eines Cyborgs
 author-id: isotopp
 date: 2009-10-09 12:23:00 UTC
 tags:
-- beruf
+- work
 - community
 - cyborg
 - internet

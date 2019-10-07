@@ -5,17 +5,11 @@ published: true
 title: Scaling, automatically and manually
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
-author_login: kris
-author_email: kristian.koehntopp@gmail.com
-wordpress_id: 2397
-wordpress_url: http://blog.koehntopp.info/?p=2397
 date: '2017-08-09 10:19:30 +0200'
-date_gmt: '2017-08-09 08:19:30 +0200'
-categories:
-- Erklärbär
-- Performance
-- Containers and Kubernetes
-tags: []
+tags:
+- erklaerbaer
+- performance
+- container
 ---
 There is an interesting article by Brendan Gregg out there, about 
 [the actual data that goes into the Load Average](http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html)

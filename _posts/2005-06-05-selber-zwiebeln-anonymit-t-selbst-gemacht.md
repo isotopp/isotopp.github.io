@@ -6,7 +6,6 @@ author-id: isotopp
 date: 2005-06-05 19:36:03 UTC
 tags:
 - authentication
-- dedicated server
 - identity
 - security
 - lang_de

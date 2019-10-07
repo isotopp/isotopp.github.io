@@ -8,7 +8,6 @@ tags:
 - copyright
 - free software
 - novell
-- patent
 - sco
 - unix
 - lang_de

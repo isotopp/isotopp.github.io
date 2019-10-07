@@ -5,10 +5,8 @@ title: 'Google opensourced VP8 Video-Codec: WebM Project'
 author-id: isotopp
 date: 2010-05-19 19:20:58 UTC
 tags:
-- free software
 - google
 - media
-- ogg theora
 - politik
 - vp8
 - lang_de

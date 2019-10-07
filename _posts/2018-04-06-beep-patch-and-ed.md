@@ -7,7 +7,7 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - erklaerbaer
-- hackerterrorcybercyber
+- security
 - lang_en
 ---
 So a few days ago, somebody found an exploit in beep - now

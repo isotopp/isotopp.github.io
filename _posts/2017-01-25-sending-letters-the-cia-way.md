@@ -7,7 +7,8 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-01-25 08:16:22 +0100'
 tags:
-- hackerterrorcybercyber
+- security
+- hack
 - lang_en
 ---
 

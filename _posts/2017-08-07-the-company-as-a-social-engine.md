@@ -7,6 +7,7 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-08-07 19:34:37 +0200'
 tags:
+- work
 - lang_en
 ---
 So why is everything so complicated? At work, I mean. 

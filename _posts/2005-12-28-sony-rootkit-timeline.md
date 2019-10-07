@@ -7,6 +7,7 @@ date: 2005-12-28 19:06:48 UTC
 tags:
 - ccc
 - musik
+- sony
 - security
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg

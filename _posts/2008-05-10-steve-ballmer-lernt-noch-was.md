@@ -5,7 +5,6 @@ title: Steve Ballmer lernt noch was
 author-id: isotopp
 date: 2008-05-10 16:51:11 UTC
 tags:
-- asus
 - computer
 - microsoft
 - lang_de

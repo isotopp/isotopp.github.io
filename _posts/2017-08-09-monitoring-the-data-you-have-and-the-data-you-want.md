@@ -9,7 +9,7 @@ date: '2017-08-09 19:35:44 +0200'
 tags:
 - erklaerbaer
 - monitoring
-- data centers
+- data center
 - lang_en
 ---
 So you are running systems in production and you want to collect data from

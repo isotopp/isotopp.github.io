@@ -5,8 +5,7 @@ title: Mein privates Datawarehouse - Sparen mit MySQL
 author-id: isotopp
 date: 2006-07-23 11:50:00 UTC
 tags:
-- geekstuff
-- geld
+- erklaerbaer
 - mysql
 - lang_de
 feature-img: assets/img/background/mysql.jpg

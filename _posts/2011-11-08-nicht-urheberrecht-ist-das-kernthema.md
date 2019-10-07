@@ -6,11 +6,9 @@ author-id: isotopp
 date: 2011-11-08 12:01:06 UTC
 tags:
 - copyright
-- kultur
 - media
 - piraten
 - politik
-- star trek
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
