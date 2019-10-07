@@ -12,7 +12,7 @@ tags:
 - computer
 - lang_en
 ---
-![](/uploads/2017/11/dabc-300x92.png)
+![](/uploads/2017/11/dabc.png)
 
 [Introduction to GPUs](http://haifux.org/lectures/267/Introduction-to-GPUs.pdf) (PDF)
 
