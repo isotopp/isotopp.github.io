@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Ancient Shores'
 author-id: isotopp
 date: 2012-09-03 07:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

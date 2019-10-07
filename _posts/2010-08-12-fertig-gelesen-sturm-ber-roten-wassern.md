@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Sturm über roten Wassern'
 author-id: isotopp
 date: 2010-08-12 06:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - lang_de
 feature-img: assets/img/background/book.jpg

@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Frozen Sky'
 author-id: isotopp
 date: 2012-08-19 07:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

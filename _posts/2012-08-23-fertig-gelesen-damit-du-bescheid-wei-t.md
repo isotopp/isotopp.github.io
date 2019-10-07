@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Damit Du Bescheid weißt'
 author-id: isotopp
 date: 2012-08-23 07:36:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - politik
 - religion

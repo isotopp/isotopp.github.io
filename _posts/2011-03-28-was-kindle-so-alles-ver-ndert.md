@@ -5,7 +5,7 @@ title: Was Kindle so alles verändert
 author-id: isotopp
 date: 2011-03-28 07:29:09 UTC
 tags:
-- buch
+- book
 - media
 - lang_de
 feature-img: assets/img/background/book.jpg

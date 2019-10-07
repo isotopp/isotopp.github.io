@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Epoch Index und If at first...'
 author-id: isotopp
 date: 2012-08-21 07:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

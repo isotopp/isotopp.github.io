@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Dreaming Void'
 author-id: isotopp
 date: 2010-08-18 06:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Daemon, Freedom™'
 author-id: isotopp
 date: 2011-05-08 09:06:31 UTC
 tags:
-- buch
+- book
+- review
 - media
 - politik
 - scifi

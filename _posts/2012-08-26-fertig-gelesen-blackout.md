@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Blackout'
 author-id: isotopp
 date: 2012-08-26 07:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - strom
 - lang_de

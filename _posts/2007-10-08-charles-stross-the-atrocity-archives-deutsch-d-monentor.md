@@ -5,9 +5,9 @@ title: 'Fertig gelesen: The Atrocity Archives'
 author-id: isotopp
 date: 2007-10-08 20:01:04 UTC
 tags:
-- buch
+- book
+- review
 - media
-- print
 - stross
 - cthulhu
 - lang_de

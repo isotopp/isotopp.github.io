@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Batwoman Elegy'
 author-id: isotopp
 date: 2010-08-14 06:00:00 UTC
 tags:
-- buch
+- book
+- review
 - comic
 - media
 - lang_de

@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Rho Agenda (The Second Ship und Immune)'
 author-id: isotopp
 date: 2011-05-08 09:21:38 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

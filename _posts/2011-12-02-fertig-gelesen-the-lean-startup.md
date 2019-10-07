@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Lean Startup'
 author-id: isotopp
 date: 2011-12-02 19:44:03 UTC
 tags:
-- buch
+- book
+- review
 - media
 - software
 - wirtschaft

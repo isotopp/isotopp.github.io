@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Der Autor als Agentur der Moderne'
 author-id: isotopp
 date: 2012-08-29 14:00:00 UTC
 tags:
-- buch
+- book
+- review
 - literatur
 - media
 - scifi

@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Metagame'
 author-id: isotopp
 date: 2012-02-28 08:58:58 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

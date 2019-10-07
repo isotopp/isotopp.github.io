@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Whatever happened to the world of tomorrow?'
 author-id: isotopp
 date: 2012-08-29 07:00:00 UTC
 tags:
-- buch
+- book
+- review
 - comic
 - media
 - lang_de

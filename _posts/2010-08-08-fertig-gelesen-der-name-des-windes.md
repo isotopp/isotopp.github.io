@@ -5,8 +5,9 @@ title: 'Fertig gelesen: Der Name des Windes'
 author-id: isotopp
 date: 2010-08-08 06:15:00 UTC
 tags:
-- buch
+- book
 - media
+- review
 - lang_de
 feature-img: assets/img/background/book.jpg
 ---

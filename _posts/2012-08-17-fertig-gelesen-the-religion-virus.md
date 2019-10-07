@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Religion Virus'
 author-id: isotopp
 date: 2012-08-17 21:24:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - religion
 - wissenschaft

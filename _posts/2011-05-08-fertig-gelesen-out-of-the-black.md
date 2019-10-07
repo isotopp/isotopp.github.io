@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Out of the Black'
 author-id: isotopp
 date: 2011-05-08 09:38:21 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

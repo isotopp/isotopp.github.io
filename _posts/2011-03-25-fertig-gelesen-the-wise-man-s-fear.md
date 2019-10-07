@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Wise Man''s Fear'
 author-id: isotopp
 date: 2011-03-25 09:14:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - lang_de
 feature-img: assets/img/background/book.jpg

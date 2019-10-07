@@ -5,7 +5,8 @@ title: 'Fertig gelesen: Alex Benedict'
 author-id: isotopp
 date: 2012-09-04 07:00:00 UTC
 tags:
-- buch
+- book
+- review
 - media
 - scifi
 - lang_de

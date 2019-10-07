@@ -5,7 +5,8 @@ title: 'Fertig gelesen: The Fuller Memorandum'
 author-id: isotopp
 date: 2010-08-16 06:00:00 UTC
 tags:
-- buch
+- book
+- review
 - cthulhu
 - media
 - stross
