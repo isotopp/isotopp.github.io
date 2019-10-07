@@ -6,6 +6,7 @@ author-id: isotopp
 date: 2011-03-28 07:29:09 UTC
 tags:
 - book
+- review
 - media
 - lang_de
 feature-img: assets/img/background/book.jpg

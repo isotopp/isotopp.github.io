@@ -7,6 +7,7 @@ author-id: isotopp
 feature-img: assets/img/background/book.jpg
 date: '2017-08-01 13:56:20 +0200'
 tags:
+- review
 - media
 - book
 - lang_en
