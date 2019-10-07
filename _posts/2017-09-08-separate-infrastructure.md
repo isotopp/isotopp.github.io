@@ -42,7 +42,7 @@ visibility of cyclists is suboptimal and often outright dangerous.
 ![](/uploads/2017/09/altec-basic-28-inch-omafiets-zwart-52cm_1.jpg)
 
 The Omafiets is being used by everyone, Omas as well as Jongens or
-businessmenâ
+businessmen.
 
 As a German living in the Netherlands, I have a direct comparison between
 bike paths constructed for example in Kiel, in Berlin and in places like
@@ -102,8 +102,8 @@ road, wide and with two directions, next to a road, makes biking more
 comfortable, also also simplifies leading traffic across intersections and
 does not even necessarily use more space.
 
-An example can be seen [here next to
-Haarlem](https://goo.gl/maps/VhmPazGRoJA2), leaving for the Dunes. They also
+An example can be seen [here next to Haarlem](https://goo.gl/maps/VhmPazGRoJA2), 
+leaving for the Dunes. They also
 make other "typical" problems that Kampfradler experience immaterial -
 [dooring](https://en.wikipedia.org/wiki/Dooring) does not exist in bike
 infra built this way.
