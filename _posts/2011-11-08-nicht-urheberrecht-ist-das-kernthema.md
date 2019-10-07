@@ -240,7 +240,7 @@ In einem weiteren Kommentar habe ich dazu Beispiele gebracht:
 > Aber inzwischen ist es so,
 > daß ich persönlich meine Artikel lieber kostenlos ins Blog stelle als etwa
 > einem Verlag zu verkaufen: 
-> [Warum alle meine Texte frei im Netz zu lesen sind](_posts/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md).
+> [Warum alle meine Texte frei im Netz zu lesen sind]({% link _posts/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md %}).
 > 
 > Der Return für mich ist besser, wen der Artikel dauernd frei im Netz steht
 > als wenn mir ein Verlag was dafür bezahlt, UND ich habe keinen Nerv mit
