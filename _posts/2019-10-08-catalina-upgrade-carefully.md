@@ -17,7 +17,7 @@ hand, it drops support for 32-Bit MacOS applications.
 Consider the upgrade carefully.
 
 {% highlight console %}
-$ system_profile SPApplicationsDataType
+$ system_profiler SPApplicationsDataType
 …
     Steam:
 
