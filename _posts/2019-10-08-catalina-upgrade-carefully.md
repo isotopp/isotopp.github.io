@@ -12,7 +12,7 @@ tags:
 Catalina is here. It fixes many things, among them iTunes. On the other
 hand, it drops support for 32-Bit MacOS applications.
 
-![](/uploads/catalina.jpg)
+![](/uploads/catalina.png)
 
 Consider the upgrade carefully.
 
