@@ -7,7 +7,8 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-03-21 07:34:23 +0100'
 tags:
-- Science
+- science
+- lang_en
 ---
 [![](/uploads/2017/03/salty-300x225.jpg)](https://www.theatlantic.com/health/archive/2017/03/salt-vs-superbugs/518427/)
 
