@@ -54,4 +54,5 @@ On my box:
 Some of them are unimportant, other things are quite critical, some of them
 can't be updated easily.
 
-At this point, for me this is a hard pass.
+At this point, for me this is a hard pass, and a lot of work to be done.
+
