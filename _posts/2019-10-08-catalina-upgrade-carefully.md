@@ -31,7 +31,7 @@ $ system_profile SPApplicationsDataType
 …
 {% endhighlight %}
 
-Anything listed with `64-Bit (Intel): No' will stop working after the
+Anything listed with `64-Bit (Intel): No` will stop working after the
 upgrade. Check before you upgrade, and consider what you will be losing
 access to if you perform the upgrade.
 
