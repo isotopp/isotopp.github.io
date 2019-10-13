@@ -8,6 +8,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-03-10 18:50:38 +0100'
 tags:
 - security
+- performance
 - lang_en
 ---
 Tech.co has an article titled 
