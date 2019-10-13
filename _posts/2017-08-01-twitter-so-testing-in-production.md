@@ -7,8 +7,9 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-08-01 09:25:02 +0200'
 tags:
-- Computer Science
-- Work
+- computer
+- work
+- lang_en
 ---
 [Matthew Dutton:](https://twitter.com/matthewrdutton/status/892007581639737344)
 »@mipsytipsy I thought "You have to test in production" was a bold statement
