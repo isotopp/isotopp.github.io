@@ -7,9 +7,10 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-04-05 11:42:32 +0200'
 tags:
-- Post Car Society
-- Als Deutscher in den Niederlanden
-- Neuland
+- post car society
+- netherlands
+- neuland
+- lang_en
 ---
 
 A long time ago, I wrote a text on the German Blog and on Carta: 
