@@ -14,9 +14,9 @@ tags:
 [![](/uploads/2017/07/6502-die.jpg)](http://www.pagetable.com/?p=39)
 
 Illegal and undocumented instructions are not a new thing. The Commodore 64
-CPU, a 6502 with a few additional I/O lines, was known to have them, and
-since on current CPUs we can completely VLSI simulate a 6502 in Javascript
-we also understand where they come from. 
+CPU, a 6502 with a few additional I/O lines, was known to have them. Since
+on current CPUs we can completely VLSI simulate a 6502 in Javascript we also
+understand where they come from.
 
 [Pagetable.com has a wonderful article on this](http://www.pagetable.com/?p=39). 
 So how about current CPUs? Modern CPUs are vastly bigger and more
