@@ -22,14 +22,19 @@ And so is this:
 {% highlight console %}
 #! /usr/bin/env expect -f
 
-set totp [exec oathtool --totp -b MYSECRET7W22]
+# exp_internal 1
+
+set seed [ exec security find-generic-password -w -a $USER -s seed ]
+set totp [ exec oathtool --totp -b $seed ]
+set pass [ exec security find-generic-password -w -a $USER -s pass ]
+
 spawn ssh verysecure.doma.in
-expect "Password:"
+expect "word:"
 sleep 1
-send "thisIsN0t1GoodPaszwort@\r"
+send "$pass\r\n"
 expect "Two Factor Token:"
 sleep 1
-send "$totp\n"
+send "$totp\r\n"
 interact
 {% endhighlight %}
 
