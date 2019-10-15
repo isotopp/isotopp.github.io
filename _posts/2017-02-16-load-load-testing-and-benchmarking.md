@@ -6,7 +6,7 @@ title: Load, Load Testing and Benchmarking
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date: '2017-02-16 21:13:28 +0100'
-categories:
+tags:
 - erklaerbaer
 - datenbanken
 - performance

@@ -4,7 +4,6 @@ title:  "MySQL Performance Limits"
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date:   2019-09-06 15:30:14 +0200
-categories: mysql
 tags:
 - mysql
 - performance

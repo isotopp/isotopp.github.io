@@ -4,20 +4,10 @@ title:  "MySQL Performance Limits"
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date:   2019-09-06 15:30:14 +0200
-categories: mysql
 tags:
 - mysql
 - performance
 - mysql
-- "lang_en"
-layout: post
-title: "Enemy Action"
-author-id: isotopp
-date: 2012-10-31 13:11:22 UTC
-categories: mysql
-tags:
-- mysql
-- performance
 - "lang_de"
 ---
 "Kris, guck mal, connection surge auf $WICHTIGER_MASTER, davor kurzer Activity drop. Alle anderen Graphen sehen normal aus."

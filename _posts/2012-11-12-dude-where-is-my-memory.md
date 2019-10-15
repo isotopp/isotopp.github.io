@@ -4,7 +4,6 @@ title: "Dude, where is my memory?"
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date: 2012-11-12 14:06:40 UTC
-categories: mysql
 tags:
 - mysql
 - performance
