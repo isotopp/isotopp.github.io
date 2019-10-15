@@ -6,7 +6,8 @@ author-id: isotopp
 date: '2005-10-08 12:21:27 UTC'
 tags:
 - computer
-- unix
+- linux
+- erklaerbaer
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
