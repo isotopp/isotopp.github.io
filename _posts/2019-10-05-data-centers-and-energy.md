@@ -4,7 +4,6 @@ title:  'Data Centers and Energy'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: 2019-10-05 11:44:55 +0200
-category: erklaerbaer
 tags:
 - climate
 - data center

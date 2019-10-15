@@ -4,7 +4,6 @@ published: true
 title: Filesysteme für theclaw (30 Jahre Unix Source)
 author-id: isotopp
 date: 2006-12-26 19:09:59 UTC
-category: erklaerbaer
 tags:
 - dateisysteme
 - erklaerbaer

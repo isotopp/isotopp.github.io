@@ -4,7 +4,6 @@ title:  'MySQL Does Disk I/O'
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date: 2019-09-27 09:49:03 +0200
-category: mysql
 tags:
 - mysql
 - database

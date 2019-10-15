@@ -4,7 +4,6 @@ published: true
 title: User und Gruppen, Prozesse und Dateien
 author-id: isotopp
 date: 2005-11-01 18:41:28 UTC
-category: erklaerbar
 tags:
 - computer
 - erklaerbaer

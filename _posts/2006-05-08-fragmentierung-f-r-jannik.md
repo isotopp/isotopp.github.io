@@ -4,7 +4,6 @@ published: true
 title: Fragmentierung (für Jannik)
 author-id: isotopp
 date: 2006-05-08 20:45:51 UTC
-category: erklaerbaer
 tags:
 - computer
 - dateisysteme

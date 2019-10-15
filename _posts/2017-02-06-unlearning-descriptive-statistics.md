@@ -7,8 +7,8 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-02-06 13:41:19 +0100'
 tags:
-- Computer Science
-- Science
+- computer
+- science
 ---
 [![](/uploads/2017/02/640px-Anscombes_quartet_3.svg_.png)](https://en.wikipedia.org/wiki/Anscombe's_quartet#/media/File:Anscombe%27s_quartet_3.svg)
 
