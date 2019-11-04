@@ -1,0 +1,282 @@
+<?php
+
+// helper
+function echeck($e) {
+   if (!isset($e))
+    $e = "";
+  else
+    $e .= "\n";
+
+  return $e;
+}
+
+###########################################################################
+
+// Integer checker
+// Parameters: base -> array of allowed bases (default: 10)
+function check_int($k, $v, $par) {
+  $base       = (array_key_exists('base', $par)?$par['base']:10);
+  $base_err   = "check_int: ".
+                (array_key_exists('base_err', $par)?$par['base_err']:"$v is not a valid base $base int or invalid base $base not in (2, 8, 10, 16).");
+  $default    = array_key_exists('default', $par)?$par['default']:NULL;
+
+  if (DEBUG) echo "In check_int: k=$k v=$v base=$base\n";
+
+  switch($base) {
+    case 2:
+      $pattern = '/^[01]+$/';
+      $func    = 'bindec';
+    break;
+    case 8:
+      $pattern = '/^[0-7]+$/';
+      $func    = 'octdec';
+    break;
+    case 10:
+      $pattern = '/^[0-9]+$/';
+      $func    = 'intval';
+    break;
+    case 16:
+      $pattern = '/^(0[xX])?[0-9a-fA-F]+$/';
+      $func    = 'hexdec';
+    break;
+  }
+
+  if (preg_match("$pattern", $v))
+    return array(intval($func($v)), NULL);
+  else
+    return array($default, $base_err);
+}
+
+// Integer enum checker
+// Parameters: values -> array of valid values
+function check_int_enum($k, $v, $par) {
+  $values      = $par['values'];
+  $valuestring = join(",", $values);
+  $values_err  = "check_int_enum: ".
+                 (array_key_exists('values_err', $par)?$par['values_err']:"$v not in $valuestring.");
+  $default     = array_key_exists('default', $par)?$par['default']:NULL;
+  
+  if (DEBUG) echo "In check_int_enum: k=$k v=$v values=($valuestring)\n";
+  list($v, $e) = check_int($k, $v, $par);
+  if (!isset($v)) return array(NULL, $e);
+  $e = echeck($e);
+  
+  if (array_search($v, $values) === false)
+    return array($default, "$e$values_err");
+
+  return array($v, NULL);
+  
+}
+
+// Integer minmax checker
+// Parameters: min -> minimum valid value
+//             max -> maximum valid value
+function check_int_minmax($k, $v, $par) {
+  $min     = $par['min'];
+  $min_err = "check_int_minmax: ". 
+             (array_key_exists('min_err', $par)?$par['min_err']:"$v < $min.");
+  $max = $par['max'];
+  $max_err = "check_int_minmax: ". 
+             (array_key_exists('max_err', $par)?$par['max_err']:"$v > $max.");
+  $default = array_key_exists('default', $par)?$par['default']:NULL;
+  
+  if (DEBUG) echo "In check_int_minmax: k=$k v=$v min=$min max=$max\n";
+  list($v, $e) = check_int($k, $v, $par);
+  if (!isset($v)) return array(NULL, $e);
+  $e = echeck($e);
+
+  if ($v < $min)
+    return array($default, "$e$min_err");
+  if ($v > $max)
+    return array($default, "$e$max_err");
+
+  return array($v, NULL);
+}
+
+// bool checker
+// Parameters: none
+function check_bool($k, $v, $par) {
+  $error   = "check_bool: ".
+             (array_key_exists('error', $par)?$par['error']:"$v is not a recognized bool value");
+  $default = array_key_exists('default', $par)?$par['default']:NULL;
+
+  if (DEBUG) echo "In check_bool: k=$k v=$v\n";
+  $v = strtolower($v);
+  
+  if ($v == '1' or $v == 'true' or $v == 'yes' or $v == 'on')
+    return array(TRUE, NULL);
+  if ($v == '0' or $v == 'false' or $v == 'no' or $v == 'off' or $v == '')
+    return array(FALSE, NULL);
+
+  return array($default, $error);
+}
+
+// Float checker
+// Parameters: none
+function check_float($k, $v, $par) {
+  $error   = "check_float: ".
+             (array_key_exists('error', $par)?$par['error']:"$v is not a valid float value.");
+  $default = array_key_exists('default', $par)?$par['default']:NULL;
+
+  if (DEBUG) echo "In check_float: k=$k v=$v\n";
+  
+  if (is_numeric($v))
+    return array(doubleval($v), NULL);
+  else
+    return array(NULL, $error);
+}
+
+
+// Regular expression checker
+// Parameters: pattern -> the regex to check against
+function check_text_regex($k, $v, $par) {
+  $pattern     = $par['pattern'];
+  $pattern_err = "check_text_regex: ".
+                 (array_key_exists('pattern_err', $par)?$par['pattern_err']:"$v did not match $pattern.");
+  $default     = array_key_exists('default', $par)?$par['default']:NULL;
+
+  if (DEBUG) echo "In check_text_regex: k=$k v=$v pattern= $pattern\n";
+  
+  if (preg_match("/^$pattern\$/", $v))
+    return array($v, NULL);
+  else
+    return array($default, $pattern_err);
+}
+
+// Text enum checker
+// Parameters: values -> array of valid values
+function check_text_enum($k, $v, $par) {
+  $values      = $par['values'];
+  $valuestring = join(",", $values);
+  $values_err  = "check_text_enum: ".
+                 (array_key_exists('values_err', $par)?$par['values_err']:"$v not in $valuestring.");
+  $default     = array_key_exists('default', $par)?$par['default']:NULL;
+  
+  if (DEBUG) echo "In check_text_enum: k=$k v=$v values=($valuestring)\n";
+  
+  if (array_search($v, $values) === false)
+    return array($default, "$e$values_err");
+
+  return array($v, NULL);
+}
+
+// IP V4 checker
+// Parameters: none
+function check_ipv4($k, $v, $par) {
+  $error   = "check_ipv4: ".
+             (array_key_exists('error', $par)?$par['error']:"$v is not a valid IP V4 address.");
+  $default = array_key_exists('default', $par)?$par['default']:NULL;
+ 
+  $h = explode(".", $v);
+  if (count($h) != 4)
+    return array($default, $error);
+  
+  foreach ($h as $hh) {
+    list($hh, $e) = check_int($k, $hh, $par);
+    if (!isset($hh)) return array($default, $e);
+    $e = echeck($e);
+      
+    if ($hh < 0 or $hh > 255)
+      return array($default, $error);
+  }
+  
+  return array($v, NULL);
+}
+
+function clean($R, $cleaners, &$E = "") {
+  $C = array();
+
+  foreach ($R as $k => $v) {
+    // Check for bogus values.
+    if (! array_key_exists($k, $cleaners)) {
+      if (DEBUG) echo "*** WARNING: Skipped bogus value $k => $v\n";
+      continue;
+    }
+    // If we make it to here, the value should be imported.
+
+    // generic cleanup
+    $v = get_magic_quotes_gpc() ? stripslashes($v) : $v;
+    // $v = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($v) : mysql_escape_string($v);
+    $v = mysql_escape_string($v);
+    
+    // The value can be imported only, if the specified cleaner exists.
+    $checkfun = "check_" . $cleaners[$k]['check'];
+    if (function_exists($checkfun)) {
+      // $c will then be the sanitized value
+      list($c, $e) = $checkfun($k, $v, $cleaners[$k]);
+    } else {
+      die("*** ERROR: $k => $v fails, because specified checkfun $checkfun does not exist.\n");
+    }
+    
+    // The value can be imported only, if the specified cleaner succeeded.
+    if (isset($c)) {
+      if (DEBUG) echo "Import $k's value of $v as $c\n"; 
+      $C[$k] = $c;
+    } else {
+      if (DEBUG) echo "*** WARNING: Not importing $k, because $v failed $checkfun().\n";
+      $E[$k] = $e;
+    }
+  }
+  
+  return $C;
+}
+
+
+## TODO
+
+## isodate
+## usdate
+## germandate
+## anydate
+
+## ipv6
+
+###########################################################################
+
+## Changes go here
+
+define("DEBUG", 1);
+
+
+$cleaners = array(
+  'anint'  => array( 'check' => 'int'),
+  'abin'   => array( 'check' => 'int', 'base' => 2),
+  'anoct'  => array( 'check' => 'int', 'base' => 8),
+  'ahex'   => array( 'check' => 'int', 'base' => 16),
+  'minmax' => array( 'check' => 'int_minmax', 'min' => 1000, 'max' => 1200),
+  'enum'   => array( 'check' => 'int_enum', 'values' => array(1,2,3,4)),
+  'abool'  => array( 'check' => 'bool'),
+  'afloat' => array( 'check' => 'float'),
+  'aregex' => array( 'check' => 'text_regex', 'pattern' => '[a-zA-Z0-9]+' ),
+  'tenum'  => array( 'check' => 'text_enum', values => array('red', 'yellow', 'green')),
+  'anipv4' => array( 'check' => 'ipv4'),
+);
+
+$_REQUEST = array(
+  'anint'  => '1900',
+  'abin'   => '01010101',
+  'anoct'  => '0377',
+  'ahex'   => '0xfeff',
+  'minmax' => '1100',
+  'enum'   => '3',
+  'abool'  => 'yes',
+  'afloat' => '3.1415926E4',
+  'aregex' => 'someword',
+  'tenum'  => 'yellow',
+  'anipv4' => '192.168.22.1',
+
+  'bogus' => 'value'
+);
+
+$_ERROR = array();
+$_CLEAN = clean($_REQUEST, $cleaners, $_ERROR);
+
+echo "original input\n";
+var_dump($_REQUEST);
+
+echo "cleaned input\n";
+var_dump($_CLEAN);
+
+echo "collected errors\n";
+var_dump($_ERROR);
+?>
