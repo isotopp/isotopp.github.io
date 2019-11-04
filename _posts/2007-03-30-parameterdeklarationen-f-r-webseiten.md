@@ -1,9 +1,10 @@
 ---
 layout: post
 published: true
-title: Parameterdeklarationen für Webseiten
+title: 'Parameterdeklarationen für Webseiten'
 author-id: isotopp
-date: 2007-03-30 11:47:38 UTC
+date: '2007-03-30 11:47:38 UTC'
+tags:
 - php
 - security
 - lang_de
