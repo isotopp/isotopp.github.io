@@ -51,9 +51,7 @@ den Eingabewert ein. Außerdem werden Eingabewerte, die für die Seite gar
 nicht da sein dürfen trotzdem akzeptiert und dann vielleicht ignoriert -
 vielleicht aber auch nicht.
 
-(Das folgende Codebeispiel zum Runterladen: 
-
-[input_validation.php.txt](/uploads/input_validation.php.txt" title="input_validation.php.txt" target="_blank))
+(Das folgende Codebeispiel zum Runterladen: [input_validation.php.txt](/uploads/input_validation.php.txt" title="input_validation.php.txt" target="_blank))
 
 Kurz gesagt: Was ich möchte ist eigentlich eine Typdeklaration für eine
 PHP-Seite, die die Eingabeparameter mit Namen und Typprüfungen deklariert.
