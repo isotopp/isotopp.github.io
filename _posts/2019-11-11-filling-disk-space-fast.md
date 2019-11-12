@@ -10,9 +10,11 @@ tags:
 - storage
 - datenbanken
 ---
-Some of the database at work are a tad on the large side, in the high
-2-digit terabytes of size. Copying these at the moment takes a rather long
-time, multiple days, up to a week. 
+Some of the databases at work are a tad on the large side, in the high
+2-digit terabytes of size. Copying these to new machines at the moment takes
+a rather long time, multiple days, up to a week. Speeding it up pays
+twice, because with shorter copy times there is also less binlog to catch
+up.
 
 I have been looking into disk copy speeds in order to better understand the
 limits. When creating a partition from NVME devices, the most simple layout
@@ -55,7 +57,8 @@ will translate into something along the lines of
 
 {% highlight console %}
 # mkdir /root/kris
-# fpart -o chunk -n 128 /mysql/ppc
+# cd !$
+# fpart -o chunk -n 128 /mysql/testschema
 # find . -type f | parallel rsync --files-from={} / kris@B:/mysql/testschema
 {% endhighlight %}
 
@@ -67,13 +70,13 @@ you around 2.7 GB/s. Using tar, this becomes
 > parallel 'tar cvf - --files-from={} | ssh kkoehntopp@B "tar -C /a -xf -"'
 {% endhighlight %}
 
-but that is still using ssh to encrypt and that can become a bottleneck in
-some use cases.
+which is much faster for a clean, non-incremental copy. But that is still
+using ssh to encrypt and can become a bottleneck in some use cases.
 
-You could run (tnc)[http://moo.nac.uci.edu/~hjm/tnc] to use tar and netcat
+You could run [tnc](http://moo.nac.uci.edu/~hjm/tnc) to use tar and netcat
 to get rid of both sources of overhead to speed things up even more and run
 at media speed. 
-(How to transfer large amounts of data via network)[http://moo.nac.uci.edu/~hjm/HOWTO_move_data.html]
+[How to transfer large amounts of data via network](http://moo.nac.uci.edu/~hjm/HOWTO_move_data.html)
 in general is a useful resource and has a few more ideas and tools on how to
 handle things.
 
@@ -82,7 +85,7 @@ handle things.
 GNU `parallel` - a perl script that is part of CentOS 7, which can
 comfortably construct and run command lines in parallel execution. It has no
 large advantage over `xargs -P`, but I like the flexibility of the
-substitutions offered.
+substitutions offer.
 
 `fpart` - a tool that will take a list of filenames or pairs of size and
 filename (du output) and sort it into chunks of files so that each chunk
@@ -102,13 +105,13 @@ turn it into performance. In fact, getting the full performance out of a
 NVME device probably requires asyncio or parallel processes.
 
 That is, because a single NVME device can give you around 800000 IOPS or
-more, so you should complete one IO every 1.2??s. On the other hand, actual
-read latency is on the order to 120??s, and write latency
-buffered/unbuffered is at around 50/450??s, so a single threaded access can
-realize only a fraction of the total I/O potential of the device.
+more, so you should complete one IO every 1.2 microseconds. On the other
+hand, actual read latency is on the order to 100 micros, and write latency
+buffered/unbuffered is at around 50/450 micros, so a single threaded access
+can realize only a fraction of the total I/O potential of the device.
 
 NVME devices are using the same flash storage that SSD use, but they remove
 the SATA controller from the equation. Instead the flash resides directly on
 the PCI bus. NVME can be made available locally or remotely, and the way we
 have set our network the network is not the bottleneck. Network access
-inside our data centers will add 20??s or less in latency.
+inside our data centers will add 20 micros or less in latency.
