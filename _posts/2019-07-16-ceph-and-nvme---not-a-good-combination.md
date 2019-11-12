@@ -2,8 +2,8 @@
 layout: post
 title:  'Ceph and NVME - not a good combination?'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
-date: 2019-11-12 10:21:25 +0100
+feature-img: assets/img/background/mysql.jpg
+date: 2019-07-16 08:21:25 +0100
 tags:
 - lang_en
 - computer
