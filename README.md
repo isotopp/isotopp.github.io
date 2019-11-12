@@ -1,6 +1,6 @@
 # Using Github pages as a blog
 
-[blog.koehntopp.info](blog.koehntopp.info) This is using github
+[blog.koehntopp.info](https://blog.koehntopp.info) This is using github
 pages and Jekyll to make a blog. You can subscribe to the RSS in
 the blog or to changes in the repo using github.
 
