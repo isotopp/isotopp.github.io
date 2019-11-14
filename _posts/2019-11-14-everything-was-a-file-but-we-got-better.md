@@ -10,33 +10,31 @@ tags:
 - damals
 - lang_en
 ---
+I fell into the Twitters again. [@CarrickDB](https://twitter.com/carrickdb/status/1194842452361789441) joked about Unix,
+Files and Directories:
 
 [![](/uploads/everything-is-a-file.png)](https://twitter.com/carrickdb/status/1194842452361789441)
 
-CarrickDB about Unix, Files and Directories.
-
-Haha, only serious. Directories used to be files, and that was a bad
-time. Check out V7 Unix
+And that is a case of "Haha, only serious". Because directories
+used to be files, and that was a bad time. Check out the V7 Unix
 [mkdir](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L49)
-command. At this point in history we do not have a `mkdir(1)`
+command. At this point in history we do not have a `mkdir(2)`
 syscall, yet, so we need to construct the entire directory in
 multiple steps.
 
-- `mknod(2)` an inode that has the `S_IFDIR` flag set, even if that
-  macro does not even exist yet.
-- manually link the entry for the current directory `.` into that
-- manually link the entry for the parent directory `..` into
-  that
+- [`mknod(2)` an inode that has the `S_IFDIR` flag set](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L49),
+  even if that macro does not even exist yet.
+- [manually link the entry for the current directory `.` into that](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L57)
+- [manually link the entry for the parent directory `..` into that](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L64)
 
-This fragile and broken: mkdir could be interrupted while doing
-that or another program could try to race mkdir while it is
-doing that. In both cases we get directories that are invalid
+This fragile and broken: `mkdir` could be interrupted while
+doing that or another program could try to race `mkdir` while it
+is doing that. In both cases we get directories that are invalid
 and dangerous to traverse, because they break crucial
 assumptions users make about directories.
 
-This is also before readdir(2) and friends, so programs like
-`ls` [open directories like
-files](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/ls.c#L304)
+This is also before `readdir(2)` and friends, so programs like
+`ls` [open directories like files](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/ls.c#L304)
 and then make assumptions about the format of dentries on disk.
 Specifically, they assume a 16 bit inode number and then a
 filename of 14 characters or less and a directory that is an array
@@ -51,13 +49,13 @@ command is. What could probably go wrong?
 Well, [Jan Kraetzschmar](https://twitter.com/opheleon/status/1194941703632932865)
 reminds us that this kind of non-atomic rmdir can also produce
 structures in the filesystem that are disconnected from the main
-tree starting at `/`, so you end up with orphaned, unreachable
+tree starting at `/`. In that case you end up with orphaned, unreachable
 inodes that still have a non-zero link count. `fsck` should be
 able to find them and free them, but of course that would be a
-disruptive operation. Making mkdir and rmdir system call avoids
+disruptive operation. Making `mkdir` and `rmdir` system call avoids
 all of these problems.
 
-And that is why all of this was fixed in 1984 or so, when BSD
+That's why all of this was fixed in 1984 or so, when BSD
 FFS came around and we got long filenames, wider inodes,
 `mkdir`, `rmdir` and `readdir` as syscalls and many other
 improvements.
