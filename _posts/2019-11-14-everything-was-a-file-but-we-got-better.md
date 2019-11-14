@@ -57,7 +57,7 @@ able to find them and free them, but of course that would be a
 disruptive operation. Making mkdir and rmdir system call avoids
 all of these problems.
 
-And that is, why all of this was fixed in 1984 or so, when BSD
+And that is why all of this was fixed in 1984 or so, when BSD
 FFS came around and we got long filenames, wider inodes,
 `mkdir`, `rmdir` and `readdir` as syscalls and many other
 improvements.
