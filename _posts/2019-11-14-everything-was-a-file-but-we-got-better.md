@@ -48,9 +48,19 @@ Finally have a look at the hot mess that the
 [rmdir](https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/rmdir.c#L29)
 command is. What could probably go wrong?
 
-All of this was fixed in 1984 or so, when BSD FFS came around
-and we got long filenames, wider inodes, `mkdir`, `rmdir` and
-`readdir` as syscalls and many other improvements.
+Well, [Jan Kraetzschmar](https://twitter.com/opheleon/status/1194941703632932865)
+reminds us that this kind of non-atomic rmdir can also produce
+structures in the filesystem that are disconnected from the main
+tree starting at `/`, so you end up with orphaned, unreachable
+inodes that still have a non-zero link count. `fsck` should be
+able to find them and free them, but of course that would be a
+disruptive operation. Making mkdir and rmdir system call avoids
+all of these problems.
+
+And that is, why all of this was fixed in 1984 or so, when BSD
+FFS came around and we got long filenames, wider inodes,
+`mkdir`, `rmdir` and `readdir` as syscalls and many other
+improvements.
 
 ## What if really everything was a file?
 
