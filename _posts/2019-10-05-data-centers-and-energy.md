@@ -110,7 +110,7 @@ With this, we are 30% better than industry average."
 Amazons energy page is [AWS &
 Sustainability](https://aws.amazon.com/about-aws/sustainability/)
 and they claim more than 50% power from renewables, and commit
-ot a 100% renewable goal for their global infrastructure. 
+to a 100% renewable goal for their global infrastructure. 
 
 Like all the other cloud providers, they also highlight the way
 lower PUE and much higher utilitzation of their servers compared
@@ -273,7 +273,7 @@ More modern data traditional centers can achieve a design PUE as
 low as 1.2 and an effective operational PUE of 1.6. Rigidly
 optimized OCP data centers can go below 1.1 effective PUE (sic!)
 in good conditions. Google published their numbers in their 
-[PUE dashboard](https://www.google.com/about/datacenters/efficiency/internal/index.html).
+[PUE dashboard](https://www.google.com/about/datacenters/efficiency/).
 
 All current cloud vendors deploy OCP equipment or (in the case
 of Microsoft) self-developed equipment that is
