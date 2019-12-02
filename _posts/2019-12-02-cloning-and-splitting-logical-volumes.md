@@ -9,7 +9,7 @@ tags:
 - erklaerbaer
 - storage
 ---
-Where I work, we rountine run our databases on XFS on LVM2.
+Where I work, we routinely run our databases on XFS on LVM2.
 
 ## The setup
 
@@ -18,6 +18,13 @@ the subdirectories `/mysql/schemaname/{data,log,tmp}`. The
 entire `/mysql/schemname` tree is a LVM2 Logical Volume
 `mysqlVol` on the Volume Group `vg00`, which is then formatted
 as an XFS filesystem.
+
+{% highlight console %}
+# vgcreate vg00 /dev/nvme*n1
+# lvcreate -n mysqlVol -L...G vg00
+# mkfs -t xfs /dev/vg00/mysqlVol
+# mount -t xfs /dev/vg00/mysqlVol /mysql/schemaname
+{% endhighlight %}
 
 ## Basic Ops
 
@@ -28,8 +35,9 @@ You can grow an existing LVM Logical Volume with
 You can also create a snapshot with 
 `lvcreate -s -L50G -n SNAPSHOT /dev/vg00/mysqlVol` 
 and if you do this right, it will even be consistent or at least
-recoverable. But LVM snapshots are terribly inefficient, and you
-might not want to do that on a busy database. 
+recoverable, from a database POV. But LVM snapshots are terribly
+inefficient, and you might not want to do that on a busy
+database.
 
 The size you specified for the LVM snapshot is the amount of
 backing storage: When there is a logical write to the mysqlVol,
@@ -37,24 +45,34 @@ LVM intercepts the write, physically reads the old target block,
 physically writes the old target block into the snapshot backing
 storage and then resumes the original write. This will do
 horrible things to your write latency, because the orignal write
-is stalled until the copy has been made.
+is stalled until the copy has been made, and I crashed a
+database at least once with Redo Log overflow while holding and
+reading a snapshot.
 
 As the backing storage fills up, the snapshot will fail once it
-is running out. If you still have free space, it is possible to
-extend the backing store using `lvextend -L+50G /dev/vg00/SNAPSHOT`.
+is running out of free space. If you still have free space, it
+is possible to extend the backing store using 
+`lvextend -L+50G /dev/vg00/SNAPSHOT` with a life snapshot being
+held.
 
 Reads to the original mysqlVol can be satisfied the normal way
 now, as the data we see is always the most recent blocks. Reads
 from the snapshot will look for the data in the snapshot, and if
 they find it, will return with the old, snapshotted data. Or, if
-they do not find it, will look into the mysqlVol instead.
+they do not find it, will look into the mysqlVol instead. In any
+case, the normal filesystem will show current data, while the
+snapshot will show old data, and as both volumes diverge,
+snapshot backing storage will be consumed up to the point where
+both volumes are completely diverged and the snapshot is as
+large as the original volume.
 
-Mounting the XFS snapshot volume is a bit trick: XFS will refuse
-to mount the same UUID filesystem twice, and since by definition
-the snapshot is a clone of the (past) original volume, it will
-of course have the same UUID. So we need to tell XFS that this
-is okay: `mount -t ro,nouuid /dev/vg00/SNAPSHOT /mnt` to get it
-mounted.
+Mounting the XFS snapshot volume is a bit tricky: XFS will
+refuse to mount the same UUID filesystem twice, and since by
+definition the snapshot is a clone of the (past) original
+volume, it will of course have the same UUID. So we need to tell
+XFS that this is okay: 
+`mount -t ro,nouuid /dev/vg00/SNAPSHOT /mnt` 
+to get it mounted.
 
 Once unmounted again, you can turn the Logical Volume to offline
 and throw it away: `lvchange -an /dev/vg00/SNAPSHOT` and
@@ -66,8 +84,9 @@ One method to clone a machine is to convert an existing volume
 into a RAID1, then split the raid and move one half of the
 mirriro to a new machine.
 
-I made myself a small VM with seven tiny drives: The boot disk
-is sda, and the drives sdb to sdg are for LVM testing.
+I made myself a small VM with seven tiny drives to test this:
+The boot disk is sda, and the drives sdb to sdg are for LVM
+testing.
 
 The initial setup is like so: We copy the partition table of sda
 to all play drives. We then create a volume group testvg, to
@@ -152,8 +171,8 @@ root@ubuntu:~# pvs
   /dev/sdg1  testvg lvm2 a--  <20.00g <20.00g
 {% endhighlight %}
 
-and the actual conversion. Using `lvs` we can watch the
-progress.
+and the actual conversion. 
+First, using `lvs` we can watch the progress of the sync:
 
 {% highlight console %}
 root@ubuntu:~# lvconvert --type raid1 -m1 /dev/testvg/testlv
@@ -170,7 +189,38 @@ root@ubuntu:~# lvs
   testlv testvg rwi-a-r--- 6.00g                                    100.00
 {% endhighlight %}
 
-Let's check the disk layout again:
+Let's check the disk layout again.
+
+There are two competing implementations of this, `--type mirror`
+and `--type raid1`. The mirror implementation is very extremely
+strongly deprecated, the raid1 implementation is okay, which is
+why we used this one. It uses mdraid code internally, and we can
+show this using `lvs -a --segments -o+devices`
+
+{% highlight console %}
+# lvs -a --segments -o+devices
+  LV                VG     Attr       #Str Type   SSize Devices
+  testlv            testvg rwi-a-r---    2 raid1  6.00g testlv_rimage_0(0),testlv_rimage_1(0)
+  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdb1(0)
+  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdc1(0)
+  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdd1(0)
+  [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sdf1(1)
+  [testlv_rmeta_0]  testvg ewi-aor---    1 linear 4.00m /dev/sdb1(512)
+  [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sdf1(0)
+{% endhighlight %}
+
+This shows us the visible LV testlv as well as the hidden
+infrastructure that is being created to build it. The left left
+of the RAID 1 is testlv_rimage_0, spread over 3 physical
+devices. 
+
+The right leg is testlv_rimage1, and because the data all fits
+onto one disk, we get this consolidated into a single 6G segment
+on a single device, not quite what we want. We also see two meta
+devices, which hold the metadata and a bitmap that can speed up
+array synchonisation.
+
+Here we see the asymmetric layout again, at the `pvs` level:
 
 {% highlight console %}
 root@ubuntu:~# pvs
@@ -181,15 +231,7 @@ root@ubuntu:~# pvs
   /dev/sde1  testvg lvm2 a--  <20.00g  13.99g
   /dev/sdf1  testvg lvm2 a--  <20.00g <20.00g
   /dev/sdg1  testvg lvm2 a--  <20.00g <20.00g
-{% endhighlight %}
-
-Wait a moment! Why are sdf1 and sdg1 unused and there are 6G
-used from sde1? Checking the map, we can confirm that the
-process consolidated our layout: What was three drives on one
-side is now one drive on the other side, because 6G easily fit
-onto a 20G drive.
-
-{% highlight console %}
+# pvdisplay --map
   --- Physical volume ---
   PV Name               /dev/sde1
   VG Name               testvg
