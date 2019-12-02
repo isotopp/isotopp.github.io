@@ -264,7 +264,7 @@ RAID and check this:
 {% endhighlight %}
 
 The `--syncaction repair` forces a RAID recovery, the `lvs` command shows
-the data we nedd to see to track it.
+the data we need to see to track it.
 
 ## Splitting the RAID and the VG
 
