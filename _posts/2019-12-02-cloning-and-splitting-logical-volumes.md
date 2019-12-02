@@ -246,6 +246,26 @@ root@ubuntu:~# pvs
 ...
 {% endhighlight %}
 
+## Maintaining the RAID
+
+As dm-raid uses md-raid plumbing internally, it has the same controls as
+md-raid. Among them are also controls that control the sync speed of a
+logical volume. The lvchange command can set these. For demonstration
+purposes we are setting these as low as possible, then force a resync of the
+RAID and check this:
+
+{% highlight console %}
+# lvchange /dev/testvg/testlv --minrecoveryrate 1k --maxrecoveryrate 100k
+  Logical volume testvg/testlv changed.
+# lvchange --syncaction repair /dev/testvg/testlv
+# lvs -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
+  LV                VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
+  testlv            testvg rwi-a-r--- 6.00g                                    0.19                   1     100          0 repair
+{% endhighlight %}
+
+The `--syncaction repair` forces a RAID recovery, the `lvs` command shows
+the data we nedd to see to track it.
+
 ## Splitting the RAID and the VG
 
 We can now split the RAID into two unraided LVs with different
