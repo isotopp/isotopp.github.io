@@ -20,6 +20,7 @@ entire `/mysql/schemname` tree is a LVM2 Logical Volume
 as an XFS filesystem.
 
 {% highlight console %}
+# pvcreate /dev/nvme*n1
 # vgcreate vg00 /dev/nvme*n1
 # lvcreate -n mysqlVol -L...G vg00
 # mkfs -t xfs /dev/vg00/mysqlVol
@@ -204,9 +205,9 @@ show this using `lvs -a --segments -o+devices`
   [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdb1(0)
   [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdc1(0)
   [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdd1(0)
-  [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sdf1(1)
+  [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sde1(1)
   [testlv_rmeta_0]  testvg ewi-aor---    1 linear 4.00m /dev/sdb1(512)
-  [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sdf1(0)
+  [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sde1(0)
 {% endhighlight %}
 
 This shows us the visible LV testlv as well as the hidden
@@ -220,7 +221,9 @@ on a single device, not quite what we want. We also see two meta
 devices, which hold the metadata and a bitmap that can speed up
 array synchonisation.
 
-Here we see the asymmetric layout again, at the `pvs` level:
+Here we see the asymmetric layout again, at the `pvs` level.
+Note how the allocation of the rmeta sub-LVs creats the ".99"
+free sizes.
 
 {% highlight console %}
 root@ubuntu:~# pvs
@@ -288,12 +291,22 @@ root@ubuntu:~# pvs
   /dev/sdg1  testvg lvm2 a--  <20.00g <20.00g
 {% endhighlight %}
 
-And we can then proceed to split the Volume Group in two,
+Since the raid is now split, the rmeta sub-LVs are gone and the
+rimage sub-LVs are unwrapped and become the actual LVs (and
+those .99 numbers in the PFree column are nice and round again).
+
+At this point we can then proceed to split the Volume Group in two,
 putting splitlv into a new Volume Group splitvg, then export
 that.
 
 For that, we need to change the testvg to unavailable, then run
-vgsplit. The outcome:
+vgsplit. Because of that, a data LV should always be on a data
+VG that is different from the Boot VG which would hold the boot
+LVs. If this is not the case, splitting the data LV would require
+a boot into a rescue image in order to be able to split the data
+LV: It is not possible to offline a boot LV without this.
+
+The outcome:
 
 {% highlight console %}
 root@ubuntu:~# vgchange -an testvg
