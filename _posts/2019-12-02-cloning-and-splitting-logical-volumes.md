@@ -52,7 +52,7 @@ reading a snapshot.
 As the backing storage fills up, the snapshot will fail once it
 is running out of free space. If you still have free space, it
 is possible to extend the backing store using 
-`lvextend -L+50G /dev/vg00/SNAPSHOT` with a life snapshot being
+`lvextend -L+50G /dev/vg00/SNAPSHOT` with a live snapshot being
 held.
 
 Reads to the original mysqlVol can be satisfied the normal way
@@ -82,7 +82,7 @@ and throw it away: `lvchange -an /dev/vg00/SNAPSHOT` and
 
 One method to clone a machine is to convert an existing volume
 into a RAID1, then split the raid and move one half of the
-mirriro to a new machine.
+mirror to a new machine.
 
 I made myself a small VM with seven tiny drives to test this:
 The boot disk is sda, and the drives sdb to sdg are for LVM
