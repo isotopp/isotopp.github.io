@@ -210,7 +210,7 @@ show this using `lvs -a --segments -o+devices`
 {% endhighlight %}
 
 This shows us the visible LV testlv as well as the hidden
-infrastructure that is being created to build it. The left left
+infrastructure that is being created to build it. The left leg
 of the RAID 1 is testlv_rimage_0, spread over 3 physical
 devices. 
 
