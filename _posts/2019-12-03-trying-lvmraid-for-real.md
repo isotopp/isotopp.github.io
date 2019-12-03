@@ -38,6 +38,8 @@ a machine with 24 of these drives, 12 of them currently filled
 by a 90T database, and I just used a spare box to test the basic
 procedure.
 
+## It works, slowly
+
 So, this worked:
 
 {% highlight console %}
@@ -55,6 +57,9 @@ So, this worked:
   [mysqlVol_rmeta_1]  vg00  ewi-aor---    4.00m
 {% endhighlight %}
 
+
+## Performance metric
+
 For very slow and single threaded values of work: `iostat -x -k 10`
 
 ![](/uploads/2019/12/lvmraid-iostat.png)
@@ -66,6 +71,15 @@ the writing goes to dm-10, the rimage_1.
 At this rate, I will get a RAID sync in 3.5 days or so (60*1024/0.22 = 280k
 seconds).
 
+## Expected performance
+
+The expected behavior is to see a request queue deep enough to get the full
+transfer rate from a single NVME device (3.5 GB/s according to the spec
+sheet, anything above 2.5 GB/s sustained is good enough), and on all 6
+device pairs in parallel, for a total of anything above 6x 2.5GB/s = 15 GB/s
+for an unconstrained RAID-1 sync. That is what the hardware can do here. In
+this case, the sync would complete in 4096 seconds, a bit under 1.5h.
+
 So basically this died in the crib, because it does not leverage any
 parallelism the CPU, the multitude of drives, the deep queues of the NVMEs
 or anything else would have to offer.
@@ -76,3 +90,24 @@ LVM is in need of serious overhaul in order to become a tool for the 2020's.
 Outside of toy workloads, snapshots don't work,
 [lvmraid](https://www.systutorials.com/docs/linux/man/7-lvmraid/) also does
 not work.
+
+## Why is this slow?
+
+A single NVME drive (we have 2x 6 of them) like the one I used is a 4xPCIe
+3.0 device, so we get a transfer rate on the bus of 32 GByte/s. The internal
+structure of the flash limits the performance here, and according to the
+technical specifications of the device we get 800k-ish IOPS (let's say it's
+a million) and 3.5 GByte/s from it.
+
+We also can measure the device and see that it does have a read latency of
+around 100-120 microseconds, and a buffered write latency (to the internal
+RAM of the device, assume it has 512 MB or so) of 50 microseconds. If you
+write a lot, writes become unbuffered at, say, 420 micros.
+
+In order to get 1 million IOPS single threaded at a queue depth of 1, you
+would need a latency of 1 microseconds. You don't get that, so in order to
+get all IOPS, you need to have deep queues (and async IO) or many threads.
+
+In order to get 3.5 GB/s (say, 4 GB/s) at 4 KB block size, you need 1
+million blocks per second (920k for 3.5 GB/s). Again, you need deep queues
+or many thread to get that.
