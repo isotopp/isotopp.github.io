@@ -134,3 +134,26 @@ and around 8600 requests/s at a size of 128 KB one level higher
 in the dm-layer. There is also some kind of request merging
 going on somewhere in the stack, which for adjacent requests
 even makes sense.
+
+## Addendum: Interrupting the RAID sync
+
+If you try to split the Volume while it is still synching, you
+will find that this is not possible.
+
+{% highlight console %}
+# lvconvert --splitmirrors 1 -n splitlv /dev/vg00/mysqlVol
+  Unable to split vg00/mysqlVol while it is not in-sync.
+{% endhighlight %}
+
+Another observationL While lvmraid employs mdraid code, working with
+devicemapper block devices for the data and external metadata, mdraid does
+not see any of this in /proc;
+
+{% highlight console %}
+# cat /proc/mdstat
+Personalities : [raid6] [raid5] [raid4] [raid1]
+unused devices: <none>
+{% endhighlight %}
+
+You can't use any mdraid tooling to turn knobs inside lvm
+controlled mdraid code.
