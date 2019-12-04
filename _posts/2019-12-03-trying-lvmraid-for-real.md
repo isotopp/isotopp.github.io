@@ -64,9 +64,10 @@ For very slow and single threaded values of work: `iostat -x -k 10`
 
 ![](/uploads/2019/12/lvmraid-iostat.png)
 
-As you can see, nmve0n1 is being read at 240 MB/s, and being written at the
-same speed to nvme6n1. The rimage_0 is dm-8, you can see the reading, and
-the writing goes to dm-10, the rimage_1.
+As you can see, nmve0n1 is being read at around 240 MB/s, and
+being written at the same speed to nvme6n1. The rimage_0 is
+dm-8, you can see the reading, and the writing goes to dm-10,
+the rimage_1.
 
 At this rate, I will get a RAID sync in 3.5 days or so (60*1024/0.22 = 280k
 seconds).
@@ -111,3 +112,25 @@ get all IOPS, you need to have deep queues (and async IO) or many threads.
 In order to get 3.5 GB/s (say, 4 GB/s) at 4 KB block size, you need 1
 million blocks per second (920k for 3.5 GB/s). Again, you need deep queues
 or many thread to get that.
+
+## Addendum: Unexpected performance limits
+
+Today, I monitored the still syncing array and it has been progressing at
+around 250 MB/s equalling around 1.1% per hours over night, and
+is now at 20-something percent synced.
+
+{% highlight console %}
+# lvchange -maxrecoveryspeed=1000k /dev/vg00/mysqlVol
+{% endhighlight %}
+
+This works, and throttles the sync to just below 1000k per
+second. Conversely, setting a recovery speed of 0k falls back to
+the default 250 MB/s.
+
+But: Setting it to 1000000k ups the speed to around 550 MB/s,
+which is the single threaded native speed of the array. I see
+around 4300 requests/s at a size of 256 KB at the NVME level,
+and around 8600 requests/s at a size of 128 KB one level higher
+in the dm-layer. There is also some kind of request merging
+going on somewhere in the stack, which for adjacent requests
+even makes sense.
