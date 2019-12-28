@@ -18,6 +18,9 @@ computers are using power.
 
 Let's have a look.
 
+**EDIT:** Second part [Streaming and Energy]({% link
+_posts/2019-12-28-streaming-and-energy.md %}) now available.
+
 ## End-User Device.
 
 It's 2019. End user devices are using Wifi, and are running on
