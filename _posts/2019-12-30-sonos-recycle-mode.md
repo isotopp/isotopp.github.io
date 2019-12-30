@@ -83,14 +83,15 @@ becoming pretty long in the tooth.
 Especially the limited amount of memory makes it increasingly
 difficult to even install the most current versions of their
 software. New functionality such as Airplay 2, and new services
-require more memory and (in case of Airplay 2, also more CPU and
-more Wifi bandwidth) that this 10 year old piece of hardware
+require more memory and, in case of Airplay 2 also more CPU and
+more Wifi bandwidth than 10 year old piece of hardware
 has. 
 
-They would like to shrink the installed base of this (and soon,
-the Play:3), and would like to offer their long-time customers
-some kind of bonus and way to upgrade before they have to
-disable the hardware because it cannot longer be supported.
+They would like to shrink the installed base of their outdated
+hardware in order to be able to move forward technologically.
+They would like to offer their long-time customers some kind of
+bonus and way to upgrade before they have to disable the
+hardware because it cannot longer be supported.
 
 Not having to ship the hardware back to Sonos should be a plus,
 not a minus. Instead there is a pretty hard blowback on Twitter.
