@@ -32,8 +32,7 @@ no longer necessary.
 - The Play:5 (1st generation) speaker, the only one currently
   qualified for Trade-Up appeared, in 2009, 10 years ago. It was
   replaced by the 2nd generation in 2015. 
-- The Play:3 appeared in July 2011, and was discontinued in July
-  2018. 
+- The Play:3 appeared in July 2011, and was discontinued in July 2018. 
 - The Play:1 appeared in October 2013, and was replaced by the
   Play One (1st generation) in October 2017. The second generation
   Play One added Bluetooth Hardware and a much fatter SOC and even
