@@ -2,7 +2,7 @@
 layout: post
 title:  'Sonos Recycle Mode'
 author-id: isotopp
-feature-img: uploads/2019/12/sonos.jpg
+feature-img: assets/img/background/rijksmuseum.jpg
 date: 2019-12-30 15:02:23 +0100
 tags:
 - lang_en
