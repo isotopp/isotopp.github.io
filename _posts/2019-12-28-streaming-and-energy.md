@@ -33,7 +33,7 @@ via [Netmanias: Youtube Chunking, 2013](https://www.netmanias.com/en/post/blog/5
 
 Define "fancy": The file is being chopped into chunks of around a few seconds playback time, and a number of chunks ahead of the current playback position is being downloaded in advance and buffered on the end user device. How many of these chunks are preloaded depends on a lot of parameters, such as device type, internet connection speed and user behavior ("are they jumping around a lot?"). Using chunked downloads allows for switching video resolution depending on changes in line speed or display window size, and for jumping around in the video without downloading unnecessary parts of the video.
 
-**A video is not shipped across the Atlantic Ocean for each viewer.** Most likely (and especially for popular videos), an edge cache is holding a copy of the file locally and serving it to the customer. Google documents this in [https://peering.google.com/#/infrastructure](their peering and caching documentation).
+**A video is not shipped across the Atlantic Ocean for each viewer.** Most likely (and especially for popular videos), an edge cache is holding a copy of the file locally and serving it to the customer. Google documents this in [their peering and caching documentation](https://peering.google.com/#/infrastructure).
 
 ![](/uploads/2019/12/google-edge.png)
 
