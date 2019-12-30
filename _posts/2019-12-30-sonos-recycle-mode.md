@@ -14,7 +14,7 @@ offer acceptable sound quality and an extremely good user
 experience. They also so far have never cancelled support for
 any of their speakers.
 
-Some of their speakers are now qualified for a Trade-In program,
+Some of their speakers are now qualified for a Trade-Up program,
 in particular their 
 
 - Play:5 (1st generation) speaker, 
@@ -45,9 +45,9 @@ Play One added Bluetooth Hardware and a much fatter SOC and even
 more memory only one year later. Owners of the 1st gen Play One
 are probably currently worst off.
 
-The Trade-In is advertised as follows:
+The Trade-Up is advertised as follows:
 
-![](uploads/2019/12/sonos-trade-up.png)
+![](/uploads/2019/12/sonos-trade-up.png)
 
 You select a device for Trade-Up, and receive a voucher for a
 30% rebate on the purchase of a new device. You then have 21
@@ -57,7 +57,7 @@ purchase any new Sonos device, replace the old one and ship the
 old device to whatever recycling services in your area accept
 it.
 
-That is a normal Trade-In program, minus the part where you
+That is a normal Trade-Up program, minus the part where you
 uselessly ship the old hardware across the country to the maker,
 which will then hand it over to a recycling service instead of
 you doing this.
@@ -87,4 +87,4 @@ Not having to ship the hardware back to Sonos should be a plus,
 not a minus. Instead there is a pretty hard blowback on Twitter.
 Most people criticise that this bricks the device.
 
-Which is kind of the point in a Trade-In.
+Which is kind of the point in a Trade-Up.
