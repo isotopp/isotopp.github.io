@@ -33,8 +33,8 @@ ago, and was replaced by the 2nd generation in 2015.
 Unfortunately I have no idea what kind of hardware the platform
 is built on, I have only look into a Play:3 from 2013.
 
-The Play:3 appeared in July 2011, and was discontinued in July
-2018. The hardware I had looked at had a MIPS based single core
+The Play:3 appeared in July 2011, and was discontinued in July 2018. 
+The hardware I had looked at had a MIPS based single core
 CPU and 64 MB of memory. Current Sonos hardware is using
 Multicore ARM SOCs and have at least four times the amount of
 memory.
