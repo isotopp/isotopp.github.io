@@ -61,3 +61,10 @@ The TL;DR is: Cloud providers run data centers on renewable energy, Google is on
 Cloud providers use purpose built data centers that match their purpose built computers, "Open Compute Technology". These machines use less than half the power of normal servers when idle, and around 33% less energy when fully loaded. They also run in data centers that do not require compression cooling, but can consume ambient air temperatures, greatly reducing the cooling energy spent.
 
 Cloud technology can size applications on demand, allowing way better utilisation of servers. While a typical enterprise data center has around 5%-10% utilisation, cloud data centers are 3x to 7x better utilised.
+
+**EDIT:** Netflix specifically is overcompensating. In
+[A renewable energy update from us](https://media.netflix.com/en/company-blog/a-renewable-energy-update-from-us)
+they explain how much energy they use, primary and secondary, and how they
+compensate for this. This is assuming that their cloud provider, Amazon, was
+running on 100% coal, which they aren't, and that means they are actually
+carbon negative.
