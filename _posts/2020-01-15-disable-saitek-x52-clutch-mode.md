@@ -3,7 +3,7 @@ layout: post
 title:  'Disable Saitek X.52 pro Clutch Mode'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
-date: 2020-01-16 07:21:19 +0100
+date: 2020-01-15 18:21:19 +0100
 tags:
 - lang_en
 - gaming
@@ -34,7 +34,7 @@ search and not via menu.
 
 Select the device, and then hit the device properties.
 
-![](/uploads/2020/01/x52-clutch-3.png)
+![](/uploads/2020/01/x.52-clutch-3.png)
 
 In the MFD (Multi Function Display) of all places you can also
 disable the clutch function (which, of course, has nothing to do
