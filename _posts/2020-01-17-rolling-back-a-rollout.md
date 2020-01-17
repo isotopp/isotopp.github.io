@@ -106,7 +106,7 @@ It can direct business decisions, because it allows safe rapid development and d
 
 You can even use this data to build predictors for expected business behavior, and alert on deviations. "According to observed growth and data from last year, last month and last week, we would expect x bookings per minute, but see m fewer, so something is likely wrong. That started 10 minutes ago at the yellow activation line of experiment 13" is a thing where I live, and turning off 13 before even looking for possible root causes is a complete no-brainer. In 95% of the cases or more it actually fixes the incident for now, so that any followup is done again outside of panic mode.
 
-![](/uploads/2020/01/rolling-production.png)
+![](/uploads/2020/01/rolling-production.jpg)
 
 That is: Testing In Production Is A Safe Thing To Do. If you build an environment that makes it survivable. The key ingredients are
 
