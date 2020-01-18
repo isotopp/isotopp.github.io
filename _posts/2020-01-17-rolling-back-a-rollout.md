@@ -25,11 +25,11 @@ My reply on Twitter begins [here](https://twitter.com/isotopp/status/12181623109
 
 In 2015, I gave a talk titled "Go away, or I will replace you with a little shell script" as a keynote for the GUUG FFG 2015 in Stuttgart. The german language slides are [here](https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script), the english slides are [here](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english) and a Youtube video of the Froscon version of the talk is [here](https://www.youtube.com/watch?v=e0CCv7pSK4s). Unfortunately, the video is the german language version of that talk.
 
-The talk focuses on how the sysadmin profession started to die out somewhere around 2001, when we invented horizontal scaleout and Tom Limoncelli publoshed the first edition of "The Practice of System Administration", which in one chapeter explained the role of the sysadmin in the greater corporate organisation and how to cooperate with, not fight with users. The term and the practice of Devops evolved in this decade, until in 2008 Patrick Debois coined the actual term "Devops", which we use today.
+The talk focuses on how the sysadmin profession started to die out somewhere around 2001, when we invented horizontal scaleout and [Tom Limoncelli](https://twitter.com/yesthattom) published the first edition of [The Practice of System Administration](https://the-sysadmin-book.com/), which in one chapeter explained the role of the sysadmin in the greater corporate organisation and how to cooperate with, not fight with users. The term and the practice of Devops evolved in this decade, until in 2008 [Patrick Debois](https://twitter.com/patrickdebois) coined the actual term "Devops", which we use today.
 
 The term has been abused a lot, but what does it actually mean? In one slide I show this:
 
-![](/uploads/2020/01/rolling-away.jpg)
+[![Go away of I will replace you with a little Shell Script (english) - Slide 19](/uploads/2020/01/rolling-away.jpg)](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english#19)
 
 The modern development environment according to Devops, and the technical meaning of the term.
 
