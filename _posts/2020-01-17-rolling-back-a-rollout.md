@@ -52,7 +52,7 @@ What you check in, you want to be processed automatically. So you push it throug
 
 Eventually, your code is rolled out. And a key invention - one that is not yet done by enough people - is *separation of Rollout and Activation* by the means of an experiment framework. More on that below.
 
-When application code runs, it is appending messages, measurements and context to a hash of hashes. This collection will the end of the request eventually be pushed into an event processor. Ours is called "Booking Events". If you happen to work elsewhere, an Observabilty tool such as [Honeycomb.io](https://honeycomb.io) is the closest to Booking Events I have been able to find outside of Booking.
+When application code runs, it is appending messages, measurements and context to a hash of hashes. This collection will be pushed into an event processor at the end of a request. Ours is called "Booking Events". If you happen to work elsewhere, an Observabilty tool such as [Honeycomb.io](https://honeycomb.io) is the closest to Booking Events I have been able to find outside of Booking.
 
 Using this, you alert and push alerts out through a multitude of channels, including Pagerduty, and whatever you use instead of Slack. Humans are being alerted to a situation, and can act on it.
 
@@ -72,7 +72,7 @@ This is also important for customer support: A CS agent needs to be able to see 
 
 Having experimentation available obviously means that variant code is in execution concurrently. Or in terms of rollouts: Old and new code run at the same time.
 
-For state management, it means that schema changes or similar data adjustments need to be done in advance. They also need to be done in a way that is compatiable with the old and the new code. That is not hard to do, and can be done in a robust testable way. You want to package it, and run a bunch of checks on schema changes automatically, so you can detect best practice violation and prevent these from being checked into staging and prod.
+For state management, it means that schema changes or similar data adjustments need to be done in advance. They also need to be done in a way that is compatible with the old and the new code. That is not hard to do, and can be done in a robust testable way. You want to package it, and run a bunch of checks on schema changes automatically, so you can detect best practice violation and prevent these from being checked into staging and prod.
 
 And yes, you need that table change framework anyway, because SOX will eventually want that from you. You probably will end up with a web frontend and API for [pt-online-schema-change](https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html) accessible to end users in a way that also advises them automatically on best practice. This also scales better than your DBAs checking manually for the presence of a PK, NULLable columns, columns that are DOUBLE but suggest monetary values in their names, and similar things.
 
@@ -139,7 +139,7 @@ This is also a question of attitude, and it has to be coming from the top. Back 
 
 A typical conversation that happened similarly more than once is Kees asking somebody: "I haven't seen you before. Are you new?" "Yes, of course. I started 3 weeks ago." "And", Kees would ask, in one way or the other, "did you break production already?" The newbie would of course answer "No, of course not!" and get the usual response "So what am I paying you for?".
 
-The moral in this is that errors and downrtimes are a part of doing business. Of course we would like to have infrastructure where these things do not happen, or minimise impact, but velocity and risk taking are a thing of value to a fast company. By having an error budget (the integral between the predicted income and the actual income) and checking that things are within the error budget, management has a control that allows them to check on the state of the engineering culture. If we are over the error budget, we probably need to look at our ways, and the state of our education and practice. If we are under error budget a lot, we are probably not moving fast enough and are too risk averse.
+The moral in this is that errors and downtimes are a part of doing business. Of course we would like to have infrastructure where these things do not happen, or minimise impact, but velocity and risk taking are a thing of value to a fast company. By having an error budget (the integral between the predicted income and the actual income) and checking that things are within the error budget, management has a control that allows them to check on the state of the engineering culture. If we are over the error budget, we probably need to look at our ways, and the state of our education and practice. If we are under error budget a lot, we are probably not moving fast enough and are too risk averse.
 
 All the instrumentation around this - CI/CD, dev and staging, experiment framework and observability framework - exist to make better use of the error budget and get most out of our invest into corporate improvement and organisational learning.
 
