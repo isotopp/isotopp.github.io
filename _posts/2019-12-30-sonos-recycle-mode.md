@@ -40,7 +40,7 @@ no longer necessary.
 
 Unfortunately I have no idea what kind of hardware the Play:5
 platform was built on in 2009. I have only looked into a Play:3
-from 2013. That box had a MIPS based single core CPU and 64 MB
+from 2013. That box had a PPC based single core CPU and 64 MB
 of memory. Current Sonos hardware is using, IIRC, Multicore ARM
 SOCs and have at least four times the amount of memory.
 
