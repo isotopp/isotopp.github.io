@@ -45,7 +45,7 @@ One attempt of handling this better is M.2, which is basically a logic board for
 
 The attempt to fix all of that is the “flash ruler”, “EDSFF”.
 
-![](/uploads/2019/06/storage-ruler.png)
+![](/uploads/2019/06/storage-ruler.jpg)
 
 Intel flash rulers in a 1U high chassis.
 
