@@ -3,7 +3,7 @@ layout: post
 title:  'Not quite storage any more'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
-date: 2020-01-24 15:01:43 +0100
+date: 2019-06-14 15:01:43 +0100
 tags:
 - lang_en
 - storage
