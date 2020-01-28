@@ -13,7 +13,7 @@ tags:
 ---
 On Twitter, [@CaptainEyesight](https://twitter.com/CaptainEyesight/status/1221889419654787073) asked a question:
 
-![](/uploads/2020/01/pk-question.png)
+[![](/uploads/2020/01/pk-question.png)](https://twitter.com/CaptainEyesight/status/1221889419654787073)
 
 »Database architecture question: For deleting records, instead of a DELETE, UPDATE the id to the negative (i.e. 1 becomes -1) and then add `AND id > 0` to every query. Great idea? or Greatest idea?«
 
