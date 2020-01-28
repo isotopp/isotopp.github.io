@@ -7,6 +7,7 @@ date: 2020-01-28 20:28:43 +0100
 tags:
 - lang_de
 - schnuppel
+- media
 ---
 Oliver Rautenberg berichtet auf [Twitter](https://twitter.com/AnthroBlogger/status/1222112157787131905) von "Elternvereinbarungen zur Smartphone- und Mediennutzung" an Waldorfschulen in Deutschland.
 
