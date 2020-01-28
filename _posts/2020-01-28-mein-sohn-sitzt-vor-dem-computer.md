@@ -93,3 +93,5 @@ Er denkt, er dreht einen Film, aber er erforscht selbst und mit unserer Hilfe Ch
 Und da kann man mit ihm drüber reden, ihm zeigen, wie wir diese Dinge auch in unserer Arbeit wieder finden und warum er gerade welche Schwierigkeiten hat und was mögliche Handlungsoptionen sind. Und dann läßt man ihn und seine Kumpane wieder alleine und die müssen selber Wege finden, das anzuwenden oder auch nicht und dabei zu lernen.
 
 Und Youtube. Youtube wird in der medialen Berichterstattung in Deutschland gerne einmal runtergemacht und als Halde voller Schrott und Propaganda dargestellt. Youtube ist die großartigste Selbstbedienung-Ausbildung, die es auf diesem Planeten gibt. Und mit der richtigen Voreinstellung im Kopf sortiert das Kind eventuell in die Timeline gespülten Schrott weitgehend selbstständig aus und hält sich selbst auf Spur. Mit Neun ist das noch nicht perfekt, wie auch. Aber ich bin sehr beeindruckt von dem, was er so macht.
+
+Wie dem auch sei: Mein Kind sitzt vor dem Computer. Auch, nicht nur. Das ist auch im wesentlichen gut so, und außerdem unvermeidlich. Also muß ich damit umgehen lernen, genau wie er.
