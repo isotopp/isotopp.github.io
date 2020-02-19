@@ -139,9 +139,9 @@ The dutch government provides Cycling Facts [PDF](https://www.government.nl/bina
 
 ![](/uploads/2020/02/fiets-use-spatial.png)
 
-*Bike use is regionally different, and in some zones the usage quote is more than 50% of all trips shorter than 7.5km*
+*Bike use is regionally different, and in some zones the usage quota is more than 50% of all trips shorter than 7.5km*
 
-## Other Sources (also in German)
+## Other Sources (in german language)
 
 If you are looking for a more in depth discussion of all of this in german language, have a look at [Wunderlösung Schutzkreuzung? by [Darmstadt fährt Rad](http://www.darmstadtfaehrtrad.org).
 
