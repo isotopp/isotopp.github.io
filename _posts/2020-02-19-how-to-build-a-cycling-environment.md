@@ -15,6 +15,8 @@ Welcome to the Netherlands. We're building roads differently. They are better, s
 
 (based on a [Twitter Thread](https://twitter.com/isotopp/status/1229819834239770624))
 
+## Dynamic Traffic Lights
+
 ![](/uploads/2020/02/fiets-drempel.jpg)
 
 I am living in a village. That means a speed limit of 30 km/h inside the city limits, and that is being enforced by the design of the road.
@@ -36,6 +38,8 @@ That is because almost all traffic lights around here are dynamically controlled
 All of that under the principle that pedestrians and cyclists have priority over car traffic at all times.
 
 ![](/uploads/2020/02/fiets-n205-3.jpg)
+
+## Intersection Design
 
 Interestingly enough: Cycle path design and rules make it possible for a cyclist to turn right at a crossing even when the light is red for motorists. It's in the design of their crossings.
 
@@ -59,6 +63,8 @@ That is true for cyclists. Here waiting cyclists can stop for the red light with
 
 But it is also true for cars. Motorists can handle one task (turning), and then the next one (handling crossing cyclists), avoiding dangerous multitasking and dangers from multiple directions.
 
+## Danger Zone and the importance of consistency
+
 In fact, when driving in the Netherlands you will eventually notice that the main spot to check for dangers is usually 45 degrees to the right over the hood. That is, because whenever space allows it the situation is designed so that you can wait without being pressured from behind, handle one situation at the time, and the situation is coming up at approximately this position from the front-right.
 
 ![](/uploads/2020/02/fiets-crossing.jpg)
@@ -80,6 +86,8 @@ This ensures again that a potential conflict is seen at the 45 degress-to-the-ri
 ![](/uploads/2020/02/fiets-urban-roundabout.jpg)
 
 Roundabouts are safer and faster than crossings, but the same design principles and design language can be applied to this situation as well, even in historic old towns such as Amsterdam shown here. We see the familiar Dutch design: Staging area for cars, separating the action of leaving the roundabout and clearing the cycle path. Road marking communicates bike priority. Shark teeth also help to communicate priority. Danger zone is positioned to the right-front for the car leaving the roundabout, and to the left-front for the car entering the roundabout (because there is no other option to make this possible).
+
+## Hierarchy of Mitigations
 
 Of course, according to the OSHA Hierarchy of Mitigations, none of this is the best solution.
 
@@ -108,3 +116,47 @@ This is not a space intensive design. It works in many historic old towns in the
 
 A [second video](https://www.youtube.com/watch?v=FlApbxLz6pA) demonstrates this.
 
+
+## Did you say 15 km/h?
+
+The design speed for cycle pathes in the Netherlands is 15 km/h. The cycle infrastructure is excellent, and you can often and for long stretches read a much higher speed, but there are two core ideas behind the entire network that lead to the 15 km/h design speed:
+
+**"AAA", "All Ages and Abilities"** For a high cycling rates, it is important that anybody can cycle and feels safe doing so. That leads to a design requirement in which a 4-year-old can cycle to school supervised, and a 6-year-old can cycle to school unsupervised, or an 80-year-old can use the cycle path safely and comfortably on a bike, trike or a suitable electrically assisted personal transport. The key idea is that bike pathes are a system for the many, not for the fittest.
+
+**Multimodal Transport** The bike system in the Netherlands and the public transport (OV) system are designed to work together. The designers envision the bike trip of commuters to be <7.5km (<30m travel time on bike), ending at a train station.
+
+Train stations have large covered parking structures (free to use), and often offer additional services ("Bike repair while you are away to work", "Sale of small service parts such as inner tubes or LED lights"). Haarlem station has a fairly typical station, [I made a video](https://www.youtube.com/watch?v=S1xGsDyT4PI). Note how the design language of the cycle tracks extends down even to the racks.
+
+They also usually have NS OV Fiets lending stations. While public transport in the Netherlands is being run by a number of municipal and commercial operators, which are free to set prices as they see fit, the billing is unified and works via the nationwide OV Chipkaart - all trains, trams, buses and also the rental bikes offered at almost all train stations are being billed via one single card. Getting a rental is as easy as swiping your card, at a price of less than 3.60 EUR per day billed to the OV card.
+
+Eltis explains [multimodality in Dutch rail](https://www.eltis.org/discover/case-studies/how-dutch-railway-stations-encourage-multimodality).
+
+The dutch government provides Cycling Facts [PDF](https://www.government.nl/binaries/government/documents/reports/2018/04/01/cycling-facts-2018/Cycling+facts+2018.pdf).
+
+![](/uploads/2020/02/fiets-use-nation.png)
+
+*Bike use is x2.5 higher in the Netherlands than in Germany, on the average*
+
+![](/uploads/2020/02/fiets-use-spatial.png)
+
+*Bike use is regionally different, and in some zones the usage quote is more than 50% of all trips shorter than 7.5km*
+
+## Other Sources (also in German)
+
+If you are looking for a more in depth discussion of all of this in german language, have a look at [Wunderlösung Schutzkreuzung? by [Darmstadt fährt Rad](http://www.darmstadtfaehrtrad.org).
+
+- [Die Schutzkreuzung, Teil 1](http://www.darmstadtfaehrtrad.org/?p=2446)
+- [Die Schutzkreuzung, Teil 2](http://www.darmstadtfaehrtrad.org/?p=2594)
+
+Be sure to also check out the detailed background references in the footers of the articles, and the details "view from the car" addenda in Teil 2, which show deadzones of cars and lorries in detail.
+
+Also at "Darmstadt fährt Rad":
+
+- [Kreuzung Deluxe 1: Einleitung](http://www.darmstadtfaehrtrad.org/?p=671)
+- [Kreuzung Deluxe 2: Designelemente](http://www.darmstadtfaehrtrad.org/?p=961)
+- [Kreuzung Deluxe 3: Funktion](http://www.darmstadtfaehrtrad.org/?p=1070)
+- [Kreuzung Deluxe 4: Fallbeispiele](http://www.darmstadtfaehrtrad.org/?p=1279)
+- [Kreuzung Deluxe 5: Neugestaltung einer deutschen Kreuzung](http://www.darmstadtfaehrtrad.org/?p=1787)
+- [Kreuzung Deluxe 6: Neugestaltung einer großen deutschen Kreuzung](http://www.darmstadtfaehrtrad.org/?p=1938)
+
+These articles are a treasure trove of traffic design information in german language, and again are backed by a wealth of illustrations and linked sources.
