@@ -63,7 +63,7 @@ That is true for cyclists. Here waiting cyclists can stop for the red light with
 
 But it is even more true for cars. Motorists can handle one task (turning), and then the next one (handling crossing cyclists), avoiding dangerous multitasking and dangers from multiple directions.
 
-If you are used to driving in Germany, that is unexpected and initially confusing. Take your time, and take the traffic step by step, it is designed this way. If the traffic designed did their job, there is only one dangerous thing happening at a time, and there is always a safe place to stop and double check. Also, the other drivers are *expecting you to stop and take your time.*
+If you are used to driving in Germany, that is unexpected and initially confusing. Take your time, and take the traffic step by step, it is designed this way. If the traffic designer did their job, there is only one dangerous thing happening at a time, and there is always a safe place to stop and double check. Also, the other drivers are *expecting you to stop and take your time.*
 
 ## Danger Zone and the importance of consistency
 
@@ -85,11 +85,11 @@ The raised curb on the cycle path side also encourages cyclists to stay in the l
 
 The same design language is applied everywhere, making roads readable to everyone intuitively. Here a car is turning right into a residential area. The curb is raised from street level with a bump and different paving, making it visually and haptically clear to a driver that the environment is changing. There is of course a staging area, so that turning and clearing the cycle path are two different, sequential tasks.
 
-The cycle path makes a slight swerve to the right to allow for this. In the video it becomes clear that this does not slow down the cyclist. Again, soft lawn is being used to discourage drivers from shorting the turn and crossing the cycle path at a different angle that a clear 90 degress.
+The cycle path makes a slight swerve to the right to allow for this. In the video it becomes clear that this does not slow down the cyclist. Again, soft lawn is being used to discourage drivers from shorting the turn and crossing the cycle path at a different angle that a clear 90 degrees.
 
-Again, narrow roads in the Netherlands are a design tool. They make sure traffic types cross at a safe angle so that eye contact can be made, and together with speed bumps and raised curbs they help to keep speed down to safe levels.
+Again, narrow roads in the Netherlands are a design tool. They make sure traffic types cross at a safe angle so that eye contact can be made, and together with speed bumps and raised curbs they help to keep speed down to safe levels. The design is built specifically so that drivers *do not accelerate into a conflict zone*.
 
-The situation is built so that potential conflicts happen the 45 degress-to-the-right-over-the-hood angle that motorists are trained to double and triple check in urban areas, and with the car at rest of close to rest.
+The situation is built so that potential conflicts happen the 45 degress-to-the-right-over-the-hood angle that motorists are trained to double and triple check in urban areas, and with the car at rest or close to rest.
 
 Consistent design language helps to make safety habitually automatic.
 
@@ -97,7 +97,7 @@ Consistent design language helps to make safety habitually automatic.
 
 Roundabouts are safer and faster than intersections, but the same design principles and design language can be applied to this situation as well, even in historic old towns such as Amsterdam shown here.
 
-We see the familiar Dutch design: Staging area for cars, separating the action of leaving the roundabout and clearing the cycle path. Road marking communicates bike priority. Shark teeth also help to communicate priority.
+We see the familiar Dutch design: Staging area for cars, separating the action of leaving the roundabout and clearing the cycle path. Road marking communicates bike priority. Shark teeth also help to communicate priority. The curb extension and the middle island separating the car lanes both keep the roads visually narrow and encourages drivers to position themselves properly and not cut corners.
 
 The danger zone is positioned to the right-front for the car leaving the roundabout, traffic types intersect at 90 degree angle and with the car at rest or almost at rest. For the car entering the roundabout, the danger zone is the left-front, because there is no other option to make this possible.
 
@@ -114,7 +114,7 @@ Of course, according to the OSHA Hierarchy of Mitigations, none of this is the b
 3. **Isolate:** *Separate the hazard from the people at risk from injury.* Cycle paths are separated from car roads with alternative routing, curbs, underpasses or other means of physical separation.
 4. **Engineer controls:** *Physical changes, eg. redesign machine by adding safeguards.* Speed bumps, and physical intersection design reduce risk of collision and injury.
 5. **Administrative controls:** *Install signs, rotate jobs.* Road signs ("Cyclists crossing!", speed limit signs)
-6. **PPE (Personal Protective Equipment:** *Provide gloves, earplus, helmets.* Bike helmets and high viz vests.
+6. **PPE (Personal Protective Equipment):** *Provide gloves, earplugs, helmets.* Bike helmets and high viz vests.
 
 So while we have been speaking about intersection design, we have been essentially been speaking about level 4 methods from the OSHA hierarchy. Where space allows it, level 3 methods would be better.
 
@@ -154,7 +154,7 @@ They also usually have NS OV Fiets lending stations. While public transport in t
 
 Eltis explains [multimodality in Dutch rail](https://www.eltis.org/discover/case-studies/how-dutch-railway-stations-encourage-multimodality).
 
-The dutch government provides Cycling Facts [PDF](https://www.government.nl/binaries/government/documents/reports/2018/04/01/cycling-facts-2018/Cycling+facts+2018.pdf).
+The dutch government provides Cycling Facts ([PDF](https://www.government.nl/binaries/government/documents/reports/2018/04/01/cycling-facts-2018/Cycling+facts+2018.pdf)).
 
 ![](/uploads/2020/02/fiets-use-nation.png)
 
@@ -166,7 +166,7 @@ The dutch government provides Cycling Facts [PDF](https://www.government.nl/bina
 
 ## Other Sources (in german language)
 
-If you are looking for a more in depth discussion of all of this in german language, have a look at [Wunderlösung Schutzkreuzung? by [Darmstadt fährt Rad](http://www.darmstadtfaehrtrad.org).
+If you are looking for a more in depth discussion of all of this in german language, have a look at Wunderlösung Schutzkreuzung? by [Darmstadt fährt Rad](http://www.darmstadtfaehrtrad.org).
 
 - [Die Schutzkreuzung, Teil 1](http://www.darmstadtfaehrtrad.org/?p=2446)
 - [Die Schutzkreuzung, Teil 2](http://www.darmstadtfaehrtrad.org/?p=2594)
