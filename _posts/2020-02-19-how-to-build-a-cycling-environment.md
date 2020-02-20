@@ -45,7 +45,7 @@ Interestingly enough: Cycle path design and rules make it possible for a cyclist
 
 This [article at Bicycle Dutch](https://bicycledutch.wordpress.com/2012/10/25/cycling-past-red-lights-its-legal-in-the-netherlands/) explains it in detail.
 
-They also have a [Youtube Video](https://www.youtube.com/watch?v=XpQMgbDJPok) that shows this in practice and with traffic in motion. It's beautiful.
+They also have a [Youtube Video](https://www.youtube.com/watch?v=XpQMgbDJPok) ([same in German](https://www.youtube.com/watch?v=7RLqOgAW9wY)) that shows this in practice and with traffic in motion. It's beautiful.
 
 Go watch the video. But even then, let me highlight a few things from the video:
 
@@ -130,7 +130,7 @@ The video finishes with two children passing an intersection on bikes. Again, we
 
 This is not a space intensive design. It works in many historic old towns in the Netherlands, and any design up to code in the US (or Germany) can be converted to a safer Dutch design within the same space.
 
-A [second video](https://www.youtube.com/watch?v=FlApbxLz6pA) demonstrates this. This video also reiterates the various design choices shown above, and explains them.
+A [second video](https://www.youtube.com/watch?v=FlApbxLz6pA) ([same video in German](https://www.youtube.com/watch?v=yCzi1Q4xCTA)) demonstrates this. This video also reiterates the various design choices shown above, and explains them.
 
 ## Did you say 15 km/h?
 
