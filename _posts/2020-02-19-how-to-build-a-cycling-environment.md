@@ -29,6 +29,14 @@ It looks like this:
 
 In the background you can see the traffic sign on the right hand side of the road, and the bridge. I am standing on the footpath, the bike path is on the left hand side.
 
+Let's move forward to the bridge:
+
+![](/uploads/2020/02/fiets-bridge.jpg)
+
+In the mornings this is a very busy spot, because there are to basic schools down the road over thr bridge, and of course all the children are biking to school.
+
+School begins the day after the fourth birthday (and groep 1 and 2 is what in germany would be preschool, but it's mandatory) and it can be reasonably expected from children of this age to be able to bike to school under their own power, but supervised. Children of group 3 and over can be expected to bike school unsupervised, and the environment must be built to enable this, and to allow them to roam around the city limits in order to go to sports or visity friends.
+
 My village is next to the N205. That is a multilane motorway, a national street, an A-road. On the other side is the Schiphol runway "Polderbaan".
 
 A cycling traffic light in the Netherlands looks like this. The "tikker" (call button) is only a formality, but good to hold yourself upright on the bike should you ever have to wait.
