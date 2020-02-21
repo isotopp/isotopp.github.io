@@ -23,6 +23,12 @@ I am living in a village. That means a speed limit of 30 km/h inside the city li
 
 The red path is only a subordinate cycle path. On the other side of the canal, to the left, is the real cycle path. The bridge in the background is leading over to it.
 
+It looks like this:
+
+![](/uploads/2020/02/fiets-drempel2.jpg)
+
+In the background you can see the traffic sign on the right hand side of the road, and the bridge. I am standing on the footpath, the bike path is on the left hand side.
+
 My village is next to the N205. That is a multilane motorway, a national street, an A-road. On the other side is the Schiphol runway "Polderbaan".
 
 A cycling traffic light in the Netherlands looks like this. The "tikker" (call button) is only a formality, but good to hold yourself upright on the bike should you ever have to wait.
