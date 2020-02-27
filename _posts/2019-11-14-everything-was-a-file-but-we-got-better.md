@@ -76,7 +76,7 @@ Except that you can't `rm -rf /proc/1` to shut down the box.
 
 ## Things that still are not a file, and should be dead
 
-I am not going to mention System V IPC her at all. Not shm, not
+I am not going to mention System V IPC here at all. Not shm, not
 sem, and not msq. They are abominations that should never have
 escaped the lab cages they have been conceived in.
 
