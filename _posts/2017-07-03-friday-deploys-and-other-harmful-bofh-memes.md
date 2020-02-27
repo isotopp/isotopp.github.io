@@ -12,7 +12,7 @@ tags:
 ---
 ![](/uploads/2017/07/friday-deploy.jpg)
 
-Glorifying toil, glorifying organisational ossification
+*Glorifying toil, glorifying organisational ossification*
 
 So somebody posted this on G+, and it's a classic example for a thing that I
 classify as [BOFH](http://bofh.bjash.com/) memes. That's a group of memes
