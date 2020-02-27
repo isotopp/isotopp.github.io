@@ -68,3 +68,5 @@ they explain how much energy they use, primary and secondary, and how they
 compensate for this. This is assuming that their cloud provider, Amazon, was
 running on 100% coal, which they aren't, and that means they are actually
 carbon negative.
+
+**EDIT:** The BBC has an [article](https://www.bbc.co.uk/sounds/play/p0819sc4) on this, and they come to the same conclusions (via [Twitter](https://twitter.com/elizab0t/status/1223570360555188224)).
