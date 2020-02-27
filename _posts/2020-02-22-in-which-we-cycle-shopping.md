@@ -48,7 +48,7 @@ This used to be a roadblock for construction. As you can see, it has been remove
 
 [![](/uploads/2020/02/shopping-geniedijk3.jpg)](https://www.google.com/maps/@52.3141836,4.6843711,17.27z)
 
-Only later on our trip we would have seen why there was blockage. This looks like there is going to be a fietspad improvement - wider, and close up to code than this old road we are on.
+Only later on our trip we would have seen why there was blockage. This looks like there is going to be a fietspad improvement - wider, and closer up to code than this old road we are on.
 
 But first things first:
 
