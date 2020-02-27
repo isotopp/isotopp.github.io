@@ -27,8 +27,8 @@ short periods of time.
 
 ![](/uploads/2017/11/power-budget.jpg)]
 
-Cellphone power over time. Green bar = plugged in. Yellow bar =
-Screen on.
+*Cellphone power over time. Green bar = plugged in. Yellow bar =
+Screen on.*
 
 These devices also have batteries, and when they are running on
 batteries, they need to be sleeping most of the time and have
@@ -50,8 +50,8 @@ idle, but it is easily out of the TDP for fanless devices.
 
 ![](/uploads/2017/11/Screen-Shot-2017-11-07-at-12.34.50.png) 
 
-This machine is currently drawing 12.1W. The fans are hardly
-moving.
+*This machine is currently drawing 12.1W. The fans are hardly
+moving.*
 
 If I want to test what this machine could use, I could start a
 game. Most games are busy waiting event loops, that is, they
