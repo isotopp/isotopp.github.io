@@ -40,7 +40,7 @@ Check out the section
 in that document, especially the part where they explain this:
 
 > If you call a script directly from a bourne shell ("./script"
-> without shebang), then the shell only forks off a subhell and
+> without shebang), then the shell only forks off a subshell and
 > reads in the script.
 >
 > The split between original and local copy of the variable is
