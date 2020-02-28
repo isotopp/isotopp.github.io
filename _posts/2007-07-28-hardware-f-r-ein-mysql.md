@@ -11,16 +11,16 @@ tags:
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
-<!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> "Ich muß Hardware für einen Rechner kaufen, auf dem dediziert nur ein MySQL laufen soll. Was soll ich beschaffen?" ist eine Frage, die ich recht oft höre. Hier ist die lange Antwort.
+"Ich muß Hardware für einen Rechner kaufen, auf dem dediziert nur ein MySQL laufen soll. Was soll ich beschaffen?" ist eine Frage, die ich recht oft höre. Hier ist die lange Antwort.
 
-Bevor man sich mit dem freundlichen <a href="http://www.deltacomputer.de/index.shtml">Hardwarehöker des geringsten Mißtrauens</a> in Verbindung setzen kann, muß man sich erst einmal ein paar Dinge überlegen.
+Bevor man sich mit dem freundlichen Hardwarehöker des geringsten Mißtrauens in Verbindung setzen kann, muß man sich erst einmal ein paar Dinge überlegen.
 
-<b>Datenbank-Zielgröße bestimmen</b>
+## Datenbank-Zielgröße bestimmen
 
 Die allererste Überlegung ist die erwartete Zielgröße der Datenbank: Werden wir einen Bestand von 1G, 10G, 100G oder 1000G haben? Daraus und aus dem allgemeinen Gesundheitszustand des Geldbeutels ergibt sich schon die erste wichtige Erkenntnis. Nämlich: Werden wir es schaffen, eine speichergesättigte Datenbank zu bauen, oder bekommen wir eine Datenbank, die für Lesezugriffe auf die Platte zugreift?
-<br />
 
-Folgerung 1: <b>Speichergesättigte Datenbanken sind ein bevorzugtes Designziel</b>
+
+### Folgerung 1: Speichergesättigte Datenbanken sind ein bevorzugtes Designziel
 
 Mechanische Festplatten sind unerträglich langsam. 
 
@@ -34,27 +34,28 @@ Wird eine Platte nicht mit Random-I/O betrieben, sondern mit linearer Ein-/Ausga
 
 Wenn es einem also gelingt, speichergesättigte Datenbanken zu bauen, dann sind Reads für viele Anwendungsfälle schon kein Problem mehr und teilweise fällt sogar schlechtes SQL nicht mal mehr auf, weil die entsprechenden Operationen zwar ineffizient sein mögen, aber dank schnellem RAM-Zugriff dennoch schnell genug sind.
 
-Folgerung 2: <b>64 Bit sind Mandat</b>
+### Folgerung 2: 64 Bit sind Mandat
 
 MySQL hat eine Ein-Prozeß-Architektur. Ein einzelner Datenbankserver enthält eine Reihe von datenbankinternen Service-Threads und einen Handlerthread pro Connection, die sich alle den gemeinsamen Speicher des Prozesses teilen.
 
 Wir brauchen also nicht nur jede Menge RAM, sondern wir brauchen das RAM auch in einer Form, die es uns erlaubt, innerhalb eines einzelnen Prozesses darauf zugreifen zu können. Das bedeutet in 2007: Eine 64 Bit CPU, ein 64 Bit Betriebssystem und eine 64 Bit Version von MySQL, falls wir Speicher von mehr als 3G (in Windows: 2G) im Server haben.
 
-Für kleine Speichergrößen ist ein 32 Bit-Programm einem 64 Bit-Programm ein wenig überlegen: Da alle Zeiger kleiner sind und wir in einem typischen Programm jede Menge Zeiger haben, ist 32 Bit-Code ein wenig kleiner als 64 Bit-Code und bei sonst gleichen Parametern oft schneller. So wird man einen Webserver in der Regel nicht als 64 Bit-Maschine realisieren.
+32 Bit-Code kann in Linux nur etwas unter 3G in einem Prozeß adressieren, und in Windows sind es sogar nur etwas unter 2G. Es ist also vollkommen sinnlos, einen Rechner mit 8G RAM hinzustellen und dann nur ein 32 Bit-Betriebssystem und ein 32 Bit-MySQL drauf zu installieren. Das gibt zwar einen schönen File System Buffer Cache und das ist besser als nix, aber es wäre sehr viel interessanter, den Speicher direkt in MySQL zur Verfügung zu haben. Ein Datenbankserver wird also immer fett RAM bekommen und das zieht dann relativ schnell die 64 Bit nach sich.
 
-Aber 32 Bit-Code kann in Linux nur etwas unter 3G in einem Prozeß adressieren, und in Windows sind es sogar nur etwas unter 2G. Es ist also vollkommen sinnlos, einen Rechner mit 8G RAM hinzustellen und dann nur ein 32 Bit-Betriebssystem und ein 32 Bit-MySQL drauf zu installieren. Das gibt zwar einen schönen File System Buffer Cache und das ist besser als nix, aber es wäre sehr viel interessanter, den Speicher direkt in MySQL zur Verfügung zu haben. Ein Datenbankserver wird also immer fett RAM bekommen und das zieht dann relativ schnell die 64 Bit nach sich.
+Es gibt zwar so was wie 
+[PAE](http://en.wikipedia.org/wiki/Physical_Address_Extension)/
+[AWE](http://en.wikipedia.org/wiki/Address_Windowing_Extensions), aber reden wir da nicht drüber - wir haben 2007, und es gibt keinen Grund, mit gefesselten Beinen über die Ziellinie zu hüpfen, wenn man stattdessen richtig rennen kann. Es gibt zwar PAE-Code in MySQL, aber der ist per Default nicht enabled, in den MySQL-eigenen Binaries nicht vorhanden und schlecht getestet. Selbst wenn das alles anders wäre, würde man PAE nicht wollen, sondern gleich richtig 64 Bit machen wollen - PAE ist langsam und hat haarige Tatzen.
 
-Es gibt zwar so was wie <a href="http://en.wikipedia.org/wiki/Physical_Address_Extension">PAE</a>/<a href="http://en.wikipedia.org/wiki/Address_Windowing_Extensions">AWE</a>, aber reden wir da nicht drüber - wir haben 2007, und es gibt keinen Grund, mit gefesselten Beinen über die Ziellinie zu hüpfen, wenn man stattdessen richtig rennen kann. Es gibt zwar PAE-Code in MySQL, aber der ist per Default nicht enabled, in den MySQL-eigenen Binaries nicht vorhanden und schlecht getestet. Selbst wenn das alles anders wäre, würde man PAE nicht wollen, sondern gleich richtig 64 Bit machen wollen - PAE ist langsam und hat haarige Tatzen.
-
-<b>Schreibleistung vs. Leseleistung</b>
+### Schreibleistung vs. Leseleistung
 
 Eine andere Sache, die man sich frühzeitig bewußt machen muß ist die Überlegung, daß Leseleistung sehr viel leichter zu optimieren ist als Schreibleistung.
 
 Datenbanken, die überwiegend Reads sehen und wenig Schreiboperationen haben sind sehr leicht zu skalieren: Wir ersticken das Problem nach Möglichkeit erst einmal mit Speicher und wenn das nicht mehr reicht, setzen wir eine ausreichende Anzahl von Replication-Slaves auf. Die Reads verteilen wir dann gleichmäßig über die Slaves. Das können wir je nach Problemgröße leicht bis auf 1000 Slaves pro Master ausdehnen, wenn wir wollen.
 
-Writes dagegen sind sehr viel unhandlicher. Wir können Schreibzugriffe zwar Delayen, Batchen und Sortieren, aber am Ende muß der Write auf irgendein persistentes Medium. Wenn wir mehr Schreibzugriffe haben als eine Platte wegstecken kann, dann müssen wir ein Array hinstellen. Wenn wir mehr Schreibzugriffe haben als man sinnvoll über ein Array verteilen kann, dann müssen wir die Datenbank partitionieren mit all den unangenehmen Designentscheidungen, die mit solchen <a href="http://blog.koehntopp.de/archives/1349-Leben-mit-Fehlern-der-Schluessel-zum-Scaleout.html">verteilten, lose gekoppelten Systemen</a> einher gehen.
+Writes dagegen sind sehr viel unhandlicher. Wir können Schreibzugriffe zwar Delayen, Batchen und Sortieren, aber am Ende muß der Write auf irgendein persistentes Medium. Wenn wir mehr Schreibzugriffe haben als eine Platte wegstecken kann, dann müssen wir ein Array hinstellen. Wenn wir mehr Schreibzugriffe haben als man sinnvoll über ein Array verteilen kann, dann müssen wir die Datenbank partitionieren mit all den unangenehmen Designentscheidungen, die mit solchen 
+[verteilten, lose gekoppelten Systemen]({% link _posts/2006-07-30-leben-mit-fehlern-der-schl-ssel-zum-scaleout.md %}) einher gehen.
 
-Folgerung 3: <b>Locality erzeugen um Schreibzugriffe zu minimieren</b>
+### Folgerung 3: Locality erzeugen um Schreibzugriffe zu minimieren
 
 Datenbanken speichern Daten in Speicherseiten ab. In InnoDB zum Beispiel ist eine solche Speicherseite mit 16K relativ groß. In einer solchen Seite liegen in der Regel mehrere Rows, und InnoDB liest und schreibt immer ganze Seiten.
 
@@ -64,9 +65,13 @@ Wir wissen, daß InnoDB Daten im Primary Key in B+-Bäumen abspeichert, d.h. in 
 
 Mit diesem Wissen können wir jetzt über die Wahl des Primärschlüssels einer InnoDB-Tabelle die physikalische Anordnung von Daten in einer InnoDB-Tabelle beeinflussen und die Locality verbessern.
 
-<ul><li>Oft erzeugen hierarchische Primärschlüssel ausgezeichnete Locality. In einer Tabelle, die Mails für einen Maildienst verwaltet wäre (userid, folderid, messagenummer) zum Beispiel ein sehr guter Primärschlüssel für die Mailtabelle, weil Informationen über neue Mails im aktuellen Folder des aktuellen Users dicht beieinander gespeichert werden.</li><li>Ein <em>INTEGER UNSIGNED NOT NULL PRIMARY KEY auto_increment</em> erzeugt eine zeitliche Reihung von Daten nach dem Erzeugungsdatum und das ist für viele Daten, die neu heiß sind und dann mit der Zeit abkühlen genau der richtige Schlüssel.</li><li>Ein Zufallswert, ein MD5 oder SHA1-Hash oder eine UUID ist ein furchtbarer Primärschlüssel, weil Daten im Endeffekt zufällig gestreut werden und keine Locality erzeugt werden kann.</li></ul> Locality ist nicht nur für Schreibleistung wichtig, sondern auch wenn wir eine Datenbank haben, die nicht speichergesättigt sein kann und wir Lesezugriffe zur Disk senden müssen. Mit einer guten Locality können wir unter Umständen viele Lesezugriffe im RAM cachen auch wenn die Gesamtdatenbank sehr viel größer als der Verfügbare Hauptspeicher ist.
+- Oft erzeugen hierarchische Primärschlüssel ausgezeichnete Locality. In einer Tabelle, die Mails für einen Maildienst verwaltet wäre (userid, folderid, messagenummer) zum Beispiel ein sehr guter Primärschlüssel für die Mailtabelle, weil Informationen über neue Mails im aktuellen Folder des aktuellen Users dicht beieinander gespeichert werden.
+- Ein _INTEGER UNSIGNED NOT NULL PRIMARY KEY auto_increment_ erzeugt eine zeitliche Reihung von Daten nach dem Erzeugungsdatum und das ist für viele Daten, die neu heiß sind und dann mit der Zeit abkühlen genau der richtige Schlüssel.
+- Ein Zufallswert, ein MD5 oder SHA1-Hash oder eine UUID ist ein furchtbarer Primärschlüssel, weil Daten im Endeffekt zufällig gestreut werden und keine Locality erzeugt werden kann.
 
-Folgerung 4: <b>Beschriebene Rows schmal halten um Schreibzugriffe zu minimieren</b>
+Locality ist nicht nur für Schreibleistung wichtig, sondern auch wenn wir eine Datenbank haben, die nicht speichergesättigt sein kann und wir Lesezugriffe zur Disk senden müssen. Mit einer guten Locality können wir unter Umständen viele Lesezugriffe im RAM cachen auch wenn die Gesamtdatenbank sehr viel größer als der Verfügbare Hauptspeicher ist.
+
+### Folgerung 4: Beschriebene Rows schmal halten um Schreibzugriffe zu minimieren
 
 Schreibzugriffe ändern Seiten. Wenn wir eine gute Locality haben und wir außerdem Schreibzugriffe von beschriebenen Seiten zur Disk verzögern können, dann werden wir viele Rows in einem Block ändern können, bevor wir diesen Block zur Disk senden. Indem wir die Rows von Tabellen schmal halten, die beschrieben werden, bekommen wir mehr Rows in einen Block und haben so weniger Schreibzugriffe.
 
@@ -76,15 +81,16 @@ Hier haben wir nun 8 Byte breite Rows in 16K großen Records, also bis zu 2048 R
 
 Dazu kommt, daß jeder Schreibzugriff auch alle Resultsets im MySQL Query Cache löscht, die von der beschriebenen Tabelle abstammen. Indem man häufig beschriebene Daten in Extratabellen isoliert bekommt man unter Umständen eine bessere Query Cache Hit Ratio und so bessere Performance.
 
-Aus dem gleichen Grund und noch einigen anderen Gründen will man auch unbedingt alle Spalten abtrennen, in denen Typen verwendet werden, die "TEXT" oder "BLOB" im Namen haben. Zu den "anderen Gründen" gehört hier in MySQL auch die Handhabung von "temp tables" in Queryplänen, bei denen "using temporary" bei <em>EXPLAIN</em> gelistet wird.
+Aus dem gleichen Grund und noch einigen anderen Gründen will man auch unbedingt alle Spalten abtrennen, in denen Typen verwendet werden, die "TEXT" oder "BLOB" im Namen haben. Zu den "anderen Gründen" gehört hier in MySQL auch die Handhabung von "temp tables" in Queryplänen, bei denen "using temporary" bei _EXPLAIN_ gelistet wird.
 
-Folgerung 5: <b>Writes delayen, batchen und sortieren</b>
+### Folgerung 5: Writes delayen, batchen und sortieren
 
 Bei einem COMMIT schreibt InnoDB die geänderte 16K Seite nun nicht sofort zurück in den Tablespace, sondern notiert die Änderung erst einmal im Redo-Log und markiert die InnoDB-Seite als Dirty. Später wird die Dirty Page zur Disk gesendet und der entsprechende Redo-Log Pointer kann vorwärts bewegt werden um den Platz im Redo-Log wieder frei zu geben.
 
 Dadurch, daß alle Änderungen so erst einmal im Redo-Log landen, werden Schreibzugriffe, die eigentlich Random-Writes wären vorübergehend erst einmal als Lineare Writes abgehandelt: Wir hatten weiter oben ja schon etabliert, daß lineare Writes schneller sind. Außerdem spekuliert diese Aktion natürlich darauf, daß eine eben veränderte InnoDB Seite wegen Locality gleich noch einmal geändert wird und wir so Random I/O-Schreibzugriffe einsparen können.
 
-Wir können Locality abschätzen, indem wir die Größe des Redo-Logs mit der Menge der Pages vergleichen, die dirty sind. In <em>SHOW ENGINE INNODB STATUS\G</em> finden wir: 
+Wir können Locality abschätzen, indem wir die Größe des Redo-Logs mit der Menge der Pages vergleichen, die dirty sind. In _SHOW ENGINE INNODB STATUS\G_ finden wir: 
+
 {% highlight console %}
 ---
 LOG
@@ -100,14 +106,19 @@ BUFFER POOL AND MEMORY
 Modified db pages  278
 {% endhighlight %}
 
-
 Unser Redo-Log hat also bisher Null (0) Umdrehungen gemacht, und der Schreibzeiger steht bei Offset 1994670731, während der hintere Lesezeiger bei Offset 1993477319 steht. Es sind also 1994670731-1993477319 = 1193412 (ca. 1.1M) Redo Log belegt. Dem stehen 278 16K große Seiten (ca. 4.4M) gegenüber, die als Dirty markiert sind. Wenn es uns gelingt, durch Umstrukturierung dieses Verhältnis zu verbessern, also die Anzahl der Seiten, die als Dirty markiert werden zu verkleinern, dann bekommen wir weniger Random-I/O und eine bessere Schreibleistung.
 
-MySQL wird die "modified db pages" dann verzögert und im Batch auf die Platte schreiben, wenn <ul><li>das Redo-Log droht, vollzulaufen</li><li><em>innodb_max_dirty_pages_pct</em> Prozent aller Pages im Buffer Pool als Dirty markiert sind</li><li>oder InnoDB eine Pause zum Atemholen bekommt und einen Checkpoint fährt.</li></ul> Das Schreiben der Dirty Pages erfolgt derzeit <a href="http://www.mysqlperformanceblog.com/2007/07/18/how-innodb-flushes-data-to-the-disk/">leider noch nicht sortiert</a>, obwohl das echt nützlich wäre.
+MySQL wird die "modified db pages" dann verzögert und im Batch auf die Platte schreiben, wenn 
+
+- das Redo-Log droht, vollzulaufen
+- _innodb_max_dirty_pages_pct_ Prozent aller Pages im Buffer Pool als Dirty markiert sind
+- oder InnoDB eine Pause zum Atemholen bekommt und einen Checkpoint fährt.
+
+Das Schreiben der Dirty Pages erfolgt derzeit [leider noch nicht sortiert](http://www.mysqlperformanceblog.com/2007/07/18/how-innodb-flushes-data-to-the-disk/), obwohl das echt nützlich wäre.
 
 Wir können uns, wenn uns unsere Daten nicht so wichtig sind, sogar noch die Writes ins Redo-Log delayen. Indem wir innodb_flush_log_at_trx_commit auf den Wert 2 oder gar 0 setzen, erlauben wir es der Datenbank auch Einträge ins Redo-Log zu verzögern und zu batchen und können so die Schreibleistung noch weiter erhöhen.
 
-Folgerung 6: <b>Mehr Spindeln</b>
+### Folgerung 6: Mehr Spindeln
 
 Wir können so mit verschiedenen Tricks bei der Gestaltung des Datenbankschemas die Anzahl der notwendigen Schreibzugriffe unter Umständen drastisch verringern und wir können uns mit Hilfe des Redo-Log unter Umständen einige Random-I/Os sparen, indem wir stattdessen vorübergehend lineare Schreibzugriffe machen. Am Ende aber müssen die Blöcke auf die Platte.
 
@@ -117,11 +128,11 @@ In einem RAID-5 ist es weitaus schlechter. Da Datenbanken ausschließlich RAID-5
 
 Für eine Datenbank wollen wir also ein Plattenarray kaufen, daß aus möglichst vielen kleinen Disks zusammen gesetzt ist - uns interessiert ausschließlich die Anzahl der Seeks pro Sekunde, die wir von dem Array bekommen können. MB/sec sind von untergeordneter Bedeutung.
 
-Die Sun Performance Blueprint <a href="http://www.sun.com/blueprints/1000/layout.pdf">Wide Thin Disk Striping</a> erklärt wie man mit Partitionen auf Arrays umgehen sollte: Sie sollten sich immer über alle vorhandenen Platten des Array erstrecken und es sollten <em>keine</em> dedizierten Disks für Logs, Indices oder einzelne Tabellen verwendet werden. Ab 6 Platten wird diese Strategie sinnvoll, ab 10 Platten ist sie dedizierten Disks auf jeden Fall überlegen. 
+Die Sun Performance Blueprint [Wide Thin Disk Striping](http://www.sun.com/blueprints/1000/layout.pdf) erklärt wie man mit Partitionen auf Arrays umgehen sollte: Sie sollten sich immer über alle vorhandenen Platten des Array erstrecken und es sollten _keine_ dedizierten Disks für Logs, Indices oder einzelne Tabellen verwendet werden. Ab 6 Platten wird diese Strategie sinnvoll, ab 10 Platten ist sie dedizierten Disks auf jeden Fall überlegen. 
 
-In großen Arrays will man sich nicht mehr mit Disks abgeben, sondern "Storage managen" - Partitionen sollten daher immer über alle Disks gehen und das Array gleichmäßig aufheizen, sodaß man keine Hotspots mehr bekommt. Wenn das Array überlastet wird, kauft man dann eben einfach mehr Platten und reorganisiert. <em>sar -d</em>, <em>iostat -x</em> oder <em>dstat</em> sind des Storage- und des Datenbankadmins treue Freunde. Man sollte eine gewisse Nähe zu ihnen aufbauen.
+In großen Arrays will man sich nicht mehr mit Disks abgeben, sondern "Storage managen" - Partitionen sollten daher immer über alle Disks gehen und das Array gleichmäßig aufheizen, sodaß man keine Hotspots mehr bekommt. Wenn das Array überlastet wird, kauft man dann eben einfach mehr Platten und reorganisiert. _sar -d_, _iostat -x_ oder _dstat_ sind des Storage- und des Datenbankadmins treue Freunde. Man sollte eine gewisse Nähe zu ihnen aufbauen.
 
-Folgerung 7: <b>Software-Raid ist nix schlimmes</b>
+### Folgerung 7: Software-Raid ist nix schlimmes
 
 Wenn wir ein RAID-10 bauen, dann ist die Realisierung des RAID sehr wenig aufwendig: Ein Write-Request wird einfach zu zwei verschiedenen Platten gesendet und endet erst dann, wenn beide Platten ihn bestätigt haben. Das ist sehr leicht in Software realisieren. Ein Hardware-RAID bringt hier nur wenig Gewinn.
 
@@ -129,43 +140,61 @@ Bei RAID-5, wenn man durch äußere Umstände dazu gezwungen wird, sieht da scho
 
 Ein Software-RAID hat gegenüber einem Hardware-RAID dann verschiedene Vorteile: Zum Beispiel braucht man sich nicht mit einem proprietären Treiber zu prügeln, kann das RAID zuverlässig über /proc/mdstat in Linux oder das entsprechende Windows-Äquivalent monitoren und kann zumindest in Linux auf die einzelnen Platte auch nach dem Splitten des Mirrors einzeln ohne RAID zugreifen, da Linuxraid die Metadaten hinten auf die Platten malt - eine RAID-Hälfte ohne RAID sieht dann zumindest read-only für einen Nicht-RAID-Zugriff ganz normal aus.
 
-Sogar <a href="http://michael.fuckner.net/me/blog/index.php?/archives/367-SAS-Raid-mit-multipathing-unter-Linux.html">multipathen</a> kann man das.
+Sogar [multipathen](http://michael.fuckner.net/me/blog/index.php?/archives/367-SAS-Raid-mit-multipathing-unter-Linux.html) kann man das.
 
-<b>CPU Leistung verblaßt neben Plattenleistung</b>
+### CPU Leistung verblaßt neben Plattenleistung
 
-Die oben angestellten Betrachtungen haben an keiner Stelle die Leistung der Prozessoren des Systems gewürdigt. Das ist deswegen so, weil Datenbanken in der Regel kaum CPU-Probleme haben. Eine CPU mit 3 GHz Takt arbeitet pro Sekunde 3 Milliarden Prozessorzylen ab, und moderne CPUs sollten eigentlich größenordnungsmäßig bei jedem Zyklus auch einen Befehl fertigstellen. Wenn man also von Disk Seeks von einer 200stel Sekunde ausgeht, dann werden in der Wartezeit auf die Platte um die 15 Millionen Wartezyklen in der CPU freigesetzt.
+Die oben angestellten Betrachtungen haben an keiner Stelle die Leistung der Prozessoren des Systems gewürdigt. Das ist deswegen so, weil Datenbanken in der Regel kaum CPU-Probleme haben. Eine CPU mit 3 GHz Takt arbeitet pro Sekunde und Core 3 Milliarden Prozessorzylen ab, und moderne CPUs sollten eigentlich größenordnungsmäßig bei jedem Zyklus auch einen Befehl fertigstellen. Wenn man also von Disk Seeks von einer 200stel Sekunde ausgeht, dann werden in der Wartezeit auf die Platte um die 15 Millionen Wartezyklen pro Core in der CPU freigesetzt.
 
-Oder anders gesagt: Eine Datenbank kann nur in zwei Fällen wirklich CPU-Probleme bekommen: <ul><li>Wir haben etwas ganz wildes mit Stored Procedures oder anderem Code in der Datenbank gemacht. Das hätten wir besser gelassen.</li><li>Die Datenbank ist speichergesättigt und fräst nun wie wild mit der CPU durch ihre Speicherbänke, weil sie niemals auf die Platte warten muß. Klagen über "CPU ausgelastet" sind in diesem Fall wahrscheinlich Beschwerden auf sehr hohem Niveau.</li></ul> In MySQL ist es außerdem so, daß wir in der Regel eine Query in einem Thread abarbeiten und wir eine bestimmte Menge an Concurrency benötigen, um ausreichend viele CPUs sättigen zu können.
+Oder anders gesagt: Eine Datenbank kann nur in zwei Fällen wirklich CPU-Probleme bekommen: 
+
+- >Wir haben etwas ganz wildes mit Stored Procedures oder anderem Code in der Datenbank gemacht. Das hätten wir besser gelassen.
+- Die Datenbank ist speichergesättigt und fräst nun wie wild mit der CPU durch ihre Speicherbänke, weil sie niemals auf die Platte warten muß. Klagen über "CPU ausgelastet" sind in diesem Fall wahrscheinlich Beschwerden auf sehr hohem Niveau.
+
+In MySQL ist es außerdem so, daß wir in der Regel eine Query in einem Thread abarbeiten und wir eine bestimmte Menge an Concurrency benötigen, um ausreichend viele CPUs sättigen zu können.
 
 Insbesondere Replikation ist derzeit strikt seriell und kann nicht nennenswert mehr als einen Thread belegen.
 
-Folgerung 8: <b>Ein reiner Backup-Slave braucht nur einen, maximal 2 Cores</b>
+### Folgerung 8: Ein reiner Backup-Slave braucht nur einen, maximal 2 Cores
 
 Da Replikation strikt seriell ist, kann ein Slave der nur repliziert und nicht auch noch Read-Queries abarbeitet oder Reports generiert niemals nennenswert mehr als einen Core busy halten. Es lohnt überhaupt nicht, hier viel Geld in Cores zu investieren. RAM oder Platten sind bessere Investitionsziele.
 
-Folgerung 9: <b>Concurrency schätzen, und begrenzen</b>
+### Folgerung 9: Concurrency schätzen, und begrenzen
 
 MySQL ist eine Datenbank die klar auf Commodity Hardware hin entwickelt worden ist und die durch die überall verfügbare und leicht zu konfigurierende Replikation bevorzugt horizontal zu skalieren ist. Es ist in vielen Fällen eher lohnend, einen zweiten Server aufzusetzen statt den einzigen Server weiter zu vergrößern.
 
-MySQL funktioniert derzeit recht gut mit 4 oder 8 Cores, aber 16 Cores wären schon grenzwertig und es wäre zu beweisen, daß eine 16 Core-Maschine mit MySQL tatsächlich besser funktioniert als zwei 8 Core-Maschinen. Speichergrößen von 32G und 64G können gut gehandhabt werden, aber für wesentlich größere Pools müßte nachgewiesen werden, daß keine Lockingprobleme existieren. Mit MySQL 5.0.30 und MySQL 5.0.37 wurden verschiedene Lockingprobleme für sehr große InnoDB Buffer Pools behoben, sodaß es unbedingt lohnend ist ein Upgrade durchzuführen wenn man sehr große Speichermengen hat und noch kleinere Versionen einsetzt. Aber selbst dann kann <a href="http://www.mysqlperformanceblog.com/2007/07/27/more-gotchas-with-mysql-50/">intensives Monitoring</a> noch Locking triggern. Dieses Problem wird derzeit bearbeitet.
+MySQL funktioniert derzeit recht gut mit 4 oder 8 Cores, aber 16 Cores wären schon grenzwertig und es wäre zu beweisen, daß eine 16 Core-Maschine mit MySQL tatsächlich besser funktioniert als zwei 8 Core-Maschinen. Speichergrößen von 32G und 64G können gut gehandhabt werden, aber für wesentlich größere Pools müßte nachgewiesen werden, daß keine Lockingprobleme existieren. Mit MySQL 5.0.30 und MySQL 5.0.37 wurden verschiedene Lockingprobleme für sehr große InnoDB Buffer Pools behoben, sodaß es unbedingt lohnend ist ein Upgrade durchzuführen wenn man sehr große Speichermengen hat und noch kleinere Versionen einsetzt. Aber selbst dann kann [intensives Monitoring](http://www.mysqlperformanceblog.com/2007/07/27/more-gotchas-with-mysql-50/) noch Locking triggern. Dieses Problem wird derzeit bearbeitet.
 
-<b>Recovery gleich mit planen</b>
+### Recovery gleich mit planen
 
-Im Falle einer Katastrophe oder eines Administrationsfehlers wird der eigene Chef rüberkommen und die üblichen drei Fragen haben: <ul><li>Werden wir wieder online gehen können?</li><li>Haben wir Daten verloren?</li><li>Wie lange wird das alles dauern?</li></ul> Der vorausschauende Admin hat für alle drei Fragen schon Antworten parat. Das kann er nur, wenn er die Recovery seiner Datenbank geplant, geübt und gebenchmarkt hat.
+Im Falle einer Katastrophe oder eines Administrationsfehlers wird der eigene Chef rüberkommen und die üblichen drei Fragen haben: 
 
-Folgerung 10: <b>Platz um sich zu bewegen</b>
+- Werden wir wieder online gehen können?
+- Haben wir Daten verloren?
+- Wie lange wird das alles dauern?
+
+Der vorausschauende Admin hat für alle drei Fragen schon Antworten parat. Das kann er nur, wenn er die Recovery seiner Datenbank geplant, geübt und gebenchmarkt hat.
+
+### Folgerung 10: Platz um sich zu bewegen
 
 Ein Backup-Slave, so vorhanden, sollte genug Platz und Power haben, um eine Recovery in endlicher Zeit durchführen zu können. In den meisten Fällen plant man 3 bis 5 mal mehr Plattenplatz ein als die Datenbankzielgröße ist. Teile dieses Platzes können langsamer sein (weniger Spindeln haben, also aus größeren Platten zusammengesetzt sein) als die eigentliche aktive Datenbank.
 
 Ein Test- oder Scratchrechner, etwa der Backup-Slave oder eine dritte Kiste, können sehr handlich sein, um Dinge zu testen, Datenextraktionen oder Loads vorzubereiten oder andere administrative Dinge zu stagen.
 
-<b>Der Einkaufszettel</b>
+## Der Einkaufszettel
 
-Schätzhilfen: <ul><li>Die Zielgröße der Datenbank.</li><li>Die erwartete Schreiblast.</li></ul> Prüfung: <ul><li>Lohnt es eine speichergesättigte Datenbank zu bauen?
+Schätzhilfen: 
 
-Dies ist der Fall, wenn wir die benötigten Daten komplett ins RAM bekommen und die Schreibrate angemessen niedrig ist.
+- Die Zielgröße der Datenbank.
+- Die erwartete Schreiblast.
 
-In diesem Fall stecken wir alles Geld ins RAM und bauen Platten an die Datenbank, um die Schreibrate zu bewältigen und um unseren RAM-Cache beim Hochfahren voll zu saugen. Wir brauchen aber unter Umständen keine dicken Arrays mit vielen Spindeln.</li></ul> Wenn wir eine hohe Schreibrate haben oder unser Datenbestand so dick ist, daß wir mit den üblichen RAM-Größen keine Chance haben das alles weg zu cachen, nehmen wir das RAM eine Größe kleiner und stecken das frei werdende Geld in ein dickes Array mit vielen Spindeln. Das Array setzen wir als RAID-10 auf.
+Prüfung: Lohnt es eine speichergesättigte Datenbank zu bauen?
+
+**Ja:** Dies ist der Fall, wenn wir die benötigten Daten komplett ins RAM bekommen und die Schreibrate angemessen niedrig ist.
+
+In diesem Fall stecken wir alles Geld ins RAM und bauen Platten an die Datenbank, um die Schreibrate zu bewältigen und um unseren RAM-Cache beim Hochfahren voll zu saugen. Wir brauchen aber unter Umständen keine dicken Arrays mit vielen Spindeln.
+
+**Nein:** Wenn wir eine hohe Schreibrate haben oder unser Datenbestand so dick ist, daß wir mit den üblichen RAM-Größen keine Chance haben das alles weg zu cachen, nehmen wir das RAM eine Größe kleiner und stecken das frei werdende Geld in ein dickes Array mit vielen Spindeln. Das Array setzen wir als RAID-10 auf.
 
 Je nach zu erwartendem Grad von Concurrency bauen wir uns ein 2, 4 oder 8-Core-System. Richtig spannend wird die CPU-Nutzung aber aller Voraussicht nur bei speichergesättigten Datenbanken oder in spezialgelagerten Sonderfällen.
 
