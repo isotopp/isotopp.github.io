@@ -65,7 +65,7 @@ Und die letzte Zeile ist die Default-Route und die sagt: Alles andere geht erst 
 
 Die Spalte mit den Portokosten sagt dabei: Wenn wir ein Paket direkt zustellen wird kein Router überquert und daher die 'Time To Live' (TTL) auch nicht runtergezählt. Für Pakete, die nach draußen gehen ist das anders - da wird die TTL von z.B. 20 auf 19 runtergezählt. Der nächste Router macht dasselbe und so weiter. Irgendwann ist das Porto mal alle, d.h. die TTL ist 0 und dann wird das Paket weggeschmissen, egal ob es irgendwo angekommen ist oder nicht.
 
-Das letzte Mal als wir uns das [Internet mit Kugelschreibern (und Bussen)]({% link 2009-06-24-internet-mit-kugelschreibern-und-bussen.md %}) angesehen haben, hatten wir gesehen, daß es von mir bis nach Norwalk, CT, USA 13 Router sind, die man sehen kann. Der TTL-Zähler geht also bei jedem Schritt einen Wert runter und die Pakete kommen mit einer Rest-TTL von 7 in Norwalk an.
+Das letzte Mal als wir uns das [Internet mit Kugelschreibern (und Bussen)]({% link _posts/2009-06-24-internet-mit-kugelschreibern-und-bussen.md %}) angesehen haben, hatten wir gesehen, daß es von mir bis nach Norwalk, CT, USA 13 Router sind, die man sehen kann. Der TTL-Zähler geht also bei jedem Schritt einen Wert runter und die Pakete kommen mit einer Rest-TTL von 7 in Norwalk an.
 
 Wozu ist das gut?
 
