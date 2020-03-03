@@ -18,7 +18,7 @@ On 2010-04-06 12:26:49 +0200,
 > testen.Das Ausführen der INSERTs dauert allerdings einige Stunden :) Es
 > läuft derzeit immer noch...
 
-InnoDB, AUTOCOMMIT = 1. Vor dem source DE.sql ein BEGIN WORK machen, danach
+InnoDB, AUTOCOMMIT = 1. Vor dem source von DE.sql ein BEGIN WORK machen, danach
 ein COMMIT. Dann geht es sehr viel schneller.
 
 Mit diesen Daten und einem Beispielort kann man experimentieren. 
