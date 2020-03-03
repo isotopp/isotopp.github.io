@@ -10,14 +10,13 @@ tags:
 - oracle
 - sun
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
-Am 20. April 2009 hat <a href='http://blog.koehntopp.de/archives/2430-Sun,-IBM,-Cisco,-Oracle.html'>Sun verkündet, daß sie von Oracle gekauft werden</a>. Das hätte MySQL mit eingeschlossen. Am 10. November hat die EU dann mitgeteilt, daß sie <a href='http://blog.koehntopp.de/archives/2668-EU-blockiert-den-SunOracle-Merger-wegen-MySQL.html'>diesem Kauf widerspricht</a> und zwar ausschließlich wegen MySQL.
+Am 20. April 2009 hat Sun verkündet, daß sie von Oracle gekauft werden. Das hätte MySQL mit eingeschlossen. Am 10. November hat die EU dann mitgeteilt, daß sie diesem Kauf widerspricht und zwar ausschließlich wegen MySQL.
 
-<a href='http://www.groklaw.net/article.php?story=20091021164738392'>Groklaw hat Hintergründe dazu</a>, die ein wenig komisch erscheinen. Ausgerechnet Monty und Florian Müller argumentieren gegen diesen Verkauf und verwenden in den Texten, die sie öffentlich gemacht haben noch dazu die GPL: Diese verhindere nämlich kommerzielle Spinoffs und Forks von MySQL.
+[Groklaw hat Hintergründe dazu](http://www.groklaw.net/article.php?story=20091021164738392), die ein wenig komisch erscheinen. Ausgerechnet Monty und Florian Müller argumentieren gegen diesen Verkauf und verwenden in den Texten, die sie öffentlich gemacht haben noch dazu die GPL: Diese verhindere nämlich kommerzielle Spinoffs und Forks von MySQL.
 
 Das ist auf vielen Ebenen seltsam bis unsinnig.
-<br />
 
 Zum rechtlichen Hintergrund:
 
@@ -35,7 +34,8 @@ Und schließlich kann es sein, daß man sein MySQL tatsächlich embedden will, a
 
 Groklaw beleuchtet nun die Argumentation, die wir von Monty zu hören bekommen haben unter verschiedenen Aspekten. Dabei kommt Monty offenbar immer wieder auf die Möglichkeit von proprietären Forks von MySQL zu sprechen, die nicht möglich wären, wenn Oracle die Rechte an MySQL innehätte. Nun, so etwas ist auch jetzt schon nicht möglich, denn die Rechte an MySQL hat derzeit Sun, auch eine kommerzielle Firma.
 
-Groklaw findet es seltsam, daß Monty so gegen die GPL wettert und auch auf den angeblich 'viralen' Character der GPL abhebt (<a href='http://blog.koehntopp.de/archives/628-Ein-paar-ideologische-Steine-ins-Rollen-bringen.html'>Kooperativ vs. Kompetetiv</a>, <a href='http://blog.koehntopp.de/archives/680-Von-der-GPL.html'>Was steht in der GPL?</a>, <a href='http://blog.koehntopp.de/archives/1411-GPL-Marktdurchdringung-ist-kein-Wert-an-sich.html'>Warum GPL?</a>, <a href='http://blog.koehntopp.de/archives/1458-GPL-Microsoft,-Novell,-Samba.org-und-die-Freiheiten-der-GPL.html'>Freiheiten der GPL</a>). Das ist Microsoft-Rethorik, und tatsächlich ist Monty nun genau Ratgeber bei der MS Codeflex Foundation. Groklaw zitiert auch eine längeren Text von Carlo Piana, der erklärt, warum die Open Source Community für den Deal sein sollte und wieso die GPL bzw. das Dual Licensing kein Problem sind.
+Groklaw findet es seltsam, daß Monty so gegen die GPL wettert und auch auf den angeblich 'viralen' Character der GPL abhebt (
+[Kooperativ vs. Kompetetiv]({% link _posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md %}), [Was steht in der GPL?]({% link _posts/2005-02-07-von-der-gpl.md %}), [Warum GPL?]({% link _posts/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md %})). Das ist Microsoft-Rethorik, und tatsächlich ist Monty nun genau Ratgeber bei der MS Codeflex Foundation. Groklaw zitiert auch eine längeren Text von Carlo Piana, der erklärt, warum die Open Source Community für den Deal sein sollte und wieso die GPL bzw. das Dual Licensing kein Problem sind.
 
 Der Punkt ist jedenfalls, daß die GPL bei MySQL nichts verhindert, außer für zwei sehr eingeschränkte Personenkreise: Leute, die MySQL embedden wollen oder Leute, die ihre proprietäre Technik in MySQL injezieren wollen. Beides ist eigentlich kaum ein Problem.
 
@@ -45,8 +45,8 @@ Der dritte Punkt ist, daß das Problem nicht bestünde, wäre MySQL pur GPL lize
 
 Weitere Artikel zum Thema:
 
-Der <a href='http://www.economist.com/node/14840272'>Economist</a> hat einen Bericht über den Handel, und zielt darauf ab, daß die amerikanische Monopolkomission dem Deal zugestimmt hat, die europäische ihn aber abgelehnt hat, und wie das zu einem Handelskrieg oder zumindest zu Verstimmung führen könnte.
+Der [Economist](http://www.economist.com/node/14840272) hat einen Bericht über den Handel, und zielt darauf ab, daß die amerikanische Monopolkomission dem Deal zugestimmt hat, die europäische ihn aber abgelehnt hat, und wie das zu einem Handelskrieg oder zumindest zu Verstimmung führen könnte.
 
-<a href='http://www.heise.de/newsticker/meldung/EU-Kommission-hat-Bedenken-gegen-Uebernahme-von-Sun-durch-Oracle-Update-854613.html'>Heise</a> berichtet ebenfalls.
+[Heise](http://www.heise.de/newsticker/meldung/EU-Kommission-hat-Bedenken-gegen-Uebernahme-von-Sun-durch-Oracle-Update-854613.html) berichtet ebenfalls.
 
 Die Position von SAP in dieser Sache bleibt zumindest nach der Berichterstattung im Dunkeln.

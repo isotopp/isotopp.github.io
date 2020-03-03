@@ -90,12 +90,7 @@ zusammen in einer Distribution verbreitet werden können.
 
 ![](/uploads/relay.jpg)
 
-So ist [SQL Relay](http://freshmeat.net/projects/sqlrelay/) zum Beispiel ein
-eigenständiges Programm, das die unter der GPL stehenden Bibliotheken von
-MySQL 4.x verwenden kann. Wenn es diese Bibliotheken einbindet, muß es
-selber auch unter der GPL stehen - es ist ein abgeleitetes Werk im Sinne der
-GPL und nicht von der unter der GPL stehenden Komponente - den Bibliotheken
-- getrennt.
+So ist [SQL Relay](http://freshmeat.net/projects/sqlrelay/) zum Beispiel ein eigenständiges Programm, das die unter der GPL stehenden Bibliotheken von MySQL 4.x verwenden kann. Wenn es diese Bibliotheken einbindet, muß es selber auch unter der GPL stehen - es ist ein abgeleitetes Werk im Sinne der GPL und nicht von der unter der GPL stehenden Komponente - den Bibliotheken - getrennt.
 
 Ein Client kann jedoch das SQL Relay ansprechen und über Netz mit ihm
 kommunizieren. Er ist ein getrenntes Programm, das vom SQL Relay verschieden
@@ -158,7 +153,7 @@ müssen, können sich die verschiedenen Forks untereinander befruchten und
 Code austauschen, wenn sie dies wünschen. Sie können also jederzeit ganz
 oder teilweise wieder zusammenfließen.
 
-![](/uploads/forke.jpg')
+![](/uploads/forke.jpg)
 
 Forks sind nur dann ein Problem, wenn die ursprüngliche Codebasis in mehrere
 Kopien zerfällt, die sich unterschiedlich entwickeln und untereinander
