@@ -50,7 +50,7 @@ more reliable - less chance of annoyance - and because I can back out of
 crap much more easily if it does not grip me in the first 20 minutes. 
 
 Then MP3 happened, and while Napster was pretty unreliable, it did sell
-cheap ATA HDDs instead of proper SCSI HDD to be, and I ripped the 600 or so
+cheap ATA HDDs instead of proper SCSI HDD to me, and I ripped the 600 or so
 CDs I had - all of them purchased for 20 DM or less. Most of them I got
 much, much cheaper. Because Cinema taught me to wait and grab stuff when it
 was on sale and not when it was released. 
@@ -139,7 +139,7 @@ paid about one Dollar, each, on the average.
 
 I am an adult with a well paying job, a family and a child. Where do I put
 my time? Games last, pretty much. I don't have that much of a monetary
-constraint on my purchases per see, but I have been trained that you never
+constraint on my purchases per se, but I have been trained that you never
 do media, any media, at full price, because it's a rip-off.
 
 Also, I have learned that media ages well, so it's kind of okay to let it
