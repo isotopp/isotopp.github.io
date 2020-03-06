@@ -6,6 +6,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: 2019-12-30 15:02:23 +0100
 tags:
 - lang_en
+- media
 - sonos
 ---
 Sonos is a company that makes Wifi Connected speakers. They
