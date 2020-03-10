@@ -7,17 +7,15 @@ date: 2020-03-09 20:49:37 +0100
 tags:
 - lang_de
 - politik
-- deutschland
+- germany
 ---
-"Normalitär", ein Begriff, der von @beimwort geprägt wurde. Nach einem [Twitter Thread](https://twitter.com/isotopp/status/1234762176902107137).
-
-In seinem [Artikel auf T-Online](https://www.t-online.de/nachrichten/deutschland/gesellschaft/id_84519312/wieso-es-keinen-rechtsruck-gibt-aber-die-extreme-rechte-trotzdem-waechst.html) propagiert Schaible eine Bruchlinie innerhalb der "rechten" Parteien, weil Teile der Mitglieder die Weltbildverschiebung der frühen 2000er mitgemacht haben, andere sie ablehnen.
+"Normalitär", ein Begriff, der von @beimwort geprägt wurde. Nach einem [Twitter Thread](https://twitter.com/isotopp/status/1234762176902107137). In seinem [Artikel auf T-Online](https://www.t-online.de/nachrichten/deutschland/gesellschaft/id_84519312/wieso-es-keinen-rechtsruck-gibt-aber-die-extreme-rechte-trotzdem-waechst.html) propagiert Schaible eine Bruchlinie innerhalb der "rechten" Parteien, weil Teile der Mitglieder die Weltbildverschiebung der frühen 2000er mitgemacht haben, andere sie ablehnen.
 
 Er beschreibt die Welt von 1990, die Nachwendezeit:
 
 - Vergewaltigung in der Ehe nicht strafbar, 
 - Diercke Weltatlas redet von Menschenrassen, 
-- unter den 250 Positionen der politischen Elite in D war nur eine Frau, alles weiße, angeblich heterosexuelle und angeblich christliche Männer.
+- unter den 250 Positionen der politischen Elite in Deutschland war nur eine Frau; alles weiße, angeblich heterosexuelle und angeblich christliche Männer.
 
 > In dieser auf dem Papier egalitären Welt hing der Platz der Menschen ganz selbstverständlich von Geschlecht, Hautfarbe, Sexualität und Religion ab.
 
