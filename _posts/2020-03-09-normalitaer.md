@@ -37,7 +37,7 @@ Die Trennung ist auch nicht Rechts-Links: In einem anderen [Twitter Thread](http
 
 Noch deutlicher: @DugarToGo zeigt in [einem Antwort-Thread](https://twitter.com/DugarToGo/status/1234175885454069760) ([unroll](https://threadreaderapp.com/thread/1234175885454069760.html)) am Beispiel konkreter Gespräche genau diesen Graben auf.
 
-Das Problem dabei: Die normalitäre Position ist demokratisch nicht politisch durchsetzbar. Und *an dieser Stelle* ist das Scharnier zwischen den Faschisten und den Normalitären. Scharnierpolitiker, -medien und -publizisten bilden eine Vermittlerfunktion aus dem konserativen Mainstream in den faschistischen Extremismus. Im Ausgangs-Essay nennt von 2019 Schaible Sarrazin, Tichy, Steinbach, heutzutage biedern sich die Werte-Union und Teile der FDP an.
+Das Problem dabei: Die normalitäre Position ist demokratisch nicht politisch durchsetzbar. Und *an dieser Stelle* ist das Scharnier zwischen den Faschisten und den Normalitären. Scharnierpolitiker, -medien und -publizisten bilden eine Vermittlerfunktion aus dem konserativen Mainstream in den faschistischen Extremismus. Im Ausgangs-Essay von 2019 nennt Schaible Sarrazin, Tichy, Steinbach, heutzutage biedern sich die Werte-Union und Teile der FDP an.
 
 Kennzeichen des "Normalitären" ist eine Verklärung einer Vergangenheit, die es so nie gab und die, hätte sie es gegeben, nicht zeitgemäß wäre. Daher "Make America Great Again", Brexit-Empire-Verklärung, und generelle Rückwärtsgewandheit. Das Normalitäre wünscht sich auch eine Komplexitätsreduktion der Welt, und die Faschisten bieten diese (in Wahrheit inadequate und nicht zur Problemlösung geeignete) Vereinfachung an.
 
