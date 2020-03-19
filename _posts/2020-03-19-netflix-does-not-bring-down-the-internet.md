@@ -11,11 +11,15 @@ tags:
 ---
 It's Coronavirus Crisis and Netflix is killing us all, again. This time it's not their [excessive energy use]({% link _posts/2019-12-28-streaming-and-energy.md %}), but their dreaded HD videos that are overloading the Internet. Or is it?
 
+## It's only Swisscom
+
 Supposedly [Switzerland is considering Netflix shutdown](https://www.web24.news/u/2020/03/corona-crisis-switzerland-is-considering-netflix-shutdown.html) to prevent Home Office workers from being disconnected.
 
 > According to its own statements, on the first day of the quasi curfew in our neighboring country, Swisscom recorded an enormous increase in the load on the infrastructure. There were three times more calls via the mobile network than on normal days. The volume in the fixed network has also increased massively
 
 None of the other swiss providers reported any problems. Swisscom, on the other hand, already had Netflix problems as early as 2015 ([Article in German](https://community.swisscom.ch/t5/Archiv-Internet/Netflix-Probleme-Swisscom-Backbone-%C3%BCberlastet/m-p/413725)), way before the Coronavirus Crisis.
+
+## There should and could be caches
 
 Videostreaming and Content Delivery usually does not happen from outside a providers network. Netflix, Youtube, even Steam, will gladly provide a cache server with plenty of disk space at not cost for any provider to install inside their network. These things dramatically decrease the amount of traffic leaving the provider network, keeping it as local as possible. 
 
@@ -30,6 +34,14 @@ I checked. My computer in Haarlemmermeer is loading Netflix from
 which indicates a content cache located in or close to Amsterdam, and the ping delay is <3.5ms. Traceroute confirms the locality of the server.
 
 So I am getting my content from content cache in Amsterdam that is extremely close by in terms of network topology. Youtube, Twitch and Steam expose similar behavior.
+
+## Videostreaming already is dynamic bandwidth
+
+In [Data Centers and Energy]({% link _posts/2019-12-28-streaming-and-energy.md %}) I already explained that video streaming is dynamic bandwidth and dynamic resolution, pointing to [Chunking](https://www.netmanias.com/en/post/blog/5923/google-http-adaptive-streaming-iptv-video-streaming-youtube/youtube-changing-the-way-of-delivering-videos-chunking-and-adaptive-streaming-are-in-progressive-download-is-out). All video streamers sense the bandwidth of the relevant part of the delivery pipeline and automatically and gracefully degrade the experience as necessary if bandwidth is becoming tight.
+
+Doing this manually is not going to improve anybodies experience.
+
+## There is no crisis except the one Swisscom manufactured for itself
 
 There is no crisis except the one that has been manufactured by Swisscom themselves. We don't have a network capacity crisis because of Home Office and we do not need to throttle Netflix. Some providers just painted themselves into a corner and now have trouble adjusting to shifting demand patterns. It's easily fixed by stopping being an asshole.
 
