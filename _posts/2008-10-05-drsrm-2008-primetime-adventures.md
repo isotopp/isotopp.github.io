@@ -13,114 +13,38 @@ feature-img: assets/img/background/rijksmuseum.jpg
 ---
 ![](/uploads/phantasie.jpg)
 
-drsrm 2008 in Hannover geht nun zu Ende. Ich war von Freitag Mittag bis
-Sonntag Mittag da. Gespielt habe ich Shadowrun "über 30" nach Primetime
-Adventures-Regeln als Producer ("Spielleiter"), das Buffy/Angel-Rollenspiel
-mit einem Setting in Berlin und Universalis "Future Fantasy". Aber der Reihe
-nach.
+drsrm 2008 in Hannover geht nun zu Ende. Ich war von Freitag Mittag bis Sonntag Mittag da. Gespielt habe ich Shadowrun "über 30" nach Primetime Adventures-Regeln als Producer ("Spielleiter"), das Buffy/Angel-Rollenspiel mit einem Setting in Berlin und Universalis "Future Fantasy". Aber der Reihe nach.
 
-Nachdem ich PtA schon auf dem drsrm-Con 2005 faszinierend fand habe ich
-diesmal ein "Ü30 Shadowrun" nach PtA-Regeln angeboten.
+Nachdem ich PtA schon auf dem drsrm-Con 2005 faszinierend fand habe ich diesmal ein "Ü30 Shadowrun" nach PtA-Regeln angeboten.
 
-Das Genre habe ich gewählt, weil PtA bestimmte Schwächen beim Spielstart
-hat: PtA simuliert das Geschichtenerzählen nach der Art aktueller
-Fernsehserien. Das bedeutet, daß die Entwicklung von Figuren, ihre
-persönlichen Krisen und ihre Entwicklung interessant sind: Wie sind sie
-dahin gekommen wo sie jetzt sind, was sind die Probleme, die sie haben und
-wie entwickeln sie sich weiter. Typische Fernsehserien für dieses Format
-sind Smallville, Desperate Housewives oder Lost.
+Das Genre habe ich gewählt, weil PtA bestimmte Schwächen beim Spielstart hat: PtA simuliert das Geschichtenerzählen nach der Art aktueller Fernsehserien. Das bedeutet, daß die Entwicklung von Figuren, ihre persönlichen Krisen und ihre Entwicklung interessant sind: Wie sind sie dahin gekommen wo sie jetzt sind, was sind die Probleme, die sie haben und wie entwickeln sie sich weiter. Typische Fernsehserien für dieses Format sind Smallville, Desperate Housewives oder Lost.
 
-Plot spielt in PtA nur eine untergeordnete Rolle. Es ist Fluff, Hintergrund
-vor dem die Charactere agieren oder Auslöser für eine Krise, aber nie die
-Ursache für eine solche. Spielern, insbesondere PtA-unerfahrenen Spielern,
-ist dies mitunter schwer zu vermitteln und so kommt es am Start einer neuen
-PtA-Runde oft zu recht langen Verhandlungen darüber, was man spielen wolle
-und was genau dort passieren soll. Erst im Laufe einer Session zeigt sich
-dann, daß das mehr oder weniger irrelevant ist.
+Plot spielt in PtA nur eine untergeordnete Rolle. Es ist Fluff, Hintergrund vor dem die Charactere agieren oder Auslöser für eine Krise, aber nie die Ursache für eine solche. Spielern, insbesondere PtA-unerfahrenen Spielern, ist dies mitunter schwer zu vermitteln und so kommt es am Start einer neuen PtA-Runde oft zu recht langen Verhandlungen darüber, was man spielen wolle und was genau dort passieren soll. Erst im Laufe einer Session zeigt sich dann, daß das mehr oder weniger irrelevant ist.
 
-Durch die Vorgabe von "Shadowrun" und "über 30" ("für Erwachsene, variante
-dreckig und gemein") wollte ich das abkürzen: Einmal ist das Universum dem
-erwarteten Con-Publikum wohlbekannt und zum anderen stehen so die
+Durch die Vorgabe von "Shadowrun" und "über 30" ("für Erwachsene, variante dreckig und gemein") wollte ich das abkürzen: Einmal ist das Universum dem erwarteten Con-Publikum wohlbekannt und zum anderen stehen so die [Genrekonventionen und Erwartungen]({% link _posts/2005-07-06-regeln-vs-genrekonventionen.md %}) schon fest.
 
-[Genrekonventionen und Erwartungen]({% link _posts/2005-07-06-regeln-vs-genrekonventionen.md %})
-schon fest.
+Die unausweichliche Startdiskussion stellte also zwei bis drei mögliche Szenarien ins den Raum:
 
-Die unausweichliche Startdiskussion stellte also zwei bis drei mögliche
-Szenarien ins den Raum:
+- Wir können eine stinknormale Runnergruppe spielen, die in irgend etwas hineingezogen wird. Personen können die üblichen Runner sein. Vielleicht ein Journalist, der sich für das Leben auf der Straße interessiert. Vielleicht auch Figuren aus einem Konzern, mit   denen wir die andere Seite beleuchten können.
+- Wir können ein Medienteam spielen, das eine Dokumentation "[Echo Mirage](http://wiki.dumpshock.com/index.php/Echo_Mirage) - 25 Jahre danach" drehen möchte und bei seinen Nachforschungen von allen möglichen Seiten Behinderungen und Druck ausgesetzt ist, bis es endlich aufdecken kann, was damals wirklich geschehen ist.
 
-- Wir können eine stinknormale Runnergruppe
-  spielen, die in irgend etwas hineingezogen wird. Personen können die
-  üblichen Runner sein. Vielleicht ein Journalist, der sich für das Leben auf
-  der Straße interessiert. Vielleicht auch Figuren aus einem Konzern, mit
-  denen wir die andere Seite beleuchten können.
-- Wir können ein Medienteam spielen, das eine Dokumentation 
-  "[Echo Mirage](http://wiki.dumpshock.com/index.php/Echo_Mirage) - 25 Jahre
-  danach" drehen möchte und bei seinen Nachforschungen von allen möglichen
-  Seiten Behinderungen und Druck ausgesetzt ist, bis es endlich aufdecken
-  kann, was damals wirklich geschehen ist.
+Wir haben uns dann für das simplere erste Szenario entschieden und für eine Spielführung, die sich nicht sehr eng an dem offiziellen Shadowrun-Universum orientiert, sondern mehr an den dramatischen Erfordernissen - eine Fernsehserie zu dem Thema würde das ja auch nicht anders handhaben.
 
-Wir haben uns dann für das simplere erste Szenario entschieden und für eine
-Spielführung, die sich nicht sehr eng an dem offiziellen Shadowrun-Universum
-orientiert, sondern mehr an den dramatischen Erfordernissen - eine
-Fernsehserie zu dem Thema würde das ja auch nicht anders handhaben.
+Schnell haben wir einige Figuren skizzieren können, die später vorkommen sollen: 
 
-Schnell haben wir einige Figuren skizzieren können, die später vorkommen
-sollen: 
+- Kate, eine freie Journalistin mit der Motivation "Knowledge: Father". Ihr Vater verschwand in frühen Jahren um Runner zu werden. Kate arbeitet oft als (Edge) Medienschlampe für (Connection) Kanal 21 und hat (Connection) Verbindungen in die Unterwelt. Ihr Personal Set ist ihr gepanzerter privater Ü-Wagen.
+- Face ist ein Fixer und Hochstapler, genau wie sein Namensvetter beim A-Team. Ebenso wie sein A-Team Vorbild ist er unverbindlich und oberflächlich - sein Issue ist "Growth". Er ist ein (Edge) Strahlemann, der immer perfekt aussieht, und (Edge) organisiert unverhoffte Ressourcen. Seine Freundschaft mit (Connection) dem Barkeeper Bob ist legendär. Sein Personal Set ist sein Schlafzimmer mit seinem geliebten Wasserbett.
+- Rock ist ein Troll, und ein Rigger. Er ist hart gepanzert und gut ausgerüstet und hat das Gefühl, daß er als Person nicht ernst genommen wird sondern nur als Waffe oder gelehriges Monster. Sein Issue ist "Self respect/Selbstwert". Als die Figur definiert wurde, hatte Harald (Connection) Susan, ein fünfjähriges Mädchen, das der Troll in seinem Arm hält, noch nicht näher definiert, sondern nur dieses Bild vor Augen. Rock ist (Edge) ein Tank und (Edge) ein Rigger mit Ausrüstung.
+- Squeek ist ein furchtsamer, aber begabter Schamane. Sein Totem ist Ratte, und so ist er in der Großstadt gerne zu Hause. Sein Issue ist die Liebe, speziell die schüchterne und unerwiderte Liebe. Er ist (Edge) zäh und hat (Connection) einen Esoterikladen in irgendeinem mittelbilligen Viertel der Stadt. Dort (Personal Set) diskutiert er gerne über Magietheorie mit einer (Connection) Stammkundin, ausgerechnet einer hermetischen Magierin.
+- Tie ist ein (Edge) Corporate Killer, oder war es, denn sein Issue ist Reue. Er ist gut bei Kasse in seinem (Personal Set) Penthouse, in dem er mit (Connection) seiner Freundin lebt. Obwohl er aus dem Geschäft ist, unterhält er noch Verbindungen (Connection) zu seinem alten Mr. Johnson.
 
-- Kate, eine freie Journalistin mit der Motivation "Knowledge:
-  Father". Ihr Vater verschwand in frühen Jahren um Runner zu werden. Kate
-  arbeitet oft als (Edge) Medienschlampe für (Connection) Kanal 21 und hat
-  (Connection) Verbindungen in die Unterwelt. Ihr Personal Set ist ihr
-  gepanzerter privater Ü-Wagen.
-- Face ist ein Fixer und Hochstapler, genau wie sein Namensvetter beim
-  A-Team. Ebenso wie sein A-Team Vorbild ist er unverbindlich und
-  oberflächlich - sein Issue ist "Growth". Er ist ein (Edge) Strahlemann,
-  der immer perfekt aussieht, und (Edge) organisiert unverhoffte Ressourcen.
-  Seine Freundschaft mit (Connection) dem Barkeeper Bob ist legendär. Sein
-  Personal Set ist sein Schlafzimmer mit seinem geliebten Wasserbett.
-- Rock ist ein Troll, und ein Rigger. Er ist hart gepanzert und gut
-  ausgerüstet und hat das Gefühl, daß er als Person nicht ernst genommen
-  wird sondern nur als Waffe oder gelehriges Monster. Sein Issue ist "Self
-  respect/Selbstwert". Als die Figur definiert wurde, hatte Harald
-  (Connection) Susan, ein fünfjähriges Mädchen, das der Troll in seinem Arm
-  hält, noch nicht näher definiert, sondern nur dieses Bild vor Augen. Rock
-  ist (Edge) ein Tank und (Edge) ein Rigger mit Ausrüstung.
-- Squeek ist ein furchtsamer, aber begabter Schamane. Sein
-  Totem ist Ratte, und so ist er in der Großstadt gerne zu Hause. Sein Issue
-  ist die Liebe, speziell die schüchterne und unerwiderte Liebe. Er ist
-  (Edge) zäh und hat (Connection) einen Esoterikladen in irgendeinem
-  mittelbilligen Viertel der Stadt. Dort (Personal Set) diskutiert er gerne
-  über Magietheorie mit einer (Connection) Stammkundin, ausgerechnet einer
-  hermetischen Magierin.
-- Tie ist ein (Edge) Corporate Killer, oder war es, denn sein Issue ist
-  Reue. Er ist gut bei Kasse in seinem (Personal Set) Penthouse, in dem er
-  mit (Connection) seiner Freundin lebt. Obwohl er aus dem Geschäft ist,
-  unterhält er noch Verbindungen (Connection) zu seinem alten Mr. Johnson.
+Nachdem die Figuren unserer Serie feststanden, mußten wir uns über einen Story-Arc und den Hintergrund klar werden.
 
-Nachdem die Figuren unserer Serie feststanden, mußten wir uns über einen
-Story-Arc und den Hintergrund klar werden.
+Wir haben uns für einen Plot entschieden, der ein wenig an die [Universal Brotherhood](http://wiki.dumpshock.com/index.php/Universal_Brotherhood)erinnert: Die Geschichte beginnt damit, daß unsere Runner in einem Warenhaus der Interweb Logistics aufwachen, mit einer Schockamnesie a la [Bourne Identity](http://www.imdb.com/title/tt0258463/) und dort auch prompt von einem Team der Interweb Logistic angegriffen werden. Sie begreifen schnell, daß sie keine normalen Menschen sind, und daß sie als Team zusammen zu agieren gewohnt sind. Wir haben diese Szene aus einem potentiellen Pilotfilm kurz angespielt, um die Figuren und ihre Interaktion und Motivation zu testen.
 
-Wir haben uns für einen Plot entschieden, der ein wenig an die 
-[Universal Brotherhood](http://wiki.dumpshock.com/index.php/Universal_Brotherhood)
-erinnert: Die Geschichte beginnt damit, daß unsere Runner in einem Warenhaus
-der Interweb Logistics aufwachen, mit einer Schockamnesie a la
-[Bourne Identity](http://www.imdb.com/title/tt0258463/) und dort auch prompt
-von einem Team der Interweb Logistic angegriffen werden. Sie begreifen
-schnell, daß sie keine normalen Menschen sind, und daß sie als Team zusammen
-zu agieren gewohnt sind. Wir haben diese Szene aus einem potentiellen
-Pilotfilm kurz angespielt, um die Figuren und ihre Interaktion und
-Motivation zu testen.
+Danach erst haben wir eine Season von neun Abenteuern geplant, die alle vor dem Piloten spielen. 
 
-Danach erst haben wir eine Season von neun Abenteuern geplant, die alle vor
-dem Piloten spielen. 
-
-Die angegebenen Zahlen zeigen dabei die Screen Presence
-einer Figur in dieser Folge: Eine Screen Presence von 1 definiert, daß die
-Figur in dieser Folge kaum mehr als ein Statist mit einem Namen ist. Eine
-Screen Presence von 2 hat eine Figur, die in dieser Folge eine wichtige
-Nebenrolle spielt oder die den B-Plot trägt - der B-Plot kontrastiert oft
-die Ereignisse und Erfahrungen der Hauptfigur, die in dieser Folge eine
-Screen Presence von 3 hat. 
+Die angegebenen Zahlen zeigen dabei die Screen Presence einer Figur in dieser Folge: Eine Screen Presence von 1 definiert, daß die Figur in dieser Folge kaum mehr als ein Statist mit einem Namen ist. Eine Screen Presence von 2 hat eine Figur, die in dieser Folge eine wichtige Nebenrolle spielt oder die den B-Plot trägt - der B-Plot kontrastiert oft die Ereignisse und Erfahrungen der Hauptfigur, die in dieser Folge eine Screen Presence von 3 hat. 
 
 1. Die erste Folge ist "Face it", eine Face (3) und Kate (2)-Folge, in der
   das Issue von Face recht schnell gelöst werden sollte, um ihn besser in
@@ -174,11 +98,6 @@ Screen Presence von 3 hat.
   Piloten führen.
 
 
-Alles in allem haben sich die ursprünglich recht losen Plotbausteine durch
-das Anspielen und dann weiter planen von Episoden tatsächlich zu einem
-einigermaßen stimmigen Arc zusammengeführt, und die Issues der einzelnen
-Figuren haben sich tatsächlich recht mühelos in den Plot integriert.
+Alles in allem haben sich die ursprünglich recht losen Plotbausteine durch das Anspielen und dann weiter planen von Episoden tatsächlich zu einem einigermaßen stimmigen Arc zusammengeführt, und die Issues der einzelnen Figuren haben sich tatsächlich recht mühelos in den Plot integriert.
 
-Lediglich die Startphase von PtA ist noch immer recht mühsam, obwohl durch
-die oben angesprochene Vorgehensweise viele Probleme entschärft worden sind,
-die ich sonst mit PtA habe.
+Lediglich die Startphase von PtA ist noch immer recht mühsam, obwohl durch die oben angesprochene Vorgehensweise viele Probleme entschärft worden sind, die ich sonst mit PtA habe.
