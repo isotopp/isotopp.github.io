@@ -48,3 +48,15 @@ There is no crisis except the one that has been manufactured by Swisscom themsel
 *EDIT:* Swiss provider Init7 [explains the same thing](https://www.luzernerzeitung.ch/wirtschaft/swisscom-fuehrt-uns-in-die-irre-it-unternehmer-zweifelt-an-erklaerungen-fuer-pannen-ld.1204874) and comes to the same conclusions.
 
 This blog article originally was a [Twitter Thread](https://twitter.com/isotopp/status/1240264656947683333).
+
+## Update: Akamai throttles, too
+
+In a number of news, sucessively most streaming providers have been decided to throttle their stuff, following Netflix initial decision. The final giveaway was [Akamai](https://blogs.akamai.com/2020/03/working-together-to-manage-global-internet-traffic-increases.html):
+
+> Akamai's intelligent edge network architecture is inherently designed to mitigate and minimize network congestion, and because we have deployed our infrastructure deep into carrier networks, we can help those networks avoid overload by diverting traffic away from areas experiencing high levels of congestion. 
+
+Akamai is a CDN operator. They have edge caches all over the world, in each and every providers network directly. That is, it is impossible for Akamai to overload peering exchanges or the actual internetworking fabric of the Internet. The whole point of their business operation is to be local, in every locality.
+
+> In regions where demand is creating bottlenecks for customers, we will be reducing gaming software downloads at peak times, completing the downloads at the normal fast speeds late at night.
+
+So it is not the Internet or the Exchanges here. It is individual local providers who have overcomitted their own internal backbones or their last miles, and sold more access than they can provide. That's of course a self-made problem for that these providers deserve to suffer, but of course that's a problem when literally everybody is coughing their soul out. But we must make sure that we do not forget about this when it is time.
