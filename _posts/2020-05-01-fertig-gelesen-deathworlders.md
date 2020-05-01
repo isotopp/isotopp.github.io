@@ -2,7 +2,7 @@
 layout: post
 title:  'Fertig gelesen: Deathworlders'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 date: 2020-05-01 08:47:15 +0200
 tags:
 - lang_en
