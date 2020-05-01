@@ -15,7 +15,7 @@ In the foreword to his short story "With Friends Like These["](http://img.4plebs
 ## HFY?
 
 > My favorite writer of science fiction was, and still is, the inimitable Eric Frank Russell. When I was turning in short stories to the magazines instead of papers to my college professors and collecting rejection slips instead of credits and grades, I often wondered why Russell had stopped writing. I miss him.
-
+>
 > At the 1968 World Science-Fiction Convention in Oakland, John Campbell told me that Russell was his favorite writer, and that he too sorely bemoaned the lack of yarns Russellian. So I decided to try a Russell-flavored Terra-über-alles story. Campbell liked it. He never sent acceptance letters—just checks.
 
 Sure enough, the story is Terra-über-alles: Aliens come to Earth, which has been sealed off in an impenetrable force-field in a kind of last stand eons ago by some Alien race that feared Terra would take over the Galaxy. The aliens that did that died off, and their successors come to Earth to set Terra free because they are in a fight to death with some kind of sentient-eater swarm horde and need all the allies they can get.
@@ -23,11 +23,11 @@ Sure enough, the story is Terra-über-alles: Aliens come to Earth, which has bee
 They find a planet that looks like a pastoral paradise, and fear that humanity would be nothing but cannon fodder. But they do come to an agreement with some random farmer who claims to be able to speak for all of Terra: The aliens would set Terra free and Terra would help in the war. Sure enough, once the planetary shield is down,
 
 > In the middle of the planet's second ocean, great, impossible masses of thick columnar crystals began to leap upward from the waters. Translucent at first, the chalcedony towers began to pulse with deep inner fires: blue, purple, gold, carmine, and finally a strange, yet familiar silver-gray. The ionosphere, tickled, began to surround the flashing needles with auroras, clothing them in blankets of coruscating radiance.
-
+>
 > Following, the planet began to move after the [Cruiser] Tpin.
-
+>
 > On board the cruiser it was very quiet.
-
+>
 > "I see," whispered Rappan idly, "that they are bringing their moon along also."
 
 ## Reddit and Deathworlders
