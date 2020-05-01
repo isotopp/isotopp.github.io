@@ -112,3 +112,5 @@ The point being that data access programs are boring code
 - that often is also not quite correct.
 
 When we observe code generators mounted on top of NoSQL products that [eat SQL and output DAPs](https://www.datastax.com/blog/2015/03/how-do-joins-apache-cassandratm-and-datastax-enterprise) for the NoSQL product underneath, this is why. This is code that is better written on the fly at runtime, by machines, and run largely without human supervision.
+
+This is what a query planner and executor does for you in relational database products.
