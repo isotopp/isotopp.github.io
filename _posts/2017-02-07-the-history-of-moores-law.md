@@ -7,7 +7,7 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-02-07 21:55:00 +0100'
 tags:
-- computers
+- computer
 - lang_en
 ---
 [![](/uploads/2017/02/Commodore-64-Computer-768x392.jpg)](https://www.theguardian.com/technology/2017/jan/26/vanishing-point-rise-invisible-computer)
