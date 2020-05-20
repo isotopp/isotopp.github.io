@@ -50,6 +50,20 @@ SetOption21 1
 
 The former sets the base voltage the plug sees, calibrating things, and the latter makes the plug report voltage even when the relais is off.
 
+Some people also recommend to shorten the power consumption reporting interval. The minimum is 10s. This can be done in the web interface, or with a console command:
+
+{% highlight console %}
+TelePeriod 10
+{% endhighlight %}
+
+Additionally, the number of digits after the comma can be dialled up. If you trust the equipment to actually deliver this precision, do configure like this, and also set a NTP server.
+
+{% highlight console %}
+Backlog AmpRes 3; EnergyRes 5; FreqRes 3; VoltRes 3; WattRes 3
+NtpServer http://ptbtime1.ptb.de
+{% endhighlight %}
+
+
 [MQTT to Influx and Grafana](http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana) contains instructions for dockering Influx and Grafana and a small piece of Python that can be trivially adjusted to grab the power reports from the plug and load them into the Influx.
 
 I added a total of 10 plugs to the household and may have need for another 10. I am also looking at a potential IPv4 shortage at home and may need to expand beyond a single /24.
