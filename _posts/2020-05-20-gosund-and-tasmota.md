@@ -41,7 +41,7 @@ Apart from the obvious config through http, you want
 
 as the template of choice for the v1.1 plug. Tasmota Templates select the binary function module that controls the plug, here 45 - Blitzwolf SHP6 - and then assigns functions to the GPIO pins.
 
-Apary from setting up syslog, MQTT and Wifi, you also want to run some Console commands:
+Apart from setting up syslog, MQTT and Wifi, you also want to run some Console commands:
 
 {% highlight console %}
 VoltageSet 235
