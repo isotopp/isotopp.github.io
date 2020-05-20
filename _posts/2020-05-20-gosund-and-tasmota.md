@@ -21,7 +21,11 @@ But lets start at the beginning:
 
 There is [tuya-convert](https://github.com/ct-Open-Source/tuya-convert) for solder-free flashing. The software needs to run on a machine with a controllable Wifi chip, in my case a Raspi 4. It fakes a trustworthy firmware update hotspot and then flashes an alternate firmware onto the plug. For me, this was an entirely pain-free process.
 
-In my home, that is [Tasmota](https://github.com/arendst/Tasmota) - there is also esphome. Tasmota does http, mqtt (both with TLS, if you wish) and syslog.
+*Clarification:* tuya-convert is a solder-free conversion process that exploits a firmware update vulnerability in the original firmware. For some plugs or ESP devices in general it can work, and if it does, it is a breeze.
+
+Some Tuya devices are locked. In this case it is always possible to convert them by connecting a serial port to the GPIO pins of the ESP chip. This can be done with a [Raspi 4](https://www.amazon.de/gp/product/B07TC2BK1X) ([Case](https://www.amazon.de/gp/product/B085795KPX), [Power](https://www.amazon.de/gp/product/B07ZCK2B8J), [SD Card](https://www.amazon.de/gp/product/B073JYVKNX)), a [RS232 adapter](https://www.amazon.de/gp/product/B01N7KA3OO), and some headers and breadboard wires. Sometimes the connection can be made without soldering using the breadboard wires, and always with a quick solder drop to make the connection more reliable. In my case all of that was not necessary for the Gosund plugs, tuya-convert worked.
+
+In my home, the new firmware is [Tasmota](https://github.com/arendst/Tasmota) - there is also esphome. Tasmota does http, mqtt (both with TLS, if you wish) and syslog.
 
 ![](/uploads/2020/05/tasmota-ui.jpg)
 
