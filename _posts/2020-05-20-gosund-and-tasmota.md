@@ -47,3 +47,5 @@ SetOption21 1
 The former sets the base voltage the plug sees, calibrating things, and the latter makes the plug report voltage even when the relais is off.
 
 [MQTT to Influx and Grafana](http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana) contains instructions for dockering Influx and Grafana and a small piece of Python that can be trivially adjusted to grab the power reports from the plug and load them into the Influx.
+
+I added a total of 10 plugs to the household and may have need for another 10. I am also looking at a potential IPv4 shortage at home and may need to expand beyond a single /24.
