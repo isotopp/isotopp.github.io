@@ -201,4 +201,4 @@ rm keks` in a secondary shell:
 {% endhighlight %}
 
 The actual observer selection allows a rich palette of event
-classes and filters, so dispatching and filering events is easy.
+classes and filters, so dispatching and filtering events is easy.
