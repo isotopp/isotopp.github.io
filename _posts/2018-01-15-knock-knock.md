@@ -10,7 +10,6 @@ tags:
 - macos
 - apple
 - lang_en
-
 ---
 What does your Mac do on Startup? [Knockknock knows](https://github.com/synack/knockknock). 
 

@@ -7,6 +7,7 @@ date: 2020-05-26 15:45:15 +0200
 tags:
 - lang_en
 - apple
+- macos
 - backup
 ---
 I have an embedded Mac mini, it drives the local TV screen by doing OpenVPN to Germany, Netflix, Amazon and the local [Subsonic](https://subsonic.org). It does not really do much with the local disk, and it does not need to wake up every hour to make a Time Machine backup over the network.

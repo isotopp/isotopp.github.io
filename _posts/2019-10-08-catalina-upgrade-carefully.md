@@ -6,7 +6,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: 2019-10-08 09:20:08 +0200
 tags:
 - apple
-- mac os
+- macos
 - lang_en
 ---
 Catalina is here. It fixes many things, among them iTunes. On the other

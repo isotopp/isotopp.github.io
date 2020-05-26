@@ -6,6 +6,8 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: 2019-10-15 11:50:23 +0200
 tags:
 - lang_en
+- apple
+- macos
 ---
 Note to self: Ignoring the Catalina Nagscreens is done like this:
 
