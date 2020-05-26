@@ -2,7 +2,7 @@
 layout: post
 status: publish
 published: true
-title: Harbebrained Battletech
+title: Harebrained Battletech
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2018-04-26 14:14:10 +0200'

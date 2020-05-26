@@ -7,7 +7,7 @@ date: 2012-08-22 10:01:00 UTC
 tags:
 - debug
 - mysql
-- network
+- networking
 - performance
 - lang_de
 feature-img: assets/img/background/mysql.jpg

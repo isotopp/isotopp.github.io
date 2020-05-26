@@ -6,6 +6,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: 2020-05-25 21:27:26 +0200
 tags:
 - lang_en
+- iot
 ---
 In an earlier episode I asked for [Plugs with Wifi]({% link _posts/2020-05-12-plugs-with-wifi.md %}) and ended up with [Gosund and Tasmota]({% link _posts/2020-05-20-gosund-and-tasmota.md %}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
 

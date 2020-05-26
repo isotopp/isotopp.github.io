@@ -7,7 +7,7 @@ date: 2019-09-03 21:31:01 +0100
 tags:
 - lang_de
 - erklaerbaer
-- distributed systems
+- distributed computing
 ---
 Ein Thread über Konsenssysteme aus
 [Twitter](https://twitter.com/isotopp/status/1168969885512286210)

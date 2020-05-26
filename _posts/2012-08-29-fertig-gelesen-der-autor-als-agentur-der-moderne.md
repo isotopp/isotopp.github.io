@@ -7,7 +7,6 @@ date: 2012-08-29 14:00:00 UTC
 tags:
 - book
 - review
-- literatur
 - media
 - scifi
 - lang_de

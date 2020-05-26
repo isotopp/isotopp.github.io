@@ -5,7 +5,6 @@ title: Wieviel Speicher brauchst Du denn?
 author-id: isotopp
 date: 2009-10-09 17:05:00 UTC
 tags:
-- betriebssysteme
 - computer
 - kernel
 - linux
