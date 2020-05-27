@@ -29,3 +29,7 @@ $ sudo defaults write /System/Library/LaunchDaemons/com.apple.backupd-auto Start
 {% endhighlight %}
 
 does no longer work: It tries to change a `plist` in `/System` and fails. The approach chosen by Time Machine Editor is cleaner and not subject to these new Apple limitations.
+
+![](/uploads/2020/05/tme-before-after.png)
+
+*Energy consumption of the Mac mini before and after installation of Time Machine Editor. I am running a backup every 6h, and that is just fine with this machine and how it is being used.*
