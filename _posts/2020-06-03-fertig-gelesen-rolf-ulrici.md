@@ -2,11 +2,13 @@
 layout: post
 title:  'Fertig gelesen: Rolf Ulrici'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 date: 2020-06-03 12:13:28 +0200
 tags:
 - lang_de
 - review
+- book
+- media
 - scifi
 ---
 Als ich noch ein ganz kleiner Kris war, habe ich die Schülerbüchereien von mehreren Schulen durchgelesen und mich dann über die [Gemeindebücherei](http://www.gemeindebuecherei-heikendorf.de/team.htm) hergemacht. Es ist jetzt mehr als 40 Jahre her, daß ich da im Schülerteam mitgearbeitet habe, aber die Chefin, die damals gerade angefangen hatte und die auch das Schülerteam begründet hat, ist immer noch da und macht ihren Job. Das ist unglaublich großartig.
