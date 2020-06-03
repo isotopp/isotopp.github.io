@@ -10,7 +10,7 @@ tags:
 - review
 - media
 - book
-- sci fi
+- scifi
 - lang_en
 ---
 [![](/uploads/2017/03/Screen-Shot-2017-03-02-at-21.24.31.png)](https://www.amazon.de/Are-Legion-Bobiverse-Book-English-ebook/dp/B01LWAESYQ)
