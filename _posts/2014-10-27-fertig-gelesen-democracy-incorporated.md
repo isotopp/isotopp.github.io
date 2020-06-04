@@ -1,6 +1,5 @@
 ---
-title: 'Fertig gelesen: "Democracy Incorporated: Managed Democracy and
-  the Specter of Inverted...'
+title: 'Fertig gelesen: Democracy Incorporated'
 date: '2014-10-27 08:25:27 +0100'
 layout: post
 published: true

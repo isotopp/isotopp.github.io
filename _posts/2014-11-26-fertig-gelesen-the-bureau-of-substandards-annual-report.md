@@ -1,5 +1,5 @@
 ---
-title: 'Fertig gelesen: "The Bureau of Substandards Annual Report "'
+title: 'Fertig gelesen: The Bureau of Substandards Annual Report'
 date: '2014-11-26 21:17:18 +0100'
 layout: post
 published: true

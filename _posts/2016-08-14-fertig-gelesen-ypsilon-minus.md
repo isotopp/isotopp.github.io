@@ -1,5 +1,5 @@
 ---
-title: 'Ypsilon Minus: Roman eBook: Herbert W. Franke: Amazon.de: Kindle-Shop'
+title: 'Fertig gelesen: Ypsilon Minus'
 date: '2016-08-14 18:12:42 +0200'
 layout: post
 published: true

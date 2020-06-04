@@ -1,5 +1,5 @@
 ---
-title: 'Fertig gelesen: "Perfect State"'
+title: 'Fertig gelesen: Perfect State'
 date: '2015-11-29 15:02:46 +0100'
 layout: post
 published: true

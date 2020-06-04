@@ -1,5 +1,5 @@
 ---
-title: '"Good Taste", Isaac Asimov (1976)'
+title: 'Fertig gelesen: Good Taste'
 date: '2018-07-15 15:56:09 +0200'
 layout: post
 published: true

@@ -1,5 +1,5 @@
 ---
-title: 'Fertig gelesen: "On the Steel Breeze"'
+title: 'Fertig gelesen: On the Steel Breeze'
 date: '2015-11-29 17:46:54 +0100'
 layout: post
 published: true

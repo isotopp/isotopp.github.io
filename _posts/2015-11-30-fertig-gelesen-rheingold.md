@@ -1,5 +1,5 @@
 ---
-title: 'Fertig gelesen: "Rheingold"'
+title: 'Fertig gelesen: Rheingold'
 date: '2015-11-30 20:51:26 +0100'
 layout: post
 published: true

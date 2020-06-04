@@ -1,5 +1,5 @@
 ---
-title: 'Fertig gelesen: "Poseidon''s Wake"'
+title: 'Fertig gelesen: Poseidon''s Wake'
 date: '2015-11-29 17:55:46 +0100'
 layout: post
 published: true
