@@ -23,3 +23,7 @@ Im Laufe des Buches erfahren wir mehr über die Diebin, warum sie das tut, was s
 Klausmanns erstes Buch. Ein zweiter Teil ist auf dem Weg. Ich werde ihn kaufen.
 
 "[Slingshot](https://www.amazon.de/dp/B00WBZFHTG)", Tobias Klausmann, EUR 2.99
+
+Mehr Reviews:
+- [Slingshot]({% link _posts/2015-11-30-fertig-gelesen-slingshot.md %})
+- [Retaliation]({% link _posts/2017-01-02-fertig-gelesen-retaliation.md %})
