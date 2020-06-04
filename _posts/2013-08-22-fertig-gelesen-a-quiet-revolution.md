@@ -1,8 +1,7 @@
 ---
 layout: post
 published: true
-title: 'Fertig gelesen: "Leila Ahmed - A Quiet Revolution: The Veil''s Resurgence,
-  from the Middle East to America"'
+title: 'Fertig gelesen: A Quiet Revolution: The Veil''s Resurgence'
 author: isotopp
 date: '2013-08-22 07:15:07 +0200'
 tags:
