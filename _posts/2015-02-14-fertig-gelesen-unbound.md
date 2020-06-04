@@ -28,3 +28,9 @@ Was immer Ihr nach den ersten beiden Büchern der Serie habt, dieses Buch wird s
 "[Unbound](https://www.amazon.de/Unbound-Magic-Libris-Book-Three-ebook/dp/B00KWG5U6Q)", Jim C. Hines, 11.99 EUR
 
 Trigger Warning: Depression
+
+Mehr Reviews:
+- [Libriomancer]({% link _posts/2013-09-23-fertig-gelesen-libriomancer.md %})
+- [Codex Born]({% link _posts/2013-09-27-fertig-gelesen-codex-born.md %})
+- [Unbound]({% link _posts/2015-02-14-fertig-gelesen-unbound.md %})
+- [Revisionary]({% link _posts/2016-08-14-fertig-gelesen-revisionary.md %})
