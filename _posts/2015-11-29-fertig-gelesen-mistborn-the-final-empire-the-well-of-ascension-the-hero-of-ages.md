@@ -30,3 +30,8 @@ Brandron Sanderson:
 - "[The Well of Ascension](https://www.amazon.de/Well-Ascension-Mistborn-Book-Two-ebook/dp/B003XNTTYY)"
 - "[The Hero of Ages](https://www.amazon.de/Hero-Ages-Mistborn-Book-Three-ebook/dp/B005PM3YII
 ])"
+
+Mehr Reviews:
+- [Mistborn: The Final Empire, #1-#3]({% link _posts/2015-11-29-fertig-gelesen-mistborn-the-final-empire-the-well-of-ascension-the-hero-of-ages.md %})
+- [Mistborn: The Allow of Law, #4-#6]({% link _posts/2016-02-28-fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.md %})
+- [Mistborn: Secret History]({% link _posts/2016-02-28-fertig-gelesen-mistborn-secret-history.md %})
