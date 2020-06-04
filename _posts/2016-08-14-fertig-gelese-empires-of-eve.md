@@ -1,5 +1,5 @@
 ---
-title: 'Fertig gelese: Empires of EVE'
+title: 'Fertig gelesen: Empires of EVE'
 date: '2016-08-14 18:49:05 +0200'
 layout: post
 published: true
