@@ -14,7 +14,7 @@ feature-img: assets/img/background/book.jpg
 ---
 Unter der Magie der Geschichten und Bücher liegt die Magie des Gewebes der Welt. Im dritten Teil der Libriomancer-Geschichten von Jim C. Hines lernen wir endlich, wie das alles zusammenhängt. Dazu schickt Hines seinen Helden und seine verschiedenen Begleiterinnen auf einen regelrechten Höllenritt gegen eine potentielle Göttin und die Gefechtszone zweier übermächtigter Fraktionen - die Porter und die Studenten von Bi Sheng, und er macht keine Gefangenen.
 
-[![](/uploads/2015/11/unbound.jpg)](https://www.amazon.de/Unbound-Magic-Libris-Book-Three-ebook/dp/B00KWG5U6Q)
+[![](/uploads/2015/02/unbound.jpg)](https://www.amazon.de/Unbound-Magic-Libris-Book-Three-ebook/dp/B00KWG5U6Q)
 
 [Unbound](https://www.amazon.de/Unbound-Magic-Libris-Book-Three-ebook/dp/B00KWG5U6Q)
 
