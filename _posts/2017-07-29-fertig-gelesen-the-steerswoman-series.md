@@ -2,7 +2,7 @@
 layout: post
 status: publish
 published: true
-title: 'Fertig gelesen: The Steerwoman Series'
+title: 'Fertig gelesen: The Steerswoman Series'
 author-id: isotopp
 feature-img: assets/img/background/book.jpg
 date: '2017-07-29 08:16:30 +0200'
