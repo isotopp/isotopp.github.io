@@ -69,3 +69,13 @@ java    3900157 docker  153u  IPv4 34927830      0t0  TCP 172.3.0.5:59998->172.3
 java    3900157 docker  157u  IPv4 34927885      0t0  UDP *:5000
 java    3900157 docker  159u  IPv6 34927887      0t0  UDP *:5000
 {% endraw %}{% endhighlight %}
+
+[@ascii158](https://twitter.com/ascii158/status/1269868957458186240) points me at
+
+{% highlight console %}{% raw %}
+# nsenter -n -t $(docker inspect <containername> -f '{{.State.Pid}}') lsof -i -n -P
+{% endraw %}{% endhighlight %}
+
+as an alternative solution. That works, but is also quite a lot to type. Like the former solution it needs a script, just a different one. It still is more flexible: works with non-network namespaces and does not need to update a static lookup table.
+
+It also highlights the fact that `docker ps` prints a lot of different identifiers, none of which are the actual PID. Which is funny, because that is kind of the point of a thing called `ps`, isn't it?
