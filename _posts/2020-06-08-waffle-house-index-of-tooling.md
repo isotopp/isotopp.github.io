@@ -64,3 +64,7 @@ And that is the way to go: From reactive scaling ("CPU Load too high, raise capa
   - That means load tests with production users.
   - That means detailed, many-dimensional metrics with many tags, and a lot of ad-hoc metrics exploration.
 - Once you have that, you are also ready for predictive autoscaling, which actually works.
+
+and
+
+- If you shop uses CPU load alerting, changes are that their tooling and education is in need of emergency updating.
