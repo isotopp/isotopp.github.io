@@ -23,7 +23,7 @@ Nobody wants two apps, and two Sonos networks.
 
 Nobody wants to throw out perfectly good speakers.
 
-This is a very unsatisfying situation, and a completely unnecessary one, to boot. I get that a single-core PPC CPU| with 32 MB of memory and 32 MB of flash has limitations. I also know that newer devices are Raspi-4 like devices with up to 4 cores, 1024 MB of memory and 1024 MB of flash.
+This is a very unsatisfying situation, and a completely unnecessary one, to boot. I get that a single-core PPC CPU with 32 MB of memory and 32 MB of flash has limitations. I also know that newer devices are Raspi-4 like devices with up to 4 cores, 1024 MB of memory and 1024 MB of flash.
 
 Sonos decided to split universes instead of dumbing down old devices to remote-controlled WAV/MP3 stream receivers and running the control software on any of the more powerful devices in a network. Sonos decided to not sell a Raspi 4-like Controller box for legacy devices in a nice chassis as a maintenance upgrade for legacy speakers.
 
