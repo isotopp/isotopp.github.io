@@ -29,4 +29,4 @@ Sonos decided to split universes instead of dumbing down old devices to remote-c
 
 Sonos always was known for long-term support of their devices, and Sonos was always known for making things simple and just work. They completely failed at any of these, their core values, with their S2 migration.
 
-And that is not even looking at the completely botched communication around this entire thing, with the explaination-less announcement of the trade-in program, the completely messed up bricking-program and the half-assed attempt of not really bringing the old hardware into the future.
+And that is not even looking at the completely botched communication around this entire thing, with the explaination-less announcement of the trade-in program, and the completely messed up bricking-program.
