@@ -28,3 +28,5 @@ This is a very unsatisfying situation, and a completely unnecessary one, to boot
 Sonos decided to split universes instead of dumbing down old devices to remote-controlled WAV/MP3 stream receivers and running the control software on any of the more powerful devices in a network. Sonos decided to not sell a Raspi 4-like Controller box for legacy devices in a nice chassis as a maintenance upgrade for legacy speakers.
 
 Sonos always was known for long-term support of their devices, and Sonos was always known for making things simple and just work. They completely failed at any of these, their core values, with their S2 migration.
+
+And that is not even looking at the completely botched communication around this entire thing, with the explaination-less announcement of the trade-in program, the completely messed up bricking-program and the half-assed attempt of not really bringing the old hardware into the future.
