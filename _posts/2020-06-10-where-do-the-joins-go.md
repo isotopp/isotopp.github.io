@@ -63,7 +63,7 @@ The `order` table most likely would be an `orderlog` table, and we would record 
 There are multiple good things about this, which is why we are doing it like this in relational systems as well:
 
 - The OrderService can handle the order from all the data in the one single order event, because it contains all the relevant information for the most common purpose, fulfillment.
-- This is most likely also all the information that we would in the Event that feeds the data warehouse.
+- This is most likely also all the information that we would put into the Event that feeds the data warehouse.
 
 Doing things this way keeps the size of our OLTP system bounded (for the same number of customers, articles and active orders, over an infinite amount of time, the system does not grow). The data lifecycle in the OLTP system is complete and we do not accrete an infinite amount of data - Data Warehouses do grow infinitely unless you drop after x years, OLTP system must not grow infinitely and if they do, they do contain a small DWH that struggles to get out.
 
@@ -101,11 +101,11 @@ In a MySQL database with row based replication, the actual row events are even i
 
 In fact, with RBR the actual row events with full row images are even reversible: we do not only get "set x = 10", we do get "set x from 9 to 10", and if the log were pure we could play it backwards and walk back in time step by step (this fails in reality in the general case, but again this is a different discussion).
 
-So if you think of the database as a giant global variable that is modified in transactions, and as the binlog as a recording of these transactions in ideally reversible notation, then we can think of a services system as "that binlog", and as each of these services as a thing that builds materialized views (projections) of fragments of the total database and the total globalized state is gone, because it has become too big to maintain (We will see about that in a second).
+So if you think of the database as a giant global variable that is modified in transactions, and as the binlog as a recording of these transactions in ideally reversible notation, then we can think of a services system as "that binlog on an event bus", and as each of these services as a thing that builds materialized views (projections) of fragments of the total database and the total globalized state is gone, because it has become too big to maintain (We will see about that in a second).
 
-But: You cannot realistically keep the log an indefinite amount of time, and even if you did, you cannot replay it from the Big Band, because your recovery time would be unbounded. So there must be backups (images) associated with positions in the event stream, that allow individual services to reset and replay themselves.
+But: You cannot realistically keep the log an indefinite amount of time. And even if you did, you cannot replay it from the Big Bang, because your recovery time would be unbounded. So there must be backups (images) associated with positions in the event stream, that allow individual services to reset and replay themselves. Or you demand that all questions are always sequentially independent and over fixed time windows so they can be starting up in the middle of an ongoing stream. Maybe that is even a reasonable restriction, it is in any case a useful classification for types of queries on a stream.
 
-But there is also the problem of complicance/correctness/synchronisation: How do you show that for every event in your orderlog there is also an entry in the payment service that matches the order? Probably with some event reader that consumes both types of events, matches one up with the other or alerts if some order is being maintained as active for too long without finding a matching order.
+But there is also the problem of complicance/correctness/synchronisation: How do you show that for every event in your orderlog there is also an entry in the payment service that matches the order? Probably with some event reader that consumes both types of events, orders and payments. It would have to match one up with the other or alert if some order is being maintained as active for too long without finding a matching payment.
 
 At some point in the evening I got into a chat with a colleague:
 
@@ -114,7 +114,6 @@ At some point in the evening I got into a chat with a colleague:
 > To the JoinDataService, obviously. 
 > Aka "Data Lake".
 > aka The Data Monolith that secretly underpins all the service shit.
-
 
 He's not wrong. The Hadoop in the end is the global state where all the events get joined together again and it produces a giant global image of the current and all past states. That is why the big data is big (and you can go back to the big bang, it just eats Megawatthours to do so.)
 
