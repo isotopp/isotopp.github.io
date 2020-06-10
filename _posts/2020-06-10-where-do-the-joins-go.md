@@ -110,10 +110,10 @@ But there is also the problem of complicance/correctness/synchronisation: How do
 At some point in the evening I got into a chat with a colleague:
 
 > L> You asked:
-> L> [Where do the Joins go?](https://twitter.com/isotopp/status/1270746627339358208?s=21)
-> L> To the JoinDataService, obviously. 
-> L> Aka "Data Lake".
-> L> aka The Data Monolith that secretly underpins all the service shit.
+> [Where do the Joins go?](https://twitter.com/isotopp/status/1270746627339358208?s=21)
+> To the JoinDataService, obviously. 
+> Aka "Data Lake".
+> aka The Data Monolith that secretly underpins all the service shit.
 
 
 He's not wrong. The Hadoop in the end is the global state where all the events get joined together again and it produces a giant global image of the current and all past states. That is why the big data is big (and you can go back to the big bang, it just eats Megawatthours to do so.)
@@ -121,16 +121,16 @@ He's not wrong. The Hadoop in the end is the global state where all the events g
 At some point I was like:
 
 > K> I get the feeling that the answer is "we are looking at each event in a self-contained fashion. One event is one Transaction."
-> K> So an order event is self-contained and does not need to refer to other orders or other facts.
-> K> It contains all data necessary to fulfull the order. It also means "Fuck you, reporting."
-> K> And that is where your data lake comes in.
+> So an order event is self-contained and does not need to refer to other orders or other facts.
+> It contains all data necessary to fulfull the order. It also means "Fuck you, reporting."
+> And that is where your data lake comes in.
 >
 > L> I wasn’t kidding.
 >
 > K> "Why is it called data lake?" "Because this is where we drown our problems in hardware and petabytes"
-> K> Unfortunately, book keeping is stateful and cannot look at individual orders, it is all about aggregation.
-> K> I also get the feeling that is where the blockchain bros come in.
-> K> "by turning your event stream into a sequence of chained and signed blocks you get guarantees of losslessness"
+> Unfortunately, book keeping is stateful and cannot look at individual orders, it is all about aggregation.
+> I also get the feeling that is where the blockchain bros come in.
+> "by turning your event stream into a sequence of chained and signed blocks you get guarantees of losslessness"
 >
 > L> Blockchain == storage.
 >
@@ -138,7 +138,7 @@ At some point I was like:
 >…
 > 
 > L> There will always be two things: state and changes to state.
-> L> Unless every change contains the entire previous state, or changes are distributed guaranteed, there is risk of diversion.
+> Unless every change contains the entire previous state, or changes are distributed guaranteed, there is risk of diversion.
 > 
 > K> So this is also a question I have about Blockch... Merkle trees. You can spot holes. How do you heal them?
 >
