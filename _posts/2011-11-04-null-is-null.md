@@ -9,9 +9,9 @@ tags:
 - mysql
 - sql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
-Q> Sag mal, NULL zählt nicht bei einem UNIQUE INDEX? Zum Beuspiel ein UNIQUE INDEX auf (a,b) und dann
+Q> Sag mal, NULL zählt nicht bei einem UNIQUE INDEX? Zum Beispiel ein UNIQUE INDEX auf (a,b) und dann
 
 {% highlight sql %}
 a  b
