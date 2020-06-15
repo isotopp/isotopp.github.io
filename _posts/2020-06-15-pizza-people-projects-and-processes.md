@@ -41,7 +41,7 @@ In the end, it can look like this:
 
 ![](/uploads/2020/06/pizza/pizza-as-a-service.png)
 
-*CMMI for services, Service Delivery (pretty much the same as ITIL SD)*
+*[CMMI for services, Service Delivery](https://www.wibas.com/cmmi/service-establishment-and-delivery-cmmi-svc) (pretty much the same as ITIL SD)*
 
 CMMI for services 1.3 creates a set of processes interacting to structure service delivery. It looks complicated, but it’s not. There is the customer, and service delivery delivers. There might be an incident such as the oven being on fire, and Incident Resolution takes care of that. The Strategic Service Management looks at how we set up the kitchen, and what goes on the menu - the production process. Service Development thinks up the way the kitchen is structured and works, and Service Transition makes sure the kitchen is being built and that cooks and servers are trained. The Incident Resolution in ITIL has deeper structure, looking at larger scale problems that can be extracted from individual services, and interacts with the Service Transition in Change Management.
 
@@ -53,7 +53,7 @@ What we build here could be a single pizzeria, but also a chain that deals with 
 
 *The ideal outcome of proper process*
 
-When you perform process, you are in a cycle. The stages of the cycle are named differently, depending on your management ideology, but it’s always a planning stage, a doing stage (“a sprint” in Agile), and a stage where you look back at how things work and what we can learn (“a retrospective” in Agile, “Check” in PDCA). Then you implement potential improvements (“Act” in PDCA).
+When you perform process, you are in a cycle. The stages of the cycle are named differently, depending on your management ideology, but it’s always a planning stage, a doing stage (“a sprint” in Agile), and a stage where you look back at how things work and what we can learn (“a retrospective” in Agile, “Check” in PDCA). Then you implement potential improvements (“Act” in [PDCA](https://en.wikipedia.org/wiki/PDCA)).
 
 ![](/uploads/2020/06/pizza/pcda.png)
 
@@ -87,7 +87,7 @@ So processes spawn meta-projects to change themelves.
 
 We always need to take all three pillars into account: There is always an organisation, with roles that have defined tasks, skills, and that need staffing. There are people that staff the roles, they need training to get the skills they need and to understand the specific tasks they are supposed to perform, and there is the Tech that is supposed to support People to perform their roles. For some reason that Tech is always the least important thing in a process.
 
-So on a scale of 1-5, how good are we at a thing?
+So [on a scale of 1-5](https://en.wikipedia.org/wiki/File:Characteristics_of_Capability_Maturity_Model.svg), how good are we at a thing?
 
 Suppose you are a Pizzeria, and you are really good at Pizza as a Service. Now somebody comes in, and wants Spaghetti. Bologna, of all things. You happen to have the noodles, and you have the sauce, because of the Pizza of the same style you service.
 
