@@ -67,4 +67,4 @@ And that is the way to go: From reactive scaling ("CPU Load too high, raise capa
 
 and
 
-- If you shop uses CPU load alerting, changes are that their tooling and education is in need of emergency updating.
+- If your shop uses CPU load alerting, chances are that their tooling and education is in need of emergency updating.
