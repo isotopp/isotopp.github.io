@@ -14,7 +14,7 @@ Charity Majors was [on fire and on target, again](https://twitter.com/mipsytipsy
 [![](/uploads/2020/06/waffle-house-index.png)](https://twitter.com/mipsytipsy/status/1268418428542443520)
 
 What is a [Waffle House Index](https://en.wikipedia.org/wiki/Waffle_House_Index#Levels)?
-> The Waffle House Index is an informal metric named after the Waffle House restaurant chain and is used by the Federal Emergency Management Agency (FEMA) to determine the effect of a storm and the likely scale of assistance required for disaster recovery.
+> The Waffle House Index is an informal metric named after the Waffle House restaurant chain and is used by the Federal Emergency Management Agency (FEMA) to determine the effect of a storm and the **likely scale of assistance required for disaster recovery**.
 
 A "Waffle House Index for Tooling" would be an indicator how bad the situation on the ground in an IT department is. Charity Majors suggest "CPU load alerts" as a tooling emergency indicator.
 
