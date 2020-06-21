@@ -8,7 +8,7 @@ tags:
 - mysql
 - performance
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 [Oprofile](http://oprofile.sourceforge.net) ist ein Profiler. Und zwar einer, der die Performance Measurement Instrumentation verwendet, die in moderne CPUs eingebaut ist, wenn diese vorhanden ist. Der Profiler braucht also keine speziell für Profiling compilierten Binaries, sondern zieht sich statische Samples des Programmzählers aus dem laufenden System und analysiert diese: Es findet heraus, welcher Prozeß gerade aktiv ist, welche Bibliothek in diesem Prozeß gerade verwendet wird und wenn Symboltabellen vorhanden sind (Kein "strip" auf die Bibliothek oder das Programm angewendet), dann weiß Oprofile sogar, welche Funktion oder Methode gerade aktiv ist.
 

@@ -2,7 +2,7 @@
 layout: post
 title:  'Optimistic locking'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-06-04 09:00:01 +0200
 tags:
 - lang_en

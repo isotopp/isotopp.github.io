@@ -9,7 +9,7 @@ tags:
 - mysql
 - work
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 "Ich muß Hardware für einen Rechner kaufen, auf dem dediziert nur ein MySQL laufen soll. Was soll ich beschaffen?" ist eine Frage, die ich recht oft höre. Hier ist die lange Antwort.
 

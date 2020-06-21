@@ -2,7 +2,7 @@
 layout: post
 title:  'MySQL store_result and use_result'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-06-01 17:47:36 +0200
 tags:
 - lang_en

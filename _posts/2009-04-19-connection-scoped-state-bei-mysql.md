@@ -10,7 +10,7 @@ tags:
 - php
 - phpmyadmin
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 Aus einer Diskussion in der deutschsprachigen MySQL Gruppe im USENET. Dort ging es um die Frage, warum phpMyAdmin ein eingeschränktes Werkzeug ist und bei vielen Helfern im Netz unbeliebt. Meine Antwort lautete so:
 

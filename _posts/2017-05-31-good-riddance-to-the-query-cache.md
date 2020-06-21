@@ -4,7 +4,7 @@ status: publish
 published: true
 title: Good Riddance to the Query Cache
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: '2017-05-31 15:36:31 +0200'
 tags:
 - mysql

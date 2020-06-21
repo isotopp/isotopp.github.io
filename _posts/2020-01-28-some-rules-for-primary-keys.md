@@ -2,7 +2,7 @@
 layout: post
 title:  'Some rules for primary keys'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-01-28 19:26:35 +0100
 tags:
 - lang_en

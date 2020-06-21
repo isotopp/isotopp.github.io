@@ -9,7 +9,7 @@ tags:
 - mysql
 - performance
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 "Hey, Kris!  Wir haben zwischen 16:20 und 17:20 CEST einen Lasttest
 durchgeführt und kurz vor 17:00 Uhr einen unerklärlichen Spike und einen

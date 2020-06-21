@@ -2,7 +2,7 @@
 layout: post
 title:  'The lack of developer centric MySQL monitoring - a rant'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-03-18 11:24:09 +0100
 tags:
 - lang_en

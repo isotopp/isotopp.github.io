@@ -11,7 +11,7 @@ tags:
 - sql
 - sqlite
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 ---
 Ich lese gerade [SQLite Foreign Key Support](http://www.sqlite.org/draft/foreignkeys.html) und ich muß sagen, ich kann mir ein leichtes Grinsen nicht verkneifen.
 

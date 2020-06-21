@@ -2,7 +2,7 @@
 layout: post
 title:  'Deleting data from MySQL'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-05-13 11:24:35 +0200
 tags:
 - lang_en
