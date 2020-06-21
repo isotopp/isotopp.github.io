@@ -12,6 +12,7 @@ tags:
 - lang_en
 feature-img: assets/img/background/rijksmuseum.jpg
 ---
+(*Update:* 2020-06-19 [Russian version](https://howtorecover.me/kontent-i-kulturnyy-kontrol-forumov) contributed by Vladimir Htr)
 
 Vor vielen Jahren, Ende 1999, habe ich die Erstellung der Newsgroup
 de.comp.lang.php initiiert. Als die Gruppe neu war, habe ich für mich
