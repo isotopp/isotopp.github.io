@@ -14,28 +14,12 @@ feature-img: assets/img/background/rijksmuseum.jpg
 ---
 (*Update:* 2020-06-19 [Russian version](https://howtorecover.me/kontent-i-kulturnyy-kontrol-forumov) contributed by Vladimir Htr)
 
-Vor vielen Jahren, Ende 1999, habe ich die Erstellung der Newsgroup
-de.comp.lang.php initiiert. Als die Gruppe neu war, habe ich für mich
-persönlich ein Experiment gestartet und versucht, die
-[Kommunikationskultur in einer offenen Usenet Newsgroup]({% link _posts/2005-06-07-zehn-jahre-php.md %})
-beeinflussen und zu kontrollieren.
+Many years ago, late in 1999, I was involved in the creation of de.comp.lang.php, a USENET newsgroup. Since the group was new I began a personal experiment to influence the communication culture of an [open USENET group]({% link _posts/2005-06-07-zehn-jahre-php.md %}).
 
-Das hat vier bis fünf Jahre gehalten, von denen ich zwei Jahre aktiv an der
-Sache gearbeitet habe und mir
-[viel gutes Karma]({% link _posts/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md %}) 
-gebracht. Aber leider ist
-[http://www.php-faq.de/](http://www.php-faq.de/) nun doch tot (oder
-zumindest veraltet und nicht mehr aktiv.
+That went on for four to five year, out of which I have been actively involved for two years, earning [good Karma]({% link _posts/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md %}). But unfortunately [http://www.php-faq.de/](http://www.php-faq.de/) is now dead (or outdated and inactive).
 
-Auf meiner Platte liegt noch ein alter, seit Jahren unveröffentlichter Text
-über das Konzept, das hinter dieser Aktion stand. Ich veröffentliche ihn
-also hier einmal - die Strategie ist sicherlich auf ähnlich strukturierte
-Kommunikationsumgebungen übertragbar. In anderen Umgebungen funktionieren
-andere Strategien, wie ich sie in dem
-[Flames-Vortrag]({% link _posts/2007-02-11-flames-kommunikationszusammenbr-che-im-netz.md %})
-angeschnitten habe. Einige von den Dingen in dem Paper da unten würde ich
-heute leicht anders darstellen, aber im Kern ist es gut. Vielleicht nutzt es
-ja jemandem was?
+On my disk there was an old text, unpublished for many years, about the concept behind the engagement. I will just post it here, because the strategy might be salvaged and could be applied elsewhere to similarly structured environments. Other environments need different strategies, as shown in my talk about 
+[Flames]({% link _posts/2007-02-11-flames-kommunikationszusammenbr-che-im-netz.md %}). Some of the things shown below I would present differently today, but the core is solid. Maybe it is useful to someone?
 
 ### Uplift or A Process to Create Useful USENET Newsgroups
 
