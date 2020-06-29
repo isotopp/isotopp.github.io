@@ -19,19 +19,19 @@ In the past, we had stored data on rotating disks.
 
 ![](/uploads/2019/06/storage-hdd.png)
 
-An open hard disk chassis. You can see the topmost of a stack of disks, and the arm with the r/w heads.
+*An open hard disk chassis. You can see the topmost of a stack of disks, and the arm with the r/w heads.*
 
 While the capacities of hard disks changed, access speeds and the underlying technology did not change so much. So today you can get a stack of rotating disks that stores 10, 12 or 14 TB per drive, but the access time is still in the millisecond range.
 
 It is likely around or slightly below 5ms, so you get to transfer data from 200-250 different locations per second. Databases do mostly random access, and that means you get to write 200-250 commit/s to disk.
 
-All of that changed around 2012 or so. At that time, NAND flash based storage became available at scale under the name of Solid State Drive (SSD). Our first deployment of SSD at scale was in that year, in the flatav replication chain and it completely transformed the way we worked with availability data.
+All of that changed around 2012 or so. At that time, NAND flash based storage became available at scale under the name of Solid State Drive (SSD). At work, first deployment of SSD at scale was in that year, in a very volatile replication chain and it completely transformed the way we worked with hotel room availability data.
 
 SSD are plug-in replacements for traditional hard disks: They have the same connectors and bus systems, and the same form factor. They may be flatter, though: A modern U.2 (2.5”) SSD is either tall (15mm) or flat (7mm).
 
 ![](/uploads/2019/06/storage-ssd.png)
 
-15mm U.2 drive and it’s content.
+*15mm U.2 drive and it’s content.*
 
 On the inside they are different, though: They contain one logic board which houses a lot of flash NAND chips and a custom flash NAND controller. The logic board may be folded in order to make most use of the available height to increase storage capacity. The image above shows a SSD chassis and its content, unfolded.
 
@@ -39,7 +39,7 @@ The folded design is far from optimal: Inside such a chassis you have a thermal 
 
 ![](/uploads/2019/06/storage-m2.png)
 
-M.2 flash drive in a holder on a mainboard.
+*M.2 flash drive in a holder on a mainboard.*
 
 One attempt of handling this better is M.2, which is basically a logic board for flash NAND chips and a controller, and a board holder on the main board. This cools obviously much better, but is very hard to handle inside a data center and has a very limited lifetime in terms of number of plug-in/removal operations inside a consumer device.
 
@@ -47,14 +47,13 @@ The attempt to fix all of that is the “flash ruler”, “EDSFF”.
 
 ![](/uploads/2019/06/storage-ruler.jpg)
 
-Intel flash rulers in a 1U high chassis.
+*Intel flash rulers in a 1U high chassis.*
 
 “Ruler” type flash is built to the height of a rack unit, has a specificed chassis form that allows for cooling (up to 40W TDP per “long” device), has managed air flow, and is designed to be toolless, field replaceable and hot pluggable. It looks like the perfect solution.
 
 Until you realise that there are two incompatible competing standards, each of which has exactly one supplier: Intel and Samsung.
 
 So, for most, at the moment, U.2 it is, until the “ruler” proponents get their stuff sorted out.
-Interfaces
 
 ### Interfaces
 
@@ -280,13 +279,13 @@ For the mix (times 8):
 
 That comes out as a total of 23005 IOPS (as opposed to 21412), and for reads, a range of 174-635µs (155-873µs for the expensive controller), while for writes it is 52-237µs (60-449µs).
 
-Indeed, latency and degraded behavior are better for directly attached disks, the caching RAID controller (200€ extra per device) is subtracting value.
+Indeed, latency and degraded behavior are better for directly attached disks, the caching RAID controller (200€ extra per device) is substracting value.
 
 We can confirm these results with more benchmarking in additional, slightly different configurations (Dell, HP, new and old machines) across the test zoo.
 
 #### Some NVME
 
-A colleague donated a NVME based HP box to the test. It actually has 4 NVME devices, and we naively build a striped RAID-0 from it using LVM2, because why not? Each 16 KB write goes to a different NVME device, in a round-robin fashion (This is a silly thing to do, but that would require a longer disgression to explain - the 1M stripe setup does not fundamentally change things, though).
+A colleague donated a NVME based HP box to the test. It actually has 4 NVME devices, and we naively build a striped RAID-0 from it using LVM2, because why not? Each 16 KB write goes to a different NVME device, in a round-robin fashion (This is a silly thing to do, but that would require a longer digression to explain - the 1M stripe setup does not fundamentally change things, though).
 
 The outcome is unexpected and disappointing, or is it?
 
