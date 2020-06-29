@@ -56,7 +56,7 @@ This controller can make use of the fact that all accesses are block-sized, and 
 
 ![](/uploads/2019/06/optane-bates.png)
 
-Bates Conjecture Slide (Slide 10)
+*Bates Conjecture Slide (Slide 10)*
 
 He said that any kind of large storage has an Uncorrectable Bit Error Rate (UBER), and for new kinds of storage media, this is likely to be high in the beginning. If you access the media in blocks, you can transparently add error correction, and get a much better Recoverable Bit Error Rate (RBER). As you make the blocks larger, checksums have less overhead and can become larger, and the RBER goes down for a constantly bad UBER. So new and unreliable media will come as block storage to the market much easier.
 
@@ -112,12 +112,13 @@ Here is a comparison of some key performance data: SSD with smart controller, SS
 
 ![](/uploads/2019/06/optane-latency.png)
 
-Read, Buffered and Unbuffered Writes. The Optane Data is there, you just cannot see it, because it is too fast. The scale is µs.
+*Read, Buffered and Unbuffered Writes. The Optane Data is there, you just cannot see it, because it is too fast. The scale is µs.*
 
 Moral: NVME don’t buy you much latency, but look at those sweet IOPS, all available in parallel accesses/deep queues only.
 
 ![](/uploads/2019/06/optane-iops.png)
-IOPS and Bandwidth of various storage hardware compared
+
+*IOPS and Bandwidth of various storage hardware compared*
 
 ## Recommendations
 
