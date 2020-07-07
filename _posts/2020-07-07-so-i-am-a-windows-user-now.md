@@ -43,7 +43,7 @@ Python, git and other things are available natively and in WSL just fine, I have
 
 ![](/uploads/2020/07/yoga2.jpg)
 
-*5 Sekunden bis Logo, 15 Sekunden bis betriebsbereit aus den Kaltstart*
+*5 seconds to the logo, 15 seconds until ready, from a complete cold start*
 
 
 And it's fast. I am not speaking just about 12 threads on a NVME disk, I am also speaking about a system that cold-boots faster than a Mac wakes up from deep sleep, and about a graphic subsystem that can handle "Assassins Creed: Origins" in HD at "High" with absolutely playable framerates, and that actually manages to drive a Rift S in Elite: Dangerous pretty ok.
