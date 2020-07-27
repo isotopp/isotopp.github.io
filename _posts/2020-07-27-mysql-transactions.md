@@ -11,7 +11,6 @@ tags:
 - innodb
 - erklaerbaer
 ---
-
 So you talk to a database, doing transactions. What happens actually, behind the scenes? Let’s have a look.
 
 There is a test table and we write data into it inside a transaction:
@@ -44,9 +43,9 @@ InnoDB is a MVCC engine, that is, it uses Multi Value Concurrency Control. What 
 The diagram has four quadrants: 
 
 - The upper half talks about log structures, the lower half about data structures.
-  - Things on the upper half are in some Log: The Redo Log, the Undo Log or the Double Write Buffer.
-  - Things on the lower half are in some tablespace file, so some .ibd file on disk.
-  - The left half is about things in memory, not persisted. The right half is about things on disk, stored persistently. 
+    - Things on the upper half are in some Log: The Redo Log, the Undo Log or the Double Write Buffer.
+    - Things on the lower half are in some tablespace file, so some .ibd file on disk.
+- The left half is about things in memory, not persisted. The right half is about things on disk, stored persistently. 
     - If you kill a machine by pulling a plug, things on the right half survive, and things on the left half are lost.
 
 There is also the binlog, which is used in replication and restore, but it is not in this picture.
@@ -75,13 +74,13 @@ is such a statement. It writes a `NULL` to an `auto_increment` field to get a ne
 
 The transaction is being built up in memory, in the top left quadrant: A log buffer is being allocated and filled with data, step by step, until the log buffer overflows or the transaction commits.
 
-A second thing happens simultaneously: The data being “overwritten” needs to be saved in order to have it around for rollback - this is more true of an UPDATE or DELETE than an INSERT statement, though.
+A second thing happens simultaneously: The data being “overwritten” needs to be saved in order to have it around for rollback - this is more true of an `UPDATE` or `DELETE` than an `INSERT` statement, though.
 
 So the data page where this record is located is loaded from a data file (lower right quadrant) into memory (lower left quadrant), into the InnoDB Buffer Pool. That is a userspace data cache owned by the database process. It is the primary reason for the database process using a lot of memory.
 
 The row being “overwritten” is then being moved out of the table, and moved into the Undo Log. This is purely an in-memory operation, copying data from one page to another. A linked list is being built from the new, current version of the row to this older previous version of the row. This linked list can be long, pointing from the current version of the row to ever older version of that row in the Undo log. Following the list you get to see the past versions of this row, one by one.
 
-If we were to ROLLBACK the transaction now, MySQL would move the data back from the Undo Log page into the Tablespace page. This is a comparatively slow operation - MySQL is set up and optimized for transactions being COMMIT’ed instead of rolled back most of the time.
+If we were to `ROLLBACK` the transaction now, MySQL would move the data back from the Undo Log page into the Tablespace page. This is a comparatively slow operation - MySQL is set up and optimized for transactions being COMMIT’ed instead of rolled back most of the time.
 
 ## Comitting
 
@@ -147,7 +146,7 @@ mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/
 …
 {% endhighlight %}
 
-We are using a database kris with a test table t. The file handles that are relevant for observation are 4 for the ibd file, 3 and 9 for the logfiles and 10 for the ibdata1, which would also be the location of the Double Write Buffer.
+We are using a database `kris` with a test table `t`. The file handles that are relevant for observation are 4 for the ibd file, 3 and 9 for the logfiles and 10 for the ibdata1, which would also be the location of the Double Write Buffer.
 
 We can see the command coming in:
 
@@ -171,13 +170,13 @@ We observe some action on the table metadata and then the log write from the com
 [pid 29441] fsync(3)                    = 0
 {% endhighlight %}
 
-This is the only fsync that contributed to commit-Latency. The write is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo log during recovery.
+This is the only `fsync` that contributed to commit-Latency. The write is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo log during recovery.
 
 The modified page is still in memory, though, and in order to reclaim redo log space, needs to be eventually checkpointed.
 
-This happens later, and with many more fsync operations. It does happen in batch, for many commits and multiple pages, normally, but in our easily traceable test setup, it’s looking like a lot of overhead.
+This happens later, and with many more `fsync` operations. It does happen in batch, for many commits and multiple pages, normally, but in our easily traceable test setup, it’s looking like a lot of overhead.
 
-During normal operations, a page often is modified in multiple commits over a short amount of time. Each of these commits is a separate redo log fsync (it's not, there are some ways to cheat a bit). But in the Buffer Pool, on the file side of things, all these changes are being accumulated on the dirty in-memory page, and get persisted into the tablespace in a single checkpoint write. In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.
+During normal operations, a page often is modified in multiple commits over a short amount of time. Each of these commits is a separate redo log `fsync` (it's not, there are some ways to cheat a bit). But in the Buffer Pool, on the file side of things, all these changes are being accumulated on the dirty in-memory page, and get persisted into the tablespace in a single checkpoint write. In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.
 
 Also, during checkpointing, one Double Write Buffer worth of pages gets written out in a single sync operation, so we do see a far better page/sync and MB/sync ratio than in this test setup.
 
@@ -224,7 +223,7 @@ A system that is consistently seeing a lot of writes can profit from a large Red
 
 Deletion of data is also a write and copy operation: It could be rolled back until it is committed, so on delete data is actually pushed to the Undo Log. Depending on how things are organized, it can also trigger a lot of reorganisation of the Index Trees and other operations.
 
-If you want to delete all data, TRUNCATE is better than DELETE, because it does not cause these things.
+If you want to delete all data, `TRUNCATE` is better than `DELETE`, because it does not cause these things.
 
 If you want to structure data with regular expirations, have a look at table partitioning and use dynamic DDL to create and drop partitions on a schedule instead of deleting data. This implies a temporal arrangement of the data, so a date or time is becoming part of the primary key.
 
