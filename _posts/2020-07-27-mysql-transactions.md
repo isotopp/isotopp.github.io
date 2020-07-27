@@ -1,3 +1,17 @@
+---
+layout: post
+title:  'MySQL Transactions - the physical side'
+author-id: isotopp
+feature-img: assets/img/background/mysql.jpg
+date: 2020-07-27 11:15:58 +0200
+tags:
+- lang_en
+- mysql
+- databases
+- innodb
+- erklaerbaer
+---
+
 So you talk to a database, doing transactions. What happens actually, behind the scenes? Let’s have a look.
 
 There is a test table and we write data into it inside a transaction:
