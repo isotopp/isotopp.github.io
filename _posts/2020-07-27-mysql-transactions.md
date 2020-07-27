@@ -94,13 +94,13 @@ On commit, the log buffer is being written to disk, as a kind of binary diff to 
 
 There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.
 
-When we write the Log Buffer out, we write it to the Redo Log. The Redo Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib_filefile* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo Log are fast, sequential writes, even on rotating hard disks.
+When we write the Log Buffer out, we write it to the Redo Log. The Redo Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib\_logfile\* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo Log are fast, sequential writes, even on rotating hard disks.
 
 After that, we are done - the transaction is committed to stable storage and can no longer be lost. The application can move on.
 
 ## After committing: Checkpointing
 
-But wait! Isn’t the .ibd tablespace file changed? What about purging the Redo Log? How long can this go on?
+But wait! Isn’t the `.ibd` tablespace file changed? What about purging the Redo Log? How long can this go on?
 
 We are constantly creating InnoDB Buffer Pool pages that are different from their original image on disk in the tablespace files. These pages are called dirty, and eventually they need to be written back.
 
