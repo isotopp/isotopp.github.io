@@ -2,8 +2,8 @@
 layout: post
 title:  'MySQL Connection Scoped State'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
-date: 2020-07-28 12:43:00 +0200
+feature-img: assets/img/background/mysql.jpg
+date: 2020-07-28 15:40:00 +0200
 tags:
 - lang_en
 - database
