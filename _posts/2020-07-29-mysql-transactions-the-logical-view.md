@@ -8,6 +8,7 @@ tags:
 - lang_en
 - mysql
 - database
+- innodb
 ---
 After having a look [how MySQL handles transactions physically]({% link
 _posts/2020-07-27-mysql-transactions.md %}), let's have a look at what is
