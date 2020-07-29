@@ -246,21 +246,27 @@ Starting a transaction at the default isolation level will force the Undo
 Log Purge Thread to stop at the position of our read view. Undo Log entries
 will no longer be purged, filling up and growing the Undo Log. Reads and
 Index Lookups become more complicated and slower, slowing down the overall
-performance of the database. It is a good idea to not have long running
-transactions.
+performance of the database.
+
+It is a good idea to not have long running transactions.
 
 Maintenance Operations such as running `mysqldump --single transaction
 mydatabase` to make a logical backup achieve a consistent backup my
-maintaining a consistent read view by starting a long running transaction.
+maintaining a consistent read view by starting a long running transaction. 
 As the dump of a large database can take some time, it is a good idea to do
-this at a point in time where the database is not so busy, specifically
-where the write activity is low. Otherwise the incoming writes will mostly
-blow up the Undo Log and make everything slow.
+this at a point in time where the database is not so busy.  Specifically
+where the write activity is low.  Otherwise the incoming writes will blow up
+your Undo Log by the size of the data load, and make everything slow.
 
 While in theory these two operations - a data load and a backup - can happen
 concurrently and should not interfere, nothing is for free and the
 implementation of consistent read views will function better if you do not
 work against it.
+
+The Undo Log will not shrink, but will be freed internally and re-used,
+should that space ever be needed. But you will end up, depending on your
+version of MySQL, with a very large ibdata1 file or very large Undo Log
+segment files.
 
 ## Reading Data without Locks
 
