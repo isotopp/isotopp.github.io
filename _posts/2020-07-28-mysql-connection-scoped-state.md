@@ -8,6 +8,7 @@ tags:
 - lang_en
 - database
 - mysql
+- mysqldev
 ---
 MySQL speaks its own proprietary protocol.  It cannot be routed
 by a HTTP proxy, and a MySQL connection is entire unlike a HTTP

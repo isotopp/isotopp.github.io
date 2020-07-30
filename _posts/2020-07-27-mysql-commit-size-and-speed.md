@@ -10,6 +10,7 @@ tags:
 - mysql
 - innodb
 - erklaerbaer
+- mysqldev
 ---
 When writing data to disk, for small transactions the cost of writing the
 commit out do disk dominates the execution time of the script. In order to

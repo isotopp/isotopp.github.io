@@ -6,6 +6,7 @@ feature-img: assets/img/background/mysql.jpg
 date: 2020-07-27 11:15:58 +0200
 tags:
 - lang_en
+- mysqldev
 - mysql
 - databases
 - innodb
