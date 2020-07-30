@@ -2,7 +2,7 @@
 layout: post
 title:  'MySQL Transactions - writing data'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-07-30 08:37:32 +0200
 tags:
 - lang_en

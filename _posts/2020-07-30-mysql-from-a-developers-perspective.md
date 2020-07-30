@@ -2,7 +2,7 @@
 layout: post
 title:  'MySQL from a Developers Perspective'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-07-30 09:18:16 +0200
 tags:
 - lang_en
@@ -20,7 +20,7 @@ The code for the series is also available in
 [isotopp/mysql-dev-examples](https://github.com/isotopp/mysql-dev-examples.git)
 on GitHub.
 
-The Tag [#mysqldev](https://blog.koehntopp/info/tags/#mysqldev) will
+The Tag [#mysqldev](https://blog.koehntopp.info/tags/#mysqldev) will
 reference all articles from this series.
 
 - [MySQL Transactions - the physical side](https://blog.koehntopp.info/2020/07/27/mysql-transactions.html).
