@@ -158,7 +158,7 @@ mysql> insert into b values (10, 10);
 Query OK, 1 row affected (0.00 sec)
 
 mysql> insert into b (20, 20), (50,50), (30,30);
-ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '20, 20), (50,50), (30,30)' at line 1
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`kris`.`b`, CONSTRAINT `a_id_exists` FOREIGN KEY (`a_id`) REFERENCES `a` (`a_id`) ON DELETE RESTRICT ON UPDATE RESTRICT)
 mysql> insert into b values (40, 40);
 Query OK, 1 row affected (0.00 sec)
 
@@ -287,3 +287,11 @@ select * from tree;
 +------+--------+-------+-------+
 {% endhighlight %}
 
+## What we found
+
+- Foreign Keys are everywhere.
+- Foreign Key Constraints look attractive at first, in order to ensure our Foreign Keys are valid
+- But they are being enforced at the row level.
+  - That enforces an order to operations inside a transaction.
+  - It is easy to build structures that are hard to update.
+  - It is easy to create structures with undeletable records.
