@@ -287,11 +287,13 @@ select * from tree;
 +------+--------+-------+-------+
 {% endhighlight %}
 
-## What we found
+## What we found so far.
 
 - Foreign Keys are everywhere.
 - Foreign Key Constraints look attractive at first, in order to ensure our Foreign Keys are valid
 - But they are being enforced at the row level.
   - That enforces an order to operations inside a transaction.
-  - It is easy to build structures that are hard to update.
+  - It is easy to build structures that are hard to update, delete from, truncate or even drop.
   - It is easy to create structures with undeletable records.
+- The SQL Standard has options to make this less painful, but MySQL does not implement these.
+
