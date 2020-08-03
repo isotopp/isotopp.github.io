@@ -140,7 +140,7 @@ Create Table: CREATE TABLE `b` (
 
 ## Playing with foreign key constraints
 
-Using the definitions of `a` and `b` from above, we are now playing with foreign key constrainst a bit:
+Using the definitions of `a` and `b` from above, we are now playing with foreign key constraints a bit:
 
 {% highlight sql %}
 mysql> insert into a values (10), (20), (30), (40);
