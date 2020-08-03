@@ -32,7 +32,7 @@ One - the Key - is a property of the model: "There exists a bijective function b
 
 The other - the Index - is a data structure that allows us to look up the other values of a Customer fast, given any `customer_id` value.
 
-There is no need for a Key to have an Index, but we need to ensure that a new `customer_id` is unique. We are also given `customer_id`s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up `customer_id`s in the Customers table all of the time, and without the index we can only resort to a full table scan for this. This is going so slow that the table will be without any real-world value for us.
+There is no need for a Key to have an Index, but we need to ensure that a new `customer_id` is unique. We are also given `customer_id`s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up `customer_id`s in the Customers table all of the time, and without the index we can only resort to a full table scan for this. This is going to be so slow that the table will be without any real-world value for us.
 
 Practically, a Key and an Index go so much hand-in-hand that database people are using both terms interchangeably when they are clearly different things: An average database person will say Key, when they mean Index or the other way around, because in their minds having a Key without an Index is Not A Thing at all.
 
@@ -40,7 +40,7 @@ There may be multiple things - or combinations of things - that uniquely identif
 
 In the mind of a database person, the Primary Key is the row, and the row is the Primary Key. That is what bijective functions are for.
 
-Technically, a table need not have a Primary Key. Practically this creates all kinds of problems that many databases have options to prevent this: They will reject table definitions without a primary key definition for good, and responsible database administrators enable these restrictions.
+Technically, a table doesn't need to not have a Primary Key. Practically, this creates so many kinds of problems that many databases have options to prevent this: They will reject table definitions without a primary key definition for good, and responsible database administrators enable these restrictions.
 
 ## Foreign Keys
 
@@ -77,7 +77,7 @@ select *
 
 Now, when we put a `b.a_id` into `b`, we would normally want the matching `a.a_id` to exist. That is, when we put in an `orders.customer_id` value, there better be a `customers.customer_id` for this, or there will be problems.
 
-Foreign Key Constrains are conditions that can be put into table definitions that enforce that. Actually doing this may or may not be a good idea, we will be looking at that in some more detail in a separate article.
+Foreign Key Constrains are conditions that can be put into table definitions to enforce that. Actually doing this may or may not be a good idea, we will be looking at that in some more detail in a separate article.
 
 Let's define a useless base table with a primary key:
 
@@ -136,7 +136,7 @@ Create Table: CREATE TABLE `b` (
 ) ENGINE=InnoDB
 {% endhighlight %}
 
-[The Manual](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html) describes the other terms and conditions that apply, and also explains which types of enforcement referential actions are valid for the `ON DELETE` and `ON UPDATE` clauses.
+[The Manual](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html) describes the other terms and conditions that apply, and also explains which types of referential actions are valid for the `ON DELETE` and `ON UPDATE` clauses.
 
 ## Playing with foreign key constraints
 
@@ -251,7 +251,7 @@ Records: 8  Duplicates: 0  Warnings: 0
 
 Both statements define the same tree structure, but one does it from the bottom up, the other from the top down. We can see that even inside a single statement referential integrity is enforced at a per-row level and the first statement is impossible to load. Order suddenly matters.
 
-The same would be true if we used multiple insert statements inside the same transaction: Even if the entire set of rows is only committed at the end of the transaction, statements inside the transaction suddenly have an order, and all referential integrity constraints have to be valid at all times ("for each row").
+The same would be true if we used multiple insert statements inside the same transaction: Even if the entire set of rows is only committed at the end of the transaction, statements inside the transaction suddenly have to have an order, and all referential integrity constraints have to be valid at all times ("for each row").
 
 For individual tables or simple 1:1 relationships this matters little, but referential integrity is transitive and it is very easy to build completely validated structures that become uninsertable, unupdateable or undeletable, or to build referential integrity puzzles.
 
@@ -290,9 +290,9 @@ select * from tree;
 ## What we found so far.
 
 - Foreign Keys are everywhere.
-- Foreign Key Constraints look attractive at first, in order to ensure our Foreign Keys are valid
+- Foreign Key Constraints look attractive at first, in order to ensure our Foreign Keys are valid.
 - But they are being enforced at the row level.
-  - That enforces an order to operations inside a transaction.
+  - That enforces an order to operations within a transaction.
   - It is easy to build structures that are hard to update, delete from, truncate or even drop.
   - It is easy to create structures with undeletable records.
 - The SQL Standard has options to make this less painful, but MySQL does not implement these.
