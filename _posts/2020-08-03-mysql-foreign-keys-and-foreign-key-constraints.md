@@ -32,7 +32,7 @@ One - the Key - is a property of the model: "There exists a bijective function b
 
 The other - the Index - is a data structure that allows us to look up the other values of a Customer fast, given any `customer_id` value.
 
-There is no need for a Key to have an Index, but we need to ensure that a new `customer_id` is uniqu. We are also given `customer_id`s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up `customer_id`s in the Customers table all of the time, and without the index we can only resort to a full table scan for this. This is going so slow that the table will be without any real-world value for us.
+There is no need for a Key to have an Index, but we need to ensure that a new `customer_id` is unique. We are also given `customer_id`s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up `customer_id`s in the Customers table all of the time, and without the index we can only resort to a full table scan for this. This is going so slow that the table will be without any real-world value for us.
 
 Practically, a Key and an Index go so much hand-in-hand that database people are using both terms interchangeably when they are clearly different things: An average database person will say Key, when they mean Index or the other way around, because in their minds having a Key without an Index is Not A Thing at all.
 
