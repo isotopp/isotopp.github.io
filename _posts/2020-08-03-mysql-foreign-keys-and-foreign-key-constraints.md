@@ -109,7 +109,7 @@ There are many things to this, and all of them are required to make this work.
 - We have to define an index in the foreign key column in `b`. When we don't, MySQL does this automatically and uses the constraint name for this. Leave off `index a_id (a_id)` from our `CREATE TABLE b` statement, and see what you get.
 - The constraint we define can get a name, or MySQL chooses one when we leave of the `constraint a_id_exists` part of the statement.
 - We then describe which of "our" columns points to what column in the other table: `foreign key (a_id) references a(a_id)`.
-- Finally we get to say what shall happen when there are update or delete statements that would the relationship. This part is also optional.
+- Finally we get to say what shall happen when there are update or delete statements that would invalidate the relationship. This part is also optional.
 
 Thus, the shortest possible definition of `b` would be
 
@@ -117,7 +117,7 @@ Thus, the shortest possible definition of `b` would be
 create table b ( 
   b_id integer not null primary key auto_increment,
   a_id integer not null, 
-  oreign key (a_id) references a(a_id) 
+  foreign key (a_id) references a(a_id) 
 );
 {% endhighlight %}
 
