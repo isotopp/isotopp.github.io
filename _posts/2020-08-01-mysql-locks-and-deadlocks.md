@@ -139,7 +139,7 @@ and in the other session:
 
 {% highlight sql %}
 Session2> start transaction read write;
-Session2> select * from kris where id = 10 for pdate;
+Session2> select * from kris where id = 10 for update;
 +----+-------+
 | id | value |
 +----+-------+
