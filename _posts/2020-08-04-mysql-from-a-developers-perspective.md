@@ -3,7 +3,7 @@ layout: post
 title:  'MySQL from a Developers Perspective'
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
-date: 2020-08-03 09:18:16 +0200
+date: 2020-08-04 17:18:16 +0200
 tags:
 - lang_en
 - mysql
@@ -35,7 +35,7 @@ reference all articles from this series.
 - [MySQL Transactions - the logical view]({% link _posts/2020-07-29-mysql-transactions-the-logical-view.md %}).
   This article introduces the concept of `TRANSACTION ISOLATION LEVEL` and how pushing things into the Undo Log, while a necessity to implement `ROLLBACK` for a Writer, enables features for a Reader.
 
-- [MySQL Transactions - writing data]({% link _posts/2020-07-30-mysql-transactions-writing-data.md %}).
+- [MySQL Transactions - writing data]({% link _posts/2020-07-30-mysql-transactions---writing-data.md %}).
   This article has code in Github, in mysql-transactions-counter. We increment a counter in the database, with multiple concurrent writers, and see what happens.
 
 - [MySQL: Locks and Deadlocks]({% link _posts/2020-08-01-mysql-locks-and-deadlocks.md %}).
@@ -46,4 +46,7 @@ reference all articles from this series.
 
 - [MySQL Foreign Keys and Foreign Key Constraints]({% link _posts/2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md %})
   When establishing relationships between tables, you are doing this by putting one tables primary keys into another tables columns. Enforcing valid pointers between tables seems like a sexy idea, but is painful, and maybe hurts more than it helps.
+
+- [MySQL Foreign Key Constraints and Locking]({% link _posts/2020-08-04-mysql-foreign-key-constraints-and-locking.md %})
+  Looking at tables with foreign key constraints, we check what happens to table and row locks, and how this is different from before.
 
