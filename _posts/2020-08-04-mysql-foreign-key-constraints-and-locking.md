@@ -67,7 +67,7 @@ mysql> select * from performance_schema.data_locks\G
 ...
 {% endhighlight %}
 
-We can see that the `INSERT` did just create an intention-lock on the table, but did not actually have to create any row locks. The update had to change an existing table row `b.b_id=10`, and hence did need an X-lock the row 10.
+We can see that the `INSERT` did just create an intention-lock on the table, but did not actually have to create any row locks. The update had to change an existing table row `b.b_id=10`, and hence needed to X-lock the row 10.
 
 ## INSERT and UPDATE with a foreign key constraint
 
@@ -92,7 +92,7 @@ In order for the `INSERT` to be valid, we need to check if the `a_id` inserted i
 
 We also need to ensure that the value we checked for stays there and is not modified until we finish the transaction. So we do get an additional intention-lock on `a`, and then an actual S-lock on `a.a_id=30`. The intention-lock on `b` is as before.
 
-Continuing our exploration we can now try to change a row:
+Continuing our exploration, we can now try to change a row:
 
 {% highlight sql %}
 mysql> update b set a_id=20 where b_id=10;
@@ -114,7 +114,7 @@ We get another S-lock on `a.a_id=20` to ensure that our parent record stays unch
 
 We observe:
 - Defining foreign key constraints produces more S-locks.
-- Given a 1:n relationship between `a` and `b`, making changes to `a_id` fields of records in `b` will S-lock the records in `a` that the changed rows in `b.a_id` point to.
+- Given a 1:n relationship between `a` and `b`, making changes to `a_id` fields of records in `b` will S-lock the records in `a` that the changed rows in `b.a_id` are pointing to.
 - We did not see this, but there was also a lookup in `a` to ensure that the `b.a_id` actually exists in `a`.
 
 Experiment yourself:
@@ -122,11 +122,11 @@ Experiment yourself:
 - Make changes to `b.a_id` for one row, and to `b.data` for another row. How does the locking change?
 
 You will find:
-- Making changes to `b.data` can not affect the relationship between the tables, and does not create S-locks in `a`.
+- Making changes to `b.data` neither affects the relationship between the tables, nor creates S-locks in `a`.
 
 ## Given the observed behavior, is our RMW still correct?
 
-After looking at the locking behavior of these statements, and what we have learned about locking: How would we `INSERT` and `UPDATE` the dependent records (`b` records) in our 1:n relationship correctly?
+After looking at the locking behavior of these statements, and what we previously learned about locking: How would we `INSERT` and `UPDATE` the dependent records (`b` records) in our 1:n relationship correctly?
 
 We can still manipulate all fields as before that are not foreign keys:
 
@@ -164,7 +164,7 @@ update b set a_id = 20 where b_id = 10';
 commit;
 {% endhighlight %}
 
-We have to use two distinct select statements for this, as this is a linking to be created, and the locks need to be in place before we make the change.
+As this is a linking to be created, we have to use two distinct select statements for this, and the locks need to be in place before we make the change.
 
 ## Self-referential structures and locks
 
@@ -222,11 +222,11 @@ mysql> rollback;
 
 The term "UPSERT" is database-speak for "create a record, or if it exists, update it". The word is a portmanteau from Insert and Update. It can have three different resolutions for conflicts, and MySQL has three different special commands for this:
 
-- *Older Record wins:* When a new record is to be inserted, but an older record with this primary key exists already, the old record should stay, unmodified. MySQL has the command `INSERT IGNORE` for this.
+- *Older Record wins:* When a new record is to be inserted, but an older record with this primary key already exists, the old record should stay unmodified. MySQL has the command `INSERT IGNORE` for this.
 
-- *Newer Record wins:* When a new record is to be inserted, but an older record with this primary key exists already, the old record is to be deleted, then the new record is to be inserted. MySQL has the command `REPLACE INTO` for this.
+- *Newer Record wins:* When a new record is to be inserted, but an older record with this primary key already exists, the old record is to be deleted, then the new record is to be inserted. MySQL has the command `REPLACE INTO` for this.
 
-- *Merge old and new:* When a new record is to be inserted, but an older record with this primary key exists already, the old and new records have to be merged somehow. MySQL has `INSERT ON DUPLICATE KEY UPDATE` and the `VALUES()` function for this.
+- *Merge old and new:* When a new record is to be inserted, but an older record with this primary key already exists, the old and new records have to be merged somehow. MySQL has `INSERT ON DUPLICATE KEY UPDATE` and the `VALUES()` function for this.
 
 The generic way for this, without special commands, is again a RMW.
 
