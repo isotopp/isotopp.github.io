@@ -134,7 +134,7 @@ no sense at all.  Also, in general, you do not want to run code
 on expensive and crowded database CPUs when you can have plenty
 of cheap and easy to scale CPUs in application nodes.
 
-In general, the recommendatoon is tp not use code in the
+In general, the recommendatoon is to not use code in the
 database, if at all possible.  For the purposes of this
 discussion, stored code caches are per-session and are lost on
 disconnect, but automatically recovered on reconnect (at a
