@@ -661,7 +661,7 @@ ist, kann dies unter Umständen zu schwer verständlichen Fehlermeldungen
 ("Table full", obwohl noch mächtig Platz da ist) oder Transaktionsabbrüchen
 führen.
 
-### Transaction Isolation Level SERIALIZEABLE und SELECT ... FOR UPDATE
+### Transaction Isolation Level SERIALIZABLE und SELECT ... FOR UPDATE
 
 Während `REPEATABLE READ` also alle unsere Leseprobleme löst, fehlt uns jetzt
 noch ein Mechanismus, mit dem wir `READ-MODIFY-WRITE` Zyklen korrekt handhaben
@@ -827,7 +827,7 @@ Verhalten ist abschaltbar, der Schalter hat den unerwarteten Namen
 InnoDB einfach Zeilenlocks erzeugt ohne die Lücke hinter der Zeile auch zu
 sperren.
 
-Auf dem Transaction Isolation Level `SERIALIZEABLE` verhält sich das System
+Auf dem Transaction Isolation Level `SERIALIZABLE` verhält sich das System
 genau wie auf dem Level `REPEATABLE-READ`, führt aber jedes einzelne
 `SELECT` so aus, als sei es als `SELECT ... FOR UPDATE` geschrieben worden.
 Das führt dazu, daß jedes SELECT Locks erzeugt als wäre es in
@@ -836,8 +836,8 @@ führt effektiv dazu, daß sich selbst Lesezugriffe (die ja Schreiblocks
 erzeugen) gegenseitig in die Quere kommen, wenn sie zugleich dieselben Daten
 lesen wollen. Dies ist noch schlechteres Verhalten als in MyISAM!
 
-Der Transaction Isolation Level `SERIALIZEABLE` ist unnötig: Er wird nie
+Der Transaction Isolation Level `SERIALIZABLE` ist unnötig: Er wird nie
 gebraucht, wenn der SQL-Code in der Anwendung korrekt mit `... FOR UPDATE`
 lockt. Nur Anwendungen, die dies nicht korrekt tun **und** bei denen
 außerdem das SQL nicht korrigierbar ist, brauchen den Isolation Level
-`SERIALIZEABLE`.
+`SERIALIZABLE`.
