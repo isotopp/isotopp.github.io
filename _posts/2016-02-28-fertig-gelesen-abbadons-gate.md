@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Abbadon''s Gate'
 date: '2016-02-28 19:34:43 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

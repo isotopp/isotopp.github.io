@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Crazy Rich Asians'
 date: '2013-09-27 18:52:03 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

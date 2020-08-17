@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Slow Regard of Silent Things'
 date: '2014-10-28 14:30:00 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

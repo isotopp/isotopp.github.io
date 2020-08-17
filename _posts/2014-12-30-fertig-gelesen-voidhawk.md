@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Voidhawk'
 date: '2014-12-30 18:32:38 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

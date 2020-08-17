@@ -2,7 +2,7 @@
 layout: post
 published: true
 title: Fertig gelesen vs. Spoiler.
-author: isotopp
+author-id: isotopp
 feature-img: assets/img/background/book.jpg
 
 date: 2012-08-31 08:33:00 UTC

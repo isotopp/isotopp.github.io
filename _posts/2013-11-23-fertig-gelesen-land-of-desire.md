@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Land of Desire'
 date: '2013-11-23 14:01:46 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Case of the Toxic Spell Dump'
 date: '2016-08-14 19:00:26 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

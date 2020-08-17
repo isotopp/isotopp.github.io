@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Invisible Library'
 date: '2016-02-28 16:25:42 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Work Rules!'
 date: '2016-08-14 20:45:03 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

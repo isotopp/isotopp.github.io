@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Ultrasociety'
 date: '2016-08-14 20:29:48 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

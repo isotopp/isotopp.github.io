@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "How Much for Just the Planet?"'
 date: '2014-08-11 20:02:41 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

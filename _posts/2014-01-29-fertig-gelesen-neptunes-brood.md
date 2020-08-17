@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "Neptune''s Brood"'
 date: '2014-01-29 14:25:18 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

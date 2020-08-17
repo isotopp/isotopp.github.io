@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Libriomancer'
 date: '2013-09-23 16:08:39 +0000'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

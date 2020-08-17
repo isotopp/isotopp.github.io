@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Empire of the Summer Moon'
 date: '2014-08-11 19:18:19 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

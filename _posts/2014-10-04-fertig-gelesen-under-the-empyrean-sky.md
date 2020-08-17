@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Under the Empyrean Sky'
 date: '2014-10-04 19:53:25 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

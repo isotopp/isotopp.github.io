@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Apex'
 date: '2015-11-29 18:13:33 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

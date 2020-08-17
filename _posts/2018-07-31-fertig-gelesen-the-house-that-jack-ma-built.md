@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The House That Jack Ma Built'
 date: '2018-07-31 18:03:21 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

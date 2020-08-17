@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Waldesruh'
 date: '2014-12-01 20:33:10 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

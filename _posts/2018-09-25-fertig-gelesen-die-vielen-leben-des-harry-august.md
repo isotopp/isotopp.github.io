@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Die vielen Leben des Harry August'
 date: '2018-09-25 19:56:35 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

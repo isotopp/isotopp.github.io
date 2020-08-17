@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "The Circle"'
 date: '2014-01-29 14:15:59 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

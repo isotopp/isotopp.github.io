@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Fashion and Its Social Agendas'
 date: '2018-09-25 20:24:22 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

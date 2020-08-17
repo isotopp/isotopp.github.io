@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Dracula: The Modern Prometheus'
 date: '2015-11-30 20:07:08 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_en
 - book

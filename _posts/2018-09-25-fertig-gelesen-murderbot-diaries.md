@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Murderbot Diaries'
 date: '2018-09-25 19:14:05 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

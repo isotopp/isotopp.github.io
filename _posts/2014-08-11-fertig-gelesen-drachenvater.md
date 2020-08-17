@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "Drachenväter"'
 date: '2014-08-11 19:37:08 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

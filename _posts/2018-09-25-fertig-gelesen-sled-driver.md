@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Sled Driver'
 date: '2018-09-25 20:17:39 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

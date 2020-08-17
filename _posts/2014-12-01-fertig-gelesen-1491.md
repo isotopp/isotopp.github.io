@@ -3,7 +3,7 @@ title: 'Fertig gelesen: 1491'
 date: '2014-12-01 20:27:03 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

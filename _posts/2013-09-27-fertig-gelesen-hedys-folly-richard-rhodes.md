@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Hedy''s Folly'
 date: '2013-09-27 18:11:54 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

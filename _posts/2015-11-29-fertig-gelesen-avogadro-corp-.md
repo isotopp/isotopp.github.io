@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Avogadro Corp'
 date: '2015-11-29 14:29:06 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

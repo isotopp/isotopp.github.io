@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "101 Cthulhu Mythos Haiku"'
 date: '2014-08-11 19:52:20 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Docker for Sysadmins'
 date: '2017-01-02 14:34:02 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

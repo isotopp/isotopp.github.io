@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Flash Boys'
 date: '2014-10-04 20:06:31 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

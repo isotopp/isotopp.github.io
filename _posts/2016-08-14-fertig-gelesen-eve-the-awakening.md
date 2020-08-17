@@ -3,7 +3,7 @@ title: 'Fertig gelesen: EVE: The Awakening'
 date: '2016-08-14 19:40:12 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

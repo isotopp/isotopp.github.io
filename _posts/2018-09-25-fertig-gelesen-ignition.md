@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Ignition!'
 date: '2018-09-25 20:09:16 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -4,7 +4,7 @@ title: 'Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsi
 date: '2014-01-19 20:10:55 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

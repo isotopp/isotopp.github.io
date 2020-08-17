@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "The Departure"'
 date: '2013-12-05 16:24:33 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

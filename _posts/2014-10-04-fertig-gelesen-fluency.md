@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Fluency'
 date: '2014-10-04 20:02:11 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

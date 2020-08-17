@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Site Reliability Engineering'
 date: '2016-08-14 20:38:18 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

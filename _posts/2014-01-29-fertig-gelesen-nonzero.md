@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "Nonzero - The Logic of Human Destiny"'
 date: '2014-01-29 14:47:41 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Earth'
 date: '2015-11-30 21:07:50 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

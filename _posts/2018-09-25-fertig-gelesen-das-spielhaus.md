@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Das Spielhaus'
 date: '2018-09-25 19:47:23 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Boss'
 date: '2015-02-08 15:03:00 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

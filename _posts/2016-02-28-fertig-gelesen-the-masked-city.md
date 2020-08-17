@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Masked City'
 date: '2016-02-28 18:15:58 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

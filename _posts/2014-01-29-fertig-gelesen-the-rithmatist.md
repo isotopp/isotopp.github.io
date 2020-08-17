@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "The Rithmatist"'
 date: '2014-01-29 14:34:32 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

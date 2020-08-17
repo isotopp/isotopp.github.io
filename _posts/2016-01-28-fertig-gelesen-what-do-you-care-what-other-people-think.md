@@ -3,7 +3,7 @@ title: 'Fertig gelesen: What Do You Care What Other People Think?'
 date: '2016-01-28 10:54:54 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

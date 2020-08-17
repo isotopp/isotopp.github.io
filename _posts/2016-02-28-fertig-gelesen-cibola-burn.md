@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Cibola burn'
 date: '2016-02-28 19:46:41 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

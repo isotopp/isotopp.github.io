@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Firefight'
 date: '2015-02-14 20:23:41 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

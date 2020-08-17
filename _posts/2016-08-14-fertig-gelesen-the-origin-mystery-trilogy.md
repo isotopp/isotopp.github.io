@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Origin Mystery Trilogy'
 date: '2016-08-14 19:58:45 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

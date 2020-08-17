@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Die zerbrochene Puppe'
 date: '2013-11-18 09:57:22 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

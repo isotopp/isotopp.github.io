@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Altered Carbon'
 date: '2018-07-31 17:28:36 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: 1177 B.C. - The Year Civilization Collapsed'
 date: '2014-10-04 19:13:51 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

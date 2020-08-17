@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Drift Into Failure'
 date: '2017-01-02 14:01:07 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

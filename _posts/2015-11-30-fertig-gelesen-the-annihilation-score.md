@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Annihilation Score'
 date: '2015-11-30 21:16:01 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

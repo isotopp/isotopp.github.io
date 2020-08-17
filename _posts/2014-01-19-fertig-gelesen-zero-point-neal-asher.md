@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "Zero Point"'
 date: '2014-01-19 18:18:05 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

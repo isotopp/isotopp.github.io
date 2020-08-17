@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "Fortuna: Geschichten aus der Aetherwelt"'
 date: '2014-08-11 19:41:56 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Streetfight: Handbook for an Urban Revolution.'
 date: '2018-11-04 13:41:50 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -4,7 +4,7 @@ title: 'Fertig gelesen: Mistborn, The Final Empire, The Well of Ascension, The
 date: '2015-11-29 18:58:10 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book
