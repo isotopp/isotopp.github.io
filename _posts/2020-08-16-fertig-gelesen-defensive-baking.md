@@ -20,7 +20,7 @@ Bob.
 
 [![](/uploads/2020/08/defensive-baking.jpg)](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
 
-*A Wizards Guide To Defensive Baking*, [Amazon](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
+*A Wizards Guide To Defensive Baking*, T. Kingfisher, [Amazon](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W)
 
 Mona is a 14-year-old girl living in Riverbraid, a random city-state near a
 river in the floodplain of an otherwise unnamed country that vaguely feels
@@ -42,6 +42,4 @@ The story is amusingly written and Mona's world-view, as shared with the
 reader, is full of baking puns. The story arc is what one would assume from
 a YA book, and entertaining. All in all well worth my time.
 
-"[A Wizard's Guide To Defensive
-Baking](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W),
-EUR 4.44
+"[A Wizard's Guide To Defensive Baking](https://www.amazon.de/Wizards-Guide-Defensive-Baking-English-ebook/dp/B08CJ86Y1W), T. Kingfisher, EUR 4.44
