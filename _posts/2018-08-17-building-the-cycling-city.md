@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Building the Cycling City'
 date: '2020-08-17 17:41:50 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_en
 - book
