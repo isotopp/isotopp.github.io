@@ -33,3 +33,5 @@ Interesting read, and a good complement to [Streetfight]({% link _posts/2018-11-
 %}), which covers the New York story on the same problem.
 
 [Building the Cycling City: The Dutch Blueprint for Urban Vitality](https://www.amazon.com/Building-Cycling-City-Blueprint-Vitality-ebook/dp/B07F1S9KVQ), Melissa and Chris Bruntlett, USD 17.00
+
+You can also follow them on Twitter: [@modacitylife](https://twitter.com/modacitylife)
