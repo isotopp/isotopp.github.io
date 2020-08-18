@@ -3,7 +3,7 @@ layout: post
 title:  'MySQL from a Developers Perspective'
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
-date: 2020-08-04 17:18:16 +0200
+date: 2020-08-18 17:18:16 +0200
 tags:
 - lang_en
 - mysql
@@ -49,4 +49,7 @@ reference all articles from this series.
 
 - [MySQL Foreign Key Constraints and Locking]({% link _posts/2020-08-04-mysql-foreign-key-constraints-and-locking.md %})
   Looking at tables with foreign key constraints, we check what happens to table and row locks, and how this is different from before.
+
+- [MySQL: Some Character Set Basics]({% link _posts/2020-08-18-mysql-character-sets.md %})
+  A collection and re-evaluation of things I wrote about MySQL character sets in the past, updated to match MySQL 8.
 
