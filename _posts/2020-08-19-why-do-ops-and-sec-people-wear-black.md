@@ -9,7 +9,7 @@ tags:
 - security
 - unix
 ---
-For [reasons that need no exploration at this junction](https://www.imdb.com/title/tt0108756) I [tweeted](https://twitter.com/isotopp/status/1296073392655933444)
+For [reasons that don't need exploring at this juncture](https://www.imdb.com/title/tt0108756) I [tweeted](https://twitter.com/isotopp/status/1296073392655933444)
 
 > Once upon a time there were shared boxes, on which the local Unix easily had 200-300 users, Junior Developers at a University.
 >
