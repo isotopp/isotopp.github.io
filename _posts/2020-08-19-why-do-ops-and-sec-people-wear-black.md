@@ -31,11 +31,11 @@ I was asked to explain: "What is /tmp/ls?".
 
 So when you `cd /tmp` and then `ls` you are executing my script instead of the actual `/bin/ls` command. You are now inadvertently running my code under your permissions. When I finish my script with `exec /bin/ls "$@"` you won't even notice, because it will run the normal `/bin/ls` command at the end.
 
-The mistake is to have any directory in your path that can contain code controlled by another person besides you and root. That is, a world-writeable `/usr/local/bin` in - say - an AIX install would amount to the same exposure (A lot of old Unices such as AIX, HP/UX and SGI would ship with world writeable directories of one kind of the other by default).
+The mistake is to have any directory in your path that can contain code controlled by another person besides you and root. That is, a world-writeable `/usr/local/bin` in - say - an AIX install would amount to the same exposure (A lot of old Unices such as AIX, HP/UX and SGI would ship with world writeable directories of one kind or the other by default).
 
 ## The 777 root cron
 
-The same scenario is a script globally installed on all Macs by JAMF, running through cron as root every minute. The same JAMF sets the enclosing directory to 777 (full access for everybody). Due to how permissions work in Unix, this allows anybody to remove, rename or replace the script itself no matter what the script permissions are.
+The same scenario is a script globally installed on all Macs by JAMF, running through cron as root every minute. The same JAMF sets the enclosing directory to 777 (full access for everybody). Due to how permissions work in Unix, this allows anybody to remove, rename or replace the script itself, no matter what the script permissions are.
 
 It is instant root for anybody who cares: You replace the script with your own content, wait a minute for the cron to hit it, and put the original script back. Or not, depending on how you feel that day.
 
