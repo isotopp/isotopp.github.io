@@ -23,17 +23,18 @@ Aber das ist nur die Spitze des Eisberges. Checkt man sich einmal
 > ## 2.1 Web applications and the FHS
 >
 > Web applications should follow the same guidelines as any other software. most specifically, they should not make any assumption about how the administrator has arranged the file hierarchy outside of the FHS by placing files in non-standard places such as /var/www or /usr/local. Specifically, the following table should serve as guidelines for the location of files:
-> | type of file | location |
-> +--------------+----------+
-> | static web pages| /usr/share/PACKAGE/www |
-> | dynamically interpreted web pages | /usr/share/PACKAGE/www</td> |
-> | persistent application data | /var/lib/PACKAGE |
-> | dynamcially executed web pages | /usr/lib/cgi-bin/PACKAGE |
-> | application-specific libraries | /usr/share/PACKAGE/include | 
-> | site configuration (settings/passwords) | /etc/PACKAGE | 
-> | locally modifiable/overridable content | /etc/PACKAGE/templates | 
-> | php libraries | /usr/share/php/PACKAGE |
-> | rrd, mrtg and other database files | see database application policy |
+> 
+> | type of file                           | location                        |
+> +----------------------------------------+---------------------------------+
+> | static web pages                       | /usr/share/PACKAGE/www          |
+> | dynamically interpreted web pages      | /usr/share/PACKAGE/www          |
+> | persistent application data            | /var/lib/PACKAGE                |
+> | dynamcially executed web pages         | /usr/lib/cgi-bin/PACKAGE        |
+> | application-specific libraries         | /usr/share/PACKAGE/include      |
+> | site configuration                     | /etc/PACKAGE                    |
+> | locally modifiable/overridable content | /etc/PACKAGE/templates          | 
+> | php libraries                          | /usr/share/php/PACKAGE          |
+> | rrd, mrtg and other database files     | see database application policy |
 >
 > Fußnoten weggelassen.
 
