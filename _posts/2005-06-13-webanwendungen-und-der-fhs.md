@@ -16,13 +16,27 @@ Auf der S9Y Mailingliste fragte ein zukünftiger Paketmaintainer nach, ob er Ser
 In den Bereich der allgemeinen Überlegungen fallen zum Beispiel die Releasezyklen von Distributionen: Sie sind in der Regel sehr viel länger als die von Webanwendungen wie Serendipity. Insbesondere sehr langwellige Distributionen wie Debian verteilen mit ihren Paketen Versionen der Software, die die Entwickler von S9Y nicht mehr unterstützen können und wollen. 
 
 Auch ist fraglich, welchen Gewinn ein solches Package bringen soll. Eine Anwendung wie S9Y installiert sich mit Download-Auspacken-Anklicken sowieso schon selber und ist dabei dann an keinerlei externes Packaging oder fremde Zyklen gebunden. Eine Installation mit Betriebssystem-Packages bringt da nur Nachteile und fehlende Flexibilität. Zum Beispiel ist es so nicht leicht möglich, mehr als eine Version von S9Y an mehr als einer Location im System zu installieren, denn das Packagemanagement der üblichen Distributionen unterstützt weder konkurrente Installation unterschiedlicher Paketversionen noch sind verschiebliche Pakete mit durch den Anwender bestimmter Package-Root allgemein üblich.
-<br clear='all' />
 
-Aber das ist nur die Spitze des Eisberges. Checkt man sich einmal <a href="https://alioth.debian.org/projects/webapps-common/">webapps-common</a> aus und liest, was da drin steht - oder vielmehr nicht drin steht, sieht man, daß ein solches Packaging nur Nachteile haben kann: <blockquote><h4>2.1 Web applications and the FHS</h4>
-Web applications should follow the same guidelines as any other software. most specifically, they should not make any assumption about how the administrator has arranged the file hierarchy outside of the FHS by placing files in non-standard places such as /var/www or /usr/local.
+Aber das ist nur die Spitze des Eisberges. Checkt man sich einmal 
+[webapps-common](https://alioth.debian.org/projects/webapps-common/) aus und liest, was da drin steht - oder vielmehr nicht drin steht, sieht man, daß ein solches Packaging nur Nachteile haben kann: 
 
-Specifically, the following table should serve as guidelines for the location of files:
-<table><tr><td>type of file</td><td>location</td></tr><tr><td>static web pages</td><td>/usr/share/PACKAGE/www</td></tr><tr><td>dynamically interpreted web pages</td><td>/usr/share/PACKAGE/www</td></tr><tr><td>persistent application data</td><td>/var/lib/PACKAGE</td></tr><tr><td>dynamcially executed web pages</td><td>/usr/lib/cgi-bin/PACKAGE</td></tr><tr><td>application-specific libraries</td><td>/usr/share/PACKAGE/include</td></tr><tr><td>site configuration (settings/passwords)</td><td>/etc/PACKAGE</td></tr><tr><td>locally modifiable/overridable content</td><td>/etc/PACKAGE/templates</td></tr><tr><td>php libraries</td><td>/usr/share/php/PACKAGE</td></tr><tr><td>rrd, mrtg and other database files</td><td>see database application policy</td></tr></table>Fußnoten weggelassen.</blockquote>
+> ## 2.1 Web applications and the FHS
+>
+> Web applications should follow the same guidelines as any other software. most specifically, they should not make any assumption about how the administrator has arranged the file hierarchy outside of the FHS by placing files in non-standard places such as /var/www or /usr/local. Specifically, the following table should serve as guidelines for the location of files:
+> | type of file | location |
+> +--------------+----------+
+> | static web pages| /usr/share/PACKAGE/www |
+> | dynamically interpreted web pages | /usr/share/PACKAGE/www</td> |
+> | persistent application data | /var/lib/PACKAGE |
+> | dynamcially executed web pages | /usr/lib/cgi-bin/PACKAGE |
+> | application-specific libraries | /usr/share/PACKAGE/include | 
+> | site configuration (settings/passwords) | /etc/PACKAGE | 
+> | locally modifiable/overridable content | /etc/PACKAGE/templates | 
+> | php libraries | /usr/share/php/PACKAGE |
+> | rrd, mrtg and other database files | see database application policy |
+>
+> Fußnoten weggelassen.
+
 
 Das ist so kraß konsequent an der Realität vorbei, daß es mir persönlich schon wieder Respekt abnötigt.
 
@@ -32,7 +46,12 @@ Eine Webapp-Policy, die das komplett ignoriert und Webanwendungen atomisiert, um
 
 Okay, hier ist also einmal ein Katalog von Anforderungen:
 
-<ul><li>Policy muß chroot/virtual base directory jails unterstützen</li><li>Policy muß UID pro Domain/GID pro Kunde oder ähnliche Setups unterstützen, die auf Apache suexec oder PHP safe_mode basieren</li><li>Policy muß erlauben, daß die Anwendung mehr als einmal pro physikalischem Rechner installiert wird</li><li>Policy muß erlauben, daß die Anwendung in mehr als einer Version pro physikalischem Rechner installier wird.</li><li>Policy muß dem Kunden erlauben, seine Installation per ftp/scp/rsync zu sichern und zu modifizieren. Versionsmanagement muß erkennen, ob die modifizierte Anwendung danach noch automatisiert updatebar ist und ggf. einen Mergeprozeß unterstützen.</li><li>Policy muß die Installation mehrerer unterschiedlicher Webanwendungen pro Vhost in unterschiedliche Directories unterhalb der DocRoot eines VHosts unterstützen</li></ul>
+- Policy muß chroot/virtual base directory jails unterstützen
+- Policy muß UID pro Domain/GID pro Kunde oder ähnliche Setups unterstützen, die auf Apache suexec oder PHP safe_mode basieren
+- Policy muß erlauben, daß die Anwendung mehr als einmal pro physikalischem Rechner installiert wird
+- Policy muß erlauben, daß die Anwendung in mehr als einer Version pro physikalischem Rechner installier wird.
+- Policy muß dem Kunden erlauben, seine Installation per ftp/scp/rsync zu sichern und zu modifizieren. Versionsmanagement muß erkennen, ob die modifizierte Anwendung danach noch automatisiert updatebar ist und ggf. einen Mergeprozeß unterstützen.
+- Policy muß die Installation mehrerer unterschiedlicher Webanwendungen pro Vhost in unterschiedliche Directories unterhalb der DocRoot eines VHosts unterstützen
 
 Die Policy muß also ein Framework liefern, mit dem man Vhosts schnell erzeugen kann, mit dem man in einem Vhosts Features wie modlogan, perl, python, php, chroot Jail und andere Eigenschaften enablen und disablen kann, und mit dem man pro VHost eine oder mehrere Anwendungen in unterschiedlichen Verzeichnissen installieren und möglicherweise sogar sicher aktualisieren kann. Dabei muß die Anwendung durch Kopie aus einem Shared Repository installiert werden können, durch Hardlink auf das Repository um Platz zu sparen oder sie muß, wenn die Anwendung das unterstützt, shared installs (PEAR, S9Y, ...) möglich machen.
 
