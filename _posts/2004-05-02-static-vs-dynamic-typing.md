@@ -4,6 +4,7 @@ published: true
 title: Static vs. dynamic typing
 author-id: isotopp
 date: 2004-05-02 10:50:02 UTC
+tags:
 - computer
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg
@@ -14,10 +15,8 @@ Ich habe zu dieser Zeit bei einem Erwachsenenbildungswerk Programmierkurse gegeb
 
 Natürlich habe ich diese Experimente auch in C++ versucht, und mich in kürzester Zeit angewidert abgewandt. C++ hat sich für diese Aufgabe nämlich als haarsträubend unbrauchbar herausgestellt. Ich fragte mich: Wozu eine objektorientierte Programmiersprache, wenn in ihr nicht einmal ordentliche Container schreiben kann? (Ich weiß, daß es inzwischen Templates gibt, aber ihr wißt, daß die auch nicht Teil der Lösung, sondern Teil des Problems sind)
 
- 
-
-Aber ich war sowieso schon von der Uni her versaut, wo wir im Rahmen der Vorlesung "Objektorientierte Programmierung" mit Smalltalk und CLOS rumgemacht haben - von dort hatte ich recht konkrete Vorstellungen davon, was ich von einer objektorientierten Sprache erwarte, wenn es darum geht, dem Programmierer Arbeit abzunehmen. Kurz danach geriet ich an eine Nextstation und Objective-C und war für die Type Nazis für immer verloren: Dynamisch getypte Sprachen 
-[rocken einfach mehr](http://blog.koehntopp.de/archives/85_ObjC__oder_warum_DCOP_so_kompliziert_ist.html), denn sie nehmen einem Arbeit ab, anstatt welche zu generieren.
+ Aber ich war sowieso schon von der Uni her versaut, wo wir im Rahmen der Vorlesung "Objektorientierte Programmierung" mit Smalltalk und CLOS rumgemacht haben - von dort hatte ich recht konkrete Vorstellungen davon, was ich von einer objektorientierten Sprache erwarte, wenn es darum geht, dem Programmierer Arbeit abzunehmen. Kurz danach geriet ich an eine Nextstation und Objective-C und war für die Type Nazis für immer verloren: Dynamisch getypte Sprachen 
+[rocken einfach mehr]({% link _posts/2003-10-24-objc-oder-warum-dcop-so-kompliziert-ist.md %}), denn sie nehmen einem Arbeit ab, anstatt welche zu generieren.
 
 Natürlich habe ich das gerne auch im Netz verargumentiert, und bin von der Static Typing Fraktion mehr als einmal getoastet worden, denn ohne starke Typprüfung durch den Compiler geht angeblich die Welt unter. Angeblich, denn bei mir tat sie es nie. 
 
@@ -25,11 +24,13 @@ Aber offenbar bin ich nicht der einzige, der diese Erfahrung gemacht hat. Bei
 [Jeff Morre's Classpath considered harmful](http://www.procata.com/blog/archives/2004/04/26/classpath-considered-harmful/) findet sich ein Link auf 
 [Stephen Ferg's Java vs. Python comparison](http://www.ferg.org/projects/python_java_side-by-side.html), und die beschreibt ziemlich gut meine Erfahrungen mit C++ und später Java. 
 
-Manche Beispiele sind echt lustig, jedenfalls wenn man diese Art Geek-Humor steht. Wie schreibt ein Java-Programmierer <tt>$fp = fopen($argFilename, "r")</tt>?
+Manche Beispiele sind echt lustig, jedenfalls wenn man diese Art Geek-Humor steht. Wie schreibt ein Java-Programmierer `$fp = fopen($argFilename, "r")`?
 
-<tt>import java.io.*;
+{% highlight java %}
+import java.io.*;
 
-BufferedReader myFile = new BufferedReader(new FileReader(argFilename));</tt>
+BufferedReader myFile = new BufferedReader(new FileReader(argFilename));
+{% endhighlight %}
 
 Das baut ein 
 [FileReader](http://java.sun.com/j2se/1.4.2/docs/api/java/io/FileReader.html)-Objekt (FileReader ist eine Unterklasse von 
@@ -43,39 +44,47 @@ Das baut ein
 
 Oder, schöner noch: Wie schreibt ein Java-Programmierer "Tu eine Zahl in Array und hol sie wieder raus?"
 
-<tt>public Vector aList = new Vector;
+{% highlight java %}
+public Vector aList = new Vector;
 public int aNumber = 5;
-public  int anotherNumber;
+public int anotherNumber;
 
 aList.addElement(new Integer(aNumber));
-anotherNumber = ((Integer)aList.getElement(0)).intValue();</tt>
+anotherNumber = ((Integer)aList.getElement(0)).intValue();
+{% endhighlight %}
 
 Wir bauen uns also ein int-Skalar aNumber, und eine Liste aList. Da in die Liste nur Objekte rein können, machen wir aus dem int-Skalar ein int-Objekt und tun das in die Liste. Da Java 
 [statisch typt](http://www.ferg.org/projects/python_java_side-by-side.html#typing), ist in der Liste jetzt ein Object-Objekt und kein Integer-Objekt mehr. Wir fischen das Object-Objekt also mit getElement() aus der Liste, und typecasten das erst mal in was brauchbares, ein Integer-Objekt. Nur dann dürfen wir das int-Skalar aus dem Integer-Objekt wieder herausholen. 
 
 In Python und jeder anderen dynamisch getypten Sprache:
 
-<tt>aList = []
+{% highlighy python %}
+aList = []
 aNumber = 5
 
 aList.append(aNumber)
-anotherNumber = aList[0]</tt>
+anotherNumber = aList[0]
+{% endhighlight %}
 
 Was ich für sehr viel klarer und weniger fehleranfällig halte. 
-
 
 [Bruce Eckel](http://mindview.net/WebLog/log-0025) auch. Die Fehler, die Code explodieren lassen, sind in der Regel keine Typfehler, sondern falsche Grenzbedingungen, falsche Logik oder falsches Design. Und denen kommt man nicht mit Typechecking bei, sondern halt nur mit Tests.
 
 Bruce Eckel verweist in seinem Eintrag auf 
-[Robert Martin](http://www.artima.com/weblogs/viewpost.jsp?thread=4639). Der schreibt <i>I thought an experiment was in order. So I tried writing some applications in Python, and then Ruby (well known dynamically typed languages). I was not entirely surprised when I found that type issues simply never arose. My unit tests kept my code on the straight and narrow. I simply didn't need the static type checking that I had depended upon for so many years.</i> Mein Reden seit 
+[Robert Martin](http://www.artima.com/weblogs/viewpost.jsp?thread=4639). Der schreibt 
+
+> I thought an experiment was in order. So I tried writing some applications in Python, and then Ruby (well known dynamically typed languages). I was not entirely surprised when I found that type issues simply never arose. My unit tests kept my code on the straight and narrow. I simply didn't need the static type checking that I had depended upon for so many years.
+
+Mein Reden seit 
 [1870/71](http://kris.koehntopp.de/inkomploehntopp/01792.html) (letzter Abschnitt).
 
 Guido hat sich 
-[ebenfalls dazu geäußert](http://www.artima.com/intv/strongweak.html): <i>All that attention to getting the types right doesn't necessarily mean you don't have other bugs in your program. A type is a narrow piece of information about your data. When you look at large programs that deal with a lot of strong typing, you see that many words are spent working around strong typing.</i>
-
-<i>The container problem is one issue. It's difficult in a language without generics to write a container implementation that isn't limited to a particular type. And all the strong typing goes out the door the moment you say, "Well, we're just going to write a container of Objects, and you'll have to cast them back to whatever type they really are once you start using them." That means you have even more finger typing, because of all those casts. And you don't have the helpful support of the type system while you're inside your container implementation.</i>
-
-<i>Python doesn't require you to write the cast, and its containers are completely generic. So it has the plus side of generic containers without the downside. It doesn't have the plus side that the C++ folks claim to get with their templates and other generics. But in practice that mechanism turns out to be very cumbersome. Even compiler writers have difficulty getting templates to work correctly and efficiently, and the programmers certainly seem to have a lot of trouble learning how to use it correctly. Templates are a whole new language that has enormous complexity.</i>
+[ebenfalls dazu geäußert](http://www.artima.com/intv/strongweak.html):
+> All that attention to getting the types right doesn't necessarily mean you don't have other bugs in your program. A type is a narrow piece of information about your data. When you look at large programs that deal with a lot of strong typing, you see that many words are spent working around strong typing.
+> 
+> The container problem is one issue. It's difficult in a language without generics to write a container implementation that isn't limited to a particular type. And all the strong typing goes out the door the moment you say, "Well, we're just going to write a container of Objects, and you'll have to cast them back to whatever type they really are once you start using them." That means you have even more finger typing, because of all those casts. And you don't have the helpful support of the type system while you're inside your container implementation.
+> 
+> Python doesn't require you to write the cast, and its containers are completely generic. So it has the plus side of generic containers without the downside. It doesn't have the plus side that the C++ folks claim to get with their templates and other generics. But in practice that mechanism turns out to be very cumbersome. Even compiler writers have difficulty getting templates to work correctly and efficiently, and the programmers certainly seem to have a lot of trouble learning how to use it correctly. Templates are a whole new language that has enormous complexity.
 
 John Ousterhout sieht das ganz ähnlich in 
 [Scripting: Higher Level Programming for the 21st Century](http://home.pacbell.net/ouster/scripting.html), Abschnitt 6 ist der interessante Teil.
