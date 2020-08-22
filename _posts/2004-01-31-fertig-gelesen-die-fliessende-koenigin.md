@@ -1,19 +1,21 @@
 ---
 layout: post
 published: true
-title: Die fließende Königin
+title: "Fertig gelesen: Die fließende Königin"
 author-id: isotopp
 date: 2004-01-31 05:36:00 UTC
 tags:
+- book
 - media
+- review
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 ---
-<a href='/uploads/20040131-fliessende_koenigin.jpg'><img border='0' hspace='5' align='left' src='/uploads/20040131-fliessende_koenigin.serendipityThumb.jpg' alt='' /></a> <a href="http://www.amazon.de/exec/obidos/ASIN/3785540159/kristiankoehntopp"> Die fließende Königin</a> ist die Beschützerin von Venedig. Nur sie allein hat mit ihrer Magie die Mumientruppen des Pharao über 30 Jahre zurückhalten können.
+[Die fließende Königin](https://www.amazon.de/Merle-Die-Fließende-Königin-Merle-Zyklus-ebook/dp/B07ZR53C3M) ist die Beschützerin von Venedig. Nur sie allein hat mit ihrer Magie die Mumientruppen des Pharao über 30 Jahre zurückhalten können.
+
+![](/uploads/2004/01/fliessende_koenigin.jpg)
 
 Merle ist Schülerin bei Venedigs berümtesten und berüchtigsten Spiegelmacher, Arcimboldo. Sie und ihre Mitlehrlinge liegen im Streit mit den Lehrlingen des gegenüberliegenden Hauses. Doch während sie sich im kleinen streitet, wird hinter den Kulissen der Stadt ein wesentlich größerer Kampf ausgetragen.
-
-&nbsp;
 
 Merle belauscht ein Gespräch und gerät in dem Versuch, die fließende Königin zu retten schon bald in den Strudel aus Intrigen und Magie. Sie lernt das Volk der Meerjungfrauen kennen und muß auf den Schwingen eines steinernen Löwen reitend aus der Stadt fliehen, während die Sonnenbarken des Pharao sie verfolgen.
 
