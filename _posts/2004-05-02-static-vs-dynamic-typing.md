@@ -58,7 +58,7 @@ Wir bauen uns also ein int-Skalar aNumber, und eine Liste aList. Da in die Liste
 
 In Python und jeder anderen dynamisch getypten Sprache:
 
-{% highlighy python %}
+{% highlight python %}
 aList = []
 aNumber = 5
 
