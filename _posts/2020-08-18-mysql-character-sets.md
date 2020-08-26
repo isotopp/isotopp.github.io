@@ -45,8 +45,7 @@ If you have two character sequences and want to compare or sort them, you need a
 
 For example, the collation latin1_german1_ci represents "Köhntopp" internally as "kohntopp" and uses this internal represenation to compare it to other strings or sort it. But in storage we always find the original string, "Köhntopp".
 
-There is a second german language collation, latin1_german2_ci, which interally writes "Köhntopp" as "koehntopp" to compare and sort - but it will also save the same "Köhntopp" 
-to disk.
+There is a second german language collation, latin1_german2_ci, which interally writes "Köhntopp" as "koehntopp" to compare and sort - but it will also save the same "Köhntopp" to disk.
 
 ## The variants of Unicode and Unicode encoding
 
@@ -73,6 +72,18 @@ Unix systems tend to use UTF-8 (utf8), a variable length encoding in which Unico
 MySQL names an encoding a "CHARACTER SET" or "CHARSET". The charsets available in the server can be listed with `SHOW CHARSET`, or by searching through `INFORMATION_SCHEMA.CHARACTER_SETS`. In both cases, looking at the `Maxlen` column will tell you how long a symbols encoding in bytes can become in the worst case.
 
 Conversely, `SHOW COLLATION` (and `INFORMATION_SCHEMA.COLLATIONS`) will show you the collations the server knows about. Collations are not things that can be used standalone, they always belong to charsets. So `INFORMATION_SCHEMA.COLLATION_CHARACTER_SET_APPLICABILITY` tells you which collation can be used with which character set (or you `SHOW COLLATION WHERE Charset = "..."`).
+
+## MySQL objects with a character set and collation
+
+The only storage thing in MySQL that *has* a character set and a collation is a column. Columns that store text (`VARCHAR`, all `TEXT` types, textual `enum` and JSON objects) have a character set and a collation. In JSON it is fixed by the standard, for the others we can set it. Other things such as tables, databases and servers provide a hierarchy of defaults.
+
+The other thing in MySQL that *has* a character set and a collation is the connection. For the purpose of our discussion the connection represents the character set that your terminal or application uses in the server. So when you tell the server with `SET NAMES` what you are using, the server believes you.
+
+MySQL converts, if possible, between connection and column. So when you send a string in utf8 through your connection that ends up being stored in a latin1 column, MySQL will turn that `0xc3b6` in the connection into a `0xf6` on disk. On read, it will do the opposite, if necessary and possible.
+
+MySQL also converts if you convert columns. So if you `ALTER TABLE t MODIFY COLUMN c VARCHAR(80) CHARSET utf8` and that was previously a latin1 column, MySQL will take the `0xf6`es and turn them into `0xc3b6`es instead. All of that is automatic, safe and lossless, if possible. There are warnings and errors if not.
+
+But let's look at the details step by step.
 
 ## Setting charset and collation on a table
 
@@ -149,6 +160,8 @@ mysql> select _latin1 X'F6' as umlaut;
 {% endhighlight %}
 
 This creates a string literal from the hex code `0xF6` and labels it as latin1. The statement is then run, produces an Umlaut, and this Umlaut is then emitted as a result table. Because the connection is set to utf8, the Umlaut is converted to utf8, yields `C3 B6` and that is sent to the terminal, where it renders correctly.
+
+This is the automatic conversion at work, that I spoke about earlier.
 
 When we leave the label off, the conversion does not work. When we lie, the result is invalid and rejected:
 
