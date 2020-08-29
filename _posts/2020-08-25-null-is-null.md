@@ -201,7 +201,7 @@ kekskeks
 To them, SQL says "no cookie":
 
 {% highlight sql %}
-root@localhost [kris]> select concat('keks', 'keks') as double_cookie, concat('keks',NULL,'keks');
+root@localhost [kris]> select concat('keks', 'keks') as double_cookie, concat('keks',NULL,'keks') as no_cookie;
 +---------------+-----------+
 | double_cookie | no_cookie |
 +---------------+-----------+
