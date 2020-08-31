@@ -55,6 +55,8 @@ A set of 8 bit character sets were defined in ISO-8859, among them ISO-8859-1 ("
 
 ISO-8859 also contained other character sets for Cyrillic, Arabic, Greek, Hebrew and other languages, but because of the limitation to 8 bits, it was not possible to easily write text that switches between languages.
 
+> *Note:* The character set called `latin1` in MySQL is actually `Windows CP1252`, which is a superset of `iso-8859-1`. See [this article](https://mysqlserverteam.com/debugging-character-set-issues-by-example/) for details.
+
 Unicode development started in 1991 as a 16 bit character set, and it was assumed that this is sufficient to hold all characters from all possible writing systems. Unicode was design as a superset of ISO-8859-1, so codepoints that exist in both character sets are identical.
 
 In 1996 it became clear that a set of 65536 characters was not sufficient, and Uncode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.
