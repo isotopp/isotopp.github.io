@@ -6,6 +6,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: 2020-08-31 17:51:27 +0200
 tags:
 - lang_en
+- devops
 - erklaerbaer
 ---
 Ok, it's "Dad Stories" Time (from [Twitter](https://twitter.com/isotopp/status/1300414521169907713)). When my son was somewhat older than a year, he was learning to speak. He could already say "Mama" and "Papa".
@@ -20,9 +21,9 @@ So the only thing I could do for him was to get a wet cloth and let him touch th
 
 Computer Science is a lot like this, for some reason.
 
-People know here (*touches head*), for example by reading the SRE book or other stuff. You can ask them, and they will repeat the key learnings from the book back to them.
+People know here (*touches head*), for example by reading the SRE book or other stuff. You can ask them, and they will repeat the key learnings from the book back to you correctly.
 
-But they do not know here (*touches here*), and they will still build centralized Zookeepers.
+But they do not know here (*touches head*), and they will still build centralized Zookeepers.
 
 It requires a few outages until they know here (*touches gut*) how to design systems properly and what is important in design.
 
