@@ -27,7 +27,7 @@ But they do not know here (*touches head*), and they will still build centralize
 
 It requires a few outages until they know here (*touches gut*) how to design systems properly and what is important in design.
 
-So that person over there, with the centralized Zookeeper cluster. And that person over there with the schemaless, much simpler config language. And that one yonder, with the (type, length, value) BER-like data format. I could tell you "heiß" and you would not *understand*.
+So that person over there, with the centralized Zookeeper cluster. And that person over there with the schemaless, [much simpler config language](http://mikehadlow.blogspot.com/2012/05/configuration-complexity-clock.html). And that one yonder, with the (type, length, value) BER-like data format. I could tell you "heiß" and you would not *understand*.
 
 Go and touch that candle. It's the only way to learn *properly*.
 
@@ -36,9 +36,9 @@ Go and touch that candle. It's the only way to learn *properly*.
 >
 > I dream of a university/bootcamp of "candle touching" where learners practice scaling a service.
 
-I once worked at a company which used to own the domain [wahl.de](https://wahl.de) ("election.de"). They did not do much with it, they usually gave it do apprentices to play with. Usually the apprentices built elaborate PHP based websites that did pre-election mix- and match "Find the party that matches my interests".
+Another "Dad Story": I once worked at a company which used to own the domain [wahl.de](https://wahl.de) ("election.de"). They did not do much with it, they usually gave it do apprentices to play with. Usually the apprentices built elaborate PHP based websites that did pre-election mix- and match "Find the party that matches my interests".
 
-Never did they stop to consider what will happen on election day, Sunday at 6pm. Because that's when the die is cast, so hordes of people will drop onto the site and what they want - the *only* thing they want - is the results, as they develop. With no amount of hardware running PHP you will be able to handle this.
+Never did the apprentices stop to consider what will happen on election day, Sunday at 6pm. Because that's when the die is cast, so hordes of people will drop onto the site and what they want - the *only* thing they want - is the results, as they develop. With no amount of hardware running PHP you will be able to handle this.
 
 And that does not matter, because all you need at that time is a single static page, updated in the background, with current results.
 
