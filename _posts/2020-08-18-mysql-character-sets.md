@@ -45,7 +45,7 @@ If you have two character sequences and want to compare or sort them, you need a
 
 For example, the collation latin1_german1_ci represents "Köhntopp" internally as "kohntopp" and uses this internal represenation to compare it to other strings or sort it. But in storage we always find the original string, "Köhntopp".
 
-There is a second german language collation, latin1_german2_ci, which interally writes "Köhntopp" as "koehntopp" to compare and sort - but it will also save the same "Köhntopp" to disk.
+There is a second german language collation, latin1_german2_ci, which internally writes "Köhntopp" as "koehntopp" to compare and sort - but it will also save the same "Köhntopp" to disk.
 
 ## The variants of Unicode and Unicode encoding
 
@@ -59,17 +59,17 @@ ISO-8859 also contained other character sets for Cyrillic, Arabic, Greek, Hebrew
 
 Unicode development started in 1991 as a 16 bit character set, and it was assumed that this is sufficient to hold all characters from all possible writing systems. Unicode was design as a superset of ISO-8859-1, so codepoints that exist in both character sets are identical.
 
-In 1996 it became clear that a set of 65536 characters was not sufficient, and Uncode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.
+In 1996 it became clear that a set of 65536 characters was not sufficient, and Unicode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.
 
-As of March 2020, Unicode 13.0 contains some 140k characters from 154 writing systems. The definition of Unicode 13.0 currently allows for 1.112064 possible characters. The weird number is necessary, because some code points in the lower 65536 characters are reserved to encode *surrogate pairs*, basically extension characters for the original 16 bit character set.
+As of March 2020, Unicode 13.0 contains some 140k characters from 154 writing systems. The definition of Unicode 13.0 currently allows for 1.112064 possible characters. Some code points in the lower 65536 characters are reserved to encode *surrogate pairs*, basically extension characters for the original 16 bit character set, resulting in a weird number for the total possible characters.
 
-16 Bit Unicode is stored as UCS2 (what Windows NT used to use) - a fixed length encoding, which instead of 8 bit characters now uses 16 bit characters. When writing western languages, every other byte in text is 0.
+16 Bit Unicode can be stored as UCS2 (what Windows NT used to use) - a fixed length encoding, which instead of 8 bit characters now uses 16 bit characters. When writing western languages, every other byte in text is 0.
 
 UTF-16 extends UCS2 and uses variable length encoding of 2 bytes or 4 bytes to allow representation of all unicode characters, even those beyond the initial 65536 characters.
 
 Unix systems tend to use UTF-8 (utf8), a variable length encoding in which Unicode characters are 1-3 bytes in length (for the initial 65536 characters of Unicode 1.0), or 1-4 bytes in length (for full unicode).
 
-## Server Terms
+## MySQL Server Terms
 
 MySQL names an encoding a "CHARACTER SET" or "CHARSET". The charsets available in the server can be listed with `SHOW CHARSET`, or by searching through `INFORMATION_SCHEMA.CHARACTER_SETS`. In both cases, looking at the `Maxlen` column will tell you how long a symbols encoding in bytes can become in the worst case.
 
@@ -87,7 +87,7 @@ MySQL also converts if you convert columns. So if you `ALTER TABLE t MODIFY COLU
 
 But let's look at the details step by step.
 
-## Setting charset and collation on a table
+## Setting charset and collation on a column
 
 Every string in MySQL is labeled with an charset and a collation. For database objects that happens at the column level: A column with CHAR, VARCHAR, or any TEXT type always has a charset and a collation. The same can be true for an ENUM type that contains strings.
 
@@ -192,7 +192,7 @@ You can set a default with `default-character-set` and `default-encoding` in the
 
 If I am setting up my terminal to send utf8, and `SET NAMES utf8`, these things match and all will be well and converted correctly, if at all possible.
 
-I can check:
+I can check, using the `HEX()` function to see the actual bytes:
 
 {% highlight sql %}
 root@localhost [kris]> set names utf8;
@@ -207,7 +207,7 @@ root@localhost [kris]> select hex("ö");
 1 row in set (0.00 sec)
 {% endhighlight %}
 
-Switching my terminal to latin1, and then telling the database about this with `SET NAMES latin`, I get:
+Switching my terminal to latin1, and then telling the database about this with `SET NAMES latin1`, I get:
 
 {% highlight sql %}
 root@localhost [kris]> set names latin1;
@@ -254,7 +254,7 @@ I also see the hex code stored in the table, `F6`, by selecting the column value
 
 And on reading that back, I am still getting an "ö". That proves the database sent me a `C3B6`, converting back from the storage character set to the terminal character set, as declared with `SET NAMES`.
 
-So as long as I am not lying to the database about what my connection sends, values should be transaparently converted back and forth if at all possible.
+So as long as I am not lying to the database about what my connection sends, values should be transparently converted back and forth if at all possible.
 
 ## CONVERT(), LENGTH() and CHAR_LENGTH() functions
 
@@ -376,7 +376,7 @@ UCA 9.0.0 solves the Köhntopp/koehntopp problem by defining different functions
 
 ## Why utf8mb4, and not simply utf8?
 
-MySQL gained character set support with the MySQL 4.1 series of server releases in 2003. At that time, utf8 was a character set with room for 65536 (2^16) code points, and the UCS2 encoding (for 16 bit fixed width characters used in Windows) plus the UTF8 encoding (for variable length characters of 1-3 bytes in length).
+MySQL gained character set support with the MySQL 4.1 series of server releases in 2003. At that time, in MySQL utf8 was a character set with room for 65536 (2^16) code points, and the UCS2 encoding (for 16 bit fixed width characters used in Windows) plus the UTF8 encoding (for variable length characters of 1-3 bytes in length).
 
 MySQL at that point in time changed character sets and collations several times, as bugs were detected and fixed.
 
@@ -400,7 +400,7 @@ Hence we have utf8 (the 16-bit character set) and utf8mb4 (the larger than 16 bi
 
 The same is true for Timezones: MySQL does not use operating system sort and comparison rules as offered in the glibc functions, but brings its own, and it also does not use Timezone functions and rules as offered by glibc, but again uses its own.
 
-That provides stable and controlled migration that is also independent of operating system updates - the same comparison and index rules exist indendent of glibc updates, and on Linux, MacOS and Windows. This also keeps binary data files portable and upgradeable across operating systems and database versions.
+That provides stable and controlled migration that is also independent of operating system updates - the same comparison and index rules exist indendently of glibc updates, and on Linux, MacOS and Windows. This also keeps binary data files portable and upgradable across operating systems and database versions.
 
 Compare that for example to Postgres, which uses glibc functions for string comparison, sorting and for timezone conversions. In Postgres, you have to be aware of operating system updates that affect sorting, comparison or timezones, and you have to recreate indexes every time you make changes to these operating system functions. Noticing glibc updates that affect the function of the database on a system with security auto-updates can be very hard.
 
