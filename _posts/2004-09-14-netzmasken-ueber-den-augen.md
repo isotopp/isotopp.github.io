@@ -29,3 +29,5 @@ Ich erzählte dies meiner Katze, und sie antwortete mit einem einfachen Paste in
 {% endhighlight %}
 
 Dafür liebe ich sie.
+
+[More of this](https://www.funkthat.com/~jmg/jmpc/bitwise.html).
