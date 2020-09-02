@@ -29,4 +29,4 @@ Step by Step:
 
 5. Delete these using `rm -rf 'Relocated Items'`.
 
-6. Reboot using the epinymous item from the Apple Menu.
+6. Reboot using the eponymous item from the Apple Menu.
