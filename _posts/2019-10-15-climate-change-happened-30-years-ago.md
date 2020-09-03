@@ -23,7 +23,7 @@ The water on our planet is a buffer that can store energy if
 there is more energy incoming that the earth can dissipate, or
 release energy if the bilancing is negative. Since some time
 around 1990 the energy bilancing of our planet is positive and
-the oceans are capturing energy at an alarmling rate:
+the oceans are capturing energy at an alarming rate:
 
 ![](/uploads/climate-ocean.jpg)
 
