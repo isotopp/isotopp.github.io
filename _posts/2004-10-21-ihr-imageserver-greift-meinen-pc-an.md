@@ -11,10 +11,8 @@ feature-img: assets/img/background/rijksmuseum.jpg
 ---
 Da sich dies langsam zur FAQ auswächst, hier einmal als Text, damit ich in Zukunft darauf verweisen kann.
 
-Sie schreiben: <blockquote>Ich erhalte von Ihnen immer 8 TCP Scans auf meinen Rechner. Da es nicht das erste Mal ist, daß mein Router mir das von Ihrem Rechner aus meldet, muß ich Sie dazu auffordern dies bitte zu unterlassen.
-
-Possible TCP port scan from 217.72.195.85 (8 ports) against (IP-Nummer).</blockquote>
-
+Sie schreiben: 
+> Ich erhalte von Ihnen immer 8 TCP Scans auf meinen Rechner. Da es nicht das erste Mal ist, daß mein Router mir das von Ihrem Rechner aus meldet, muß ich Sie dazu auffordern dies bitte zu unterlassen. Possible TCP port scan from 217.72.195.85 (8 ports) against (IP-Nummer).
 
 Sie sehen Meldungen, die die IP-Nummer 217.72.195.85 betreffen. Diese IP-Nummer gehört zu dem Namen img.web.de. "img.web.de" ist ein Cluster von vielen spezialisierten Webservern für statische Dateien, etwa für Bilder und statische HTML-Seiten. Es handelt sich nicht um einen realen Server, sondern um die virtuelle IP eines Loadbalancers für Webserver. Von dort kann keine Portscan-Software arbeiten.
 
