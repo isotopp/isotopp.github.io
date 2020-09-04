@@ -3,7 +3,7 @@ layout: post
 title:  'MySQL: Basic usage of the JSON data type'
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
-date: 2020-08-18 08:57:10 +0200
+date: 2020-09-03 22:57:10 +0200
 tags:
 - lang_en
 - mysql
