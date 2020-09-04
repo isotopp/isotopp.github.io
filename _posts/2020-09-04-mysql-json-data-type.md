@@ -13,6 +13,7 @@ tags:
 ---
 MySQL 8 provides solid support for the JSON data type. The manual has [an overview of the data type](https://dev.mysql.com/doc/refman/8.0/en/json.html), a [JSON function reference](https://dev.mysql.com/doc/refman/8.0/en/json-functions.html), an [an overview on generated column indexes](https://dev.mysql.com/doc/refman/8.0/en/create-table-secondary-indexes.html#json-column-indirect-index), and [explains multi-values indexes](https://dev.mysql.com/doc/refman/8.0/en/create-index.html#create-index-multi-valued).
 
+
 ## Creating JSON columns
 
 Creating JSON columns is easy: Make the column of the JSON data type, fill in valid JSON data.
@@ -93,7 +94,7 @@ preserve: {"drei": "three", "eins": "one", "zwei": ["two", "two"]}
 1 row in set (0.00 sec)
 {% endhighlight %}
 
-Quotes and quoting can be a bit painful, and even confusion. Let's put the string `A so-called "string".` into a JSON string, inside an SQL statement. To turn this text into a JSON string we need to put double quotes around it, quoting our internal double quotes with backslashes. To produce a backslash literal, we need to write a double backslash.
+Quotes and quoting can be a bit painful, and even confusing. Let's put the string `A so-called "string".` into a JSON string, inside an SQL statement. To turn this text into a JSON string we need to put double quotes around it, quoting our internal double quotes with backslashes. To produce a backslash literal, we need to write a double backslash.
 
 The result:
 
@@ -219,8 +220,7 @@ mysql> select j->"$.paid" as paid from t where j->"$.paid";
 
 Warning (Code 3986): Evaluating a JSON value in SQL boolean context does an implicit comparison against JSON integer 0; if this is not what you want, consider converting JSON to a SQL numeric type with JSON_VALUE RETURNING
 
-mysql> select j->"$.user" as user, j->"$.paid" as paid from t where json_value(j
-, '$.paid' returning signed);
+mysql> select j->"$.user" as user, j->"$.paid" as paid from t where json_value(j, '$.paid' returning signed);
 +--------+------+
 | user   | paid |
 +--------+------+
@@ -236,7 +236,11 @@ Using `JSON_VALUE()` we can do the work of `JSON_EXTRACT()`, `JSON_UNQUOTE()` an
 We could have used cast as well:
 
 {% highlight sql %}
-mysql> select j->"$.user" as user, j->"$.paid" as paid, cast(j->"$.paid" as signed) as casted, json_value(j, "$.paid" returning signed) as valued from t;
+mysql> select j->"$.user" as user,
+->   j->"$.paid" as paid, 
+->   cast(j->"$.paid" as signed) as casted, 
+->   json_value(j, "$.paid" returning signed) as valued 
+-> from t;
 +--------+-------+--------+--------+
 | user   | paid  | casted | valued |
 +--------+-------+--------+--------+
@@ -245,7 +249,10 @@ mysql> select j->"$.user" as user, j->"$.paid" as paid, cast(j->"$.paid" as sign
 +--------+-------+--------+--------+
 2 rows in set (0.00 sec)
 
-mysql> select j->"$.user" as user, j->"$.paid" as paid from t where cast(j->"$.paid" as signed);
+mysql> select j->"$.user" as user,
+->   j->"$.paid" as paid 
+-> from t
+-> where cast(j->"$.paid" as signed);
 +--------+------+
 | user   | paid |
 +--------+------+
@@ -254,7 +261,10 @@ mysql> select j->"$.user" as user, j->"$.paid" as paid from t where cast(j->"$.p
 1 row in set (0.00 sec)
 
 
-mysql> select j->"$.user" as user, j->"$.paid" as paid from t where json_value(j, "$.paid" returning signed);
+mysql> select j->"$.user" as user, 
+-> j->"$.paid" as paid 
+-> from t 
+-> where json_value(j, "$.paid" returning signed);
 +--------+------+
 | user   | paid |
 +--------+------+
@@ -272,8 +282,9 @@ Reusing the example above, we can try to update the payment status of a user usi
 First, let's check if we can isolate the row we want to see elegantly:
 
 {% highlight sql %}
-mysql> select j->"$.user" as user, j->"$.paid" as paid,  json_type(j->"$.paid")
-as paid from t;
+mysql> select j->"$.user" as user, 
+-> j->"$.paid" as paid,  
+-> json_type(j->"$.paid") as paid from t;
 +--------+-------+---------+
 | user   | paid  | paid    |
 +--------+-------+---------+
@@ -282,8 +293,10 @@ as paid from t;
 +--------+-------+---------+
 2 rows in set (0.00 sec)
 
-mysql> select j->"$.user" as user, j->"$.paid" as paid from t where j->"$.user"
-= "kris";
+mysql> select j->"$.user" as user, 
+-> j->"$.paid" as paid 
+-> from t 
+-> where j->"$.user" = "kris";
 +--------+------+
 | user   | paid |
 +--------+------+
@@ -291,17 +304,21 @@ mysql> select j->"$.user" as user, j->"$.paid" as paid from t where j->"$.user"
 +--------+------+
 1 row in set (0.00 sec)
 
-mysql> select j->"$.user" as user, j->"$.paid" as paid from t where j->"$.user"
-= "KRIS";
+mysql> select j->"$.user" as user, 
+-> j->"$.paid" as paid 
+-> from t 
+-> where j->"$.user" = "KRIS";
 Empty set (0.00 sec)
 {% endhighlight %}
 
-Note that while this works, it is working with JSON character sets, so it is `utf8mb4` with a collation of `utf8mb4_bin`, hence case sensitive comparison.
+We notice: while this works, it is working with JSON character sets, so it is `utf8mb4` with a collation of `utf8mb4_bin`, hence case sensitive comparison.
 
 Using `JSON_SET()` we update the `$.paid` field of that user to `false`, and run into the next problem:
 
 {% highlight sql %}
-mysql> update t set j=json_set(j, "$.paid", "false" ) where j->"$.user" = "kris";
+mysql> update t 
+-> set j=json_set(j, "$.paid", "false" ) 
+-> where j->"$.user" = "kris";
 Query OK, 1 row affected (0.01 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
@@ -314,7 +331,10 @@ mysql> select * from t;
 +----+---------------------------------------------------------+
 2 rows in set (0.00 sec)
 
-mysql> select j->"$.user" as user, j->"$.paid" as paid, json_type(j->"$.paid") as paid from t;
+mysql> select j->"$.user" as user, 
+-> j->"$.paid" as paid, 
+-> json_type(j->"$.paid") as paid 
+-> from t;
 +--------+---------+---------+
 | user   | paid    | paid    |
 +--------+---------+---------+
@@ -344,7 +364,9 @@ Well, yes, but…
 Functions in MySQL expect types, and convert to these types. `JSON_SET()` expects JSON, so we do it like this:
 
 {% highlight sql %}
-mysql> update t set j=json_set(j, "$.paid", false ) where j->"$.user" = "kris";
+mysql> update t 
+-> set j=json_set(j, "$.paid", false ) 
+-> where j->"$.user" = "kris";
 Query OK, 1 row affected (0.01 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
