@@ -80,7 +80,7 @@ NULL, "zwei", "two") as obj;
 1 row in set (0.01 sec)
 {% endhighlight %}
 
-We can use `JSON_MERGE_PRESERVE()` and `JSON_MERGE_PATCH()` to incrementally build complicated structures. `JSON_MERGE_PRESERVE()` replaces `JSON_MERGE()`, which is deprecaged and should no longer be used.
+We can use `JSON_MERGE_PRESERVE()` and `JSON_MERGE_PATCH()` to incrementally build complicated structures. `JSON_MERGE_PRESERVE()` replaces `JSON_MERGE()`, which is deprecated and should no longer be used.
 
 {% highlight sql %}
 mysql> select json_merge_preserve('[3, 4, 5]', '[1, 2, 3]') as preserve, json_merge_patch('[1, 2, 3]', '[3, 4, 5]') as patch\G
@@ -370,11 +370,11 @@ mysql> update t
 Query OK, 1 row affected (0.01 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
-mysql> select id, j, json_type(j) as type from t where id = 3;
+mysql> select id, j, json_type(j) as type from t where id = 1;
 +----+-------+---------+
 | id | j     | type    |
 +----+-------+---------+
-|  3 | false | BOOLEAN |
+|  1 | false | BOOLEAN |
 +----+-------+---------+
 1 row in set (0.00 sec)
 {% endhighlight %}
@@ -384,3 +384,6 @@ There is [`JSON_REMOVE()`](https://dev.mysql.com/doc/refman/8.0/en/json-modifica
 - [`JSON_SET()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-set) replaces existing values and adds nonexisting values.
 - [`JSON_INSERT()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-insert) inserts values without replacing existing values.
 - [`JSON_REPLACE()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-replace) replaces only existing values.
+
+These are the basic tools we need to get JSON into and out of tables. We now just need to make it fast - the stuff for another article.
+
