@@ -51,9 +51,9 @@ mysql> select count(*) from t1;
 
 ## Generated columns
 
-A generated column is a column which has value that is calculated from a deterministic expression provided in the column definition. It has the usual name and type, and then a `GENERATED ALWAYS AS ()` term. The parentheses are part of the syntax and cannot be left off.
+A generated column is a column values that are calculated from a deterministic expression provided in the column definition. It has the usual name and type, and then a `GENERATED ALWAYS AS ()` term. The parentheses are part of the syntax and cannot be left off. The `GENERATED ALWAYS` is optional, and we are going to leave it off, because we are lazy.
 
-The column can be `VIRTUAL`, in which case the expression is evaluated on `SELECT` every time a value is needed, or `STORED`, in which case the value is materialized and stored on write.
+The column can be `VIRTUAL`, in which case the expression is evaluated when reading every time a value is needed, or `STORED`, in which case the value is materialized and stored on write.
 
 In may also contain inline index definition and a column comment.
 
@@ -146,9 +146,9 @@ Query OK, 1048576 rows affected (6.27 sec)
 Records: 1048576  Duplicates: 0  Warnings: 0
 {% endhighlight %}
 
-If we looked at the average row length in `INFORMATION_SCHEMA.TABLES`, we would see it as a bit longer (but as usual with I_S.TABLES output for small and narrow tables, the values are a bit off).
+If we looked at the average row length in `INFORMATION_SCHEMA.TABLES`, we would see it as a bit longer (but as is usual with I_S.TABLES output for small and narrow tables, the values are a bit off).
 
-We also see the `ALTER TABLE` now takes actual time, proportional to the table size. What happened is that the values for `c` now get materialized on write, as if we defined an `BEFORE INSERT` trigger maintaining the values in `c`.
+We also see the `ALTER TABLE` now takes actual time, proportional to the table size. What happened is that the values for `c` now get materialized on write, as if we defined a `BEFORE INSERT` trigger maintaining the values in `c`.
 
 ### Trying to write to a generated column fails (except when it doesn't)
 
@@ -170,7 +170,7 @@ Query OK, 0 rows affected (0.00 sec)
 Rows matched: 1  Changed: 0  Warnings: 0
 {% endhighlight %}
 
-So if you aren't actually writing to `c`, you are allowed to write to `c`. That sounds stupid until you define a view on t1 that includes `c` and is considered updateable - by allowing this construct, it stays updateable, even if it includes `c`.
+So if you aren't actually writing to `c`, you are allowed to write to `c`. That sounds stupid until you define a view on `t1` that includes `c` and is considered updatable - by allowing this construct, it stays updatable, even if it includes `c`.
 
 Filling in the correct value is not the same as `default` and does not work:
 
@@ -189,7 +189,7 @@ ERROR 3105 (HY000): The value specified for generated column 'c' in table 't1' i
 
 ### Caution: CREATE TABLE ... AS SELECT vs. generated columns
 
-We already know (I hope) that `CREATE TABLE ... AS SELECT` is of the devil and should not be used: It creates a table from the result set of the select statement, which is most definitively not the definition of the original table.
+We already know (I hope) that `CREATE TABLE ... AS SELECT` is of the devil and should not be used to copy table definitions: It creates a table from the result set of the select statement, which is most definitively not the definition of the original table.
 
 We have seen this fail already with indexes and foreign key definitions, and in case you didn't, here is what I mean:
 
@@ -212,6 +212,7 @@ Create Table: CREATE TABLE `sane` (
 mysql> insert into sane values (1, 1), (2, 2), (3, 3), (4, 4);
 Query OK, 4 rows affected (0.01 sec)
 Records: 4  Duplicates: 0  Warnings: 0
+
 mysql> create table broken as select * from sane;
 Query OK, 4 rows affected (0.07 sec)
 Records: 4  Duplicates: 0  Warnings: 0
@@ -225,7 +226,7 @@ Create Table: CREATE TABLE `broken` (
 1 row in set (0.01 sec)
 {% endhighlight %}
 
-`broken` is most decidedly not the same table as `sane`. The definition of `broken` has been inferred from the format of the result set, which may or may not have the same types as the base table(s), it also has no indexes and no constraints.
+`broken` is most decidedly not the same table as `sane`. The definition of `broken` has been inferred from the format of the result set, which may or may not have the same types as the base table(s). It also has no indexes and no constraints.
 
 The correct way to copy a table definition is `CREATE TABLE ... LIKE ...` and then move the data with `INSERT ... SELECT ...`. You still have to move the foreign key constraints manually, though:
 
@@ -310,7 +311,9 @@ Awww, yes. Okay, the full monty:
 mysql> insert into t2 (id, a, b) select id, a, b from t1;
 {% endhighlight %}
 
-Finally. Ok, copying data between tables with generated columns requires a bit more engineering than a mindless `INSERT ... SELECT *`. The rules are not unexpected, we have explored them right above, still...
+Finally.
+
+Ok, copying data between tables with generated columns requires a bit more engineering than a mindless `INSERT ... SELECT *`. The rules are not unexpected, we have explored them right above, still...
 
 ### The wrong data type
 
@@ -333,7 +336,7 @@ ERROR 1264 (22003): Out of range value for column 'c' at row 1
 
 Oh, they are on to us!?!? Are they?
 
-They are not, when we do it in two steps:
+They are not when we do it in two steps:
 
 {% highlight sql %}
 mysql> alter table t1 drop column c;
@@ -355,7 +358,9 @@ mysql> select * from t1 limit 3;
 3 rows in set (0.00 sec)
 {% endhighlight %}
 
-Let's `CREATE TABLE ... AS SELECT` again:
+It clips the values according to the rules that MySQL always had, and that ate so much data.
+
+Now, let's `CREATE TABLE ... AS SELECT` again:
 
 {% highlight sql %}
 mysql> drop table broken;
@@ -367,9 +372,9 @@ Error (Code 1264): Out of range value for column 'c' at row 2
 Error (Code 1030): Got error 1 - 'Operation not permitted' from storage engine
 {% endhighlight %}
 
-Wow. No less than three error messages, none of them helpful and pointing at the root cause. Something saying things about generated column `c` causing type errors would be really helpful here.
+Wow. No less than three error messages. At least they mention the column `c` and the word "range", so we kind of can have an idea what goes on. Still, this is only medium helpful and initially confusing.
 
-What happens?
+What happens, and why?
 
 {% highlight sql %}
 mysql> select @@sql_mode;
@@ -390,9 +395,9 @@ Warning (Code 1264): Out of range value for column 'c' at row 1029
 Warning (Code 1264): Out of range value for column 'c' at row 1030
 {% endhighlight %}
 
-`SQL_MODE` helpfully detected the problem and prevented data loss. As usual, `SQL_MODE` was as useless as it was helpful - while it prevented data loss, it did not point us into the right direct with its error messages at all.
+`SQL_MODE` helpfully detected the problem and prevented data loss. As usual, `SQL_MODE` was as useless as it was helpful - while it prevented data loss, it did not directly point us into the right direct with its error messages.
 
-By turning off `SQL_MODE` we get the clipped values copied and a bunch of warnings that everybody ignores all of the time, anyway. 
+By turning off `SQL_MODE` we get the clipped values copied and a bunch of warnings that everybody ignores all of the time, anyway, so I guess it's an improvement.
 
 ### Allowed and disallowed functions
 
