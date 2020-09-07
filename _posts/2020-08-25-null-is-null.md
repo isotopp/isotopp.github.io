@@ -1,7 +1,7 @@
 ---
 layout: post
 published: true
-title: NULL is NULL
+title: MySQL: NULL is NULL
 author-id: isotopp
 date: 2020-08-25 17:10:00 UTC
 tags:

@@ -3,7 +3,7 @@ layout: post
 title:  'MySQL from a Developers Perspective'
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
-date: 2020-08-18 17:18:16 +0200
+date: 2020-09-07 09:18:16 +0200
 tags:
 - lang_en
 - mysql
@@ -12,16 +12,11 @@ tags:
 - erklaerbaer
 - mysqldev
 ---
-So this has turned into a small series, explaining how to work with MYSQL
-from a developers perspective. This post is intended as a directory for the
-individual articles. It will be amended and re-dated as necessary.
+So this has turned into a small series, explaining how to work with MYSQL from a developers perspective. This post is intended as a directory for the individual articles. It will be amended and re-dated as necessary.
 
-The code for the series is also available in
-[isotopp/mysql-dev-examples](https://github.com/isotopp/mysql-dev-examples.git)
-on GitHub.
+The code for the series is also available in [isotopp/mysql-dev-examples](https://github.com/isotopp/mysql-dev-examples.git) on GitHub.
 
-The Tag [#mysqldev](https://blog.koehntopp.info/tags/#mysqldev) will
-reference all articles from this series.
+The Tag [#mysqldev](https://blog.koehntopp.info/tags/#mysqldev) will reference all articles from this series.
 
 - [MySQL Transactions - the physical side]({% link _posts/2020-07-27-mysql-transactions.md %}).
   Looking at how MySQL InnoDB handles transactions on the physical media, enabling rollback and commit. Introduces a number of important concepts: The Undo Log, the Redo Log, the Doublewrite Buffer, and the corrosponding in memory structures, the Log Buffer and the InnoDB Buffer Pool, as well as the concept of a page.
@@ -53,3 +48,8 @@ reference all articles from this series.
 - [MySQL: Some Character Set Basics]({% link _posts/2020-08-18-mysql-character-sets.md %})
   A collection and re-evaluation of things I wrote about MySQL character sets in the past, updated to match MySQL 8.
 
+- [MySQL: NULL is NULL]({% link _posts/2020-08-25-null-is-null.md %})
+  Understanding the handling of NULL values in SQL. NULL is not false, nor None/nil/undef, but is a thing specific to SQL.
+
+- [MySQL: Basic usage of the JSON data type]({% link _posts/2020-09-04-mysql-json-data-type.md })
+  MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fields.
