@@ -465,7 +465,13 @@ Records: 0  Duplicates: 0  Warnings: 0
 
 As expected, adding the index takes time, even if the column `c` is `VIRTUAL`: For an index we extract the indexed values from the table, sort them and store them together with pointers to the base row in the (secondary) index tree. In InnoDB, the pointer to the base row always is the primary key, so what we get in the index is actually pairs of `(c, id)`.
 
-We can prove that: Queries for `c` or for `c` and `id` should both be covering, that is, the queried values are all present in the index so that going to the base row is unnecessary. In an `EXPLAIN` we see this being indicated with `using index`, and indeed:
+We can prove that: 
+
+1. Queries for `c` can be answered from the index.
+2. Queries for `c` and `id` should also be covering: the queried values are all present in the index so that going to the base row is unnecessary. In an `EXPLAIN` we see this being indicated with `using index`.
+3. Querying for `c` and `a` is not covering, so the `using index` should be gone.
+
+And indeed:
 
 {% highlight sql %}
 mysql> explain select c from t1 where c < 50\G
@@ -497,9 +503,13 @@ possible_keys: c
 Note (Code 1003): /* select#1 */ select `kris`.`t1`.`id` AS `id`,`kris`.`t1`.`a` AS `a`,`kris`.`t1`.`b` AS `b`,`kris`.`t1`.`c` AS `c` from `kris`.`t1` where (`kris`.`t1`.`c` < 50)
 {% endhighlight %}
 
-As expected, the finaly query for `c`, `a` cannot be covering and is missing the `using index` Extra notice.
+As predicted, the final query for `c`, `a` cannot be covering and is missing the `using index` notice in the Extra column.
 
-This should give us an idea: In almost all cases `STORED` columns will not be paying off: They use disk space, still need to evaluate the expression at least once for storage. If indexed, will use additional disk space in the index, the column is actually materialized twice, in the table and the index. `STORED` generated columns sense only if the expression is complicated and is being evaluated really often, otherwise the cost for the storage is not amortized.
+This should give us an idea about how to design:
+
+In almost all cases `STORED` columns will not be paying off. They use disk space, and still need to evaluate the expression at least once for storage. If indexed, they will use disk space in the index a second time - the column is actually materialized twice, in the table and the index.
+
+`STORED` generated columns sense only if the expression is complicated and slow to calculate, but with the set of functions available to us that is hardly going to be the case, ever. So unless the expression is being evaluated really often the cost for the storage is not amortized.
 
 Even then, for generated columns `STORED` and `VIRTUAL`, many queries can probably be answered leveraging an index on the generated column so that we might try to get away with `VIRTUAL` columns all of the time.
 
@@ -569,7 +579,7 @@ That's a long article. Do you still remember how we started?
 
 > JSON cannot be indexed.
 
-Well, now it can.
+Well, now it can and you know how.
 
 {% highlight sql %}
 mysql> show create table t\G
@@ -590,6 +600,10 @@ mysql> select * from t;
 |  3 | false                                                 |
 +----+-------------------------------------------------------+
 3 rows in set (0.00 sec)
+
+mysql> alter table t add column user varchar(80) as (j->'$.user') virtual, add index (user);
+Query OK, 0 rows affected (0.10 sec)
+Records: 0  Duplicates: 0  Warnings: 0
 
 mysql> select user, id from t;
 +--------+----+
