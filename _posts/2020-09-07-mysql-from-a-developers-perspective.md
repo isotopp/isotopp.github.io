@@ -51,5 +51,5 @@ The Tag [#mysqldev](https://blog.koehntopp.info/tags/#mysqldev) will reference a
 - [MySQL: NULL is NULL]({% link _posts/2020-08-25-null-is-null.md %})
   Understanding the handling of NULL values in SQL. NULL is not false, nor None/nil/undef, but is a thing specific to SQL.
 
-- [MySQL: Basic usage of the JSON data type]({% link _posts/2020-09-04-mysql-json-data-type.md })
+- [MySQL: Basic usage of the JSON data type]({% link _posts/2020-09-04-mysql-json-data-type.md %})
   MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fields.
