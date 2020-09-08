@@ -51,7 +51,7 @@ mysql> select count(*) from t1;
 
 ## Generated columns
 
-A generated column is a column values that are calculated from a deterministic expression provided in the column definition. It has the usual name and type, and then a `GENERATED ALWAYS AS ()` term. The parentheses are part of the syntax and cannot be left off. The `GENERATED ALWAYS` is optional, and we are going to leave it off, because we are lazy.
+A generated column is a column with values that are calculated from a deterministic expression provided in the column definition. It has the usual name and type, and then a `GENERATED ALWAYS AS ()` term. The parentheses are part of the syntax and cannot be left off. The `GENERATED ALWAYS` is optional, and we are going to leave it off, because we are lazy.
 
 The column can be `VIRTUAL`, in which case the expression is evaluated when reading every time a value is needed, or `STORED`, in which case the value is materialized and stored on write.
 
@@ -135,6 +135,8 @@ Note (Code 1003): /* select#1 */ select `kris`.`t1`.`id` AS `id`,`kris`.`t1`.`a`
 {% endhighlight %}
 
 The output differs slightly in two places: the estimate given for filtered is different, and the view "sees" and exposes the definition for `c` as `a+b` in the reparsed statement in the "Note" section.
+
+Further down we will also see how the generated column can be indexed, while the statement expression can not - and that in the end what makes the key difference in performance.
 
 ### STORED generated columns
 
@@ -395,7 +397,7 @@ Warning (Code 1264): Out of range value for column 'c' at row 1029
 Warning (Code 1264): Out of range value for column 'c' at row 1030
 {% endhighlight %}
 
-`SQL_MODE` helpfully detected the problem and prevented data loss. As usual, `SQL_MODE` was as useless as it was helpful - while it prevented data loss, it did not directly point us into the right direct with its error messages.
+`SQL_MODE` helpfully detected the problem and prevented data loss. As usual, `SQL_MODE` was as useless as it was helpful - while it prevented data loss, it did not directly point us into the right direction with its error messages.
 
 By turning off `SQL_MODE` we get the clipped values copied and a bunch of warnings that everybody ignores all of the time, anyway, so I guess it's an improvement.
 
@@ -467,8 +469,8 @@ As expected, adding the index takes time, even if the column `c` is `VIRTUAL`: F
 
 We can prove that: 
 
-1. Queries for `c` can be answered from the index.
-2. Queries for `c` and `id` should also be covering: the queried values are all present in the index so that going to the base row is unnecessary. In an `EXPLAIN` we see this being indicated with `using index`.
+1. Queries for `c` can be answered from the index. The index is called *covering*, it saves us chasing the row pointer and an access to the actual row. In an `EXPLAIN` we see this being indicated with `using index`.
+2. Queries for `c` and `id` should also be *covering*: the queried values are all present in the index so that going to the base row is unnecessary.
 3. Querying for `c` and `a` is not covering, so the `using index` should be gone.
 
 And indeed:
@@ -503,13 +505,13 @@ possible_keys: c
 Note (Code 1003): /* select#1 */ select `kris`.`t1`.`id` AS `id`,`kris`.`t1`.`a` AS `a`,`kris`.`t1`.`b` AS `b`,`kris`.`t1`.`c` AS `c` from `kris`.`t1` where (`kris`.`t1`.`c` < 50)
 {% endhighlight %}
 
-As predicted, the final query for `c`, `a` cannot be covering and is missing the `using index` notice in the Extra column.
+As predicted, the final query for `c`, `a` cannot be covering and is missing the `using index` notice in the Extra column. This is still a good query: it is considering and using the index on `c` - the index alone is just not sufficient to resolve the query.
 
 This should give us an idea about how to design:
 
-In almost all cases `STORED` columns will not be paying off. They use disk space, and still need to evaluate the expression at least once for storage. If indexed, they will use disk space in the index a second time - the column is actually materialized twice, in the table and the index.
+In almost all cases `STORED` columns will not be paying off. They use disk space, and still need to evaluate the expression at least once for storage. If indexed, they will use disk space in the index a second time - the column is actually materialized twice, in the table in primary key order and the index in index order.
 
-`STORED` generated columns sense only if the expression is complicated and slow to calculate, but with the set of functions available to us that is hardly going to be the case, ever. So unless the expression is being evaluated really often the cost for the storage is not amortized.
+`STORED` generated columns make sense only if the expression is complicated and slow to calculate, but with the set of functions available to us that is hardly going to be the case, ever. So unless the expression is being evaluated really often the cost for the storage is not amortized.
 
 Even then, for generated columns `STORED` and `VIRTUAL`, many queries can probably be answered leveraging an index on the generated column so that we might try to get away with `VIRTUAL` columns all of the time.
 
