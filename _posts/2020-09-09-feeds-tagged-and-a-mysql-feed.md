@@ -30,4 +30,4 @@ Example for the tags:
 </channel>
 {% endhighlight %}
 
-So if you want only the MySQL content, subscribe to [this feed](https://blog.koehntopp.info/feed_mysql.xml), if you want all the content, subscribe to [the original feed](https://blog.koehntopp.info/feed.xml). In both cases, use the `<tags>` to filter further down.
+So if you want only the MySQL content, subscribe to [this feed](https://blog.koehntopp.info/feed_mysql.xml), if you want all the content, subscribe to [the original feed](https://blog.koehntopp.info/feed.xml). In both cases, use the `<tags/>` to filter further down.
