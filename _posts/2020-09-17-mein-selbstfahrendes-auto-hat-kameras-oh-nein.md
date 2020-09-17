@@ -27,7 +27,7 @@ Pro Kamera.
 
 Von denen wir 9 Stück im Auto haben.
 
-Okay, das Auto speichert also bestimmte ausgewählte Sequenzen, und manche Autos laden dannkleine Teile davon hoch, wenn es dazu aufgefordert wird.
+Okay, das Auto speichert also bestimmte ausgewählte Sequenzen, und manche Autos laden dann kleine Teile davon hoch, wenn es dazu aufgefordert wird.
 
 Gewiss wird es nicht (2 MBit/s * 9 Kameras / 8 Bit/Byte) = 2.25 MB/s, also 8 GB pro Stunde, 64 GB pro Tag mitspeichern und lange vorhalten und noch viel weniger wird es versuchen, diesen Kram in einem deutschen Mobilfunknetz irgendwohin automatisch hochzuladen. Schon gar nicht flottenweit.
 
