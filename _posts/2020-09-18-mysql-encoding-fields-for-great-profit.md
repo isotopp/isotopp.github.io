@@ -2,7 +2,7 @@
 layout: post
 title:  'MySQL: Encoding fields for great profit.'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-09-18 17:39:10 +0200
 tags:
 - lang_en
