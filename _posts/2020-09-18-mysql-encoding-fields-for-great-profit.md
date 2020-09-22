@@ -31,7 +31,7 @@ CREATE TABLE `log` (
 
 That is, our log table has an `id` field to allow individual row addressing, and then logs the state change of a `device_id` at a certain `change_time` from an `old_state` into a `new_state`. The two state fields are `varchar(64)` and contain one of some 13 or so different strings.
 
-Maybe they also contain typos, outdated state codes or other stuff that will later needs remapping and cleanup, but in today example we want to concentracte on the cleanup.
+Maybe they also contain typos, outdated state codes or other stuff that will later needs remapping and cleanup, but in today example we want to concentrate on the cleanup.
 
 Some small manual sample data:
 
