@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Calamity'
 date: '2016-02-28 18:27:03 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

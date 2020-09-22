@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Mindstar Rising, A Quantum Murder, The Nano Flower'
 date: '2015-11-30 19:59:10 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

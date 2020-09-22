@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Hexcommunicated'
 date: '2015-02-14 19:45:31 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_en
 - book

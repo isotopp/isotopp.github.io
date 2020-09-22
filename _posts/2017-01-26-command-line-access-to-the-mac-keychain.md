@@ -8,6 +8,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-01-26 20:34:42 +0100'
 tags:
 - erklaerbaer
+- macos
 - apple
 ---
 I am getting my payslips in electronic form, as an encrypted, password

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Blue Remembered Earth (Poseidons Children)'
 date: '2015-02-14 19:26:08 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

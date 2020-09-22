@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Nexus - Mankind gets an upgrade'
 date: '2013-09-04 19:15:07 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

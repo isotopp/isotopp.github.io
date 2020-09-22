@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Debt, the first 5000 years'
 date: '2014-12-11 09:33:04 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

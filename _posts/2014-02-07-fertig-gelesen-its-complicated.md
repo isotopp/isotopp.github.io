@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "It''s complicated"'
 date: '2014-02-07 11:17:09 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

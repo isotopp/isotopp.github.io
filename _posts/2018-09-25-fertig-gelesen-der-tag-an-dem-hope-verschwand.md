@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Der Tag, an dem Hope verschwand'
 date: '2018-09-25 20:03:23 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

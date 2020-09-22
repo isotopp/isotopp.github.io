@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Mistborn: Secret History'
 date: '2016-02-28 20:45:07 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

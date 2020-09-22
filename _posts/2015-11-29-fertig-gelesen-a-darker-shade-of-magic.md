@@ -3,7 +3,7 @@ title: 'Fertig gelesen: A Darker Shade Of Magic'
 date: '2015-11-29 14:42:54 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

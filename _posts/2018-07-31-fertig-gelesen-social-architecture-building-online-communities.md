@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Social Architecture: Building Online Communities'
 date: '2018-07-31 17:54:03 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

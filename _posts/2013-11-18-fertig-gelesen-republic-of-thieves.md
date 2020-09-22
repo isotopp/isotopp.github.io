@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Republic of Thieves'
 date: '2013-11-18 09:38:59 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

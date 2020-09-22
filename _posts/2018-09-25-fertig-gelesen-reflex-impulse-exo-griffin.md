@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Reflex, Impulse, Exo + Griffin'
 date: '2018-09-25 18:47:20 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

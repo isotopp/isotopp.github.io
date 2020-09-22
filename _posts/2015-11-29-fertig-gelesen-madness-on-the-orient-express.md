@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Madness on the Orient Express'
 date: '2015-11-29 15:14:10 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

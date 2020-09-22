@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Alloy of Law, Shadows of Self, The Bands of Mourning
 date: '2016-02-28 20:38:55 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

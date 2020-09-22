@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Box'
 date: '2017-01-02 13:42:12 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

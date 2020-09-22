@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Kady Cross "The Girl with the ..."'
 date: '2014-08-11 20:30:46 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_en
 - book

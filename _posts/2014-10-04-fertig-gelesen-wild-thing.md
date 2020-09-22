@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Wild Thing'
 date: '2014-10-04 18:53:32 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

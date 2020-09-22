@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Aeronaut''s Windlass'
 date: '2017-01-02 14:55:04 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

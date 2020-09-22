@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Astounding Antagonists'
 date: '2014-12-13 14:02:59 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

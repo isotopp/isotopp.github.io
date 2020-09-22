@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Indexing'
 date: '2015-02-14 19:09:43 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

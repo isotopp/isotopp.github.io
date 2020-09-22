@@ -67,7 +67,7 @@ Or, if they understand what goes on with the database, to map this to the code.
 
 In this case it is solvable, though. The `isolation = Isolation.SERIALIZABLE` is the culprit here.
 
-So when we spoke about [transactions and isolation levels]({% link _posts/2020-07-29-mysql-transactions-the-logical-view.md %}) previously, I made the decision to leave the fourth and most useless isolation level out of the picture: `SET TRANSACTION ISOLATION LEVEL SERIALIZEABLE`. [The manual says](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html#isolevel_serializable):
+So when we spoke about [transactions and isolation levels]({% link _posts/2020-07-29-mysql-transactions-the-logical-view.md %}) previously, I made the decision to leave the fourth and most useless isolation level out of the picture: `SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`. [The manual says](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html#isolevel_serializable):
 
 >  `SERIALIZABLE`
 > 
@@ -77,7 +77,7 @@ It then goes on to explain how `SERIALIZABLE` does nothing when there is no expl
 
 It does answer the question of "Where to the S-Locks come from?", though.
 
-The `SERIALIZEABLE` isolation mode turns a normal `SELECT` statement into a Medusa's freeze ray that shoots S-Locks all over the tables onto everything it looks at, preventing other threads from changing these things until we end our transaction and drop our locks (And that is why you should not use it, and why I personally believe that your code is broken if it needs it).
+The `SERIALIZABLE` isolation mode turns a normal `SELECT` statement into a Medusa's freeze ray that shoots S-Locks all over the tables onto everything it looks at, preventing other threads from changing these things until we end our transaction and drop our locks (And that is why you should not use it, and why I personally believe that your code is broken if it needs it).
 
 ## A broken RMW and lock escalation
 

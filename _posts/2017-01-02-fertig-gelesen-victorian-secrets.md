@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Victorian Secrets'
 date: '2017-01-02 14:49:22 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Kubernetes - Scheduling the Future at Cloud Scale'
 date: '2017-01-02 14:38:34 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

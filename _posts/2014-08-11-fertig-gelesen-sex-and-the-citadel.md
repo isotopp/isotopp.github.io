@@ -3,7 +3,7 @@ title: 'Fertig gelesen: "Sex and the citadel"'
 date: '2014-08-11 20:00:10 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

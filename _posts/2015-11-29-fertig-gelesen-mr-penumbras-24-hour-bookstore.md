@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Mr Penumbra''s 24-hour Bookstore'
 date: '2015-11-29 17:07:34 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Codex Born'
 date: '2013-09-27 14:00:06 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

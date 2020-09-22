@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Casino Royale'
 date: '2018-07-31 18:24:50 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

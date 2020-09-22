@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The End of The Aztecs'
 date: '2017-01-02 14:42:49 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

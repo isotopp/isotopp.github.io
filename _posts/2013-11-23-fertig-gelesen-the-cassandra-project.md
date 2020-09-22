@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Cassandra Project'
 date: '2013-11-23 06:21:28 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Once Dead und Dead Wrong'
 date: '2015-02-14 20:01:02 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

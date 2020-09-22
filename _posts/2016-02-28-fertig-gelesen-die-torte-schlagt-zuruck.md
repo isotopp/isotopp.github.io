@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Die Torte schlägt zurück'
 date: '2016-02-28 21:43:49 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

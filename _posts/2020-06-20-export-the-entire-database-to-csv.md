@@ -28,6 +28,12 @@ import csv
 
 # connect to database, set mysql_use_results mode for streaming
 db =  mdb.connect(host='localhost', user='root', db='kris')
+
+# Default is db.store_result(), which would buffer the
+# result set in memory in the client. This won't work
+# for a full table download, so we switch to streaming
+# mode aka db.use_result(). That way we keep at most
+# one result row in memory at any point in time.
 db.use_result()
 
 # Get a list of all tables in database
@@ -49,3 +55,9 @@ for t in tables:
 {% endhighlight %}
 
 Then customize as needed.
+
+*Note:* Using `db.use_result()` normally is not recommended, because it puts additional burden on the database when handling your result set, and because you cannot jump back and forth in the result set in the client.
+
+For a `mysqldump`-like usage as here, the default `db.store_result()` won't work, though, because it downloads the result set (here: entire tables) into client memory, one at a time, and that won't work. So in this particular case, `db.use_result()` is mandatory.
+
+In `mysqldump`, the option `--quick` switches to streaming mode, and it is part of the `--opt` set of recommended options, and they are enabled by default. When using `mysqldump --skip-quick`, buffered mode is used (and your mysqldump will explode due to memory buffering requirements).

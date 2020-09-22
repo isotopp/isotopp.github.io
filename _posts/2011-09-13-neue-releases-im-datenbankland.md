@@ -56,7 +56,7 @@ Postgres 9.1 definiert nun ebenfalls einen
 aber die genauen Definitionen von Transaction Isolation Levels variieren
 sowieso von Implementation zu Implementation ein wenig, sodaß diese nicht
 wirklich zwischen z.B. MySQL und Postgres vergleichbar sind (Dazu kommt, daß
-man vermutlich etwas falsch macht, wenn man in MySQL SERIALiZEABLE
+man vermutlich etwas falsch macht, wenn man in MySQL SERIALIZABLE
 tatsächlich benötigt.
 
 Version 9.1 unterstützt nun 

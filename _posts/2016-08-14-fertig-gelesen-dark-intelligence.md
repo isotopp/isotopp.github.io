@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Dark Intelligence'
 date: '2016-08-14 18:30:54 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

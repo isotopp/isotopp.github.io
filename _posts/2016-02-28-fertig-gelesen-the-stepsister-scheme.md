@@ -3,7 +3,7 @@ title: 'Fertig gelesen: The Stepsister Scheme'
 date: '2016-02-28 16:35:43 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

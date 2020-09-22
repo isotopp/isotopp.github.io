@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Unbound'
 date: '2015-02-14 18:53:12 +0100'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

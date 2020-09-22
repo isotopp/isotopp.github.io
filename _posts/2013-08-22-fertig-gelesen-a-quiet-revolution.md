@@ -2,7 +2,7 @@
 layout: post
 published: true
 title: 'Fertig gelesen: A Quiet Revolution: The Veil''s Resurgence'
-author: isotopp
+author-id: isotopp
 date: '2013-08-22 07:15:07 +0200'
 tags:
 - book

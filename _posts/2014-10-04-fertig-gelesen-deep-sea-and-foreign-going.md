@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Deep Sea and Foreign Going'
 date: '2014-10-04 19:46:37 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book

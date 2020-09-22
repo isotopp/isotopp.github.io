@@ -3,7 +3,7 @@ title: 'Fertig gelesen: Drohnenland'
 date: '2014-08-17 06:29:58 +0200'
 layout: post
 published: true
-author: isotopp
+author-id: isotopp
 tags:
 - lang_de
 - book
