@@ -152,14 +152,17 @@ In the InnoDB storage engine, the PRIMARY KEY is a B+-Tree. That is a B-Tree in 
 
 - Data with adjacent primary key values is likely stored in the same physical page.
 - Data with small differences in primary key values is likely stored closer together than data with large differences in primary key values.
-- Changing a primary key value changes the physical position of a record. Never change a primary key value `(Never UPDATE t SET id = ...)`.
+- Changing a primary key value changes the physical position of a record. Never change a primary key value (Never `UPDATE t SET id = ...`).
 - For an AUTO_INCREMENT key, new data is inserted at the end of the table, old data is closer to the beginning of the table.
   - MySQL has special code to handle this efficiently.
   - Deleting old data is not handled very efficiently. Look into [Partitions](https://dev.mysql.com/doc/refman/8.0/en/partitioning.html) and think about `ALTER TABLE t DROP PARTITION ...` for buffer like structures that need to scale. Also think about proper time series databases, if applicable, or about using Cassandra (they have TTL).
 
+
+We remember:
+
 > In InnoDB the primary key value governs the physical layout of the table.
 
-Assuming that new data is accessed often and old data is accessed less often, using primary keys with an AUTO_INCREMENT value collects all new, hot records in a minimum number of data pages. The set of pages the database is accessing a lot is minimal, and most easily cached in memory.
+Assuming that new data is accessed often and old data is accessed less often, using primary keys with an AUTO_INCREMENT value collects all new, hot records in a minimum number of data pages at the end of the table/the right hand side of the tree. The set of pages the database is accessing a lot is minimal, and most easily cached in memory.
 
 This design minimizes the amount of memory cache, and maximizes database speed automatically for many common access patterns and workloads.
 
