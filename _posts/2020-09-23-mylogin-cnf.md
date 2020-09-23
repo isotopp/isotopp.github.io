@@ -50,7 +50,7 @@ That is, I put general connection parameters such as the host, user and password
 
 ## .mylogin.cnf
 
-Some time in 2012, the `.mylogin.cnf` mechanism and the `mysql_config_editor` program were added. It is not possible to store a number of login pathes in a mylogin file, and call the client program with `--login-path=...`. The client program will then read the mylogin file and use the connection parameters from there.
+Some time in 2012, the `.mylogin.cnf` mechanism and the `mysql_config_editor` program were added. They provide little value in security as we will see, but allow storage of more than one set of credentials: It is now possible to store a number of login pathes (credential sets) in a mylogin file, and call the client program with `--login-path=...`. The client program will then read the mylogin file and use the connection parameters from there.
 
 mylogin files are being made with the `mysql_config_editor` program, for example
 
