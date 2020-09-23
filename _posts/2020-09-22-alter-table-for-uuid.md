@@ -117,15 +117,15 @@ Our table change was of the third, most expensive kind.
 
 In our case, we internally and invisibly
 
-- lock the original table.
+- Lock the original table.
 - Create a temp table in the new format.
 - Read all data from the original table, write it into the new table as an `INSERT INTO temptable SELECT ... FROM oldtable` would do.
 - `RENAME TABLE oldtable TO temptable2, temptable TO oldtable; DROP TABLE temptable2;`
-- unlock everything and are open for business again
+- Unlock everything and are open for business again.
 
 This process is safe against data loss: If at any point in time this fails, we drop the temptable and still have the original table, unchanged.
 
-This processes for some time doubles disk storage: The table converted will for some time exist in both variants. It requires an appropriate amount of disk space for the duration of the conversion.
+This processes temporarily doubles disk usage: For some time, the table to be converted will exist in both variants. It requires an appropriate amount of disk space for the duration of the conversion.
 
 This process can be emulated. Locking a production table for conversion for an extended amount of time is not an option. Online Schema Change (OSC) does the same thing, in code, while allowing access to the table. Data changes are captured in the background and mirrored to both versions. Multiple competing implementations of this exist, and we have institutionalized and automated this in the DBA portal at work.
 
@@ -137,9 +137,9 @@ When looking at the test-`SELECT` we see there seems to be an order, and it chan
 
 There is an order, because the column I changed was the `PRIMARY KEY`. The MySQL InnoDB storage engine stores data in a B+-Tree.
 
-A B-Tree is a balanced tree. That is a tree in with the path length of the longest path from the root of the tree to any leaf is at most one step longer than the shortest path.
+A B-Tree is a balanced tree. That is a tree in which the path length of the longest path from the root of the tree to any leaf is at most one step longer than the shortest path.
 
-So assuming a database with a page size of 16384 bytes (16KB), as MySQL uses, and assuming index records of 10 byte (4 Byte integer plus some overhead), we can cram over 1500 index records into a single page. Assuming index records of 64 byte size - quite large - we still fit 256 records into one page.
+So assuming a database with a page size of 16384 bytes (16KB), as MySQL uses, and assuming index records of 10 bytes (4 byte integer plus some overhead), we can cram over 1500 index records into a single page. Assuming index records of 64 bytes - quite large - we still fit 256 records into one page.
 
 We get an index tree with a fan-out per level of 100 or more (in our example: 256 to over 1500).
 
@@ -234,7 +234,7 @@ MySQL 8 provides a [UUID_TO_BIN()](https://dev.mysql.com/doc/refman/8.0/en/misce
 
 # TL;DR
 
-So if you must use a UUID in a primary key
+So if you must use an UUID in a primary key
 
 - Choose MySQL 8.
 - Make it VARBINARY(16).
