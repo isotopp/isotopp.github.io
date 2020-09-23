@@ -101,3 +101,4 @@ mysql_config_editor -v print --all
 # Note: mysql_config_editor will not print the password, just five stars
 {% endhighlight %}
 
+The program depends on `click` and `pycrypto`, but really any implementation of `aes-128-ebc` should be easily usable.
