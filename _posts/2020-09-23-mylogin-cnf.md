@@ -71,11 +71,11 @@ host = localhost
 
 will create a new mylogin, or amend an existing one, and define a login path named `test`. It will take the host and the username on the command line, but you cannot specify the password easily - it has to be typed in.
 
-This makes provisioning hard.
+This makes provisioning hard - templating this in Ansible is not easy and dancing around with `expect` and friends is just silly.
 
 ## Working around this
 
-A small [Python Program](https://github.com/isotopp/mysql-config-coder) based on a much older [article and PHP program](http://mysqldump.azundris.com/archives/104-.mylogin.cnf-password-recovery.html) of minechanges that.
+A small [Python Program](https://github.com/isotopp/mysql-config-coder) based on a much older [article and PHP program](http://mysqldump.azundris.com/archives/104-.mylogin.cnf-password-recovery.html) of mine changes that.
 
 It can decode and encode mylogin files, opening them up to Ansible templating. Just provision a valid mylogin file in plain text, encode it and delete the plain text original file.
 
