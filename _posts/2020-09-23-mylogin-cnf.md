@@ -10,7 +10,7 @@ tags:
 - mysqldev
 - database
 ---
-MySQL uses connection parameters from a number of possible sources. The easiest way to find out where it is looking for config files is to run
+MySQL uses connection and config parameters from a number of possible sources. The easiest way to find out where it is looking for config files is to run
 
 {% highlight console %}
 $ mysql --help | grep cnf
