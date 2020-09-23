@@ -97,8 +97,10 @@ chmod 600 mylogin.cnf
 # test with original
 MYSQL_TEST_LOGIN_FILE=$(pwd)/mylogin.cnf
 mysql_config_editor -v print --all
+my_print_defaults -s local
 
 # Note: mysql_config_editor will not print the password, just five stars
+#       but my_print_defaults should also show the password.
 {% endhighlight %}
 
 The program depends on `click` and `pycrypto`, but really any implementation of `aes-128-ebc` should be easily usable.
