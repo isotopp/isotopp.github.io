@@ -83,7 +83,7 @@ The sample session looks like this:
 
 {% highlight sql %}
 # generate a dummy file
-mysql_config_editor set --login-path=local --user=root --host=localhost --passwd
+mysql_config_editor set --login-path=local --user=root --host=localhost --password
 Password: keks
 
 # decode this file
