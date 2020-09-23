@@ -23,7 +23,7 @@ Computer Science is a lot like this, for some reason.
 
 People know here (*touches head*), for example by reading the SRE book or other stuff. You can ask them, and they will repeat the key learnings from the book back to you correctly.
 
-But they do not know here (*touches head*), and they will still build centralized Zookeepers.
+But they do not know here (*touches heart*), and they will still build centralized Zookeepers.
 
 It requires a few outages until they know here (*touches gut*) how to design systems properly and what is important in design.
 
