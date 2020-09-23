@@ -3,7 +3,7 @@ layout: post
 title:  'MySQL: Provisioning .mylogin.cnf'
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
-date: 2020-09-22 16:29:52:18 +0200
+date: 2020-09-23 12:29:52:18 +0200
 tags:
 - lang_en
 - mysql
