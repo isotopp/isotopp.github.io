@@ -74,7 +74,7 @@ ALTER TABLE t ADD PARTITION ( PARTITION p2 VALUES LESS THAN (3000000)),
              DROP PARTITION p0;
 {% endhighlight %}
 
-Because each parition is internally a table of its own, each partition will have their own much tinyier tree, and the actual drop operation is a file system delete instead of a tree rebalancing operation.
+Because each partition is internally a table of its own, each partition will have their own much tinyier tree, and the actual drop operation is a file system delete instead of a tree rebalancing operation.
 
 ## Other systems
 
