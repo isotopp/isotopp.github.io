@@ -333,3 +333,5 @@ kris@localhost [kris]> select count(*) from data;
 +----------+
 1 row in set (0.01 sec)
 {% endhighlight %}
+
+The complete example is available [on github.com](https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions).
