@@ -12,7 +12,7 @@ tags:
 - erklaerbaer
 - mysqldev
 ---
-In [Deleting data]({% link _posts/2020-09-24-mysql-deleting-data.md %) we have been looking at a process that loads data into MySQL, leveraging partitions to make it easier and faster to later get rid of the data again. For this, we created three processes, a data loader process, and two observers - one for creating partitions, and one for deleting them.
+In [Deleting data]({% link _posts/2020-09-24-mysql-deleting-data.md %}) we have been looking at a process that loads data into MySQL, leveraging partitions to make it easier and faster to later get rid of the data again. For this, we created three processes, a data loader process, and two observers - one for creating partitions, and one for deleting them.
 
 The observer processes have been running `ANALYZE TABLES` and then polling `INFORMATION_SCHEMA.PARTITIONS` every 1/10th of a second to check if intervention is needed. They then have been dynamically generating the necessary `ALTER TABLE` statements maintaining the proper partitioning of the table by adding and dropping additional partitions.
 
@@ -31,7 +31,12 @@ Query OK, 0 rows affected (0.00 sec)
 kris@localhost [kris]> set @next_limit := "30000";
 Query OK, 0 rows affected (0.00 sec)
 
-kris@localhost [kris]> select concat("alter table data add partition ( partition ", @next_name, " values less than (", @next_limit, "))") as cmd into @cmd;
+kris@localhost [kris]> select 
+-> concat("alter table data add partition ( partition ",
+-> @next_name, 
+-> " values less than (", 
+-> @next_limit, 
+-> "))") as cmd into @cmd;
 Query OK, 1 row affected (0.00 sec)
 
 kris@localhost [kris]> select @cmd;
@@ -61,10 +66,10 @@ Create Table: CREATE TABLE `data` (
   `e` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-/*!50100 PARTITION BY RANGE (`id`)
+PARTITION BY RANGE (`id`)
 (PARTITION p1 VALUES LESS THAN (10000) ENGINE = InnoDB,
  PARTITION p2 VALUES LESS THAN (20000) ENGINE = InnoDB,
- PARTITION p3 VALUES LESS THAN (30000) ENGINE = InnoDB) */
+ PARTITION p3 VALUES LESS THAN (30000) ENGINE = InnoDB)
 1 row in set (0.00 sec)
 {% endhighlight %}
 
