@@ -150,3 +150,55 @@ And using Python's multiprocessing, you could make it load multiple tables in pa
 In any case - this is simpler, more secure and less privileged than any of the broken `LOAD DATA` variants.
 
 Don't use them, write a loader program.
+
+Let's run it. First we generate some data, using the previous example from the partitions tutorial:
+
+{% highlight console %}
+(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py setup-tables
+(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py start-processing
+create p2 reason: not enough partitions
+cmd = alter table data add partition ( partition p2 values less than ( 20000))
+create p3 reason: not enough partitions
+cmd = alter table data add partition ( partition p3 values less than ( 30000))
+create p4 reason: not enough partitions
+cmd = alter table data add partition ( partition p4 values less than ( 40000))
+create p5 reason: not enough partitions
+cmd = alter table data add partition ( partition p5 values less than ( 50000))
+create p6 reason: not enough empty partitions
+cmd = alter table data add partition ( partition p6 values less than ( 60000))
+counter = 1000
+counter = 2000
+counter = 3000
+counter = 4000
+^CError in atexit._run_exitfuncs:               
+...
+{% endhighlight %}
+
+We then dump the data, truncate the table, and reload the data. We count the rows to be sure we get all of them back.
+
+{% highlight console %}
+(venv) kris@server:~/Python/mysql$ mysql-csv/dump.py
+table = data
+
+(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e 'select count(*) from data'
+mysql: [Warning] Using a password on the command line interface can be insecure.
++----------+
+| count(*) |
++----------+
+|     4511 |
++----------+
+
+(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e 'truncate table data'
+mysql: [Warning] Using a password on the command line interface can be insecure.
+
+(venv) kris@server:~/Python/mysql$ mysql-csv/load.py
+cmd = insert into data ( id, d, e) values (%s,%s,%s)
+
+(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e 'select count(*) from data'
+mysql: [Warning] Using a password on the command line interface can be insecure.
++----------+
+| count(*) |
++----------+
+|     4511 |
++----------+
+{% endhighlight %}
