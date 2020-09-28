@@ -23,11 +23,18 @@ Try this piece of Python 3.7 (or better) as a starting point. It requires `mysql
 # -*- coding: utf-8 -*-
 
 # pip install mysqlclient (https://pypi.org/project/mysqlclient/)
-import MySQLdb as mdb
+import MySQLdb
 import csv
 
 # connect to database, set mysql_use_results mode for streaming
-db =  mdb.connect(host='localhost', user='root', db='kris')
+db_config = dict(
+    host="localhost",
+    user="kris",
+    passwd="geheim",
+    db="kris",
+)
+
+db = MySQLdb.connect(**db_config)
 
 # Default is db.store_result(), which would buffer the
 # result set in memory in the client. This won't work
@@ -43,11 +50,10 @@ tables.execute("show tables")
 # for each table, dump it to csv file
 for t in tables:
   table = t[0]
-  print(f"{table}")
+  print(f"table = {table}")
 
-  query = f"select * from %s"
   data = db.cursor()
-  data.execute(query, table)
+  data.execute(f"select * from `{table}`")
 
   with open(f"{table}.csv", "w") as csvfile:
     w = csv.writer(csvfile)
