@@ -23,7 +23,7 @@ All over the Internet people are having trouble getting `LOAD DATA` and `LOAD DA
 > 
 > - In a Web environment where the clients are connecting from a Web server, a user could use LOAD DATA LOCAL to read any files that the Web server process has read access to (assuming that a user could run any statement against the SQL server). In this environment, the client with respect to the MySQL server actually is the Web server, not a remote program being run by users who connect to the Web server. 
 
-The second issue in reality means that if the web server has a suitable XSS vulnerability, the attacker may use that to read any file the web server has access to, bouncing this through the database server.
+The second issue in reality means that if the web server has a suitable SQL injection vulnerability, the attacker may use that to read any file the web server has access to, bouncing this through the database server.
 
 In short, never use (or even enable) `LOAD DATA LOCAL`.
 
@@ -33,28 +33,30 @@ In short, never use (or even enable) `LOAD DATA LOCAL`.
 
 ## Not using LOAD DATA
 
-The `LOAD DATA` variant of the command assumes that you place a file on the database server, into a directory in the file system of the server, and load it from there. In the age of "MySQL as a service" this is inconventient to impossible, so forget about this option, too.
+The `LOAD DATA` variant of the command assumes that you place a file on the database server, into a directory in the file system of the server, and load it from there. In the age of "MySQL as a service" this is inconvenient to impossible, so forget about this option, too.
 
-If you were able to do this,
+If you were able to do place files onto the system where your mysqld lives,
 
 - your user needs to have `FILE` as a privilege, a global privilege (`GRANT FILE TO ... ON *.*`)
 - the server variable [`secure_file_priv`](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_secure_file_priv) needs to be set to a directory name, and that directory needs to be world-readable. `LOAD DATA` and `SELECT INTO OUTFILE` work only with filenames below this directory. Setting this variable requires a server restart, this is not a dynamic variable (on purpose).
 
 Note that the variable can be `NULL` (this is secure in the sense that `LOAD DATA` is disabled) or empty (this is insecure in that there are no restrictions).
 
-There is nothing preventing you from setting the variable to `/var/lib/mysql` or other dumb locations which would expose vital system files to load and save operations. Do not do this. Also, a location such as `/tmp` or any other world-writeable directory would be dumb: Use a directory that is writeable by the import user only, and make sure that it is world-readable in order to make the command work.
+There is nothing preventing you from setting the variable to `/var/lib/mysql` or other dumb locations which would expose vital system files to load and save operations. Do not do this.
 
-Better: Do not use this command at all (and set `secure_file_priv` to NULL).
+Also, a location such as `/tmp` or any other world-writeable directory would be dumb: Use a dedicated directory that is writeable by the import user only, and make sure that it is world-readable in order to make the command work.
+
+**Better:** Do not use this command at all (and set `secure_file_priv` to NULL).
 
 ## Using data dump and load programs instead
 
 We spoke about dumping a schema into CSV files in [Export the entire database to CSV]({% link _posts/2020-06-20-export-the-entire-database-to-csv.md %}) already.
 
-To complete the discussion we need to provide a way to to the inverse and load data from a CSV file into a table.
-
-The main idea is to open a `.csv` file with `csv.reader`, and then iterate over the rows. For each row, we execute an `INSERT` statement, and every few rows we also `COMMIT`.
+To complete the discussion we need to provide a way to do the inverse and load data from a CSV file into a table.
 
 The full code is in [load.py](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-csv/load.py).
+
+The main idea is to open a `.csv` file with `csv.reader`, and then iterate over the rows. For each row, we execute an `INSERT` statement, and every few rows we also `COMMIT`.
 
 In terms of dependencies, we rely on `MySQLdb` and `csv`:
 
@@ -63,7 +65,11 @@ import MySQLdb
 import csv
 {% endhighlight %}
 
-We need to know the name of a table, and the table's column names. We should also make sure we can change the delimiter and quoting character used by the CSV, and make the commit interval variable. Finally, we need to be able to connect to the database.
+We need to know the name of a table, and the column names of that table (in the order in which they appear). 
+
+We should also make sure we can change the delimiter and quoting character used by the CSV, and make the commit interval variable. 
+
+Finally, we need to be able to connect to the database.
 
 {% highlight python %}
 # table to load into
@@ -92,7 +98,7 @@ db_config = dict(
 )
 {% endhighlight %}
 
-From this, we can build a database connection and an `INSERT` statement:
+From this, we can build a database connection and an `INSERT` statement, using the table name and column names:
 
 {% highlight python %}
 db = MySQLdb.connect(**db_config)
@@ -132,7 +138,12 @@ with open(f"{table}.csv", "r") as csvfile:
     db.commit()
 {% endhighlight %}
 
-And that it. That's all the code. It requires no `FILE` privilege, no special permissions besides insert into the target table. No config in the database. No server restart.
+And that it. That's all the code. 
+
+- No `FILE` privilege, 
+- No special permissions besides `insert_priv` into the target table.
+- No config in the database.
+- No server restart to set up the permissions.
 
 And using Python's multiprocessing, you could make it load multiple tables in parallel or chunk a very large table and load that in parallel - assuming you have database hardware that could profit from any of this.
 
