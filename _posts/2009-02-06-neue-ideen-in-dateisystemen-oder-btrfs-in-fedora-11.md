@@ -5,7 +5,7 @@ title: 'Neue Ideen in Dateisystemen (oder: BTRFS in Fedora 11)'
 author-id: isotopp
 date: 2009-02-06 16:34:20 UTC
 tags:
-- dateisysteme
+- filesystems
 - free software
 - linux
 - lang_de

@@ -7,7 +7,7 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: '2017-07-26 14:51:55 +0200'
 tags:
-- dateisysteme
+- filesystems
 - data center
 - container
 - performance

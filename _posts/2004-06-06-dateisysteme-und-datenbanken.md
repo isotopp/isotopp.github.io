@@ -5,7 +5,7 @@ author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: 2004-06-06 14:06:40 UTC
 tags:
-- dateisysteme
+- filesystems
 - datenbanken
 - "lang_de"
 ---

@@ -5,7 +5,7 @@ title: Webanwendungen und der FHS
 author-id: isotopp
 date: 2005-06-13 10:47:50 UTC
 tags:
-- dateisysteme
+- filesystems
 - php
 - s9y
 - lang_de

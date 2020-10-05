@@ -6,7 +6,7 @@ author-id: isotopp
 date: 2006-05-08 20:45:51 UTC
 tags:
 - computer
-- dateisysteme
+- filesystems
 - erklaerbaer
 - lang_de
 feature-img: assets/img/background/rijksmuseum.jpg

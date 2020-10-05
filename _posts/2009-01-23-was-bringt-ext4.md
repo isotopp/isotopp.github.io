@@ -5,7 +5,7 @@ author-id: isotopp
 date: 2009-01-23 19:14:35 UTC
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- dateisysteme
+- filesystems
 - free software
 - linux
 - lang_de
