@@ -57,15 +57,15 @@ There is an attempt to extend this, using Posix File ACLs (ACL) and Posix Extend
 
 Posix demands synchronus updates to metadata updates. When you extend a file, this should be visible immediately in the file length, and when you access a file, the atime should update, too. Even on local filesystems this is no longer doable - everybody mounts their Linux disks with a variant of `noatime` or the other.
 
-But while data writes distribute themselves across the cluster, metadata updates to not. They all have to hit the relatively small number of metadata nodes, and this load often crushed metadata servers
+But while data writes distribute themselves across the cluster, metadata updates do not. They all have to hit the relatively small number of metadata nodes, and this load often crushed metadata servers.
 
 ### The key idea: Immutability
 
-Note that all the things we spoke about are lower file system problems - they happen at the level of individual files already, not even going into upper file system, directory hierarchies and path names. That's not even necessary, because as long as the lower FS is not in shape looking up is kind of pointless.
+Note that all the things we spoke about are lower file system problems - they happen at the level of individual files already, not even going into upper file system, directory hierarchies and path names. That's not even necessary, because as long as the lower file system is not in shape looking up is kind of pointless.
 
 Object Stores have one single core idea: Files are immutable, maybe appendable (S3 is not, Google GFS and Hadoop HDFS are). The payoff is that we can cache this stuff, because the cache never becomes invalid. Maybe the end of the file is not up to date, but it will be eventually consistent.
 
-The file has a KV store with metadata, which can even grow to considerable size, and which is also eventually consistent. The upper file system we do away with: The entire namespace is one single KV store, in which the key is a binary string that cosplays a path name, and the value is the actual file data (and metadata).
+The file has a Key-Value store with metadata, which can even grow to considerable size, and which is also eventually consistent. With the upper file system we do the same: The entire namespace is one single KV store, in which the key is a binary string that cosplays a path name, and the value is the actual file data (and metadata).
 
 This has far reaching consequences: We can talk about "Log Structured Merge Trees", why they became popular in database land, and how that plays nicely with Object Storages. Or we can talk about how "Event Sourcing" favors "append only data structures", and how that plays nicely with Object Storages.
 
@@ -79,7 +79,7 @@ The culmination point of these ideas, and structures, can be found in Silicon Gr
 
 A completely different way of thinking can be found in [Log Structured File Systems](https://en.wikipedia.org/wiki/Log-structured_file_system), first seen in Ousterhout's  Sprite, in the early 1990. But performancewise the original implementation that was a failure: the first successful and performant implementation can be found  - made by Oursterhout's students - in Solaris ZFS, and at the same time in NetApps WAFL, which promptly engaged in a legal battle over patents. In parallel, many ZFS ideas are being reimplemented about half a decade later in Btrfs. All of that would put us roughly into 2004, in terms of commercial availability.
 
-Now, widespread adoption of Object Storages in persistence products, using Log Structured Merge (LSM) Trees, has taken place. We find them in Elastic Search, in Cassandra, in RocksDB and its many applications, and many more. In a timeline, this would put is into 2014-land.
+Now, widespread adoption of Object Storages in persistence products, using Log Structured Merge (LSM) Trees, has taken place. We find them in Elastic Search, in Cassandra, in RocksDB and its many applications, and many more. In a timeline, this would put us into 2014-land.
 
 LFS-like non-overwriting structures are also at the foundation of all of our storage, deep down in the block-simulation layer of flash storage devices, again around 2014.
 
@@ -91,7 +91,7 @@ Flash Storage originally appeared as a simulated hard disk, SSD. So we have a PC
 
 NVME is what we get when we ask the question "What purpose does the SATA controller have in this setup, anyway?" - except slowing everything down, forcing us to use antiquated SCSI commands and serializing access to the highly parallel flash.
 
-NVME therefore is a PCI bus, which talks to flash controllers, which talk to the flash, and a revised command set for this. The great innovation is to do away with the single disk queue and allow many of these. Which allows us to utilize around 800k IOPS per device, even if a single operation can take as long as 1/20.000th of a second - just go 40-way wide, if you can.
+NVME therefore is a PCI bus, which talks to flash controllers, which talk to the flash, and a revised command set for this. The great innovation is to put away the single disk queue and allow many of these. Which allows us to utilize around 800k IOPS per device, even if a single operation can take as long as 1/20.000th of a second - just go 40-way wide, if you can.
 
 Now, what if we had a way to speak to a NVME device on a different computers PCI bus as if it were local? That's what remote DMA (RDMA) would enable us to do. RoCE ("rocky", "RDMA over Converged Ethernet") initially was painful - RoCE V1 was unrouteable raw Ethernet with its own Ethertype. RoCE V2 fixed that, and put the entire stuff into UDP instead, so it was routeable, at least within a single data center.
 
