@@ -8,7 +8,7 @@ tags:
 - lang_en
 - erklaerbaer
 - filesystems
-- databases
+- database
 - mysql
 ---
 Every once in a while there is the IT news article that kind of triggers me. This time it was ["Object-Storage-Protokoll könnte Posix ablösen"](https://www.golem.de/news/object-storage-object-storage-protokoll-koennte-posix-abloesen-2010-151294.html) in german computer news site [Golem](https://golem.de). The article speaks about mmap(), NVMEoF and object storage and how it could revolutionize or complete object storages, but does not link to an original article, names no persons and no paper. Also, what do these things - mmap, NVMEoF, object storage and Posix, even have in common? It is not explained anywhere in the article.

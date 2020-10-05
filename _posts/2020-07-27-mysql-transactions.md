@@ -8,7 +8,7 @@ tags:
 - lang_en
 - mysqldev
 - mysql
-- databases
+- database
 - innodb
 - erklaerbaer
 ---
