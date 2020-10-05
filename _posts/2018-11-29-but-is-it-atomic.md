@@ -61,7 +61,7 @@ Sun ZFS and Linux Btrfs are from 2004, and are a complete deviation from earlier
 
 ## Source Dive: Why are writes atomic?
 
-“Posix requiring a file write to be atomic” comes from the behavior of the original Version 7 Unix and later systems. In there, we find the [write(2)](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/sys2.c#L20) system call, which just calls the `[rdwr()](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/sys2.c#L30)` function.
+“Posix requiring a file write to be atomic” comes from the behavior of the original Version 7 Unix and later systems. In there, we find the [write(2)](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/sys2.c#L20) system call, which just calls the [`rdwr()`](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/sys2.c#L30) function.
 
 {% highlight c %}
 /*
