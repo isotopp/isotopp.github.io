@@ -60,8 +60,8 @@ $ sudo roster-tool list /persistent/pools/example-misc/az-west1-a
 0be2b240a6964a338f0a65f22a2bb09d-example-2016.dc1.prod.example.com
 421e3f5c81914082b26f93cd096c4d25-example-8050.dc2.prod.example.com
 95624c835c454bbb8ad10a2eb728f66a-example-8051.dc2.prod.example.com
-afc7bd521a5c404582645d89598269d3-example-2015.dc1.prod.booking.com
-e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.booking.com
+afc7bd521a5c404582645d89598269d3-example-2015.dc1.prod.example.com
+e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.example.com
 
 So let’s have a look at example-8051:
 
