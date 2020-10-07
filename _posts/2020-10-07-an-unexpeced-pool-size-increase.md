@@ -149,7 +149,7 @@ So it may be long running transactions.
 
 How can we prove that?
 
-And this is where metrics end, and observability starts. We would need a flight recorder that takes a snapshot of the database activities in regular interval and keeps the data for some time so that we can look at non-numeric, non-aggregated detailed system stats from the past.
+And this is where metrics end, and observability starts. We would need a flight recorder that takes a snapshot of the database activities in regular intervals and keeps the data for some time so that we can look at non-numeric, non-aggregated detailed system stats from the past.
 
 This is such an obvious pressing need that [Simon Mudd wrote a script](http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/) to do that in the deep, dark past long before the term “observability” even existed.
 
