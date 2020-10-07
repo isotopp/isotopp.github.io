@@ -189,6 +189,6 @@ We have all the tooling, but it is from a different age. An age where people eit
 
 We do no longer have access to root shells in production, and in the age of anything as a service not even to shells.
 
-Observability as taught by Charity Majors is your trusted `printf(“Checkpoint: I am here.\n”);` or your [Fred Fish Dbug Macros](https://sourceforge.net/projects/dbug/files/dbug/) brought into the 21st century [age of distributed services](https://docs.honeycomb.io/getting-data-in/python/beeline/#using-a-decorator), and the tooling to create metrics from events, and [then slice and dice that in any dimension] without having a privileged shell on the broken system.
+Observability as taught by Charity Majors is your trusted `printf(“Checkpoint: I am here.\n”);` or your [Fred Fish Dbug Macros](https://sourceforge.net/projects/dbug/files/dbug/) brought into the 21st century [age of distributed services](https://docs.honeycomb.io/getting-data-in/python/beeline/#using-a-decorator), and the tooling to create metrics from events, and [then slice and dice that in any dimension](https://docs.honeycomb.io/getting-data-in/python/beeline/#queries-to-try) without having a privileged shell on the broken system.
 
 So yeah, let’s upgrade.
