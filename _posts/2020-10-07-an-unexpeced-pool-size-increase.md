@@ -28,9 +28,9 @@ The read handle should be in the same AZ as your client application, and should 
 
 We also have other replicas, for cloning, to make more replicas, and for example time delayed replicas to correct accidental data deletions and other Oopses quickly.
 
-Machines that are available for reading are organised in “Pools” per AZ. Many replication chains have only one Pool, “<name>-misc”, but some replication chains also have additional pools for workload isolation. For example, some chains have “<name>-slow” pools, and you get a third handle, to which you are supposed to send slow queries that cannot be optimised.
+Machines that are available for reading are organised in “Pools” per AZ. Many replication chains have only one Pool, “\<name>-misc”, but some replication chains also have additional pools for workload isolation. For example, some chains have “\<name>-slow” pools, and you get a third handle, to which you are supposed to send slow queries that cannot be optimised.
 
-Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your application-xml” queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.
+Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your "application-xml” queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.
 
 In any case, we run automated capacity tests on each pool, and then adjust pool sizes as needed. We also report to ourselves on that. Sometimes that report is interesting:
 
@@ -40,7 +40,7 @@ In any case, we run automated capacity tests on each pool, and then adjust pool 
 
 The minimum pool size is three, for redundancy reasons. The example chain is not busy, ever, and the pool size should *never* exceed three.
 
-DBA Operations talk to the customer: “I am reaching out to you because you are currently designated as owners of one or more of the database schemata in the example database chain. The schemata in question are <list>.
+DBA Operations talk to the customer: “I am reaching out to you because you are currently designated as owners of one or more of the database schemata in the example database chain. The schemata in question are \<list>.
 
 Starting yesterday, the example chain (and, especifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”
 
@@ -151,7 +151,7 @@ And this is where metrics end, and observability starts. We would need a flight 
 
 This is such an obvious pressing need that [Simon Mudd wrote a script](http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/) to do that in the deep, dark past long before the term “observability” even existed.
 
-It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in /var/log/mysql_pl/<weekday name>. In an age of baremetal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:
+It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in /var/log/mysql_pl/\<weekday name>. In an age of baremetal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:
 
 {% highlight console%}
 /var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz > /tmp/kris
