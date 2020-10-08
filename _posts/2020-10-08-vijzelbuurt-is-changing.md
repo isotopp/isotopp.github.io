@@ -18,7 +18,7 @@ Back when I was still commuting to work in an office, in the far past, I used to
 
 He also linked to [an image from the  Stadsarchief](https://archief.amsterdam/beeldbank/detail/03429525-d56a-9371-d7ba-d3258ecdc8e3) where the situation in 1987 is shown.
 
-These works are documented on the [City of Amsterdam website](https://www.amsterdam.nl/projecten), which also has a page for the [Vijzelstraat: hereinrichting](https://www.amsterdam.nl/projecten/vijzelstraat-herinrichting/).
+These works are documented on the [City of Amsterdam website](https://www.amsterdam.nl/projecten), which also has a page for the [Vijzelstraat: herinrichting](https://www.amsterdam.nl/projecten/vijzelstraat-herinrichting/).
 
 ![](/uploads/2020/10/vijzelstraat-goal.jpg)
 
@@ -38,4 +38,4 @@ Interestingly there are two more projects active that match and extend the Rode 
 
 [Vijzelgracht: afbouw Vijzelgrachtgarage](https://www.amsterdam.nl/projecten/vijzelgrachtgarage/) - The City is building a paid-for underground parking garage in the space between the metro station Vijzelgracht and the street level. This will provide paid-for parking space for 270 cars, similar to the Parkeergarage Museumskwartier, which is serving Frans-Hals-Buurt.
 
-[Vijzelbuurt: parkeerluw](https://www.amsterdam.nl/projecten/vijzelbuurt-parkeerluw/) - Matching the extremely successful conversion of Frans-Hals-Buurt (around 500m north of Vijzelgracht), free and paid-for on street parking is almost completely removed, freeing up public space for fietsers, pedestrians, playing children and city green. The change will affect two local neighborhoods, Weteringbuurt and Norderbuurt. The city has [local consultations](https://www.amsterdam.nl/projecten/vijzelbuurt-parkeerluw/nieuws-vijzelbuurt/ontwerpsessies-weteringbuurt/) with the people living there right now.
+[Vijzelbuurt: parkeerluw](https://www.amsterdam.nl/projecten/vijzelbuurt-parkeerluw/) - Matching the extremely successful conversion of Frans-Hals-Buurt (around 500m north of Vijzelgracht), free and paid-for on street parking is almost completely removed, freeing up public space for fietsers, pedestrians, playing children and city green. The change will affect two local neighborhoods, Weteringbuurt and Noorderbuurt. The city has [local consultations](https://www.amsterdam.nl/projecten/vijzelbuurt-parkeerluw/nieuws-vijzelbuurt/ontwerpsessies-weteringbuurt/) with the people living there right now.
