@@ -63,7 +63,7 @@ No matter what you call these things, these cycles form the bones of a continuou
 
 ![](/uploads/2020/06/pizza/checking.png)
 
-*From closest to furthest, looking an product and process.*
+*From closest to furthest, looking at product and process.*
 
 Checking can be done by continually distancing yourself from the product and the process.
 
@@ -89,7 +89,7 @@ We always need to take all three pillars into account: There is always an organi
 
 So [on a scale of 1-5](https://en.wikipedia.org/wiki/File:Characteristics_of_Capability_Maturity_Model.svg), how good are we at a thing?
 
-Suppose you are a Pizzeria, and you are really good at Pizza as a Service. Now somebody comes in, and wants Spaghetti. Bologna, of all things. You happen to have the noodles, and you have the sauce, because of the Pizza of the same style you service.
+Suppose you are a Pizzeria, and you are really good at Pizza as a Service. Now somebody comes in, and wants Spaghetti. Bologna, of all things. You happen to have the noodles, and you have the sauce, because of the Pizza of the same style you serve.
 
 So, you make it. You just went from 0 to 1: Not Performed to Individual Heroics. That was a success!
 
@@ -121,4 +121,4 @@ Maybe we give up Pizza production, and outsource ourselves, or just pre-products
 
 *Must be at least this tall to successfully outsource.*
 
-In any case that will fail, if we and our partner are below level 4, each, in process maturity. Without a shared understanding of the deliverable and the relevant metrics, there is no common understanding of what is being sold or bought, and a lot of pain and finger pointing will be the result. That is, without process maturity, you need to do stuff yourself, no matter what.
+In any case: that will fail, if we and our partner are below level 4, each, in process maturity. Without a shared understanding of the deliverable and the relevant metrics, there is no common understanding of what is being sold or bought, and a lot of pain and finger pointing will be the result. That is, without process maturity, you need to do stuff yourself, no matter what.
