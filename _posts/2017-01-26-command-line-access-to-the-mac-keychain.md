@@ -84,7 +84,7 @@ $ security add-generic-password -T "" -a $LOGNAME -s payslip -w keks
 Here is how to get the password back: 
 
 {% highlight console %}
-$ security find-generic-password -w -a $LOGNAME -s payslip keks
+$ security find-generic-password -w -a $LOGNAME -s payslip
 {% endhighlight %}
 
 If you did not allow "security" to include itself, you will see a permission
