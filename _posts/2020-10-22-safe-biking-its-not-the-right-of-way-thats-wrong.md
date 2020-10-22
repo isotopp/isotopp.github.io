@@ -14,7 +14,7 @@ Sven Geggus [trolled me](https://twitter.com/realgiggls/status/13192051073183784
 
 ![](/uploads/2020/10/bike-troll.jpg)
 
-*Der Isotopp wohnt doch in Holland. Wo sind denn bei euch die Vorfahrtsregeln anders und könnte man da was sinnvoll für .de übernehmen? -- @isotopp is living in the Netherlands. So how is the right of way different and how could .de learn from this?*
+*Der @isotopp wohnt doch in Holland. Wo sind denn bei euch die Vorfahrtsregeln anders und könnte man da was sinnvoll für .de übernehmen? -- @isotopp is living in the Netherlands. So how is the right of way different and how could .de learn from this?*
 
 Biking in the Netherlands does not suck, and that is not because of any specific traffic rules being any different, but because traffic is fundamentally different, and that somehow escalated.
 
@@ -76,19 +76,19 @@ Some key points:
 - We never really interact with car traffic, barring one situation near Spaarne Gasthuis, and even that could have been avoided choosing one bike lane to the left.
 - We never cross any of the two national streets (N201, N205). We have a tunnel and a bridge for bikes, instead.
 
-![](/2020/10/bike-segregated2.jpg)
+![](/uploads/2020/10/bike-segregated2.jpg)
 
 *Typical bike lane in Hoofddorp. The bike path is segregated from any car lane, and is bi-directional. Cyclists can ride two-up side by side, and talk.*
 
-![](/2020/10/bike-segregated3.jpg)
+![](/uploads/2020/10/bike-segregated3.jpg)
 
 *Underpass under the N201. The N201 is a multilane national road. It could have been a crossing with a traffic light, but building an underpass removes all risk to cyclists from cars.*
 
-![](/2020/10/bike-segregated4.jpg)
+![](/uploads/2020/10/bike-segregated4.jpg)
 
 *The same spot, as seen by a car driver. The bubble indicates where we emerge from under the road, passing the underpass.*
 
-![](/2020/10/bike-segregated5.jpg)
+![](/uploads/2020/10/bike-segregated5.jpg)
 
 *Later we pass over the N205, across the bike bridge. Underneath are 2x2 lanes of the N205 and the 2x1 lane of the reserved bus lane.*
 
