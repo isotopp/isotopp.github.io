@@ -126,6 +126,7 @@ Similar:
 
 ## But there is no room in our city
 
+
 "But, Kris! This may work where you live, with wide streets and much room and many trees, but not in our crowded and narrow city. We have no room to segregate traffic!"
 
 [![](/uploads/2020/10/bike-de-nl.jpg)](https://twitter.com/marcogroenewege/status/1319298417894383616)
