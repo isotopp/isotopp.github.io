@@ -12,15 +12,15 @@ tags:
 ---
 Sven Geggus [trolled me](https://twitter.com/realgiggls/status/1319205107318378498). A bunch of nerds were speaking about what's wrong with biking in Germany, and he wrote:
 
-![](/uploads/2020/10/bike-troll.jpg)
+[![](/uploads/2020/10/bike-troll.jpg)](https://twitter.com/realgiggls/status/1319205107318378498)
 
-*Der @isotopp wohnt doch in Holland. Wo sind denn bei euch die Vorfahrtsregeln anders und könnte man da was sinnvoll für .de übernehmen? -- @isotopp is living in the Netherlands. So how is the right of way different and how could .de learn from this?*
+*[Tweet](https://twitter.com/realgiggls/status/1319205107318378498): Der @isotopp wohnt doch in Holland. Wo sind denn bei euch die Vorfahrtsregeln anders und könnte man da was sinnvoll für .de übernehmen? -- @isotopp is living in the Netherlands. So how is the right of way different and how could .de learn from this?*
 
 Biking in the Netherlands does not suck, and that is not because of any specific traffic rules being any different, but because traffic is fundamentally different, and that somehow escalated.
 
 It starts here:
 
-![](/uploads/2020/10/bika-osha.jpg)
+![](/uploads/2020/10/bike-osha.jpg)
 
 *The OSHA hierarchy of mitigations.*
 
@@ -37,15 +37,15 @@ The OSHA hierarchy of mitigations for safety risks, as shown [here](https://www.
 
 There is the famous [Guardian article](https://www.theguardian.com/cities/2015/may/05/amsterdam-bicycle-capital-world-transport-cycling-kindermoord) that explains the history of [Stop De Kindermoord](https://nl.wikipedia.org/wiki/Stichting_Kinderen_Voorrang) and there is the video [Namens De Kinderen Van De Pijp, 1972](https://www.youtube.com/watch?v=YY6PQAI4TZE) that tries to explain and to capture the amount of outrage in the Netherlands in the early 70'ies regarding the destruction of the urban environment created by a car culture.
 
-![](/uploads/2020/10/bike-jokinen.gif)
+[![](/uploads/2020/10/bike-jokinen.gif)](https://en.wikipedia.org/wiki/Jokinen_Plan)
 
-There is the infamous [Plan Jokinen](https://en.wikipedia.org/wiki/Jokinen_Plan), which would have completely destroyed the old town of Amsterdam (which is now a Unesco World Heritage Site) and replaced it with a giant tumor of highway intersection, killing the city completely. It realization was averted, thankfully.
+There is the infamous [Plan Jokinen](https://en.wikipedia.org/wiki/Jokinen_Plan), which would have completely destroyed the old town of Amsterdam (which is now a Unesco World Heritage Site) and replaced it with a giant tumor of highway intersection, killing the city completely. Its realization was averted, thankfully.
 
 Other cities were less lucky, and took heavy damage.
 
 [![](/uploads/2020/10/bike-utrecht.jpg)](https://bicycledutch.wordpress.com/2016/01/05/motorway-removed-to-bring-back-original-water/)
 
-*Utrecht Catharinesingel was destroyed and turned into an Autobahn. It took more than 40 years to restore this part of the city to something not insane. [Article at Bicycledutch](https://bicycledutch.wordpress.com/2016/01/05/motorway-removed-to-bring-back-original-water/).*
+*Utrecht Catharijnesingel was destroyed and turned into an Autobahn. It took more than 40 years to restore this part of the city to something not insane. [Article at Bicycledutch](https://bicycledutch.wordpress.com/2016/01/05/motorway-removed-to-bring-back-original-water/).*
 
 In Amsterdam, the same story is told, slightly differently. We have [Vijzelbuurt is changing]({% link _posts/2020-10-08-vijzelbuurt-is-changing.md %}) here in this blog, explaining the construction of [De Rode Loper](https://nl.wikipedia.org/wiki/Rode_Loper_(Amsterdam)) as an extension of the Metro 52 construction. At station Vijzelstraat, the room between the street and the very deeply located metro station is now turned into a parking garage. On street parking will be dialled back or completely removed, and people that still want a car can rent space down there - but it will of course cost substantially.
 
@@ -63,7 +63,7 @@ Germany, right now, is building 1980'ies bike lanes, on a NL scale, using paint 
 
 And you cannot improve intersections with paint. You need an excavator.
 
-## #3 - Isolate - avoid intersections
+## OSHA #3 - Isolate - avoid intersections
 
 Let's bike from Hoofddorp Floriande to Vijfhuizen, and have a look at the scenery. Here is the video:
 
@@ -74,7 +74,7 @@ Let's bike from Hoofddorp Floriande to Vijfhuizen, and have a look at the scener
 Some key points:
 
 - We never really interact with car traffic, barring one situation near Spaarne Gasthuis, and even that could have been avoided choosing one bike lane to the left.
-- We never cross any of the two national streets (N201, N205). We have a tunnel and a bridge for bikes, instead.
+- We never interact with any of the two national streets (N201, N205). We have a tunnel and a bridge for bikes instead.
 
 ![](/uploads/2020/10/bike-segregated2.jpg)
 
@@ -116,7 +116,7 @@ This bike parking is only a fraction of the bike parking. There is more inside t
 
 This is not the exception, this is the rule. Rush Hour in Amsterdam is horribly busy. It looks like this:
 
-![](https://www.youtube.com/watch?v=H31UFT2wnWM)
+[![](/uploads/2020/10/bike-ams-rush.jpg)](https://www.youtube.com/watch?v=H31UFT2wnWM)
 
 *[Video](https://www.youtube.com/watch?v=H31UFT2wnWM) - Rush Hour in Amsterdam.*
 
@@ -149,7 +149,7 @@ This is the whole secret.
 
 *[Amsterdam, on S105](https://www.google.com/maps/@52.3748806,4.8719663,3a,75y,320.42h,71.83t/data=!3m6!1e1!3m4!1sZiOdE7QjfWPtuvvBtuN1kw!2e0!7i16384!8i8192) - click for Streetview. The residential streets around Hugo De Grootplein are narrow. Many of them are one-way, like this one on the right (exit only). Construction of the street makes it very clear what the situation is and who has priority.*
 
-[![](/uploads/2020/10/bike-amsterdam2.jpg)](https://www.google.com/maps/@52.3751321,4.871899,3a,75y,351.18h,64.18t/data=!3m6!1e1!3m4!1s3BSv4KQx7xJJJw7pm-dVmg!2e0!7i16384!8i8192)
+[![](/uploads/2020/10/bike-amsterdam3.jpg)](https://www.google.com/maps/@52.3751321,4.871899,3a,75y,351.18h,64.18t/data=!3m6!1e1!3m4!1s3BSv4KQx7xJJJw7pm-dVmg!2e0!7i16384!8i8192)
 
 *[Amsterdam, inside the one-way street](https://www.google.com/maps/@52.3751321,4.871899,3a,75y,351.18h,64.18t/data=!3m6!1e1!3m4!1s3BSv4KQx7xJJJw7pm-dVmg!2e0!7i16384!8i8192) - click for Streetview. The pavement signals that this is a bike-priority lane, in which cars are guests. The direction of car parking indicates that this is a one way street. Parked cars clog the street.*
 
@@ -165,11 +165,11 @@ Cities in the Netherlands have room for people, because they made room for peopl
 
 It is very important to have a second, closer look at these bike parks at Train Stations and Bus Stops. They are crucial.
 
-I am 50+, fit, and have a Pedelec. I have little problems riding 22km from a village near Schiphol to central Amsterdam and back. It takes me around 2h to do that, one hour in each direction. The same amount of time as spent in public transport.
+I am 50+, fit, and have a Pedelec. I have few problems riding 22km from a village near Schiphol to central Amsterdam and back. It takes me around 2h to do that, one hour in each direction. The same amount of time as spent in public transport.
 
-But the Netherlands build this AAA - All Ages and Abilities. Not everyone can do that. So multimodal transport is the rule. You can bike to a train station or bus stop. The design speed is 15 km/h, the design distance is 20min or less - so within 5 km radius you are supposed to be able to jump onto public transport.
+But the Netherlands build this AAA - All Ages and Abilities. Not everyone can do what I do. So multimodal transport is the rule. You can bike to a train station or bus stop. The design speed is 15 km/h, the design distance is 20min or less - so within 5 km radius you are supposed to be able to jump onto public transport.
 
-At the OV ppint, you will find bike parking. Covered at Bus Stops, covered, guarded and often with a bike repair shop in Train Stations. You jump on the *Openbaare Vervoer* (OV, Public Transport) using [the chipcard](https://en.wikipedia.org/wiki/OV-chipkaart): All transport in the Netherlands can make their own tariff and zones, but the collection is unified with the Chipcard. That means: One ticket for the entire country, one method of billing.
+At the OV point, you will find bike parking. Covered at Bus Stops, covered, guarded and often with a bike repair shop in Train Stations. You jump on the *Openbaare Vervoer* (OV, Public Transport) using [the chipcard](https://en.wikipedia.org/wiki/OV-chipkaart): All transport in the Netherlands can make their own tariff and zones, but the collection is unified with the Chipcard. That means: One ticket for the entire country, one method of billing.
 
 At your destination, [OV fiets](https://www.ns.nl/en/door-to-door/ov-fiets/how-it-works.html) is likely to be available - there are more than 300 stations all across the country where you can have this. This is a public transport bike that can be rented *using the same train ticket*.
 
@@ -198,7 +198,7 @@ There is a pretty nifty video [Invisible Bike Infrastructure of the Netherlands]
 
 And the best thing is: This is engineering. That means, it can be reproduced, taught, adjusted and ported into your urban environment. There is [CROW](https://www.crow.nl/thema-s/contracteren), which is the private engineering partner organisation for Dutch city planners. They have documentation in German, English, Dutch and other languages, they have classes and they have people that you can pay to do the work for you - depending on your cities needs and preferences.
 
-## In German
+## OSHA #4 in German: Safe intersections discussed
 
 For Germany, there is "Darmstadt fährt Rad", which has german languge article series on [dutch protected intersections](https://www.darmstadtfaehrtrad.org/?p=671), explains how [protected intersections work](https://www.darmstadtfaehrtrad.org/?p=2446), and also [refutes](https://www.darmstadtfaehrtrad.org/?p=3628) the [Tagesspiegel article](https://www.tagesspiegel.de/berlin/protected-intersections-im-praxistest-unfallforscher-warnt-vor-hollaendischen-kreuzungen-fuer-radfahrer/26071942.html).
 
