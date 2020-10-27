@@ -40,7 +40,7 @@ Schnell haben wir einige Figuren skizzieren können, die später vorkommen solle
 
 Nachdem die Figuren unserer Serie feststanden, mußten wir uns über einen Story-Arc und den Hintergrund klar werden.
 
-Wir haben uns für einen Plot entschieden, der ein wenig an die [Universal Brotherhood](http://wiki.dumpshock.com/index.php/Universal_Brotherhood)erinnert: Die Geschichte beginnt damit, daß unsere Runner in einem Warenhaus der Interweb Logistics aufwachen, mit einer Schockamnesie a la [Bourne Identity](http://www.imdb.com/title/tt0258463/) und dort auch prompt von einem Team der Interweb Logistic angegriffen werden. Sie begreifen schnell, daß sie keine normalen Menschen sind, und daß sie als Team zusammen zu agieren gewohnt sind. Wir haben diese Szene aus einem potentiellen Pilotfilm kurz angespielt, um die Figuren und ihre Interaktion und Motivation zu testen.
+Wir haben uns für einen Plot entschieden, der ein wenig an die [Universal Brotherhood](http://wiki.dumpshock.com/index.php/Universal_Brotherhood) erinnert: Die Geschichte beginnt damit, daß unsere Runner in einem Warenhaus der Interweb Logistics aufwachen, mit einer Schockamnesie a la [Bourne Identity](http://www.imdb.com/title/tt0258463/) und dort auch prompt von einem Team der Interweb Logistic angegriffen werden. Sie begreifen schnell, daß sie keine normalen Menschen sind, und daß sie als Team zusammen zu agieren gewohnt sind. Wir haben diese Szene aus einem potentiellen Pilotfilm kurz angespielt, um die Figuren und ihre Interaktion und Motivation zu testen.
 
 Danach erst haben wir eine Season von neun Abenteuern geplant, die alle vor dem Piloten spielen. 
 
@@ -77,7 +77,7 @@ Die angegebenen Zahlen zeigen dabei die Screen Presence einer Figur in dieser Fo
   Sinn, der über seine Rolle hinausgeht.
 6. Auch die folgende Episode, "Shadow", haben wir dann ausgespielt. Dies ist
   eine Folge für Kate (3), Squeek (2) und Tie (2). Kate und die beiden
-  finden nämlich entscheidene Informationen über Interweb heraus, geraten
+  finden nämlich entscheidende Informationen über Interweb heraus, geraten
   aber in eine Verfolgungsjagd, bei der Kate ihren Vater wiedertrifft, aber
   feststellen muß, daß er irgendwie in die ganze Geschichte verstrickt ist -
   leider möglicherweise nicht auf der richtigen Seite. Im Finale der Folge
