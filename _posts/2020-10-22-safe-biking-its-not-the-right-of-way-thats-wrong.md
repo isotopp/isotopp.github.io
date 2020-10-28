@@ -131,7 +131,7 @@ Similar:
 
 [![](/uploads/2020/10/bike-de-nl.jpg)](https://twitter.com/marcogroenewege/status/1319298417894383616)
 
-*Marco Groenewege contrasting a major city artery in Germany and the S107, a major Amsterdam artery, and of comparable size. The dutch street separates traffic types, makes impossible for cars to leave the lane and overtake, or abuse or block the tram. Area use of both constructs is comparable, one is much safer.*
+*[Tweet](https://twitter.com/marcogroenewege/status/1319298417894383616) - Marco Groenewege contrasting a major city artery in Germany and the S107, a major Amsterdam artery, and of comparable size. The dutch street separates traffic types, makes impossible for cars to leave the lane and overtake, or abuse or block the tram. Area use of both constructs is comparable, one is much safer.*
 
 There is room in every city.
 
