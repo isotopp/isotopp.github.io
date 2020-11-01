@@ -14,14 +14,14 @@ tags:
 ---
 Es gibt ein Interview mit Stefan Ramesohl vom Bundesumweltministerium in Netzpolitik.org: "[Warum niemand weiß, wie viele Rechenzentren es in Europa gibt](https://netzpolitik.org/2020/interview-zur-umweltpolitischen-digitalagenda-warum-niemand-weiss-wie-viele-rechenzentren-es-in-europa-gibt/)". Im Wesentlichen hat das Bundesumweltministerium angesagt, daß es auf europäischer Ebene Rechenzentren erfassen und katalogisieren will, um in einem zweiten Schritt den Energieverbrauch von Rechenzentren zu regulieren.
 
-Das ist sehr spannend, denn derzeit gibt es keine Übersicht über Rechenzentren in Europa, und tatsächlich sind einige Rechenzentrumsbetreiber sehr paranoid, was den genauen Standort ihrer Hardware angeht und wieviel und welche Hardware darin ist oder was die tut. Das ist zwar lächerlich - es ist sehr schwierig eine Energiesenke wie ein Rechenzentrum und ihre Abwärme zu verstecken - aber auch ein sehr sensitives Thema.
+Das ist sehr spannend, denn derzeit gibt es keine Übersicht über Rechenzentren in Europa, und tatsächlich sind einige Rechenzentrumsbetreiber sehr paranoid, was den genauen Standort ihrer Hardware angeht und wieviel und welche Hardware darin ist oder was diese tut. Das ist zwar lächerlich - es ist sehr schwierig eine Energiesenke wie ein Rechenzentrum und ihre Abwärme zu verstecken - aber auch ein sehr sensitives Thema.
 
 ## Eine Leseliste
 
 In dem Interview gibt es ein paar Dinge, die Anmerkungen verdienen, aber bevor es los geht noch die anderen Artikel in diesen Blog als Links:
 
-- [Threads vs. Watts]({% link _posts/2017-07-19-threads-vs-watts.md %}): Ich habe eine Dell R630 mit zwei Xeon 6132 CPUs getestet, und ihren Energieverbrauch unter Last gemessen. Die Resultate sind repräsentativ für die ganze Klasse von Rechnern, die eine Art Arbeitspferd im modernen Rechenzentrum sind. Der Hauptpunkt: 50% der maximalen Energieaufnahme werden bereits bei 20% Auslastung aufgenommen.
-- [A Journey to Open Compute]({% link _posts/2018-02-21-a-journey-to-open-compute.md %}): Mit Open Computer hat Facebook hat die Energieaufnahme eines Rechners in Idle auf 50% eines herkömmlichen Rechners senken können, und unter Volllast auf 80%. Das wird ermöglicht, indem man Rechner, Rack und Raum nach einer gemeinsamen Spezifikation baut und optimiert. Der Open Compute Standard ist jetzt eine offene Spezifikation, aber wegen der Abhängigkeiten zwischen Raum, Rack und Rechner lohnt sich das alles nur, wenn man ein [GAFAM](https://en.wikipedia.org/wiki/Big_Tech#GAFAM_or_FAAMG)-type Hyperscaler ist.
+- [Threads vs. Watts]({% link _posts/2017-07-19-threads-vs-watts.md %}): Ich habe einen Dell R630 mit zwei Xeon 6132 CPUs getestet, und deren Energieverbrauch unter Last gemessen. Die Resultate sind repräsentativ für die ganze Klasse von Rechnern, die eine Art Arbeitspferd im modernen Rechenzentrum sind. Der Hauptpunkt: 50% der maximalen Energieaufnahme werden bereits bei 20% Auslastung aufgenommen.
+- [A Journey to Open Compute]({% link _posts/2018-02-21-a-journey-to-open-compute.md %}): Mit Open Computer hat Facebook die Energieaufnahme eines Rechners in Idle auf 50% eines herkömmlichen Rechners senken können, und unter Volllast auf 80%. Das wird ermöglicht, indem man Rechner, Rack und Raum nach einer gemeinsamen Spezifikation baut und optimiert. Der Open Compute Standard ist jetzt eine offene Spezifikation, aber wegen der Abhängigkeiten zwischen Raum, Rack und Rechner lohnt sich das alles nur, wenn man ein [GAFAM](https://en.wikipedia.org/wiki/Big_Tech#GAFAM_or_FAAMG)-type Hyperscaler ist.
 - [Power budgets for computing resources - portable and stationary]({% link _posts/2017-11-07-power-budgets-for-computing-resources-portable-and-stationary.md %}) listet generell die Zusammenhänge zwischen Rechnen, Batterieverbrauch und Abwärme auf.
 - [Data Centers and Energy]({% link _posts/2019-10-05-data-centers-and-energy.md %}): Wenn man Netflix schaut, wird Energie verbraucht. Wo und wieviel? Wir reden über Endgeräte (die nur wenige Watt brauchen), über Open Compute in Rechenzentren und über Energieverbrauch im Netzwerk, speziell auf der letzten Meile. Letztere variiert enorm: 5G braucht sehr viel Energie, (V)DSL ist ebenfalls sehr aufwendig, und Glasfaser nicht - sie ist leicht eine Zehnerpotenz günstiger.
 - [Streaming and Energy]({% link _posts/2019-12-28-streaming-and-energy.md %}) und [Netflix does not bring down the Internet]({% link _posts/2020-03-19-netflix-does-not-bring-down-the-internet.md %}): Speziell Videostreaming funktioniert schon sehr optimiert: Videos werden in Edge Data Centers gespeichert und nicht neu codiert, sie werden in der niedrigsten sinnvollen Auflösung geliefert und die Decodierung erfolgt mit spezieller Hardware, damit die Batterie im Endgerät länger hält. All das braucht weniger Energie als angenommen.
@@ -39,17 +39,17 @@ Wie oben bereits dargestellt, hat GAFAM bereits Rechenzentren, die sehr viel eff
 
 Während also ein traditionelles Rechenzentrum Rechner für eine Million Watt betreibt und dafür um die 600.000W an Kühlung und anderer Sekundärenergie aufbringen muß (Power Utilization Efficiency, PUE 1.6), können die am Besten optimierten Google-Rechenzentren eine Million Watt an Rechnern mit 60.000W Sekundärenergie betreiben (PUE 1.06).
 
-Ein effekitiver PUE von <1.2 ist par für die Hyperscaler-Cloud.
+Ein effektiver PUE von <1.2 ist par für die Hyperscaler-Cloud.
 
-Dazu kommt, wie oben auch dargestellt, daß ein ausgelasteter Rechner energieeffizienter ist als einer, der teilweise vor sich hin idled. Eine Dell R630 verbraucht bereits 50% ihrer maximalen Energie bei 20% Auslastung.
+Dazu kommt, wie oben auch dargestellt, daß ein ausgelasteter Rechner energieeffizienter ist als einer, der teilweise vor sich hin idled. Ein Dell R630 verbraucht bereits 50% seiner maximalen Energie bei 20% Auslastung.
 
-Maschinen auszulasten und Workloads dynamisch zu skalieren ist etwas, für das "die Cloud", also die API-gesteuerten Rechenzentren der Hyperscaler, gebaut worden sind. Hyperscaler Clouds haben "sellable cores per provisioned cores" als eine zentrale Optimierungsmetrik, sie wollen ausgelastete Rechner, weil das die Einnahmen definiert.
+Maschinen auszulasten und Workloads dynamisch zu skalieren ist etwas, für das "die Cloud", also die API-gesteuerten Rechenzentren der Hyperscaler, gebaut worden sind. Hyperscale Clouds haben "sellable cores per provisioned cores" als eine zentrale Optimierungsmetrik, sie wollen ausgelastete Rechner, weil das die Einnahmen definiert.
 
 ![](/uploads/2017/07/watt-thread.jpg)
 
 *Watts per Thread (Dell R630, Dual Xeon 6132)*
 
-Wie dem auch sei: Aus energetischer Sicht ist Auslastung wichtig, weil die Watts zur Aktivierung des n-ten Rechenkerns asymptotisch günstiger sind. Das ist so, weil die Idle-Energieaufnahme der Maschine und des ganzen Rechenzentrums drumsich sich so amortisiert.
+Wie dem auch sei: Aus energetischer Sicht ist Auslastung wichtig, weil die Watts zur Aktivierung des n-ten Rechenkerns asymptotisch günstiger sind. Das ist so, weil die Idle-Energieaufnahme der Maschine und des ganzen Rechenzentrums drumherum sich so amortisiert.
 
 Außerdem: Wenn man es sich leisten kann, Hyperthreading zu aktivieren, dann sind die Hyperthreads energetisch betrachtet nahezu kostenfrei. Integer- und Stringprocessing-Workloads können Hypterthreads als nahezu vollwertige zweite CPU betrachten, Fließkomma-intensive Workloads nicht. Webshops sind, wenn sie richtig gebaut worden sind, String- und Integer-Anwendungen und sehr wenig Fließkomma-intensiv.
 
