@@ -528,3 +528,9 @@ The result is a network map. The map is always only a current snapshot, and the 
 *The MQTT network map shows the devices and how they connect between each other. Unlinked devices connect directly to the coordinator.*
 
 To be continued with a section on Influx configuration.
+
+## I could not have done this alone
+
+There are many people who have helped me to set this up. The one that stands out most is [Marianne Spiller](https://unixe.de). She wrote [Smart Home mit openHAB 2](https://www.rheinwerk-verlag.de/smart-home-mit-openhab-2-einrichten-steuern-automatisieren/), the book on openHAB and home automation, and while I did not go down that route, she inspired me to research the topic. She also [motivated me to look into docker-compose](https://www.unixe.de/yaja-yet-another-jitsi-article/) and she is running the fantastic [#tabsvongesternnacht](https://www.tabsvongesternnacht.de/) Stammtisch every Friday. Thank you, [@sys_adm_ama](https://twitter.com/sys_adm_ama).
+
+Another useful resource was [https://github.com/Nilhcem/home-monitoring-grafana](https://github.com/Nilhcem/home-monitoring-grafana) and the article in [Home sensor data monitoring with MQTT, InfluxDB and Grafana](http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana), which I took as a blueprint for my setup.
