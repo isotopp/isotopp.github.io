@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  'My home sensor network'
+title:  'On the Observability of Outliers'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: 2020-11-19 17:08:09 +0100
