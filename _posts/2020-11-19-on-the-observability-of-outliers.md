@@ -18,7 +18,7 @@ Where I work, we do have [SolarWinds Database Performance Monitor](https://www.s
 
 There is also work done by a few developers which instead collects query strings, query execution times and query counts at the application. This has access to the call stack, so it can tell you which code generated the query that was slow.
 
-It also channels this data into events (what we have instead of [Honeycomb](https://www.honeycomb.io/), and that is particularly useful, because now you can generate aggregates and keep the link from the aggregates to the constituting events.
+It also channels this data into events (what we have instead of [Honeycomb](https://www.honeycomb.io/)), and that is particularly useful, because now you can generate aggregates and keep the link from the aggregates to the constituting events.
 
 ## How do you find outliers?
 
@@ -33,6 +33,8 @@ That is descriptive statistics for normal distributions and for them to work we 
 Averages and Standard Deviations work on normal distributions. So the first thing we need to do is to look at the data and ensure that we actually have a normal distribution.
 
 ![](/uploads/2020/11/obs-anscombe.png)
+
+*Anscombe's Quartet is a set of graphs having an identical number of points, and producing identical descriptive statistics, but being clearly extremely different distributions.*
 
 Because when you apply the Descriptive Statistics of Averages and Standard Deviations to things that are Not a Normal Distribution (see [Anscombe’s Quartet](https://en.wikipedia.org/wiki/Anscombe%27s_quartet)) they do not tell you much about the data: all the graphs in the infamous Quartet have the same descriptive stats (more than just average and stddev, even), but are clearly completely different.
 
@@ -76,9 +78,9 @@ Plus one for the actual record, so the magical database number is 4: It’s alwa
 
 With measurements, aggregations, and the visualisation as a heatmap, I can identify my outliers – that is, I learn that I have them and where they are in time and maybe space (group of hosts).
 
-But with a common monitoring agents such as Diamond or Telegraf, what is being recorded are numbers or even aggregates of numbers - the quantisation into time and value buckets happens in the client and all that is recorded in monitoring is “there have been 4 queries of 4-8ms run time at 17:10:20 on host bpdb-2029”. We don’t know what queries they were, where they came from or whatever other context may be helpful.
+But with a common monitoring agents such as Diamond or Telegraf, what is being recorded are numbers or even aggregates of numbers - the quantisation into time and value buckets happens in the client and all that is recorded in monitoring is “there have been 4 queries of 4-8ms run time at 17:10:20 on host randomdb-2029”. We don’t know what queries they were, where they came from or whatever other context may be helpful.
 
-With events, we optionally get rich records for each query - query text, stack trace context, runtime, hostname, database pool name and many other pieces of information. They are being aggregated as they come in, or can be aggregated along other, exotic dimensions after the fast. And best of all, once we find an outlier, we can go back from the outlier and find all the events that are within the boundary conditions of the section of the heapmap that we have marked up as an outlier.
+With events, we optionally get rich records for each query - query text, stack trace context, runtime, hostname, database pool name and many other pieces of information. They are being aggregated as they come in, or can be aggregated along other, exotic dimensions after the fact. And best of all, once we find an outlier, we can go back from the outlier and find all the events that are within the boundary conditions of the section of the heapmap that we have marked up as an outlier.
 
 This also is the fundamental difference between monitoring (“We know we had an abnormal condition in this section of time and space”) and observability (“... and these are the events that make up the abnormality, and from them we can see why and how things went wrong.”).
 
