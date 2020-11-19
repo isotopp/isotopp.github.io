@@ -46,6 +46,8 @@ What you see here is a bi- or multipartite distribution. It is a common case whe
 
 The slow set is  also often run with unstable execution times – an important secondary observation.
 
+![](/uploads/2020/11/obs-mixture.png)
+
 This is not a normal distribution, but a thing composed of two other things (hence bipartite), each of which in itself hopefully can be adequately modelled as a normal distribution: A [gaussian mixture](https://en.wikipedia.org/wiki/Mixture_model#Gaussian_mixture_model).
 
 Luckily we do not actually have to deal with the math of these mixtures (I hope you did not follow the Wikipedia link :-) ) when we want to find slow queries.
