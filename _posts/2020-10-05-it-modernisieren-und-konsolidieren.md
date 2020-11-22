@@ -59,7 +59,7 @@ Aber das sind nur Beispiele aus hunderten von Diensten...
 
 ### Nicht die Mission der meisten Betriebe
 
-Das ist etwas, das einer traditionellen RZ-IT nicht zugänglich ist, und das auch unverhältnismäßig viel Kapital, Investment und Personal binden würde, würde man es selbst lokal entwickeln. Schon so etwas simples wie RDS funktkioniert besser und automatischer als alle selbstgestrickten DevOps Managementscripte für Datenbanken, die man selbst haben kann.
+Das ist etwas, das einer traditionellen RZ-IT nicht zugänglich ist, und das auch unverhältnismäßig viel Kapital, Investment und Personal binden würde, würde man es selbst lokal entwickeln. Schon so etwas simples wie RDS funktioniert besser und automatischer als alle selbstgestrickten DevOps Managementscripte für Datenbanken, die man selbst haben kann.
 
 Druck kommt nicht nur aus dem Management und aus der Compliance, sondern auch von unten: Die aktuelle Generation von Entwicklern hat nie mit einem lokalen RZ gearbeitet, sondern ist in AWS groß geworden. Sie setzt die Qualität der Implementierung und die Prozesse von Amazon als gegeben und als Maßstab voraus. Sie setzt die Leichtigkeit von Operations und Observability voraus, die für eine Cloud-Umgebung typisch sind.
 
