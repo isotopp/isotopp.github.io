@@ -147,3 +147,15 @@ The alternative is `INFORMATION_SCHEMA`, which often locks, and that can be actu
 Just `select * from INFORMATION_SCHEMA.INNODB_BUFFER_PAGE` on a server with a few hundreds of GB of buffer pool, humming at 10k QPS. The query will freeze the server completely for the runtime of the query – which with a large buffer pool size can be substantial.
 
 I'd rather have this in `P_S` and then deal with the vagaries of the data changing while I read it than lose an important production server.
+
+## Addendum
+
+Both [Øystein Grøvlen](https://twitter.com/ogrovlen/status/1334047725298585600) and [Mark Leith](https://twitter.com/MarkLeith/status/1334075136450945024) remind me that in MySQL 8 [we geht secondary indexes on `P_S`](https://dev.mysql.com/doc/refman/8.0/en/performance-schema-optimization.html) - this will address some of the problematic queries above and will need some research on my side.
+
+The sorting is still complicated. [Øystein writes](https://twitter.com/ogrovlen/status/1334056375123632129):
+
+> It depends on the sort algorithm used by MySQL.  Many sorts will add all requested columns to the sort buffer, and will not need to fetch anything from the tables after sorting, but it depends on the size of the sort buffer and how much data needs to be fetched.
+
+So there are some sorts that are stable, and some sorts that will always be unstable (those that work with bloblike columns such as `SQL_TEXT` or `DIGEST_TEXT` likely), but it is really hard to see this when looking at the query.
+
+I still maintain my advice of forcing stable copies with subselects and `NO_MERGE()` hints - this is much easier to teach and guaranteed to be stable.
