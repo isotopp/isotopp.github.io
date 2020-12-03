@@ -121,7 +121,7 @@ Around the same time, Thomas A. Limoncelli wrote the proto-devops book "The prac
 
 The current, updated edition of that book is titled "The Practice of Systems and network Administration".
 
-The term Devlop meanwhile, was coined by [Patric Debois](https://twitter.com/patrickdebois) in 2008 in Belgium, and pretty much assembled and then taught the same ideas as the Limoncelli book, at a larger scale and using even clearer structure.
+The term "Devops" meanwhile, was coined by [Patric Debois](https://twitter.com/patrickdebois) in 2008 in Belgium, and pretty much assembled and then taught the same ideas as the Limoncelli book, at a larger scale and using even clearer structure.
 
 ![](/uploads/2015/03/devops-en.023.jpg)
 
@@ -274,7 +274,7 @@ Testing in production is okay, if you engineer for it, and make it survivable. E
 
 ![](/uploads/2015/03/devops-en.076.jpg)
 
-Martin Seeger of NetUSE is famous for popularizing the proverb "Nobidy wants Backup. Everybody needs Restore." He wants to highlight the fact, that Backups are just a cost center, and do not produce a thing of value. The value - which needs to be proven - is in the successful Restore, and that is also what needs to be tested, constantly.
+Martin Seeger of NetUSE is famous for popularizing the proverb "Nobody wants Backup. Everybody needs Restore." He wants to highlight the fact that Backups are just a cost center, and do not produce anything of value. The value - which needs to be proven - is in the successful Restore, and that is also what needs to be tested, constantly.
 
 Of course, if you automate, you do not need backups for anything besides the (clearly defined and isolated) state. You can rebuild your systems at will, in regular intervals, or for testing purposes, and then inject the actually unique state into them.
 
@@ -342,5 +342,9 @@ Devops means that the System Administrator as a job description goes away: There
 
 Devops means that as a System Administrator you have to learn the tools of a Developer, learn to automate, learn to talk to APIs, and learn how to apply Infrastructure thinking to other peoples codebases.
 
-If you do not do that, you will soon be replaced by a tiny shell script.
+As a Devops Engineer, or Infrastructure Developer, it is your task to keep the entire stack in mind, and applying Infrastructure thinking to this means you know how that change 20 levels down in the stack affects production on a grander scale - because somebody has to know the details and understand all the dependencies.
+
+As a Devops Engineer you also need to teach enthusiastic young people with a feature developer mindset how to [touch candles]({% link _posts/2020-08-31-on-touching-candles.html %}), how to fail safely, in order to make them actually experience a problem class, instead of just abstractly knowing about it somewhere in the back of their mind.
+
+If you do not do that, if you cannot do that, you will soon be replaced by a tiny shell script.
 
