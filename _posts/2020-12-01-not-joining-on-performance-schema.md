@@ -159,3 +159,9 @@ The sorting is still complicated. [Øystein writes](https://twitter.com/ogrovlen
 So there are some sorts that are stable, and some sorts that will always be unstable (those that work with bloblike columns such as `SQL_TEXT` or `DIGEST_TEXT` likely), but it is really hard to see this when looking at the query.
 
 I still maintain my advice of forcing stable copies with subselects and `NO_MERGE()` hints - this is much easier to teach and guaranteed to be stable.
+
+## Another addendum
+
+In [a tweet](https://twitter.com/justin_swanhart/status/1334544467987197953) Justin Swanhart pointed me at [PS_HISTORY](https://github.com/greenlion/PS_HISTORY), which makes snapshots of `P_S` that try to be as consistent as possible.
+
+It will allow you to replay and review old `P_S` states and query them, and it will - if you configure it - also automatically expire the old recordings. It may be useful as a kind of flight recorder to debug performance problems that cannot otherwise reproduced.
