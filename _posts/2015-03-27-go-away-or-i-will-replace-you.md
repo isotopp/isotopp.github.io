@@ -344,7 +344,7 @@ Devops means that as a System Administrator you have to learn the tools of a Dev
 
 As a Devops Engineer, or Infrastructure Developer, it is your task to keep the entire stack in mind, and applying Infrastructure thinking to this means you know how that change 20 levels down in the stack affects production on a grander scale - because somebody has to know the details and understand all the dependencies.
 
-As a Devops Engineer you also need to teach enthusiastic young people with a feature developer mindset how to [touch candles]({% link _posts/2020-08-31-on-touching-candles.html %}), how to fail safely, in order to make them actually experience a problem class, instead of just abstractly knowing about it somewhere in the back of their mind.
+As a Devops Engineer you also need to teach enthusiastic young people with a feature developer mindset how to [touch candles]({% link _posts/2020-08-31-on-touching-candles.md %}), how to fail safely, in order to make them actually experience a problem class, instead of just abstractly knowing about it somewhere in the back of their mind.
 
 If you do not do that, if you cannot do that, you will soon be replaced by a tiny shell script.
 
