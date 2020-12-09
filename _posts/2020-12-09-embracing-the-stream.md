@@ -10,6 +10,7 @@ tags:
 ---
 
 So this happened: [CentOS Project shifts focus to CentOS Stream](https://lists.centos.org/pipermail/centos-announce/2020-December/048208.html)
+
 > The future of the CentOS Project is CentOS Stream, and over the next  year we’ll be shifting focus from CentOS Linux, the rebuild of Red Hat Enterprise Linux (RHEL), to CentOS Stream, which tracks just ahead of a current RHEL release. CentOS Linux 8, as a rebuild of RHEL 8, will end at the end of 2021. CentOS Stream continues after that date, serving as 
 the upstream (development) branch of Red Hat Enterprise Linux.
 
