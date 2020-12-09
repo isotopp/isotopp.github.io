@@ -2,7 +2,7 @@
 layout: post
 title:  'MySQL: Ecosystem fragmentation'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-10-28 15:28:00 +0100
 tags:
 - lang_en

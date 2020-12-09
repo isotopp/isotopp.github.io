@@ -2,7 +2,7 @@
 layout: post
 title:  'Not JOINing on PERFORMANCE_SCHEMA'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2020-12-01 09:33:10 +0100
 tags:
 - lang_en
