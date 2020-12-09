@@ -16,13 +16,13 @@ the upstream (development) branch of Red Hat Enterprise Linux.
 
 And a lot of people react like this:
 
-![](/uploads/2020/12/stream-migrate-now.png)
+[![](/uploads/2020/12/stream-migrate-now.png)](https://twitter.com/nixcraft/status/1336348208184741888)
 
-*Oracle buys Sun: Solaris Unix, Sun servers/workstation, and MySQL went to /dev/null. IBM buys Red Hat: CentOS is going to >/dev/null. Note to self: If a big vendor such as Oracle, IBM, MS, and others buys your fav software, start the migration procedure ASAP.*
+*Oracle buys Sun: Solaris Unix, Sun servers/workstation, and MySQL went to /dev/null. IBM buys Red Hat: CentOS is going to >/dev/null. Note to self: If a big vendor such as Oracle, IBM, MS, and others buys your fav software, start the migration procedure ASAP. ([Tweet](https://twitter.com/nixcraft/status/1336348208184741888))*
 
-So it seems my opinion is an unpopular one: CentOS switching to Stream is not bad at all.
+So it seems my opinion is the unpopular one: CentOS switching to Stream is not bad at all.
 
-When you wanted to run Openstack on CentOS in 2015, you needed to enable [EPEL](https://fedoraproject.org/wiki/EPEL) to even begin an install. The first thing that did was literally replace every single package in the install. That was, because CentOS at that time was literally making Debian Stale look young.
+When you wanted to run Openstack on CentOS in 2015, you needed to enable [EPEL](https://fedoraproject.org/wiki/EPEL) to even begin an install. The first thing this did was literally replace every single package in the install. That was, because CentOS at that time was literally making Debian Stale look young.
 
 And we see similar problems with Ubuntu LTS, for what it's worth. Ubuntu LTS comes out every 2 years, and that's kind of ok-ish, but it lasts 5 years, which is nonsensical. It was not, in the past.
 
@@ -49,21 +49,41 @@ That is, because we have come to rely on an entire ecosystem of tooling to make 
 
 We also have come to rely on tooling to enable collaboration, and structured discussion about code, since we as programmers no longer work alone. A good part of the value of Gitlab, Github and similar is enabling useful cooperation between developers, in ways that Developers value.
 
-Another good part of the value is extracted at the production end of these platforms, where we produce artifacts of builds, automatically and in reproducible ways. Which includes also knowing things about these artifacts - for example, what went into producing them and being able to report on these things (Dependencies, Licenses, Versions, Vulnerabilities and stuff). With these processes, and repositories, and with another ingredient, we have made rollouts and rollbacks an automated and uniform procedure provided we find a way to manage and evolve state properly. Compared to the hand crafted bespoke rollout and rollback procedures of the 2010s, this is tremendous progress.
+Another good part of the value is extracted at the production end of these platforms: We produce artifacts of builds, automatically and in reproducible ways.
+
+Which includes also knowing things about these artifacts - for example, what went into producing them and being able to report on these things:
+- Dependencies
+- Licenses
+- Versions
+- Vulnerabilities
+- Commit frequency and time to fix for each dependency, abandonware alert
+
+and many more things. With these processes, and repositories, and with one other ingredient, we have made rollouts and rollbacks an automated and uniform procedure, provided we find a way to manage and evolve state properly.
+
+Compared to the hand crafted bespoke rollout and rollback procedures of the 2010s, this is tremendous progress.
 
 ### Immutable infrastructure, and reproducible builds
 
-This other ingredient is immutable infrastructure. It is the base idea that we do no longer manipulate the state of the base image we run our code on, ever. We provide the base image, and then supply secrets, runtime config and control config in others, more appropriate ways. Things like Vault, a consensus system such as Zookeeper, or similar mechanisms come to mind.
+This other ingredient is immutable infrastructure.
+
+It is the basic idea that we do no longer manipulate the state of the base image we run our code on, ever, after it is deployed. Instead we change the build process, rebuild and redeploy. We deploy the base image, and then supply secrets, runtime config and control config in other, more appropriate ways. Things like Vault, a consensus system such as Zookeeper, or similar mechanisms come to mind.
 
 The same thinking can be applied to the actual base operating system of the host, where we remove application installs completely from the base operating system. Instead we provide a mechanism to mount and unmount application installs, including their dependencies, in the form of virtual machine images, container images or serverless function deployments (also containers, but with fewer buttons).
 
-As a consequence, everything becomes single-user, single-tenant - one image contains only Postgres, another one only your static images webserver (images supplied from an external mountable volume), and a third one only your production Python application plus runtime environment. With only one thing in the container, Linux UIDs no longer have a useful separation functionm, and other isolation and separation mechanisms take this place - virtualization, CGroups, Namespaces, Seccomp, and similar. They are arguably more powerful, anyway.
+As a consequence, everything becomes single-user, single-tenant - one image contains only Postgres, another one only your static images webserver (images supplied from an external mountable volume), and a third one only your production Python application plus runtime environment. With only one thing in the container, Linux UIDs no longer have a useful separation function, and other isolation and separation mechanisms take their place:
+
+- virtualization,
+- CGroups,
+- Namespaces,
+- Seccomp,
+
+and similar. They are arguably more powerful, anyway.
 
 This also forms a kind of argument in the great "Is curlbash or even sudo curlbash still a bad thing?" debate of our times, but I am unsure which (I'm not: in a single-user single-tenant environment curlbashing into that environment should not be a security problem, but you get problems proving the provenance of your code. Which you would not have, had you used another method of acquiring that dependency).
 
 ### Images as building blocks for applications
 
-So now we can use entire applications, with configuration provided and injected at runtime, to construct services, and we can add relatively tiny bits of our own code to build our own services on top of existing services provided by the environment. We get Helm Charts for Kubernetes, we get [The Serverless Sea Change](https://www.infoq.com/articles/serverless-sea-change/), and Step Functions. We also get Nocode, Codeless or similar attempts at building certain things only from services without actual coding.
+So now we can use entire applications, with configuration provided and injected at runtime, to construct services, and we can add relatively tiny bits of our own code to build our own services on top of existing services, provided by the environment. We get Helm Charts for Kubernetes, we get [The Serverless Sea Change](https://www.infoq.com/articles/serverless-sea-change/), and Step Functions. We also get Nocode, Codeless or similar attempts at building certain things only from services without actual coding.
 
 But it is more pervasive than this:
 - The Unifi Control Plane uses multiple Java processes and one Mongodb. It can be dockered into one container, or can be provided as helm chart or as a docker-compose with multiple containers, for better scalability and maintenance.
@@ -74,7 +94,7 @@ But it is more pervasive than this:
 
 At that is kind of the point: By packing all dependencies into the container or VM image itself, the base operating system hardly matters any more. It allows us to move on, each on their own speed, on a per-project basis.
 
-The project will bring its own database, cache, runtime and libraries with itself, without version conflicts, and without waiting for the distro to upgrade them, or to provide them at all. Conversely it allows the Distro to move to Stream: They are finally free from slow moving OSS projects preventing them from upgrading local components, because they are not ready to move.
+The project will bring its own database, cache, runtime and libraries with itself, without version conflicts, and without waiting for the distro to upgrade them, or to provide them at all. Conversely it allows the Distro to move to Stream: They are finally free from slow moving OSS projects preventing them from upgrading local components, because one of them is not yet ready to move.
 
 Even teams in the Enterprise are now free to move at their own speed, because they no longer have to wait for half a dozen stakeholders ot get to the Technical Debt Section of their backlog.
 
