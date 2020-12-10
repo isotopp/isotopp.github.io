@@ -34,14 +34,13 @@ We have been moving to a platform based development approach, leveraging the win
 
 "Kris, that's corporate bullshit." It's not, though. Let me spell it out in plain for you.
 
-
 ### Programming languages are platforms powered by tools
 
 People these days do not program in an editor, with a compiler.
 
-They use Github or Gitlab, with many integrations, and a local IDE. They commit to a VCS (the one true VCS, it's spelled git), and trigger a bunch of things. Typechecks, Reformatters, Tests, but also Code Quality Metrics, and Security Scanners.
+They use Github or Gitlab, with many integrations, and a local IDE. They commit to a VCS (git, actually, the world converged on one single VCS), and trigger a bunch of things. Typechecks, Reformatters, Tests, but also Code Quality Metrics, and Security Scanners.
 
-Even starting a new programming language in 2020 is not as easy as it was in the past. Having a language is not enough, because you do not only need a language and maybe a standard library, but also a JetBrains Product supporting it, SonarQube support, XRay integration, gitlab-ci.yml examples and so on. Basically, there is a huge infrastructure system designed to support development and whatever you start needs to fit into it.
+Even starting a new programming language in 2020 is not as easy as it was in the past. Having a language is not enough, because you do not only need a language and maybe a standard library, but also a JetBrains Product supporting it, SonarQube support, XRay integration, gitlab-ci.yml examples and so on. Basically, there is a huge infrastructure system designed to support development and whatever you start needs to fit into it ,right from the start.
 
 That is, because we have come to rely on an entire ecosystem of tooling to make our developers faster, and to enforce uniform standards across the group. And that is a good thing, which can help us to become better programmers.
 
@@ -66,7 +65,9 @@ Compared to the hand crafted bespoke rollout and rollback procedures of the 2010
 
 This other ingredient is immutable infrastructure.
 
-It is the basic idea that we do no longer manipulate the state of the base image we run our code on, ever, after it is deployed. Instead we change the build process, rebuild and redeploy. We deploy the base image, and then supply secrets, runtime config and control config in other, more appropriate ways. Things like Vault, a consensus system such as Zookeeper, or similar mechanisms come to mind.
+It is the basic idea that we do no longer manipulate the state of the base image we run our code on, ever, after it is deployed. It's basically death to Puppet and its likes.
+
+Instead we change the build process, producing immutable images, and quickly rebuild and redeploy. We deploy the base image, and then supply secrets, runtime config and control config in other, more appropriate ways. Things like Vault, a consensus system such as Zookeeper, or similar mechanisms come to mind. It allows us to orchestrate change across a fleet of instances, all alike, in a way that guarantees consistency across our fleet, in an age where all computing has become distributed computing.
 
 The same thinking can be applied to the actual base operating system of the host, where we remove application installs completely from the base operating system. Instead we provide a mechanism to mount and unmount application installs, including their dependencies, in the form of virtual machine images, container images or serverless function deployments (also containers, but with fewer buttons).
 
@@ -79,7 +80,7 @@ As a consequence, everything becomes single-user, single-tenant - one image cont
 
 and similar. They are arguably more powerful, anyway.
 
-This also forms a kind of argument in the great "Is curlbash or even sudo curlbash still a bad thing?" debate of our times, but I am unsure which (I'm not: in a single-user single-tenant environment curlbashing into that environment should not be a security problem, but you get problems proving the provenance of your code. Which you would not have, had you used another method of acquiring that dependency).
+This also forms a kind of argument in the great "Is curlbash or even sudo curlbash still a bad thing?" debate of our times, but I am unsure which (I'm not: in a single-user single-tenant environment curlbashing into that environment should not be a security problem, but you get problems proving the provenance of your code. Which you would not have, had you used another, less casual method of acquiring that dependency).
 
 ### Images as building blocks for applications
 
@@ -98,10 +99,14 @@ The project will bring its own database, cache, runtime and libraries with itsel
 
 Even teams in the Enterprise are now free to move at their own speed, because they no longer have to wait for half a dozen stakeholders ot get to the Technical Debt Section of their backlog.
 
+The main point is, in my opinion, that it is okay and normal for the application to use a different "No longer a full OS" than what the host uses. In acknowledging that both can reduce scope and size, and optimize. This is a good thing, and will speed up development.
+
 So in a world where components and their dependencies are being packaged as single-user single-tenancy units of execution (virtual machines, containers and the like), CentOS moving to Streams is not only acknowledging that change, it also forced the slower half of the world to acknowledge this, and to embrace it.
 
 I say: This is a good thing.
 
 And if you rant "Stability goes out of the window!" - check your calendar and your processes.
 
-It's 2020. Act like it. "If your compliance is based on certifying the running end product instead of the process that built it, your organisation will not be able to keep up with the development speed of others." (paraphrasing [Christoph Petrausch](Christoph Petrausch) from [this tweet](https://twitter.com/hikhvar/status/1336608880013488130)).
+It's 2020. Act like it. One of the major innovations in how we do computers in the last decade has been establishing the beginnings of a certifiable process for building the things we run.
+
+Or, as [Christoph Petrausch](Christoph Petrausch) puts it in [this tweet](https://twitter.com/hikhvar/status/1336608880013488130): "If your compliance is based on certifying the running end product instead of the process that built it, your organisation will not be able to keep up with the development speed of others."
