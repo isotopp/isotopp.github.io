@@ -25,7 +25,7 @@ At Devops.com, Rajat Bhargava tries to explain in [DevOps and Enterprises: It's 
 
 > DevOps is about increasing company performance through better IT execution. The hypothesis is that by more closely aligning what cus with what gets built in a more timely fashion, organizations will sell more products and services. That’s not a small company or SMB issue, that’s an every company issue.
 
-In general, change in companies does not happen by itself - companies by construction try to repeatedly execute the same thing with the same results over an over. Change only happens because out outside pressures. So if companies change the way to do IT to "increase company performance through better IT execution", there are outside influences at work that exert pressure on the processes, forcing change.
+In general, change in companies does not happen by itself - companies by construction try to repeatedly execute the same thing with the same results over and over. Change only happens because of outside pressures. So if companies change the way they do IT to "increase company performance through better IT execution", there are outside influences at work that exert pressure on the processes, forcing change.
 
 Let's look at these outside influences.
 
@@ -37,13 +37,13 @@ Let's look at these outside influences.
 
 The Cynefin model is a soft thing, a model or frame of mind that is used by people to have words and categories to express what tools and project structures make sense in a given context: It can be used to classify "decision making contexts". A decision making context is for example a market in which a company is going to act, and then it would become a way to express "market maturity".
 
-If you apply it to "the development of the early Internet" or "the Dotcom bubble before 2000", then you see the very early Dotcom bubble as "Nobody has a clue how to even make money on the Internet, much less how to structure a company around this idea". This is the Chaotic domain, subject of the "Research" model, in which you try out things, and see what sticks. You do not know the rules at all, and also not if they are static or changing, you need to get any structure at all. The work model is "Act" - try a thing, "Sense" - see what happens and "Respond" - discard the attempt or if it works, try to modify it and see what changes. With "Novel" practice you work with very small teams of highly qualified people - a research team - and try to establish and formulate some ground rules, you expect to lose money and to throw away many experiments, quickly.
+If you apply it to "the development of the early Internet" or "the Dotcom bubble before 2000", then you see the very early Dotcom bubble as "Nobody has a clue how to even make money on the Internet, much less how to structure a company around this idea". This is the Chaotic domain, subject of the "Research" model, in which you try out things, and see what sticks. You do not know the rules at all, not even if they are static or changing. You need to get any structure at all. The work model is "Act" - try a thing, "Sense" - see what happens and "Respond" - discard the attempt or if it works, try to modify it and see what changes. With "Novel" practice you work with very small teams of highly qualified people - a research team - and try to establish and formulate some ground rules. You expect to lose money and to throw away many experiments, quickly.
 
-Once you have found a working business model, and successfully extract any money at all, you can switch to the "Complex" domain and build on your emergent practice. You secure the position you have found and try out small things, instead of wild guesses all over the place. Again, you try to register what that does to your business and improve (instead of trying something else entirely). Basically you have the business model and now try to build practice at all. You try to move things from Research to Engineering. This also changes team structure - you would work with your Researchers moving to Lead positions with a bunch of applied sciences or engineering grade people working for them. You focus on iteration, small improvements and may experiment with some basic automation. In the Complex you know there are rules, but they may be not easily discoverable, and they may be changing and stateful.
+Once you have found a working business model, and successfully extract any money at all, you can switch to the "Complex" domain and build on your emergent practice. You secure the position you have found and try out small things, instead of wild guesses all over the place. Again, you try to register what that does to your business and improve (instead of trying something else entirely). Basically you have the business model and now try to build practice at all. You try to move things from Research to Engineering. This also changes team structure - you would work with your Researchers moving to Lead positions with a bunch of applied sciences or engineering grade people working for them. This is now multiple small teams at work, on different aspects of incremental improvement. You focus on iteration, small improvements and may experiment with some basic automation. In the Complex you know there are rules, but they may be not easily discoverable, and they may be changing and stateful.
 
-As the market and the business matures, it may move to the "Complicated" domain, in which a Business Model and Basic Practice exists and you now try to find dimensions along which to judge these practices ("What are the metrics?") and then try to establish measureing processes for this. Using the metrics you can sense, and exert control by analyzing the metrics and how they change. This is no longer research at all, but engineering at the verge of pure business excecution, preparing for scaleout. You remove the researchers, and add engineering bureaucrats that establish the framework for quantification. In the Complicated market rules exist, and are discoverable, and usually are static or the rules by which they change are also known.
+As the market and the business matures, it may move to the "Complicated" domain, in which a Business Model and Basic Practice exists and you now try to find dimensions along which to judge these practices ("What are the metrics?") and then try to establish measuring processes for this. Using the metrics you can sense, and exert control by analyzing the metrics and how they change. This is no longer research at all, but engineering at the verge of pure business excecution, preparing for scaleout. You remove the researchers, and add engineering bureaucrats that establish the framework for quantification. In the Complicated market rules exist, and are discoverable, and usually are static or the rules by which they change are also known.
 
-In the Complex and especially in the Complicated, companies are growing in a growing market, and focus is not so much on efficiency ("Do not spend more than we earn at any time, but first and foremost, do not stall growth.") as on land grab.
+In the Complex and especially in the Complicated, companies are growing in a growing market, and focus is not so much on efficiency as on land grab. Management says things like "Do not spend more than we earn at any time, but first and foremost, do not stall growth."
 
 Finally things move into "Simple" or "Obvious" domain, which has well established procedural handbooks, metrics and can draw on past iterations that are similar to the current. So you measure, sense, then look up the proper response and execute it. Best Practice and quantified metrics exist, and you can scale out the process by hiring and training moderately trained people working from the book you prepared in the previous step. This is a mature and stable market, with obvious and discoverable rules and playbooks for all situations. In a mature market, growth is usually only possible at the cost of others, as the market itself is not growing and there is no unclaimed or untapped market share. Instead, growth often is created by efficieny improvements. This is the domain of bureaucrats and beancounters.
 
@@ -55,7 +55,7 @@ For outsourcing decisions that means they are impossible. In order to have agree
 
 ![](/uploads/2015/03/devops-en.013.jpg)
 
-At the beginning of the Dotcom bubble, running IT mostly meant Enterprise IT. Some somebody somewhere had a data center, and in the data center was a large computer called server. Somebody else now connected the data center network with the Internet. After figuring out a few basic concepts such as Firewalls, DMZ and basic network security, people started about thinking connecting the internal IT to the Internet. At that time the Web came around.
+At the beginning of the Dotcom bubble, running IT mostly meant Enterprise IT. Some somebody somewhere had a data center, and in the data center was a large computer called server. Somebody else now connected the data center network to the Internet. After figuring out a few basic concepts such as Firewalls, DMZ and basic network security, people started about thinking connecting the internal IT to the Internet. At that time the Web came around.
 
 As the Web grew, more people used it, and the load on the existing large computers grew. What to do?
 
@@ -77,7 +77,7 @@ This triggered a lot of learnings at all levels of the profession - network, dat
 
 ![](/uploads/2015/03/devops-en.016.jpg)
 
-I have been known to anny people with saying that "Whenever you are using ssh, you might as well open a ticket."
+I have been known to annoy people with saying that "Whenever you are using ssh, you might as well open a ticket."
 
 If you need to login to a box manually to look something up, you are looking at a monitoring defect - make a ticket for that. If you need to login to a box manually to change something, you are looking at an automation defect - make a ticket for that. I have literally been beaten for saying that.
 
@@ -95,7 +95,9 @@ Automating things makes them reproducible: The same change applied to many insta
 
 If that actually works, and has zero manual interactions, we can apply the change to the entire fleet in parallel, instead of filtering it through a single person and serializing it that way.
 
-Once you can do things fully automated and in parallel, it does no longer matter so much if a single thing fails - you do not care about individual instances any more, you care more about always having sufficient capacity in general, and how to orchestrate all your instances so that this condition is never ever violated. It is this stage where we see people moving from "highly available setups" using Pacemaker and Active/Passive pairs to loadbalancers with n workers, all of them active at a sufficiently low utilization factor to buffer away a loss of m units of capacity. All computing becomes distributed computing at some point - more about that in another talk.
+Once you can do things fully automated and in parallel, it does no longer matter so much if a single thing fails - you do not care about individual instances any more. Instead you care more about always having sufficient capacity in general, and how to orchestrate all your instances so that this condition is never ever violated.
+
+It is this stage where we see people moving from "highly available setups" using Pacemaker and Active/Passive pairs to loadbalancers with *n* workers, all of them active at a sufficiently low utilization factor to buffer away a loss of *m* units of capacity. All computing becomes distributed computing at some point - more about that in another talk.
 
 ## This requires a different mindset, and different qualifications
 
@@ -115,11 +117,11 @@ This is not a good mindset or culture. It not only rejects development, and chan
 
 Of course it is a joke, or satire, but unfortunately, stories influcence minds, even when they are meant to be funny or satire.
 
-Around the same time, Thomas A. Limoncelli wrote the proto-devops book "The practice of System Administration", which interestingly contained a chapter on how not be to a BOFH - it asked the system administrator to reflect on the structure and processes of the larger company and their place in them, and then how to build useful supporting and reporting structures to function successfully in that structure, and how to respond to unexpected demands without too much toil and effort. It foreshadows a lot of development that caught on later under the label devops.
+Around the same time, Thomas A. Limoncelli wrote the proto-devops book "The practice of System Administration", which interestingly contained a chapter on how not be to a BOFH - it asked the system administrator to reflect on the structure and processes of the larger company and their place in them. Limoncelli then goes on about how to build useful supporting and reporting structures to function successfully in that structure. He closes with advice on how to respond to unexpected demands without too much toil and effort. It foreshadows a lot of development that caught on later under the label devops.
 
 ![](/uploads/2015/03/devops-en.022.jpg)
 
-The current, updated edition of that book is titled "The Practice of Systems and network Administration".
+*The current, updated edition of that book is titled "The Practice of Systems and network Administration".*
 
 The term "Devops" meanwhile, was coined by [Patric Debois](https://twitter.com/patrickdebois) in 2008 in Belgium, and pretty much assembled and then taught the same ideas as the Limoncelli book, at a larger scale and using even clearer structure.
 
