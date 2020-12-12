@@ -40,7 +40,7 @@ People these days do not program in an editor, with a compiler.
 
 They use Github or Gitlab, with many integrations, and a local IDE. They commit to a VCS (git, actually, the world converged on one single VCS), and trigger a bunch of things. Typechecks, Reformatters, Tests, but also Code Quality Metrics, and Security Scanners.
 
-Even starting a new programming language in 2020 is not as easy as it was in the past. Having a language is not enough, because you do not only need a language and maybe a standard library, but also a JetBrains Product supporting it, SonarQube support, XRay integration, gitlab-ci.yml examples and so on. Basically, there is a huge infrastructure system designed to support development and whatever you start needs to fit into it ,right from the start.
+Even starting a new programming language in 2020 is not as easy as it was in the past. Having a language is not enough, because you do not only need a language and maybe a standard library, but also a JetBrains Product supporting it, SonarQube support, XRay integration, gitlab-ci.yml examples and so on. Basically, there is a huge infrastructure system designed to support development and whatever you start needs to fit into it, right from the start.
 
 That is, because we have come to rely on an entire ecosystem of tooling to make our developers faster, and to enforce uniform standards across the group. And that is a good thing, which can help us to become better programmers.
 
