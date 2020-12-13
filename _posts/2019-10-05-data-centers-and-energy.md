@@ -293,6 +293,8 @@ cloud hardware often is 3x (or more) efficient than a traditional data center.
 
 **EDIT:** A study by Masanet, Koomey et al, [Recalibrating global data center energy-use estimates](https://science.sciencemag.org/content/367/6481/984). The [TL;DR is](https://twitter.com/jgkoomey/status/1233113568934907904): »We find that computing output from data centers went up six fold from 2010 to 2018 but electricity use only went up 6%.« Masanet, Koomey et al have a second article, [Characteristics of low-carbon data centres](https://www.nature.com/articles/nclimate1786)[.](https://sci-hub.se/https://www.nature.com/articles/nclimate1786)
 
+**EDIT:** I have been sent a [link to a writeup on data center planning considerations](https://www.se.com/ww/en/work/campaign/data-center-design-overview/). While this was part of a SEO effort, the source (Schneider Electric) is competent - Scheider specializes in Data Center Design and Planning and Energy Systems - and the writeup is actually useful. The text gives a bit of insight into the process and the factors that go into site planning and choices. A lot depends on intended purpose, local climate, available space and power and ultimately also site size and building increments.
+
 ## Summary
 
 Compared to technology from 10 years ago, in the data center we
