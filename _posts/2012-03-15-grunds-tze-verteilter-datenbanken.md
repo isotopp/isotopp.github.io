@@ -163,7 +163,7 @@ Cluster-Software ist immer speziell gegen Cluster geschrieben.
 Aktueller Cluster ist inzwischen VIEL BESSER darin als der Cluster, den ich
 gekannt habe, aber es bleibt schwierig.
 
-Du suchst einfache Lösungen fuer distrubuted databases.  So etwas existiert
+Du suchst einfache Lösungen fuer distributed databases.  So etwas existiert
 nicht.  So etwas KANN nicht existieren ohne daß du an c drehst.
 
 Du willst also mit Q (aus Star Trek: The Next Generation) reden, oder Dir
