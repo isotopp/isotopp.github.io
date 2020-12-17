@@ -49,7 +49,7 @@ Cloudflare ist ein Betreiber eines CDN (Content Delivery Networks), das Frontend
 
 Hinter dem Loadbalancer liegen also nicht nur mehr als zwei Server, sondern möglicherweise sogar mehr als ein Standort. Es ist die Dienstleistung und das Geschäft von Cloudflare, schlechte (DDoS) von guten Verbindungen zu trennen, und für die guten Verbindungen den netztopologisch am günstigsten gelegenen Server zu verbinden.
 
-Die Nutzung von Cloudflare macht natürlich auch die Erklärung "es ist ein DDoS" oder "es sind Hacker" weniger glaubwürdig. Cloudflares Geschäft ist es, so etwas auszusortieren und ein paar Schüler, die keinen Bock auf Fernunterricht haben und die deswegen rum kaspern holen Cloudflare im Mittel eher nicht runter.
+Die Nutzung von Cloudflare macht natürlich auch die Erklärung "es ist ein DDoS" oder "es sind Hacker" weniger glaubwürdig. Cloudflares Geschäft ist es, so etwas auszusortieren. Ein paar Schüler, die keinen Bock auf Fernunterricht haben und die deswegen rum kaspern holen Cloudflare im Mittel eher nicht runter.
 
 ## Serverzahlen und Größen
 
@@ -61,7 +61,11 @@ Disclaimer: Ich kenne das Design von mebis nicht. Ich kenne aber Anwendungen von
 
 Die Server selbst führen die Anwendung aus. Die Anwendung generiert in der Regel das HTML der Basisseite, und dort drin sind dann die Seiten-Elemente enthalten - also Grafiken, Filme, Zeichensätze, CSS und was sonst noch so von einer Webseite nachgeladen wird, damit sie bunt ist. Dieses HTML ist oft nicht statisch, sondern wird dynamisch unterschiedlich für jeden User generiert.
 
-Ein CDN wie Cloudflare cached in der Regel die statischen Seitenelemente, und verbreitet sie aktiv im Content Delivery Network zu den Edges, also den Servern, die möglichst dicht am User stehen und zum Enduser ausliefern. Medieninhalte wie Filme, Bilder und andere große statische Dinge sind also idealerweise gar nicht auf den Servern von Mebis enthalten, oder werden jedenfalls nicht von Mebis direkt an den Enduser ausgeliefert, sondern werden vom CDN abgefangen und dort abgehandelt - darum will man so etwas ja genau haben.
+Ein CDN wie Cloudflare cached in der Regel die statischen Seitenelemente, und verbreitet sie aktiv im Content Delivery Network zu den Edges. Also zu den Servern, die möglichst dicht am User stehen und die dann zum Enduser ausliefern. Medieninhalte wie Filme, Bilder und andere große statische Dinge sind also idealerweise gar nicht auf den Servern von Mebis enthalten, oder werden jedenfalls nicht von Mebis direkt an den Enduser ausgeliefert, sondern werden vom CDN abgefangen und dort abgehandelt - darum will man so etwas ja genau haben.
+
+Die eigenen Server generieren dann nur das dynamische HTML, benutzerspezifisch, das dann die ganzen großen, statischen Elemente referenziert, die von Cloudflare geliefert werden. Auf diese Weise braucht man am eigenen Server sehr viel weniger Bandbreite und Leistung.
+
+### Sind 28 Server viel oder wenig?
 
 1.7 Millionen Schüler auf 28 Servern sind etwa 60k User pro Server. Ich kenne den Footprint von Mebis oder itslearning nicht, aber das ist für eine moderne Maschine möglicherweise nicht zu viel. Ein moderner Server kann alles von einer 3000-Euro-Blade mit zwei [Xeon 4110](https://ark.intel.com/content/www/us/en/ark/products/123547/intel-xeon-silver-4110-processor-11m-cache-2-10-ghz.html), 128 GB RAM und einem 10 GBit/s Netzwerkinterface sein, bis hin zu einer [Dual EPYC 7502](https://en.wikichip.org/wiki/amd/epyc/7502) mit 4TB RAM und mehreren 100 GBit/s Netzwerkkarten.
 
@@ -72,6 +76,8 @@ Zum Vergleich: Eine Freemail-Datenbank von web.de im Jahre 2004 (eine HP DL380 G
 Es erscheint wenig, wenn man auf AWS VM-Serverhäppchen groß geworden ist und nie einen richten Baremetal-Server ganz für sich allein gehabt hat. Aber man sollte dabei auch bedenken, daß wir den ganzen Quatsch mit Virtualisierung oder Kubernetes ja genau deswegen machen, weil die meisten Anwendungen nicht in der Lage sind, selbst eine kleine Maschine wie die o.a. 3000-Euro-Blade voll zu machen.
 
 Und selbst wenn, wollte man das eventuell nicht, sondern die Anwendung stattdessen in drei oder mehr Instanzen aufteilen, die auf drei bis fünf Drittelservern laufen, der Ausfallsicherheit wegen.
+
+### Ist das alles teuer?
 
 Hardware ist übrigens unglaublich billig. Eine 3000 Euro-Blade braucht im Laufe ihres fünfjährigen Serverlebens (bei drei Jahren Abschreibungszeitraum) Strom, Klima und Rechenzentrumskosten für noch einmal ca. 3000 Euro, und ein wenig Kosten für Netz. Man landet bei 60 Monaten bei Serverkosten von bummelig 120-150 Euro pro Monat.
 
@@ -87,25 +93,37 @@ Das braucht nicht nur eine gewisse Menge an Bandbreite, Speicher und Datenbank, 
 
 Dazu machen es sich Schulen notlos schwer, falls sie weiter Frontalunterricht im Internet simulieren und insbesondere Unterrichtsbeginn und Login landesweit minutengenau synchronisieren. Das wäre, wenn man es so machte, ein selbst organisierter und durch ein Ministerium verordneter Eigen-DDoS. Mit dem Gong drücken alle Return und die Server fallen um.
 
+### Wie sich web.de mal selbst mit Userlogins ge-DoS-t hat
+
 Auch hier wieder eine 15 Jahre alte Geschichte von web.de:
 
-Die oben erwähnten Freemail-Datenbanken (25 davon in 25 Clustern) haben ein zentrales Gegenstück, die User-Datenbank. Dort sind alle 25 Millionen Freemail-User (und die zahlenden webd.e Club User) verzeichnet. Der Stammdatensatz ist bummelig 1 KB groß und enthält einen Haufen Felder, die sich nur sehr selten ändern.
+Die oben erwähnten Freemail-Datenbanken (25 davon in 25 Clustern) haben ein zentrales Gegenstück, die User-Datenbank. Dort sind alle 25 Millionen Freemail-User (und die zahlenden web.de Club User) verzeichnet. Der Stammdatensatz ist bummelig 1 KB groß und enthielt einen Haufen Felder, die sich nur sehr selten ändern.
 
-Und er enthielt auch drei Lastlogin-Daten (web, IMAP und POP). Jedes dieser Felder ist ca. 4 Byte lang und sie stehen also an derselben Stelle in jedem User-Record, also etwa bummelig 1 KB weit auseinander. Die Datenbank hat Seiten von 8 KB Größe (es war damals ein rotes Oracle), es stehen also 6-8 User-Records in einer Datenbank-Seite.
+Und er enthielt auch drei Lastlogin-Daten (web, IMAP und POP). Jedes dieser Felder ist ca. 4 Byte lang und sie stehen also an derselben Stelle in jedem User-Record, also etwa 1 KB weit auseinander. Die Datenbank hat Seiten von 8 KB Größe (es war damals ein rotes Oracle), es stehen also 6-8 User-Records in einer Datenbank-Seite.
 
 Wenn sich jetzt also ein User anmeldet, dann wird dessen Record aktualisiert und eine Datenbankseite in der Datenbank ist "dirty" und muß irgendwann einmal zurück geschrieben werden. Falls sich in der Zeit bis zum Zurückschreiben noch ein User anmeldet, dann ist das gut, weil wir so zwei Updates zum Preis eines Writes bekommen. 
 
-Bei 8-9m Unique Logins pro Tag und einer Gleichverteilung kann man aber annehmen, daß alle Pages der Userdatenbank mindestens einmal am Tag zurück geschrieben werden müssen. Das war anstrengend für die Userdatenbank, hat aber unter normaler Last einigermaßen okat funktioniert.
+Bei 8-9m Unique Logins pro Tag und einer Gleichverteilung der aktiven User über die Records kann man aber annehmen, daß alle Pages der Userdatenbank mindestens einmal am Tag zurück geschrieben werden müssen. Das war anstrengend für die Userdatenbank, hat aber unter normaler Last einigermaßen okay funktioniert.
 
-Wenn es nun bei web.de zu irgendeiner Störung kam, dann kommt es dabei meist auch zu einem Verlust der Session-Caches mit den Login-Tokens und die User werden alle ausgeloggt. Was machen ausgeloggte User? Sie melden sich neu an. Dabei werden die Logindaten aller derzeit aktiven User aktualisiert und wir haben einige Millionen Logins in wenigen Minuten - und die User Datenbank macht dicke Backen und fällt um.
+Wenn es nun bei web.de zu irgendeiner Störung kam, dann kommt es dabei meist auch zu einem Verlust der Session-Caches mit den Login-Tokens und die User werden alle ausgeloggt. 
 
-Jede beliebige Störung hatte also einen Ausfall der User Datenbank aus Folgestörung, zwangsläufig.
+Was machen ausgeloggte User? Sie melden sich neu an.
 
-Das klingt so erzählt unmittelbar einleuchtend und ist auch leicht zu beheben, wenn man die Ursache identifiziert hat, aber damals waren es mehrere Teams und einige Monate Arbeit, überhaupt zu verstehen, daß es sich um zwei Störungen handelt (die ursächliche Störung und den Folgefehler "UserDB überlastet"), und daß die 2. Störung immer dieselbe ist, egal was die ursächliche Störung war.
+Dabei werden die Lastlogind-Daten aller derzeit aktiven User aktualisiert und wir haben einige Millionen Logins in wenigen Minuten - und die User Datenbank macht dicke Backen und fällt um, weil sie es nicht schafft, so viele dirty pages in so kurzer Zeit zurück zu schreiben.
 
-Die Lösung ist übrigens recht einfach: Man zieht die volatilen Felder (die drei Lastlogin-Daten) aus den statischen Stammdaten raus und tut sie in eine einzelne Tabelle, die nur die User-ID und die drei Zeitstempel enthält. Das sind dann 25 Millionen Records von 16 Bytes plus Overhead, also eine Tabelle von 400-800 MB Größe statt vorher 25 Millionen Kilobyte, also 25 GB. Man hat also die Schreiblast für die Updates von 1024 Byte auf 16-32 Byte verkleinert, also um den Faktor 32-64 gesenkt. Das konnte die UserDB leicht abhandeln und das Problem trat nie wieder auf.
+Jede beliebige Störung hatte also einen Ausfall der User Datenbank als Folgestörung, zwangsläufig.
+
+Das klingt so erzählt unmittelbar einleuchtend und ist auch leicht zu beheben, wenn man die Ursache identifiziert hat. Aber damals waren es mehrere Teams und einige Monate Arbeit, überhaupt zu verstehen, daß es sich um zwei Störungen handelt (die ursächliche Störung und den Folgefehler "UserDB überlastet"), und daß die 2. Störung immer dieselbe ist, egal was die ursächliche Störung war.
+
+Die Lösung ist übrigens recht einfach:
+
+Man zieht die volatilen Felder (die drei Lastlogin-Daten) aus den statischen Stammdaten raus und tut sie in eine einzelne Tabelle, die nur die User-ID und die drei Zeitstempel enthält. Das sind dann 25 Millionen Records von 16 Bytes plus Overhead, also eine Tabelle von 400-800 MB Größe statt vorher 25 Millionen Kilobyte, also 25 GB. 
+
+Man hat also die Schreiblast für die Updates von 1024 Byte auf 16-32 Byte verkleinert, also um den Faktor 32-64 gesenkt. Das konnte die UserDB leicht abhandeln und das Problem trat nie wieder auf.
 
 Was hat das mit mebis und itslearning zu tun? Direkt nichts, aber es zeigt, daß die Skalierung von Anwendungen in der Regel nicht einfach mit "mehr Server" zu machen ist.
+
+### Skalierung geht nicht allein am Reißbrett
 
 Eine Anwendung um den Faktor 10 zu skalieren heißt in der Regel, dieselben Deliverables mit einer komplett neu gemachten Architektur zu generieren. Ich habe in meinem Leben zwischen 1990 und 2005 viel Mail gemacht, für mich und meine Freundin (2), für einen kleinen Verein (20), für toppoint.de (200), für eine kleine Firma (2k), für Mobilcom.de (20k), ein Design für eine Ausschreibung bei hamburg.de (2m) und einige Jahre web.de (20m). 
 
@@ -118,6 +136,8 @@ Schlaue Leute gehen also nicht von Woche 50 mit 0 Usern auf Woche 51 mit 350k Us
 Schlaue Leute onboarden erst mal eine Gruppe freundliche Testkunden, bügeln die schlimmsten Probleme mit denen aus, dann ein mehrfaches dieser Gruppe in einem nächsten Schritt und so weiter. Dabei mit immer größeren Schritten und - wichtig - mit der Option innezuhalten und Dinge zu ändern, sobald sich Probleme und Engpässe manifestieren.
 
 Das geht natürlich nicht in einem Umfeld, das politisch Präsenzunterricht favorisiert und bei dem man die Technik nicht dauerhaft als lebenden Bestandteil in den normalen Unterricht integriert.
+
+### Sobald die Technik funktioniert beginnt die eigentliche Arbeit
 
 Zum Vergleich: Wo ich wohne ist die Schule meines Kindes (10) Bestandteil des Netzwerkes [Jong Leren](https://jl.nu/). Man verwendet Chromebooks mit Google Edu, und dazu kommen eine Reihe von externen Anwendungen, die sich gegen Edu authentisieren, aber unabhängig realisiert werden. [Gynzy](https://www.gynzykids.com/#/nl-nl/leerling/index/oefenen/) wird zum Beispiel verwendet, um Drillaufgaben zu automatisieren, also Rechnen, Kopfrechnen, Rechtschreibung und andere Dinge einzuüben, die auf Wiederholung basieren.
 
@@ -145,7 +165,7 @@ Im [Google SRE Buch](https://sre.google/sre-book/table-of-contents/) ist ausfüh
 
 Wo ich arbeite haben wir gemeinsam und jeder für sich dieses Buch gelesen und verstanden (*berührt die Stirn*) und sind dann aus $GRÜNDEN trotzdem in so eine Situation geraten, mit den vorhersagbaren Resultaten. Wir wissen jetzt aus persönlicher Erfahrung (*berührt Herz*) wieso das keine Gute Idee war und warum man es anders haben will, und wir haben das verinnerlicht und machen das in Zukunft instinktiv (*berührt Bauch*) richtig.
 
-Organisationen lernen so, und solche Fehlschläge sind auch wichtig, weil man jetzt gemeinsam geteilte Erfahrungen hat und auch aus der Krise weiß, welche Kollegen wie reagieren oder welche Kollegen schon vorher Ratschläge hatten, auf die man hätte hören sollen. Organisationen springen nicht, sie bewegen sich immer linear vorwärts, und das Beste was man erreichen kann ist ihr Gleiten umzulenken oder zu beschleunigen. "Sprunginnovationen" sind nie das Werk von größeren strukturierten Gruppen und Verwaltungen.
+Nein, eigentlich ließ sich das nicht vermeiden, denn Organisationen lernen so. Solche Fehlschläge sind auch wichtig, weil man jetzt gemeinsam geteilte Erfahrungen hat und auch aus der Krise weiß, welche Kollegen wie reagieren oder welche Kollegen schon vorher Ratschläge hatten, auf die man hätte hören sollen. Organisationen springen nicht, sie bewegen sich immer linear vorwärts, und das Beste was man erreichen kann ist ihr Gleiten umzulenken oder zu beschleunigen. "Sprunginnovationen" sind nie das Werk von größeren strukturierten Gruppen und Verwaltungen.
 
 Jedenfalls glaube ich, daß jetzt in diversen Bundesländern auch Leute mit einem nassen Lappen neben anderen Leuten sitzen, die brennende Server haben löschen müssen. "Heiß!" sagen sie und deuten auf den Server. "Heiß!" sagen die Admins mit den verbrannten Fingern und nicken wissend.
 
