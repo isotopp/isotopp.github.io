@@ -14,7 +14,7 @@ tags:
 
 [![](/uploads/2020/12/sql-clause.jpg)](https://twitter.com/roliepoly/status/1342549035211661312)
 
-*SQL Clause is coming town! ([buy here](https://www.xonot.com/product/sql-clause-sweatshirt/)*
+*"He's making a table. He's sorting it twice. SELECT * FROM contacts WHERE behavior = "nice"; SQL Clause is coming town!*  ([buy here](https://www.xonot.com/product/sql-clause-sweatshirt/))
 
 [Katie Bauer observes](https://twitter.com/imightbemary/status/1342676590145105921):
 
@@ -24,7 +24,7 @@ So how bad is this? Let's find out.
 
 ## Some test data
 
-We are defining a table santa, where we store peoples names (GDPR, [EU Regulation 2016/679](https://eur-lex.europa.eu/eli/reg/2016/679/oj) applies!), their behavior (naughty or nice), their age, their location, and their wishlist items.
+We are defining a table `santa`, where we store peoples names (GDPR, [EU Regulation 2016/679](https://eur-lex.europa.eu/eli/reg/2016/679/oj) applies!), their behavior (naughty or nice), their age, their location, and their wishlist items.
 
 {% highlight sql %}
 create table santa (
@@ -55,11 +55,15 @@ for i in range(1, size):
 	if i%1000 == 0:
 	    print(f"{i=}")
 	    db.commit()
+
+db.commit()
 {% endhighlight %}
 
 The full data generator is available as [santa.py](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-santa/santa.py). Note that the data generator there defines more indexes - see below.
 
-In our example we generate 1m rows, and assume a general niceness of 0.9 (90% of the children are nice). Also, all of our children have 64 characters long names, a single 64 characters long wish, a random age, and are equidistributed on a perfect sphere.
+In our example we generate one million rows, and assume a general niceness of 0.9 (90% of the children are nice). Also, all of our children have 64 characters long names, a single 64 characters long wish, a random age, and are equidistributed on a perfect sphere.
+
+Our real planet is not a perfect sphere, and also not many people live in the Pacific Ocean. Also, not many children have 64 character names.
 
 ## Sorting it twice
 
@@ -98,7 +102,10 @@ Out of 1 million children, we have around 900k nice children. No indexes can be 
 Let's order by name, using a subquery:
 
 {% highlight sql %}
-kris@localhost [kris]> explain select t.name from (select * from santa where behavior = 'nice') as t order by name;
+kris@localhost [kris]> explain 
+  -> select t.name from (
+  ->   select * from santa where behavior = 'nice'
+  -> ) as t order by name;
 +----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+-----------------------------+
 | id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows   | filtered | Extra                       |
 +----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+-----------------------------+
@@ -114,8 +121,12 @@ We can already see that the MySQL 8 optimizer recognizes that this subquery can 
 This can be done multiple times, but the optimizer handles this just fine:
 
 {% highlight sql %}
-kris@localhost [kris]> explain select s.name from ( select t.name from (select * from santa where behavior = 'nice') as t o
-rder by name ) as s order by name;
+kris@localhost [kris]> explain 
+  -> select s.name from (
+  ->   select t.name from (
+  ->     select * from santa where behavior = 'nice'
+  ->   ) as t order by name
+  -> ) as s order by name;
 +----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+-----------------------------+
 | id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows   | filtered | Extra                       |
 +----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+-----------------------------+
@@ -152,16 +163,21 @@ kris@localhost [kris]> explain select s.name from ( select t.name from (select *
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
 {% endhighlight %}
 
-The query is instead now annotated `using index`, which means that all data we ask for is present in the (covering) index `behavior_name`, and is stored in sort order. That means the data is physically stored and read in sort order and no actual sorting has to be done on read.
+The query is now annotated `using index`, which means that all data we ask for is present in the (covering) index `behavior_name`, and is stored in sort order. That means the data is physically stored and read in sort order and no actual sorting has to be done on read - despite us asking for sorting, twice.
 
 ## Hidden 'SELECT *' and Index Condition Pushdown
 
-In the example above, we have been asking for `s.name` and `t.name` only, and because that is part of the index, `using index` is shown to indicate use of a covering index. We do not actually go to the table to generate the result set, we are using the index only.
+In the example above, we have been asking for `s.name` and `t.name` only, and because the name is part of the index, `using index` is shown to indicate use of a covering index. We do not actually go to the table to generate the result set, we are using the index only.
 
 Now, if we were to ask for `t.*` in the middle subquery, what will happen?
 
 {% highlight sql %}
-kris@localhost [kris]> explain select s.name from ( select * from (select * from santa where behavior = 'nice') as t order by name ) as s order by name;
+kris@localhost [kris]> explain
+  -> select s.name from (
+  ->   select * from (
+  ->     select * from santa where behavior = 'nice'
+  ->   ) as t order by name
+  -> ) as s order by name;
 +----+-------------+-------+------------+------+---------------+---------------+---------+-------+--------+----------+-----------------------+
 | id | select_type | table | partitions | type | possible_keys | key           | key_len | ref   | rows   | filtered | Extra                 |
 +----+-------------+-------+------------+------+---------------+---------------+---------+-------+--------+----------+-----------------------+
@@ -172,7 +188,7 @@ kris@localhost [kris]> explain select s.name from ( select * from (select * from
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
 {% endhighlight %}
 
-In the `Code 1003 Note` we still see the exact same reconstituted query, but obviously the internal handling now changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.
+In the `Code 1003 Note` we still see the exact same reconstituted query, but as can be seen in the plan annotastions, the internal handling changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.
 
 The 'using index condition' annotation points to [Index Condition Pushdown Optimization](https://dev.mysql.com/doc/refman/8.0/en/index-condition-pushdown-optimization.html) being used. In our example, this is not good.
 
@@ -180,9 +196,9 @@ The 'using index condition' annotation points to [Index Condition Pushdown Optim
 
 The column we select on is a column with a cardinality of 2: `behavior` can be either `naughty` or `nice`. That means, in an equidistribution, around half of the values are `naughty`, the other half is `nice`.
 
-Data from disk is read in pages of 16 KB. If one row in a page matches, the entire page has to be read from disk. In our example, we have a row length of around 200 Byte, so we end up with 75-80 records per page. Half of them will be `nice`, so we will very likely have to read all pages from disk anyway.
+Data from disk is read in pages of 16 KB. If one row in a page matches, the entire page has to be read from disk. In our example, we have a row length of around 200 Byte, so we end up with 75-80 records per page. Half of them will be `nice`, so with an average of around 40 `nice` records per page, we will very likely have to read all pages from disk anyway.
 
-Using the index will not decrease the amount of data read from disk at all. In fact we will have to read the index pages on top of the data pages, so using an index on a low cardinality column has the potential of making the situation slightly worse.
+Using the index will not decrease the amount of data read from disk at all. In fact we will have to read the index pages on top of the data pages, so using an index on a low cardinality column has the potential of making the situation slightly worse than even a full table scan.
 
 Generally speaking, defining an index on a low cardinality column is usually not helpful - if there are 10 or fewer values, benchmark carefully and decide, or just don't define an index.
 
@@ -203,9 +219,9 @@ The `ALTER` defines a spatial index (an RTREE), which can help to speed up coord
 
 The `SET` defines a coordinate rectangle around our current position (supposedly 15/15).
 
-We then use the `mbrcovers()` function to find all points `loc` that are covered by the `@rect`.
+We then use the `mbrcovers()` function to find all points `loc` that are covered by the `@rect`. It seems to be somewhat complicated to get MySQL to actually use the index, but I have not been investigating deeply.
 
-If we added a filesort here, we would see `using filesort` again, because data is retrieved in RTREE order, if the index `loc` is used, but we want output in `name` order.
+If we added an `ORDER BY name` here, we would see `using filesort` again, because data is retrieved in RTREE order, if the index `loc` is used, but we want output in `name` order.
 
 ## Conclusion
 
