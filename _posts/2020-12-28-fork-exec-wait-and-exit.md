@@ -343,4 +343,4 @@ Also, check out the programming style of Mr. Bourne - this is C, even if it does
 
 The [original 2007 blog article]({% link _posts/2007-01-07-fork-exec-wait-und-exit.md %}), has a followup article [on Windows CreateProcess()](% link _posts/2007-01-07-fork-und-exec-vs-createprocess.md %), which has not been translated.
 
-When implementing `fork()` in Windows as part of the WSL 1, Microsoft ran into a lot of problems with the syscall, and wrote an article about how they hate it, and why they thing their `CreateProcessEx()` (in Unix: `spawn()`) would be better. The [PDF](https://www.microsoft.com/en-us/research/uploads/prod/2019/04/fork-hotos19.pdf) make a number of good points, but is still wrong. :-)
+When implementing `fork()` in Windows as part of the WSL 1, Microsoft ran into a lot of problems with the syscall, and wrote an article about how they hate it, and why they think their `CreateProcessEx()` (in Unix: `spawn()`) would be better. The [PDF](https://www.microsoft.com/en-us/research/uploads/prod/2019/04/fork-hotos19.pdf) makes a number of good points, but is still wrong. :-)
