@@ -148,7 +148,7 @@ We can then bring the relevant physical block into the buffer cache, using `brea
 
 There is an optimization here:
 
-When the write is a full block, we do not read the block from disk. We just allocate a buffer using `getblk()`, and fill it. It will overwrite the data on disk completely, there is no old and new data to merge. Disk accesses are slow, in the 1970ies even more so than today, so not reading data that you are going to obliterate completely pays of substantially.
+When the write is a full block, we do not read the block from disk. We just allocate a buffer using `getblk()`, and fill it. It will overwrite the data on disk completely, there is no old and new data to merge. Disk accesses are slow, in the 1970ies even more so than today, so not reading data that you are going to obliterate completely pays off substantially.
 
 The loop continues as long as there are no errors and still blocks to write.
 
@@ -156,9 +156,9 @@ As we return from `writei()`, `rdrw()` resumes and will eventually `prele()` the
 
 ## How old is this stuff?
 
-This is of course extremely old code, original V7 unix, almost as old as me: git blames places it’s age at 41 years, I was in the third class of a German basic school when this was written.
+This is of course extremely old code, original V7 unix, almost as old as me: git blames places its age at 41 years. I was in the third class of a German basic school when this was written.
 
-I chose this implementation, because it is very simple and because it is also what became immortalised in the performance destroying standard which we got to know as Posix File System Semantics.
+I chose this implementation, because it is very simple, and because it is also what became immortalised in the performance destroying standard which we got to know as Posix File System Semantics.
 
 ## Homework
 
