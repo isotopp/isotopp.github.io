@@ -23,7 +23,7 @@ My reply on Twitter begins [here](https://twitter.com/isotopp/status/12181623109
 
 ## "Devops", what does that even mean?
 
-In 2015, I gave a talk titled "Go away, or I will replace you with a little shell script" as a keynote for the GUUG FFG 2015 in Stuttgart. The german language slides are [here](https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script), the english slides are [here](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english) and a Youtube video of the Froscon version of the talk is [here](https://www.youtube.com/watch?v=e0CCv7pSK4s). Unfortunately, the video is the german language version of that talk.
+In 2015, I gave a talk titled "[Go away, or I will replace you with a little shell script]({% link _posts/2015-03-27-go-away-or-i-will-replace-you.md %})" as a keynote for the GUUG FFG 2015 in Stuttgart. The german language slides are [here](https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script), the english slides are [here](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english) and a Youtube video of the Froscon version of the talk is [here](https://www.youtube.com/watch?v=e0CCv7pSK4s). Unfortunately, the video is the german language version of that talk.
 
 The talk focuses on how the sysadmin profession started to die out somewhere around 2001, when we invented horizontal scaleout and [Tom Limoncelli](https://twitter.com/yesthattom) published the first edition of "[The Practice of System Administration](https://the-sysadmin-book.com)". That book explained in one chapter the role of the sysadmin in the greater corporate organisation and how to cooperate with, not fight against users. The term and the practice of Devops evolved in this decade, until in 2008 [Patrick Debois](https://twitter.com/patrickdebois) coined the actual term "Devops", which we use today.
 
@@ -92,7 +92,7 @@ That is the Dual Use value of an experiment framework: You get the business valu
 
 ![](/uploads/2020/01/rolling-relative-bugfix-cost.png)
 
-From [8 rollouts a day (2012), Slide 19](https://www.slideshare.net/isotopp/8-rollouts-a-day): Relative cost of a bugfix in various stages of the code lifecycle. Fixing broken requirements is the cheapest.
+*From [8 rollouts a day (2012), Slide 19](https://www.slideshare.net/isotopp/8-rollouts-a-day): Relative cost of a bugfix in various stages of the code lifecycle. Fixing broken requirements is the cheapest.*
 
 But you also get the technical cost of that, in terms of running the prototype code. That enables you to assess the added execution cost vs. the estimated engineering effort to speed it up. In other words, your engineers only ever work on code that is proven to make you richer, *and* you also know how much running it will cost you in AWS units or engineering hours and you can prioritise things properly.
 
@@ -159,7 +159,7 @@ Aggregations are important, they point you into a general direction. But it is t
 
 Logs and metrics are good, essential for checks and alerts, to handle known cases and navigate known waters safely. Events, and the ability to search, sort, aggregate and correlate on events at will, are what enable you to see and debug a distributed and developing production system. Experiments, separation of rollout and activation, with integrated Probes in Spans, allow you to collect this data, and to act, by disabling code that introduces undesireable behavior.
 
-The rollout is likely to be safe, because any new code you roll out is never executed in production. Unless you turn activate it. In the end you will find that it is not the rollout sparklines in your graphs that matter, it's the config change sparklines that need watching. You can turn on things for yourself, for a subset of the population, or, if you have gradually built confidence, full on.
+The rollout is likely to be safe, because any new code you roll out is never executed in production. Unless you activate it. In the end you will find that it is not the rollout sparklines in your graphs that matter, it's the config change sparklines that need watching. You can turn on things for yourself, for a subset of the population, or, if you have gradually built confidence, full on.
 
 Full on (or full off and writing the change off as worthless, in 19 of 20 cases) is a precondition then for cleaning up: Removing either the Experiment tooling around one new codepath, removing the old codepath completely, or the other way around.
 
