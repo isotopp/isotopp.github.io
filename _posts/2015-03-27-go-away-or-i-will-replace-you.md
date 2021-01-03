@@ -69,7 +69,7 @@ We see some seriously large machines at around that time - there were twelve 64 
 
 ![](/uploads/2015/03/devops-en.015.jpg)
 
-Yet it became obvious rather quickly that this was not an approach that worked, and even if it worked, it often was prohibitively complex, expensive and slow. Once that became clear, people startet to automate basic tasks, learned to mange large fleets of moderately sized machines and then tried a different approach - "scale out" instead of "scale up". Use more computers instead of larger computers.
+Yet it became obvious rather quickly that this was not an approach that worked, and even if it worked, it often was prohibitively complex, expensive and slow. Once that became clear, people started to automate basic tasks, learned to mange large fleets of moderately sized machines and then tried a different approach - "scale out" instead of "scale up". Use more computers instead of larger computers.
 
 This triggered a lot of learnings at all levels of the profession - network, data center structure and operations practice needed revision. This talk will focus on the latter, but the other topics are also of interest.
 
