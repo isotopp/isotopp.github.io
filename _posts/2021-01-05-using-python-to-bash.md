@@ -13,17 +13,22 @@ tags:
 Heise writes [an introduction to bash programming (in german)](https://www.heise.de/hintergrund/Einfuehrung-in-die-Bash-Programmierung-Minesweeper-in-der-Linux-Shell-entwickeln-5002358.html):
 
 > Bash ist eine vollwertige Programmiersprache, mit der Sie alltägliche Aufgaben leicht automatisieren.
+> 
 > Bash is a fully featured programming language that you can use to automate everyday tasks.
 
 Bash is not a fully featured programming language at all, and nothing in bash is ever easy. You are advised to use a proper programming language early on in development, and if possible never put bash commands into a file.
 
 A few early warning signs to look out for:
 
-- Bash is somewhat okay to handle files. If you find yourself handling lines, words or characters you are using the wrong tool. The script you are working on should have been written in something else.
+- Bash is somewhat okay to handle files. If you find yourself handling lines, words or characters instead of entire files, you are using the wrong tool. The script you are working on should have been written in something else.
 - Bash is really bad at math. If you are doing math, especially if it is not small positive integers, you should have been using something else.
 - Bash is really bad at handling any kind of UI. If you start thinking about curses, Tk or Qt, you should have been using something else.
 
-Bash is also bad at handling file names with weird characters in them safely, handling Unicode, handling Errors and other elementary things. Basically, it is better to start in something else right away if the things move away from an interactive command line and end up in a file.
+Bash is also bad at  safely handling filenames with weird characters in them, bad at  handling Unicode, bad at handling Errors and bad at many other elementary things.
+
+Basically, it is better to start in something else right away if the things move away from an interactive command line and end up in a file. Use whatever you like as an interactive command line, but do not write bash or shell scripts.
+
+Shell is a thing you want to understand and then not use, because you learned to understand it. 
 
 For the rest of this discussion, we assume "Python 3" as an instance of "something else", but if you are older than 50, feel free to use "Perl" instead.
 
@@ -73,27 +78,33 @@ In an online discussion, [somebody remarked](https://twitter.com/netzverweigerer
 >
 > is more intuitive or less error prone, but different people have different opinions.
 
-That is correct. The point here is that this is not useful at all, in a Python program. That line will then produce output such as
+That is correct.
+
+The point here is that this is not useful at all, in a Python program. That line will then produce output such as
 
 >  `crw-rw-rw- 1 root root 1, 3 Dec  7 12:15 /dev/null`
 
 and that needs parsing to be useful for anything. You'd not do that at all in Python, ever.
 
 {% highlight python %}
-import os
-s = os.stat("/dev/null")
+from pathlib import Path
+s = Path("/dev/null").stat()
 print(s)
 
 os.stat_result(st_mode=8630, st_ino=6, st_dev=6, st_nlink=1, st_uid=0, st_gid=0, st_size=0, st_atime=1607339753, st_mtime=1607339753, st_ctime=1607339753)
 {% endhighlight %}
 
-Now we can talk. In Bash, everything always is a string. In a proper programming language, we have a wealth of basic data types, and can use them in containers to construct aggregate types or even objects, and we can make use of this.
+Now we can talk. In Bash, everything always is a string.
 
-Using the native `os.stat()` gives us access to the same information in useful form that combines nicely with any number of powerful language and library features.
+In a proper programming language, we have a wealth of basic data types, and can use them in containers to construct aggregate types or even objects, and we can make use of this.
+
+Using `Path().stat()` we get access to the same information in useful form that combines nicely with any number of powerful language and library features.
 
 ## If you need to run commands, consume JSON
 
-So what if you have to run an external command to do things? Hopefully the external commands produce something structured such as JSON:
+So what if you have to run an external command to do things?
+
+Hopefully the external commands produce something structured such as JSON:
 
 {% highlight python %}
 import subprocess
@@ -139,9 +150,13 @@ So you already know about [`sys`](https://docs.python.org/3/library/sys.html), a
 
 `sys` is the meta about your Python environment. It offers you detailed introspection about the version, the base operating system platform, and many other things that relate to your runtime environment.
 
-`os` is the access to the operating system, allowing you to manipulate files and many other base operating system abstractions. `pathlib` is a higher level convenience interface built on top of that, which overloads the `/` operator and allows you to manipulate operating system path names in a portable way. It offers functions to parse pathnames, is `os.stat()` aware and has `basename()` and `dirname()` functionality, plus globbing. Path can completely replace os-like file access, and there is a handy table at the end of the manpage.
+`os` is the access to the operating system, allowing you to manipulate files and many other base operating system abstractions
 
-## shutil
+`pathlib` is a higher level convenience interface built on top of that, which overloads the `/` operator and allows you to manipulate operating system path names in a portable way. It offers functions to parse pathnames, is `os.stat()` aware and has `basename()` and `dirname()` functionality, plus globbing.
+
+Path can completely replace os-like file access, and there is a handy table at the end of the manpage.
+
+### shutil
 
 Basic shell file operations can be handled with [`shutil`](https://docs.python.org/3/library/shutil.html).
 
@@ -151,7 +166,7 @@ The module also offers a set of functions that deal with common archive formats 
 
 Note that the [`walk()`](https://docs.python.org/3/library/stat.html) function is part of the `os` module, not the `shutil` module. It can be used to iterate over a filesystem subtree in a number of ways, offering `find(1)` like functionality.
 
-## argparse, click, docopt
+### argparse, click, docopt
 
 Python delivers [`argparse`](https://docs.python.org/3/library/argparse.html) with the standard libary, and has [extensive tutorials](https://docs.python.org/3/howto/argparse.html) for it. It works pretty much as one would expect
 
@@ -218,7 +233,7 @@ $ ./probe.py --size 10
 
 Click is very complete, extensible and specifically the tool of choice for large commands that require the implementation of subcommands (`git log`, `git add`, `git commit` type interfaces).
 
-## fileinput
+### fileinput
 
 In this context also useful is [`fileinput`](https://docs.python.org/3/library/fileinput.html), a helper that consumes pathnames from the command arguments and offers you the lines from the files named, in one single stream or separated.
 
@@ -226,27 +241,27 @@ There is a number of support options for writing filters, in-place file changes 
 
 It is possible to install decompressor/compressor hooks, as well as data encodoers/decoders.
 
-## stat
+### stat
 
 The `os.stat()` example from the very beginning of this text is easier expanded on with the [`stat`](https://docs.python.org/3/library/stat.html) module, which has a number of constants and helpers that make more sense out of the data delivered by the operating system.
 
-## glob, fnmatch
+### glob, fnmatch
 
 Python has a [`glob`](https://docs.python.org/3/library/glob.html) and [`fnmatch`](https://docs.python.org/3/library/fnmatch.html) modules, but you are probably better off using [`Path.glob`](https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob) from the more modern and portable `pathlib` instead.
 
-## tempfile
+### tempfile
 
 Temporary filenames, files and file handles can be made safely with [`tempfile`](https://docs.python.org/3/library/tempfile.html), another standard libary.
 
-## difflib, filecmp
+### difflib, filecmp
 
 There are a number of modules that deal in comparisons of files, [`difflib`](https://docs.python.org/3/library/difflib.html#differ-example) computes diff-like output with a nice programming interface, and [`filecmp`](https://docs.python.org/3/library/filecmp.html) compares files and directory trees, finding files with different content or attributes.
 
-## ini files, yaml and json
+### ini files, yaml and json
 
 The python standard libary offers readers and writers for [`ini files`](https://docs.python.org/3/library/configparser.html) and [`json`](https://docs.python.org/3/library/json.html). Handling [`yaml`](https://pyyaml.org/wiki/PyYAMLDocumentation) is an external dependency.
 
-## sched, daemon, pidfile, and pystemd
+### sched, daemon, pidfile, and pystemd
 
 A simple-cronlike timer facility, [`sched`](https://docs.python.org/3/library/sched.html) comes with the system libraries.
 
@@ -254,6 +269,6 @@ Actually becoming a background process with [`python-daemon`](https://pagure.io/
 
 The external dependency [`pystemd`](https://github.com/facebookincubator/pystemd) allows you to speak dbus to talk to systemd, but you would not notice that from the usage: you can deal with systemd units as native Python objects and query and control them.
 
-## subprocess
+### subprocess
 
 And of course, we already mentioned [`subprocess.run()`](https://docs.python.org/3/library/subprocess.html#using-the-subprocess-module), the swiss army knife of bad old shell interfacing. Make sure you prefer commands that can produce JSON, that will hurt a lot less.
