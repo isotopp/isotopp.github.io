@@ -14,7 +14,7 @@ My son wants labyrinths. Ok, let's make them like it's the first semester.
 
 ![](/uploads/2021/01/backtracking2.png)
 
-We need a `class Labyrinth` that holds the dimensions of our maze, and the actual maze, in `l` - a List of Lists of integers. That's not exactly a two-dimensional array (it can have a ragged right edge), but it will do for us.
+We need a `class Labyrinth` that holds the dimensions of our maze, and the actual maze, in `grid` - a List of Lists of integers. That's not exactly a two-dimensional array (it can have a ragged right edge), but it will do for us.
 
 ## A basic container for labyrinths
 
