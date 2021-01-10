@@ -99,7 +99,6 @@ We can now initialize our class:
         self.grid = [[]] * self.height
         for y in range(0, self.height):
             self.grid[y] = [0] * self.width
-        return
 
         return
 {% endhighlight %}
@@ -133,17 +132,16 @@ Our `Labyrinth` is mostly a container for these integers representing cells, wit
         if not self.position_valid(item):
             raise ValueError(f"Invalid Position: {item=}")
 
-        if not self.position_valid(key):
-            raise ValueError(f"Invalid Position: {key=}")
-
-        if not (0<=value<=15):
-            raise ValueError(f"Invalid cell value: {value=}")
-
         r = self.grid[item[1]][item[0]]
         return r
 
     def __setitem__(self, key: Pos, value: int) -> None:
         """ Set the passages at position key: Pos to value: int """
+        if not self.position_valid(key):
+            raise ValueError(f"Invalid Position: {key=}")
+
+        if not (0<=value<=15):
+            raise ValueError(f"Invalid cell value: {value=}")
 
         self.grid[key[1]][key[0]] = value
         return
@@ -449,7 +447,7 @@ Nothing of this will be visible until we call `flip()`. For debugging, we provid
 
 The first function checks the Pygame event queue for a `QUIT` event (close button on the window has been hit) or an `ESC` key press. If either of them happened, we exit the program. Otherwise we delay a bit (and should make this a settable parameter).
 
-THe second method busy waits on a space bar press (and also allows quitting) before it continues. It will allow us to step through the program and observe how everything works at our leisure.
+The second method busy waits on a space bar press (and also allows quitting) before it continues. It will allow us to step through the program and observe how everything works at our leisure.
 
 A small driver that puts everything together:
 
@@ -479,7 +477,7 @@ painter.show(labyrinth, red=red, green=green)
 LabyrinthPainter.keywait()
 {% endhighlight %}
 
-We make ourselves a `labyrinth` instance, and a `painter` instance. We define a starting position in the middle of the field, then start the carver with a callback. The callback will be activated by the `carve()` function with the old position `pos` as red and the new position `np` as green square. Uncarves squares will show up black, and carves squares will be shown in light blue.
+We make ourselves a `labyrinth` instance, and a `painter` instance. We define a starting position in the middle of the field, then start the carver with a callback. The callback will be activated by the `carve()` function with the old position `pos` as red and the new position `np` as green square. Untouched squares will show up in black, and carves squares will be shown in light blue.
 
 In the end we display the final labyrinth, showing two random positions as start and end position. This will work because our labyrinth is an undirected minimal spanning tree of the grid, so any two positions are connected by exactly one path.
 
