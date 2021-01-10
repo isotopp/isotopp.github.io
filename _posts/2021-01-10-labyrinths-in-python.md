@@ -539,3 +539,8 @@ Now we push this position and the remaining directions sans the one we just chec
 This will move us to the outer loop, where we pop the new position and start working on that one: A depth-first search.
 
 Our `stack` list is not subject to `sys.recursionlimit` and so we can process larger grids. We still use the same amount of memory: we remember the same things. On a 100x100 grid, the theoretical longest possible path is 10000 steps long and that would be the biggest possible stack for that grid.
+
+### See Also
+
+- [Maze Generation: Recursive Backtracking](http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking.html), Jamis Buck, 27-Dec-2010.
+- [Basil & Fabian](http://blog.jamisbuck.org/), Jamis Buck, April 2014
