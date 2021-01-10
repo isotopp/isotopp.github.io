@@ -544,3 +544,5 @@ Our `stack` list is not subject to `sys.recursionlimit` and so we can process la
 
 - [Maze Generation: Recursive Backtracking](http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking.html), Jamis Buck, 27-Dec-2010.
 - [Basil & Fabian](http://blog.jamisbuck.org/), Jamis Buck, April 2014
+
+- [Code in github](https://github.com/isotopp/labyrinths)
