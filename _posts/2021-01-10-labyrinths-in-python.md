@@ -185,7 +185,7 @@ We also build a getter, `directions()` that returns the directions from the `_di
 
 We now can make a `step(pos, direction)`, which takes one Pos, and makes a step into the given Direction.
 
-{% highlight %}
+{% highlight python %}
     def step(self, p: Pos, d: Direction) -> Pos:
         """Starting at Pos p, walk one step into Direction d, return a new position.
            The new position is guaranteed to be valid."""
