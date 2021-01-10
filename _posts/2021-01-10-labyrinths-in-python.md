@@ -300,7 +300,7 @@ We have provided the option to supply a callback function `show=` (for which we 
 
 Here is a labyrinth generation in progress:
 
-![](/uploads/2021/01/backtracking2.png)
+![](/uploads/2021/01/backtracking.png)
 
 ## Painting the labyrinth
 
