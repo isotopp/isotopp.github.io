@@ -26,6 +26,8 @@ Im Sommer hat man dann noch einmal nachgerüstet und am 7-Jan-2021 kam dann die 
 
 *"Heute morgen wurden 2 Paletten mit 7 weiteren Servern für Moodle geliefert." -- [BelWü](https://twitter.com/neunerseb/status/1242093498859388928), 07-Jan-2021*
 
+Dennis Urban merkt an: "In den sieben Maschinen sind AMD EPYC 7h12 CPUs drin. [Langsam wird der Monitor zu klein](https://twitter.com/dpunkturban/status/1348382147564941313)."
+
 In den Kommentaren dann ein Haufen Bemerkungen und Fragen:
 
 - Wieso sind das Dells und keine von Thomas Krenn?
@@ -159,6 +161,8 @@ Der Effekt ist an der Heatmap zu sehen:
 ![](/uploads/2021/01/moodle-response.png)
 
 *Response Time Heatmap vom Bawü Moodle für den 12. Januar 2021. Die X-Achse zeigt die Uhrzeit. Die Y-Ache zeigt logarithmisch die Antwortzeit. Die meisten Antworten kommen in weniger als einer Zehntelsekunde, jetzt wo die Datenbank optimiert ist. (via [Dennnis Urban](https://twitter.com/dpunkturban)*
+
+Besonders viel Ärger hat wohl eine bestimmte Kalender-Query gemacht. Da Moodle Open Source Software ist, kann man [das Ticket sehen](https://tracker.moodle.org/browse/MDL-66253).
 
 "Jetzt sind 3300 Cores in der Plattform und eine Summen-Load von unter 1000, heute. Gestern noch um die 3000." sagte man mir. Ein System mit 3000 Cores ist mit einer Load von 3000 genau am Anschlag (Runnable Threads == vorhandene Cores). Eine Load von 1000 auf 3000 Cores ist angenehm und sollte stabil durchhalten.
 
