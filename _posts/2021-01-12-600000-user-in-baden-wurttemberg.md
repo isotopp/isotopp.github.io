@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  '600.000 User in Baden-Württemberg'
+title:  '940.000 User in Baden-Württemberg'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: 2021-01-12 17:07:50 +0100
@@ -12,7 +12,7 @@ tags:
 
 Deutschland ist im Lockdown, die Schulen sind endlich geschlossen und es wird remote unterrichtet. Weil es Deutschland ist, passiert das in jedem Bundesland anders und uneinheitlich. In Baden-Württemberg verwendet man [Moodle](https://moodle.org/). Wer sich da drunter nichts vorstellen kann, kann es sich [hier](https://school.moodledemo.net/mod/page/view.php?id=44) ansehen.
 
-In Bawü wird eine getrennte Moodle-Instanz pro Schule installiert, aber halt viele Instanzen pro Server, weil Server recht groß sind. In Summe muß man bummelig [600.000 Schüler](https://de.statista.com/statistik/daten/studie/1075552/umfrage/schueler-in-baden-wuerttemberg-nach-schulart-und-geschlecht/) abfrühstücken. Die Strukturen in Moodle sind kleinräumig (Klassen, Jahrgänge, Schulen) und nicht stark quer verbunden, sodaß sich das im Grunde relativ leicht skalieren lassen sollte. Dennoch kam es im Frühjahr zum Engpässen, weil das Moodle-Projekt auf andere Projektziele und -größen geplant war ("Pilotschulen") als es gebraucht wurde ("Lockdown").
+In Bawü wird eine getrennte Moodle-Instanz pro Schule installiert, aber halt viele Instanzen pro Server, weil Server recht groß sind. In Summe muß man bummelig [940.000 Schüler](http://www.statistik.baden-wuerttemberg.de/Service/Veroeff/Statistik_AKTUELL/803420002.pdf) abfrühstücken. Die Strukturen in Moodle sind kleinräumig (Klassen, Jahrgänge, Schulen) und nicht stark quer verbunden, sodaß sich das im Grunde relativ leicht skalieren lassen sollte. Dennoch kam es im Frühjahr zum Engpässen, weil das Moodle-Projekt auf andere Projektziele und -größen geplant war ("Pilotschulen") als es gebraucht wurde ("Lockdown").
 
 [![](/uploads/2021/01/moodle-1.jpg)](https://twitter.com/neunerseb/status/1242093498859388928)
 
@@ -158,4 +158,12 @@ Nach dem, was mir berichtet wurde, ist ein guter Datenbank-Admin wohl mehr wert 
 
 Mit mehr Leistung - in Cloud oder auf Bare Metal - hätte das System nur schneller und teurer gewartet. Der Fehler war nur unter Last zu finden und durch Datenbanktuning zu beheben, nicht durch mehr Spielzeug.
 
-Und weil Leute gefragt hatten: Moodle läuft mit 200 Usern pro Core recht rund, und bekommt wohl in diesem Szenario ab 500 User/Core Probleme.
+Und weil Leute gefragt hatten: Moodle läuft mit 300 Usern pro Core recht rund, und bekommt wohl in diesem Szenario ab dem 2.5-fachen davon Probleme.
+
+## Edit: Userzahlen
+
+Dennis Urban korrigiert:
+
+> Eine Frage bzw. Anmerkung: in Bawü gibts derzeit 1,4 Mio SchülerInnen und so 140k LehrerInnen: Wir haben so 940k registrierte Benutzer.
+
+Aus irgendwelchen Gründen listet der ursprünglich verlinkte Statista-Artikel die Berufsschüler nicht auf. [Statistik Bawü](http://www.statistik.baden-wuerttemberg.de/Service/Veroeff/Statistik_AKTUELL/803420002.pdf) hat die ganzen Zahlen.
