@@ -154,6 +154,12 @@ All dies ist in erster Linie eine Logistik-Aufgabe: Man muß den kommenden Bedar
 
 Nach dem, was mir berichtet wurde, ist ein guter Datenbank-Admin wohl mehr wert als Cloud und Bare Metal Rechenzentrum zusammen. Durch eine gemeinsame Anstrengung wurden einige Moodle-Queries an die Datenbank entscheidend verbessert und Indices nachgerüstet. Außerdem wurde das Schreibverhalten der Datenbank auf SSD entscheidend besser konfiguriert, sodaß es durch die großen Mengen Speicher nicht mehr zu Schreibstürmen kommt.
 
+Der Effekt ist an der Heatmap zu sehen:
+
+![](/uploads/2021/01/moodle-response.png)
+
+*Response Time Heatmap vom Bawü Moodle für den 12. Januar 2021. Die X-Achse zeigt die Uhrzeit. Die Y-Ache zeigt logarithmisch die Antwortzeit. Die meisten Antworten kommen in weniger als einer Zehntelsekunde, jetzt wo die Datenbank optimiert ist. (via [Dennnis Urban](https://twitter.com/dpunkturban)*
+
 "Jetzt sind 3300 Cores in der Plattform und eine Summen-Load von unter 1000, heute. Gestern noch um die 3000." sagte man mir. Ein System mit 3000 Cores ist mit einer Load von 3000 genau am Anschlag (Runnable Threads == vorhandene Cores). Eine Load von 1000 auf 3000 Cores ist angenehm und sollte stabil durchhalten.
 
 Mit mehr Leistung - in Cloud oder auf Bare Metal - hätte das System nur schneller und teurer gewartet. Der Fehler war nur unter Last zu finden und durch Datenbanktuning zu beheben, nicht durch mehr Spielzeug.
@@ -162,7 +168,7 @@ Und weil Leute gefragt hatten: Moodle läuft mit 300 Usern pro Core recht rund, 
 
 ## Edit: Userzahlen
 
-Dennis Urban korrigiert:
+[Dennis Urban](https://twitter.com/dpunkturban) korrigiert in einer DM:
 
 > Eine Frage bzw. Anmerkung: in Bawü gibts derzeit 1,4 Mio SchülerInnen und so 140k LehrerInnen: Wir haben so 940k registrierte Benutzer.
 
