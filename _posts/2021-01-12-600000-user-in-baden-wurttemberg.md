@@ -78,6 +78,10 @@ Cloud lohnt nicht, wenn man 600.000 Schüler für 10 Jahre an 220 Tagen im Jahr 
 
 Ersetzen wird man sie, denn nach 5 Jahren wird der Betrieb vermutlich unrentabel. Neue Hardware wäre so viel leistungsfähiger, daß man dieselbe Leistung mit weniger Hardware, weniger Strom und weniger RZ-Platz erbringt und so viel Geld spart. Eine Maschine verbraucht in 5 Jahren circa ihren Anschaffungspreis in Strom.
 
+Was auch teuer ist in einer Cloud-Anwendung ist Netzwerk, und dort speziell ausgehender Verkehr. AWS ist berühmt dafür, eingehenden und ausgehenden Datenverkehr sehr unterschiedlich zu bepreisen, und in den Medien findet man viele Berichte in der Art [NASA to launch 247 petabytes of data into AWS – but forgot about eye-watering cloudy egress costs before lift-off](https://www.theregister.com/2020/03/19/nasa_cloud_data_migration_mess/).
+
+Videochat Anwendungen wie Zoom sind in AWS nicht ökonomisch zu betreiben. Corey Quinn [berichtet von Zoom](https://www.lastweekinaws.com/blog/why-zoom-chose-oracle-cloud-over-aws-and-maybe-you-should-too/), und wieso man dort statt AWS die Oracle-Cloud gewählt hat. Oracle als Firma ist spät in das ganze Cloud-Geschäft eingestiegen und muß sich um Kunden bemühen, daher zielt man bewußt auf Kunden mit viel ausgehenden Verkehr und macht die Preise dort anders. 
+
 ## Wieso stehen die nicht an der Schule, sondern im RZ?
 
 Eine Schule ist der denkbar schlechteste Ort, um Rechner zu betreiben. Fünf dicke Maschinen für eine Schule mit 1000 Schülern brauchen ein Rack, Strom und Netz und produzieren Abwärme, die vermutlich aktiv weg gekühlt werden muß. Kein Ort an einer 
