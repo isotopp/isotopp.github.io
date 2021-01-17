@@ -23,7 +23,7 @@ Initialized empty Git repository in /Users/kris/Python/project/.git/
 We need a virtual environment to keep our modules apart from the system python.
 
 ```bash
-kk:project kris$ python3 -mvenv ~/.venv/project
+kk:project kris$ python3 -m venv ~/.venv/project
 ```
 
 In my case, I have a bash `PROMPT_COMMAND` installed that automatically activates the venv when I enter a directory. From the `.bashrc`, some highly insecure code:
