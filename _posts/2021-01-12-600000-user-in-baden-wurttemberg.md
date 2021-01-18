@@ -83,7 +83,7 @@ Ersetzen wird man sie, denn nach 5 Jahren wird der Betrieb vermutlich unrentabel
 Eine Schule ist der denkbar schlechteste Ort, um Rechner zu betreiben. Fünf dicke Maschinen für eine Schule mit 1000 Schülern brauchen ein Rack, Strom und Netz und produzieren Abwärme, die vermutlich aktiv weg gekühlt werden muß. Kein Ort an einer 
 Schule ist dafür geeignet, das zu betreiben. Kleine Strom- und Kühlsysteme sind ineffizient.
 
-Obendrein: so teure Hardware mit personenbezogenen Daten auf den Speichern an einer Schule zu lagern ist auch rein von der phyischen Sicherheit nicht machbar. In meiner Schulzeit, es ist schon einige Dekaden her, hat man den Medienraum der Schule, an der ich war, mehr als einmal leer gemacht. Das waren keine besonders begabten Leute, sondern Junkies auf der Suche nach Wertgegenständen zum schnellen Verticken.
+Obendrein: so teure Hardware mit personenbezogenen Daten auf den Speichern an einer Schule zu lagern ist auch rein von der physischen Sicherheit nicht machbar. In meiner Schulzeit, es ist schon einige Dekaden her, hat man den Medienraum der Schule, an der ich war, mehr als einmal leer gemacht. Das waren keine besonders begabten Leute, sondern Junkies auf der Suche nach Wertgegenständen zum schnellen Verticken.
 
 In einem Rechenzentrum hat man nicht nur eine für Rechner geeignete Umgebung mit Strom, Netz und Kühlung, sondern kann auch Personal auslasten, das sich mit Dingen wirklich auskennt und mehr kann als Dinge ein- und auszuschalten. Netz ist genug da: im Rechenzentrum sowieso und die Kapazität einer einzelnen Glasfaser (normal legt man Bündel) ist für den interessierten Laien im Grunde unbegrenzt.
 
@@ -93,7 +93,7 @@ Wen es interessiert: [OptiX OSN 6800](https://www.alibaba.com/product-detail/Hua
 
 *Mein Jitsi ruckelt nicht, Tweak.nl sei Dank!*
 
-Jedenfalls ist es, Cloud oder nicht, sinnvoller Netz in die Schule zu legen und für Strom und Netz in allen Klassenräumen zu sorgen (das muß man in jedem Fall tun!), als Server in die Schule zu stellen. Eine Schule ist ungefähr der dümmste mögliche Platz für Server, die Raspi 4s mit den Minecraft-Servern des Informatik-Kurses ausgenommen.
+Jedenfalls ist es, Cloud oder nicht, [sinnvoller Netz in die Schule zu legen]({% link _posts/2020-06-23-schulen-digitalisieren.md %}) und für Strom und Netz in allen Klassenräumen zu sorgen (das muß man in jedem Fall tun!), als Server in die Schule zu stellen. Eine Schule ist ungefähr der dümmste mögliche Platz für Server, die Raspi 4s mit den Minecraft-Servern des Informatik-Kurses ausgenommen.
 
 ## Wie sieht so etwas aus?
 
@@ -177,3 +177,23 @@ Und weil Leute gefragt hatten: Moodle läuft mit 300 Usern pro Core recht rund, 
 > Eine Frage bzw. Anmerkung: in Bawü gibts derzeit 1,4 Mio SchülerInnen und so 140k LehrerInnen: Wir haben so 940k registrierte Benutzer.
 
 Aus irgendwelchen Gründen listet der ursprünglich verlinkte Statista-Artikel die Berufsschüler nicht auf. [Statistik Bawü](http://www.statistik.baden-wuerttemberg.de/Service/Veroeff/Statistik_AKTUELL/803420002.pdf) hat die ganzen Zahlen.
+
+## Edit: Merkwürdigkeiten
+
+Im Nachgang zu diesem Artikel kam es zu diversen Diskussionen auf Twitter. Ein Haufen Leute hat sich beim Moodle-Team von BaWü über die Performance von BBB beschwert. Dieser Dienst wird zwar in Moodle integriert, ist aber von einem anderen Team an einer anderen Institution in einer anderen Stadt betrieben.
+
+Eventuell ist es sinnvoll, die IT-Organisation an Schulen nicht auf Kreis- oder Landesebene zu zerfasern, sondern Aufwände zu bündeln. Das macht den Betrieb nicht nur zuverlässiger, sondern auch billiger.
+
+Doch es ist noch "komplizierter":
+
+Ein Benutzer hat sich über die Performance von BBB beschwert und zeigte einen Screenshot.
+
+![](/uploads/2021/01/moodle-nope-bbb.jpg)
+
+*Screenshot mit nicht funktionierendem BBB: Auf demo2.bigbluebutton.org allerdings.*
+
+> Der nächste Versuch der Klassen-VC scheitert - nach der Anmeldemaske passiert bei BBB nichts mehr. Viel Kinder-Enttäuschung, dass das versprochene "Arbeiten wie die Großen" nie klappt. Stattdessen jetzt: Arbeitsblatt bearbeiten. Vorhandene Motivation: -1000
+
+demo2.bigbluebutton.org ist ein Testserver vom BBB Projekt, der in Kanada steht und als Demo-Objekt betrieben wird. Er ist nicht für den Produktiveinsatz gedacht, nicht von GDPR-Richtlinien abgedeckt und selbst wenn er funktionierte wäre er für eine angenehme Videokonferenz zu weit weg.
+
+Moodle und Big Blue Button sind Softwarepakete, die sich Organisationen wie die Schulorganisation eines Landes selbst installieren können. Als Lehrerin oder Lehrer ist man gut damit beraten auch die korrekte URL zum Verbinden zu nehmen, statt sich im Internet irgendeine Instanz zu suchen.
