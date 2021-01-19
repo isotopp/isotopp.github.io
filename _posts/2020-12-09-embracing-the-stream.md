@@ -22,7 +22,7 @@ And a lot of people react like this:
 
 So it seems my opinion is the unpopular one: CentOS switching to Stream is not bad at all.
 
-When you wanted to run Openstack on CentOS in 2015, you needed to enable [EPEL](https://fedoraproject.org/wiki/EPEL) to even begin an install. The first thing this did was literally replace every single package in the install. That was, because CentOS at that time was literally making Debian Stale look young.
+When you wanted to run Openstack on CentOS in 2015, you needed to enable [RDO](https://www.rdoproject.org/) to even begin an install. The first thing this did was literally replace every single package in the install. That was, because CentOS at that time was literally making Debian Stale look young.
 
 And we see similar problems with Ubuntu LTS, for what it's worth. Ubuntu LTS comes out every 2 years, and that's kind of ok-ish, but it lasts 5 years, which is nonsensical. It was not, in the past.
 
@@ -57,13 +57,13 @@ Which includes also knowing things about these artifacts - for example, what wen
 - Vulnerabilities
 - Commit frequency and time to fix for each dependency, abandonware alert
 
-and many more things. With these processes, and repositories, and with one other ingredient, we have made rollouts and rollbacks an automated and uniform procedure, provided we find a way to manage and evolve state properly.
+and many more things. Using the repositories and proper processes and one other ingredient, we have made rollouts and rollbacks an automated and uniform procedure. That is, provided we find a way to manage and evolve persisted state properly.
 
 Compared to the hand crafted bespoke rollout and rollback procedures of the 2010s, this is tremendous progress.
 
 ### Immutable infrastructure, and reproducible builds
 
-This other ingredient is immutable infrastructure.
+This one other ingredient is immutable infrastructure.
 
 It is the basic idea that we do no longer manipulate the state of the base image we run our code on, ever, after it is deployed. It's basically death to Puppet and its likes.
 
@@ -110,3 +110,16 @@ And if you rant "Stability goes out of the window!" - check your calendar and yo
 It's 2020. Act like it. One of the major innovations in how we do computers in the last decade has been establishing the beginnings of a certifiable process for building the things we run.
 
 Or, as [Christoph Petrausch](Christoph Petrausch) puts it in [this tweet](https://twitter.com/hikhvar/status/1336608880013488130): "If your compliance is based on certifying the running end product instead of the process that built it, your organisation will not be able to keep up with the development speed of others."
+
+## Edit: Some Enterprise
+
+So after careful Enterprise wide checking, it turns out that in fact nobody at work at this point is adverse to converting from CentOS 7 and CentOS 8 to CentOS Stream.
+
+- "We are already on a rolling release, kind of, with the security mandated patching strategy and the time limits this imposes."
+- "Where we are on image based workflows in VMs and containers, we do not really care about the base operating system image or the packaging and configuration tooling used by it; outside of the requirements of some security scanning tools."
+- "Each team basically takes a base operating system image, and then replaces the critical components for their workloads with their own images. Kernel, language platforms, web servers and the likes get replaced at the team level accoding to their need."
+- "In general, even Stream as a rolling release will be too slow to provide the packages we need for these teams. They will still need to modify the base OS images themselves. Maybe a few teams exist that can profit from Stream."
+- "We will be checking in on the state of Stream on a quarterly basis. We do still have dependencies on RPM and Puppet, but we expect both to go away within three years, anyway." 
+- "For containerized workloads the vector is distroless in the guest, and the host OS is not carrying any workload besides the container system anyway."
+
+So we will see how that goes, in quarterly intervals, and we will be past the point of caring much in three years time.
