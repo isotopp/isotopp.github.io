@@ -63,7 +63,7 @@ Das war mal alles Scheiße gut eingespielt und durchgezogen.
 
 Das Rechenzentrum von web.de befand sich in den Räumen der ehemaligen Pfaff-Nähmaschinenfabrik in der Amalienbadstraße in Durlach.
 
-Die Räume dort sind im Grunde nicht groß und nicht hoch genug für einen Rechenzentrumsbetrieb. Durch ausgeklügeltes Wärmemanagement ist es dennoch gelungen, mit der Technik von 2005 pro Rack 21kW pro Rack zu installieren und sicher zu fahren (sechs volle IBM Bladecenter pro Rack), ohne Wasser bis ins Rack zu führen.
+Die Räume dort sind im Grunde nicht groß und nicht hoch genug für einen Rechenzentrumsbetrieb. Durch ausgeklügeltes Wärmemanagement ist es dennoch gelungen, mit der Technik von 2005 pro Rack 21kW zu installieren und sicher zu fahren (sechs volle IBM Bladecenter), ohne Wasser bis ins Rack zu führen.
 
 Wir haben da eine ganze Menge Gruppen Klimatechniker (FH) durchgeführt, um die Installation zu demonstrieren.
 
