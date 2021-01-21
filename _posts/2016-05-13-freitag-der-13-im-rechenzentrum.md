@@ -8,6 +8,7 @@ tags:
 - lang_de
 - data center
 ---
+(salvaged and edited Google+ Content)
 
 Heute ist ein Gedanktag, denn an einem Freitag, dem 13. Mai vor 11 Jahren ging das so: 
 
@@ -82,7 +83,7 @@ Dort hätte man 4-5 Meter Raumhöhe haben können, wäre unter Umständen auf de
 
 In dem Fall hätte man dann einfach normale Klima von der Stange genommen und alles wäre langweilig gewesen. Langweilig ist gut.
 
-## Aufbau und umrüstung des Klimasystems
+## Aufbau und Umrüstung des Klimasystems
 
 Die Bauarbeiten zur Klimaaufrüstung und RZ-Erweiterung fanden im laufenden Betrieb statt.
 
