@@ -12,6 +12,10 @@ tags:
 
 Where I work, we try to run databases in a memory saturated way. That is, we try to provide so much memory that the working set of the database is memory resident, or in other words, the number of disk reads after an initial warmup is no longer dependent on the database load.
 
+![](/uploads/2021/02/workload-intelligence.png)
+
+*Workload Intelligence Analytics showing "Latency over time" for a mixed read/write benchmark on Datera iSCSI.*
+
 We can validate and prove that with automated load testing: For each replication chain we single out a production host, and increase the hosts weight in the load balancer until the system load1 becomes critical. Observing the system behavior in the load test, we see the select rate load go up, but the disk reads stay largely unchanged.
 
 We usually terminate an automated load test when around 3/4 the number of cores in the system are busy, or when the relevant accounts query latency goes out of bounds. We record the system performance at bailout, and with appropriate margins use this as a scale factor for predictive autoscaling.
@@ -224,3 +228,5 @@ Interestingly, [NVME does not matter much here]({% link _posts/2019-06-13-advent
 To drive Ceph to 20.000 IOPS, you will have to run 16 threads at a queue depth of 2 (or 32 threads at queue depth 1) consistently, feeding all the driver queues in parallel. This is not a kind of workload a transactional system can easily produce.
 
 To drive Datera to 20.000 IOPS, two or three threads running unlimited will suffice. This is still hard on a transactional system, but a doable challenge.
+
+While the recommendation is clear ("Use Datera over Ceph for transactional distributed storage"), it is interesting to see how Ceph has matured and does no longer completely suck at doing small transactional workloads.
