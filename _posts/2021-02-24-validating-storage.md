@@ -14,7 +14,7 @@ Where I work, we try to run databases in a memory saturated way. That is, we try
 
 ![](/uploads/2021/02/workload-intelligence.png)
 
-*Workload Intelligence Analytics showing "Latency over time" for a mixed read/write benchmark on Datera iSCSI.*
+*Workload Intelligence Analytics showing "IOPS over time" for a mixed read/write benchmark on Datera iSCSI.*
 
 We can validate and prove that with automated load testing: For each replication chain we single out a production host, and increase the hosts weight in the load balancer until the system load1 becomes critical. Observing the system behavior in the load test, we see the select rate load go up, but the disk reads stay largely unchanged.
 
