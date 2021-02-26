@@ -147,7 +147,7 @@ So that’s our tour of the 200-class from the underside – this is how your st
 
 # 2000 Commit/s Class
 
-I chose this particular datbase as a member of the 2000 Commit/s Class, also because it is the oldest and wildest of the database replication hierarchies that we have. At a time it was our performance bottleneck and was running over 20.000 queries/s with spikes into the 32.000, and with the hardware of that time that was not stable at all.
+I chose this particular database as a member of the 2000 Commit/s Class, also because it is the oldest and wildest of the database replication hierarchies that we have. At a time it was our performance bottleneck and was running over 20.000 queries/s with spikes into the 32.000, and with the hardware of that time that was not stable at all.
 
 We are much better now. I am not missing the old times at all.
 
