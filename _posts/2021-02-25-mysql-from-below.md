@@ -240,3 +240,4 @@ In a database as a queue, if all works well, the tables change a lot, but never 
 Here you can see how much log writes dominate checkpoints in this extreme scenario.
 
 If you made it this far, welcome and get your storage nerd badge at the counter.
+
