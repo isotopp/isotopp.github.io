@@ -187,7 +187,7 @@ They are also visible in the latency histogram:
 
 # 20.000 commit/s class
 
-The chosen example is a [database as a queue]({% link _posts/2021-01-28-database-as-a-queue.md %}), that logs changes form one data set for processing and creation of a materialized view in another data set. It is an example of [CQRS](https://martinfowler.com/bliki/CQRS.html) in Fowlerspeak.
+The chosen example is a [database as a queue]({% link _posts/2021-01-28-database-as-a-queue.md %}), that logs changes from one data set for processing and creation of a materialized view in another data set. It is an example of [CQRS](https://martinfowler.com/bliki/CQRS.html) in Fowlerspeak.
 
 It is also very busy.
 
