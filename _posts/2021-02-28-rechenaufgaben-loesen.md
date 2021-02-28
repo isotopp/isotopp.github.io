@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  'Rechenaufgaben löschen'
+title:  'Rechenaufgaben lösen'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: 2021-02-28 12:40:33 +0100
