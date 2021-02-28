@@ -219,7 +219,7 @@ Der Benutzer kann nun Aufgaben bekommen und diese lösen. Wir können auch schon
 
 Wir brauchen `Score`:
 
-{% highlight %}
+{% highlight python %}
 class Score:
     score: int = 0
     counter: int = 0
