@@ -10,7 +10,7 @@ tags:
 - schulung
 ---
 
-Das Kind möchte ein Programm zum üben von Rechenaufgaben sehen. Nun gut. Hier ist eine Version in PyQt5.
+Das Kind möchte ein Programm zum Üben von Rechenaufgaben sehen. Nun gut. Hier ist eine Version in PyQt5.
 
 ![](/uploads/2021/02/aufgaben-01.png)
 
@@ -129,11 +129,11 @@ window = Ui()
 app.exec()
 {% endhighlight %}
 
-Das Programm importier `QtWidgets` und `uic` aus dem `PtQt5` Package. Es definiert eine Klasse `Ui` als Unterklasse von `QtWidgets.QMainWindow`. Wir definieren eine Methode `load_ui()`, die die `aufgaben.ui`-Datei lädt. Im Konstruktor initialisieren wir die die Superklasse (das QMainWindow) und rufen dann `load_ui()` auf.
+Das Programm importiert `QtWidgets` und `uic` aus dem `PtQt5` Package. Es definiert eine Klasse `Ui` als Unterklasse von `QtWidgets.QMainWindow`. Wir definieren eine Methode `load_ui()`, die die `aufgaben.ui`-Datei lädt. Im Konstruktor initialisieren wir die die Superklasse (das QMainWindow) und rufen dann `load_ui()` auf. Mit `.show() werden die Bedienlemente dann auch sichtbar.
 
 Das Hauptprogramm hat die typische Minimalform für eine Qt-Anwendung: Erzeuge ein `QApplication`-Objekt, erzeuge unser `QMainWindow` (eigentlich eine Instanz unserer von `QMainWindow` abgeleiteten Klasse `Ui`) und starte dann die Event-Loop mit `app.exec()`.
 
-In unserer `Ui` Klasse definieren wir einen Haufen Slots für die Bedienelemente der `.ui`-Datei, die wir direkt ansprechen wollen. In der `load_ui()`-Methode durchsuchen wir die `.ui`-Datei mit `.findChild()` nach diesen Elementen und merken sie uns in diesen Slots.
+In unserer `Ui` Klasse definieren wir einen Haufen Slots für alle diejenigen  Bedienelemente der `.ui`-Datei, die wir direkt ansprechen wollen. In der `load_ui()`-Methode durchsuchen wir die `.ui`-Datei mit `.findChild()` nach diesen Elementen und merken sie uns in diesen Slots.
 
 Wir können gleich noch den Quit-Button aktivieren: Aus
 
@@ -141,7 +141,7 @@ Wir können gleich noch den Quit-Button aktivieren: Aus
         self.button_quit = self.findChild(QtWidgets.QPushButton, "button_quit")
 {% endhighlight %}
 
-wir
+wird
 
 {% highlight python %}
         self.button_quit = self.findChild(QtWidgets.QPushButton, "button_quit")
@@ -299,7 +299,9 @@ Jetzt haben wir ein Programm, das nicht nur die UI lädt und anzeigt, sondern au
 
 ## Benutzereingabe und Reaktion
 
-Wir müssen jetzt auf Benutzereingaben reagieren. Das passiert, sobald der Benutzer den Knopf "Antworten" betätigt. Wir brauchen also eine Methode `auswerten()` in `Ui` und müssen diese mit dem Knopf verbinden. Wir wollen ausdrücklich nicht, daß beim Verlassen der Editbox etwas passiert - nur der Knopf soll Funktionen auslösen.
+Wir müssen jetzt auf Benutzereingaben reagieren. Das passiert, sobald der Benutzer den Knopf "Antworten" betätigt. Wir brauchen also eine Methode `auswerten()` in `Ui` und müssen diese mit dem Knopf verbinden.
+
+Wir wollen ausdrücklich nicht, daß beim Verlassen der Editbox etwas passiert - nur der Knopf soll Funktionen auslösen. Darum verkabeln wir `feld_antwort` nicht direkt (wir könnten [editingFinished()](https://doc.qt.io/qt-5/qlineedit.html) verkabeln, wenn wir das wollten).
 
 Die Methode:
 
