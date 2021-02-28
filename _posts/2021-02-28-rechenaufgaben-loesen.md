@@ -72,7 +72,7 @@ Wir setzen ein Basisprogram mit Python 3.8 in PyCharm auf, und fügen die "aufga
 
 ![](/uploads/2021/02/aufgaben-08.png)
 
-*Wenn die Requirements korrekt installiert sind, funktioniert das Importieren der QtWidgets in Der Python Console einwandfrei und ohne Fehler.*
+*Wenn die Requirements korrekt installiert sind, funktioniert das Importieren der QtWidgets in der Python Console einwandfrei und ohne Fehler.*
 
 Wir können die UI-Datei jetzt laden und ausführen, aber unser Programm wird dann noch nichts tun:
 
@@ -129,7 +129,7 @@ window = Ui()
 app.exec()
 {% endhighlight %}
 
-Das Programm importiert `QtWidgets` und `uic` aus dem `PtQt5` Package. Es definiert eine Klasse `Ui` als Unterklasse von `QtWidgets.QMainWindow`. Wir definieren eine Methode `load_ui()`, die die `aufgaben.ui`-Datei lädt. Im Konstruktor initialisieren wir die die Superklasse (das QMainWindow) und rufen dann `load_ui()` auf. Mit `.show() werden die Bedienlemente dann auch sichtbar.
+Das Programm importiert `QtWidgets` und `uic` aus dem `PtQt5` Package. Es definiert eine Klasse `Ui` als Unterklasse von `QtWidgets.QMainWindow`. Wir definieren eine Methode `load_ui()`, die die `aufgaben.ui`-Datei lädt. Im Konstruktor initialisieren wir die Superklasse (das QMainWindow) und rufen dann `load_ui()` auf. Mit `.show()` werden die Bedienlemente dann auch sichtbar.
 
 Das Hauptprogramm hat die typische Minimalform für eine Qt-Anwendung: Erzeuge ein `QApplication`-Objekt, erzeuge unser `QMainWindow` (eigentlich eine Instanz unserer von `QMainWindow` abgeleiteten Klasse `Ui`) und starte dann die Event-Loop mit `app.exec()`.
 
@@ -247,7 +247,7 @@ Die Methode `correct()` wird aufgerufen, wenn der Benutzer eine richtige Antwort
 
 ## Aufgaben und Score verkabeln
 
-Wir verändern jetzt den Konstruktor unserer Hauptklasse `Ui`: Dort wollen wir auch einen Score und eine Aufgabe erzeugen. Und statt `show()` direkt aufzurufen haben wir hetzt eine Methode `alles_updaten()`, die die Texte der verschiedenen Bedienelemente verändert und dann erst `show()` aufruft.
+Wir verändern jetzt den Konstruktor unserer Hauptklasse `Ui`: Dort wollen wir auch einen Score und eine Aufgabe erzeugen. Und statt `show()` direkt aufzurufen haben wir jetzt eine Methode `alles_updaten()`, die die Texte der verschiedenen Bedienelemente verändert und dann erst `show()` aufruft.
 
 {% highlight python %}
 class Ui(QtWidgets.QMainWindow):
