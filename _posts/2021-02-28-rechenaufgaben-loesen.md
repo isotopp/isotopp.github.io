@@ -10,6 +10,7 @@ tags:
 - schulung
 ---
 
+
 Das Kind möchte ein Programm zum Üben von Rechenaufgaben sehen. Nun gut. Hier ist eine Version in PyQt5.
 
 ![](/uploads/2021/02/aufgaben-01.png)
