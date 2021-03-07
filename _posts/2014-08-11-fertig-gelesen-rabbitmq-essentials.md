@@ -20,3 +20,5 @@ Das Buch hier gibt einem ein solides Handle, um einen Rabbit sinnvoll betreiben,
 Ekeliges Thema, notwendiges Buch.
 
 "[RabbitMQ Essentials](https://www.amazon.de/RabbitMQ-Essentials-English-David-Dossot-ebook/dp/B00JZMZ1PI/)", David Dossot, EUR 9.37
+
+*EDIT:* Es gibt jetzt eine 2. Auflage: [RabbitMQ Essentials: Build distributed and scalable applications with message queuing using RabbitMQ, 2nd Edition ](https://www.amazon.de/RabbitMQ-Essentials-distributed-scalable-applications-ebook/dp/B089ZWKT3W/), Lovisa Johannsson und David Dossot, EUR 11.98
