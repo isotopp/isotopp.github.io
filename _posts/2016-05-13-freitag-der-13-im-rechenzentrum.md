@@ -111,7 +111,7 @@ Darum stehen die Dinger auch auf entkoppelten Betonfundamenten.
 
 ![](/uploads/2016/05/04-kuehlwasser.jpg)
 
-*Schweißarbeiten an den Kühlwasserrohren des inneren Kühlkreislaufes. Es ist ziemlich viel Wasser zu bewegen, entsprechend haben wir auch einen gewissen Rohrdurchmesser.*
+*Schweißarbeiten an den Kühlwasserrohren des inneren Kühlkreislaufes. Es ist ziemlich viel Wasser zu bewegen, entsprechend haben wir auch einen großen Rohrdurchmesser.*
 
 ![](/uploads/2016/05/05-pumpen.jpg)
 
