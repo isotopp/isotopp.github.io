@@ -9,13 +9,13 @@ tags:
 - mysql
 - mysqldev
 ---
-There was a question at work about MySQL backups and restore. I needed to replain more.
+There was a question at work about MySQL backups and restore. I needed to explain more.
 
 We use databases to make state persistent. That is: As a developer you can think of your database as a single giant, structured global variable with a weird access method, and to make things worse, concurrent access.
 
 > A database is just a global variable to your code
 
-We can log statements that change the state of our database in a log. In MySQL, we call this The Binlog.
+We can log statements that change the state of our database in a log. In MySQL, we call this *The Binlog*.
 
 ![](/uploads/2020/11/replication-01.png)
 
@@ -23,7 +23,7 @@ We can log statements that change the state of our database in a log. In MySQL, 
 
 When we make a full backup of the database, we just copy away all tables in the data directory while the database does not change. This can be achieved by simply taking the server offline during the copy, or using more elegant methods that do not interrupt production, yet still look the same when done.
 
-If the database does not change while we make the backup, the backup is internally referentially consistent, and it is associated with exactly one binlog position. And to keep things simple, the binlog position is  just the pair (`newest binlog filename`, `file length`). So a binlog position looks like (`binlog.000004`, `7625`) or similar.
+If the database does not change while we make the backup, the backup is internally referentially consistent, and it is associated with exactly one binlog position. And to keep things simple, the binlog position is  just the pair `(newest binlog filename, file length)`. So a binlog position looks like `(binlog.000004, 7625)` or similar.
 
 The server will periodically start new binlogs: When it becomes too large, when the server restarts, or when we ask it to do so using a `FLUSH BINARY LOGS` command.
 
@@ -43,7 +43,7 @@ How we continue after that statement depends on what that statement was. But if 
 
 In complicated cases (We might have changed a table definition wrongly) we might need to replace the content of the binlog with alternate, edited statements. In any case we create a new, different and edited timeline that does not contain the mistake we made.
 
-> Replication is an ongoing live Restore
+# Replication is an ongoing live Restore
 
 As early as MySQL 3.23.15 from May 2000, we have replication:
 
@@ -68,7 +68,7 @@ The `SQL_THREAD` then reads the relay log and executes it in sequence, strictly 
 
 This logic, at the core, is unchanged even today:
 
-![](/uploads/2020/03/replication-03.png)
+![](/uploads/2020/11/replication-03.png)
 
 *Simple, asynchronous replication as seen even today.*
 
