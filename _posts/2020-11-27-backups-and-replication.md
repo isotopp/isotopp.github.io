@@ -133,13 +133,13 @@ What is being logged is
 2. The timestamp of the server when executing the statement (this will also make the NOW() function deterministic.
 3. The actual statement.
 
-Despite the warning, this replicates well, and has done so for the last 20 years. What does not replicate well at all, ever, is stuff like `UPDATE t SET x = x+1 LIMIT 10`. As this lacks an `ORDER BY` clause, the server is free to order the rows updates as it wishes, and can (and in NDB cluster actually will!) update 10 random rows, different ones on each instance of replication. It is the `LIMIT` clause that makes this non-deterministic.
+Despite the warning, this replicates well, and has done so for the last 20 years. What does not replicate well at all, ever, is stuff like `UPDATE t SET x = x+1 LIMIT 10`. As this lacks an `ORDER BY` clause, the server is free to order the row updates as it wishes, and can (and in NDB cluster actually will!) update 10 random rows, different ones on each instance of replication. It is the `LIMIT` clause that makes this non-deterministic.
 
 Now that limitations of this approach are clear, we can see: We would be better off with logging the rows changed, instead of logging the statements that change them. 
 
 Counterintuitively, for the workloads we have at work, this is also 50% to 66% smaller than the statement itself, even before optimisation and compression.
 
-## Using Row Based Replication
+# Using Row Based Replication
 
 Let’s do this:
 
@@ -201,7 +201,21 @@ To make a long story short: If you go back and pick up the preceding `BINLOG` co
 
 Also interesting: In the earliest versions of MySQL with Row Based logs, the `BINLOG` command lacked all access controls, so by handcrafting the appropriate patches, anybody could change all data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line. This bug is now a long time fixed.
 
-# Row Based Replication and BLOB columns
+## Row Based Replication and Filters
+
+Since the earliest days of replication, we could filter the binlog on the primary (using `binlog-do-*` config directives) and the relay log on the replica (using `replicate-do-*` config directives).
+
+Filtering the binlog is never a good idea: It will break your ability to perform point-in-time restores. Filtering the relay log can be done, but most of the config directives that do this are broken:
+
+- `replicate-do-db` and `replicate-ignore-db` are matching the current database in statement based replication, and the actual statements database in row based replication. The statement `use a; insert into b.t values (...);` will be filtered differently in SBR than in RBR under a `replicate-do-db=a` rule. With the default setting of `row-format=MIXED`, the behavior is random, depending on the row format chosen by mysql.
+- `replicate-do/ignore-table` are tedious, they require you to state each table explicitly, and nobody really wants to use them/
+- `replicate-wild-do/ignore-table` work in SBR and RBR, but [precedence](https://dev.mysql.com/doc/refman/8.0/en/replication-rules-table-options.html) is complicated, and it is adviseable to use either only positive or only negative logic.
+
+With group replication, which we do not discuss here, any filtering will break consistency in the group, so any filters are forbidden.
+
+The summary of all that is basically: Don't use binlog or replication filters, but if you have to, it's best to stick to either `replicate-wild-do-table` or `replicate-wild-ignore-table`.
+
+## Row Based Replication and BLOB columns
 
 Row Based Replication also fails in other interesting ways: Consider a table with a BLOB and a counter.
 
@@ -216,7 +230,7 @@ This is how we got the setting `binlog-row-image`, which can be `FULL` (the defa
 
 We can use RBR in `FULL` mode, not only for replication, but also for Change Data Capture, to feed Hadoop and Kafka with it. On the other hand, with  replication chains that are blobbyrequire `NOBLOB` or `MINIMAL` mode to not die on us.
 
-# Row Based Replication and Primary Keys
+## Row Based Replication and Primary Keys
 
 On the replica, the RBR image needs to be applied. For this, the replica needs to find the row. It uses the pre-image to do this, and when the table has no primary key defined, this can be slow - it ends up being a full table scan.
 
