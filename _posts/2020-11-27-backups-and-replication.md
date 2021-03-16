@@ -9,7 +9,6 @@ tags:
 - mysql
 - mysqldev
 ---
-
 There was a question at work about MySQL backups and restore. I needed to explain more.
 
 We use databases to make state persistent. That is: As a developer you can think of your database as a single giant, structured global variable with a weird access method, and to make things worse, concurrent access.
