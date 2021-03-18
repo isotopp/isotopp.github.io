@@ -47,7 +47,7 @@ beherrschen.
 
 Aber von vorne:
 
-Eine der Grunduaufgaben in der Kryptographie ist ein Sender, Andreas, der
+Eine der Grundaufgaben in der Kryptographie ist ein Sender, Andreas, der
 einer Empfängerin, Birgit, eine Nachricht senden möchte, ohne daß Dritte
 mithören können. Die Nachricht wird als Message (M) bezeichnet.
 Verschlüsselt wird sie mit einer Verschlüsselungsfunktion, die allgemein
