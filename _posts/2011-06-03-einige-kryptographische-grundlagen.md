@@ -13,7 +13,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 Heute gibt es hier alten Scheiß: Vor vielen Jahren, in einem anderen Leben,
 habe ich im Rahmen der Ausbildung von Auszubildenden und Neuanstellungen
 eine Reihe von Slides produziert, die einige Grundlagen der Kryptographie
-erläutern, ohne daß das ganze übermäßig mathematisch werden würde. Den Text
+erläutern, ohne daß das Ganze übermäßig mathematisch werden würde. Den Text
 zu diesem Vortrag habe ich nie veröffentlicht, das hole ich hier einmal
 nach.
 
@@ -57,7 +57,7 @@ Schlüssel, den Key (K).
 Mathematiker sind faule Säue, sie können sich nicht einmal aufraffen,
 Multiplikationspunkte zu schreiben (und schreiben also A*B einfach als AB).
 Entsprechend sollten sie die Formel C = f(K, M) (der verschlüsselte
-Chiphertext C ergibt sich aus der Anwendung der Verschlüsselungsfunktion f,
+Ciphertext C ergibt sich aus der Anwendung der Verschlüsselungsfunktion f,
 die die Nachricht M und den Schlüssel K als Parameter hat) schreiben.
 Stattdessen notieren sie oft falsch C = K(M), als ob K eine Funktion und
 nicht der Schlüssel wäre.
@@ -67,10 +67,10 @@ nicht der Schlüssel wäre.
 
 Andreas verschlüsselt seine Nachricht an Birgit, weil er sich bedroht fühlt. 
 
-Wenn man sich mit Sicherheitsdingen beschäftigt ist es wichtig, diese
-Bedrohung auszuformlieren und die Ziele und Fähigkeiten des Angreifers zu
+Wenn man sich mit Sicherheitsdingen beschäftigt, ist es wichtig, diese
+Bedrohung auszuformulieren und die Ziele und Fähigkeiten des Angreifers zu
 benennen. Nur aus diesen Listen kann man die Gefahren ableiten und dann
-sagen, ob bestimmte vorgeschlagene Maßnahmen einen sinnvolle Abwehr gegen
+sagen, ob bestimmte vorgeschlagene Maßnahmen eine sinnvolle Abwehr gegen
 die Bedrohung darstellen oder nicht.
 
 Man kann diesen Effekt gar nicht genug betonen: Wenn man sich mit Laien
@@ -99,11 +99,11 @@ Identitäten des Senders und des Empfängers beweisbar bekannt und unfälschbar
 sind, dann bekommt man Authentizität.
 
 Man kann fordern, daß ein System durch gefälschte oder defekte Nachrichten
-nicht offline gezwungen werden kann, daß es also Verfügbar bleibt.
+nicht offline gezwungen werden kann, daß es also verfügbar bleibt.
 
 Angreifer können versuchen, diese Schutzziele zu vereiteln, etwa indem man
 ihnen die Fähigkeit zugesteht, die Kommunikation mitzuhören, mitgehörte
-Nachrichten wiederholt abzusenden, Nachrichten zu verändern, sich in der
+Nachrichten wiederholt abzusenden, Nachrichten zu verändern, sich in die
 Kommunikationskette zwischen Sender und Empfänger einzuschleichen und sich
 für die jeweilige Gegenstelle auszugeben, oder indem sie versuchen, die
 Kommunikation zwischen den beiden Parteien zu unterbrechen.
@@ -192,7 +192,7 @@ force'-Angriff. Damit er gelingen kann, müssen zwei Dinge gelten:
 Einmal muß man überhaupt mitbekommen, daß man fertig ist.
 
 Bei einem Brute Force-Angriff entschlüsselt man eine verschlüsselte
-Nachricht (also unlesbaren Bitsalat) mit dem falschen Schlüsselt (bekommt
+Nachricht (also unlesbaren Bitsalat) mit dem falschen Schlüssel (bekommt
 also anderen unlesbaren Bitsalat). Erwischt man zufällig den korrekten
 Schlüssel, bekommt man lesbaren Text - und muß diese Situation erkennen. Das
 heißt, es hilft, wenn man ein wenig über den Klartext weiß ('es handet sich
@@ -202,7 +202,7 @@ korrekt').
 
 Hat man solches Wissen nicht, muß man raten - etwa wenn die Nachricht nur
 gültige Zeichen in dem und dem Zeichensatz enthält und die relativen
-häufigkeiten der Buchstaben in etwa dem Muster englischer Sprache
+Häufigkeiten der Buchstaben in etwa dem Muster englischer Sprache
 entsprechen, dann ist die Nachricht möglicherweise korrekt entschlüsselt
 worden und man legt sie einem Operator zur Kontrolle vor.
 
@@ -210,11 +210,11 @@ Im zweiten Weltkrieg zum Beispiel haben die Engländer die mit der Engima
 verschlüsselten Nachrichten deutscher U-Boote abgefangen. Diese U-Boote
 haben wichtige Nachrichten mit dem Flottenkommando ausgetauscht, aber auch
 Wetternachrichten an das Kommando zurück gesendet. Diese Wetternachrichten
-waren jedoch mit demselben Schlüssel verschlüsselt, der auch führ andere
+waren jedoch mit demselben Schlüssel verschlüsselt, der auch für andere
 wichtige Nachrichten verwendet worden ist.
 
 Wenn man nun also das Wetter an der Position des U-Bootes kennt und weiß,
-wie ein militärischer Wetterbericht abgefaßt wird, dann man man den Klartext
+wie ein militärischer Wetterbericht abgefaßt wird, dann kann man den Klartext
 der Wettermeldung des U-Bootes recht gut vorhersagen und hat eine gute
 Stop-Bedingung für einen Brute Force-Angriff.
 
@@ -328,7 +328,7 @@ Dieses Verfahren nennt sich
 einzige bekannte Verfahren, das absolut und beweisbar sicher ist.
 Bedingungen: Der Schlüssel wird niemals wiederverwendet (daher die
 Notwendigkeit des Abstreichens) und der Schlüssel ist echt zufällig (und
-nicht von einer Pseudo-Zufallszahlenfunktion berechnet). Leidet gibt es sehr
+nicht von einer Pseudo-Zufallszahlenfunktion berechnet). Leider gibt es sehr
 viele Anbieter von Verfahren, die sich One-Time Pad nennen, aber entweder
 den Schlüssel wiederverwenden oder nicht wirklich zufällig bestimmen - diese
 Verfahren sind leider sehr, sehr leicht brechbar.
@@ -442,7 +442,7 @@ bringen, ihm jedesmal 100 EUR auszuzahlen, wenn er diese verschlüsselte
 Nachricht noch einmal sendet.
 
 Dieses zweite Problem läßt sich lösen, indem man der Nachricht eine
-Folgenummer oder eine Zufallszahl verpaßt, die mit codiert wird - am Besten
+Folgenummer oder eine Zufallszahl verpaßt, die mit codiert wird - am besten
 beides. Nachrichten gleichen Inhaltes werden dadurch unterscheidbar und
 Duplikate können erkannt werden. Es ist natürlich wichtig, daß diese Zahlen
 mit verschlüsselt werden, damit sie nicht leicht zu ändern sind.
@@ -590,7 +590,7 @@ auch eine digitale Unterschrift (Signatur) der Nachricht.
 
 Dieses Verfahren kann man jetzt mit der hybriden Verschlüsselung
 zusammensetzen. Man bekommt ein Verfahren, bei dem man eine Nachricht
-erzeugt, die aus der Nachricht M und ihrer Signature
+erzeugt, die aus der Nachricht M und ihrer Signatur
 Q<sub>Andreas</sub>(Hash(M)) zusammengesetzt ist. Nachricht und Signatur
 werden jetzt mit einem Session-Key K verschlüsselt: "K(M
 Q<sub>Andreas</sub>(Hash(M)))" und der Session-Key K wird mit dem
@@ -623,8 +623,8 @@ Intervall von-bis.
 
 Jede dieser Informationen hat eine spezifische Aufgabe in unserem System.
 
-Der öffentlichen Schlüssel P erlaubt das entschlüsseln von Prüfsummen, also
-das Prüfen von Signaturen. Er erlaubt auch das verschlüsseln von Nachrichten
+Der öffentlichen Schlüssel P erlaubt das Entschlüsseln von Prüfsummen, also
+das Prüfen von Signaturen. Er erlaubt auch das Verschlüsseln von Nachrichten
 an einen Empfänger.
 
 Die Inhaberdaten definieren, was für ein Empfänger ist. Der Empfänger ist
@@ -690,11 +690,11 @@ Beispiele für beides findet man jedoch eher in PGP als in X.509.
 
 ![](/uploads/kryptogrundlagen/img17.png)
 
-Und schließlich noch das Implosionsproblem: Was passiertm, wenn Andreas
+Und schließlich noch das Implosionsproblem: Was passiert, wenn Andreas
 seinen privaten Schlüssel verbummelt?
 
 Wenn der Schlüssel eine Laufzeit hat, löst sich dieses Problem mit dem
-Auflauf der Laufzeit des Schlüssels von selber. Gilt Andreas Schlüssel etwa
+Auflauf der Laufzeit des Schlüssels von selber. Gilt Andreas' Schlüssel etwa
 noch ein Jahr, genügt es, das Problem ein Jahr lang zu ignorieren und dann
 ist es weg.
 
@@ -723,7 +723,7 @@ Soweit die Technik.
 
 Jetzt will man das Ganze noch in eine Form gießen, die in Deutschland auch
 juristisch anwendbar ist. Dazu muß man quasi das Gesetz mit der Technik
-verkabeln. Diese Aufgabe hat die EU Signaturrichtlinie, das deutsche
+verkabeln. Diese Aufgabe haben die EU Signaturrichtlinie, das deutsche
 Signaturgesetz und die Durchführungsverordnung dazu, sowie eine Reihe von
 Gesetzen, die bestehende Gesetze so ändern, daß die alte Vokabel
 "Unterschrift" zu einem Hook wird, der wahlweise eine traditionelle
