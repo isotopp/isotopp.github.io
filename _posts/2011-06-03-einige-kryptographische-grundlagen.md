@@ -260,7 +260,7 @@ Daher kann man unsichere DES noch verwenden, um das
 [sichere](http://en.wikipedia.org/wiki/Triple_DES#Security) und ungebrochene 
 [Triple DES](http://en.wikipedia.org/wiki/EFF_DES_cracker) zu konstruieren.
 
-Andererseitz existiert der DES-Nachfolger 
+Andererseits existiert der DES-Nachfolger 
 [AES](http://en.wikipedia.org/wiki/Advanced_Encryption_Standard). AES 256
 hat einen K-Raum mit 2^256 Einträgen, aber AES ist
 [gebrochen](http://en.wikipedia.org/wiki/Advanced_Encryption_Standard#Known_attacks) -
