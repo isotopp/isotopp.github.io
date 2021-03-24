@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  'That's a lot of databases'
+title:  "That's a lot of databases"
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date: 2021-03-24 12:22:33 +0100
