@@ -15,7 +15,7 @@ Where I work, we are using MySQL a lot. The databases are being organized in rep
 
 We are using MySQL orchestrator to manage the replication topology.
 
-![](/uploads/2021/03/mysql-many.jpg)
+![](/uploads/2021/03/mysql-many-01.jpg)
 
 *MySQL Orchestrator shows a typical replication hierarchy. Each color indicates a different data center/availability zone. Replication is a tree, from the primary to per-AZ intermediate replicas for fan-out to leaf replicas. Clients connect to the primary for writing, and to the lead replicas for reading. Special instances exist as clone sources and backup instances.*
 
