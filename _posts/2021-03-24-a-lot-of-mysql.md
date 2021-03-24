@@ -186,3 +186,5 @@ So, yes, "continuous deployment" is a good idea, and I would like to see more of
 And "gitops" ain't gonna happen soon. We are going to see AIP operations ("ass-in-produxction") for quite some time, I am afraid.
 
 And that is why I wear black and yell at the cloud.
+
+(based on [a bit of Twitter](https://twitter.com/isotopp/status/1371866917472985095))
