@@ -110,6 +110,7 @@ For
 {% highlight sql %}
 mysql> select from_unixtime(UNIX_TIMESTAMP("2021-03-26 02:07:00" + interval 730 day)) as t\G
 t: 2023-03-26 03:00:00
+{% endhighlight %}
 
 there is the choice of producing the correct timestamp or producing an error. Silently fast forwarding to the next valid timestamp is incorrect in all cases.
 
@@ -127,6 +128,7 @@ mysql> show global variables like "%time_zone%";
 +------------------+--------+
 2 rows in set (0.01 sec)
 t: 2023-03-26 03:00:00
+{% endhighlight %}
 
 Trying to set the `time_zone` to UTC fails. This is because the time_zone tables have not been loaded.
 
