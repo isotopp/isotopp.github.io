@@ -21,9 +21,9 @@ a: 2020-02-29 12:34:56
 b: 2020-03-01 12:34:56
 {% endhighlight %}
 
-2019 is a year before a leap year. Adding left to right a year brings us to '2020-02-28', and then adding a day makes this '2020-02-29', because it's a leap year.
+2019 is a year before a leap year. Adding (left to right) a year brings us to `2020-02-28`, and then adding a day makes this `2020-02-29`, because it's a leap year.
 
-On the other hand, adding a day first makes it '2019-03-01', and then adding a year makes it '2020-03-01', a different result.
+On the other hand, adding a day first makes it `2019-03-01`, and then adding a year makes it `2020-03-01`, a different result.
 
 Clearly, addition is not commutative on dates, and having a two step interval addition is breaking expectations here.
 
@@ -31,9 +31,9 @@ Clearly, addition is not commutative on dates, and having a two step interval ad
 
 MySQL is offering a bit of syntax for compound intervals. You can look it up in the [manual](https://dev.mysql.com/doc/refman/8.0/en/expressions.html#temporal-intervals).
 
-So for select combinations of units there is a number of unit names that are actually allowed, and a special expression syntax for each one.
+To write up compound intervals, there is a select number of unit names that are actually allowed, and a special expression syntax for each one.
 
-For example, you can `+ interval 12:23:56.789 hour_microsecond`, or `+ interval 01-01 year_month`. You can't jump a year and a day, because there is no unit for that, and so you have to write this down in MySQL in a two step interval addition and suddenly order matters.
+For example, you can `+ interval 12:23:56.789 hour_microsecond`, or `+ interval 01-01 year_month`. You can't jump a year and a day, because there is no unit for that. Instead you have to write this down in MySQL in a two step interval addition and suddenly order matters.
 
 If you think that this is a cumbersome solution and a cumbersome syntax, you will see me nodding in agreement.
 
@@ -105,6 +105,8 @@ So, MySQL, please consider
 
 {% highlight sql %}
 mysql> select '2019-02-29 12:34:56' + interval '1 day 1 year' as a;
+
+a: 2020-02-29 12:34:56
 {% endhighlight %}
 
 sort it internally into a canonical expression and make it possible to jump to '2020-02-29 12:34:56' in a single interval jump.
