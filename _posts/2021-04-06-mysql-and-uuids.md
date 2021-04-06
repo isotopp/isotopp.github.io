@@ -49,7 +49,7 @@ The latter two functions have a special flag to improve performance with InnoDB.
 
 ### UUID function
 
-The MySQL function [UUID()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid) returns a RFC 4122 UUID Type 1 UUID.
+The MySQL function [UUID()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid) returns a RFC 4122 Type 1 UUID.
 
 {% highlight sql %}
 mysql> select uuid_to_bin(uuid()) as uuid;
@@ -104,15 +104,15 @@ MySQL allows three ways to write UUIDs, as a 128 bit hex string (`6ccd780cbaba10
 
 This is not a particular dense packing of data for storage. The [UUID_TO_BIN()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid-to-bin) function takes any of these strings and returns a `VARBINARY(16)` for storage.
 
-The function has an optional second parameter, the `swap` flag. When applied to a Type 1 UUID, the time bytes are being swapped around so that chronological ascending UUIDs from the same node are also having numerically ascending values. This optimizes storage with InnoDB.
+The function has an optional second parameter, the `swap_flag`. When applied to a Type 1 UUID, the time bytes are being swapped around so that chronological ascending UUIDs from the same node are also having numerically ascending values. This optimizes storage with InnoDB.
 
-It is thus recommended you define UUID columns as `VARBINARY(16)` and use the UUID_TO_BIN(uuid_string, 1) function to store Type 1 UUIDs.
-
-You should use UUID_TO_BIN(uuid_string, 0) to store Type 6 UUIDs, because Type 6 has been specifically created to avoid the swapping of time bytes around.
+- *Type 1 UUID:* It is recommended you define UUID columns as `VARBINARY(16)` and use the`UUID_TO_BIN(uuid_string, 1)` function to store data.
+- *Type 6 UUID:* You should use `UUID_TO_BIN(uuid_string, 0)` to store Type 6 UUIDs, because Type 6 has been specifically created to avoid the swapping of time bytes around.
+- Other types: These do not profit from swapping, so also use `UUID_TO_BIN(uuid_string, 0)`.
 
 ## BIN_TO_UUID function
 
-The inverse function to UUID_TO_BIN is [BIN_TO_UUID()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_bin-to-uuid). It also needs a swap flag, in order to undo the swapping around done to Type 1 UUIDs.
+The inverse function to UUID_TO_BIN is [BIN_TO_UUID()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_bin-to-uuid). It needs the same `swap_flag` value as has been used at write time in order to unpack the data correctly.
 
 # It should hurt less
 
