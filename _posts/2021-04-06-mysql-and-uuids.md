@@ -88,7 +88,7 @@ Name based UUIDs are fixed for a fixed name, so they pose no problem when used w
 
 Random UUIDs are completely random. There is nothing to optimize for MySQL here.
 
-Neither is a good choice to use as a kind of application controlled distribiuted primary key.
+Neither is a good choice to use as a kind of application controlled distributed primary key.
 
 Based on the reasoning in [ALTER TABLE for UUID]({% link _posts/2020-09-22-alter-table-for-uuid.md %}), Java developers that are using UUID for this purpose would be well advised to implement and use a Type 1 UUID. It seems that such an implementation is not available by default as part of `java.lang.util`, but [other implementations exist](https://stackoverflow.com/questions/18244897/how-to-generate-time-based-uuids).
 
