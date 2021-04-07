@@ -20,4 +20,6 @@ This almost Peter-Watts-like eclectic and unlikely cast of characters is amended
 
 Tchaikovsky again manages to pull off nonhuman characters in a way that reads interesting and relatable, while at the same time completely alien.
 
+See also [Other Minds]({% link _posts/2021-04-07-fertig-gelesen-other-minds.md %})
+
 "[Children of Ruin](https://www.amazon.de/Children-Ruin-Time-Novels-English-ebook/dp/B07KPMJ7V9/)", Adrian Tchaikovsky, EUR 5.99
