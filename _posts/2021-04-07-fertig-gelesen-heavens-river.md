@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  'Fertig gelesen: Heaven's River'
+title:  "Fertig gelesen: Heaven's River"
 author-id: isotopp
 feature-img: assets/img/background/book.jpg
 date: 2021-04-07 21:52:54 +0200
