@@ -50,6 +50,8 @@ SSD is up to 100x better: we get up to 20.000 disk accesses per second (we get 5
 
 The memory we care for is “16 KB data pages” that are kept in a memory structure called the “InnoDB Buffer Pool”. It’s the thing that makes MySQL processes large in memory. MySQL does not use the File System Buffer Cache much (Postgres does), but does things a lot more efficiently and with application level knowledge in userland, in the Buffer Pool.
 
+![](/uploads/2021/03/memory-saturated-01.png)
+
 *The largest process in this instance is mysqld. The VIRT size is 84.8G, the RES size is 73.7G.*
 
 Looking at one specific instance, we can see the machine has a main memory size of 128 GB. Userland gets to see 125 GB, the kernel needs the rest internally.
