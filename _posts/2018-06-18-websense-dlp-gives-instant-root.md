@@ -14,13 +14,15 @@ Enterprise security software is interesting, because in order to do what it does
 
 In [ASLR]({% link _posts/2017-10-20-aslr.md %}) we have had a look on the Trend Micro binary on MacOS and found that it is running as root, and with ASLR off. That means we have a privileged process that is being loaded at a fixed address, and that process is parsing random user generated data in order to scan it for viruses. If we manage to find a bug in that code, we have a way to make this privileged process do our bidding – by simply putting a special file into a directory that is being scanned by the virus scanner.
 
-Because that process is at the same, fixed address on every machine running that OS version and Trendmicro version – that is, our bug works the same way on every single machine with these properties. We basically control the entire fleet of machines at once.
+Because ASLR is off, that antivirus process is at the same, fixed address on every machine running the same OS version and Trendmicro version. This means: our bug works the same way on every single machine with these properties. We basically control the entire fleet of machines at once.
 
 Such thoughts are not hypothetical problems. Let's have a look at another enterprise security product and how that works, for real.
 
 ## Websense DLP is installed and it is Python
 
-So yesterday morning when I came to work, my Macbook Air had crashed. On Reboot, the jamf installed a bunch of patches and new stuff. I ran the usual fast [AIDE](https://aide.github.io/) check I do every morning, and found a bunch of modified files, among them WebSense DLP as announced by Corporate a while ago.
+So yesterday morning when I came to work, my Macbook Air had crashed.
+
+On Reboot, the jamf installed a bunch of patches and new stuff. I ran the usual fast [AIDE](https://aide.github.io/) check I do every morning, and found a bunch of modified system files, among them WebSense DLP as announced by Corporate a while ago.
 
 I found a bunch of files in `/Library/Application Support/Websense Endpoint` and was immediately fascinated, because apparently this installs a complete version of Python 2.5.
 
@@ -36,7 +38,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 
 Okay, so they lie about that. It’s 2.6.
 
-On the other hand, they deliver their application as a bunch of .pyc (compiled python) files. 
+On the other hand, they deliver their application as a bunch of `.pyc` (compiled python bytecode) files. 
 
 {% highlight console %}
 $ find  . -iname \*.pyc
@@ -46,7 +48,9 @@ $ find  . -iname \*.pyc
 ...
 {% endhighlight %}
 
-We can read that, using [uncompyle6](https://github.com/rocky/python-uncompyle6): "brew install python3; pip3 install uncompyle6", because I am lazy and don’t want to mess with a venv right here and now. I’d want that in my path all the time anyway.
+We can read that, using [uncompyle6](https://github.com/rocky/python-uncompyle6): `brew install python3; pip3 install uncompyle6`, because I am lazy and don’t want to mess with a venv right here and now. 
+
+I’d want that in my path all the time anyway.
 
 {% highlight python %}
 $ uncompyle6 ./EPClassifier/policies/scripts/pyLogger.pyc
@@ -59,7 +63,7 @@ import codecs, time, threading
 
 class PyLogger(object):
 
-    def __init__(self, debugName='', fileName='C:\\\\temp\\\\pyLogger_svm_default_log_file.txt'):
+    def __init__(self, debugName='', fileName='C:\\temp\\pyLogger_svm_default_log_file.txt'):
         self.debugName = debugName
         self.fileName = fileName
         self.myMutex = threading.Lock()
@@ -124,7 +128,7 @@ We can load it into [Hopper](https://www.hopperapp.com/). Hopper is a $99 IDAPro
 
 Turns out, the kext is delivered with a full symbol table. Here is what you see when you start Hopper, drag the kext into it and click on the symbol that inits the kernel extension:
 
-![](/uploads/2018/06/hopper-01.jpg)
+[![](/uploads/2018/06/hopper-01.jpg)](/uploads/2018/06/hopper-01.jpg)
 
 *Initial glance at the kext after loading. We have symbols. That's almost like cheating.*
 
@@ -132,19 +136,23 @@ There is a tempting call to `_ws_anti_tampering_initialize()`, but I have learne
 
 That's here:
 
-![](/uploads/2018/06/hopper-02.jpg)
+[![](/uploads/2018/06/hopper-02.jpg)](/uploads/2018/06/hopper-02.jpg)
 
 *Two places in vnode_listener_callback_9135*
 
-We are looking at a vnode listener, which is a type of [kauth](https://www.apriorit.com/dev-blog/411-mac-os-x-kauth-listeners) listener, which is a MacOS thing to monitor or block access to files. It’s what all the Cybersnakeoil is using. It’s also what’s making your git checkouts slow.
+We are looking at a vnode listener, which is a type of [kauth](https://www.apriorit.com/dev-blog/411-mac-os-x-kauth-listeners) listener, which is a MacOS thing to monitor or block access to files. It’s what all the Cybersnakeoil is using. It’s also what’s making your `git checkout` slow.
 
 And here is the callback:
 
-![](/uploads/2018/06/hopper-03.jpg)
+[![](/uploads/2018/06/hopper-03.jpg)](/uploads/2018/06/hopper-03.jpg)
 
 *Read the highlighted code...*
 
-There is little going on here until we hit the highlighted code. You can’t see all of it, but that does not matter. The code calls [proc_name()](https://developer.apple.com/documentation/kernel/1488959-proc_name?language=objc), which gets the current process title in the kernel context. It then compares this name to a list of approved process names. If there is a match, no blockage happens from the kext.
+There is little going on here until we hit the highlighted code. You can’t see all of it, but that does not matter.
+
+The code calls [proc_name()](https://developer.apple.com/documentation/kernel/1488959-proc_name?language=objc), which gets the current process title in the kernel context. It then compares this name to a list of approved process names.
+
+If there is a match, no blockage happens from the kext.
 
 So, anything called
 
@@ -164,11 +172,17 @@ So, anything called
 - Google Chrome
 - Websense Endpoint RF Notification
 
-is approved to bypass the protection afforded by kext 148. That makes a lot of sense, if you look at it - how are they going to update their code out in the world? Some programs must be allowed to write to it – that's how `InstallerTools`, `CryptoTool`, `installd`, `installer` and `rc.deferred_install` as well as `shove` end up on this list. The others are likely convenience for Develoeprs that "accidentally" (through bad development processes) made it out into production code.
+is approved to bypass the protection afforded by kext 148.
+
+That makes a lot of sense, if you look at it - how are they going to update their code out in the world? Some programs must be allowed to write to it – that's how `InstallerTools`, `CryptoTool`, `installd`, `installer` and `rc.deferred_install` as well as `shove` end up on this list.
+
+The others are likely convenience for Develoeprs that "accidentally" (through bad development processes) made it out into production code. It's likely that the bad permissions also ended up being shipped the same way – it makes a lot of sense for a developer to have these files world-writeable all the time when they are developing this product.
 
 In any case, other rules in the rest of the kernel still apply, so file permissions still work. But WebSense delivered a bunch of files world-writeable, relying on their kext to protect their application.
 
-They do load these world-writeable files into their python process, which runs as root, and happily execute them.
+They do load these world-writeable files into their python process, which runs as root, and happily execute them. So this is our hook: We overwrite any of these files with our own code, using our own program which we name `kvoop` (or anything from the list above), and then restart the machine. As it starts up, it loads our code and the box is ours.
+
+We get privilege escalation from local user to system administrator.
 
 ## We write a proof-of-concept
 
@@ -196,7 +210,9 @@ int main() {
 
 This is a slight variation of the “hello world” program: It opens a file version.plist, writes "Hello, world" to the file, sleeps a minute and exits.
 
-First, expected behavior: Boy meets file, file is world writeable, boy tries to write file, and fails due to the kext doing the kauth thing and interfering. Hackerterrorcybercyber averted.
+First, expected behavior: Boy meets file, file is world writeable, boy tries to write file, and fails due to the kext doing the kauth thing and interfering.
+
+Hackerterrorcybercyber averted.
 
 {% highlight console %}
 $ pwd
@@ -207,7 +223,7 @@ $ > version.plist
 -bash: version.plist: Permission denied
 {% endhighlight %}
 
-Boy reverses the kext, reads the list of privileged filenames, names his “hello world” program kvoop from the list of privileged filenames and lo and behold:
+Boy reverses the kext, reads the list of privileged filenames, names his "hello world" program kvoop from the list of privileged filenames and lo and behold:
 
 {% highlight console %}
 $ kvoop
@@ -217,6 +233,16 @@ Hello, world
 {% endhighlight %}
 
 I pwn.
+
+## Other observations
+
+Websense DLP is one of the kind of products that inject a shared library (a Macos `.dylib`) into other processes. In our case, Chrome and Firefox are being targetted. This is not a stable interface, and [Chrome or Firefox may crash](https://www.techradar.com/news/google-chrome-keeps-crashing-it-might-be-your-antivirus).
+
+Websense DLP relies on the `prog_name()` not only for exceptions in the kauth handler, but also in the selection of binaries to target for injection. For example, if I write a "hello world" program and rename it to `firefox`, there is a lot of commotion in the system log: Websense DLP tries to inject its libraries into my "hello world" program, which it mistakes for Firefox due to the program name, and fails, noisly.
+
+The same works in reverse: A firefox binary that is not named `firefox` is not recognized and does not the shared library injected, so it flies under the radar.
+
+One wonders what the actual threat model is that this is supposed to protect against.
 
 ## TL;DR
 
