@@ -246,8 +246,8 @@ One wonders what the actual threat model is that this is supposed to protect aga
 
 ## TL;DR
 
-We deployed Websense DLP across all company Macs, and anybody renaming their vim to kvoop can edit the files, which are then loaded into a privileged process and run as root. 
+We deployed Websense DLP across all company Macs, and anybody renaming their `vim` to `kvoop` can edit the files, which are then loaded into a privileged process and run as root. 
 
 *Websense DLP is an instant root on all Mac machines where it is being deployed.*
 
-(Security picked up on this, and communicated the problem to the vendor, which then shipped a fix. It is unknown to me if they also fixed their broken security processes. We ceased using the product shortly after that.)
+*Addendum:* Security picked up on this, and communicated the problem to the vendor, which then shipped a fix. It is unknown to me if they also fixed their broken security processes. We ceased using the product shortly after that.
