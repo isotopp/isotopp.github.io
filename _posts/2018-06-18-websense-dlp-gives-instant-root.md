@@ -236,11 +236,11 @@ I pwn.
 
 ## Other observations
 
-Websense DLP is one of the kind of products that inject a shared library (a Macos `.dylib`) into other processes. In our case, Chrome and Firefox are being targetted. This is not a stable interface, and [Chrome or Firefox may crash](https://www.techradar.com/news/google-chrome-keeps-crashing-it-might-be-your-antivirus).
+Websense DLP is one of the kind of products that inject a shared library (a Macos `.dylib`) into other processes. In our case, Chrome and Firefox are being targeted. This is not a stable interface, and [Chrome or Firefox may crash](https://www.techradar.com/news/google-chrome-keeps-crashing-it-might-be-your-antivirus).
 
 Websense DLP relies on the `prog_name()` not only for exceptions in the kauth handler, but also in the selection of binaries to target for injection. For example, if I write a "hello world" program and rename it to `firefox`, there is a lot of commotion in the system log: Websense DLP tries to inject its libraries into my "hello world" program, which it mistakes for Firefox due to the program name, and fails, noisly.
 
-The same works in reverse: A firefox binary that is not named `firefox` is not recognized and does not the shared library injected, so it flies under the radar.
+The same works in reverse: A firefox binary that is not named `firefox` is not recognized and does not get the shared library injected, so it flies under the radar.
 
 One wonders what the actual threat model is that this is supposed to protect against.
 
