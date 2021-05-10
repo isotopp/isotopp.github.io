@@ -497,7 +497,7 @@ X-Ache des HR-Diagramms.
 _kikka>_ Also in der Mitte?
 
 _Isotopp>_ ja
->
+
 _kikka>_ OK.
 
 _Isotopp>_ [Spektralklasse G](http://de.wikipedia.org/wiki/Spektralklasse#Einteilung) Farbe gelb,
@@ -576,7 +576,7 @@ steckt das Event, das beweist, daß das Higgs existiert und wieviel GeV es
 hat.
 
 _kikka>_ ... OK. Und die müssen es dann raussuchen?
->
+
 _Isotopp>_ Ja. Und das ueberhaupt zu bauen. Die Physik, die Technik, die IT.
 Das geht nur heute. Mit Technik von 1997, 1987, 1907 geht das nicht. Und
 wie aufwendig das ist! Was meinst du, wie unglaublich wichtig Physiker das
