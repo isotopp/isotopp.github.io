@@ -28,7 +28,7 @@ Bash is also bad at  safely handling filenames with weird characters in them, ba
 
 Basically, it is better to start in something else right away if the things move away from an interactive command line and end up in a file. Use whatever you like as an interactive command line, but do not write bash or shell scripts.
 
-Shell is a thing you want to understand and then not use, because you learned to understand it. 
+Shell is a thing you want to understand and then not use, because you learned to understand it. ([in German, from 1998](https://groups.google.com/g/de.comp.os.unix.shell/c/VkJ0T4P2ZVA/m/3G5MF3oLNYcJ))
 
 For the rest of this discussion, we assume "Python 3" as an instance of "something else", but if you are older than 50, feel free to use "Perl" instead.
 
