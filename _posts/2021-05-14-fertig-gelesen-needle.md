@@ -23,6 +23,6 @@ The Hunter enters the body of Bob Kincaid, a post-puberty schoolboy that parties
 
 We follow Bob and his symbiont through the case, exploring the life on the island, in a weird mix of Sci-Fi, Whodunnit and YA island life.
 
-In the second part, [Through the Eye of a Needle](https://www.amazon.de/Through-Eye-Needle-Gateway-Essentials-ebook/dp/B005OAHE7I), Hal Clement returns to his characters, we return to the two. Bob has fallen ill, whioch should be impossible with the Hunter symbiont living in him, and it appears that he's showing some kind of reaction to the presence of the Hunter himself. Help is needed from specialists of the Hunters people, but because the Hunter's ship was destroyed in the crash that seems to be impossible.
+In the second part, [Through the Eye of a Needle](https://www.amazon.de/Through-Eye-Needle-Gateway-Essentials-ebook/dp/B005OAHE7I), Hal Clement returns to his characters. Bob has fallen ill, which should be impossible with the Hunter symbiont living in him, and it appears that he's showing some kind of reaction to the presence of the Hunter himself. Help is needed from specialists of the Hunters people, but because the Hunter's ship was destroyed in the crash that seems to be impossible.
 
 Two old school hard Sci-Fi books, that, looking past the outdated role-models, are still interesting YA reads and have aged quite okay.
