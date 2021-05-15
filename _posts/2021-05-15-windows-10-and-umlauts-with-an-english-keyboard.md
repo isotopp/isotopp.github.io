@@ -24,13 +24,13 @@ This does no longer work, because while current Windows 10 still has the old con
 
 Instead, the new Windows 10 settings are required. Start them (Windows+I), and choose "Time and Language".
 
-![](/uploads/2021/05/settings01.png)
+![](/uploads/2021/05/settings01.jpg)
 
 *Windows+I will bring up the settings*
 
 In "Time and Language", select the Tab "Language", make sure "English (United States)" is selected in "Preferred Languages", and click "Options".
 
-![](/uploads/2021/05/settings02.png)
+![](/uploads/2021/05/settings02.jpg)
 
 *Select "English (United States)" in "Preferred Languages" to make the "Options" button visible. Click that button.*
 
@@ -40,13 +40,13 @@ It will be added to the list of available keyboard layouts.
 
 If you wish, click on the "US (QWERTY)" keyboard, and click "Remove".
 
-![](/uploads/2021/05/settings03.png)
+![](/uploads/2021/05/settings03.jpg)
 
 *After hitting "[+] Add a keyboard", choose "United States - International (QWERTY)"*
 
 The finished selection should look like this:
 
-![](/uploads/2021/05/settings04.png)
+![](/uploads/2021/05/settings04.jpg)
 
 *The keyboard layout chosen is "United States - International (QWERTY)".*
 
