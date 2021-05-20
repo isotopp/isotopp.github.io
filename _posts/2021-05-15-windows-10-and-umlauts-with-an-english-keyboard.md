@@ -50,4 +50,4 @@ The finished selection should look like this:
 
 *The keyboard layout chosen is "United States - International (QWERTY)".*
 
-Umlauts can now be entered by using typing `"` followed by the required vocal (for example `o` for an `ö`). You can still use all the nice brackets, braces and parentheses for programming directly, without additional finger breaking modifiers.
+Umlauts can now be entered by using typing `"` followed by the required vowel (for example `o` for an `ö`). You can still use all the nice brackets, braces and parentheses for programming directly, without additional finger breaking modifiers.
