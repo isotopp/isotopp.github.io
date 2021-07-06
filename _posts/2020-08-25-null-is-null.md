@@ -67,7 +67,7 @@ Let’s have a look.
 
 ### Counting NULL
 
-In `count()`, a NULL values not not count. Except when it does. The one case where it does is the `count(*)`, which is different from a `count(colname)`.
+In `count()`, a NULL value does not count. Except when it does. The one case where it does is the `count(*)`, which is different from a `count(colname)`.
 
 {% highlight sql %}
 root@localhost [kris]> select * from t;
