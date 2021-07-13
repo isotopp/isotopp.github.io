@@ -116,7 +116,7 @@ We generate random `d` and `e` fields, and use autoincremented numbers to identi
 The new job has the status of `unclaimed` and the `owner_id` and `owner_date` are `NULL`.
 For speed, we commit to the jobs table only every tenth job.
 
-```pyton
+```python
 def generator(generator_id):
 counter = 0
 step = 10
