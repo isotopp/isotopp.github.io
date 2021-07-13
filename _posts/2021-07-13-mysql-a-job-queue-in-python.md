@@ -7,12 +7,15 @@ date: 2021-07-13 19:51:59 +0200
 tags:
 - lang_en
 - mysql
+- mysqldev
 ---
 
 Somebody needed a job queue in Python:
 Multiple writers insert into it in random order, and the jobs are written into the MySQL table `jobs`.
 From the `jobs` table, multiple consumers claim jobs in batches of `n` or smaller (n=100), and process them.
 After processing, the consumers delete the jobs. We need concurrent job generation and consumption, with proper and efficient locking.
+
+The full source for this example can be seen in [mysql-dev-examples](https://github.com/isotopp/mysql-dev-examples) in [mysql-claim-jobs.py](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-claim-jobs/mysql-claim-jobs.py).
 
 ## Base Program
 
