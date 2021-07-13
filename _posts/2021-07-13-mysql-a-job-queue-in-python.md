@@ -194,12 +194,12 @@ So this is the plan:
     - Run `COMMIT` to drop the X-locks, and make the change visible to other processes.
 
 Note that the set of candidate primary keys can be up to 100 ids in size, but can also be empty:
-We are searching for unclaimed jobs that start with a randomly selected letter.
+We are searching for unclaimed jobs that start with a randomly selected letter, and it may be there are none.
 
-Note that the set of claimed primary keys can be identical to the candidate primary key set or smaller.
+Note that the set of claimed primary keys can be identical to the candidate primary key set, or smaller.
 It may be empty, even if the candidate set was not:
 In this case all candidates have been snatched up by other consumers before we could.
-We may want to count and log that, in order to detect if your concurrency in consumers is too high.
+We may want to count and log that, in order to detect if our concurrency in consumers is too high.
 
 #### Finding candidates
 
