@@ -9,7 +9,7 @@ tags:
 - mysql
 ---
 
-Somebody needed a job queue in Python: Jobs are being generated in random order, and are written to a MySQL table `jobs`. Jobs matching a condition are selected from the queue in batches of `n` (n=100), and are being claimed, then processed. After processing, they are deleted. Job generation and consumption are concurrent, and proper and efficient locking is needed.
+Somebody needed a job queue in Python: A writer inserts into it in random order, and they are written into the MySQL table `jobs`. From the `jobs` table, a consumer claims jobs in batches of `n` (n=100), and processes them. After processing, the consumer deletes the jobs. We need concurrent job generation and consumption, with proper and efficient locking.
 
 Using our usual includes and setup,
 
