@@ -48,7 +48,7 @@ we create a MySQL table `jobs`:
 ```python
 @click.group(help="Generate and consume jobs concurrently")
 def sql():
-pass
+    pass
 
 
 @sql.command(help="Recreate jobs table")
