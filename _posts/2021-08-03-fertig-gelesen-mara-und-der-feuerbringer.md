@@ -28,3 +28,4 @@ Zusammen treten sie gegen Loge, den Feuerbringer, den mysteriösen Dr. Thurisaz,
 Nicht nur für Jugendliche eine wunderbare Erzählung.
 
 "[Mara und der Feuerbringer](https://www.amazon.de/gp/product/B07RHCGD95)", Tommy Krappweis, EUR 9.99 pro Band.
+
