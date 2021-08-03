@@ -2,8 +2,8 @@
 layout: post
 title:  'Fertig gelesen: The Merchant Princes Omnibus'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
-date: 2021-08-03 09:48:30 +0200
+feature-img: assets/img/background/book.jpg
+date: 2021-07-28 09:48:30 +0200
 tags:
 - lang_en
 - review
