@@ -12,7 +12,7 @@ tags:
 - scifi
 ---
 
-Charles Stross "[The Merchant Princes](https://www.amazon.de/gp/kindle/series/B00WKNMLD4)" series of six books is another "[Sliders](https://en.wikipedia.org/wiki/Sliders)" type of story, with the usualy Stross-like twist.
+Charles Stross "[The Merchant Princes](https://www.amazon.de/gp/kindle/series/B00WKNMLD4)" series of six books is another "[Sliders](https://en.wikipedia.org/wiki/Sliders)" type of story, with the usually Stross-like twist.
 The story follows Miriam Beckstein, a woman who thinks she is a tech journalist.
 Miriam falls off a chair while looking at a strange pattern, and finds herself in a medival parallel earth.
 
