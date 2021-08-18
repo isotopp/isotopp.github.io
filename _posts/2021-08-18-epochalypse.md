@@ -3,7 +3,7 @@ layout: post
 title:  'Epochalypse'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
-date: 2021-05-25 14:41:50 +0200
+date: 2021-08-18 11:15:50 +0200
 tags:
 - lang_en
 - computer
