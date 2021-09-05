@@ -2,7 +2,7 @@
 layout: post
 title:  'Fertig gelesen: This Is How You Lose The Time War'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/book.jpg
 date: 2021-09-05 16:01:24 +0200
 tags:
 - lang_en
