@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  'Fertig gelesen: Old Man's War'
+title:  "Fertig gelesen: Old Man's War"
 author-id: isotopp
 feature-img: assets/img/background/book.jpg
 date: 2021-09-05 13:53:05 +0200
