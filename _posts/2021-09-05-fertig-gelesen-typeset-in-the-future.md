@@ -14,7 +14,7 @@ tags:
 Dave Addey ran a Tumblr once, titled "Typeset in the Future", in which he dissected the typography of Science Fiction films.
 This has been turned into the eponymous book.
 
-[![]/uploads/2021/09/typeset.jpg)](https://www.amazon.de/Typeset-Future-Typography-Science-Fiction-ebook/dp/B07G7SGRZ2)
+[![](/uploads/2021/09/typeset.jpg)](https://www.amazon.de/Typeset-Future-Typography-Science-Fiction-ebook/dp/B07G7SGRZ2)
 
 *[Typeset in the Future](https://www.amazon.de/Typeset-Future-Typography-Science-Fiction-ebook/dp/B07G7SGRZ2), Dave Addey*
 
