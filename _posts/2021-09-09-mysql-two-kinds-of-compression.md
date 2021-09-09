@@ -15,16 +15,16 @@ There is also page compression, a feature introduced with 5.7, which replaces ta
 
 # Table Compression
 
-[Table Compression]|(https://dev.mysql.com/doc/refman/8.0/en/innodb-table-compression.html) is available in MySQL 5.1 and newer.
+[Table Compression](https://dev.mysql.com/doc/refman/8.0/en/innodb-table-compression.html) is available in MySQL 5.1 and newer.
 It is used by setting an InnoDB table up with `ROW_FORMAT=COMPRESSED KEY_BLOCK_SIZE=8` or similar, for even smaller key block sizes.
 A lot of status tables in `INFORMATION_SCHEMA.%CMP%` are available to monitor it.
 
-Table compression creates smaller pages (in the size you specify with `KEY_BLOCL_SIZE`), and loads and stores compressed pages of this smaller size from and to the buffer pool.
+Table compression creates smaller pages (in the size you specify with `KEY_BLOCK_SIZE`), and loads and stores compressed pages of this smaller size from and to the buffer pool.
 On load, a second uncompressed page in the buffer pool is allocated, and the data is uncompressed and put into this secondary page to work with.
 
 On write, the modified uncompressed page is recompressed and put back into the compressed buffer pool page.
 As this happens on write and not on checkpoint, this is not ideal for tables that are written to a lot.
-Compression and uncompression happen in the Query thread, that is, the thread of your connection.
+Compression and uncompression happen in the Query thread, that is, the thread of your connection, and therefore single-threaded.
 
 If buffer pool space it tight, uncompressed pages can be evicted, and recreated as needed by decompressing them again.
 
@@ -105,8 +105,11 @@ Records: 262144  Duplicates: 0  Warnings: 0
 We can also check `INFORMATION_SCHEMA.INNODB_TABLESPACES` for the compression.
 
 ```console
-mysql [localhost:8025] {msandbox} (kris) > select name, fs_block_size, file_size, allocated_size, allocated_size/file_size* 100 as percent from information_schema.innodb_tablespaces where name like "kris/keks%
-";
+mysql [localhost:8025] {msandbox} (kris) > select name, fs_block_size, 
+-> file_size, allocated_size, 
+-> allocated_size/file_size* 100 as percent 
+-> from information_schema.innodb_tablespaces 
+-> where name like "kris/keks%";
 +------------+---------------+-----------+----------------+----------+
 | name       | fs_block_size | file_size | allocated_size | percent  |
 +------------+---------------+-----------+----------------+----------+
@@ -123,15 +126,16 @@ The hole punching works at the block level, so we can free 12 KB, 8 KB or 4 KB o
 Even if the data in the page compressed to, say, 9 KB, it will still use 3 file system blocks of 4 KB out of the group of 4 that make up the file system storage for a page.
 So MySQL will only be able to give back 4 KB of space to the operating system.
 
-Holes in files can fill if you copy the file naively:
-Copying `keks2.ibd` around without a hole-aware tool (for example rsync with the appropriate options) will fill the holes.
+Holes in files can fill when you copy the file naively:
+Copying `keks2.ibd` around without a hole-aware tool will fill the holes.
 That means: the copy of the 72 MB source file will be a 252 MB destination file.
+A secure way to copy the file would be  rsync with the appropriate options.
 
 Holes in files are also causing disk seeks.
 This is not an issue for any SSD or NVME flash, but can hurt performance on hard disks.
-On the other hand, this is 2021, and whoever is still running a database in HDD probably deserves no better.
+On the other hand, this is 2021, and whoever is still running a database on HDD probably deserves no better.
 
 # TL;DR
 
-Given that, for my usage scenarios there is probably no use for table compression anywhere for any reason.
+Given all of the above, for my usage scenarios there is probably no use for table compression anywhere for any reason.
 I should be using page compression everywhere where I need it.
