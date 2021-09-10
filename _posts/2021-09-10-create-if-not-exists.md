@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW'
+title:  "MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW"
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
 date: 2021-09-10 16:01:06 +0200
