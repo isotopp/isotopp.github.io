@@ -3,7 +3,7 @@ layout: post
 title:  "MySQL: The Million Challenge"
 author-id: isotopp
 feature-img: assets/img/background/mysql.jpg
-date: 2021-09-10 17:01:06 +0200
+date: 2021-09-10 16:01:06 +0200
 tags:
 - lang_en
 - mysql
