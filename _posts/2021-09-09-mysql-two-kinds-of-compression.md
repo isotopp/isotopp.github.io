@@ -41,7 +41,7 @@ This is much simpler approach that also interacts with a lot fewer parts of the 
 But since pages still are 16 KB on disk as they are in memory, an additional file system feature is required for this to actually save space:
 Hole punching support in the file system.
 The compressed page will be shorter than 16 KB, so all file system blocks that are unused at the end of the 16 KB will be marked as "unused" to the operating system.
-This works well with all modern Linux kernels, and the ext4 and xfs file systems (and preumably a lot of others as well).
+This works well with all modern Linux kernels, and the ext4 and xfs file systems (and presumably a lot of others as well).
 It does not play well with standard NTFS file systems due to the way NTFS handles things internally.
 
 Because page compression is so simple, it is also very simple to configure:
