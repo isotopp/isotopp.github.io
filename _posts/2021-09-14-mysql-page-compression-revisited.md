@@ -187,6 +187,43 @@ sys     0m0.109s
 
 With longer files, we get more holes, more overhead and even longer times.
 
+# File Size over Time
+
+While running `insert into keks2 select * from keks`, I was monitoring the size of the new table at the file system level.
+This looks funny, because we can see the file size growing over time, but there are downspikes every few seconds.
+
+```console
+kris@server:~/sandboxes/msb_8_0_25$ while :
+> do
+> ls -lsh data/kris/keks2*
+> sleep 1
+> done
+197M -rw-r----- 1 kris kris 524M Sep 14 19:09 data/kris/keks2.ibd
+200M -rw-r----- 1 kris kris 532M Sep 14 19:09 data/kris/keks2.ibd
+203M -rw-r----- 1 kris kris 540M Sep 14 19:09 data/kris/keks2.ibd
+205M -rw-r----- 1 kris kris 548M Sep 14 19:09 data/kris/keks2.ibd
+208M -rw-r----- 1 kris kris 556M Sep 14 19:09 data/kris/keks2.ibd
+212M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd
+207M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd  <---
+209M -rw-r----- 1 kris kris 572M Sep 14 19:09 data/kris/keks2.ibd
+212M -rw-r----- 1 kris kris 580M Sep 14 19:09 data/kris/keks2.ibd
+216M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd
+215M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd  <---
+218M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd
+212M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd  <---
+219M -rw-r----- 1 kris kris 604M Sep 14 19:09 data/kris/keks2.ibd
+223M -rw-r----- 1 kris kris 612M Sep 14 19:09 data/kris/keks2.ibd
+226M -rw-r----- 1 kris kris 620M Sep 14 19:09 data/kris/keks2.ibd
+225M -rw-r----- 1 kris kris 624M Sep 14 19:09 data/kris/keks2.ibd  <---
+228M -rw-r----- 1 kris kris 632M Sep 14 19:09 data/kris/keks2.ibd
+227M -rw-r----- 1 kris kris 636M Sep 14 19:09 data/kris/keks2.ibd
+225M -rw-r----- 1 kris kris 640M Sep 14 19:09 data/kris/keks2.ibd  <---
+233M -rw-r----- 1 kris kris 652M Sep 14 19:09 data/kris/keks2.ibd
+232M -rw-r----- 1 kris kris 656M Sep 14 19:09 data/kris/keks2.ibd
+```
+
+The size of these downspikes (several megabytes in some instances) is impressive.
+
 # Implications for MySQL
 
 Page Compression was introduced to MySQL in 2015, and Mark Callaghan has been experimenting from early on.
