@@ -30,7 +30,7 @@ On top of that resides the upper filesystem, which is concerned with managing na
 In our instance the upper filesystem is of no interest, so we are ignoring it completely:
 To us files are sequences of blocks, organized in inodes.
 
-While the folded block array of the original file system served us for many decades, more modern file systems try to shrink these block lists by storing extents. An extent is a pair (start, length) that describes a  contiguous sequence of blocks. On a mostly empty disk, most files can probably be arranged in such runs of contiguous blocks, so this is a more efficient way to store things. Also, free lists can in many cases stored more efficiently stored as extents.
+While the folded block array of the original file system served us for many decades, more modern file systems try to shrink these block lists by storing extents. An extent is a pair (start, length) that describes a  contiguous sequence of blocks. On a mostly empty disk, most files can probably be arranged in such runs of contiguous blocks, so this is a more efficient way to store things. Also, free lists can in many cases be stored more efficiently as extents.
 
 The XFS filesystem is getting a lot of mileage of such extents, and one major a difference between the Linux ext3 and ext4 is the use of extents instead of block lists and bitmaps in many places.
 
