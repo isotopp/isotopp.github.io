@@ -2,7 +2,7 @@
 layout: post
 title:  'MySQL: Two kinds of compression'
 author-id: isotopp
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/mysql.jpg
 date: 2021-09-09 20:16:47 +0200
 tags:
 - lang_en
