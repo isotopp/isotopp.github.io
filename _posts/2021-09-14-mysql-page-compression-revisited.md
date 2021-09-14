@@ -190,7 +190,7 @@ With longer files, we get more holes, more overhead and even longer times.
 # File Size over Time
 
 While running `insert into keks2 select * from keks`, I was monitoring the size of the new table at the file system level.
-This looks funny, because we can see the file size growing over time, but there are downspikes every few seconds.
+This looks funny, because we can see the file's allocation growing over time, but there are downward spikes in allocation every few seconds.
 
 ```console
 kris@server:~/sandboxes/msb_8_0_25$ while :
@@ -222,7 +222,7 @@ kris@server:~/sandboxes/msb_8_0_25$ while :
 232M -rw-r----- 1 kris kris 656M Sep 14 19:09 data/kris/keks2.ibd
 ```
 
-The size of these downspikes (several megabytes in some instances) is impressive.
+The size of these downward spikes (several megabytes in some instances) is impressive.
 
 # Implications for MySQL
 
