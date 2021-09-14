@@ -19,13 +19,13 @@ entire `/mysql/schemname` tree is a LVM2 Logical Volume
 `mysqlVol` on the Volume Group `vg00`, which is then formatted
 as an XFS filesystem.
 
-{% highlight console %}
+```console
 # pvcreate /dev/nvme*n1
 # vgcreate vg00 /dev/nvme*n1
 # lvcreate -n mysqlVol -L...G vg00
 # mkfs -t xfs /dev/vg00/mysqlVol
 # mount -t xfs /dev/vg00/mysqlVol /mysql/schemaname
-{% endhighlight %}
+```
 
 ## Basic Ops
 
@@ -95,7 +95,7 @@ which we add the initial 3 drives only partitions, sdb1, sdc1
 and sdd1. We then create a simple concatenation of 2G extents
 from sdb1, sdbc1 and sdd1.
 
-{% highlight console %}
+```console
 # for i in sdb sdc sdd sde sdf sdg
 > do
 >   sfdisk -d /dev/sda | sfdisk /dev/$i
@@ -106,7 +106,7 @@ from sdb1, sdbc1 and sdd1.
 # lvcreate -n testlv -L2G testvg
 # lvextend -L+2G /dev/testvg/testlv /dev/sdc1
 # lvextend -L+2G /dev/testvg/testlv /dev/sdd1
-{% endhighlight %}
+```
 
 We can now check what we have. We are looking at the `lvs`
 output to see that we have a 6G LV. Then we check the `pvs`
@@ -114,7 +114,7 @@ output to see that we indeed have sdb1, sdc1 and sdd1 in testvg,
 and that 2G of each drive have been used. We can then finally
 proceed to `pvdisplay --map` to validate the actual layout.
 
-{% highlight console %}
+```console
 # lvs
   LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   testlv testvg -wi-a----- 6.00g
@@ -154,12 +154,12 @@ proceed to `pvdisplay --map` to validate the actual layout.
     Logical volume      /dev/testvg/testlv
     Logical extents     1024 to 1535
 ...
-{% endhighlight %}
+```
 
 With this we can introduce the three additional drives, and
 convert the setup to a mirror:
 
-{% highlight console %}
+```console
 root@ubuntu:~# vgextend testvg /dev/sd{e,f,g}1
   Volume group "testvg" successfully extended
 root@ubuntu:~# pvs
@@ -170,12 +170,12 @@ root@ubuntu:~# pvs
   /dev/sde1  testvg lvm2 a--  <20.00g <20.00g
   /dev/sdf1  testvg lvm2 a--  <20.00g <20.00g
   /dev/sdg1  testvg lvm2 a--  <20.00g <20.00g
-{% endhighlight %}
+```
 
 and the actual conversion. 
 First, using `lvs` we can watch the progress of the sync:
 
-{% highlight console %}
+```console
 root@ubuntu:~# lvconvert --type raid1 -m1 /dev/testvg/testlv
 Are you sure you want to convert linear LV testvg/testlv to raid1 with 2 images enhancing resilience? [y/n]: y
   Logical volume testvg/testlv successfully converted.
@@ -188,7 +188,7 @@ root@ubuntu:~# lvs
 root@ubuntu:~# lvs
   LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
   testlv testvg rwi-a-r--- 6.00g                                    100.00
-{% endhighlight %}
+```
 
 Let's check the disk layout again.
 
@@ -198,7 +198,7 @@ strongly deprecated, the raid1 implementation is okay, which is
 why we used this one. It uses mdraid code internally, and we can
 show this using `lvs -a --segments -o+devices`
 
-{% highlight console %}
+```console
 # lvs -a --segments -o+devices
   LV                VG     Attr       #Str Type   SSize Devices
   testlv            testvg rwi-a-r---    2 raid1  6.00g testlv_rimage_0(0),testlv_rimage_1(0)
@@ -208,7 +208,7 @@ show this using `lvs -a --segments -o+devices`
   [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sde1(1)
   [testlv_rmeta_0]  testvg ewi-aor---    1 linear 4.00m /dev/sdb1(512)
   [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sde1(0)
-{% endhighlight %}
+```
 
 This shows us the visible LV testlv as well as the hidden
 infrastructure that is being created to build it. The left leg
@@ -225,7 +225,7 @@ Here we see the asymmetric layout again, at the `pvs` level.
 Note how the allocation of the rmeta sub-LVs creats the ".99"
 free sizes.
 
-{% highlight console %}
+```console
 root@ubuntu:~# pvs
   PV         VG     Fmt  Attr PSize   PFree
   /dev/sdb1  testvg lvm2 a--  <20.00g  17.99g
@@ -247,7 +247,7 @@ root@ubuntu:~# pvs
     Logical volume      /dev/testvg/testlv_rimage_1
     Logical extents     0 to 1535
 ...
-{% endhighlight %}
+```
 
 ## Maintaining the RAID
 
@@ -257,14 +257,14 @@ logical volume. The lvchange command can set these. For demonstration
 purposes we are setting these as low as possible, then force a resync of the
 RAID and check this:
 
-{% highlight console %}
+```console
 # lvchange /dev/testvg/testlv --minrecoveryrate 1k --maxrecoveryrate 100k
   Logical volume testvg/testlv changed.
 # lvchange --syncaction repair /dev/testvg/testlv
 # lvs -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
   LV                VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
   testlv            testvg rwi-a-r--- 6.00g                                    0.19                   1     100          0 repair
-{% endhighlight %}
+```
 
 The `--syncaction repair` forces a RAID recovery, the `lvs` command shows
 the data we need to see to track it.
@@ -274,7 +274,7 @@ the data we need to see to track it.
 We can now split the RAID into two unraided LVs with different
 names inside the same VG:
 
-{% highlight console %}
+```console
 root@ubuntu:~# lvconvert --splitmirrors 1 -n splitlv /dev/testvg/testlv
 Are you sure you want to split raid1 LV testvg/testlv losing all resilience? [y/n]: y
 root@ubuntu:~# lvs
@@ -289,7 +289,7 @@ root@ubuntu:~# pvs
   /dev/sde1  testvg lvm2 a--  <20.00g <14.00g
   /dev/sdf1  testvg lvm2 a--  <20.00g <20.00g
   /dev/sdg1  testvg lvm2 a--  <20.00g <20.00g
-{% endhighlight %}
+```
 
 Since the raid is now split, the rmeta sub-LVs are gone and the
 rimage sub-LVs are unwrapped and become the actual LVs (and
@@ -308,7 +308,7 @@ LV: It is not possible to offline a boot LV without this.
 
 The outcome:
 
-{% highlight console %}
+```console
 root@ubuntu:~# vgchange -an testvg
   0 logical volume(s) in volume group "testvg" now active
 root@ubuntu:~# vgsplit -n splitlv testvg splitvg
@@ -325,7 +325,7 @@ root@ubuntu:~# pvs
   /dev/sde1  splitvg lvm2 a--  <20.00g <14.00g
   /dev/sdf1  testvg  lvm2 a--  <20.00g <20.00g
   /dev/sdg1  testvg  lvm2 a--  <20.00g <20.00g
-{% endhighlight %}
+```
 
 We can see that vgsplit automatically identified the physical
 drives that make up the splitlv volume, made sure nothing else
@@ -334,9 +334,9 @@ is on these drives and moves them into a new VG splitvg.
 We can now `vgexport` that thing, eject the drives and move them
 elsewhere. Over there, we can `vgimport` things and proceed.
 
-{% highlight console %}
+```console
 root@ubuntu:~# vgexport splitvg
   Volume group "splitvg" successfully exported
-{% endhighlight %}
+```
 
 It is now safe to pull the drive.

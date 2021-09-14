@@ -35,10 +35,10 @@ Die Installation von libevent und tor folgt dem üblichen Dreiklang von "sh
 configure", "make" und "checkinstall". Für die Inbetriebnahme legt man am
 Besten einen User "tor" an, etwa mit
 
-{% highlight console %}
+```console
 # useradd -u 520 -g 520 -c "Tor Anonymous Service" -d /var/lib/tor tor
 # passwd -l tor
-{% endhighlight %}
+```
 
 
 Mein tor sucht seine Konfiguration in `/usr/local/etc/tor/torrc`. Die
@@ -48,7 +48,7 @@ es überhaupt gibt.
 
 Das Setup sieht so aus:
 
-{% highlight console %}
+```console
 ###
 ### General Options
 ###
@@ -183,13 +183,13 @@ DirAllowPrivateAddresses 0
 ###
 
 # not used
-{% endhighlight %}
+```
 
 Jetzt kann ich auf meinem Rechner einen tsocks-Client konfigurieren, um
 meinen Server anzusprechen. Danach kann ich etwa mit "tsocks irssi" dann
 anonym ircen...
 
-{% highlight console %}
+```console
 # This is the configuration for libtsocks (transparent socks) for use
 # with tor, which is providing a socks server on port 9050 by default.
 #
@@ -199,4 +199,4 @@ anonym ircen...
 local = 81.169.156.174/255.255.255.255
 server = 81.169.156.174
 server_port = 8001
-{% endhighlight %}
+```

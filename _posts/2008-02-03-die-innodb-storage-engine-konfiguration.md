@@ -71,7 +71,7 @@ einer von drei Fällen eintritt:
 
 Relevante Konfigurationseinträge in der my.cnf:
 
-{% highlight sql %}
+```sql
 # Globaler Puffer zum Zusammenbau 
 # von Transaktionen vor dem Commit
 innodb_log_buffer_size = 8M
@@ -90,18 +90,18 @@ innodb_buffer_pool_size = 3072M
 #
 # Default = 90, ok
 innodb_max_dirty_pages_pct = 90
-{% endhighlight %}
+```
 
 Relevante Zähler in `SHOW GLOBAL STATUS`:
 
-{% highlight sql %}
+```sql
 # Statuszähler für das Event "Redo Log voll"
 Innodb_log_waits 
 
 # Statuszähler für das Event "Keine Seite
 # im Bufferpool frei"
 Innodb_buffer_pool_wait_free
-{% endhighlight %}
+```
 
 
 ### Eine sinnvolle Größe für das Redo-Log wählen
@@ -166,13 +166,13 @@ ib_logfile?-Dateien löschen.
 
 Relevante Konfigurationseinträge in der my.cnf:
 
-{% highlight sql %}
+```sql
 # Anzahl der ib_logfile?
 innodb_log_files_in_group = 2
 
 # Größe eines ib_logfile?
 innodb_log_file_size = 256M
-{% endhighlight %}
+```
 
 ### Wie InnoDB die Datendateien ablegt
 
@@ -248,7 +248,7 @@ mit dazu gerechnet werden.
 
 Relevante Konfigurationseinträge in der my.cnf (File per Table):
 
-{% highlight sql %}
+```sql
 # Soll InnoDB mit einer ibd-Datei pro Tabelle betrieben werden
 innodb_file_per_table = 1
 
@@ -268,11 +268,11 @@ innodb_open_files = 2048
 # Das hier kann man in Linux auch 
 # getrost richtig hoch drehen
 open_files_limit  = 32768
-{% endhighlight %}
+```
 
 Relevante Konfigurationseinträge in der my.cnf (Single-Tablespace):
 
-{% highlight sql %}
+```sql
 # Soll InnoDB mit einer ibd-Datei pro Tabelle betrieben werden
 innodb_file_per_table = 0
 
@@ -287,7 +287,7 @@ innodb_data_file_path = "ibdata1:2048M:autoextend"
 #   Tablespace wächst hier in 2G Schritten 
 #   (1% einer 200G-Platte)
 innodb_autoextend_increment = 2048
-{% endhighlight %}
+```
 
 ### Wie InnoDB seine Daten auf die Platte malt
 
@@ -363,7 +363,7 @@ Platte geht.
 
 Relevante Konfigurationseinträge in der my.cnf (für Linux):
 
-{% highlight sql %}
+```sql
 # Gewünschtes Schreibverhalten für viele Anwendungen
 innodb_flush_log_at_trx_commit = 2
 innodb_flush_method = O_DIRECT
@@ -371,7 +371,7 @@ innodb_flush_method = O_DIRECT
 # Alternativ für ACID-Compliance:
 innodb_flush_log_at_trx_commit = 1
 innodb_flush_method = O_DIRECT
-{% endhighlight %}
+```
 
 ### Concurrency Tickets
 
@@ -417,11 +417,11 @@ Variable und der dort eingestellte Werte nicht mehr relevant.
 
 Relevante Konfigurationseinträge in der my.cnf:
 
-{% highlight sql %}
+```sql
 innodb_commit_concurrency = 0
 innodb_thread_concurrency = 16
 innodb_concurrency_tickets = 500
-{% endhighlight %}
+```
 
 
 ### Metadatenstrukturen
@@ -437,9 +437,9 @@ Wert von 20 MB benötigt.
 
 Relevante Konfigurationseinträge in der my.cnf:
 
-{% highlight sql %}
+```sql
 innodb_additional_mem_pool_size = 4M
-{% endhighlight %}
+```
 
 
 ### Gesamtübersicht

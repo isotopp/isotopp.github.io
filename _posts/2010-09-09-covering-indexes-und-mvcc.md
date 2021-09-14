@@ -85,13 +85,13 @@ interessant:
 > 
 > What I do not know is how Indexes in InnoDB deal with this. That is, given
 > a table such as
-> {% highlight console %}
+> ```console
 > CREATE TABLE T (
 >   id integer not null primary key,
 >   d varchar(80) charset latin1 not null,
 >   index(d)
 > ) engine = innodb;
-> {% endhighlight %}
+> ```
 > 
 > and transactions that change `d` values in `t`, `id` values in `t`, delete
 > `d` values in `t` or delete rows in `t`, how does InnoDB treat the index

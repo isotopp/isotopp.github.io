@@ -35,7 +35,7 @@ die man bei der direkten Lösung des Problems machen kann.
 
 Zunächst einmal ist es so, daß in InnoDB ein zusammengesetzter Primärschlüssel mit AUTO_INCREMENT nicht funktioniert. 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table t (
 -> source tinyint unsigned not null,
 -> id int unsigned not null auto_increment,
@@ -43,11 +43,11 @@ root@localhost [kris]> create table t (
 -> primary key (source, id)
 -> ) engine = innodb;
 ERROR 1075 (42000): Incorrect table definition; there can be only one auto column and it must be defined as a key
-{% endhighlight %}
+```
 
 Dieses Feature existiert nur für MyISAM: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table t (
 -> source tinyint unsigned not null,
 -> id int unsigned not null auto_increment,
@@ -55,7 +55,7 @@ root@localhost [kris]> create table t (
 -> primary key (source, id)
 -> ) engine = myisam;
 Query OK, 0 rows affected (0.23 sec)
-{% endhighlight %}
+```
 
 Es ist eines der Standard-Migrationshindernisse von MyISAM nach InnoDB.
 

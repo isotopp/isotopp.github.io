@@ -75,7 +75,7 @@ Nach einem Disconnect macht LDAP dann mit dem erhaltenen dn und dem Kennwort des
 
 Auch IRC hat Principals. In der Freenode-Geschmacksrichtung von Irc sind das die Nicknames, mit denen man sich beim Netz anmeldet. In irssi wäre das eine Definition wie 
 
-{% highlight console %}
+```console
 chatnets = {
   freenode = {
       type = "IRC";
@@ -83,7 +83,7 @@ chatnets = {
       autosendcmd = "/^msg nickserv identify s3cr3t; wait 2000";  
    };
 };
-{% endhighlight %}
+```
 
 Die Authentisierung des Nicknames `Isotopp` erfolgt hier, indem als User Isotopp eine MSG `identify` an den User `nickserv` gesendet wird, die das Authentisierungspaßwort enthält. `nickserv` prüft das, und ordnet dann über den Irc-Server dem User weitere Rechte zu.
 
@@ -99,7 +99,7 @@ Eine andere Art das zu fixen ist, zu akzeptieren, daß Ircnet als Principal eine
 
 In irssi schreibt man das also als 
 
-{% highlight console %}
+```console
 chatnet = {
   ircnet = {
       type = "IRC";
@@ -108,7 +108,7 @@ chatnet = {
       host = "2a01:238:40ab:cd00::2774";
   };
 };
-{% endhighlight %}
+```
 
 Dabei legt der Parameter `host` fest, an welche abgehende Adresse sich der Client bindet, mit welcher IP-Nummer er also für Ircnet sichtbar wird, hier wird der UID `10100 (kris)` also die IP-Nummer `…::2774` (dezimal 10100) zugeordnet. Ircnet akzeptiert das und erlaubt nun allen Unix-Benutzern den Connect vom lokalen System aus, weil jeder Benutzer von einem anderen Host kommt und daher nur gegen sein eigenes Limit zählt. Für die Ircnet-Operators ist das auch bequem - wenn ein User zickt, können sie seine IP-Nummer identifizieren und getrennt von allen anderen Benutzern von derselben physikalischen Maschine blocken.
 

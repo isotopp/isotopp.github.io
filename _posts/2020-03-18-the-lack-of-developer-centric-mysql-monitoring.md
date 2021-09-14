@@ -45,12 +45,12 @@ Our usual failure mode is not often actual bad queries, although it happens and 
 
 In our specific case, the ORM has for each object a list of essential columns and a list of all columns. Code is being written to load objects from the database into the application in single, rather efficient queries. Something like 
 
-{% highlight perl %}
+```perl
 @products = $bp->search(some query from a condition builder)->fetch();
 foreach $product (@products) {
   do_a_thing($product);
 }
-{% endhighlight %}
+```
 
 This will fire a single query for products and then build an array of products in which all the essential columns are loaded as attributes. If you happen to access a non-essential attribute, the `id` of the object is used to lazy-load the missing attributes at once and completely fleshen the object.
 

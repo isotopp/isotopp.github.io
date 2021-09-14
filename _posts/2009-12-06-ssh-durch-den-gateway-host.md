@@ -20,7 +20,7 @@ $HOME/.ssh/config-Datei auf seinem Netbook und eine Kopie von 'netcat' oder
 
 So geht's:
 
-{% highlight console %}
+```console
 ServerAliveInterval 10
 ServerAliveCountMax 3
 Compression yes
@@ -48,7 +48,7 @@ Host desktop
 
 Host *
     ForwardAgent yes
-{% endhighlight %}
+```
 
 Der Router ist dabei ein wenig langsam und es ist sehr mühsam, die erste
 dieser Verbindungen aufzubauen. Sobald die Verbindung aber steht, ist sie

@@ -64,7 +64,7 @@ This is very different from Unix-Think and Unix is actually by default not
 set up at all to handle this. MacOS attacks the problem by sandboxing Apps
 from the App Store. Apps run in 
 
-{% highlight console %} 
+```console 
 ⌂ [:~/Library com.omnigroup.OmniGraffle7.MacAppStore]↥ $ pwd
 /Users/kkoehntopp/Library/Containers/com.omnigroup.OmniGraffle7.MacAppStore
 ⌂ [:~/Library … com.omnigroup.OmniGraffle7.MacAppStore]↥ $ ls -1
@@ -75,7 +75,7 @@ Library
 Movies
 Music
 Pictures
-{% endhighlight %}
+```
 
 That is, you still have a single UID per potential user, but apps are
 confined to a subdirectory and a bunch of system standard locations for

@@ -24,7 +24,7 @@ So we have two questions to answer:
 
 `ALTER TABLE` is not lossy. We can test.
 
-{% highlight sql %}
+```sql
 mysql> create table kris ( id integer not null primary key auto_increment);
 Query OK, 0 rows affected (0.16 sec)
 
@@ -54,13 +54,13 @@ mysql> select id from kris limit 3;
 |  3 |
 +----+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Having a test table, we can play.
 
 I am running an `ALTER TABLE kris CHANGE COLUMN` command. This requires that I specifiy the old name of the column, and then the full new column specifier including the new name, the new type and all details. Hence the “`id id ...`”
 
-{% highlight sql %}
+```sql
 mysql> alter table kris change column id id varchar(200) charset latin1 not null;
 Query OK, 1024 rows affected (0.22 sec)
 Records: 1024  Duplicates: 0  Warnings: 0
@@ -90,7 +90,7 @@ Create Table: CREATE TABLE `kris` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 We can see a number of things here:
 
@@ -192,7 +192,7 @@ So we need a comparatively larger (often: much larger) amount of memory to have 
 
 Unfortunately, MySQL itself produces UUID() values with the UUID function that sort very badly:
 
-{% highlight sql %}
+```sql
 mysql> select uuid();
 +--------------------------------------+
 | uuid()                               |
@@ -216,7 +216,7 @@ mysql> select uuid();
 | 568e4edd-eeaa-11ea-b643-08606ee5ff82 |
 +--------------------------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 MySQL provides the `UUID()` function as an implementation of [RFC 4122 Version 1 UUIDs](https://www.ietf.org/rfc/rfc4122.txt).
 

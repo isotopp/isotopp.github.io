@@ -15,7 +15,7 @@ When people ask for my mail address, they usually get a personalized address fro
 
 I run `exim` and in my `exim.conf` I have
 
-{% highlight console %}
+```console
 kris_virtuserfile:
   driver = redirect
   domains = +kris_domains
@@ -27,7 +27,7 @@ kris_virtuserfile:
   allow_fail
   allow_defer
   data= ${lookup{$local_part@$domain}dbm*@{/home/kris/Exim/virtusertable.dbm}}
-{% endhighlight %}
+```
 
 The important part here is the `local_part_suffix = +* : -*`. This enables amending the local part of a mail address with an extension. So if `kris` is a valid local user for delivery, `kris-yourbusiness` and `kris+yourbusiness` become valid addresses, too, and will be delivered to the local user `kris`.
 
@@ -41,10 +41,10 @@ From this config we get the following behavior: `kris-yourbusiness@koehntopp.de`
 
 Local delivery is controlled by the local user, `kris`. Kris happens to have defined a `.forward` such as
 
-{% highlight console %}
+```console
 kris:~ $ cat .forward
 |/usr/bin/procmail
-{% endhighlight %}
+```
 
 This will invoke `procmail` for local delivery. `procmail` is a rule based local delivery agent with a horrible Syntax.
 
@@ -52,20 +52,20 @@ You can define variables, and later refer to them using `$` as a prefix. Rules s
 
 The other important but obscure piece of information is that the exit code of `procmail` defines the delivery success, and controls the mailer behavior. So checking in the obvious place (`/usr/include/sysexits.h`, of course!) you learn:
 
-{% highlight c %}
+```c
 kris:~ $ cat /usr/include/sysexits.h
 ...
 #define EX_NOINPUT      66      /* cannot open input */
 #define EX_NOUSER       67      /* addressee unknown */
 #define EX_NOHOST       68      /* host name unknown */
 ...
-{% endhighlight %}
+```
 
 We remember that the magical number `67` as an exit code makes `exim` bounce mail with `user unknown`.
 
 The end result:
 
-{% highlight console %}
+```console
 kris:~ $ cat .procmailrc
 PATH=/bin:/usr/bin:/usr/local/bin
 MAILDIR=$HOME/Maildir
@@ -114,7 +114,7 @@ $SPAM.sure/
 :0
 * ^X-Spam-Level:.*\*\*\*\*\*
 $SPAM/
-{% endhighlight %}
+```
 
 Note how we detect the `X-local-part-suffic` before we run spam detection and sorting. This allows mail to subaddresses to always go through and bypass all spam filtering, so in exchange for having a personally identifyable mail address you get guarantee delivery. Conversely, if you abuse the privilege you are routed to `$TRASH/`.
 

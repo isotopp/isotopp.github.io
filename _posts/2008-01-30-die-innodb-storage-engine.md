@@ -23,7 +23,7 @@ betriebsbereit ist, wird die Engine mit `YES` angezeigt. Wenn sie enthalten
 und nicht betriebsbereit ist, wird `DISABLED` gezeigt. Wenn sie nicht einmal
 im Code des Servers enthalten ist, wird `NO` gezeigt.
 
-{% highlight sql %}
+```sql
 root on mysql.sock [(none)]> show engines;
 +------------+---------+----------------------------------------------------------------+
 | Engine     | Support | Comment                                                        |
@@ -42,7 +42,7 @@ root on mysql.sock [(none)]> show engines;
 | ISAM       | NO      | Obsolete storage engine                                        |
 +------------+---------+----------------------------------------------------------------+
 12 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 ### Eine minimale Konfiguration für InnoDB
 
@@ -56,7 +56,7 @@ ist nicht für die Produktion geeignet, sollte aber ausreichen um von
   unter Umständen ein Datenfile `ibdata1` und zwei Logfiles, `ib_logfile0` und
   `ib_logfile1.`
 
-{% highlight console %}
+```console
 root on mysql.sock [(none)]> show global variables like 'datadir';
 +---------------+------------------------------+
 | Variable_name | Value                        |
@@ -70,7 +70,7 @@ linux:/export/data/rootforum # ls -lh /export/data/rootforum/data/ib\*
 -rw-rw---- 1 mysql mysql   5M Jan  9 17:51 /export/data/rootforum/data/ib_logfile0
 -rw-rw---- 1 mysql mysql   5M Jan  9 17:51 /export/data/rootforum/data/ib_logfile1
 -rw-rw---- 1 mysql mysql  10M Dec 13 14:34 /export/data/rootforum/data/ibdata1
-{% endhighlight %}
+```
 
 - Der Datenbankserver ist zu stoppen. - Die o.a. drei Files sind, wenn
   vorhanden, zu löschen. **WARNUNG!** Dies löscht alle evtl. bereits
@@ -83,11 +83,11 @@ linux:/export/data/rootforum # ls -lh /export/data/rootforum/data/ib\*
 - Die folgenden Konfigurationsanweisungen sind stattdessen einzufügen. Ihre
   Bedeutung wird weiter unten erläutert.
 
-{% highlight console %}
+```console
 innodb
 innodb_file_per_table = 1
 innodb_flush_log_at_trx_commit = 2
-{% endhighlight %}
+```
 
 - Dies ist ein minimales Setup, das zum Testen geeignet ist, aber keine
   Performance bringen wird. Später gehen wir auch auf InnoDB Performance
@@ -105,7 +105,7 @@ erzeugt wird. Dies kann innerhalb eines Schemas für jede Tabelle getrennt
 festgelegt werden, und mit Hilfe von `ALTER TABLE` auch nachträglich ohne
 Datenverlust geändert werden.
 
-{% highlight console %}
+```console
 root on mysql.sock [(none)]> create database innodemo;
 Query OK, 1 row affected (0.32 sec)
 
@@ -130,12 +130,12 @@ root on mysql.sock [innodemo]> select * from kris;
 |  3 | drei |
 +----+------+
 3 rows in set (0.01 sec)
-{% endhighlight %}
+```
 
 Mit Hilfe des Kommando `SHOW CREATE TABLE` oder mit `SHOW TABLE STATUS` können
 wir sehen, welche Storage Engine eine Tabelle verwendet.
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> show create table kris\G
 *************************** 1. row ***************************
        Table: kris
@@ -167,7 +167,7 @@ Max_data_length: 0
  Create_options:
         Comment: InnoDB free: 148480 kB
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 In der Ausgabe von `SHOW TABLE STATUS` sehen wir einige Besonderheiten: Erst
 einmal ist die angezeigte Average Row Length von InnoDB-Tabellen mit sehr
@@ -197,7 +197,7 @@ den Primary Key NICHT zu den Daten rechnet und daß MyISAM im Index ebenfalls
 seitenbasiert arbeitet, nur sind die Seiten viel kleiner: Sie sind nur 1KB
 groß.
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> alter table kris engine=myisam;
 Query OK, 3 rows affected (0.00 sec)
 Records: 3  Duplicates: 0  Warnings: 0
@@ -233,13 +233,13 @@ Max_data_length: 281474976710655
  Create_options:
         Comment:
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir können unsere Tabelle auch wieder zurück nach InnoDB wandeln. Wir können
 sogar eine existierende InnoDB-Tabelle nach InnoDB wandeln. Das macht sogar
 Sinn - es ist genau das, was OPTIMIZE TABLE in InnoDB macht.
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> alter table kris engine=innodb;
 Query OK, 3 rows affected (0.01 sec)
 Records: 3  Duplicates: 0  Warnings: 0
@@ -257,7 +257,7 @@ root on mysql.sock [innodemo]> select * from kris;
 |  3 | drei |
 +----+------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Ein `ALTER TABLE t ENGINE=...` erzeugt eine Kopie der Tabelle mit der neuen
 Engine als temporäre Tabelle. Danach wird die Originaltabelle gelöscht und
@@ -292,7 +292,7 @@ nach jeder Anweisung "denkt" sich der Server automatisch ein `COMMIT` dazu.
 Man kann entweder Autocommit abschalten, oder mit der Anweisung `BEGIN` auch
 im Autocommit eine längere Transaktion beginnen.
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> begin;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -322,7 +322,7 @@ root on mysql.sock [innodemo]> select * from kris;
 |  3 | drei |
 +----+------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Hier wird mit `BEGIN` eine Transaktion bei aktiviertem Autocommit begonnen,
 das Autocommit also vorübergehend unterbrochen. Dies ist die empfohlene
@@ -334,7 +334,7 @@ dem Ende der Transaktion die Zeile wieder weg.
 ### Wie InnoDB auf der Platte aussieht
 
 
-{% highlight console %}
+```console
 linux:/export/data/rootforum/data # ls -lh ib* innodemo
 -rw-rw---- 1 mysql mysql   5M Jan  9 18:27 ib_logfile0
 -rw-rw---- 1 mysql mysql   5M Jan  9 18:28 ib_logfile1
@@ -345,7 +345,7 @@ total 112K
 -rw-rw---- 1 mysql mysql   61 Jan  9 18:03 db.opt
 -rw-rw---- 1 mysql mysql 8.4K Jan  9 18:28 kris.frm
 -rw-rw---- 1 mysql mysql  96K Jan  9 18:28 kris.ibd
-{% endhighlight %}
+```
 
 Jede InnoDB-Installation hat mindestens ein Datenfile `ibdata1` und mindestens
 zwei Redo-Logiles `ib_logfile0` und `ib_logfile1`. Position, Größe, Anzahl und
@@ -402,7 +402,7 @@ die .IBD-Datei kopiert. Der Rollback-Pointer der neuen Version der Zeile
 zeigt dabei auf die alte Version der Zeile im Undo-Log.
 
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> begin;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -419,7 +419,7 @@ root on mysql.sock [innodemo]> select * from kris;
 |  3 | drei |   1  |
 +----+------+------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 In dem Beispiel oben habe ich diese verborgenen Zeilen und den Undo-Log
 Eintrag zur Verdeutlichung manuell von Hand hereingefälscht.
@@ -444,7 +444,7 @@ als comitted markiert, die Verzeigerung der Einträge bleibt bestehen und
 alles ist gut.
 
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> rollback;
 Query OK, 0 rows affected (0.01 sec)
 
@@ -456,7 +456,7 @@ Query OK, 0 rows affected (0.01 sec)
 |  3 | drei |   1  |
 +----+------+------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wenn man als Anwender ein ROLLBACK ausführt, fällt dagegen Arbeit an: Die
 Daten aus dem Undo-Log müssen rausgefischt und die Änderung in der
@@ -475,20 +475,20 @@ Wenn wir die Transaktion von oben einmal von außen betrachten, also von
 einer zweiten Verbindung aus, dann kann es sein, daß wir sie beobachten
 können oder auch nicht. Auf der ersten Verbindung machen wir:
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> begin;
 Query OK, 0 rows affected (0.00 sec)
 
 root on mysql.sock [innodemo]> update kris set d = "one" where id = 1;
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
-{% endhighlight %}
+```
 
 und lassen dies nun hängen, ohne die Transaktion mit COMMIT oder ROLLBACK zu
 beenden. In einem zweiten Fenster öffnen wir eine zweite Verbindung zur
 Datenbank und schauen einmal, was wir sehen:
 
-{% highlight console %}
+```console
 root on mysql.sock [(none)]> use innodemo;
 Database changed
 root on mysql.sock [innodemo]> select * from kris;
@@ -500,7 +500,7 @@ root on mysql.sock [innodemo]> select * from kris;
 |  3 | drei |
 +----+------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir sehen erst einmal, daß unser Lesezugriff nicht hängt oder wartet, obwohl
 gerade eine Transaktion im Gange ist. In MVCC können lesende und schreibende
@@ -520,7 +520,7 @@ Wir können auch unsere externe, zweite Verbindung diese uncomitteten Daten
 sehen lassen. Das geht, indem wir den `TRANSACTION ISOLATION LEVEL` dieser
 Verbindung auf `READ UNCOMITTED` stellen.
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> set transaction isolation level read uncommitted;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -533,7 +533,7 @@ root on mysql.sock [innodemo]> select * from kris;
 |  3 | drei |
 +----+------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir merken uns: Eine schreibende Verbindung macht immer dasselbe: Sie
 kopiert die zu verändernden Daten vor der Änderung ins Undo-Log und
@@ -572,7 +572,7 @@ zweite Verbindung selbst eine Transaktion durchführt - die Sequenz
 `BEGIN-SELECT-SELECT-COMMIT`, eine Read-Only-Transaktion, hat in `READ
 COMMITTED` keine besondere Bedeutung.
 
-{% highlight console %}
+```console
 root on mysql.sock [innodemo]> set transaction isolation level read committed;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -612,7 +612,7 @@ root on mysql.sock [innodemo]> select * from kris;
 root on mysql.sock [innodemo]> commit;
 Query OK, 0 rows affected (0.00 sec)
 
-{% endhighlight %}
+```
  
 ### Transaction Isolation Level Repeatable-Read
 
@@ -702,7 +702,7 @@ FOR UPDATE` ausführen, das `WHERE a = ... AND b = ...` enthält, werden alle in
 der a-Bedingung gefundenen Zeilen gelockt, auch jene, bei denen die
 b-Bedingung nicht zutrifft.
 
-{% highlight console %}
+```console
 -- 
 -- Tabelle anlegen
 -- 
@@ -762,22 +762,22 @@ root on mysql.sock [kris]>  select a, b from t where a > 99000 and b = 10;
 | 99970 | 10 |
 +-------+----+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 In einer anderen Verbindung können wir nun versuchen, etwa das Paar ( 99490,
 8 ) zu ändern. Wir sehen: Das Statement hängt wegen eines X-Locks auf der
 Zeile.
 
-{% highlight console %}
+```console
 root on mysql.sock [kris]> update t set b = 502 where a = 99490;
 ... hang ...
-{% endhighlight %}
+```
 
 Wenn wir jedoch einen weiteren INDEX (a,b) definieren und seine Benutzung
 erzwingen, werden nur die beiden Records (99839, 10) und (99970, 10) gelockt
 und unser paralleles Update auf (99490) geht ohne Warten durch:
 
-{% highlight console %}
+```console
 root on mysql.sock [kris]> begin;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -802,15 +802,15 @@ possible_keys: a
          rows: 63
         Extra: Using where; Using index
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 In der anderen Verbindung:
 
-{% highlight console %}
+```console
 root on mysql.sock [kris]> update t set b = 503 where a = 99490;
 Query OK, 1 row affected (0.09 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
-{% endhighlight %}
+```
 
 Dieses Lockingverhalten hat also weitreichende Auswirkungen: Wir müssen beim
 Schreiben von SQL unbedingt darauf achten, daß die Querypläne von `SELECT ...

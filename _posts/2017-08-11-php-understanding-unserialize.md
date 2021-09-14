@@ -79,14 +79,14 @@ invoked every time you want to make an instance of an unknown class. The
 function would get the name of the missing class as a parameter, and would
 then be responsible to produce a class definition for that class.
 
-{% highlight php %}
+```php
 function __autoload($missing) { 
   echo "Class $missing is missing."; 
   include("$missing.class.php"); 
 } 
 
 $a = new DoesNotExist(); 
-{% endhighlight %} 
+``` 
 
 This is your classic suicide autoloader: Whenever an undefined class is
 being encountered, `__autoload()` is being called with that classname. It
@@ -135,7 +135,7 @@ application or an end user. `unserialize()` is not an exposable API. Never
 was. Other functions and formats for this exist. Use those. Here is some
 code to try:
 
-{% highlight php %}
+```php
 #! /usr/local/bin/php 
 <?php 
   function show_serialize1() {
@@ -258,25 +258,25 @@ code to try:
       exit(1);
     break;
   }
-{% endhighlight %}
+```
 
 You can use this to see what serialized data looks like:
 
-{% highlight console %}
+```console
 $ ./probe.php ser1; cat demo; echo
 i:1; 
-{% endhighlight %}
+```
 
 More complicated stuff such as arrays: 
 
-{% highlight console %}
+```console
 $ ./probe.php ser2; cat demo; echo
 a:3:{i:0;s:5:"fnorp";i:1;s:5:"glorp";i:2;s:4:"dorp";}
-{% endhighlight %}
+```
 
 Also, references half-work, if they are internal: 
 
-{% highlight console %}
+```console
 $ ./probe.php ser4 
 References inside an array work: 
 Array ( [0] => 2 [1] => 2 ) 
@@ -284,7 +284,7 @@ References across unserialize:
 b is unserialized a:Array ( [0] => 2 [1] => 2 ) 
 Does the ref still work? 
 Array ( [0] => 3 [1] => 3 ) 
-{% endhighlight %} 
+``` 
 
 but serializing a reference $b that points to $a does not work: The value $b
 is referencing is saved, and the unserialized variable will have a value,
@@ -292,19 +292,19 @@ but will not reference the previous value. There is no error or warning.
 
 Here is what we do to Objects:
 
-{% highlight console %}
+```console
 $ ./probe.php ser3; cat demo; echo 
 Constructed. 
 To be serialized 
 O:9:"DemoClass":3:{s:15:"DemoClasspriv";s:4:"priv";s:7:"\*prot";s:4:"prot";s:3:"pub";s:3:"pub";} 
-{% endhighlight %} 
+``` 
 
 This shows how the contructor is being executed, how the `__sleep()`
 callback is called and the content of the serialized file with the
 stringified DemoClass instance referencing the class name. If we load this
 without DemoClass being defined, we get
 
-{% highlight console %}
+```console
 $ ./probe.php unser1 
 __PHP_Incomplete_Class Object ( 
   [__PHP_Incomplete_Class_Name] => DemoClass 
@@ -312,11 +312,11 @@ __PHP_Incomplete_Class Object (
   [prot:protected] => prot 
   [pub] => pub 
 ) 
-{% endhighlight %} 
+``` 
 
 We can load DemoClass using an autoloader we define. Then we get
 
-{% highlight console %}
+```console
 $ ./probe.php unser2 
 We want DemoClass defined. 
 Just unserialized. 
@@ -325,7 +325,7 @@ DemoClass Object (
   [prot:protected] => prot 
   [pub] => pub 
 ) 
-{% endhighlight %} 
+``` 
 
 You can see the Autoloader being called, the `__wakeup()` function running
 (it didn't in the example before!) and then the properly re-instantiated

@@ -16,7 +16,7 @@ Using the framework for testing we created in earlier articles, let's try to
 modify some data. We are writing a small program that increments a counter.
 Our table looks like this, and contains 10 counters:
 
-{% highlight sql %}
+```sql
 CREATE TABLE `demo` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `counter` int NOT NULL DEFAULT '0',
@@ -26,11 +26,11 @@ INSERT INTO `demo` VALUES (1,0);
 INSERT INTO `demo` VALUES (2,0);
 ...
 INSERT INTO `demo` VALUES (10,0);
-{% endhighlight %}
+```
 
 We are using some very simple programming to increment a counter:
 
-{% highlight python %}
+```python
 @sql.command()
 @click.option("--name", default="demo", help="Table name to count in")
 @click.option("--id", default=0, help="Counter to use")
@@ -43,7 +43,7 @@ def count(name, id, count):
         c = db.cursor()
         c.execute(cmd)
         db.commit()
-{% endhighlight %}
+```
 
 ## Incrementing a single counter, 1000 times
 
@@ -52,7 +52,7 @@ or similar in order to increment a counter, and commit immediately. The loop
 will run 1000 iterations, and we can time it. The speed of the loop is
 completely dependent on how fast our hardware can commit data to disk.
 
-{% highlight console %}
+```console
 $ ./counter.py truncate
 Table demo truncated.
 $ ./counter.py setup --size 10
@@ -61,7 +61,7 @@ $ time ./counter.py count --id 3
 real    0m14.457s
 user    0m0.146s
 sys     0m0.037s
-{% endhighlight %}
+```
 
 14.4 seconds for 1000 commits are 14ms per commit, to an old SATA SSD - not
 very fast at all, but this is 10 years old hardware. This is slow, because
@@ -71,7 +71,7 @@ _posts/2020-07-27-mysql-transactions.md %}).
 
 We can globally reconfigure MySQL to write to disk unsafely:
 
-{% highlight console %}
+```console
 $ mysql -uroot -p -e 'set global innodb_flush_log_at_trx_commit=2'
 Enter password:
 $ ./counter.py truncate
@@ -82,7 +82,7 @@ $ time ./counter.py count --id 3
 real    0m6.240s
 user    0m0.126s
 sys     0m0.032s 
-{% endhighlight %}
+```
 
 In this configuration, MySQL will on commit still write the data into the
 file system buffer cache, but will no longer force the buffer cache to disk,
@@ -103,7 +103,7 @@ we no longer have to wait for the slow disk to acknowledge the writes.
 Further relaxing the disk write constraints does not make things faster,
 just more dangerous:
 
-{% highlight console %}
+```console
 (venv) kris@server:~/Python/mysql$ mysql -uroot -p -e 'set global innodb_flush_log_at_trx_commit=0'
 Enter password:
 (venv) kris@server:~/Python/mysql$ ./counter.py truncate
@@ -114,7 +114,7 @@ Table demo truncated.
 real    0m6.101s
 user    0m0.118s
 sys     0m0.032s  
-{% endhighlight %}  
+```  
 
 In this mode, the database server will not even push data into the file
 system buffer cache on commit, but only once per second initiate a batch
@@ -126,7 +126,7 @@ programs in various ways.
 
 ### Incrementing two counters concurrently, 1000 times each
 
-{% highlight console %} 
+```console 
 $ ./counter.py truncate
 Table demo truncated.
 $ ./counter.py setup --size 10
@@ -152,7 +152,7 @@ $ mysql -u kris -pgeheim -e 'select * from demo where id in (3, 9)' kris
 |  3 |    1000 |
 |  9 |    1000 |
 +----+---------+
-{% endhighlight %}
+```
 
 We can see the program counted correctly, both counters have the expected
 target value. We can also see how the program took a lot longer to execute:
@@ -162,7 +162,7 @@ two threads, and things are slower (20.4 seconds instead of 14.4 seconds).
 
 ### Incrementing the same counter with two processes, 1000 times each
 
-{% highlight console %}
+```console
 $ ./counter.py truncate
 Table demo truncated.
 $ ./counter.py setup --size 10
@@ -183,7 +183,7 @@ $ mysql -u kris -pgeheim -e 'select * from demo where id = 3' kris
 +----+---------+
 |  3 |    2000 |
 +----+---------+ 
-{% endhighlight %}
+```
 
 What happens here is that we are running two instances of the script
 concurrently, each of which is incrementing the same row `id=3`. As updating
@@ -202,7 +202,7 @@ then write the changed value back.
 
 Doing this is called a read-modify-write cycle.
 
-{% highlight python %}
+```python
 @sql.command()
 @click.option("--name", default="demo", help="Table name to count in")
 @click.option("--id", default=0, help="Counter to use")
@@ -224,7 +224,7 @@ def rmw_false(name, id, count):
         cmd = f"update {name} set counter = {counter} where id = {id}"
         c.execute(cmd)
         db.commit() 
-{% endhighlight %}
+```
 
 In this piece of code we again count to 1000, but we are doing it in a three
 step process, called a read-modify-write cycle. We also implemented it
@@ -246,7 +246,7 @@ locking.
 
 We are running this, standalone, and then in multiple copies:
 
-{% highlight console %}
+```console
 $ ./counter.py truncate
 Table demo truncated.
 $ ./counter.py setup --size 10
@@ -255,7 +255,7 @@ $ time ./counter.py rmw-false --id 3
 real    0m13.331s
 user    0m0.207s
 sys     0m0.106s
-{% endhighlight %}
+```
 
 This is not slower than the single update statement, despite the fact that
 we have to talk to the database in two round trips instead of one.
@@ -263,7 +263,7 @@ we have to talk to the database in two round trips instead of one.
 But, when we are running this twice, we can see that due to the missing
 locking the results are wrong:
 
-{% highlight console %}
+```console
 $ ./counter.py truncate
 Table demo truncated.
 $ ./counter.py setup --size 10
@@ -287,7 +287,7 @@ $ mysql -u kris -pgeheim -e 'select * from demo where id = 3' kris
 +----+---------+
 |  3 |    1000 |
 +----+---------+ 
-{% endhighlight %}
+```
 
 The way we write this code, we extract the value from the database into the
 application, getting a value - say 10, and increment that.
@@ -326,7 +326,7 @@ until the lock is released, at `COMMIT`.
 Our program now counts correctly. Locks mean waiting, so of course it is
 slower.
 
-{% highlight console %}
+```console
 $ ./counter.py truncate
 Table demo truncated.
 $ ./counter.py setup --size 10
@@ -350,11 +350,11 @@ $ mysql -u kris -pgeheim -e 'select * from demo where id = 3' kris
 +----+---------+
 |  3 |    2000 |
 +----+---------+
-{% endhighlight %}
+```
 
 And this is what the code looks like:
 
-{% highlight python %}
+```python
 @sql.command()
 @click.option("--name", default="demo", help="Table name to count in")
 @click.option("--id", default=0, help="Counter to use")
@@ -380,5 +380,5 @@ def rmw_correct(name, id, count):
         cmd = f"update {name} set counter = {counter} where id = {id}"
         c.execute(cmd)
         db.commit()
-{% endhighlight %}
+```
 

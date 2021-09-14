@@ -60,10 +60,10 @@ The main idea is to open a `.csv` file with `csv.reader`, and then iterate over 
 
 In terms of dependencies, we rely on `MySQLdb` and `csv`:
 
-{% highlight python %}
+```python
 import MySQLdb
 import csv
-{% endhighlight %}
+```
 
 We need to know the name of a table, and the column names of that table (in the order in which they appear). 
 
@@ -71,7 +71,7 @@ We should also make sure we can change the delimiter and quoting character used 
 
 Finally, we need to be able to connect to the database.
 
-{% highlight python %}
+```python
 # table to load into
 table = "data"
 
@@ -96,11 +96,11 @@ db_config = dict(
     passwd="geheim",
     db="kris",
 )
-{% endhighlight %}
+```
 
 From this, we can build a database connection and an `INSERT` statement, using the table name and column names:
 
-{% highlight python %}
+```python
 db = MySQLdb.connect(**db_config)
 
 # build a proper insert command
@@ -110,7 +110,7 @@ cmd += ") values ("
 cmd += "%s," * len(columns)
 cmd = cmd[:-1] + ")"
 print(f"cmd = {cmd}")
-{% endhighlight %}
+```
 
 The actual code is then rather simple: Open the CSV file, named after the table, and create a `csv.reader()`. Using this, we iterate over the rows.
 
@@ -118,7 +118,7 @@ For each row, we execute the insert statement.
 
 Every `commit_interval` rows we commit, and for good measure we also commit after finishing, to make sure any remaining rows also get written out.
 
-{% highlight python %}
+```python
 with open(f"{table}.csv", "r") as csvfile:
     reader = csv.reader(csvfile, delimiter=delimiter, quotechar=quotechar)
 
@@ -136,7 +136,7 @@ with open(f"{table}.csv", "r") as csvfile:
 
     # final commit to the remainder
     db.commit()
-{% endhighlight %}
+```
 
 And that it. That's all the code. 
 
@@ -153,7 +153,7 @@ Don't use them, write a loader program.
 
 Let's run it. First we generate some data, using the previous example from the partitions tutorial:
 
-{% highlight console %}
+```console
 (venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py setup-tables
 (venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py start-processing
 create p2 reason: not enough partitions
@@ -172,11 +172,11 @@ counter = 3000
 counter = 4000
 ^CError in atexit._run_exitfuncs:               
 ...
-{% endhighlight %}
+```
 
 We then dump the data, truncate the table, and reload the data. We count the rows to be sure we get all of them back.
 
-{% highlight console %}
+```console
 (venv) kris@server:~/Python/mysql$ mysql-csv/dump.py
 table = data
 
@@ -201,4 +201,4 @@ mysql: [Warning] Using a password on the command line interface can be insecure.
 +----------+
 |     4511 |
 +----------+
-{% endhighlight %}
+```

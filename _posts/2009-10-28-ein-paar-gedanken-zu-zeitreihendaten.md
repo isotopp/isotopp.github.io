@@ -28,14 +28,14 @@ Beiden ist gemein, daß man Zeitreihendaten von mehreren Meßwerten sammeln
 möchte. Der naive Ansatz ist die Definition einer Tabelle mit einem
 Timestamp und dem Key als Primärschlüssel, etwa
 
-{% highlight sql %}
+```sql
 CREATE TABLE messwerte (
   ts datetime not null,
   key varchar(40) charset latin1 not null,
   value integer,
   primary key (ts, key)
 );
-{% endhighlight %}
+```
  
 
 ## Schlüsselkompression
@@ -46,7 +46,7 @@ Minutenabstand, dann hat man wieder und wieder die langen Namen von MySQL
 Statusvariablen in der Tabelle gespeichert. Das kann man wegnormalisieren,
 indem man definiert
 
-{% highlight sql %}
+```sql
 CREATE TABLE keys (
   key_id smallint unsigned not null,
   key_name varchar(40) charset latin1 not null,
@@ -59,7 +59,7 @@ CREATE TABLE messwerte (
   value integer,
   primary key (ts, key_id)
 );
-{% endhighlight %}
+```
 
 Auf diese Weise speichert man nicht wieder und wieder dieselben Strings in
 der Tabelle ab, sondern hat die relativ langen Strings auf die 2 Byte eines
@@ -107,7 +107,7 @@ oder dasselbe manuell zu simulieren. Dazu baut man sich eine
 Template-Tabelle, die man dann in bestimmten Intervallen cloned: Pro Stunde,
 Tag, Woche oder Monat wird eine neue Tabelle angefangen.
 
-{% highlight sql %}
+```sql
 CREATE TABLE messwerte_template (
   ts datetime not null,
   key_id smallint unsigned not null,
@@ -116,7 +116,7 @@ CREATE TABLE messwerte_template (
 );
 
 CREATE TABLE messwerte_20091028 LIKE messwerte_template; -- usw.
-{% endhighlight %}
+```
 
 Das hat den Vorteil, daß man alte Werte nun nicht mit einem "DELETE FROM
 messwerte WHERE ts < '20090928 00:00:00'" loswerden muß, sondern elegant

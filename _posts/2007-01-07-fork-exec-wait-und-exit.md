@@ -113,7 +113,7 @@ unterschiedlich ist (0 statt der PID des Kindes) und man dies zur
 Verzweigung nutzen kann.
 
 In Code: 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -134,17 +134,17 @@ main(void) {
 
         exit(0);
 }
-{% endhighlight %}
+```
 
 und
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> make probe1
 cc     probe1.c   -o probe1
 kris@linux:/tmp/kris> ./probe1
 Ich bin der Kindprozess.
 Ich bin der Elternprozess, das Kind ist 16959.
-{% endhighlight %}
+```
 
 Wir vereinbaren also eine Variable `pid` vom Typ `pid_t`. 
 
@@ -180,13 +180,13 @@ ein Kindprozeß ist und zwar ein Kind der Shell.
 
 Die Shell arbeitet also genau wie wir:
 
-{% highlight console %}
+```console
 bash (16957) --- erzeugt durch fork() ---> bash (16958) --- wird zu ---> probe1 (16958)
 
 probe1 (16958) --- erzeugt durch fork() ---> probe1 (16959) --> exit()
    |
    +---> exit()
-{% endhighlight %}
+```
 
 `exit()` schließt alle Dateien und Internetverbindungen eines Prozesses,
 gibt allen Speicher frei und beendet dann den Prozeß. Der Parameter von
@@ -200,7 +200,7 @@ Exitstatus abholen. Dies geschieht mit der Systemfunktion `wait()`.
 
 In Code:
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -235,11 +235,11 @@ main(void) {
 
         exit(0);
 }
-{% endhighlight %}
+```
 
 und
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> make probe2
 cc     probe2.c   -o probe2
 kris@linux:/tmp/kris> ./probe2
@@ -247,7 +247,7 @@ Ich bin der Kindprozess.
 Ich bin der Elternprozess, das Kind ist 17399.
 Ich bin der Kindprozess 10 Sekunden spaeter.
 Ende des Prozesses 17399: Der Prozess wurde mit exit(0) beendet.
-{% endhighlight %}
+```
 
 Die Variable `status` wird dem Systemaufruf `wait()` als Referenzparameter
 mit übergeben und von diesem überschrieben. Neben dem Exitstatus finden wir
@@ -304,7 +304,7 @@ So wie `fork()` Prozesse erzeugt, so lädt `exec()` Programme in einen Prozeß.
 
 In  Code:
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -339,9 +339,9 @@ main(void) {
 
         exit(0);
 }
-{% endhighlight %}
+```
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> make probe3
 cc     probe3.c   -o probe3
 
@@ -356,7 +356,7 @@ total 36
 -rwxr-xr-x 1 kris users 7513 2007-01-05 13:42 probe3
 -rw-r--r-- 1 kris users  728 2007-01-05 13:42 probe3.c
 Ende des Prozesses 17690: Der Prozess wurde mit exit(0) beendet.
-{% endhighlight %}
+```
 
 Hier wird im Sohnprozeß der Code von probe3 weggeworfen (Das `perror("In
 exec():")` wird niemals ausgeführt) und durch den angegebenen Aufruf von
@@ -368,7 +368,7 @@ fortsetzt.
 
 Die Beispiele oben operieren in C. In bash sieht es so aus: 
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> cat probe1.sh
 #! /bin/bash --
 
@@ -388,11 +388,11 @@ Der Elternprozess hat die ID 18070
 Fri Jan  5 13:49:56 CET 2007: Elternprozess geht schlafen.
 Der Kindprozess 18071 hat den Exit-Status 0
 Fri Jan  5 13:50:06 CET 2007: Elternprozess ist aufgewacht.
-{% endhighlight %}
+```
 
 Und hier beobachten wie die Shell bei der Ausführung von Kommandos:
 
-{% highlight console %}
+```console
 kris@linux:~> strace -f -e execve,clone,fork,waitpid bash
 kris@linux:~> ls
 clone(Process 30048 attached
@@ -409,7 +409,7 @@ Process 30048 detached
 WCONTINUED) = 30048
 --- SIGCHLD (Child exited) @ 0 (0) ---
 ...
-{% endhighlight %}
+```
 
 Linux verwendet eine Verallgemeinerung von `fork()` mit dem Namen `clone()` um
 einen Kindprozeß zu erzeugen. Daher sehen wir keinen `fork()`, sondern einen

@@ -18,7 +18,7 @@ going on from a logical point of view.
 We are using a test table called demo with an id and a counter field, both
 integer. In it we have 10 counters, all set to 0.
 
-{% highlight sql %}
+```sql
 CREATE TABLE `demo` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `counter` int NOT NULL DEFAULT '0',
@@ -28,21 +28,21 @@ INSERT INTO `demo` VALUES (1,0);
 INSERT INTO `demo` VALUES (2,0);
 ...
 INSERT INTO `demo` VALUES (10,0);
-{% endhighlight %}
+```
 
 In one session, we start a transaction and modify a counter value. We do not
 commit anything.
 
-{% highlight sql %}
+```sql
 Session1> start transaction read write;
 Session1> update demo set counter = 10 where id = 3;
-{% endhighlight %}
+```
 
 ## Isolation
 
 In a second session, we check the data and notice a few things:
 
-{% highlight sql %}
+```sql
 Session2> select * from demo;
 +----+---------+
 | id | counter |
@@ -52,7 +52,7 @@ Session2> select * from demo;
 |  3 |       0 |
 |  4 |       0 |
 ...
-{% endhighlight %}
+```
 
 - We do not see the uncommitted changes to row `id=3` from Session1.
 - We do not have to wait - the uncommitted change on the row `id=3` does not
@@ -78,7 +78,7 @@ does: It uses the old versions of the row to present us a consistent view of
 the data, depending on the `TRANSACTION ISOLATION LEVEL`. This is a thing we
 can change:
 
-{% highlight sql %}
+```sql
 Session2> set transaction isolation level read uncommitted;
 Session2> select * from demo;
 +----+---------+
@@ -88,7 +88,7 @@ Session2> select * from demo;
 |  2 |       0 |
 |  3 |      10 |
 |  4 |       0 |
-{% endhighlight %}
+```
 
 So once we `SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED`, we get to see
 the value 10 written by Session1, despite the fact that it never has been
@@ -106,7 +106,7 @@ If we `SET TRANSACTION ISOLATION LEVEL READ COMMITTED` with the transaction
 hanging in Session1 as before , we get to see the counter at row `id=3` as
 before, at 0.
 
-{% highlight sql %}
+```sql
 Session2> set transaction isolation level read committed;
 Session2> select * from demo;
 +----+---------+
@@ -116,7 +116,7 @@ Session2> select * from demo;
 |  2 |       0 |
 |  3 |       0 |
 |  4 |       0 |
-{% endhighlight %}
+```
 
 That is, at this isolation level we will only see data that has been
 comitted.
@@ -129,11 +129,11 @@ comitted.
 
 Now, let's commit that change, and check:
 
-{% highlight sql %}
+```sql
 Session1> commit;
-{% endhighlight %}
+```
 
-{% highlight sql %}
+```sql
 Session2> set transaction isolation level read committed;
 Session2> select * from demo where id = 3;
 +----+---------+
@@ -141,18 +141,18 @@ Session2> select * from demo where id = 3;
 +----+---------+
 |  3 |      10 |
 +----+---------+
-{% endhighlight %}
+```
 
 In fact, if we incremented the counter in Session1, we also would see that
 in Session2:
 
-{% highlight sql %}
+```sql
 Session1> start transaction read write;
 Session1> update demo set counter = counter + 1;
 Session1> commit;
-{% endhighlight %}
+```
 
-{% highlight sql %}
+```sql
 Session2> set transaction isolation level read committed;
 Session2> select * from demo where id = 3;
 +----+---------+
@@ -160,7 +160,7 @@ Session2> select * from demo where id = 3;
 +----+---------+
 |  3 |      11 |
 +----+---------+
-{% endhighlight %}
+```
 
 > At `TRANSACTION ISOLATION LEVEL READ COMMITTED`, if we read the same row
 > twice, we can see it changing.
@@ -174,17 +174,17 @@ you get.
 If in Session1 we were to run, this time with autocommit and not inside an
 explicit transaction:
 
-{% highlight sql %}
+```sql
 Session1> UPDATE demo SET counter=counter+1;
 Session1> UPDATE demo SET counter=counter+1;
 Session1> UPDATE demo SET counter=counter+1;
 Session1> UPDATE demo SET counter=counter+1;
-{% endhighlight %}
+```
 
 and in Session2 checked repeatedly, we would see the counter increment, as
 before:
 
-{% highlight sql %}
+```sql
 Session2> select * from demo where id =3;
 +----+---------+
 | id | counter |
@@ -198,12 +198,12 @@ Session2> select * from demo where id =3;
 +----+---------+
 |  3 |      13 |
 +----+---------+
-{% endhighlight %}
+```
 
 But, and that is new, we now get to use read only transactions in Session2.
 And that changes behavior:
 
-{% highlight sql %}
+```sql
 Session2> start transaction read only;
 Session2> select * from demo where id = 3;
 +----+---------+
@@ -225,7 +225,7 @@ Session2> select * from demo where id = 3;
 +----+---------+
 |  3 |      16 |
 +----+---------+
-{% endhighlight %}
+```
 
 As soon as we `START TRANSACTION READ ONLY`, in this isolation level, we get
 a consistent read view. In practice that means that our session is frozen in

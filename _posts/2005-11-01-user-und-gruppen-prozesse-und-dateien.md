@@ -43,12 +43,12 @@ Eintrag. Nach dem Namen der Datenbasis werden durch Leerzeichen
 getrennt die Namen der Datenquellen aufgelistet, und zwar in der
 Reihenfolge, in der sie durchsucht werden sollen.
 
-{% highlight console %}
+```console
 passwd: files nis
 shadow: files nis
 group: files nis
 hosts: files dns
-{% endhighlight %}
+```
 
 Diese Beispielkonfiguration holt ihre Benutzerdaten für Passwd-
 und Shadow-Datei sowie die Gruppen aus den lokalen Dateien und
@@ -93,10 +93,10 @@ sekundären Gruppen-IDs enthalten.
 
 Das Kommando "id" listet die User- und Gruppen-IDs eines Benutzers: 
 
-{% highlight console %}
+```console
 kris@dhcp-179:~> id -a
 uid=1000(kris) gid=100(users) Gruppen=16(dialout),33(video),100(users)
-{% endhighlight %}
+```
 
 Der Benutzer kris hat also die User-ID 1000 und die primäre
 Gruppen-ID 100. Er gehört außerdem den Gruppen 16 (dialout) und
@@ -109,7 +109,7 @@ dies sind die primäre User- und Gruppen-ID dieses Prozesses.
 
 Es gibt eine andere Betriebsart für Dateisysteme ("BSD Semantik"), bei der neu angelegte Dateien nicht die primäre Gruppe des anlegenden Prozesses erben, sondern die Gruppe des unmittelbar übergeordneten Verzeichnisses. Man kann das ext2-Dateisystem komplett auf BSD-Semantik umstellen, indem man es mit der Option "grpid" (alternativ "bsdgroups") mounted - der Default ist "nogrpid" (alternativ "sysvgroups"). In der Betriebsart "nogrpid" kann man für ein einzelnes Verzeichnis BSD Semantik wählen, indem man das SGID-Bit an dem Verzeichnis setzt. Hier ein Beispiel: 
 
-{% highlight console %}
+```console
 dhcp-179:~ # lvcreate -l 10 -n test system
 Logical volume "test" created
 
@@ -131,7 +131,7 @@ kris@dhcp-179:/export/test> ls -l bla/eins fasel/zwei
 kris@dhcp-179:/export/test> ls -ld bla fasel
 drwxr-xr-x 2 kris video 1024 2005-11-01 18:59 bla
 drwxr-sr-x 2 kris video 1024 2005-11-01 18:59 fasel
-{% endhighlight %}
+```
 
 In diesem Beispiel wird das logical Volume `test` in der Volume
 Group `system` angelegt und mit dem ext2-Dateisystem formatiert.
@@ -152,7 +152,7 @@ Gruppe users angehören. Die Datei in `fasel` (BSD Semantik, durch
 Dasselbe Beispiel wie oben für ein Dateisystem, das mit `grpid`
 gemountet wurde, ergibt dann das folgende Bild:
 
-{% highlight console %}
+```console
 kris@dhcp-179:/export/test> touch bla/eins fasel/zwei
 kris@dhcp-179:/export/test> ls -ld bla fasel
 drwxr-xr-x 2 kris video 1024 2005-11-01 19:04 bla
@@ -161,7 +161,7 @@ drwxr-sr-x 2 kris video 1024 2005-11-01 19:04 fasel
 kris@dhcp-179:/export/test> ls -l bla/eins fasel/zwei
 -rw-r--r-- 1 kris video 0 2005-11-01 19:04 bla/eins
 -rw-r--r-- 1 kris video 0 2005-11-01 19:04 fasel/zwei
-{% endhighlight %}
+```
 
 Das SGID-Bit am Verzeichnis hat dann also keine Wirkung mehr,
 weil das Dateisystem an sich hier schon BSD-Semantik hat.
@@ -172,7 +172,7 @@ verhält sich immer wie ein ext2-Dateissystem mit `nogrpid`.
 Wie kann man nun ein Verzeichnis einer Gruppe schenken? Nun, das
 geht einfach mit chgrp:
 
-{% highlight console %}
+```console
 kris@dhcp-179:~> mkdir keks
 kris@dhcp-179:~> chgrp video keks
 
@@ -180,7 +180,7 @@ kris@dhcp-179:~> chgrp disk keks
 chgrp: Ändern der Gruppe für „keks“: Die Operation ist nicht erlaubt
 
 kris@dhcp-179:~> chgrp users keks
-{% endhighlight %}
+```
 
 Offenbar kann man ein Verzeichnis nur Gruppen schenken, denen
 man selbst angehört. Das ist deswegen so, weil Unix die
@@ -204,7 +204,7 @@ lesen darf.
 
 Das Szenario ist konstruiert, aber technisch möglich:
 
-{% highlight console %}
+```console
 ## Kris legt ein Verzeichnis an
 
 kris@dhcp-179:~> mkdir keks
@@ -221,7 +221,7 @@ kdebuild@dhcp-179:/home/kris/keks> ls -l bla
 ----r----- 1 kdebuild video 0 2005-11-01 19:18 bla
 kdebuild@dhcp-179:/home/kris/keks> cat bla
 cat: bla: Keine Berechtigung
-{% endhighlight %}
+```
 
 Das ist für ein Rechtesystem eine unschöne Situation. Fällt
 jemandem ein sinnvoller Anwendungszweck für diese Eigenschaft
@@ -274,7 +274,7 @@ passenden Option. Mit den Kommandos `getfacl` und `setfacl` ("get
 and set a file access control list") können wir dann lustig
 individuelle Zugriffsrechte vergeben.
 
-{% highlight console %}
+```console
 dhcp-179:~ # lvcreate -l 10 -n test system
 Logical volume "test" created
 
@@ -302,7 +302,7 @@ group::---
 group:video:rwx
 mask::rwx
 other::---
-{% endhighlight %}
+```
 
 Eine Datei mit einer ACL wird von ls mit einem "+"-Zeichen
 markiert. Statt den Rechten der Gruppe werden dann im  zweiten

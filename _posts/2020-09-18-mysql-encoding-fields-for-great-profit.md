@@ -18,7 +18,7 @@ In todays example we work with a log table that logged state transitions of thin
 
 We are starting with this table:
 
-{% highlight sql %}
+```sql
 CREATE TABLE `log` (
   `id` int NOT NULL AUTO_INCREMENT,
   `device_id` int NOT NULL,
@@ -27,7 +27,7 @@ CREATE TABLE `log` (
   `new_state` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB
-{% endhighlight %}
+```
 
 That is, our log table has an `id` field to allow individual row addressing, and then logs the state change of a `device_id` at a certain `change_time` from an `old_state` into a `new_state`. The two state fields are `varchar(64)` and contain one of some 13 or so different strings.
 
@@ -35,7 +35,7 @@ Maybe they also contain typos, outdated state codes or other stuff that will lat
 
 Some small manual sample data:
 
-{% highlight sql %}
+```sql
 mysql> select * from log;
 +----+-----------+---------------------+---------------+---------------+
 | id | device_id | change_time         | old_state     | new_state     |
@@ -47,11 +47,11 @@ mysql> select * from log;
 |  5 |        17 | 2020-09-18 18:14:56 | installed     | live          |
 +----+-----------+---------------------+---------------+---------------+
 5 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Let's build a list of all possible states from both columns, `old_state` and `new_state`. This is easily done. Using `old_state`, and we prepend a `NULL` column because we want to `INSERT ... SELECT ...` this later into a `map` table which will map the string to an `id` value. We will then encode the strings using exactly this value.
 
-{% highlight sql %}
+```sql
 mysql> select NULL as id, 
 ->            old_state 
 ->       from log 
@@ -66,11 +66,11 @@ mysql> select NULL as id,
 | NULL | installed     |
 +------+---------------+
 5 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Now using a `UNION` we extend it to `new_state` as well.
 
-{% highlight sql %}
+```sql
 mysql]> select NULL as id, 
 ->             old_state 
 ->        from log 
@@ -91,7 +91,7 @@ mysql]> select NULL as id,
 | 0x         | live          |
 +------------+---------------+
 6 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 The result strings look good, but something happened to our `NULL` values. In the original statement they were still good, but in the `UNION` they get mangled.
 
@@ -99,7 +99,7 @@ The data types of the result table are derived from the values and their types i
 
 So let's be more explicit about the types:
 
-{% highlight sql %}
+```sql
 mysql> select cast(NULL as signed) as id, 
 ->            old_state as state
 ->       from log 
@@ -120,11 +120,11 @@ mysql> select cast(NULL as signed) as id,
 | NULL | live          |
 +------+---------------+
 6 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 This now works, and we can feed it into an `INSERT ... SELECT ...`.
 
-{% highlight sql %}
+```sql
 mysql> show create table map\G
        Table: map
 Create Table: CREATE TABLE `map` (
@@ -152,11 +152,11 @@ mysql> select * from map;
 |  6 | live          |
 +----+---------------+
 6 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Yay. A nice and autonumbered list of all possible states from the existing data. We need this indexed, and we also need indices on the two source columns.
 
-{% highlight sql %}
+```sql
 mysql> alter table map add index(state);
 Query OK, 0 rows affected (0.08 sec)
 Records: 0  Duplicates: 0  Warnings: 0
@@ -164,18 +164,18 @@ Records: 0  Duplicates: 0  Warnings: 0
 mysql> alter table log add index(old_state), add index(new_state);
 Query OK, 0 rows affected (0.08 sec)
 Records: 0  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 If we want to encode these two columns with id-Values from map, we need to add columns for that.
 
-{% highlight sql %}
+```sql
 mysql> alter table log add column old_state_id integer not null after old_state,
 ->                     add column new_state_id integer not null after new_state;
-{% endhighlight %}
+```
 
 We can now encode by looking up each `log.old_state` value in `map.state` and returning the matching `map.id` value. With this we should be able to construct an `UPDATE` statement that fills in the `log.old_state_id` column.
 
-{% highlight sql %}
+```sql
 mysql> select map.id as old_state_id 
 ->       from map join log 
 ->         on map.state = log.old_state;
@@ -189,11 +189,11 @@ mysql> select map.id as old_state_id
 |            4 |
 +--------------+
 5 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Let's try this out in an `UPDATE`:
 
-{% highlight sql %}
+```sql
 mysql> update log 
 ->        set log.old_state_id = ( 
 ->          select id from map where log.old_state = map.state
@@ -219,13 +219,13 @@ mysql> select * from log;
 |  5 |        17 | 2020-09-18 10:14:56 | installed     |            5 | live          |            6 |
 +----+-----------+---------------------+---------------+--------------+---------------+--------------+
 5 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 So we update `log`, specifically setting each current `log.old_state_id` value to whatever is returned as matching, for this row, from the subselect we wrote. We then do the same, again, for the `new_state` column. The result is as shown, it works.
 
 We now have two redundant columns and the indexes that go with them, and can drop these. Let's also check the new table structure, and validate the output by joining the id values for resolution against the map.
 
-{% highlight sql %}
+```sql
 mysql> alter table log drop column old_state, drop column new_state;
 Query OK, 0 rows affected (0.24 sec)
 Records: 0  Duplicates: 0  Warnings: 0
@@ -273,7 +273,7 @@ mysql> select log.id,
 |  5 |        17 | 2020-09-18 10:14:56 | installed     | live          |
 +----+-----------+---------------------+---------------+---------------+
 5 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Note that we have to join against the map twice, once for each source column, and that also means we have to rename the map table to get unique names for each usage.
 
@@ -289,7 +289,7 @@ Finally, in [finish_log_transformation](https://github.com/isotopp/mysql-dev-exa
 
 On my super slow test machine, filling the table with a million rows from a thousand devices yields a 64M data file after 2 minutes. I have some 59M of data, and a bit of empty space:
 
-{% highlight console %}
+```console
 $ time ./lookups.py create-log-data --devicecount 1000 --statecount 1000
 
 real	2m9.729s
@@ -322,11 +322,11 @@ TABLE_COLLATION: utf8mb4_0900_ai_ci
  CREATE_OPTIONS:
   TABLE_COMMENT:
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 The file size will go up to 132M in the transformation step, most of that is from the indexing we add.
 
-{% highlight console %}
+```console
 $ time ./lookups.py prepare-log-transformation
 Adding id columns and indexes
 
@@ -369,11 +369,11 @@ TABLE_COLLATION: utf8mb4_0900_ai_ci
  CREATE_OPTIONS:
   TABLE_COMMENT:
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Finishing up will drop the two `VARCHAR` columns and the indices defined on them, but leaves us with the encoded values.
 
-{% highlight console %}
+```console
 $ time ./lookups.py finish-log-transformation
 Removing string columns
 
@@ -407,7 +407,7 @@ TABLE_COLLATION: utf8mb4_0900_ai_ci
  CREATE_OPTIONS:
   TABLE_COMMENT:
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 So data length went from 59326464 bytes to 48824320 bytes, a reduction to 82.3% of the original size. We could save even more by not using `integer` 4-byte values to encode, but for example `tinyint unsigned` 1-byte values. On the other hand, that may become a problem later on when we exceed the id-space of the map table as we add new states.
 

@@ -105,7 +105,7 @@ welche Codierung der Client denn überhaupt verwendet.
 
 Dazu kann man ein Statement wie
 
-{% highlight console %}
+```console
 linux:~ # od -t x1a
 ö
 0000000 c3 b6 0a
@@ -119,14 +119,14 @@ root@localhost [(none)]> select hex("ö");
 | C3B6      |
 +-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 verwenden. Dieser Client verwendet offensichtlich einen Mehrbyte-Zeichensatz -
 hier UTF8 - um Umlaute zu codieren. In meinem Fall - ich verwende KDE
 konsole - kann ich das leicht ändern: Indem ich in Settings -> Encoding auf
 latin1 umstelle, bekomme ich
 
-{% highlight sql %}
+```sql
 linux:~ # od -t x1a
 ö
 0000000 f6 0a
@@ -140,7 +140,7 @@ root@localhost [(none)]> select hex("ö");
 | F6       |
 +----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Ich muß dem Server jetzt mitteilen, in welchem Zeichensatz meine Statements
 sein werden: Die Variable character_set_client legt dies fest. Der Server
@@ -160,11 +160,11 @@ Um einen bestimmten Zeichensatz zum Default zu machen, setzt man sich in die
 [client]-Sektion seiner my.cnf eine Definition für den
 default-character-set:
 
-{% highlight sql %}
+```sql
 [client]
 default-character-set=latin1
 default-collation=latin1_german1_ci
-{% endhighlight %}
+```
 
 
 ### Zeichensatz an Datenbank, Tabelle und Spalte
@@ -179,25 +179,25 @@ Mehrbyte-Zeichensätze so sparsam wie irgend möglich.
 Einer Datenbank kann beim Anlegen mit "CREATE DATABASE" ein Zeichensatz und
 eine Collation mitgegeben werden.
 
-{% highlight sql %}
+```sql
 root@localhost [(none)]> create database demo charset latin1 collate latin1_german1_ci;
 Query OK, 1 row affected (0.37 sec)
-{% endhighlight %}
+```
 
 MySQL hinterlegt diese Informationen in der db.opt-Datei im Verzeichnis der Datenbank.
 
-{% highlight console %}
+```console
 linux:~ # cat /export/data/rootforum/data/demo/db.opt
 default-character-set=latin1
 default-collation=latin1_german1_ci
-{% endhighlight %}
+```
 
 Die Daten können mit dem passenden ALTER DATABASE Kommando geändert werden.
 
 Auch für Tabellen können so Default festgelegt werden, die vom Default der
 Datenbank abweichen:
 
-{% highlight sql %}
+```sql
 root@localhost [demo]> create table t ( id integer not null, d varchar(20) charset latin1 not null, e varchar(20) charset utf8 not null ) charset cp1250;
 Query OK, 0 rows affected (0.33 sec)
 
@@ -209,7 +209,7 @@ Create Table: CREATE TABLE `t` (
   `e` varchar(20) character set utf8 NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=cp1250
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Dieses Beispiel definiert in unserer latin1-Datenbank demo eine Tabelle mit
@@ -218,7 +218,7 @@ einer cp1250 Codierung und in dieser eine latin1 und eine utf8-Spalte.
 Mit unserer utf8-Konsole können wir dort jetzt Umlaute einfüllen, und sie
 zum Test auch wieder auslesen.
 
-{% highlight sql %}
+```sql
 root@localhost [demo]> select hex("ö"); -- utf8 wird verwendet
 +-----------+
 | hex("ö") |
@@ -237,7 +237,7 @@ root@localhost [demo]> select d, hex(d), e, hex(e) from t;
 | ö  | F6     | ö  | C3B6   |
 +----+--------+----+--------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Man kann hier sehr schön sehen, daß der utf8-Umlaut in latin1 gewandelt
 worden ist, bevor er in d eingefügt worden ist, während er in e ohne

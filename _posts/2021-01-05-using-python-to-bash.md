@@ -38,16 +38,16 @@ If you are already doing Python, the rest of this is not for you. You already kn
 
 Use the system Python, if possible, but do not try to modify the system Python installation. Use a virtual environment for packages, instead.
 
-{% highlight console %}
+```console
 $ mkdir myscript
 $ cd !$
 $ python3 -mvenv venv
 $ source venv/bin/activate
-{% endhighlight %}
+```
 
 This will create a local (symlinked) copy of the system python, and activate it as the interpreter environment to modify if you install dependencies. You will want to update `pip`, install `wheel` and then maintain a file named `requirements.txt` at the top level of the `myscript` directory. It will contain the names of the packages (optionally with version pins) you depend on. You can install the dependencies using `pip install -r requirements.txt`.
 
-{% highlight console %}
+```console
 $ cat revenv.sh
 #! /bin/bash
 
@@ -59,7 +59,7 @@ pip install --upgrade pip
 pip install wheel
 pip install -r requirements.txt
 pip freeze -r requirements.txt > requirements-frozen.txt
-{% endhighlight %}
+```
 
 It deactivates the venv, throws away the installed venv, and then re-makes it from the requirements.
 
@@ -87,13 +87,13 @@ The point here is that this is not useful at all, in a Python program. That line
 
 and that needs parsing to be useful for anything. You'd not do that at all in Python, ever.
 
-{% highlight python %}
+```python
 from pathlib import Path
 s = Path("/dev/null").stat()
 print(s)
 
 os.stat_result(st_mode=8630, st_ino=6, st_dev=6, st_nlink=1, st_uid=0, st_gid=0, st_size=0, st_atime=1607339753, st_mtime=1607339753, st_ctime=1607339753)
-{% endhighlight %}
+```
 
 Now we can talk. In Bash, everything always is a string.
 
@@ -107,7 +107,7 @@ So what if you have to run an external command to do things?
 
 Hopefully the external commands produce something structured such as JSON:
 
-{% highlight python %}
+```python
 import subprocess
 import json
 
@@ -133,7 +133,7 @@ win_kk 2.08t
 home 60.00g
 swap 32.00g
 ubuntu 80.00g
-{% endhighlight %}
+```
 
 This imports the modules [`subprocess`](https://docs.python.org/3/library/subprocess.html) and [`json`](https://docs.python.org/3/library/json.html) for use.
 
@@ -171,7 +171,7 @@ Note that the [`walk()`](https://docs.python.org/3/library/stat.html) function i
 
 Python delivers [`argparse`](https://docs.python.org/3/library/argparse.html) with the standard libary, and has [extensive tutorials](https://docs.python.org/3/howto/argparse.html) for it. It works pretty much as one would expect
 
-{% highlight python %}
+```python
 #! /usr/bin/env python3
 
 import argparse
@@ -181,11 +181,11 @@ parser.add_argument("--size", help="file size", type=int)
 args = parser.parse_args()
 
 print(args.size, type(args.size))
-{% endhighlight %}
+```
 
 and
 
-{% highlight console %}
+```console
 $ ./keks.py --help
 usage: keks.py [-h] [--size SIZE]
 
@@ -194,7 +194,7 @@ optional arguments:
   --size SIZE  file size
 $ ./keks.py --size 10
 10 <class 'int'>
-{% endhighlight %}
+```
 
 
 There are a number of more refined options that allow for positional, keyword and more restricted optional arguments (the type we have been using here), with typechecking and choices.
@@ -205,7 +205,7 @@ There are a number of more refined options that allow for positional, keyword an
 
 `click` is built around the concept of [Python decorators](https://realpython.com/primer-on-python-decorators/), and allows things such as
 
-{% highlight python %}
+```python
 #! /usr/bin/env python
 
 import click
@@ -217,11 +217,11 @@ def size(size):
 
 if __name__ == '__main__':
     size()
-{% endhighlight %}
+```
 
 and
 
-{% highlight console %}
+```console
 $ ./probe.py  --help
 Usage: probe.py [OPTIONS]
 
@@ -230,7 +230,7 @@ Options:
   --help          Show this message and exit.
 $ ./probe.py --size 10
 10 <class 'int'>
-{% endhighlight %}
+```
 
 Click is very complete, extensible and specifically the tool of choice for large commands that require the implementation of subcommands (`git log`, `git add`, `git commit` type interfaces).
 

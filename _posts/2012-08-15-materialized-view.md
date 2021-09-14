@@ -47,10 +47,10 @@ benötigte Form gebracht.
 Dies kann zur Laufzeit geschehen und man kann die entsprechende Query in der
 Datenbank selbst abspeichern, in der Form eines Views: 
 
-{% highlight sql %}
+```sql
 CREATE VIEW v AS
   select ...  from t1 join t2 on t1.t1id = t2.t1id where ...
-{% endhighlight %}
+```
 
 In diesem Fall wird jedoch die Join-Operation auf frischen Daten jedesmal
 durchgeführt, wenn ein Lesezugriff auf den View erfolgt.
@@ -58,10 +58,10 @@ durchgeführt, wenn ein Lesezugriff auf den View erfolgt.
 Alternativ speichert man nicht die Query selber, sondern cached auch ihr
 Resultat in einer Tabelle: 
 
-{% highlight sql %}
+```sql
 CREATE TABLE mv AS 
   select ...  from t1 join t2 on t1.t1id = t2.t1id where ...
-{% endhighlight %}
+```
 
 und wenn man schlau ist definiert man auch noch ein paar passende Indices da
 mit drauf.  Hier hat man den Resultset der Query materialisiert, und kann
@@ -73,7 +73,7 @@ sehr viel schneller sein.
 
 Materialized View: Ausgejointe 1:n Beziehung zwischen Hotels und Reviews.
 
-{% highlight json %}
+```json
 # JSON-Repräsentation des Join-Ergebnisses
 {
   "hotel": "citizen M",
@@ -83,7 +83,7 @@ Materialized View: Ausgejointe 1:n Beziehung zwischen Hotels und Reviews.
     review: { "score": 9.8, "text": ...}
   }
 }
-{% endhighlight %}
+```
 
 
 Der materialisierte Resultset hat den Nachteil, daß er einen Schnappschuß

@@ -49,7 +49,7 @@ So we
 The asymmetry is introduced by keeping Q secret and makig P as
 public as possible. 
 
-{% highlight console %} 
+```console 
 P is public. 
 Q is private and only known to one person. 
 
@@ -60,7 +60,7 @@ or
 
 C = encrypt(Q, M) 
 M = decrypt(P, C) 
-{% endhighlight %}
+```
 
 Unfortunately, in asymmetric public key cryptography, the keys
 are usually rather long, and hence the encrypt() and decrypt()
@@ -76,11 +76,11 @@ creating CH.
 The message and the encrypted hash are sent
 together. 
 
-{% highlight console %} 
+```console 
 H = hash(M)
 CH = encrypt(Q, H)
 send(M, CH) 
-{% endhighlight %} 
+``` 
 
 When receiving the message, the
 receiver can read the message and can calculate their own

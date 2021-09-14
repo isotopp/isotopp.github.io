@@ -19,7 +19,7 @@ There are other UUID variants, used in other systems (NCS, and Microsoft "backwa
 
 A RFC 4122 UUID is a special 128 bit long value (["16 octets"](https://tools.ietf.org/html/rfc4122#section-4)). It is supposed to be laid out like this:
 
-{% highlight console %}
+```console
  0                   1                   2                   3
     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -31,7 +31,7 @@ A RFC 4122 UUID is a special 128 bit long value (["16 octets"](https://tools.iet
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
    |                         node (2-5)                            |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-{% endhighlight %}
+```
 
 The high bits in `clk_seq_hi_res` define the variant, and anything starting with the bit sequence `10` is a RFC 4122 compliant UUID.
 
@@ -51,7 +51,7 @@ The latter two functions have a special flag to improve performance with InnoDB.
 
 The MySQL function [UUID()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid) returns a RFC 4122 Type 1 UUID.
 
-{% highlight sql %}
+```sql
 mysql> select uuid_to_bin(uuid()) as uuid;
 +------------------------------------+
 | uuid                               |
@@ -59,16 +59,16 @@ mysql> select uuid_to_bin(uuid()) as uuid;
 | 0x80462D3C96AB11EB94BBBA2278F258E1 |
 +------------------------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Formatted like in the RFC, we get the following values:
 
-{% highlight console %}
+```console
 80462D3C
 96AB 1 1EB
 9 4 BB B A22
 78F258E1
-{% endhighlight %}
+```
 
 Specifically, the `clk_seq_hi_res` contains the variant value, `9`, and the `time_hi_and_version` contains the version, `1`.
 
@@ -126,7 +126,7 @@ This all should hurt less.
 
 That is, I want to be able to
 
-{% highlight sql %}
+```sql
 mysql> create table u ( u uuid not null primary key, dummy integer );
 mysql> insert into u values (uuid(), 1);
 mysql> select u from u\G
@@ -137,7 +137,7 @@ mysql> select format_uuid(u) as u from u\G
 u: 6CCD780C-BABA-1026-9564-5B8C656024DB
 mysql> select format_uuid(u, 1) as u from u\G
 u: {6CCD780C-BABA-1026-9564-5B8C656024DB}
-{% endhighlight %}
+```
 
 and internally, this is stored as 0x1026BABA6CCD780C95645B8C656024DB, because variant is RFC 4122 and Type is 1.
 

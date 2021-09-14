@@ -21,7 +21,7 @@ hole ich es hier gerade mal nach.
 
 Gegeben sei 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> show create table a\G
        Table: a
 Create Table: CREATE TABLE `a` (
@@ -35,13 +35,13 @@ Create Table: CREATE TABLE `a` (
 root@localhost [kris]> insert into a values ( 1, 2, 3), (4, 5, 6);
 Query OK, 2 rows affected (0.00 sec)
 Records: 2  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Das Kommando INSERT ON DUPLICATE KEY UPDATE ist erst einmal ein INSERT-Statement.
 
 Es fügt Werte in eine Tabelle ein: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> insert into a ( id, d, e) values ( 7, 8, 9) on duplicate key update e = 100;
 Query OK, 1 row affected (0.00 sec)
 
@@ -54,7 +54,7 @@ root@localhost [kris]> select * from a;
 |  7 | 8 | 9 |
 +----+---+---+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Man kann sehen, daß der INSERT-Zweig genommen wurde - unter anderem daran,
 daß dort nach dem Statement '1 row affected' angezeigt wird.
@@ -66,7 +66,7 @@ einem anderen Unique Key stattfindet.
 
 Hier ist das Beispiel: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> insert into a (id, d, e) values (7,11,12) on duplicate key update e = 100;
 Query OK, 2 rows affected (0.00 sec)
 
@@ -82,7 +82,7 @@ root@localhost [kris]> select * from a;
 |  7 | 8 | 100 |
 +----+---+-----+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wie man sieht, hat das erste INSERT einen Duplicate Key Error auf dem
 Primärschlüssel für die Row 7 erzeugt und daher ein Update durchgeführt, das
@@ -99,7 +99,7 @@ Primärschlüssel hat ja auch UNIQUE-Eigenschaft), oder haben wir ein
 Statement, das in der UPDATE-Clause auch am Primärschlüssel rumschreibt,
 können wir trotzdem einen Duplicate Key Error bekommen:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> insert into a (id,d,e) values (7,11,12) on duplicate key update d=5, e=199;
 ERROR 1062 (23000): Duplicate entry '5' for key 'd'
 root@localhost [kris]> insert into a (id,d,e) values (7,11,12) on duplicate key update id=4,d=5,e=198;
@@ -113,7 +113,7 @@ root@localhost [kris]> select * from a;
 |  7 | 8 | 100 |
 +----+---+-----+
 3 rows in set (0.01 sec)
-{% endhighlight %}
+```
 
 Ein INSERT ON DUPLICATE KEY UPDATE verhindert also Duplicate Key Errors
 nicht automatisch.
@@ -129,7 +129,7 @@ keine stillschweigende Wertanpassung mehr.
 
 Hier die Demo: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set SQL_MODE=TRADITIONAL;
 Query OK, 0 rows affected (0.00 sec)
 root@localhost [kris]> select @@sql_mode\G
@@ -137,14 +137,14 @@ root@localhost [kris]> select @@sql_mode\G
 1 row in set (0.00 sec)
 root@localhost [kris]> update a set e = 300 where id = 7;
 ERROR 1264 (22003): Out of range value for column 'e' at row 1
-{% endhighlight %}
+```
 
 
 Soweit so gut. Was ist nun, wenn wir einen Duplicate Key Error provoziere,
 sodaß INSERT ON DUPLICATE KEY das Update ausführen sollte, zugleich in der
 INSERT-Phase aber auch einen Out Of Range-Error haben?
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> insert into a (id,d,e) values (7,10,300) ON DUPLICATE KEY UPDATE e = 197;
 ERROR 1264 (22003): Out of range value for column 'e' at row 1
 
@@ -157,7 +157,7 @@ root@localhost [kris]> select * from a;
 |  7 | 8 | 100 |
 +----+---+-----+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Eigentlich hätte unser Statement funktionieren können: Wenn MySQL erst die
 Duplicate Key-Violation prüfen würde, um dann zu entscheiden, daß es in den
@@ -181,7 +181,7 @@ Gelegenheit, sich mit naiven Triggern in die Nesseln zu setzen. Bauen wir
 uns einmal eine Demo mit einer Logtabelle und allen 6 Triggern für das
 Debugging:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> delimiter //
 root@localhost [kris]> create table log ( id serial, t text ) engine = innodb;//
 root@localhost [kris]> create trigger bi_a before insert on a for each row insert into log values (NULL, 'before insert');//
@@ -211,13 +211,13 @@ root@localhost [kris]> select * from a;
 |  7 | 8 | 100 |
 +----+---+-----+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Das kann man nun sehr elegant explodieren lassen, indem man einmal den
 UPDATE-Zweig eines INSERT ON DUPLICATE KEY-Update ausführen läßt. Man
 bekommt dies:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> insert into a (id,d,e) values (7,12,13) on duplicate key update e = 190;
 Query OK, 2 rows affected (0.39 sec)
 
@@ -240,7 +240,7 @@ root@localhost [kris]> select * from log;
 |  3 | after update  |
 +----+---------------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wie man erkennen kann, ist der 'before insert'-Trigger einmal ausgeführt
 worden, dann sind wir in den Update-Fall eingetreten und dort sind der
@@ -260,7 +260,7 @@ berücksichtigen.
 Das gilt im übrigen auch für das Partnerstatement von INSERT ON DUPLICATE
 KEY UPDATE, also für INSERT IGNORE:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> delete from log;
 Query OK, 3 rows affected (0.33 sec)
 
@@ -274,7 +274,7 @@ root@localhost [kris]> select * from log;
 |  6 | before insert |
 +----+---------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Auch hier sehen wir eine ungerade Anzahl von Triggern, ein 'before insert'
 ohne 'after insert'.

@@ -12,11 +12,11 @@ tags:
 ---
 MySQL uses connection and config parameters from a number of possible sources. The easiest way to find out where it is looking for config files is to run
 
-{% highlight console %}
+```console
 $ mysql --help | grep cnf
                       order of preference, my.cnf, $MYSQL_TCP_PORT,
 /etc/my.cnf /etc/mysql/my.cnf /Users/kkoehntopp/homebrew/etc/my.cnf ~/.my.cnf
-{% endhighlight %}
+```
 
 As can be seen, my version of the MySQL client checks in this order
 
@@ -27,14 +27,14 @@ As can be seen, my version of the MySQL client checks in this order
 
 The cnf file is a file in dot-ini syntax, so you have `[groups]` and each group contains lines with `key = value` pairs. Which groups are read?
 
-{% highlight console %}
+```console
 $ mysql --help | grep "groups are"
 The following groups are read: mysql client
-{% endhighlight %}
+```
 
 So in my case, I would create a `/Users/kkoehntopp/.my.cnf` looking like this:
 
-{% highlight console %}
+```console
 [client]
 user=kris
 password=geheim
@@ -44,7 +44,7 @@ host=127.0.0.1
 database=kris
 show-warnings
 prompt=\U [\d]>\_
-{% endhighlight %}
+```
 
 That is, I put general connection parameters such as the host, user and password into the `client` group, and program specific parameters such as database, prompt and others into program specific groups such as `mysql`. That way, the `mysqldump` and `mysql` programs will connect automatically, but the `mysql` options will not interfere with `mysqldump`.
 
@@ -54,7 +54,7 @@ Some time in 2012, the `.mylogin.cnf` mechanism and the `mysql_config_editor` pr
 
 mylogin files are being made with the `mysql_config_editor` program, for example
 
-{% highlight console %}
+```console
 $ mysql_config_editor set --login-path=test --user=kris --host=localhost --password
 Enter password: geheim
 
@@ -67,7 +67,7 @@ host = localhost
 user = kris
 password = *****
 host = localhost
-{% endhighlight %}
+```
 
 will create a new mylogin, or amend an existing one, and define a login path named `test`. It will take the host and the username on the command line, but you cannot specify the password easily - it has to be typed in.
 
@@ -81,7 +81,7 @@ It can decode and encode mylogin files, opening them up to Ansible templating. J
 
 The sample session looks like this:
 
-{% highlight sql %}
+```sql
 # generate a dummy file
 mysql_config_editor set --login-path=local --user=root --host=localhost --password
 Password: keks
@@ -101,6 +101,6 @@ my_print_defaults -s local
 
 # Note: mysql_config_editor will not print the password, just five stars
 #       but my_print_defaults should also show the password.
-{% endhighlight %}
+```
 
 The program depends on `click` and `pycrypto`, but really any implementation of `aes-128-ebc` should be easily usable.

@@ -35,7 +35,7 @@ Das ist recht einfach, denn dazu muß man nur zwei Datenverzeichnisse mit
 mysql_install_db initialisieren und passende minimale Konfigurationen
 erzeugen.
 
-{% highlight console %}
+```console
 KK:~ kris$ cd /tmp
 KK:tmp kris$ mkdir eins zwei
 KK:tmp kris$ mysql_install_db5 --datadir=/tmp/eins --user=kris
@@ -69,12 +69,12 @@ server_id = 2
 auto_increment_increment = 10
 auto_increment_offset = 2
 innodb
-{% endhighlight %}
+```
 
 Die Server können nun gestartet werden. Wir geben jedem Server einen Zeiger
 auf seine Konfiguration mit.
 
-{% highlight console %}
+```console
 KK:zwei kris$ cd ../eins
 KK:eins kris$ mysqld_safe5 --defaults-file=/tmp/eins/my.cnf &
 100817 13:05:02 mysqld_safe Logging to '/tmp/eins/KK.local.err'.
@@ -88,7 +88,7 @@ KK:zwei kris$ mysqld_safe5 --defaults-file=/tmp/zwei/my.cnf &
 KK:zwei kris$ lsof -i -n -P | grep my
 mysqld    1042 kris   10u  IPv4 0x05691740      0t0  TCP \*:3307 (LISTEN)
 mysqld    1112 kris   10u  IPv4 0x0ba7eec8      0t0  TCP \*:3308 (LISTEN)
-{% endhighlight %}
+```
 
 Nachdem wir die zwei Server laufen haben und beide leer sind, können wir
 eine Datenbank aufsetzen und die Replikation konfigurieren. Wir nutzen hier
@@ -100,7 +100,7 @@ Ich habe die Angewohnheit, bei multiplen Instanzen auf einer Hardware
 Instanz eindeutig identifiziert. So kann ich sicher sein, mit dem richtigen
 Server zu sprechen.
 
-{% highlight console %}
+```console
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3307
 ...
 
@@ -120,11 +120,11 @@ Query OK, 0 rows affected (0.10 sec)
 
 root@localhost [(none)]> quit
 Bye
-{% endhighlight %}
+```
 
 Und dasselbe drüben auch noch mal. 
 
-{% highlight console %}
+```console
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3308
 root@localhost [(none)]> select @@hostname, @@datadir;
 +------------+------------+
@@ -142,7 +142,7 @@ Query OK, 0 rows affected (0.06 sec)
 
 root@localhost [(none)]> quit
 Bye
-{% endhighlight %}
+```
 
 
 Nachdem wir jetzt eine Testdatenbank mit einer leeren Testtabelle haben,
@@ -150,7 +150,7 @@ können wir replizieren. Wir setzen zunächst einmal den Server 3307 (eins)
 auf. Dazu definieren wir einen Account für zwei mit dem Privileg `replication
 slave` und notieren die Binlog-Position von eins:
 
-{% highlight console %}
+```console
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3307
 ...
 
@@ -167,7 +167,7 @@ root@localhost [(none)]> show master status;
 
 root@localhost [(none)]> quit
 Bye
-{% endhighlight %}
+```
 
 Mit diesen Daten können wir nun zwei einrichten. Auch dort muß ein Account
 mit `replication slave` eingerichtet werden. Wir lassen außerdem einmal ein
@@ -175,7 +175,7 @@ mit `replication slave` eingerichtet werden. Wir lassen außerdem einmal ein
 eins repliziert. Am Ende notieren wir uns das Binlog von zwei, um auch auf
 eins ein `CHANGE MASTER` machen zu können.
 
-{% highlight console %}
+```console
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3308
 ...
 
@@ -203,12 +203,12 @@ root@localhost [(none)]> show master status;
 1 row in set (0.00 sec)
 root@localhost [(none)]> quit
 Bye
-{% endhighlight %}
+```
 
 Jetzt muß nur noch auf dem Server eins das `CHANGE MASTER` mit diesen Daten
 laufen.
 
-{% highlight console %}
+```console
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3307
 ...
 root@localhost [(none)]> change master to master_host = '127.0.0.1', master_port = 3308, master_user = 'eins', master_password = 's3cr3t!', master_log_file = 'KK-bin.000003', master_log_pos = 246;
@@ -222,12 +222,12 @@ root@localhost [(none)]> show slave status\G
 Slave_IO_Running: Yes
 Slave_SQL_Running: Yes
 ...
-{% endhighlight %}
+```
 
 Wir haben nun einen Ring, der zwischen zwei Instanzen auf Port 3307 und Port
 3308 repliziert. Das kann man auch sehen:
 
-{% highlight sql %}
+```sql
 KK:zwei kris$ lsof -i -n -P | grep my
 mysqld    1210 kris   11u  IPv4 0x06091e98      0t0  TCP \*:3307 (LISTEN)
 mysqld    1210 kris   31u  IPv4 0x0ba6def8      0t0  TCP 127.0.0.1:3307->127.0.0.1:50981 (ESTABLISHED)
@@ -235,11 +235,11 @@ mysqld    1210 kris   37u  IPv4 0x098bab4c      0t0  TCP 127.0.0.1:50989->127.0.
 mysqld    1282 kris   11u  IPv4 0x0ba7eec8      0t0  TCP \*:3308 (LISTEN)
 mysqld    1282 kris   31u  IPv4 0x0ba7faec      0t0  TCP 127.0.0.1:3308->127.0.0.1:50989 (ESTABLISHED)
 mysqld    1282 kris   35u  IPv4 0x098b9b1c      0t0  TCP 127.0.0.1:50981->127.0.0.1:3307 (ESTABLISHED)
-{% endhighlight %}
+```
 
 Jetzt können wir testen: 
 
-{% highlight sql %}
+```sql
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3307 -e 'insert into kris.t values (NULL, "auf eins");'
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3308 -e 'insert into kris.t values (NULL, "auf zwei");'
 KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3308 -e 'select \* from kris.t;'
@@ -259,7 +259,7 @@ KK:zwei kris$ mysql5 --host=127.0.0.1 --port=3307 -e 'select \* from kris.t;'
 |  2 | auf zwei     |
 | 11 | nochmal eins |
 +----+--------------+
-{% endhighlight %}
+```
 
 Die Antwort lautet also: 
 

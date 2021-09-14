@@ -18,7 +18,7 @@ We need a `class Labyrinth` that holds the dimensions of our maze, and the actua
 
 ## A basic container for labyrinths
 
-{% highlight python %}
+```python
 class Labyrinth:
     """Store a labyrinth as a List of Lists of Integers.
 
@@ -31,7 +31,7 @@ class Labyrinth:
     width: int
     height: int
     grid: List[List[int]]
-{% endhighlight %}
+```
 
 The integer Zero will indicate an unused cell. We then use bits to store passages to the four cardinal directions: 1 for a passage to the North, 2 for a passage to the East, 4 for a passage to the South, and 8 for a passage to the West.
 
@@ -41,40 +41,40 @@ We will need to work with positions, and we define a type for that: A position i
 
 We will also need to work with the cardinal directions, and make a type for that: A direction is a `Direction`, a string. We will also make use of a number of things from `random`.
 
-{% highlight python %}
+```python
 from typing import List, Dict, Tuple, Optional, NewType
 from random import shuffle, randrange, choice, randint
 
 Pos = NewType("Pos", Tuple[int, int])
 Direction = NewType("Direction", str)
-{% endhighlight %}
+```
 
 Using this, we can define a few useful things that we will be using a lot. Our bits to encode passages, for example:
 
-{% highlight python %}
+```python
     _directions: Dict[Direction, int] = {
         Direction("N"): 1,
         Direction("E"): 2,
         Direction("S"): 4,
         Direction("W"): 8,
     }
-{% endhighlight %}
+```
 
 
 Also, the back-connections, because we want an undirected graph of passages:
 
-{% highlight python %}
+```python
     opposite: Dict[Direction, Direction] = {
         Direction("N"): Direction("S"),
         Direction("S"): Direction("N"),
         Direction("W"): Direction("E"),
         Direction("E"): Direction("W"),
     }
-{% endhighlight %}
+```
 
 And we need to be able to translate a `Direction` into a change in coordinates, in order to be able to step:
 
-{% highlight python %}
+```python
     dx: Dict[Direction, int] = {
         Direction("N"): 0,
         Direction("S"): 0,
@@ -87,11 +87,11 @@ And we need to be able to translate a `Direction` into a change in coordinates, 
         Direction("E"): 0,
         Direction("W"): 0,
     }
-{% endhighlight %}
+```
 
 We can now initialize our class:
 
-{% highlight python %}
+```python
    def __init__(self, width: int = 10, height: int = 10) -> None:
         """ Construct a labyrinth with no passages in the given dimensions """
         self.width = width
@@ -101,7 +101,7 @@ We can now initialize our class:
             self.grid[y] = [0] * self.width
 
         return
-{% endhighlight %}
+```
 
 ## Some basic Python wiring
 
@@ -109,7 +109,7 @@ We will probably suck and need to be able to dump a labyrinth object, so let's b
 
 So let's make one:
 
-{% highlight python %}
+```python
     def __repr__(self) -> str:
         """ Dump the current labyrinths passages as raw integer values """
         s = ""
@@ -122,11 +122,11 @@ So let's make one:
 
         return s
 
-{% endhighlight %}
+```
 
 Our `Labyrinth` is mostly a container for these integers representing cells, with a bit of sugar on top. Let's make the cells directly accessible:
 
-{% highlight python %}
+```python
     def __getitem__(self, item: Pos) -> int:
         """ Return the passages at position item: Pos from the labyrinth """
         if not self.position_valid(item):
@@ -145,7 +145,7 @@ Our `Labyrinth` is mostly a container for these integers representing cells, wit
 
         self.grid[key[1]][key[0]] = value
         return
-{% endhighlight %}
+```
 
 I can now make me a `l= Labyrinth` and then `p = Pos((10, 10))` and `print(l[p])` to print a single element at position `(10, 10)`. Python will invoke the `__getitem__()` with this Pos tuple and return me the element. Likeweise I can assign to `l`: `l[p] = 10`, and that will invoke `__setitem__()` with the proper parameters.
 
@@ -155,7 +155,7 @@ The predicate `position_valid()` is still missing, and we will need similar thin
 
 Let's make them:
 
-{% highlight python %}
+```python
     def position_valid(self, p: Pos) -> bool:
         """ Predicate, true if the p: Pos is valid for this labyrinth """
         return 0 <= p[0] < self.width and 0 <= p[1] < self.height
@@ -163,11 +163,11 @@ Let's make them:
     def direction_valid(self, d: Direction) -> bool:
         """ Predicate, true if Direction d is valid """
         return d in self.directions()
-{% endhighlight %}
+```
 
 We also build a getter, `directions()` that returns the directions from the `_directions` bit encoder array above, and the same thing randomized under the name of  `random_directions()`. We grab the list and apply Pythons `shuffle()`.
 
-{% highlight python %}
+```python
     def directions(self) -> List[Direction]:
         return list(self._directions.keys())
 
@@ -177,13 +177,13 @@ We also build a getter, `directions()` that returns the directions from the `_di
         shuffle(d)
 
         return d
-{% endhighlight %}
+```
 
 ## Stepping into the Labyrinth
 
 We now can make a `step(pos, direction)`, which takes one Pos, and makes a step into the given Direction.
 
-{% highlight python %}
+```python
     def step(self, p: Pos, d: Direction) -> Pos:
         """Starting at Pos p, walk one step into Direction d, return a new position.
            The new position is guaranteed to be valid."""
@@ -200,7 +200,7 @@ We now can make a `step(pos, direction)`, which takes one Pos, and makes a step 
             )
 
         return np
-{% endhighlight %}
+```
 
 The new position is guaranteed to be valid. We will raise `ValueError` for all invalid things - wrong parameters, and wrong results. Some of them may arguably be `IndexErrrors` instead, but I actually have little need for this distinction here, and it will only make the code more complicated later on.
 
@@ -208,7 +208,7 @@ The new position is guaranteed to be valid. We will raise `ValueError` for all i
 
 Now I can build me a function that makes a passage from a given Pos, into a given Direction:
 
-{% highlight python %}
+```python
     def make_passage(self, p: Pos, d: Direction) -> None:
         """At Pos p into Direction d, make a passage and back. """
         if not self.direction_valid(d):
@@ -222,11 +222,11 @@ Now I can build me a function that makes a passage from a given Pos, into a give
         self[np] |= self._directions[self.opposite[d]]
 
         return
-{% endhighlight %}
+```
 
 It may also be useful to have this as a predicate `can_make_passage()`, which returns true if I can make a passage that is not there, yet.
 
-{% highlight python %}
+```python
     def can_make_passage(self, p: Pos, d: Direction) -> bool:
         """Predicate, true if valid passage that is not there, yet."""
         if not self.direction_valid(d):
@@ -245,7 +245,7 @@ It may also be useful to have this as a predicate `can_make_passage()`, which re
         pre_elem = self[p]
         post_elem = pre_elem | self._directions[d]
         return pre_elem != post_elem
-{% endhighlight %}
+```
 
 This raises exceptions for invalid input values. It will return `False` for passages that would lead off grid, and also returns `False` is this is not a new, but already existing passage.
 
@@ -255,7 +255,7 @@ Now we can pretty easily and concisely write down a tunnel digging algorithm tha
 
 At this point it is a subclass of Labyrinth, but it really should be a strategy of Labyrinth instead. Python on my system has a default recursion nesting limit of 1000, so the longest path can be 1000 steps until we overflow the stack. This is good for a 31x31 grid at best, and we would need to change `sys.setrecursionlimit(new_value)` for more.
 
-{% highlight python %}
+```python
 class Backtracking(Labyrinth):
     """Build a labyrinth using a backtracking algorithm."""
 
@@ -287,7 +287,7 @@ class Backtracking(Labyrinth):
             if self[np] == 0:
                 self.make_passage(pos, d)
                 self.carve(np, show=show)
-{% endhighlight %}
+```
 
 What we have here is a function `carve()` that will dig a tunnel, starting at `pos`. If no `pos` is given, we default to the origin `(0,0)`.
 
@@ -304,7 +304,7 @@ Here is a labyrinth generation in progress:
 
 Our Labyrinth Painter uses Pygame. It draws cells that are `size=` wide, and are framed with `line_width=` thick lines.
 
-{% highlight python %}
+```python
 import sys
 from time import sleep
 from typing import Optional
@@ -333,11 +333,11 @@ class LabyrinthPainter:
 
         return
 
-{% endhighlight %}
+```
 
 We start pygame, and make us a surface in a window:
 
-{% highlight python %}
+```python
     def show_init(self, lab: Labyrinth) -> None:
         pygame.init()
 
@@ -351,24 +351,24 @@ We start pygame, and make us a surface in a window:
         pygame.display.flip()
 
         return
-{% endhighlight %}
+```
 
 We then implement a show function, which draws a bunch of squares in funny colors:
 
-{% highlight python %}
+```python
     def show(
         self, lab: Labyrinth, red: Optional[Pos] = None, green: Optional[Pos] = None
     ):
         for y in range(0, lab.height):
             for x in range(0, lab.width):
                 self.square(lab, Pos((x, y)), red, green)
-{% endhighlight %}
+```
 
 A square needs to find out what color it should be in, and then needs to be drawn. For that we need corners: North-East, North-West, South-East, and South-West.
 
 We do not really have many dependencies on Labyrinth: Element access, and we should really use direction names instead of raw bits for decoding here.
 
-{% highlight python %}
+```python
     def square(
         self,
         lab: Labyrinth,
@@ -408,11 +408,11 @@ We do not really have many dependencies on Labyrinth: Element access, and we sho
         # West Border
         if not (el & 8):
             pygame.draw.line(self.surface, BLACK, nw, sw, width=self.line_width)
-{% endhighlight %}
+```
 
 Nothing of this will be visible until we call `flip()`. For debugging, we provide the `flip()` as part of two waiting functions:
 
-{% highlight python %}
+```python
     @staticmethod
     def wait() -> None:
         # self.keywait()
@@ -443,7 +443,7 @@ Nothing of this will be visible until we call `flip()`. For debugging, we provid
                         pygame.quit()
                         sys.exit()
             sleep(0.05)
-{% endhighlight %}
+```
 
 The first function checks the Pygame event queue for a `QUIT` event (close button on the window has been hit) or an `ESC` key press. If either of them happened, we exit the program. Otherwise we delay a bit (and should make this a settable parameter).
 
@@ -451,7 +451,7 @@ The second method busy waits on a space bar press (and also allows quitting) bef
 
 A small driver that puts everything together:
 
-{% highlight python %}
+```python
 from random import randrange
 
 from src.backtracking import Backtracking, Pos
@@ -475,7 +475,7 @@ while True:
         break
 painter.show(labyrinth, red=red, green=green)
 LabyrinthPainter.keywait()
-{% endhighlight %}
+```
 
 We make ourselves a `labyrinth` instance, and a `painter` instance. We define a starting position in the middle of the field, then start the carver with a callback. The callback will be activated by the `carve()` function with the old position `pos` as red and the new position `np` as green square. Untouched squares will show up in black, and carves squares will be shown in light blue.
 
@@ -485,7 +485,7 @@ In the end we display the final labyrinth, showing two random positions as start
 
 We can rewrite the original `carve()` function to not use recursion. It will look almost the same:
 
-{% highlight python %}
+```python
 class DepthFirst(Labyrinth):
     """Build a labyrinth using a backtracking algorithm."""
 
@@ -526,7 +526,7 @@ class DepthFirst(Labyrinth):
                     # In any case, add the new position (and all directions)
                     stack.append((np, self.random_directions()))
                     break  # while directions: -> continue with np
-{% endhighlight %}
+```
 
 Instead of recursing we here have a local stack `stack`. On this stack we put pairs of (pos, directions): For each position we remember the directions at this position that still need checking. We prime this with the starting position and the full list of all four cardinal directions, randomly shuffled.
 

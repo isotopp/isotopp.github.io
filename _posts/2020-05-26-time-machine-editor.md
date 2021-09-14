@@ -24,9 +24,9 @@ Because of the way the application is built, it does not require special privile
 
 The pre-Catalina
 
-{% highlight console %}
+```console
 $ sudo defaults write /System/Library/LaunchDaemons/com.apple.backupd-auto StartInterval -int 14400
-{% endhighlight %}
+```
 
 does no longer work: It tries to change a `plist` in `/System` and fails. The approach chosen by Time Machine Editor is cleaner and not subject to these new Apple limitations.
 

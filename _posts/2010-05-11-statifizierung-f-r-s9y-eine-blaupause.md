@@ -56,14 +56,14 @@ dabei die Verwendung von IFrames, so wie schon jetzt auf der Startseite
 dieses Blogs ein Google-Calendar von anderswo mit Hilfe eines IFrames
 eingebunden wird.
 
-{% highlight html %}
+```html
 <iframe src="http:/www.google.com/calendar/embed?..." 
   style="border-width:0" 
   width="240" 
   height="280"
   frameborder="0"
   scrolling="no"></iframe>
-{% endhighlight %}
+```
 
 
 Das funktioniert mit dem Google Calender, weil die Größe des Elementes vorab
@@ -72,10 +72,10 @@ bekannt ist.
 Würde man im Falle von S9Y eigene Komponenten von sich selbst einbinden,
 hätte man gerne ein IFrame- oder "Div src="-Element ohne Größenangaben:
 
-{% highlight html %}
+```html
 <iframe src='http://blog.koehntopp.de/statify/latest_comments.html'
   style=...></iframe>
-{% endhighlight %}
+```
 
 
 Leider gibt es so etwas nicht, sodaß man auf andere, schlechtere Methoden
@@ -112,7 +112,7 @@ weitere Apache Worker die /statify/latest_comments.html
 ausliefern wollen, auch wenn sie noch gar nicht vollständig erzeugt ist.
 Daher muß das Schreiben so erfolgen:
 
-{% highlight php %}
+```php
 <?php
   $pid = posix_getpid();
   $filename = make_filename_from($config, '/statify/latest_comments.html', $pid);
@@ -122,7 +122,7 @@ Daher muß das Schreiben so erfolgen:
   file_put_contents($filename, $str);
   // Datei sichtbar machen
   rename($filename, $final_filename); ?>
-{% endhighlight %}
+```
 
 
 ### Expire
@@ -159,7 +159,7 @@ ist es so, daß 35% aller Zugriffe in mein Blog auf /feeds/index.rss2
 erfolgen, 3% auf atom.xml und ein weiteres Prozent auf comments.rss2. Ein
 Script wird jede Minute einmal ausgeführt:
 
-{% highlight console %}
+```console
 #! /bin/bash --
 
 cd /home/www/servers/blog.koehntopp.de/pages
@@ -186,7 +186,7 @@ rm -f comments.rss2
 curl -o comments.rss2 http://blog.koehntopp.de/feeds/comments.rss2 > /dev/null 2>&1
 
 rm -f .lock
-{% endhighlight %}
+```
 
 Dieses Script sorgt dafür, daß diese drei Dateien als minütlich neu erzeugte
 statische Dateien vorliegen statt dynamisch n-fach parallel erzeugt zu

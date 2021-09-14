@@ -18,7 +18,7 @@ Completing the data lifecycle is often harder than originally expected: Deleting
 
 Let's define a kind of log table, to which data is added with an `auto_increment` id value and some data.
 
-{% highlight python %}
+```python
 #! /usr/bin/env python3
 
 from time import sleep
@@ -67,7 +67,7 @@ def setup_tables():
 
 
 sql()
-{% endhighlight %}
+```
 
 This is our basic Python framework for experimentation, using the `click` framework, and a command `setup-tables`. This command will run a number of SQL statements to initialize our log table named `data`.
 
@@ -93,7 +93,7 @@ We will be using the Python multiprocessing module to have three processes, an `
 
 We will have small piece of code that starts our processes:
 
-{% highlight python %}
+```python
 @sql.command()
 def start_processing():
     proc_partition = Process(target=partitioner)
@@ -102,13 +102,13 @@ def start_processing():
     proc_drop.start()
     proc_insert = Process(target=inserter)
     proc_insert.start()
-{% endhighlight %}
+```
 
 ## The Inserter
 
 The Inserter is an endless loop that generates two random 64 character strings and inserts a new row into the database. Every 10 rows, we commit, every 1000 rows we print a message.
 
-{% highlight python %}
+```python
 def inserter():
     counter = 0
     step = 10
@@ -130,7 +130,7 @@ def inserter():
 
         if counter % 1000 == 0:
             print(f"counter = {counter}")
-{% endhighlight %}
+```
 
 Without the other two threads, the inserter will generate 10.000 rows and then stop, because there is no `MAXVALUE` clause.
 
@@ -148,19 +148,19 @@ The new partition gets a range expression with a limit 10.000 values higher than
 
 In code:
 
-{% highlight python %}
+```python
 def create_partition(db, next_name, next_limit):
     cmd = f"alter table data add partition ( partition {next_name} values less than ( {next_limit}))"
     print(f"cmd = {cmd}")
     c = db.cursor()
     c.execute(cmd)
-{% endhighlight %}
+```
 
 This will simply format and run an `ALTER TABLE` statement to add a new partition to the existing table.
 
 And the checking loop:
 
-{% highlight python %}
+```python
 def partitioner():
     db = MySQLdb.connect(**db_config)
     c = db.cursor()
@@ -203,7 +203,7 @@ def partitioner():
             continue
 
         sleep(0.1)
-{% endhighlight %}
+```
 
 This code is mostly a long `SELECT` on the `INFORMATION_SCHEMA.PARTITIONS` table, and then two quick checks to see if we need to make more partitions.
 
@@ -211,17 +211,17 @@ This code is mostly a long `SELECT` on the `INFORMATION_SCHEMA.PARTITIONS` table
 
 The Dropper structurally mirrors the Partitioner: We have a tiny function to create the actual `ALTER TABLE data DROP PARTITION` statement:
 
-{% highlight python %}
+```python
 def drop_partition(db, partition_name):
     cmd = f"alter table data drop partition {partition_name}"
     c = db.cursor()
     print(f"cmd = {cmd}")
     c.execute(cmd)
-{% endhighlight %}
+```
 
 And we have an endless loop that basically runs a `SELECT` on `INFORMATION_SCHEMA.PARTITIONS` and checks the number of partitions that have a non-zero number of `TABLE_ROWS`. If it is too many, we drop the one with the lowest number ("the first one found", using an appropriate sort order in our SQL).
 
-{% highlight python %}
+```python
 def dropper():
     db = MySQLdb.connect(**db_config)
     c = db.cursor()
@@ -254,13 +254,13 @@ def dropper():
             continue
 
         sleep(0.1)
-{% endhighlight %}
+```
 
 ## A test run
 
 In our test run, we see immediately after startup how the five spare partitions are being created.
 
-{% highlight console %}
+```console
 $ ./partitions.py  setup-tables
 $ ./partitions.py  start-processing
 create p2 reason: not enough partitions
@@ -277,11 +277,11 @@ counter = 1000
 counter = 2000
 counter = 3000
 ...
-{% endhighlight %}
+```
 
 Once we cross the threshold of p1, the number of empty partitions is no longer low enough and another one is being created:
 
-{% highlight console %}
+```console
 ...
 counter = 9000
 counter = 10000
@@ -289,11 +289,11 @@ create p7 reason: not enough empty partitions
 cmd = alter table data add partition ( partition p7 values less than ( 70000))
 counter = 11000
 ...
-{% endhighlight %}
+```
 
 This continues for a while, until we have a sufficient number of data partitions so that we begin dropping, too:
 
-{% highlight console %}
+```console
 ...
 counter = 90000
 create p15 reason: not enough empty partitions
@@ -303,13 +303,13 @@ cmd = alter table data drop partition p1
 counter = 91000
 counter = 92000
 ...
-{% endhighlight %}
+```
 
 Now the system reaches a stable state and will add and drop partitions in sync with the Inserter.
 
 From inside SQL we can see the number of rows in the table rise, and then suddenly drop by 10.000 as we drop a partition.
 
-{% highlight sql %}kris@localhost [kris]> select count(*) from data;
+```sqlkris@localhost [kris]> select count(*) from data;
 +----------+
 | count(*) |
 +----------+
@@ -332,6 +332,6 @@ kris@localhost [kris]> select count(*) from data;
 |    80362 |
 +----------+
 1 row in set (0.01 sec)
-{% endhighlight %}
+```
 
 The complete example is available [on github.com](https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions).

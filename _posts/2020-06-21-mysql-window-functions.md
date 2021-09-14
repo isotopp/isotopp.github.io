@@ -17,7 +17,7 @@ One of the new things in MySQL is the implementation of Window Functions. They a
 
 To better understand what goes on, let's create some fake data to work with:
 
-{% highlight python %}
+```python
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
@@ -63,13 +63,13 @@ for s in range(0, sensors):
         data = (None, s, t, value)
         cur.execute(insert_stmt, data)
     con.commit()
-{% endhighlight %}
+```
 
 This will create test data for a number of fictional sensors `sensors`. For each sensor, there will be `values` many readings with a random float value between `minvalue` and `maxvalue`. The sensor readings will be taken at a random point in time between `starttime` and `delta` days later. In our sample config, that is 3 sensors with 10 readings each, values between 0 and 10, at some random point in time in January 2020.
 
 We get data similar to this:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from series;
 +----+--------+---------------------+----------+
 | id | sensor | checktime           | value    |
@@ -87,11 +87,11 @@ root@localhost [kris]> select * from series;
 | 30 |      2 | 2020-01-20 00:00:00 |  5.86109 |
 +----+--------+---------------------+----------+
 30 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 We could group this data, for example by sensor. The database would then make piles for each sensor value, and we could apply aggregate functions to each pile:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select sensor, 
    -> count(value) as count,
    -> min(value) as min, 
@@ -107,13 +107,13 @@ root@localhost [kris]> select sensor,
 |      2 |    10 |  1.36718 | 9.90121 | 5.031034636497497 |
 +--------+-------+----------+---------+-------------------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Window Functions work similarly, but they do not make piles. They work by defining partitions over the data, and then walking through each partition, resetting the window functions applied at each partition boundary.
 
 As with `GROUP BY`, when leaving out a partitioning the entire table is taken as one:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, sensor, row_number() over () from series;
 +----+--------+----------------------+
 | id | sensor | row_number() over () |
@@ -127,11 +127,11 @@ root@localhost [kris]> select id, sensor, row_number() over () from series;
 | 30 |      2 |                   30 |
 +----+--------+----------------------+
 30 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 The `id` is stored, the `row_number()` is generated. Let's add a partitioning by sensor number and re-run the command:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, sensor, 
   -> row_number() over (partition by sensor) as r
   -> from series;
@@ -155,11 +155,11 @@ root@localhost [kris]> select id, sensor,
 | 30 |      2 | 10 |
 +----+--------+----+
 30 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 By defining partition boundaries at `sensor` value changes with `PARTITION BY sensor`, the `row_number()` counter is reset each time the `sensor` value changes. Within each partition, we can order the values as we wish. Using the same statement as before, but ordering the values by `id` in reverse, we get
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, sensor, 
   -> row_number() over (partition by sensor order by id desc) as r 
   -> from series;
@@ -183,11 +183,11 @@ root@localhost [kris]> select id, sensor,
 | 21 |      2 | 10 |
 +----+--------+----+
 30 rows in set (0.01 sec)
-{% endhighlight %}
+```
 
 Note that the `OVER ()` clause is written as a field. Different windows and hence different partitions and orderings can be defined concurrently.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, sensor, row_number() over (partition by sensor order by id desc) as r, row_number() over (order by id desc ) as rr  from series order by id;
 +----+--------+----+----+
 | id | sensor | r  | rr |
@@ -204,7 +204,7 @@ root@localhost [kris]> select id, sensor, row_number() over (partition by sensor
 | 30 |      2 |  1 |  1 |
 +----+--------+----+----+
 30 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Most aggregate functions can be used with `OVER()` clauses, among them not only `AVG()` and the other statistics functions, but also `JSON_ARRAYAGG()` and `JSON_OBJECTAGG()`. On top of that a number of window-specific functions have been defined, as listed in [Window Function Descriptions](https://dev.mysql.com/doc/refman/8.0/en/window-function-descriptions.html) in the manual. Among these are `RANK()` and `DENSE_RANK()` , as well as `LAG()` and `LEAD()`, which refer to the value next or preceding the current row.
 
@@ -212,7 +212,7 @@ We can already answer [the question about row numbers](https://www.reddit.com/r/
 
 We have shown above already how to produce global row numbers and row numbers per sensor. We can also quite easily run a topK query, for example "show me the three smallest values per sensor":
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from (
   -> select sensor, 
   ->        value, 
@@ -234,7 +234,7 @@ root@localhost [kris]> select * from (
 |      2 |  2.71718 |      3 |
 +--------+----------+--------+
 9 rows in set (0.01 sec)
-{% endhighlight %}
+```
 
 We need a subquery here, because according to [the manual]():
 > Query result rows are determined from the FROM clause, after WHERE, GROUP BY, and HAVING processing, and windowing execution occurs before ORDER BY, LIMIT, and SELECT DISTINCT. 
@@ -243,7 +243,7 @@ So if we want to filter on the result of a window function like rank, we need to
 
 To answer the [second Reddit question](https://www.reddit.com/r/mysql/comments/hbx5kk/get_the_difference_between_two_values_in), we need to use `LAG()` and `LEAD()`. With them we can also process differences between two adjacent rows in the same partition:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, 
   -> sensor, 
   -> checktime, 
@@ -268,22 +268,22 @@ root@localhost [kris]> select id,
 | 22 |      2 | 2020-01-30 00:00:00 |   1.8867 |    8.014503359794617 |
 +----+--------+---------------------+----------+----------------------+
 30 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 We define a partition by sensor, and process values in each partition in temporal order (we generated our fake sensor data in random temporal order within a time window). We calculate the difference between the current value and the lagging (following) value as `delta`.
 
 The way we have written the delta calculation highlights a pecularity of the syntax: The expression for the preceding value is not `LAG(value)`, it is `lag(value) over (partition by sensor order by checktime)`. We have to put the different `- value` behind the full window expression, not into the middle of it: `lag(value)-value over (partition by sensor order by checktime) as delta` yields a syntax error.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, sensor, checktime, value, lag(value)-value over (partition by sensor order by checktime) as delta from series order by sensor, checktime;
 ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '-value over (partition by sensor order by checktime) as delta from series order ' at line 1
-{% endhighlight %}
+```
 
 Because `OVER()` expressions can become quite unwieldy (especially if you also define frames - not explained here - in them), they can be named and put into the select-statement at a place behind the `FROM` clause.
 
 This gives us
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select id, 
   -> sensor, 
   -> checktime, 
@@ -297,7 +297,7 @@ root@localhost [kris]> select id,
 |  9 |      0 | 2020-01-04 00:00:00 |  9.20321 |                 NULL |
 |  5 |      0 | 2020-01-06 00:00:00 |  4.63966 |     4.56355619430542 |
 …
-{% endhighlight %}
+```
 
 as a different syntax with the same result. It is possible to define more than window, as long as they have different window names, and it is possible for a window to be referred to zero or more times.
 

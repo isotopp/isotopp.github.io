@@ -27,7 +27,7 @@ But if the data you want to keep is larger than memory, the indexing of the
 data will still be slow. A nice way to handle log tables are partitions.
 Here is an example. It's not very cleaned up, but it works on my system.
 
-{% highlight python %}
+```python
 #! /usr/bin/env python --
 
 # setting up the python environment:
@@ -265,4 +265,4 @@ def dropbyvalue(name, valuebelow):
       click.echo("MySQL Error: %s" % e)
 
 partitions()
-{% endhighlight %}
+```

@@ -35,7 +35,7 @@ Das geht so:
 
 Lege eine Beispieltabelle an und fülle sie mit Beispielwerten:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table t ( 
   id integer unsigned not null primary key, 
   d integer unsigned not null 
@@ -45,14 +45,14 @@ Query OK, 0 rows affected (0.16 sec)
 root@localhost [kris]> insert into t values ( 1, 1), (2,2), (3,3);
 Query OK, 3 rows affected (0.00 sec)
 Records: 3  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Jetzt initialisiere einen Zähle als Connection-Variable:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set @x = 0;
 Query OK, 0 rows affected (0.00 sec)
-{% endhighlight %}
+```
 
 Hier kommt dann die Magie: Wir zählen den Zähler in einer Update-Clause
 eines INSERT ON DUPLICATE KEY UPDATE mit hoch. Da wir den eigentlichen
@@ -60,18 +60,18 @@ Zählerwert im Statement selber nicht brauchen, multiplizieren wir ihn mit 0
 und addieren ihn dann irgendwo zu (irgendwas plus 0 ist halt irgendwas -
 neutrales Element der Addition).
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> insert into t values (4,4), (2,1), (3, 1) 
 -> on duplicate key update 
 -> d= values (d) + 0* ( @x := @x +1 );
 
 Query OK, 5 rows affected (0.00 sec)
 Records: 3  Duplicates: 2  Warnings: 0
-{% endhighlight %}
+```
 
 Kleine Gegenkontrolle: Wie viele UPDATE-Zweige haben wir betreten?
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select @x;
 +------+
 | @x   |
@@ -90,12 +90,12 @@ root@localhost [kris]> select * from t;
 |  4 | 4 |
 +----+---+
 4 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir sollten mit values(id) und einem concat() sogar eine Liste der
 Primärschlüssel bekommen können, die wir angefaßt haben.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set @id = "";
 Query OK, 0 rows affected (0.00 sec)
 
@@ -110,11 +110,11 @@ root@localhost [kris]> insert into t
 ->   substring(@id := concat(@id, ",", values(id)) , 1, 0));
 Query OK, 5 rows affected (0.00 sec)
 Records: 3  Duplicates: 2  Warnings: 0
-{% endhighlight %}
+```
 
 Und wirklich: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select @x, @id;
 +------+------+
 | @x   | @id  |
@@ -122,7 +122,7 @@ root@localhost [kris]> select @x, @id;
 |    2 | ,2,3 |
 +------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Und falls einer von Euch jetzt einwirft "Ich wußte nicht, daß man das machen
@@ -139,7 +139,7 @@ gesendet. Liz meinte dazu:
 Für ausreichend kleine Werte von Reliable kann man mit einer noch
 dreckigeren Lösung nachsetzen:
 
-{% highlight sql %}
+```sql
 set @counter = 0;
 set @_id = "";
 set @_d = "";
@@ -154,11 +154,11 @@ values (4,4), (2,1), (3, 1)
  id = concat(values(id), 
    substring(@_id := concat(@_id, ",", values(id)) , 1, 0));
 select @counter, @_id, @_d;
-{% endhighlight %}
+```
 
 Und das druckt: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select @counter, @_id, @_d;
 +----------+------+--------+
 | @counter | @_id | @_d    |
@@ -166,4 +166,4 @@ root@localhost [kris]> select @counter, @_id, @_d;
 |        2 | ,2,3 | ,20,30 |
 +----------+------+--------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```

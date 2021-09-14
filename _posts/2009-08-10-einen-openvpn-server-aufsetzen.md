@@ -34,17 +34,17 @@ Zertifikates aus unsicher zu erkennen.
 Das Kommanzeilenprogramm openvpn ist sowohl Server als auch
 Client. Auf dem Server wird es so gestartet:
 
-{% highlight console %}
+```console
 /usr/sbin/openvpn \
   --daemon \
   --writepid /var/run/openvpn/openvpn.pid \
   --config /etc/openvpn/openvpn.conf \
   --cd /etc/openvpn
-{% endhighlight %}
+```
 
 Die Konfiguration ist kurz und schmerzlos: 
 
-{% highlight console %}
+```console
 h743107:~ # cat /etc/openvpn/openvpn.conf
 daemon openvpn-server.koehntopp
 dev tun
@@ -74,7 +74,7 @@ keepalive 10 60
 
 # client config dir
 client-config-dir client-config-dir
-{% endhighlight %}
+```
 
 
 Dies erzeugt einen Server, der auf Port 443 an der an Stelle von
@@ -105,7 +105,7 @@ Auf dem Client (bei mir ein Mac) verwende ich Tunnelblick als
 openvpn-Starter und habe in $HOME/Library/openvpn eine
 openvpn.conf hinterlegt:
 
-{% highlight console %}
+```console
 client
 dev tun
 proto tcp
@@ -132,7 +132,7 @@ keepalive 1 5
 ; firmenproxy
 http-proxy {COMPANY_PROXY} 3128
 http-proxy-retry
-{% endhighlight %}
+```
 
 Hier ist dieselbe {SERVERIP} einzutragen wie bei der
 Server-Konfiguration. Wenn die Verbindung durch einen Web-Proxy

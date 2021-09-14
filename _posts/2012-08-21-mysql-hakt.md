@@ -77,7 +77,7 @@ Analysen lokal aufzeichnet und für bis zu eine Woche vorhält.
 
 Tatsächlich findet sich: 
 
-{% highlight console %}
+```console
 # less 16_52.innodb.gz
 ...
 SQL: SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX
@@ -89,7 +89,7 @@ SQL: SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX
   REPEATABLE READ 1       1       
   NULL    0       10000
 ...
-{% endhighlight %}
+```
 
 Der Pileup entsteht durch eine Folge von DDL-Locks, die durch ein
 Wartungsscript erzeugt werden.  Das Script lädt eine neue Tabelle in die

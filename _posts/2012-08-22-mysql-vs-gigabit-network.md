@@ -67,7 +67,7 @@ Was zum Teufel geht hier vor?
 Das wird schnell deutlich, denn man ein paar Dinge prüft, die mit dem Test
 zu tun haben.  Die relevante Tabelle sieht so aus:
 
-{% highlight sql %}
+```sql
 mysql> show table status like '...'\G
            Name: ...
          Engine: InnoDB
@@ -87,7 +87,7 @@ Create Table: CREATE TABLE `...` (
   KEY `last_check` (`last_check`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Wir haben hier also ein System, bei dem Daten materialisiert und als Blob
@@ -97,12 +97,12 @@ wird das Feld 'last_check' aktualisiert.
 
 Außerdem ist Row Based Replication konfiguriert: 
 
-{% highlight sql %}
+```sql
 mysql> show global variables like 'binlog_format'\G
 Variable_name: binlog_format
         Value: ROW
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Nun verhält es sich aber mit 
@@ -121,7 +121,7 @@ last_changed Feld von 4 Bytes geändert wird.
 
 Außerdem ist: 
 
-{% highlight sql %}
+```sql
 mysql> select count(command) as c from processlist where command = 'binlog dump';
 +----------+
 | c            |
@@ -129,7 +129,7 @@ mysql> select count(command) as c from processlist where command = 'binlog dump'
 |       45 |
 +----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir drücken diese 140 KB pro Change also an 45 unabhängige Slaves raus (das
 ist hier hauptsächlich der Tatsache geschuldet, daß das Zielsystem

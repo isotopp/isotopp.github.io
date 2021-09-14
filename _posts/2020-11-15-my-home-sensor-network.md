@@ -28,7 +28,7 @@ I am collecting data from a number of plugs with power meters over Wifi, using t
 
 I have a rather old server machine at home that acts as a file server and docker host.
 
-{% highlight console%}
+```console
 # lscpu  | egrep '^Model name|^CPU\(s\):'
 CPU(s):                          8
 Model name:                      Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
@@ -46,18 +46,18 @@ DISTRIB_ID=Ubuntu
 DISTRIB_RELEASE=20.04
 DISTRIB_CODENAME=focal
 DISTRIB_DESCRIPTION="Ubuntu 20.04.1 LTS"
-{% endhighlight %}
+```
 
 ### Gateway
 
 This machine is hosting a [ConBee from Dresden Elektronik](https://www.amazon.de/gp/product/B07PZ7ZHG5):
 
-{% highlight console %}
+```console
 # lsusb | grep -i Dresden
 Bus 002 Device 084: ID 1cf1:0030 Dresden Elektronik
 # ls -l /dev/ttyACM0
 crw-rw---- 1 root dialout 166, 0 Nov 15 11:51 /dev/ttyACM0
-{% endhighlight %}
+```
 
 The instructions say you should be connecting the conbee to the device using a USB cable, to keep it away from the device HF. This will improve the reach of the antenna supposedly a lot.
 
@@ -123,35 +123,35 @@ Conversion and transport from Zigbee to MQTT is done using [zigbee2mqtt](https:/
 
 All data and config resides in `/export/iot` in my setup.
 
-{% highlight console%}
+```console
 # df -Th /export/iot/
 Filesystem           Type  Size  Used Avail Use% Mounted on
 /dev/mapper/data-iot xfs    30G  7.3G   23G  25% /export/iot
-{% endhighlight %}
+```
 
 I am providing sufficient storage for about one year of data. I am using XFS as a file system, because while having higher commit latency than ext4, it has close to no jitter and consequently much better plannable performance.
 
 This is a LVM2 partition on the `data` volume group, which containts two Samsung EVO 860 4 GB drives.
 
-{% highlight console %}
+```console
 # pvs | grep data
   /dev/sde1  data   lvm2 a--    3.64t   2.32t
   /dev/sdf1  data   lvm2 a--    3.64t   1.16t
 # vgs data
   VG   #PV #LV #SN Attr   VSize VFree
   data   2  13   0 wz--n- 7.28t 3.48t
-{% endhighlight %}
+```
 
 Created this way:
 
-{% highlight console %}
+```console
 # lvcreate -n iot -L 30g data
 ...
 # mkfs -t xfs /dev/data/iot
 ...
 # mkdir /export/data
 # mount /dev/data/iot /export/data
-{% endhighlight %}
+```
 
 ### docker-compose
 
@@ -163,7 +163,7 @@ A deployment is specified in a file `docker-compose.yml`, which lists a number o
 
 We make use of this:
 
-{% highlight yaml %}
+```yaml
 # cd /export/iot
 # cat .env
 DATA_DIR=/export/iot
@@ -177,13 +177,13 @@ TZ=Europe/Amsterdam
 GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
 
 DOCKER_HOST_ADDRESS=192.168.1.10
-{% endhighlight %}
+```
 
 These are being used in the `docker-compose.yml` in the same directory. We specify the version, and enumerate the services we want.
 
 Here is our service `mosquitto`:
 
-{% highlight yaml %}
+```yaml
 ---
 version: "3"
 
@@ -201,7 +201,7 @@ services:
       - "${DATA_DIR}/mosquitto/data:/mosquitto/data"
       - "${DATA_DIR}/mosquitto/log:/mosquitto/log"
     restart: "always"
-{% endhighlight %}
+```
 
 We are defining a container named "mosquitto", which uses the docker internal hostname "mosquitto". Our other services will be able to connect to this container using this hostname. We try to run this as the user with the UID 1000, but unfortunately this is mostly a vain effort using Docker - a lot of stuff needs to run privileged. The server inside the container is running on port 1883, and we make it available on the outside on `$MQTT_PORT` from the dotenv.
 
@@ -213,7 +213,7 @@ We also define a [restart](https://docs.docker.com/compose/compose-file/#restart
 
 Next up: we want an Influx instance.
 
-{% highlight yaml %}
+```yaml
   influxdb:
     image: "influxdb:latest"
     container_name: "influxdb"
@@ -223,13 +223,13 @@ Next up: we want an Influx instance.
     volumes:
       - "${DATA_DIR}/influxdb:/var/lib/influxdb"
     restart: "always"
-{% endhighlight %}
+```
 
 Again, we may the internal port (8086) to what is defined in the dotenv, and we overwrite the internal `/var/lib/influxdb` with `$DATA_DIR/influxdb` (`/export/iot/influxdb`).
 
 We can prove this works: Enter the docker container, create a file, leave the docker container, see the file.
 
-{% highlight console %}
+```console
 # docker exec -it influxdb bash
 # cd /var/lib/influxdb/
 /var/lib/influxdb# touch keks
@@ -237,7 +237,7 @@ We can prove this works: Enter the docker container, create a file, leave the do
 # ls -l /export/iot/influxdb/keks
 -rw-r--r-- 1 root root 0 Nov 15 15:58 /export/iot/influxdb/keks
 # rm /export/iot/influxdb/keks
-{% endhighlight %}
+```
 
 This gets us an instance of Influx.
 
@@ -245,7 +245,7 @@ This gets us an instance of Influx.
 
 Next then, the Grafana instance:
 
-{% highlight yaml %}
+```yaml
   grafana:
     image: "grafana/grafana:latest"
     container_name: "grafana"
@@ -260,7 +260,7 @@ Next then, the Grafana instance:
       - "${DATA_DIR}/grafana/log:/var/log/grafana"
       - "${DATA_DIR}/grafana/config:/etc/grafana"
     restart: "always"
-{% endhighlight %}
+```
 
 We can only run Grafana, when Influx is up and running, so we provide a `depends_on` attribute to the service. Again, we map the port, and also the various directories of interest inside the container are made available to the outside.
 
@@ -268,7 +268,7 @@ We can only run Grafana, when Influx is up and running, so we provide a `depends
 
 The bridge from Zigbee to MQTT is defined as before:
 
-{% highlight yaml %}
+```yaml
   z2m:
     image: "koenkk/zigbee2mqtt"
     container_name: "z2m"
@@ -284,7 +284,7 @@ The bridge from Zigbee to MQTT is defined as before:
     depends_on:
       - "mosquitto"
     restart: "always"
-{% endhighlight %}
+```
 
 This one is special, because it needs device access to the device file of the ConBee inside the container. So the container is `privileged`, we import the device file, and a `ro` instance of `udev`. It also needs access to the `TZ` environment variable from dotenv.
 
@@ -294,7 +294,7 @@ Our Zigbee2MQTT data is in `$DATA_DIR/z2m` (`/export/iot/z2m`).
 
 The final component is our mqttbridge, which is a dockerized Python script we provide. Alternatively we could have used telegraf for this, but I realized that only later.
 
-{% highlight yaml %}
+```yaml
   bridge:
     build: "./bridge"
     image: "isotopp/mqttbridge"
@@ -305,13 +305,13 @@ The final component is our mqttbridge, which is a dockerized Python script we pr
       - "influxdb"
       - "mosquitto"
     restart: "always"
-{% endhighlight %}
+```
 
 Our script resides in `./bridge` (`/export/iot/bridge`), and runs with the hostname and container name `mqttbridge`, as UID 1000. It makes sense to run it only when it can read data from mosquitto and write to Influx, so we `depends_on` these.
 
 Inside the `./bridge` directory, we provide a `Dockerfile` and the script:
 
-{% highlight docker %}
+```docker
 # cat bridge/Dockerfile
 FROM python:3.8-alpine
 
@@ -325,7 +325,7 @@ COPY ./bridge.py /app
 WORKDIR /app
 
 CMD [ "python3", "-u", "bridge.py" ]
-{% endhighlight %}
+```
 
 This makes use of the Python 3.8 Alpine base image. We copy our requirements file into the container, run `pip` to install the requirements, copy the `bridge.py` file into the /app directory and then start that script with the appropriate options (`-u` - run Python unbuffered).
 
@@ -337,12 +337,12 @@ The various components need configuration.
 
 ### Mosquitto
 
-{% highlight console %}
+```console
 # cat /export/iot/mosquitto/mosquitto.conf
 persistence true
 persistence_location /mosquitto/data/
 log_dest file /mosquitto/log/mosquitto.log
-{% endhighlight %}
+```
 
 We also need a `/export/iot/mosquitto/users` file, and create a `mqttuser` with `mosquitto_passwd -c /export/iot/mosquitto/users mqttuser`.
 
@@ -358,7 +358,7 @@ Grafana comes up empty, and needs an admin password and manual configuration aft
 
 We can then use the hostnames we defined to access the database:
 
-{% highlight console %}
+```console
 - Name: InfluxDB
 - Default: enabled
 
@@ -369,7 +369,7 @@ Access: Server (default)
 
 Database: home_db (we are going to set this up later)
 User: and Password: as needed (by default: empty)
-{% endhighlight %}
+```
 
 As soon as we have data in InfluxDB, we can start to define dashboards.
 
@@ -379,7 +379,7 @@ And this is where we start configuration for real, the entry point for our data:
 
 It will look somewhat like this:
 
-{% highlight yaml %}
+```yaml
 # cat configuration.yaml
 homeassistant: false
 permit_join: true
@@ -388,7 +388,7 @@ mqtt:
   server: 'mqtt://mosquitto/'
 serial:
   port: /dev/ttyACM0
-{% endhighlight %}
+```
 
 That is:
 
@@ -408,16 +408,16 @@ So we `cd /export/iot` and `docker-compose build`, them `docker-compose up` the 
 
 Among all the other things we also get our bridge process and the node process from z2m:
 
-{% highlight console %}
+```console
 # ps axuwwww | grep [b]ridge.py
 kris     2982402  0.0  0.0  24136 18120 ?        Ss   Nov10   5:20 python3 -u bridge.py
 # ps axuwwww | grep index.j[s]
 root      441693  0.8  0.1 314256 57840 ?        Sl   12:12   2:53 node index.js
-{% endhighlight %}
+```
 
 We can switch to the z2m log directory and tail the log:
 
-{% highlight console %}
+```console
 # tail -F $(ls -1tr */log* | tail -1)
 info  2020-11-15 12:12:56: Logging to console and directory: '/app/data/log/2020-11-15.12-12-56' filename: log.txt
 info  2020-11-15 12:12:56: Starting zigbee2mqtt version 1.14.0 (commit #9009de2)
@@ -431,13 +431,13 @@ warn  2020-11-15 12:12:56: Set `permit_join` to `false` once you joined all devi
 info  2020-11-15 12:12:56: Zigbee: allowing new devices to join.
 info  2020-11-15 12:12:56: Connecting to MQTT server at mqtt://mosquitto/
 info  2020-11-15 12:12:56: Connected to MQTT server
-{% endhighlight %}
+```
 
 We could now try to have a device join the setup, by holding it close to the antenna and pressing the button. For the IKEA bridges, we need to push a paper clip into the small hole at the front, for the Aqara devices we press the button.
 
 We should see a log message for each of the devices. After everything has joined, we can `docker-compose stop z2m; service networking restart` and edit the `configuration.yaml` to closed state, and name the devices.
 
-{% highlight yaml %}
+```yaml
 # cat configuration.yaml
 homeassistant: false
 permit_join: false
@@ -463,14 +463,14 @@ devices:
     friendly_name: wohnzimmer/SENSOR
   '0x680ae2fffe9c847d':
     friendly_name: schuppen/BRIDGE
-{% endhighlight %}
+```
 
 z2m will now post messages to the MQTT bus, building the topic from the `base_topic`and the `friendly_name`:
 
-{% highlight console %}
+```console
 info  2020-11-15 17:42:00: MQTT publish: topic 'zigbee2mqtt/schuppen/SENSOR', payload '{"battery":97,"voltage":2995,"temperature":11.85,"humidity":81.23,"pressure":1002,"linkquality":96}'
 info  2020-11-15 17:42:45: MQTT publish: topic 'zigbee2mqtt/bathroom/SENSOR', payload '{"battery":74,"voltage":2955,"temperature":21.41,"humidity":59.62,"pressure":997.4,"linkquality":96}'
-{% endhighlight %}
+```
 
 The payload here is JSON, which we parse, and push into Influxdb. Or let `telegraf` do that, automatically.
 
@@ -486,13 +486,13 @@ Using the `mosquitto_sub` command we can listen to multiple topics on the bus. F
 
 We run
 
-{% highlight console %}
+```console
  # mosquitto_sub -F "%J"  -t zigbee2mqtt/+/SENSOR
 {"tst":1605459438,"topic":"zigbee2mqtt/westside/SENSOR","qos":0,"retain":0,"payloadlen":100,"payload":{"battery":91,"voltage":2985,"temperature":10.63,"humidity":84.22,"pressure":997.5,"linkquality":97}}
 {"tst":1605459438,"topic":"zigbee2mqtt/westside/SENSOR","qos":0,"retain":0,"payloadlen":100,"payload":{"battery":91,"voltage":2985,"temperature":10.63,"humidity":83.12,"pressure":997.5,"linkquality":97}}
 {"tst":1605459438,"topic":"zigbee2mqtt/westside/SENSOR","qos":0,"retain":0,"payloadlen":100,"payload":{"battery":91,"voltage":2985,"temperature":10.63,"humidity":83.12,"pressure":997.8,"linkquality":97}}
 
-{% endhighlight %}
+```
 
 in one window, and `tail -f /export/iot/z2m/log/*/log.txt` in a second window. When log messages appear in `log.txt`, we should also see JSON payloads being dumped by `mosquitto_sub`.
 
@@ -504,22 +504,22 @@ Zigbee is a mesh network. Our IKEA signal repeaters will act as intermediate rel
 
 We can [dump the current topology](https://www.zigbee2mqtt.io/information/mqtt_topics_and_message_structure.html#zigbee2mqttbridgenetworkmap), as seen by the zigbee2mqtt gateway, by running the following command in one window:
 
-{% highlight console %}
+```console
  mosquitto_sub -h localhost -C 1  -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng > map.$(date +%Y%m%d%H%M%S).png
-{% endhighlight %}
+```
 
 and running the matching pub command in a second window:
 
-{% highlight console %}
+```console
 # mosquitto_pub -h localhost -t zigbee2mqtt/bridge/networkmap -m graphviz
-{% endhighlight %}
+```
 
 The sfdp command is part of the `graphviz` package.
 
-{% highlight console %}
+```console
 # dpkg -S $(which sfdp)
 graphviz: /usr/bin/sfdp
-{% endhighlight %}
+```
 
 The result is a network map. The map is always only a current snapshot, and the actual configuration may vary depending on network conditions.
 

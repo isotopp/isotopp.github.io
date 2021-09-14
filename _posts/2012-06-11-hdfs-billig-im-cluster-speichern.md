@@ -103,13 +103,13 @@ sich also nur um die verteilten Aspekte des Dateisystems, und überläßt jedem
 lokalen Knoten die Arbeit, das tatsächlich irgendwo auf eine Platte zu
 malen.
 
-{% highlight console %}
+```console
 [root@hadoop-115 finalized]# pwd
 /srv/hadoop/data01/dfs/dn/current/BP-1321238634-10.196.68.149-1338912643577/current/finalized
 [root@hadoop-115 finalized]# ls -lh blk_1025864654234871634*
 -rw------- 1 hdfs hdfs 128M Jun  6 13:37 blk_1025864654234871634
 -rw------- 1 hdfs hdfs 1.1M Jun  6 13:37 blk_1025864654234871634_8941.meta
-{% endhighlight %}
+```
 
 Das Mountschema im Beispiel ist /srv/hadoop/data{n}.  Auf jeder lokalen
 Platte gibt es einen Ordner /dfs/dn (Distributed Filesystem, Datanode), in

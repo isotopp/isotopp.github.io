@@ -38,9 +38,9 @@ So how is this done in different language APIs?
 
 [https://metacpan.org/pod/DBD::mysql#DATABASE-HANDLES](https://metacpan.org/pod/DBD::mysql#DATABASE-HANDLES), scroll down to mysql_store_result
 
-{% highlight perl %}
+```perl
 $dbh = DBI->connect("DBI:mysql:test;mysql_use_result=1", "root", "");
-{% endhighlight %}
+```
 
 ### PHP
 

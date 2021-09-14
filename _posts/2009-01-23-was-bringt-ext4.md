@@ -60,10 +60,10 @@ Schließlich erzeugt auch ext4 nun ohne Journal=Data immer konsistente Datenstru
 
 ext4 kann ext3-Dateisysteme lesen. Es ist also möglich, ein ext3-Dateisystem als ext4 zu mounten. Die meisten Features, die ein ext4 einem ext3 voraus hat, sind dabei jedoch nicht nutzbar. Auch ein 
 
-{% highlight console %}
+```console
 tune2fs -O extents,uninit_bg,dir_index /dev/DEV
 fsck -pf /dev/DEV
-{% endhighlight %}
+```
 
  schaltet diese Features nur für neue Dateien um, baut aber die vorhandenen Dateien und Verzeichnisse nicht auf das neue Format um. Die volle Effizienzsteigerung erlangt man also nur durch ein Umkopieren der Daten auf ein neue angelegtes, leeres ext4-Dateisystem.
  

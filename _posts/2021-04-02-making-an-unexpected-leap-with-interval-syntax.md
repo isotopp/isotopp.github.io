@@ -13,13 +13,13 @@ tags:
 
 Ruud commented on [our DST discussion]({% link _posts/2021-03-29-mysql-date-time-dst.md %}) with
 
-{% highlight sql %}
+```sql
 mysql> SELECT 
 '2019-02-28 12:34:56'+ INTERVAL 1 YEAR + INTERVAL 1 DAY as a, 
 '2019-02-28 12:34:56'+ INTERVAL 1 DAY + INTERVAL 1 YEAR  as b\G
 a: 2020-02-29 12:34:56
 b: 2020-03-01 12:34:56
-{% endhighlight %}
+```
 
 2019 is a year before a leap year. Adding (left to right) a year brings us to `2020-02-28`, and then adding a day makes this `2020-02-29`, because it's a leap year.
 
@@ -43,14 +43,14 @@ If you think that this is a cumbersome solution and a cumbersome syntax, you wil
 
 [Mohammed S. Al Sahaf](https://twitter.com/MohammedSahaf/status/1377771663350173705) contributes this syntax for [SQLite](https://sqlite.org/lang_datefunc.html):
 
-{% highlight sql %}
+```sql
 sqlite> select
   date('2019-02-28', '+1 year', '+1 day') as a,
   date('2019-02-28', '+1 day', '+1 year') as b;
 a           b
 ----------  ----------
 2020-02-29  2020-03-01
-{% endhighlight %}
+```
 
 confirming that this is not a problem specific to MySQL.
 
@@ -58,40 +58,40 @@ confirming that this is not a problem specific to MySQL.
 
 [Andreas Scherbaum](https://twitter.com/ascherbaum/status/1377617850509180932) demonstrates the more generic Postgres Syntax:
 
-{% highlight sql %}
+```sql
 pgsql> SELECT 
 '2019-02-28 12:34:56'::TIMESTAMP + INTERVAL '1 year 1 day' as a,
 '2019-02-28 12:34:56'::TIMESTAMP + INTERVAL '1 day 1 year' as b;
 
 a: 2020-02-29T12:34:56Z	
 b: 2020-02-29T12:34:56Z	
-{% endhighlight %}
+```
 
 This works, because Postgres offers a syntax for a single interval that can combine arbitrary units. So internally both times it's the same order of operations (a span of a year and a day) in a single interval.
 
 The [two-step operation](http://sqlfiddle.com/#!17/76411/3/0) gives the same result as MYSQL.
 
-{% highlight sql %}
+```sql
 pgsql> SELECT 
 '2019-02-28 12:34:56'::TIMESTAMP + INTERVAL '1 year' + INTERVAL '1 day' as a,
 '2019-02-28 12:34:56'::TIMESTAMP + INTERVAL '1 day' + INTERVAL '1 year' as b;
 
 a: 2020-02-29T12:34:56Z	
 b: 2020-03-01T12:34:56Z
-{% endhighlight %}
+```
 
 ### Cockroach
 
 [Mohammed](https://twitter.com/MohammedSahaf/status/1377772984585367553) also demonstrates that Cockroach has the same syntax that allows Postgres to make the calculation in a single step:
 
-{% highlight sql %}
+```sql
 Cockroach> select
 '2019-02-28 12:34:56'::TIMESTAMP + INTERVAL '1 year 1 day' as a,
 '2019-02-28 12:34:56'::TIMESTAMP + INTERVAL '1 day 1 year' as b;
               a             |             b
 ----------------------------+----------------------------
   2020-02-29 12:34:56+00.00 | 2020-02-29 12:34:56+00.00
-{% endhighlight %}
+```
 
 ## What to do about it?
 
@@ -103,11 +103,11 @@ Picking up Postgres/Cockroach interval notation would allow MySQL to get rid of 
 
 So, MySQL, please consider
 
-{% highlight sql %}
+```sql
 mysql> select '2019-02-29 12:34:56' + interval '1 day 1 year' as a;
 
 a: 2020-02-29 12:34:56
-{% endhighlight %}
+```
 
 sort it internally into a canonical expression and make it possible to jump to '2020-02-29 12:34:56' in a single interval jump.
 

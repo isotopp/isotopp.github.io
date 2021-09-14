@@ -22,9 +22,9 @@ There are two ends to this question:
 
 You can of course delete data from a table using the SQL `DELETE` statement with an arbitrary `WHERE`-clause at any time:
 
-{% highlight sql %}
+```sql
 DELETE FROM t WHERE report_date < now() - INTERVAL 7 DAY
-{% endhighlight %}
+```
 
 *Delete data from table t that has a report_date more than 7 days in the past. Since the interval expression on the right hand side evaluates to a constant and the left hand side is a bare column name, the planner can leverage an index on the column report_date to find the rows to delete quickly.*
 
@@ -34,7 +34,7 @@ In the SQL style guide we use at work, we recommend that developers run a `SELEC
 
 So something like:
 
-{% highlight python %}
+```python
     batch_size = 1000
     delete_stmt = "DELETE FROM t WHERE id IN ( %s )"
 
@@ -45,7 +45,7 @@ So something like:
         current_set = ', '.join(full_set[n:n+batch_size])
         cursor.execute(delete_stmt % current_set)
         cursor.commit()
-{% endhighlight %}
+```
 
 The ORM we use (a local custom thing) actually provides functionality that automates this, and also checks replication delay on the replicas. It will delay the loop execution if necessary in order to keep the lag on the replicas within the service level.
 
@@ -61,7 +61,7 @@ The recommended way to do this is to use [MySQL partitions](https://dev.mysql.co
 
 This will hurt way less than deleting data, and also not mess with the structure of the B+-Tree.
 
-{% highlight sql %}
+```sql
 CREATE TABLE t (
   id INTEGER NOT NULL PRIMARY KEY auto_increment,
   ...
@@ -72,7 +72,7 @@ CREATE TABLE t (
 
 ALTER TABLE t ADD PARTITION ( PARTITION p2 VALUES LESS THAN (3000000)),
              DROP PARTITION p0;
-{% endhighlight %}
+```
 
 Because each partition is internally a table of its own, each partition will have their own much tinyier tree, and the actual drop operation is a file system delete instead of a tree rebalancing operation.
 

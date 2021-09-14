@@ -25,12 +25,12 @@ Nehmen wir uns einmal ein Beispiel und versuchen zu verstehen, was da passiert.
 
 Da ist zum Beispiel ein sehr einfacher Fall - ich könnte versuchen Speicher beim Betriebssystem zu reservieren und das kann fehlschlagen.
 
-{% highlight c %}
+```c
 char *p = NULL;
 if ((p = malloc(someSize)) == NULL) {
     tja_was_dann();
 }
-{% endhighlight %}
+```
 
 Das ist so eine typische Situation - wieso zum Beispiel fragt die Bibliotheksfunktion `malloc()` nicht selbst auf `p == NULL` ab und fängt diesen Fall ab. Weil sie das nicht tut, muß ich das jedes einzelne Mal selber tun und darf das in keinem einzelnen Fall vergessen.
 
@@ -63,12 +63,12 @@ Dieses Szenario setzt voraus, daß wir bereits weit vor dem Eintreten des Fehler
 
 Weil wir Entwickler also im falschen Moment mit Failures belästigen bekommen wir Code, bei dem Failure Handling im günstigsten Fall so aussieht: 
 
-{% highlight c %}
+```c
 char *p = NULL;
 if ((p = malloc(someSize)) == NULL) {
     exit(ENOMEM); // out of memory error
 }
-{% endhighlight %}
+```
 
 Immerhin ist hier überhaupt auf das Auftreten eines Fehlers geprüft worden. Vielleicht sind auch noch ein paar `atexit(3)`-Handler gestacked worden, die beim Programmende aufräumen, aber das ist allgemein recht wenig üblich.
 
@@ -76,7 +76,7 @@ Bei dieser Art der Fehlerbehandlung kann man am Code förmlich sehen, wie der An
 
 Ein anderes übliches Problem ist, daß auf einer viel zu niedrigen Ebene auf den Fehler geprüft wird. Zudem besteht oftmals keine Übereinkunft in der Anwendung, wie Fehler von einer niederen Abstraktionsebene auf die nächsthöhere Ebene weitergereicht wird, ohne daß Information verloren geht. Die Innereien des Quelltextes von MySQL sind ein ausgezeichnetes Beispiel für solche Scherereien, zum Teil findet man Code wie
 
-{% highlight c %}
+```c
 int errcode = doSomeThing();
 switch(errcode) {
   case 1:
@@ -88,7 +88,7 @@ switch(errcode) {
     return E_DAS;
     break;
 }
-{% endhighlight %}
+```
 
 Das heißt detaillierte interne Fehlercodes werden unter Informationsverlust plattgeklopft und ein Handler auf einer höheren Abtraktionsebene mit mehr Kontext hat gar keine Chance mehr festzustellen, was genau denn da unten nun schief gelaufen ist.
 

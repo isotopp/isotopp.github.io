@@ -97,7 +97,7 @@ MySQL replication logs statements in the binlog. Unfortunately, not all statemen
 
 MySQL knows this, and for the obvious cases logs additional code that makes them deterministic.
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> flush binary logs;
 Query OK, 0 rows affected (0.02 sec)
 
@@ -113,11 +113,11 @@ Note (Code 1592): Unsafe statement written to the binary log using statement for
 | 0.8351237492962962 |
 +--------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 In the binlog, we find (editing out the cruft):
 
-{% highlight sql %}
+```sql
 $ mysqlbinlog binlog.000043
 ...
 #201127 10:45:02 server id 1  end_log_pos 548 CRC32 0x1b4b14a9  Rand
@@ -126,7 +126,7 @@ SET @@RAND_SEED1=850981370, @@RAND_SEED2=491246833/*!*/;
 SET TIMESTAMP=1606470302/*!*/;
 insert into t values (rand());
 ...
-{% endhighlight %}
+```
 
 What is being logged is
 1. The RAND_SEED values to make the statement deterministic.
@@ -143,7 +143,7 @@ Counterintuitively, for the workloads we have at work, this is also 50% to 66% s
 
 Let’s do this:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> set binlog_format = row;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -164,11 +164,11 @@ Query OK, 1 row affected (0.01 sec)
 | 0.7980042936261783 |
 +--------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 We find:
 
-{% highlight sql %}
+```sql
 $ mysqlbinlog binlog.000043
 ...
 #201127 10:53:43 server id 1  end_log_pos 598 CRC32 0xdae6423f  Write_rows: table id 233 flags: STMT_END_F
@@ -179,7 +179,7 @@ p8zAXx4BAAAALAAAAAAAAAAAAOkAAAAAAAEAAgAB/wABJeZMQInpPz9C5to=
 '/*!*/;
 # at 598
 ...
-{% endhighlight %}
+```
 
 (You would need to run `mysqlbinlog -vvv` to have the mysqlbinlog command decode the BASE64 for you).
 
@@ -189,13 +189,13 @@ This is interesting, because it tells us: There is no such thing as a Row Based 
 
 Seeing this, I should be able to take this `BINLOG` statement and run it on the command line of my client:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]>   BINLOG '
     '> p8zAXxMBAAAAMAAAAAAAAAAAAOkAAAAAAAEABGtyaXMAAXQAAQUBCAEBAQCZVfvm
     '> p8zAXx4BAAAALAAAAAAAAAAAAOkAAAAAAAEAAgAB/wABJeZMQInpPz9C5to=
     '> '/*!*/;
 ERROR 1609 (HY000): The BINLOG statement of type `Table_map` was not preceded by a format description BINLOG statement.
-{% endhighlight %}
+```
 
 To make a long story short: If you go back and pick up the preceding `BINLOG` command earlier in the binlog, and then this one, it actually works.
 
@@ -219,10 +219,10 @@ The summary of all that is basically: Don't use binlog or replication filters, b
 
 Row Based Replication also fails in other interesting ways: Consider a table with a BLOB and a counter.
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> create table t ( id integer, cnt integer, b blob );
 Query OK, 0 rows affected (0.05 sec)
-{% endhighlight %}
+```
 
 When you increment the counter, the entire row is logged, twice: Once as a pre-image, and once again as a post-image. You end up with 4 bytes integer changing, but two full copies of the `BLOB`, which can be very large.
 

@@ -26,7 +26,7 @@ So how bad is this? Let's find out.
 
 We are defining a table `santa`, where we store peoples names (GDPR, [EU Regulation 2016/679](https://eur-lex.europa.eu/eli/reg/2016/679/oj) applies!), their behavior (naughty or nice), their age, their location, and their wishlist items.
 
-{% highlight sql %}
+```sql
 create table santa (
 	id integer not null primary key auto_increment,
 	name varchar(64) not null,
@@ -35,11 +35,11 @@ create table santa (
 	behavior enum('naughty', 'nice') not null,
 	wish varchar(64) not null
 )
-{% endhighlight %}
+```
 
 We are also writing some code to generate data (to evade GDPR, we are using randomly generated test data):
 
-{% highlight python %}
+```python
 for i in range(1, size):
 	data = {
 	    "id": i,
@@ -57,7 +57,7 @@ for i in range(1, size):
 	    db.commit()
 
 db.commit()
-{% endhighlight %}
+```
 
 The full data generator is available as [santa.py](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-santa/santa.py). Note that the data generator there defines more indexes - see below.
 
@@ -69,7 +69,7 @@ Our real planet is not a perfect sphere, and also not many people live in the Pa
 
 How do you even sort the data twice? Now, assuming we sort by name, we can run an increasingly deeply nested subquery:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> select count(*) from santa where behavior = 'nice';
 +----------+
 | count(*) |
@@ -95,13 +95,13 @@ possible_keys: NULL
 1 row in set, 1 warning (0.00 sec)
 
 Note (Code 1003): /* select#1 */ select count(0) AS `count(*)` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice')
-{% endhighlight %}
+```
 
 Out of 1 million children, we have around 900k nice children. No indexes can be used to resolve the query.
 
 Let's order by name, using a subquery:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> explain 
   -> select t.name from (
   ->   select * from santa where behavior = 'nice'
@@ -114,13 +114,13 @@ kris@localhost [kris]> explain
 1 row in set, 1 warning (0.00 sec)
 
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
-{% endhighlight %}
+```
 
 We can already see that the MySQL 8 optimizer recognizes that this subquery can be merged with the inner query, and does this.
 
 This can be done multiple times, but the optimizer handles this just fine:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> explain 
   -> select s.name from (
   ->   select t.name from (
@@ -135,7 +135,7 @@ kris@localhost [kris]> explain
 1 row in set, 1 warning (0.00 sec)
 
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
-{% endhighlight %}
+```
 
 We can see `using filesort`, so while we ask for the query result to be sorted by name twice, it is actually only sorted once.
 
@@ -143,15 +143,15 @@ We can see `using filesort`, so while we ask for the query result to be sorted b
 
 We can improve on this, using a covering index in appropriate order:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> alter table santa add index behavior_name (behavior, name);
 Query OK, 0 rows affected (21.82 sec)
 Records: 0  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Having done this, we now see that we lost the `using filesort` altogether:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> explain select s.name from ( select t.name from (select * from santa where behavior = 'nice') as t order by name ) as s order by name;
 +----+-------------+-------+------------+------+---------------+---------------+---------+-------+--------+----------+--------------------------+
 | id | select_type | table | partitions | type | possible_keys | key           | key_len | ref   | rows   | filtered | Extra                    |
@@ -161,7 +161,7 @@ kris@localhost [kris]> explain select s.name from ( select t.name from (select *
 1 row in set, 1 warning (0.00 sec)
 
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
-{% endhighlight %}
+```
 
 The query is now annotated `using index`, which means that all data we ask for is present in the (covering) index `behavior_name`, and is stored in sort order. That means the data is physically stored and read in sort order and no actual sorting has to be done on read - despite us asking for sorting, twice.
 
@@ -171,7 +171,7 @@ In the example above, we have been asking for `s.name` and `t.name` only, and be
 
 Now, if we were to ask for `t.*` in the middle subquery, what will happen?
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> explain
   -> select s.name from (
   ->   select * from (
@@ -186,7 +186,7 @@ kris@localhost [kris]> explain
 1 row in set, 1 warning (0.00 sec)
 
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
-{% endhighlight %}
+```
 
 In the `Code 1003 Note` we still see the exact same reconstituted query, but as can be seen in the plan annotastions, the internal handling changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.
 
@@ -206,14 +206,14 @@ In our case, the index is not even equidistributed, but biased to 90% `nice`. We
 
 We could try to improve the query by adding conditions to make it more selective. For example, we could ask for people close to our current position, using an RTREE index such as this:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> ALTER TABLE santa ADD SPATIAL INDEX (loc);
 ...
 kris@localhost [kris]> set @rect = 'polygon((10 10, 10 20, 20 20, 20 10, 10 10 ))';
 kris@localhost [kris]> select * from santa where mbrcovers(st_geomfromtext(@rect), loc);
 ...
 1535 rows in set (3.53 sec)
-{% endhighlight %}
+```
 
 The `ALTER` defines a spatial index (an RTREE), which can help to speed up coordinate queries.
 

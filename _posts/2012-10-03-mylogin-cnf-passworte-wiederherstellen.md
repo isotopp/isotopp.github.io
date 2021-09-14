@@ -33,7 +33,7 @@ BINARY(16) Puffer rein XOR't, der mit Nullbytes initialisiert worden ist.
 
 In Code:
 
-{% highlight php %}
+```php
 #! /usr/bin/php  -q
 <?php
 $fp = fopen(".mylogin.cnf", "r");
@@ -64,12 +64,12 @@ while ($len = fread($fp, 4)) {
   # print
   print $plain;
 }
-{% endhighlight %}
+```
 
 Die Datei selber ist dann ein simples Textfile, nicht unähnlich einer
 .my.cnf:
 
-{% highlight console %}
+```console
 server:~ # ./p.php
 [default]
 user = root
@@ -79,7 +79,7 @@ host = localhost
 user = root
 password = s3cret
 host = 127.0.0.1
-{% endhighlight %}
+```
 
 Teil des Problems ist die Tatsache, daß das MySQL Protokoll das
 Klartextpaßwort auf dem Client in lesbar braucht, um ein Login zu

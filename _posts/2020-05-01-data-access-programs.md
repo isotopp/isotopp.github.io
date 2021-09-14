@@ -24,20 +24,20 @@ The developer would have to write a piece of code to open the indexes of interes
 
 We can do the same thing in MySQL.
 
-{% highlight sql %}
+```sql
 mysql> create table emp ( empno integer not null, name varchar(40), salary integer not null, primary key (empno) );
 mysql> insert into emp values (1, 'Lucky Eddie', 100);
 mysql> insert into emp values (2, 'Hagar Horrible', 200);
 mysql> insert into emp values (3, 'Honi Horrible', 300);
 mysql> insert into emp values (4, 'Kwack', 400);
 mysql> create index salary on emp (salary);
-{% endhighlight %}
+```
 
 We create an employee table `emp` and fill it with some data. We create an additional index on the salary column.
 
 Using the low level `HANDLER` command we can perform a procedural data lookup:
 
-{% highlight sql %}
+```sql
 mysql> handler emp open as e;
 mysql> handler e read salary <= (200) limit 10;
 +-------+----------------+--------+
@@ -49,7 +49,7 @@ mysql> handler e read salary <= (200) limit 10;
 2 rows in set (0.00 sec)
 mysql> handler e close;
 Query OK, 0 rows affected (0.00 sec)
-{% endhighlight %}
+```
 
 In this example we are opening the table `emp` using the alias `e`. We then read the table in index order, using the `salary` index, and fetch up to 10 records that satisfy the condition 'index value <= 200'. The two matching records are listed.
 
@@ -71,7 +71,7 @@ But: For any given QL (Query Language) statement, the result set on the same dat
 
 Using the table above, we say what we want: Records with salary <= 200 and names ending in the "Horrible" family name.
 
-{% highlight sql %}
+```sql
 mysql> select * from emp where salary <= 200 and name like '%Horrible';
 +-------+----------------+--------+
 | empno | name           | salary |
@@ -79,11 +79,11 @@ mysql> select * from emp where salary <= 200 and name like '%Horrible';
 |     2 | Hagar Horrible |    200 |
 +-------+----------------+--------+
 1 row in set (0.01 sec)
-{% endhighlight %}
+```
 
 We then drop the index and re-run the same statement:
 
-{% highlight sql %}
+```sql
 mysql> alter table emp drop index salary;
 Query OK, 0 rows affected (0.03 sec)
 Records: 0  Duplicates: 0  Warnings: 0
@@ -95,7 +95,7 @@ mysql> select * from emp where salary <= 200 and name like '%Horrible';
 |     2 | Hagar Horrible |    200 |
 +-------+----------------+--------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 The result is the same. The data access program may or may not have changed - we could check with `EXPLAIN`, but unless it is slow or otherwise weird we do not actually care.
 

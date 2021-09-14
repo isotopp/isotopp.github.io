@@ -89,7 +89,7 @@ dahinter, daß Recovery möglich ist.
 Wir suchen nicht nach einem direkten Config Change, und das ist gut so, denn
 es hat in letzter Zeit auch keine solchen gegeben:
 
-{% highlight sql %}
+```sql
 root@dba-master-01 [dba]> select 
   new.report_date, 
   new.config_variable, 
@@ -112,7 +112,7 @@ where
 | 2012-05-12  | innodb_max_dirty_pages_pct | 20           | 75           |
 +-------------+----------------------------+--------------+--------------+
 2 rows in set (0.82 sec)
-{% endhighlight %}
+```
 
 Weiteres Wühlen im Graphite bringt Erleuchtung, denn wir finden das Inverse
 des Activity Patterns hier:
@@ -150,27 +150,27 @@ sich in kürzester Zeit wieder zu und wir fallen auf das alte Niveau runter.
 Der alte Trick mit der Processlist klappt auch hier wieder: Das Login kommt
 von
 
-{% highlight console %} | 6694419 | cacti | <hostname>:44467 |
-performance_schema | {% endhighlight %}
+```console | 6694419 | cacti | <hostname>:44467 |
+performance_schema | ```
 
 Moment.  performance_schema?  Cacti?
 
 Nein.  Das ist nicht cacti.
 
-{% highlight console %} lsof -i -n -P | grep 44467 mysqld 17242 mysql 178u
+```console lsof -i -n -P | grep 44467 mysqld 17242 mysql 178u
 # IPv6 3599986352 TCP
 ...:3306->...:44467 (ESTABLISHED) diamond 18596 root 1u IPv4 3599986351 TCP
-...:44467->10.147.206.122:3306 (ESTABLISHED) {% endhighlight %}
+...:44467->10.147.206.122:3306 (ESTABLISHED) ```
 
 Ja.  Das ist diamond, der Datenkollektor für Graphite.
 
 Und welches Modul von Diamond/Graphite ist am 20-Sep nachmittags global
 ausgerollt worden?
 
-{% highlight console %} cd /etc/graphite/collectors ls -l MySQL*conf
+```console cd /etc/graphite/collectors ls -l MySQL*conf
 ...
--r-------- 1 root root 471 Sep 20 14:19 MySQLPerfCollector.conf {%
-endhighlight %}
+-r-------- 1 root root 471 Sep 20 14:19 MySQLPerfCollector.conf 
+```
 
 Der Replication Load Monitor.  Ja, der da ganz oben im ersten Bild.
 

@@ -17,13 +17,13 @@ feature-img: assets/img/background/rijksmuseum.jpg
 
 Manchmal muß man viel erklären, um eine einfache Frage beantworten zu können: Wieviel Speicher belegt ein Programm in Linux? Diese Frage war bisher überraschend schwer zu beantworten. Da ist einmal die Ausgabe von `ps axuwww` oder `top`:
 
-{% highlight console %}
+```console
 [root@mc01bpmdb-02 ~]# ps axu | egrep '(mysql[d]|USER)'
 USER       PID %CPU %MEM   VSZ  RSS TTY      STAT START   TIME COMMAND
 ...
 mysql    24861 71.2 77.3 26284608 25444724 ? Sl    2008 385405:36 /usr/sbin/mysqld
 ...
-{% endhighlight %}
+```
 
 Hier bekommt man zwei Größenangaben in den Spalten VSZ und RSS, beide sind in Kilobytes.
 
@@ -39,16 +39,16 @@ Wenn man ein MySQL neu startet sieht man, daß die VSZ schon fast die endgültig
 
 Auch von einem `top` bekommt man diese Zahlen, sogar gleich in hübsch:
 
-{% highlight console %}
+```console
 PID USER      PR  NI %CPU    TIME+  %MEM  VIRT  RES  SHR S COMMAND            
 24861 mysql     16   0  222 385424:47 77.4 25.1g  24g 5804 S mysqld
-{% endhighlight %}
+```
 
 Aber für Prozesse, die viel fork()'en bekommt man so keine sehr aussagekräftigen Zahlen. Von einem Apache-Webserver würde man ja sehr gerne wissen, wie viele parallele Server-Instanzen man so ausführen kann, wenn man ihn startet.
 
 Hier ist mein Apache, in einem Moment geringer Last: 
 
-{% highlight console %}
+```console
 h743107:~ # ps auxwww | grep http
 root     18345  0.0  0.9 124880 10100 ?        Ss   Oct08   0:00 /usr/sbin/httpd2 
 wwwrun   28179  2.3  3.1 127172 32324 ?        S    17:28   0:09 /usr/sbin/httpd2 
@@ -56,7 +56,7 @@ wwwrun   28591  1.8  2.8 127796 29192 ?        S    17:33   0:02 /usr/sbin/httpd
 wwwrun   28677  1.7  2.2 127480 23808 ?        S    17:34   0:00 /usr/sbin/httpd2 
 wwwrun   28678  1.2  2.6 127448 27408 ?        S    17:34   0:00 /usr/sbin/httpd2
 wwwrun   28779  1.9  2.3 127116 24780 ?        S    17:35   0:00 /usr/sbin/httpd2
-{% endhighlight %}
+```
 
 Wir erkennen zwei Sorten Apache-Prozesse: PID 18345 läuft unter der UID root - es ist der Apache Master, der auf eingehende Verbindungen lauscht und Aufträge dann an Worker-Prozesse weiter gibt, die die eigentliche Seite erzeugen. Der Master steuert auch die Größe des Worker-Pools über die Zeit je nach Bedarf. Dazu hat er eine Reihe von Parametern, von denen einer den Namen MaxClients hat. Dieser Parameter legt fest, wie viele Worker Apache maximal startet und man sollte diesen Wert so hoch wie möglich ansetzen ohne daß der Server in den Swap gerät.
 
@@ -64,7 +64,7 @@ Wie man sieht hat ein Apache Master bei mir eine Größe von etwas über 120M, a
 
 Der tatsächliche Speicherverbrauch ist jedoch weitaus geringer. Wir können ihn uns im Detail in der Datei /proc/_PID_/maps ansehen: 
 
-{% highlight console %}
+```console
 h743107:~ # cd /proc/18345/
 h743107:/proc/18345 # wc -l maps
 264 maps
@@ -82,7 +82,7 @@ b7f9f000-b7fba000 r-xp 00000000 08:03 6160422    /lib/ld-2.5.so
 b7fba000-b7fbc000 rw-p 0001a000 08:03 6160422    /lib/ld-2.5.so
 bf866000-bf87a000 rwxp bf866000 00:00 0          [stack]
 bf87a000-bf87b000 rw-p bf87a000 00:00 0
-{% endhighlight %}
+```
 
 Die Angaben in /proc/.../maps lassen sich [wie folgt](http://linuxwiki.de/proc/pid#A.2BAC8-proc.2BAC8.3CPID.3E.2BAC8-maps) lesen: 
 
@@ -94,11 +94,11 @@ Die Angaben in /proc/.../maps lassen sich [wie folgt](http://linuxwiki.de/proc/p
 
 Das wird klarer, wenn man sich die Datei einmal anschaut:
 
-{% highlight console %}
+```console
 h743107:/proc/18345 # size -x /usr/sbin/httpd2-prefork
    text    data     bss     dec     hex filename
 0x4ebe3  0x2378  0x2e10  343403   53d6b /usr/sbin/httpd2-prefork
-{% endhighlight %}
+```
 
 Die Datei besteht also aus Code (Text) in der Länge von 0x4ebe3 Byte, das entspricht aufgerundet 0x4f000 Bytes oder 0x4f Seiten zu 4K. Danach kommen 0x2378 Byte (0x3000 Byte aufgerundet zur Seitengrenze) ab Offset 0x4f000 an Daten.
 
@@ -130,28 +130,28 @@ In jedem Fall entsteht durch die Programmausführung ein Mapping von Seiten - da
 
 In Linux wird die Situation nun durch mehrere Dinge noch komplizierter: Zum einen existieren Shared Libraries. Das ist Code, der von allen oder vielen Programmen gebraucht wird und der deswegen in einer Extradatei abgelegt ist - zum Beispiel libc.so.6, die Laufzeitbibliothek der Sprache C: 
 
-{% highlight console %}
+```console
 h743107:/lib # ls -lL libc.so.6
 -rwxr-xr-x 1 root root 1491141 Oct 19  2008 libc.so.6
 h743107:/lib # size -x libc.so.6
    text    data     bss     dec     hex filename
 0x1273dd         0x2758  0x2c58 1230733  12c78d libc.so.6
-{% endhighlight %}
+```
 
 Wie man sieht ist die libc recht fett: 0x128000 Bytes, also 0x128 Speicherseiten an Code plus Daten. Jedes noch so kleine Hello-World-Programm das `printf()` aufruft verwendet die ganze libc.
 
 Aber: Der Code für die libc wird nur einmal geladen und belegt nur einen Satz physikalische Speicherseiten. Er wird jedoch in jeden laufenden Prozeß im System eingeblendet: 
 
-{% highlight console %}
+```console
 h743107:/proc # ls -ld [0-9]* | wc -l 
 198
 h743107:/proc # grep libc-2.5 [0-9]*/maps | grep r-xp| wc -l 
 175
-{% endhighlight %}
+```
 
 Okay, fast jeden. Etwas anderes fällt dabei auch noch auf: 
 
-{% highlight console %}
+```console
 h743107:/proc # grep libc-2.5 [0-9]*/maps | grep r-xp| head -10
 1031/maps:b7c1f000-b7d47000 r-xp 00000000 08:03 6160449    /lib/libc-2.5.so
 1131/maps:b7c1f000-b7d47000 r-xp 00000000 08:03 6160449    /lib/libc-2.5.so
@@ -163,7 +163,7 @@ h743107:/proc # grep libc-2.5 [0-9]*/maps | grep r-xp| head -10
 12906/maps:b7dae000-b7ed6000 r-xp 00000000 08:03 6160449    /lib/libc-2.5.so
 13103/maps:b7cee000-b7e16000 r-xp 00000000 08:03 6160449    /lib/libc-2.5.so
 1342/maps:b7b30000-b7c58000 r-xp 00000000 08:03 6160449    /lib/libc-2.5.so
-{% endhighlight %}
+```
 
 
 Der Code einer shared library ist verschieblich (PIC, position independent code) und kann so in verschiedenen Programmen an verschiedenen Stellen eingeblendet werden. Das kann wegen PIC geschehen, ohne daß die Inhalte der Speicherseiten angepaßt werden müssen: Sprünge im Code werden relativ (300 Bytes vor) statt absolut (springe nach b7c1fe34) angegeben. Die libc ist also einmal geladen, belegt 0x128 Speicherseiten, wird aber in unserem System in 175 von 198 Programmen eingeblendet.
@@ -172,12 +172,12 @@ Das heißt, wir verbrauchen schon mal sehr viel weniger Speicher als gedacht. Gu
 
 Nun hat zwar jedes Programm mit libc ein `printf()` und ein `ctime()`, aber in jedem Programm steht in dem statischen internen Puffer der Funktion ctime() eine andere Zeit - jedes Programm hat für seine libc also eigene private Daten. Die Datenseiten der verschiedenen libc können also nicht zwischen den Prozessen geshared werden. Darum haben sie auch eigene Mappings mit eigenen Zugriffsrechten: 
 
-{% highlight console %}
+```console
 h743107:/proc # grep libc /proc/self/maps
 b7dbd000-b7ee5000 r-xp 00000000 08:03 6160449    /lib/libc-2.5.so
 b7ee5000-b7ee6000 r--p 00128000 08:03 6160449    /lib/libc-2.5.so
 b7ee6000-b7ee8000 rw-p 00129000 08:03 6160449    /lib/libc-2.5.so
-{% endhighlight %}
+```
 
 Dasselbe passiert auch mit Programmen, die sich per `fork()` vervielfältigen oder mehrfach geladen werden: Wenn zwei Benutzer vi verwenden, dann steht der Code für vi selbst nur einmal im Speicher - aber jeder vi-Prozeß hat eigene Datenseiten, die eigenen Text speichern und eine eigene Cursorposition und einen eigenen Cut und Paste-Buffer haben. Das ist ja recht wichtig, wenn man nicht gerade Google Docs ist und Documente haben möchte, die von mehreren Personen zur Zeit bearbeitet werden können sollen.
 

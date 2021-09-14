@@ -20,16 +20,16 @@ kann.
 Auf allen betroffenen Kisten habe ich dann gesehen, daß die entsprechenden
 Queries gegen Performance-Schema ein
 
-{% highlight sql %}
+```sql
 mysql> select \* from performance_schema.threads;
 Empty set (0.01 sec)
-{% endhighlight %}
+```
 
 zurück liefern. 
 
 Weitere Untersuchung stellt heraus: P_S ist aber an. Jedoch:
 
-{% highlight sql %}
+```sql
 mysql> select \* from performance_schema.setup_instruments;
 Empty set (0.03 sec)
  
@@ -38,12 +38,12 @@ Empty set (0.01 sec)
  
 mysql> select \* from performance_schema.setup_consumers;
 Empty set (0.02 sec)
-{% endhighlight %}
+```
 
 und das bleibt auch so, sogar über Server-Restarts hinweg.  Warum ist das
 so?
 
-{% highlight console %}
+```console
 # cd /mysql/\*/data/performance_schema/
 # ls -l
 total 1840
@@ -53,7 +53,7 @@ total 1840
 -rw-rw---- 1 mysql mysql  9220 Oct  6  2011 events_waits_current.frm
 -rw-rw---- 1 mysql mysql 98304 Oct  6  2011 events_waits_current.ibd
 ...
-{% endhighlight %}
+```
 
 und ein SHOW CREATE TABLE bestätigt das. 
 
@@ -82,7 +82,7 @@ Linderung.
 
 Der Fix ist in der Tat
 
-{% highlight sql %}
+```sql
 # mysql -BNe "select 
   concat('drop table ', table_name, ';') 
 from 
@@ -92,7 +92,7 @@ where
 mysql performance_schema
 # mysql_upgrade
 ...
-{% endhighlight %}
+```
 
 und alles wird gut - sogar ohne Neustart.
 

@@ -26,7 +26,7 @@ I gave the following context:
 
 So you sell stuff, that is, you have an `orders` table `o` with an `oid`, which stores a customer id `cid` from a `customers` `c` table, and an article id `aid`, from an articles table `a` and a count `cnt`.
 
-{% highlight sql %}
+```sql
 -- customer 17 ordered 3 45's
 ? SELECT o.cnt, a.aid
 >   FROM o JOIN c ON o.cid = o.cid
@@ -34,7 +34,7 @@ So you sell stuff, that is, you have an `orders` table `o` with an `oid`, which 
 >  WHERE c.cid = 17
 
 = 3 45
-{% endhighlight %}
+```
 
 When moving to services because you are a multibillion dollar enterprise, your customers, orders and articles can no longer fit into a single database, and there are other reasons to have an OrderService, CustomerService and ArticleService. You still want to ask something (OrderService?) about the number of 45's that 17 ordered.
 

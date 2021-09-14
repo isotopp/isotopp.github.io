@@ -56,14 +56,14 @@ Is that the story? It is not.
 
 Humans descend on the problem and look. What are the machines in the pool, currently? Well, if have the privileges, you can check with our roster tool:
 
-{% highlight console %}
+```console
 $ sudo roster-tool list /persistent/pools/example-misc/az-west1-a
 0be2b240a6964a338f0a65f22a2bb09d-example-2016.dc1.prod.example.com
 421e3f5c81914082b26f93cd096c4d25-example-8050.dc2.prod.example.com
 95624c835c454bbb8ad10a2eb728f66a-example-8051.dc2.prod.example.com
 afc7bd521a5c404582645d89598269d3-example-2015.dc1.prod.example.com
 e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.example.com
-{% endhighlight %}
+```
 
 So let’s have a look at example-8051:
 
@@ -155,11 +155,11 @@ This is such an obvious pressing need that [Simon Mudd wrote a script](http://bl
 
 It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in /var/log/mysql_pl/\<weekday name>. In an age of baremetal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:
 
-{% highlight console%}
+```console
 /var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz > /tmp/kris
 /var/log/mysql_pl/Sun $ vim /tmp/kris
 /var/log/mysql_pl/Sun $ awk -F'\t' '($5 != "Sleep") && !match($7, /Waiting for/)' /tmp/kris | less
-{% endhighlight %}
+```
 
 With a text editor we isolate the processlist recording from 23:48 on 04-Oct. We then use Unix Tooling to look at all non-sleeping connections that are also not idle replication connections.
 

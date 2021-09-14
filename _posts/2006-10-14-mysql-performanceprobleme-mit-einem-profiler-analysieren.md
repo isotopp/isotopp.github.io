@@ -14,7 +14,7 @@ feature-img: assets/img/background/mysql.jpg
 
 Das kann man auch auf ein laufendes MySQL anwenden. Dies hier zum Beispiel ist ein mysqld, der mit einem Haufen MyISAM Tabellen arbeitet und nicht zu busy ist. Man kann sehen, daß aus irgendeinem Grund sehr viel Zeit in memcpy verbracht wird:
 
-{% highlight console %}
+```console
 CPU: CPU with timer interrupt, speed 0 MHz (estimated)
 Profiling through timer interrupt
 samples  %        image name               symbol name
@@ -25,11 +25,11 @@ samples  %        image name               symbol name
 17468     1.9862  mysqld.debug             get_hash_link
 16767     1.9065  mysqld.debug             ha_key_cmp
 14106     1.6039  mysqld.debug             MYSQLparse(void*)
-{% endhighlight %}
+```
 
 Ein anderes Anwendungsbeispiel verwendet InnoDB mit Transaktionen und einer sehr hohen Load. Hier kann man das Problem sofort erkennen:
 
-{% highlight console %}
+```console
 CPU: AMD64 processors, speed 2396.91 MHz (estimated)
 Counted CPU_CLK_UNHALTED events (Cycles outside of halt state) 
 with a unit mask of 0x00 (No unit mask) count 100000
@@ -40,7 +40,7 @@ samples  %        image name               symbol name
 125545    2.2063  /usr/sbin/mysqld         my_hash_sort_bin
 95069     1.6708  /lib64/tls/libc.so.6     memcpy
 79791     1.4023  /lib64/tls/libc.so.6     memset
-{% endhighlight %}
+```
 
 Offensichtlich ist der Query Cache hier nicht sehr nützlich und tatsächlich: Kaum schaltet man ihn aus, wird der Benchmark 50% schneller.
 

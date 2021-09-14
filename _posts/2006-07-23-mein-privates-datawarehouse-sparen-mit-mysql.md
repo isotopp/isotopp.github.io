@@ -13,7 +13,7 @@ feature-img: assets/img/background/mysql.jpg
 Meine Sparkasse exportiert mir die Kontoauszüge aus Wunsch auch als CSV. Die
 Dateien sehen so aus:
 
-{% highlight sql %}
+```sql
 "Auftragskonto";"Buchungstag";"Valutadatum";"Buchungstext";
 "Verwendungszweck";
 "Begünstigter/Zahlungspflichtiger";"Kontonummer";"BLZ";
@@ -22,7 +22,7 @@ Dateien sehen so aus:
 "DRP 08154711 040441777  INKL. 16% UST 5.38 EUR";
 "STRATO MEDIEN AG";"040441777";"10050000";
 "-39,00";"EUR";"Umsatz gebucht"
-{% endhighlight %}
+```
 
 Weil ich wissen will, wofür ich mein Geld ausgebe, lade ich diese Daten in
 ein MySQL.
@@ -35,7 +35,7 @@ geschaffen sind, die Daten aufnehmen zu können. Wir müssen die Daten noch
 bereinigen, sodaß es sich noch nicht um die endgültigen Felder oder Typen
 handelt.
 
-{% highlight sql %}
+```sql
 -- load data
 warnings;
 DROP TABLE IF EXISTS buchungen;
@@ -59,7 +59,7 @@ CREATE TABLE buchungen (
     , betrag_text)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 truncate table buchungen;
-{% endhighlight %}
+```
 
 Es fällt auf, daß in den Kontoauszügen keine eindeutigen Transaktionsnummern
 sind, sodaß ich keinen Primärschlüssel definieren kann. Mit dem Unique
@@ -69,7 +69,7 @@ entdecken. Dies kann jedoch falsche positive Treffer liefern.
 In diese Tabelle kann ich nun nacheinander die einzelnen CSV mit den
 Kontoauszügen hinein laden:
 
-{% highlight sql %}
+```sql
 load data infile  
   '/home/kris/Documents/banking/umsatz-22758031-29122004.csv' 
 into table buchungen 
@@ -83,13 +83,13 @@ fields terminated by ";"
 optionally enclosed by '"' 
 ignore 1 lines;
 ...
-{% endhighlight %}
+```
 
 Wir müssen diese Daten nun in brauchbare Datensätze umwandeln. Dazu wird
 erst einmal eine Zieltabelle erzeugt und diese mit einem Primärschlüssel
 versehen.
 
-{% highlight sql %}
+```sql
 -- prepare conversion stage
 DROP TABLE IF EXISTS b;
 create table b like buchungen;
@@ -97,7 +97,7 @@ alter table b add column id integer unsigned not null first;
 alter table b add primary key (id);
 alter table b change column id 
   id integer unsigned not null auto_increment;
-{% endhighlight %}
+```
 
 Jetzt können die Daten umgeladen werden und danach die Felder bereinigt
 werden: Das Betrag-Feld muß von "xxx.xxx,yy"-Syntax auf "xxxxxx.yy"
@@ -105,7 +105,7 @@ umgestellt werden und die Datumsfelder valutatag_text und buchungstag_text
 müssen in ISO-Syntax umgestellt werden. Dabei muß das fehlende Jahr beim
 buchungstag_text aus dem valutatag ergänzt werden.
 
-{% highlight sql %}
+```sql
 -- load data into conversion stage
 insert into b select NULL, buchungen.* from buchungen;
 
@@ -138,21 +138,21 @@ alter table b change column buchungstag_text
 
 -- drop info
 alter table b drop column info;
-{% endhighlight %}
+```
 
 Ich will nun außerdem eine Gruppierung meiner Ausgaben vornehmen. Dazu führe
 ich eine Spalte "gruppe "ein. Mit Hilfe einer weiteren Tabelle
 "wichtige_geldsenken" matche ich dann den gegenkonto_name und fülle die
 Gruppe:
 
-{% highlight sql %}
+```sql
 -- add gruppe
 alter table b add column gruppe varchar(20) not null;
-{% endhighlight %}
+```
 
 Und jetzt die wichtige_geldsenken Tabelle:
 
-{% highlight sql %}
+```sql
 DROP TABLE IF EXISTS `wichtige_geldsenken`;
 CREATE TABLE `wichtige_geldsenken` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -225,27 +225,27 @@ INSERT INTO `wichtige_geldsenken` VALUES (136,'euf-ga','Geldautomat Ausland');
 INSERT INTO `wichtige_geldsenken` VALUES (137,'dell','Toys und Gadgets');
 INSERT INTO `wichtige_geldsenken` VALUES (138,'yvonne','RPG');
 UNLOCK TABLES;
-{% endhighlight %}
+```
 
 
 Mit Hilfe dieser Mappingtabelle und der folgenden Query kann ich jetzt das
 Feld gruppe in b sinnvoll belegen:
 
-{% highlight sql %}
+```sql
 update b set gruppe = ( 
     select gruppe 
       from wichtige_geldsenken as w 
      where b.gegenkonto_name like concat(w.pattern, "%") 
   order by length(pattern) desc 
     limit 1) where b.betrag < 0;
-{% endhighlight %}
+```
 
 Wenn meine pattern-Liste vollständig ist, ist jetzt das Feld gruppe bei
 allen Ausgaben korrekt belegt.
 
 Ich kann nun Fragen stellen:
 
-{% highlight sql %}
+```sql
 select gegenkonto_name, 
          count(gegenkonto_name) as eingaenge 
     from b 
@@ -260,9 +260,9 @@ order by eingaenge desc;
 | MYSQL GMBH SCHLOSSERSTR. 4 72622 NUERTINGEN            |         3 |
 | COOP SCHLESWIG-HOLSTEIN EG BENZSTR. 10                 |         2 |
 +--------------------------------------------------------+-----------+
-{% endhighlight %}
+```
 
-{% highlight sql %}
+```sql
 select gegenkonto_name, 
          count(gegenkonto_name) as abgaenge 
     from b 
@@ -282,11 +282,11 @@ order by abgaenge desc;
 | QSC AG                                                  |       17 |
 | STADTWERKE KARLSRUHE                                    |       17 |
 ...
-{% endhighlight %}
+```
 
 Mit den Gruppen kann ich nun auch sehen, wo das Geld hin gegangen ist:
 
-{% highlight sql %}
+```sql
 select gruppe, 
          count(betrag) as abgaenge, 
          sum(betrag) as total 
@@ -294,6 +294,6 @@ select gruppe,
    where betrag<0 
 group by gruppe 
 order by total;
-{% endhighlight %}
+```
 
 wird mir sagen, wofür ich mein Geld ausgebe.

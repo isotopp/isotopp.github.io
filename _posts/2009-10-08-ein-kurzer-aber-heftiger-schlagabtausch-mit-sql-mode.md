@@ -15,12 +15,12 @@ Letzte Woche Montag haben wir beschlossen, den [SQL_MODE](http://dev.mysql.com/d
 
 Als Ziel-Einstellung haben wir eine Kombination von 
 
-{% highlight console %}
+```console
 TRADITIONAL,
 NO_ENGINE_SUBSTITUTION,
 ONLY_FULL_GROUP_BY,
 NO_AUTO_VALUE_ON_ZERO
-{% endhighlight %}
+```
 
 ins Auge gefaßt.
 
@@ -28,22 +28,22 @@ ins Auge gefaßt.
 
 So steht der Name `TRADITIONAL` in Wirklichkeit für die Kombination der Bits
 
-{% highlight console %}
+```console
 STRICT_TRANS_TABLES,
 STRICT_ALL_TABLES,
 NO_ZERO_IN_DATE,
 NO_ZERO_DATE,
 ERROR_FOR_DIVISION_BY_ZERO,
 NO_AUTO_CREATE_USER
-{% endhighlight %}
+```
 
 zu der wir dann weiter verschärfend noch
 
-{% highlight console %}
+```console
 NO_ENGINE_SUBSTITUTION,
 ONLY_FULL_GROUP_BY
 NO_AUTO_VALUE_ON_ZERO
-{% endhighlight %}
+```
 
 dazu genommen haben.
 
@@ -54,7 +54,7 @@ Die Kombination `STRICT_ALL_TABLES,STRICT_TRANS_TABLES` schaltet dabei den stric
 Am leichtesten läßt sich das mit ein wenig Code demonstrieren: 
 
 
-{% highlight sql %}
+```sql
 root@localhost > create table t ( id tinyint unsigned not null );
 Query OK, 0 rows affected (0.11 sec)
 
@@ -79,13 +79,13 @@ root@localhost > select * from t;
 |   0 | 
 +-----+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Da niemals jemand in seinem Code die Warnungen abfragt werden die eingefügten Werte also stillschweigend gerundet. Ähnliche Dinge können bei illegalen UTF8-Zeichen in latin1-Spalten, bei zu langen Strings oder anderen Typen passieren.
 
 Mit strict mode kann man so etwas verhindern:
 
-{% highlight sql %}
+```sql
 root@localhost > delete from t;
 Query OK, 2 rows affected (0.00 sec)
 
@@ -96,11 +96,11 @@ root@localhost > insert into t values ( 256 ), ( -1 );
 ERROR 1264 (22003): Out of range value adjusted for column 'id' at row 1
 root@localhost > select * from t;
 Empty set (0.00 sec)
-{% endhighlight %}
+```
 
 Und genau das wollten wir haben, insbesondere auch für Enum-Werte:
 
-{% highlight sql %}
+```sql
 root@localhost > drop table t;
 Query OK, 0 rows affected (0.01 sec)
 
@@ -113,12 +113,12 @@ ERROR 1265 (01000): Data truncated for column 'i' at row 1
 root@localhost > insert into t values ('drei');
 ERROR 1265 (01000): Data truncated for column 'i' at row 1root@localhost > select * from t;
 Empty set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Denn ohne strict mode akzeptiert und vermatscht MySQL diese Daten gnadenlos:
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = '';
 Query OK, 0 rows affected (0.00 sec)
 
@@ -151,7 +151,7 @@ root@localhost > select * from t;
 |   |
 +---+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Man beachte hier `''` in der Tabelle - wo der `ENUM` doch als `ENUM('eins','zwei')` definiert ist!
@@ -161,7 +161,7 @@ Man beachte hier `''` in der Tabelle - wo der `ENUM` doch als `ENUM('eins','zwei
 Auch für Datumsangaben wollen wir das haben, und dazu haben wir `NO_ZERO_DATE` und `NO_ZERO_IN_DATE` gesetzt. Ohne `SQL_MODE`: 
 
 
-{% highlight sql %}
+```sql
 root@localhost > drop table t;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -183,11 +183,11 @@ root@localhost > select * from t;
 | 2009-10-00 | 
 +------------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Und mit: 
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = 'NO_ZERO_DATE,NO_ZERO_IN_DATE,STRICT_ALL_TABLES';
 Query OK, 0 rows affected (0.00 sec)
 
@@ -198,7 +198,7 @@ root@localhost > insert into t values ('0000-00-00');
 ERROR 1292 (22007): Incorrect date value: '0000-00-00' for column 'd' at row 1
 root@localhost > insert into t values ('2009-10-00');
 ERROR 1292 (22007): Incorrect date value: '2009-10-00' for column 'd' at row 1
-{% endhighlight %}
+```
 
 Man beachte, daß es die Kombination von `STRICT_ALL_TABLES` und den `NO_ZERO*DATE` Modi braucht, um hier einen Fehler zu erzeugen. Ohne den strict mode bekommt man nur eine Warnung.
 
@@ -207,7 +207,7 @@ Man beachte, daß es die Kombination von `STRICT_ALL_TABLES` und den `NO_ZERO*DA
 Die Einstellung `ERROR_FOR_DIVISION_BY_ZERO` tut nicht ganz das, was wir eigentlich wollen - eine gut und weithin sichtbare Explosion bei einer Division durch 0 - aber ist immerhin besser als nichts: 
 
 
-{% highlight sql %}
+```sql
 root@localhost > create table t ( i integer null );
 Query OK, 0 rows affected (0.07 sec)
 
@@ -234,11 +234,11 @@ root@localhost > show warnings;
 | Error | 1365 | Division by 0 | 
 +-------+------+---------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wie man sieht, wird nur beim INSERT (oder UPDATE) in eine Tabelle ein Fehler statt einer NULL produziert. Bei einem normalen Ausdruck bekommt man weiterhin NULL und eine Warning. Folgefalsch also auch hier: 
 
-{% highlight sql %}
+```sql
 root@localhost > create table t ( a integer, b integer );
 Query OK, 0 rows affected (0.05 sec)
 
@@ -263,7 +263,7 @@ root@localhost > show warnings;
 | Error | 1365 | Division by 0 | 
 +-------+------+---------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 ### NO_AUTO_CREATE_USER - auch zu schön um wahr zu sein
@@ -275,7 +275,7 @@ Ebenfalls nicht das, was man will tut `NO_AUTO_CREATE_USER`: Es verhindert das v
 Wir haben außerdem `ONLY_FULL_GROUP_BY` gesetzt. Normalerweise erlaubt MySQL die Anwahl von nicht aggregierten Spalten in `SELECT`-Statements mit `GROUP BY`-Ausdrücken:
 
 
-{% highlight sql %}
+```sql
 root@localhost > drop table t;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -295,20 +295,20 @@ root@localhost > select i,j,group_concat(j) from t group by i;
 |    3 |    5 | 5               | 
 +------+------+-----------------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 MySQL verhält sich hier so, als stünde das `j` in einem Funktionaufruf einer hypothetischen Aggregatfunktion `ANY(j)`. Es wählt also ein beliebiges j aus der Gruppe der j aus, die der Zeile zugeordnet sind und zeigt es als Repräsentant der Äquivalenzklasse an. MySQL hat auch eine ganz reale Funktion `ALL()`, die die gesamte Äquivalenzklasse anzeigt - sie heißt `GROUP_CONCAT()`.
 
 Das Verhalten von MySQL ist hier strikt konform mit dem SQL-Standard und der Mathematik dahinter, aber diese Auslegung des Standards ist einzigartig - alle anderen SQL-Produkte machen es anders. Mit `ONLY_FULL_GROUP_BY` soll man MySQL in einem Modus schalten, in dem es der verbreiteten Auslegung folgt: 
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = 'TRADITIONAL,ONLY_FULL_GROUP_BY';
 Query OK, 0 rows affected (0.00 sec)
 
 root@localhost > select i,j,group_concat(j) from t group by i;
 ERROR 1055 (42000): 'koehntopp.t.j' isn't in GROUP BY
-{% endhighlight %}
+```
 
 Leider gibt es kein `ANY()` in MySQL, sodaß man sich mit `MIN()` oder `MAX()` behelfen muß, um deterministisch ein Element der Äquivalenzklasse zu bestimmen.
 
@@ -318,7 +318,7 @@ Um Entwicklern zu helfen beim Anlegen von Tabellen Fehler mit der Storage Engine
 
 Schließlich wollten wir noch `NO_AUTO_VALUE_ON_ZERO`, um einen lange bestehenden Fehler in MySQL zu korrigieren:
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = '';
 Query OK, 0 rows affected (0.00 sec)
 
@@ -342,13 +342,13 @@ root@localhost > select * from t;
 |  2 | 
 +----+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 MySQL weist also neue auto_increment-Werte nicht nur bei NULL zu, sondern auch bei 0. Das ist sehr störend, denn es verhindert, daß bestimmte Fehler gefunden werden.
 
 Was `NO_AUTO_VALUE_ON_ZERO` macht ist jedoch auch erst beim 2. Versuch hilfreich: 
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO';
 Query OK, 0 rows affected (0.00 sec)
 
@@ -381,7 +381,7 @@ root@localhost > select * from t;
 |  3 | 
 +----+
 4 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wie man sieht erzeugt die erste Zuweisung keinen auto_increment-Wert, sondern den Primärschlüssel 0, was man in den meisten Fällen auch nicht will. Immerhin explodiert dann die 2. Zuweisung mit einem Duplicate Key Error, sodaß man den fehlerhaften SQL-Code dann zu sehen bekommt.
 
@@ -393,13 +393,13 @@ Und jetzt wie es explodiert.
 
 Aufgrund einer Migration von einer älteren Version von MySQL haben wir haufenweise Definition von Tabellen mit Code wie diesem:
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = 'TRADITIONAL';
 Query OK, 0 rows affected (0.00 sec)
 
 root@localhost > create table t ( d date not null default '0000-00-00' );
 ERROR 1067 (42000): Invalid default value for 'd'
-{% endhighlight %}
+```
 
 Das Setzen von `NO_ZERO_DATE` zerbricht also diese Tabellen und damit auch alle Tests (da kommt das nämlich in so gut wie jeder Tabelle vor). Das ist kein Fehler von MySQL, sondern ein Problem bei uns, macht aber erst einmal `NO_ZERO_DATE` für uns unmöglich.
 
@@ -408,7 +408,7 @@ Das Setzen von `NO_ZERO_DATE` zerbricht also diese Tabellen und damit auch alle 
 Dann explodiert `ONLY_FULL_GROUP_BY` in unserem (zu alten) MySQL 5.0 - in unserem (viel neueren) 5.1 ist der Fehler behoben:
 
 
-{% highlight sql %}
+```sql
 
 mysql> SELECT
 	MIN(latitude), MAX(latitude), MIN(longitude), MAX(longitude)
@@ -419,13 +419,13 @@ WHERE id IN (99910, 98561, 10200)
 ERROR 1140 (42000): Mixing of GROUP columns 
 (MIN(),MAX(),COUNT(),...) with no GROUP columns 
 is illegal if there is no GROUP BY clause
-{% endhighlight %}
+```
 
 Das ist Unsinn - id wird nicht angezeigt und alle angezeigten Spalten sind in Aggregatfunktionen. Die WHERE-Clause verwirrt MySQL.
 
 Man kann die Query umschreiben, um den Fehler zu umgehen (aber das ist nicht Sinn der Sache): 
 
-{% highlight sql %}
+```sql
 SELECT
   MIN(latitude), MAX(latitude), 
   MIN(longitude), MAX(longitude)
@@ -433,11 +433,11 @@ FROM Objects
   WHERE id IN (99910, 98561, 10200)
   AND latitude  IS NOT NULL
   AND longitude IS NOT NULL group by 1=1;
-{% endhighlight %}
+```
 
 Beachte, daß man `GROUP BY 1=1` schreiben muß und nicht einfach `GROUP BY 1` machen kann. Letzteres ist eine (obsolete und nicht empfohlene) Schreibweise um nach Spalte 1 zu gruppieren (oder, mit `ORDER BY`, zu sortieren).
 
-{% highlight sql %}
+```sql
 
 SELECT
   MIN(latitude), MAX(latitude),
@@ -447,14 +447,14 @@ FROM Objects
   AND latitude  IS NOT NULL
   AND longitude IS NOT NULL group by 1;
 ERROR 1056 (42000): Can't group on 'MIN(latitude)'
-{% endhighlight %}
+```
 
 
 ### INSERT ON DUPLICATE KEY UPDATE Breakage I
 
 Eine weitere Explosion bekommt man mit `INSERT ON DUPLICATE KEY UPDATE` hin. Gegeben sei
 
-{% highlight sql %}
+```sql
 
 root@localhost > create table t (
   id integer unsigned not null primary key auto_increment,
@@ -474,11 +474,11 @@ root@localhost > select * from t;
 |  1 | 1 | 2 | 0 | 
 +----+---+---+---+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Ohne SQL-Mode bekommt man Warnungen, wenn man das folgende versucht:
 
-{% highlight sql %}
+```sql
 root@localhost > insert into t (id, f) values (1,4) on duplicate key update f = f+values(f);
 Query OK, 2 rows affected, 2 warnings (0.01 sec)
 
@@ -498,17 +498,17 @@ root@localhost > select * from t;
 |  1 | 1 | 2 | 4 | 
 +----+---+---+---+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Ungeachtet der Warnungen tut der Code aber genau das, was er soll. Durch den Strict Mode werden solche Warnungen aber zu Fehlern: 
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode ='TRADITIONAL';
 Query OK, 0 rows affected (0.00 sec)
 
 root@localhost > insert into t (id, f) values (1,4) on duplicate key update f = f+values(f);
 ERROR 1364 (HY000): Field 'd' doesn't have a default value
-{% endhighlight %}
+```
 
 Und damit Breakage in der Anwendung.
 
@@ -520,7 +520,7 @@ Oder man sieht von so komplexen Statements wie `INSERT ON DUPLICATE KEY UPDATE` 
 
 Dann muß man jedoch auch auf Extended `INSERT`-Syntax verzichten. Denn: 
 
-{% highlight sql %}
+```sql
 root@localhost > set sql_mode = 'TRADITIONAL';
 Query OK, 0 rows affected (0.00 sec)
 
@@ -541,7 +541,7 @@ ERROR 1264 (22003): Out of range value for column 'value' at row 1
 root@localhost > INSERT INTO wop VALUES (1,1),(1,256) ON DUPLICATE KEY UPDATE value=VALUES(value);
 ERROR 1264 (22003): Out of range value for column 'value' at row 2
 // *BREAKS REPLICATION*
-{% endhighlight %}
+```
 
 Das ist das Resultat auf dem Master: Ein halb ausgeführtes Statement. Das Statement hat im letzten Fall jedoch Daten modifiziert und gelangt so in das Binlog zum Slave, jedoch mit der Information, daß es auf dem Master auf halber Strecke abgebrochen wurde. Also bleibt die Replikation zum Slave nun stehen, um Inkonsistenzen zu vermeiden.
 
@@ -557,7 +557,7 @@ Wir haben einige long standing bugs bei uns gefunden und gefixt - an einigen Ste
 
 Auch so etwas wird durch `TRADITIONAL` haufenweise gefunden: 
 
-{% highlight sql %}
+```sql
 
 root@localhost > create table t ( i integer not null, s varchar(32) not null );
 Query OK, 0 rows affected (0.06 sec)
@@ -594,7 +594,7 @@ root@localhost > select * from t;
 +---+---+
 1 row in set (0.00 sec)
 
-{% endhighlight %}
+```
 
 
 Durch das `NO_ZERO_DATE` haben wir die exzessive Verwendung von `DATE NOT NULL DEFAULT '0000-00-00'` als Überrest einer Migration von einer älteren Version von MySQL zur Disposition gestellt. Viele Entwickler fragen sich nun, was `SELECT * FROM t WHERE somedate = "0000-00-00"` wohl für eine Bedeutung haben mag, also was die dort gezeigten Zeilen wohl bedeuten mögen und gehen sorgfältiger mit Default-Werten um. Das hat ebenfalls eine Reihe von Bugs gekillt.

@@ -52,26 +52,26 @@ durch die Hex-Folge "4b c3 b6 68 6e 74 6f 70 70" repräsentiert, das LOWER
 CASE o-UMLAUT wird als C3 B6 codiert.
 
 
-{% highlight console %}
+```console
 kris@linux:~> od -t x1a
 Köhntopp
 0000000 4b c3 b6 68 6e 74 6f 70 70 0a
           K   C   6   h   n   t   o   p   p  nl
 0000012
-{% endhighlight %}
+```
 
 
 Nach dem Aufruf von Settings->Encoding->Iso-8859-1 hat sich das Encoding
 geändert und derselbe Text wird jetzt durch die Bytes "4b f6 68 6e 74 6f 70
 70 0a" repräsentiert. Der LOWER CASE o-UMLAUTE ist nun also ein F6-Byte.
 
-{% highlight console %}
+```console
 kris@linux:~> od -t x1a
 Köhntopp
 0000000 4b f6 68 6e 74 6f 70 70 0a
           K   v   h   n   t   o   p   p  nl
 0000011
-{% endhighlight %}
+```
 
 
 Wenn man zwei Zeichenfolgen vergleichen oder ordnen (sortieren) will, dann
@@ -115,16 +115,16 @@ wiederum von den Server Defaults vererbt.
 
 Man kann also in der my.cnf festlegen:
 
-{% highlight console %}
+```console
 [mysqld]
 default-character-set=latin1
 default-collation=latin1_german1_ci
-{% endhighlight %}
+```
 
 Man kann auch beim Anlegen eines Schemas (einer logischen Datenbank)
 festlegen:
 
-{% highlight sql %}
+```sql
 root@localhost [(none)]> create database kris charset latin1 collate latin1_german1_ci;
 Query OK, 1 row affected (0.00 sec)
 
@@ -134,12 +134,12 @@ Create Database: CREATE DATABASE `kris`
    /*!40100 DEFAULT CHARACTER SET latin1 
     COLLATE latin1_german1_ci */
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Für eine Tabelle und deren Spalten kann man bestimmen:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table t (
   id integer unsigned not null auto_increment primary key, 
   c char(20) charset utf8 collate utf8_general_ci, 
@@ -160,7 +160,7 @@ Create Table: CREATE TABLE `t` (
 DEFAULT CHARSET=latin1 
 COLLATE=latin1_general_ci
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Die Verbindung, die der Client zur Datenbank aufbaut, muß ebenfalls mit
@@ -176,7 +176,7 @@ Indem ich in konsole Settings->Encoding->utf8 einstelle und dann SET NAMES
 utf8 im Kommandozeilenclient von MySQL mache, sende ich nicht nur utf8,
 sondern habe den Client auch über diese Tatsache informiert.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set names utf8;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -187,13 +187,13 @@ root@localhost [kris]> select hex("ö");
 | C3B6      |
 +-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Stelle ich in konsole Settings->Encoding->latin1 ein und sende SET NAMES
 latin1, dann bekomme ich:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set names latin1;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -204,7 +204,7 @@ root@localhost [kris]> select hex("ö");
 | F6       |
 +----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Warum ist das wichtig und nützlich? Nun, wenn ich mit meinem utf8-Client an
@@ -212,7 +212,7 @@ die Datenbank gehe und Daten nach kris.t.t speichere, was wird dann
 geschehen?
 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set names utf8;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -234,7 +234,7 @@ root@localhost [kris]> select hex(t), t from kris.t;
 | F6     | ö    |
 +--------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Ich habe also einen Client, der utf8 spricht und sendet. Das kann ich
 kontrollieren ("set names utf8") und beweisen (Ich bekomme ein C3B6).
@@ -267,7 +267,7 @@ verwendet?
 Dieser Zeichensatz muß dann für das Einlesen des Dumps verwendet werden. Am
 einfachsten fügt man ein passendes SET NAMES-Statement in das Dumpfile ein.
 
-{% highlight sql %}
+```sql
 --
 -- Table structure for table `t`
 --
@@ -300,7 +300,7 @@ linux:/export/data/charset # od -t x1a kris.sql
           v   '   )   ;  nl   U   N   L   O   C   K  sp   T   A   B   L
 ...
 
-{% endhighlight %}
+```
 
 
 Wir können nun leicht dieses Dumpfile um ein "CREATE DATABASE kris CHARSET
@@ -317,7 +317,7 @@ Zeichen bei der Ausgabe entsprechend den Wünschen der Clients umwandeln.
 
 Eine Stringkonstante kann in MySQL mit einem Encoding prefixed werden.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select _utf8'Köhntopp';
 +-----------+
 | Köhntopp |
@@ -325,7 +325,7 @@ root@localhost [kris]> select _utf8'Köhntopp';
 | Köhntopp  |
 +-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Dies ist dasselbe wie "SELECT 'Köhntopp'", nur daß der Zeichensatz
 ausdrücklich an den Ausdruck geklebt wird und nun vom SET NAMES verschieden
@@ -333,7 +333,7 @@ sein kann.
 
 Wir können auch Daten in andere Zeichensätze umwandeln:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select hex(convert('Köhntopp' using latin1)) as Beispiel;
 +------------------+
 | Beispiel         |
@@ -341,7 +341,7 @@ root@localhost [kris]> select hex(convert('Köhntopp' using latin1)) as Beispiel
 | 4BF6686E746F7070 |
 +------------------+
 1 row in set (0.03 sec)
-{% endhighlight %}
+```
 
 Hier ist mein utf8-Köhntopp aus der Connection in ein latin1-Köhntopp mit
 F6-Umlaut umgewandelt worden.
@@ -363,7 +363,7 @@ hier unterstützt wird, immer 2 Bytes. Die angezeigte Maxlen ist also 2.
 
 Hier alle drei Encodings im Vergleich:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select hex(convert("Köhntopp" using ucs2)) as x;
 +--------------------------------------+
 | x |
@@ -387,7 +387,7 @@ root@localhost [kris]> select hex("Köhntopp") as x;
 | 4BC3B6686E746F7070 |
 +--------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 In MySQL wird ein CHAR(20) definiert als ein String von Zeichen Zeichen. Ein

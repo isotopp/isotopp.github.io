@@ -77,7 +77,7 @@ Wir setzen ein Basisprogram mit Python 3.8 in PyCharm auf, und fügen die "aufga
 
 Wir können die UI-Datei jetzt laden und ausführen, aber unser Programm wird dann noch nichts tun:
 
-{% highlight python %}
+```python
 from PyQt5 import QtWidgets, uic
 import sys
 
@@ -128,7 +128,7 @@ class Ui(QtWidgets.QMainWindow):
 app = QtWidgets.QApplication(sys.argv)
 window = Ui()
 app.exec()
-{% endhighlight %}
+```
 
 Das Programm importiert `QtWidgets` und `uic` aus dem `PtQt5` Package. Es definiert eine Klasse `Ui` als Unterklasse von `QtWidgets.QMainWindow`. Wir definieren eine Methode `load_ui()`, die die `aufgaben.ui`-Datei lädt. Im Konstruktor initialisieren wir die Superklasse (das QMainWindow) und rufen dann `load_ui()` auf. Mit `.show()` werden die Bedienlemente dann auch sichtbar.
 
@@ -138,20 +138,20 @@ In unserer `Ui` Klasse definieren wir einen Haufen Slots für alle diejenigen  B
 
 Wir können gleich noch den Quit-Button aktivieren: Aus
 
-{% highlight python %}
+```python
         self.button_quit = self.findChild(QtWidgets.QPushButton, "button_quit")
-{% endhighlight %}
+```
 
 wird
 
-{% highlight python %}
+```python
         self.button_quit = self.findChild(QtWidgets.QPushButton, "button_quit")
         self.button_quit.clicked.connect(self.quit_pressed)
-{% endhighlight %}
+```
 
 und wir fügen der `Ui`-Klasse eine Methode `quit_pressed()` hinzu:
 
-{% highlight python %}
+```python
     def quit_pressed(self) -> None:
         msg: QtWidgets.QMessageBox = QtWidgets.QMessageBox()
         msg.setText("Auf Wiedersehen.")
@@ -161,7 +161,7 @@ und wir fügen der `Ui`-Klasse eine Methode `quit_pressed()` hinzu:
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.exec()
         sys.exit(0)
-{% endhighlight %}
+```
 
 Dies ist zugleich ein Beispiel für das Erzeugen von PyQt5-Elementen ohne QtDesigner: Wir hätten diesen Dialog auch mit dem Designer in eine `.ui`-Datei speichern können, um sie dann mit `uic` zu laden. Stattdessen erzeugen wir hier den Abschiedsdialog manuell und rufen ihn dann auf, bevor wir das Programm beenden.
 
@@ -171,7 +171,7 @@ Dieses Teilprogramm ist nun schon lauffähig und zeigt das funktionsfähige Prog
 
 Um Rechenaufgaben zu erzeugen und dann feststellen zu können, ob jemand sie richtig ausgerechnet hat, brauchen wir eine Klasse `Aufgabe`.
 
-{% highlight python %}
+```python
 from random import randint, choice
 from typing import List
 
@@ -202,7 +202,7 @@ class Aufgabe:
     def __init__(self) -> None:
         self.allops = ["+", "-"]
         self.ausdenken()
-{% endhighlight %}
+```
 
 Die Aufgabe hat die Variablen `a`, `b` und `op`, wobei `a` und `b` zwei Zahlen zwischen 1 und 10 sein sollen, und `op` entweder `+` oder `-` sein soll. Um die Subtraktion einfacher zu machen soll `a` die Größere der beiden Zahlen sein. In der Variablen `loesung` wollen wir uns die korrekte Lösung der Aufgabe merken.
 
@@ -220,7 +220,7 @@ Der Benutzer kann nun Aufgaben bekommen und diese lösen. Wir können auch schon
 
 Wir brauchen `Score`:
 
-{% highlight python %}
+```python
 class Score:
     score: int = 0
     counter: int = 0
@@ -240,7 +240,7 @@ class Score:
         self.score = 0
         self.counter = 0
         self.target = 10
-{% endhighlight %}
+```
 
 Die Klasse zählt in `score` die korrekten Lösungen mit, in `counter` werden alle gelösten Aufgaben mitgezählt und in `target` speichern wir, wie viele Aufgabenrunden das Spiel insgesamt dauert.
 
@@ -250,7 +250,7 @@ Die Methode `correct()` wird aufgerufen, wenn der Benutzer eine richtige Antwort
 
 Wir verändern jetzt den Konstruktor unserer Hauptklasse `Ui`: Dort wollen wir auch einen Score und eine Aufgabe erzeugen. Und statt `show()` direkt aufzurufen haben wir jetzt eine Methode `alles_updaten()`, die die Texte der verschiedenen Bedienelemente verändert und dann erst `show()` aufruft.
 
-{% highlight python %}
+```python
 class Ui(QtWidgets.QMainWindow):
     aufgabe: Aufgabe
     score: Score
@@ -264,11 +264,11 @@ class Ui(QtWidgets.QMainWindow):
 
         self.load_ui()
         self.alles_updaten()
-{% endhighlight %}
+```
 
 Und `alles_updaten()` sieht nun so aus:
 
-{% highlight python %}
+```python
     def set_aufgabe(self) -> None:
         self.label_a.setText(str(self.aufgabe.a))
         self.label_op.setText(str(self.aufgabe.op))
@@ -288,7 +288,7 @@ Und `alles_updaten()` sieht nun so aus:
         self.set_statusbar()
         self.set_aufgabe()
         self.show()
-{% endhighlight %}
+```
 
 Wir aktualisieren also das `statusbar` Element in `set_statusbar()` und die Aufgabenanzeige in der Groupbox in `set_aufgabe()`.
 
@@ -306,7 +306,7 @@ Wir wollen ausdrücklich nicht, daß beim Verlassen der Editbox etwas passiert -
 
 Die Methode:
 
-{% highlight python %}
+```python
     def auswerten(self) -> None:
         loesung: int
         text: str
@@ -338,7 +338,7 @@ Die Methode:
             self.alles_updaten()
 }
 
-{% endhighlight %}
+```
 
 Wir lesen die Benutzeringabe aus dem Antwortfeld mit `text()` aus. Sie kann leer sein, dann ignorieren wir sie.
 
@@ -352,16 +352,16 @@ Falls der Benutzer ausreichend viele Aufgaben gelöst hat, beenden wir das Progr
 
 Der Knopf "Antworten" muß nun ebenfalls verkabelt werden: In `load_ui()` passen wir die Zeile
 
-{% highlight python %}
+```python
         self.button_loesen = self.findChild(QtWidgets.QPushButton, "button_loesen")
-{% endhighlight %}
+```
 
 also zu 
 
-{% highlight python %}
+```python
         self.button_loesen = self.findChild(QtWidgets.QPushButton, "button_loesen")
         self.button_loesen.clicked.connect(self.auswerten)
-{% endhighlight %}
+```
 
 an.
 
@@ -369,7 +369,7 @@ an.
 
 Schließlich können wir in `quit_pressed()` noch die Dialognachricht anpassen, um einen Endscore anzuzeigen:
 
-{% highlight python %}
+```python
     def quit_pressed(self) -> None:
         msg: QtWidgets.QMessageBox = QtWidgets.QMessageBox()
         msg.setText(
@@ -381,7 +381,7 @@ Schließlich können wir in `quit_pressed()` noch die Dialognachricht anpassen, 
         msg.setIcon(QtWidgets.QMessageBox.Information)
         msg.exec()
         sys.exit(0)
-{% endhighlight %}
+```
 
 Nach dem Starten kann der Benutzer jetzt Aufgaben sehen, eine Lösung eingeben und den Knopf "Antworten" drücken. Das Programm wertet die Eingabe aus, zählt die Ergebnisse und bewegt die Fortschrittbalken. Nach 10 Eingaben gibt es ein Endergebnis aus und beendet sich.
 

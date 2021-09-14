@@ -64,7 +64,7 @@ Greift ein Browser das erste Mal auf eine Webanwendung zu, sendet er einen
 GET-Request mit dem Namen der gewünschten Site im Host-Header und einigen
 weiteren Headerzeilen, die uns hier heute nicht interessieren sollen.
 
-{% highlight console %}
+```console
 GET / HTTP/1.1
 Host: www.shop.com
 Connection: keep-alive
@@ -73,7 +73,7 @@ User-Agent: Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_6; en-US) AppleWebKit
 Accept-Encoding: gzip,deflate,sdch
 Accept-Language: en-US,en;q=0.8
 Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
-{% endhighlight %}
+```
 
 Die Webanwendung reagiert mit einer Antwort, die einen Content-Type
 definiert (zum Beispiel _text/html_ für Webseiten) und die weitere Header
@@ -81,14 +81,14 @@ enthalten kann. Einer dieser Header ist _Set-Cookie_. Das ist die
 Tätowierung, die unseren Browser von allen anderen Browsern unterscheidbar
 macht.
 
-{% highlight console %}
+```console
 Set-Cookie: <name>=<value>
 	[; expires=<date>]
 	[; domain=<domain_name>]
 	[; path=<some_path>]
 	[; secure]
 	[; httponly]
-{% endhighlight %}
+```
 
 Set-Cookie definiert eine Variable mit dem Namen _Name_ und dem Wert
 _value_. Es gibt Limits im Browser für die Anzahl und Länge dieser Variablen
@@ -203,27 +203,27 @@ meisten anderen geratenen IDs gehören zu gar keiner Session.
 Man könnte Session-IDs auch anders als mit Cookies übermitteln. Statt des
 Requests
 
-{% highlight console %}
+```console
 GET /shop.html
 Host: www.shop.com
 Cookie: sessid=17
-{% endhighlight %}
+```
 
 könnte man zum Beispiel auch die ID in die URL tun, also
 `http://www.shop.com/shop.html?sessid=17` laden:
 
-{% highlight console %}
+```console
 GET /shop.html?sessid=17
 Host: www.shop.com
-{% endhighlight %}
+```
 
 als Request senden. Oder man baut die ID in den Hostnamen ein:
 http://sessid17.shop.com/shop.html wäre die URL und der Request ist dann
 
-{% highlight console %}
+```console
 GET /shop.html
 Host: sessid17.shop.com
-{% endhighlight %}
+```
 
 Das Problem bei diesen anderen Verfahren ist, daß die Session-ID auf die
 eine oder andere Weise Bestandteil der URL wird. Dadurch gibt man die
@@ -257,12 +257,12 @@ schwer zu manipulieren ist und das auf diese Weisen den Benutzer bei allen
 weiteren Besuchen auf der Site einloggt, ohne daß dieser noch einmal einen
 Paßwort-Prompt zu sehen bekommt.
 
-{% highlight console %}
+```console
 Set-Cookie: Login=kris-23b9404f78d90b881175bcfc5f57b61c;       
 	domain=.shop.com;
 	expires=Sat, 01-Jan-2030 00:00:00 GMT;
 	path=/;
-{% endhighlight %}
+```
 
 Die Site hat nun Methoden, mit denen sie die behauptete Identität ("kris")
 und den Authentizitätsbeweis (die Nummer da) zusammenführen kann und mit
@@ -287,11 +287,11 @@ Tracking-Mechanismus mißbrauchen kann.
 Denn wäre es legal, einen Cookie wie diesen für die "Domain" "." (das ganze
 Internet) zu senden:
 
-{% highlight console %}
+```console
 Set-Cookie: ID=ee487f1423d28992ee285760875e2cb8;
 	expires=Sat, 01-Jan-2030 00:00:00 GMT;
 	domain=.;
-{% endhighlight %}
+```
 
 dann hätte man dem Browser des Benutzers für die nächsten beiden Dekaden
 internet-weit eine eindeutige Kennung verpaßt und könnte diesen Benutzer
@@ -310,11 +310,11 @@ anderen Wegen. In den Seiten von
 [web.de](http://www.web.de) und bei vielen anderen Websites findet man zum
 Beispiel Code wie diesen hier:
 
-{% highlight html %}
+```html
 <img src="http://webdessl.ivwbox.de/cgi-bin/ivw/CP/264_PH;sc%3Dwebde/homepage"
      alt=""
      width="1" height="1"/>
-{% endhighlight %}
+```
 
 Dieser Code lädt ein 1x1 Pixel großes Bild - das Bild ist ein transparentes
 GIF, also unsichtbar. Das Bild wird aber nicht von der Domain web.de
@@ -322,14 +322,14 @@ geladen, sondern von der Domain ivwbox.de.
 
 Von dort bekommt man dann eine Antwort wie diese hier: 
 
-{% highlight console %}
+```console
 KK:~ kris$ curl -D x 'http://webdessl.ivwbox.de/cgi-bin/ivw/CP/264_PH;sc%3Dwebde/homepage'
 KK:~ kris$ cat x
 HTTP/1.0 302 FOUND
 Date: Sat, 05 Feb 2011 18:20:49 GMT
 ...
 Set-Cookie: i00=01914d4d94fc5da00006; path=/; domain=.ivwbox.de; expires=Sunday, 05-Feb-2012 18:20:44 GMT
-{% endhighlight %}
+```
 
 Es wird also der Cookie _i00_ mit dem Wert _01914d4d94fc5da00006_ definiert.
 Der Cookie hält ein Jahr lang und wird für die Domain ".ivwbox.de" gesetzt.
@@ -353,22 +353,22 @@ Genau!).
 Schließlich kann auch noch weitere Spielchen spielen, falls Javascript
 aktiviert ist. So findet man etwa bei web.de vor dem Counterpixel den Code
 
-{% highlight javascript %}
+```javascript
 <script type="text/javascript" src="http://uim.tifbs.net/js/4423.js"></script>
-{% endhighlight %} 
+``` 
 
 der wiederum auf Umwegen die Datei
 [http://uim.tifbs.net/js/global_4423_38.js](http://uim.tifbs.net/js/global_4423_38.js)
 nachlädt.
 
 Dort wird an geeigneter Stelle ein Aufruf wie folgt gemacht: 
-{% highlight javascript %}
+```javascript
 this._loadPixel(
         this._replaceVariables(
             '//pixelbox.uimserv.net/cgi-bin/webde/__TYPE__/__CODE__;sc%3D__SC__%26jsv%3D__JSV__%26scr%3D__SCR__%26flv%3D__FLV__%26vid%3D__VID__%26vct%3D__VCT__%26res%3D__RES__%26smv%3D__SMV__%26cona%3D__CONA__%26cost%3D__COST__?d%3D__D__%26r=__R__'
         )
 );
-{% endhighlight %}
+```
 
 Aus dem ganzen Drumherum geht hervor, dass die Texte der Form \_\_NAME\_\_
 Platzhalter sind, die Werten ersetzt werden, die zuvor von Javascript

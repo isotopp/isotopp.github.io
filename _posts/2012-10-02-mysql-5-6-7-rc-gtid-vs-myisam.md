@@ -29,11 +29,11 @@ friends, and that is even
 Also, this is supposed to work with GRANT and REVOKE, but not with INSERT
 and DELETE.  Now guess what mysql-install-db and friends are using?
 
-{% highlight sql %}
+```sql
 server:~ # less /usr/share/mysql/mysql_system_tables_data.sql
 ...
 INSERT INTO tmp_user VALUES ('localhost','root','',...);
-{% endhighlight %}
+```
 
 This is a larger problem: We are supposed to use GRANT and REVOKE, but many
 people are using INSERT and DELETE in mysql.\* all of the time, and so do

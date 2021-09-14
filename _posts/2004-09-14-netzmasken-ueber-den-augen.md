@@ -20,13 +20,13 @@ Wahrscheinlich ist das das Gefühl, das man hat, wenn man alt wird.
 
 Ich erzählte dies meiner Katze, und sie antwortete mit einem einfachen Paste ins Irc: 
 
-{% highlight c %}
+```c
 #define BITCOUNT(x)     (((BX_(x)+(BX_(x)>>4)) & 0x0F0F0F0F) % 255)
 
 #define  BX_(x)         ((x) - (((x)>>1)&0x77777777) \
                              - (((x)>>2)&0x33333333) \
                              - (((x)>>3)&0x11111111))
-{% endhighlight %}
+```
 
 Dafür liebe ich sie.
 

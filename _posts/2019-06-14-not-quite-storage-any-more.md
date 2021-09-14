@@ -74,7 +74,7 @@ So let’s make a file system and use this one-of-a-kind pinnacle of 21st centur
 
 Anyway, here’s the fio:
 
-{% highlight console %}
+```console
    read: IOPS=142k, BW=2212MiB/s (2319MB/s)(648GiB/300001msec)
     clat percentiles (nsec):
      |  1.00th=[  227],  5.00th=[  231], 10.00th=[  233], 20.00th=[  243],
@@ -82,7 +82,7 @@ Anyway, here’s the fio:
      | 70.00th=[  266], 80.00th=[  274], 90.00th=[  298], 95.00th=[  314],
      | 99.00th=[  338], 99.50th=[  350], 99.90th=[  438], 99.95th=[  540],
      | 99.99th=[10176]
-{% endhighlight %}
+```
 
 Shut your mouth, please. The scale actually switched to ns (1/10E-9) instead of µs (1/10E-6). We are at 0.227µs - 0.350µs here, and are good till the 99.95th, actually.
 
@@ -90,7 +90,7 @@ So, dumb sysadmin bloke hodored 142 000 single threaded IOPS out of a /dev/pmem,
 
 Pure writes (times 8):
 
-{% highlight console %}
+```console
   write: IOPS=63.3k, BW=989MiB/s (1037MB/s)(290GiB/300000msec)
     clat percentiles (nsec):
      |  1.00th=[  249],  5.00th=[  255], 10.00th=[  258], 20.00th=[  262],
@@ -98,7 +98,7 @@ Pure writes (times 8):
      | 70.00th=[  290], 80.00th=[  326], 90.00th=[  370], 95.00th=[  382],
      | 99.00th=[  430], 99.50th=[  438], 99.90th=[  470], 99.95th=[  482],
      | 99.99th=[ 3376]
-{% endhighlight %}
+```
 
 506400 IOPS, 8 GB/s, 0.249µs-0.482µs till the 99.95th. And the 8x read + 8x write is much of the same, 500k IOPS, 8 GB, stable latencies of 1/4 to 1/2 µs till the 99.95th.
 

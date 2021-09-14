@@ -19,7 +19,7 @@ show that, I wrote a little bit of Python.
 The script creates a test table in a database and writes 10.000 rows of test
 data into it, in commit sizes of 1, 2, 4, ..., 1024 rows.
 
-{% highlight console %}
+```console
 $ ./mysql.py --help
 Usage: mysql.py [OPTIONS] COMMAND [ARGS]...
 
@@ -33,7 +33,7 @@ Commands:
   drop      Drop the demo table
   fill      Write test records into the demo table.
   truncate  Truncate the demo table.
-{% endhighlight %}
+```
 
 There is a small driver script to run the test. The driver creates the
 table, truncates it and will then run the fill command of the script over
@@ -43,7 +43,7 @@ being tried with 10.000 rows of test data.
 The test system has a very old SSD (Crucial M4-CT512M4SSD2) as a data
 directory.
 
-{% highlight bash %}
+```bash
 $ cat driver.sh
 #! /bin/bash --
 
@@ -56,7 +56,7 @@ do
         echo "./mysql.py fill --size=10000 --commit-size=$csize"
         time ./mysql.py fill --size=10000 --commit-size=$csize
 done
-{% endhighlight %}
+```
 
 The result of the test run is as follows shown, and since at point 10.000
 rows were not enough, I later added a second test run with 100.000 rows and
@@ -99,7 +99,7 @@ rows/commit to 1024 rows/commit.
 
 ## The script
 
-{% highlight console %}
+```console
 $ cat requirements.txt
 click
 mysqlclient
@@ -112,11 +112,11 @@ $ source venv/bin/activate
 (venv) $ pip install -r requirements.txt
 ...
 (venv) $ pip freeze -r requirements.txt > requirements-frozen.txt
-{% endhighlight %}
+```
 
 and
 
-{% highlight python %}
+```python
 #! /usr/bin/env python3
 
 import sys
@@ -228,4 +228,4 @@ def truncate(name):
 
 
 sql()
-{% endhighlight %}
+```

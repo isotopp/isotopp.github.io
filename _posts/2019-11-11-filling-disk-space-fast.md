@@ -20,10 +20,10 @@ I have been looking into disk copy speeds in order to better understand the
 limits. When creating a partition from NVME devices, the most simple layout
 is a concatenation:
 
-{% highlight console %}
+```console
 # lvcreate -n kris -L 10t vg00
 # dd if=/dev/zero of=data.0 bs=1024k count=10240
-{% endhighlight %}
+```
 
 Using a single `dd` command, I get about 600 MB/sec read or written from it.
 For 50TB, this is 87400 seconds, slightly more than one day.
@@ -31,9 +31,9 @@ For 50TB, this is 87400 seconds, slightly more than one day.
 The key to NVME saturation is parallel access, so lets do this in parallel
 with multiple processes:
 
-{% highlight console %}
+```console
 # seq 1 128 | parallel dd if=/dev/zero of=data.{} bs=1024k count=10240
-{% endhighlight %}
+```
 
 This will run as many processes in parallel as I have CPUs. On the test
 machine it will keep 32 processes running at all times, filling the queues
@@ -43,10 +43,10 @@ of the NVME device deeply. It can reach 3250 MB/s, so 50 TB translate into
 Had I created the NVME device as a striped RAID-0, I would have gotten even
 better performance:
 
-{% highlight console %}
+```console
 # lvcreate -n kris -L 10t -i12 -I64k vg00
 # seq 1 128 | parallel dd if=/dev/zero of=data.{} bs=1024k count=10240
-{% endhighlight %}
+```
 
 This configuration can reach up to 5.2 GB/s locally, so for 50TB, we get to
 2.75h disk write time.
@@ -55,20 +55,20 @@ Now, what I actually want is unfortunately something different: A copy of
 the original database image from machine A transferred to machine B. So that
 will translate into something along the lines of
 
-{% highlight console %}
+```console
 # mkdir /root/kris
 # cd !$
 # fpart -o chunk -n 128 /mysql/testschema
 # find . -type f | parallel rsync --files-from={} / kris@B:/mysql/testschema
-{% endhighlight %}
+```
 
 but that is still suffering from all the rsync+ssh overhead. It will give
 you around 2.7 GB/s. Using tar, this becomes
 
-{% highlight console %}
+```console
 # find . -type f | 
 > parallel 'tar cvf - --files-from={} | ssh kkoehntopp@B "tar -C /a -xf -"'
-{% endhighlight %}
+```
 
 which is much faster for a clean, non-incremental copy. But that is still
 using ssh to encrypt and can become a bottleneck in some use cases.

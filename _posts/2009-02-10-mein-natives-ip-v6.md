@@ -26,17 +26,17 @@ noch kein V6, leider.
 Die notwendigen Konfigurationen habe ich dann jedoch zu Fuß in
 /etc/sysconfig/network erledigt.
 
-{% highlight console %}
+```console
 h743107:/etc/sysconfig/network # cat ifroute-lo
 127/8
 2A01:238:40AB:CD00::/56
-{% endhighlight %}
+```
 
 Die erdet mein /56, sodaß der Provider-Router und mein Dedi nicht mit den
 Paketen pingpong spielen. Für einzelne genutzte Adressen lege ich dann
 Hostrouten, um das zu aktivieren.
 
-{% highlight console %}
+```console
 h743107:/etc/sysconfig/network # cat ifcfg-eth0
 ...
 NETMASK=''
@@ -47,13 +47,13 @@ BROADCAST_1='85.214.44.126'
 LABEL_1='1'
 IPADDR_2='2A01:238:4000:0:0123:4567:89AB:CDEF'
 IPADDR_3='2A01:238:40AB:CD00::1'
-{% endhighlight %}
+```
  Dies setzt die primäre V6-Adresse und die eine weitere V6-Adresse, die ich bisher nutze als aktiv. Der Rest des /56 ist weiter geerdet, nur diese eine Adresse ...::1 ist aktiv. Nun muß noch die Routingtabelle entsprechend gesetzt werden: 
-{% highlight console %}
+```console
 h743107:/etc/sysconfig/network # cat ifroute-eth0
 2A01:238:40AB:CD00::1 fe80::1
 default fe80::1
-{% endhighlight %}
+```
 
 Auch durch /etc/sysconfig/SuSEfirewall2 muß man einmal durchtoben und die
 entsprechenden V6-Optionen dort setzen, damit die Pakete nicht weggeworfen
@@ -61,7 +61,7 @@ werden.
 
 Mit einem ping6 kann man nun schon Connectivity testen. 
 
-{% highlight console %}
+```console
  h743107:/etc/sysconfig/network # ping6 -c 3 2001:4c40:1::6667
 PING 2001:4c40:1::6667(2001:4c40:1::6667) 56 data bytes
 64 bytes from 2001:4c40:1::6667: icmp_seq=1 ttl=57 time=31.5 ms
@@ -71,7 +71,7 @@ PING 2001:4c40:1::6667(2001:4c40:1::6667) 56 data bytes
 --- 2001:4c40:1::6667 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2008ms
 rtt min/avg/max/mdev = 31.518/31.568/31.654/0.061 ms
-{% endhighlight %}
+```
 
 Auch ein traceroute6 dort hin kann sehr aufschlußreich sein.
 
@@ -80,7 +80,7 @@ Auch ein traceroute6 dort hin kann sehr aufschlußreich sein.
 ssh sollte sofort und ohne weitere Konfiguration mit V6 funktionieren. Die
 /etc/ssh/sshd_config kennt
 
-{% highlight console %}
+```console
 AddressFamily
 Specifies which address family should be used by sshd(8).  Valid arguments are “any”, “inet” (use IPv4 only), 
 or “inet6” (use IPv6 only).  The default is “any”.
@@ -95,7 +95,7 @@ Specifies the local addresses sshd(8) should listen on.  The following forms may
 If port is not specified, sshd will listen on the address and all prior Port options specified.
 The default is to listen on all local addresses.  Multiple ListenAddress options are permitted.
 Additionally, any Port options must precede this option for nonport qualified addresses.
-{% endhighlight %}
+```
 
 Da insbesondere der Default 'any' ist, sollte keine Konfiguration notwendig
 sein. Wer ein Setup mit ListenAddress fährt, muß kurz die Config anpassen,
@@ -110,13 +110,13 @@ Alle Änderungen, die ich am Exim gemacht habe sind:
 
 Der entsprechende Abschnitt in der Konfiguration sieht also wie folgt aus:
 
-{% highlight console %}
+```console
 #disable_ipv6
 local_interfaces = <; [85.214.35.184]:25; [85.214.35.184]:587; 
     [127.0.0.1]:25; [127.0.0.1]:587;  
     [2a01:238:4000:0:123:4567:89ab:cdef]:25; [2a01:238:4000:0:123:4567:89ab:cdef]:587;
     [2a01:238:40ab:cd00::1]:25; [2a01:238:40ab:cd00::1]:587
-{% endhighlight %}
+```
 
 ### httpd
 
@@ -124,13 +124,13 @@ Der Apache, den ich fahre, lauscht nun ebenfalls für seine virtuellen Hosts
 aus V6-Adressen. Dazu habe ich meinen Konfigurationsgenerator wie folgt
 definiert:
 
-{% highlight console %}
+```console
 Listen SERVERIP:80
 Listen [2a01:0238:4000:0000:0123:4567:89ab:cdef]:80
 Listen [2a01:0238:4000:0000:0123:4567:89ab:cdef]:443
 
 NameVirtualHost *
-{% endhighlight %}
+```
 
 Die Kombination von Listen-Anweisungen und `NameVirtualHost *` sorgt dafür,
 daß alle name based virtual Hosts auf allen diesen Interfaces zu bekommen
@@ -147,10 +147,10 @@ Dovecot kann derzeit nur auf einem oder allen Interface lauschen. Ich muß
 also meine alte IP-basierte `listen`-Anweisung löschen und ein
 globales Listen einsetzen:
 
-{% highlight console %}
+```console
 #listen = 85.214.35.184
 listen = [::]
-{% endhighlight %}
+```
 
 Ein * hätte alle V4-Interfaces aktiviert, ein [::] aktiviert V4 und V6.
 
@@ -160,7 +160,7 @@ Um mit V6 im Ircnet ircen zu können, muß man sich mit einem Webbrowser gegen
 [einen V6-only Webserver](http://irc.irc6.net) connecten und dort
 freischalten lassen. Dann kann man definieren:
 
-{% highlight console %}
+```console
 servers = (
   {
     address = "irc.irc6.net";
@@ -171,11 +171,11 @@ servers = (
     autoconnect = "yes";
   }
 );
-{% endhighlight %}
+```
 
 und von dort aus weiterarbeiten. Für Freenode ist es 
 
-{% highlight console %}
+```console
 servers = (
   {
     address = "ipv6.chat.freenode.net";
@@ -186,7 +186,7 @@ servers = (
     autoconnect = "yes";
   }
 );
-{% endhighlight %}
+```
 
 Undernet kann noch kein V6.
 
@@ -196,18 +196,18 @@ Bind 9 kann V6. Das reverse Lookup für die primäre IP liefert der Provider. F�
 
 Vorwärts-Einträge: 
 
-{% highlight console %}
+```console
 irc                     1D IN AAAA      2A01:0238:40AB:CD00:0000:0000:0000:0001
 irc                     1D IN MX        100 smtp.koehntopp.de.
 
 smtp                    1D IN AAAA      2A01:0238:40AB:CD00:0000:0000:0000:0001
 smtp                    1D IN A         85.214.35.184
 smtp                    1D IN MX        100 smtp.koehntopp.de.
-{% endhighlight %}
+```
 
 Und die reverse Zone: 
 
-{% highlight console %}
+```console
 h743107:/var/lib/named/master # less /etc/named.conf
 ...
 options {
@@ -228,11 +228,11 @@ zone "d.c.b.a.0.4.8.3.2.0.1.0.a.2.ip6.arpa" in {
         type master;
         file "master/d.c.b.a.0.4.8.3.2.0.1.0.a.2.ip6.arpa.zone";
 };
-{% endhighlight %}
+```
 
 Dann muß noch die Zone erzeugt werden. Dies geschieht wie üblich und ist nur ein Haufen Tipperei.
 
-{% highlight console %}
+```console
 h743107:/var/lib/named/master # ls -l *ip6*
 -rw-r--r-- 1 root root 347 Feb  3 10:03 d.c.b.a.0.4.8.3.2.0.1.0.a.2.ip6.arpa.zone
 h743107:/var/lib/named/master # cat !$
@@ -249,5 +249,5 @@ cat *ip6*
         1D IN NS        ns1.koehntopp.de.
 
 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0     1D IN PTR irc.koehntopp.de.
-{% endhighlight %}
+```
 

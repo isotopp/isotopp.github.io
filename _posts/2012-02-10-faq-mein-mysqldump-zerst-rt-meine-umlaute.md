@@ -44,29 +44,29 @@ hier im Blog.
 Wir definieren eine Tabelle mit einer VARCHAR-Spalte, an der ein
 Zeichensatz-Label 'latin1' klebt.
 
-{% highlight sql %}
+```sql
 mysql> create table t ( 
 -> id integer unsigned not null primary key, 
 -> f varchar(20) charset latin1 
 -> ) engine = innodb;
 Query OK, 0 rows affected (0.25 sec)
-{% endhighlight %}
+```
 
 
 Wir definieren die Verbindung zur Datenbank auch als latin1.  Der
 Zeichensatz der Spalte t.f und das Zeichensatzlabel der Connection stimmen
 also überein.
 
-{% highlight sql %}
+```sql
 mysql> set names latin1;
 Query OK, 0 rows affected (0.00 sec)
-{% endhighlight %}
+```
 
 
 Wir senden nun Daten mit UTF8-codierung über eine Connection, die das Label
 latin1 trägt.  Wir lügen die Datenbank also an:
 
-{% highlight sql %}
+```sql
 mysql> select hex('Köhntopp') as umlaut;
 +--------------------+
 | umlaut             |
@@ -77,7 +77,7 @@ mysql> select hex('Köhntopp') as umlaut;
 
 mysql> insert into t values ( 1, 'Köhntopp');
 Query OK, 1 row affected (0.00 sec)
-{% endhighlight %}
+```
 
 Die Daten sind also real in utf8 codiert, werden aber über eine Verbindung
 übertragen, die das Label latin1 hat.  Die Spalte t.f hat ebenfalls die
@@ -89,7 +89,7 @@ gelesen.  Sie liegen in latin1 vor.  Die Verbindung, über die wir die Daten
 lesen, ist ebenfalls latin1.  Die Daten werden also 1:1 ausgelesen und in
 unserem utf8-Terminal korrekt angezeigt:
 
-{% highlight sql %}
+```sql
 mysql> select f, hex(f) from t where id =1;
 +-----------+--------------------+
 | f         | hex(f)             |
@@ -97,7 +97,7 @@ mysql> select f, hex(f) from t where id =1;
 | Köhntopp | 4BC3B6686E746F7070 |
 +-----------+--------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Man sieht in der Ausgabe links einen korrekten Umlaut - das Terminal des Mac
 steht aber auf utf8.  Man sieht rechts die Bytes vor jeder
@@ -105,7 +105,7 @@ Ausgabekonvertierung auf der Platte - 0xc3 0xb6 sind ein utf8 o-Umlaut.
 
 Und jetzt der Dump:
 
-{% highlight sql %}
+```sql
 ...
 /*!40101 SET NAMES utf8 */;
 ...
@@ -129,7 +129,7 @@ LOCK TABLES `t` WRITE;
 INSERT INTO `t` VALUES (1,'KÃ¶hntopp');
 /*!40000 ALTER TABLE `t` ENABLE KEYS */;
 UNLOCK TABLES;
-{% endhighlight %}
+```
 
 
 Wir sehen, daß mysqldump die Verbindung auf utf8 setzt.  Das tut es immer,
@@ -155,9 +155,9 @@ Das Problem ist auf zwei Arten lösbar:
 
 Die haarsträubende Kommandozeile 
 
-{% highlight sql %}
+```sql
 server:~ # mysqldump --default-character-set latin1 kris t | sed -e 's/SET NAMES latin1/SET NAMES utf8/'
-{% endhighlight %}
+```
 
 erzeugt einen Dump, bei dem die Verbindung auf 'SET NAMES latin1'
 eingestellt wird - die Daten werden also genau wie in der Anwendung ohne
@@ -195,7 +195,7 @@ beschrieben, kann man:
 
 Wir machen das also:
 
-{% highlight sql %}
+```sql
 mysql> show create table t\G
        Table: t
 Create Table: CREATE TABLE `t` (
@@ -204,12 +204,12 @@ Create Table: CREATE TABLE `t` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 In der alten Tabelle ist die Spalte f als latin1 definiert, enthält aber
 utf8-Daten.
 
-{% highlight sql %}
+```sql
 mysql> alter table t modify column f varbinary(20);
 Query OK, 1 row affected (0.63 sec)
 Records: 1  Duplicates: 0  Warnings: 0
@@ -217,7 +217,7 @@ Records: 1  Duplicates: 0  Warnings: 0
 mysql> alter table t modify column f varchar(20) charset utf8;
 Query OK, 1 row affected (0.62 sec)
 Records: 1  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Wir wandeln f in ein VARBINARY um - das ist ein VARCHAR ohne
 Zeichensatzlabel, also ein Binärklumpen.  Die Daten in f bleiben erhalten,
@@ -239,7 +239,7 @@ kaputte Daten, die wir heil machen wollen.
 
 Das Resultat: 
 
-{% highlight sql %}
+```sql
 mysql> show create table t\G
        Table: t
 Create Table: CREATE TABLE `t` (
@@ -256,7 +256,7 @@ mysql> select f, hex(f) from t;
 | Köhntopp | 4BC3B6686E746F7070 |
 +-----------+--------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir speichern nun utf8 Daten in einer utf8-Spalte.  Damit stimmen
 Spalten-Label und Spalten-Daten überein und die Mechanismen der Datenbank

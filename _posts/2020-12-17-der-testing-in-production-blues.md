@@ -27,7 +27,7 @@ Dazu ein paar Anmerkungen:
 
 Es ist mehr als [ein Paar Frontend-Server](https://twitter.com/watch_union/status/1339231931578322962). Die angegebenen IPv4-Adressen 104.16.101.21 und 104.16.102.21 gehören zu Cloudflare:
 
-{% highlight console %} 
+```console 
 $ whois 104.16.101.21
 ...
 NetRange:       104.16.0.0 - 104.31.255.255
@@ -43,7 +43,7 @@ Updated:        2017-02-17
 Comment:        All Cloudflare abuse reporting can be done via https://www.cloudflare.com/abuse
 Ref:            https://rdap.arin.net/registry/ip/104.16.0.0
 ...
-{% endhighlight %}
+```
 
 Cloudflare ist ein Betreiber eines CDN (Content Delivery Networks), das Frontend-Dienste mit DDoS-Schutz für alles und jeden anbietet. Cloudflare arbeitet mit [DNS basierendem Global Loadbalancing](https://www.cloudflare.com/de-de/learning/cdn/glossary/global-server-load-balancing-gslb/) oder mit [TCP Anycast](https://www.cloudflare.com/de-de/learning/cdn/glossary/anycast-network/). Auf diese Weise kann entweder derselbe DNS-Name oder gar dieselbe IPv4-Adresse zu dem Server aufgelöst werden, der dem Verbindung Suchenden am nächsten liegt. Das Maß "am Nächsten" ist dabei meist auf der Netzwerk-Topologie definiert, also "mit den wenigsten Hops" oder "mit der geringsten Zugriffsverzögerung (Latenz)", und das muß nicht unbedingt der geographisch am nächsten liegende Server sein.
 

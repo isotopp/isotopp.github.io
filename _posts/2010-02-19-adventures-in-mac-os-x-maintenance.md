@@ -28,9 +28,9 @@ Jetzt hat man eine bootbare Platte - nicht umbenennen. DVD auswerfen, Platte unm
 
 Beim Anschließen oder Mounten der Platte (mit Disk Utility) öffnet sich diese nun automatisch wie es die originale Installations-DVD auch tut. Das nervt. Also müssen wir sie unblessen:
 
-{% highlight console %}
+```console
 $ sudo bless --folder "/Volumes/Mac OS X Install DVD/" -saveX
-{% endhighlight %}
+```
 
 Bless steuert normalerweise was von wo warum gebootet wird, kontrolliert aber auch diese Folder Auto-Open.
 

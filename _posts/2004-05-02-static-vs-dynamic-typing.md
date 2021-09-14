@@ -26,11 +26,11 @@ Aber offenbar bin ich nicht der einzige, der diese Erfahrung gemacht hat. Bei
 
 Manche Beispiele sind echt lustig, jedenfalls wenn man diese Art Geek-Humor steht. Wie schreibt ein Java-Programmierer `$fp = fopen($argFilename, "r")`?
 
-{% highlight java %}
+```java
 import java.io.*;
 
 BufferedReader myFile = new BufferedReader(new FileReader(argFilename));
-{% endhighlight %}
+```
 
 Das baut ein 
 [FileReader](http://java.sun.com/j2se/1.4.2/docs/api/java/io/FileReader.html)-Objekt (FileReader ist eine Unterklasse von 
@@ -44,27 +44,27 @@ Das baut ein
 
 Oder, schöner noch: Wie schreibt ein Java-Programmierer "Tu eine Zahl in Array und hol sie wieder raus?"
 
-{% highlight java %}
+```java
 public Vector aList = new Vector;
 public int aNumber = 5;
 public int anotherNumber;
 
 aList.addElement(new Integer(aNumber));
 anotherNumber = ((Integer)aList.getElement(0)).intValue();
-{% endhighlight %}
+```
 
 Wir bauen uns also ein int-Skalar aNumber, und eine Liste aList. Da in die Liste nur Objekte rein können, machen wir aus dem int-Skalar ein int-Objekt und tun das in die Liste. Da Java 
 [statisch typt](http://www.ferg.org/projects/python_java_side-by-side.html#typing), ist in der Liste jetzt ein Object-Objekt und kein Integer-Objekt mehr. Wir fischen das Object-Objekt also mit getElement() aus der Liste, und typecasten das erst mal in was brauchbares, ein Integer-Objekt. Nur dann dürfen wir das int-Skalar aus dem Integer-Objekt wieder herausholen. 
 
 In Python und jeder anderen dynamisch getypten Sprache:
 
-{% highlight python %}
+```python
 aList = []
 aNumber = 5
 
 aList.append(aNumber)
 anotherNumber = aList[0]
-{% endhighlight %}
+```
 
 Was ich für sehr viel klarer und weniger fehleranfällig halte. 
 

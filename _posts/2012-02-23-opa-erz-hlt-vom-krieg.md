@@ -50,10 +50,10 @@ also die Verbindungen zu den Nachbarknoten, mit Gewichten dran.  Hier ein
 [Mapschnipsel](http://groups.google.com/group/sub.config/browse_thread/thread/33abbbe7714b4b3b/9c31c38086d5c0c1)
 von 1991: 
 
-{% highlight console %}
+```console
 tpki    unido(DAILY+HIGH), smurf(DAILY+HIGH), abqhh(DAILY+HIGH),
         <ipkima>(DAILY+HIGH)
-{% endhighlight %}
+```
 
 Das Schreiben von Mapschnipseln ist eine Wissenschaft, die verloren
 gegangen ist: Je nachdem, welche Gewichte man seinen Links zugewiesen hat,

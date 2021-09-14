@@ -18,7 +18,7 @@ This is an update and translation of a [much older article]({% link _posts/2006-
 
 The data looked like this:
 
-{% highlight console %}
+```console
 $ head -2 /home/kris/Documents/banking/umsatz-22758031-29122004.csv
 "Local Account";"Book Date";"Valuta Date";"Transaction Type";
 "Purpose";
@@ -28,13 +28,13 @@ $ head -2 /home/kris/Documents/banking/umsatz-22758031-29122004.csv
 "DRP 08154711 040441777  INKL. 16% UST 5.38 EUR";
 "STRATO MEDIEN AG";"040441777";"10050000";
 "-39,00";"EUR";"Direct Debit booked"
-{% endhighlight %}
+```
 
 Because I want to know how I spend my money, I am loading the data into MySQL. Here is how:
 
 As a first step we are defining a table into which to load the data. The table has columns whose primary purpose it to hold the data. We still have to clean and adjust the data to be able to do things with the data, so we are not looking at the final fields or types at all.
 
-{% highlight sql %}
+```sql
 -- load data
 warnings;
 DROP TABLE IF EXISTS transactions;
@@ -58,7 +58,7 @@ CREATE TABLE transactions (
     , amount_text)
 ) ;
 truncate table transactions;
-{% endhighlight %}
+```
 
 Sadly, we have no unique transaction identifiers, so I cannot really define a proper primary key. I am trying to make do with a `UNIQUE INDEX`, but it is likely overly specific. 
 
@@ -68,7 +68,7 @@ To prevent loading the same line twice if it happens to appear in multiple CSV f
 
 I load can load the various CSV files into this table:
 
-{% highlight sql %}
+```sql
 load data infile  
   '/home/kris/Documents/banking/umsatz-22758031-29122004.csv' 
 into table buchungen 
@@ -82,11 +82,11 @@ fields terminated by ";"
 optionally enclosed by '"' 
 ignore 1 lines;
 ...
-{% endhighlight %}
+```
 
 Now it is time to clean up the data. For this we create a target table, and add a primary key to it.
 
-{% highlight sql %}
+```sql
 -- prepare conversion stage
 DROP TABLE IF EXISTS b;
 create table b like transactions;
@@ -94,7 +94,7 @@ alter table b add column id integer unsigned not null first;
 alter table b add primary key (id);
 alter table b change column id 
   id integer unsigned not null auto_increment;
-{% endhighlight %}
+```
 
 ## Cleaning and changing the data
 
@@ -105,7 +105,7 @@ We can now copy the data over, and in the process clean it up.
 - We need to add a year to bookdate_text, taking it from the valutadate_text.
 - The `info` column is useless.
 
-{% highlight sql %}
+```sql
 -- load data into conversion stage
 insert into b select NULL, transactions.* from transactions;
 
@@ -138,7 +138,7 @@ alter table b change column bookdate_text
 
 -- drop info
 alter table b drop column info;
-{% endhighlight %}
+```
 
 ## Preparing binning categories
 
@@ -146,14 +146,14 @@ I now want to aggregate my expenses. In the raw data, spent money is listed toge
 
 I can have a table "moneysinks" that does this account to category assignment.
 
-{% highlight sql %}
+```sql
 -- add category
 alter table b add column category varchar(20) not null;
-{% endhighlight %}
+```
 
 And here is the `moneysinks` table, which needed manual population (I had to assign a category to each pattern by hand):
 
-{% highlight sql %}
+```sql
 DROP TABLE IF EXISTS `moneysinks`;
 CREATE TABLE `moneysinks` (
   `id` int(10) unsigned NOT NULL auto_increment,
@@ -226,26 +226,26 @@ INSERT INTO `moneysinks` VALUES (136,'euf-ga','ATM intl');
 INSERT INTO `moneysinks` VALUES (137,'dell','Toys und Gadgets');
 INSERT INTO `moneysinks` VALUES (138,'yvonne','RPG');
 UNLOCK TABLES;
-{% endhighlight %}
+```
 
 ## Asking Questions
 
 Using the mapping in `moneysinks` and the query below I can now permanently assign the `category` field in `b`:
 
-{% highlight sql %}
+```sql
 update b set category = ( 
     select category 
       from moneysinks as w 
      where b.remoteaccount_name like concat(w.pattern, "%") 
   order by length(pattern) desc 
     limit 1) where b.amount < 0;
-{% endhighlight %}
+```
 
 As I complete my list of patters I get a `category` assigned to everything.
 
 That enables me to ask questions:
 
-{% highlight sql %}
+```sql
 select   remoteaccount_name, 
          count(remoteaccount_name) as income 
     from b 
@@ -260,9 +260,9 @@ order by income desc;
 | MYSQL GMBH SCHLOSSERSTR. 4 72622 NUERTINGEN            |         3 |
 | COOP SCHLESWIG-HOLSTEIN EG BENZSTR. 10                 |         2 |
 +--------------------------------------------------------+-----------+
-{% endhighlight %}
+```
 
-{% highlight sql %}
+```sql
 select   remoteaccount_name, 
          count(remoteaccount_name) as payments
     from b 
@@ -282,11 +282,11 @@ order by payments desc;
 | QSC AG                                                  |       17 |
 | STADTWERKE KARLSRUHE                                    |       17 |
 ...
-{% endhighlight %}
+```
 
 Using the `category` I an also group this and make group totals.
 
-{% highlight sql %}
+```sql
 select category, 
          count(amount) as payments, 
          sum(amount) as total 
@@ -294,7 +294,7 @@ select category,
    where amount<0 
 group by category 
 order by total;
-{% endhighlight %}
+```
 
 This will tell me how I spend my money.
 

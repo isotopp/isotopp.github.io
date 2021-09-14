@@ -14,16 +14,16 @@ feature-img: assets/img/background/rijksmuseum.jpg
 ircnet, #lug-kiel, am 7. und 8. Mai.
 
 Jannik wundert sich über fsck's Meldung 
-{% highlight console %}
+```console
 /: 130834/6553600 Dateien (1.1% nicht zusammenhängend), 1007700/13107200 Blöcke
 Ist das schlimm?
-{% endhighlight %}
+```
 
 **Jannik:**
 hmm.. /: 
-{% highlight console %}
+```console
 130834/6553600 Dateien (1.1% nicht zusammenhängend), 1007700/13107200 Blöcke
-{% endhighlight %}
+```
 
 Sieht so aus als wäre mein Dateisystem fragmentiert gewesen o.O?
 Ich dachte, so etwas kennt Linux nicht.
@@ -293,25 +293,25 @@ Hast du ein `/boot`?
 Wie heisst die Partition bei Dir? Bei mir ist `/boot` auf `/dev/sda5`.
 
 **Jannik:**
-{% highlight console %}
+```console
 # mount |grep boot
 dev/hdb4 on /boot type ext2 (rw)
-{% endhighlight %}
+```
 
 **Isotopp:**
-{% highlight console %}
+```console
 linux:~ # debugfs /dev/sda5
 debugfs 1.38 (30-Jun-2005)
 debugfs:  ls
    2  (12) .        2  (12) ..      11  (20) lost+found    40  (16) message
 6025  (24) grub    29  (12) boot    31  (16) vmlinuz       13  (76) initrd
-{% endhighlight %}
+```
 
 debugfs arbeitet ja auf Dateisystemen, deswegen siehst du nur Sachen in /dev/hdb4 und nicht Zeugs da drüber
 Du kannst nun mal `stat` auf einen Kernel machen. 
 In meinem Fall
 
-{% highlight console %}
+```console
 debugfs:  stat vmlinux-2.6.13-15-default.gz
 Inode: 27   Type: regular    Mode:  0644   Flags: 0x0   Generation: 1675033442
 User:     0   Group:     0   Size: 1838899
@@ -327,7 +327,7 @@ BLOCKS:
 96-10751, (IND):10752, (1036-1291):10753-11008, (IND):11009, (1292-1547):11010-1
 1265, (IND):11266, (1548-1795):11267-11514
 TOTAL: 1804
-{% endhighlight %}
+```
 
 Vergleiche das mit [LXR](http://lxr.linux.no/source/include/linux/ext2\_fs.h#L211)
 vmlinux-... ist Inodenummer 27, ein Regular File.
@@ -386,11 +386,11 @@ und dann `ls -li lall laber`
 und paste den output.
 
 **Jannik:**
-{% highlight console %}
+```console
 # ls -li lall laber
 870099 -rw-r--r-- 2 root root 0 2006-05-08 21:43 laber
 870099 -rw-r--r-- 2 root root 0 2006-05-08 21:43 lall
-{% endhighlight %}
+```
 
 **Isotopp:**
 Wie lang ist die Datei?
@@ -461,19 +461,19 @@ Ja.
 Hey, welche Inode hat /boot? `ls -dlsi /boot` sagt es dir?
 
 **Jannik:**
-{% highlight console %}
+```console
 # ls -dlsi /boot
 2 2 drwxr-xr-x 4 root root 2048 2006-05-02 00:37 /boot
-{% endhighlight %}
+```
 
 **Isotopp:**
 Und welche Inode hat `/`?
 
 **Jannik:**
-{% highlight console %}
+```console
 # ls -dlsi /
 2 4 drwxr-xr-x 22 root root 4096 2006-04-26 23:31 /
-{% endhighlight %}
+```
 
 **Isotopp:**
 Die erste Zahl ist die Inodenummer, die 2. Zahl ist die Länge in Blöcken.
@@ -517,9 +517,9 @@ und da steht es.
 
 **Jannik:**
 cool
-{% highlight c %}
+```c
 #define EXT2_BAD_INO             1      /* Bad blocks Inode */
-{% endhighlight %}
+```
 
 Was soll das dann heißen?
 Das wird einfach ausgelassen?
@@ -552,9 +552,9 @@ Wenn du also mal ein `ls -li / /boot` machst, wirst du sehen, dass
 (vorausgesetzt, alle betrachteten Dateisysteme sind ext2/ext3, denn bei reiser ist alles anders.
 
 **Jannik:**
-{% highlight console %}
+```console
        2 drwxr-xr-x   4 root root  2048 2006-05-02 00:37 boot
-{% endhighlight %}
+```
 
 Hat wieder kleinere Inode ;P
 
@@ -585,17 +585,17 @@ oder genauer, mit `cat /proc/mounts`, denn da holt `mount` das her, und diese Li
 Linux weiß dann: wegen `/dev/sda5 /boot ext2 rw 0 0`
 muß ich ab `/boot` neu zu zählen anfangen, und zwar
 
-{% highlight console %}
+```console
 linux:/proc # ls -l /dev/sda5
 brw-r-----  1 root disk 8, 5 May  6 22:44 /dev/sda5
-{% endhighlight %}
+```
 
 auf (8, 5) statt auf (8, 1), bzw in meinem Fall statt auf (8, 5) auf (253, 1)
 
-{% highlight console %}
+```console
 linux:/proc # ls -lL /dev/system/root
 brw-r-----  1 root disk 253, 1 May  6 22:44 /dev/system/root
-{% endhighlight %}
+```
 
 **Isotopp:**
 Wir wollten über Dateisysteme und Layoutstrategien reden.
@@ -622,7 +622,7 @@ Ja
 Aber wenn ext2 ein Verzeichnis anlegt, dann tut es das neue Verzeichnis in einer _andere_ bg als das Elternverzeichnis.
 Die Inode-nummern aller Verzeichnisse in / sollten sich von der Inode-nummer von / sehr unterscheiden.
 
-{% highlight console %}
+```console
 linux:/boot # ls -li
      2 drwxr-xr-x   5 root root    2048 Mar 26 11:00 .
     28 -rw-r--r--   1 root root 1541719 Sep 13  2005 vmlinuz-2.6.13-15-default
@@ -630,18 +630,18 @@ linux:/boot # ls -li
 
   6025 drwxr-xr-x   2 root root    1024 Feb 11 21:20 grub
  10041 drwxr-xr-x   2 root root    1024 Dec 13 09:48 mysql
-{% endhighlight %}
+```
 
 und in grub dann:
 
-{% highlight console %}
+```console
 linux:/boot/grub # ls -li
 total 285
  6025 drwxr-xr-x  2 root root   1024 Feb 11 21:20 .
  6040 -rw-r--r--  1 root root     10 May  2 14:01 default
  6039 -rw-------  1 root root     15 Nov  2  2005 Device.map
  6026 -rw-r--r--  1 root root   7540 Dec 17 06:52 e2fs_stage1_5
-{% endhighlight %}
+```
 
 Da liegt dann alles beieinander, und in einer anderen bg als /.
 ext2/ext3 sortiert also Dateien _in_ einem Verzeichnis _dicht_ beieinander,
@@ -742,25 +742,25 @@ Das kann sehr viel schneller sein auf einem ordentlich defraggten System,
 denn da ist der Cache leer und Programme greifen nacheinander zu.
 
 Danach - naja, ich habe 
-{% highlight console %}
+```console
 linux:/boot/grub # free -m
               total       used       free     shared    buffers     cached
  Mem:          1011        909        101          0         82        280
  -/+ buffers/cache:        547        464
  Swap:         2055          3       2051
-{% endhighlight %}
+```
 
 ein Gig RAM, und davon sind 547 MB durch Programme belegt und 82+280 MB in Filesystem Caches.
 Die meisten meiner Reads gehen der Platte am Arsch vorbei, denn sie kommen aus dem Cache.
 
 **Jannik:**
-{% highlight console %}
+```console
 # free -m
               total       used       free     shared    buffers     cached
  Mem:          1517       1484         33          0         40       1052
  -/+ buffers/cache:        391       1126
  Swap:         1011        313        698
-{% endhighlight %}
+```
 LOL.
 
 **Isotopp:**

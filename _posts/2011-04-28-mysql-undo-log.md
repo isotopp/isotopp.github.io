@@ -38,7 +38,7 @@ Das ist die weitaus wahrscheinlichere Fehlerquelle. Wie also finden wir den
 Schuldigen?
 
 
-{% highlight sql %}
+```sql
 mysql> pager grep ACTIVE
 mysql> show engine innodb status\G
 ...
@@ -52,18 +52,18 @@ mysql> show engine innodb status\G
 MySQL thread id 146473882, query id 4156570244 mc02cronapp-01 192.168.1.10 cron_bp
 Trx read view will not see trx with id >= A90E14DE8, sees < A90E14DE8
 ...
-{% endhighlight %}
+```
 
 Ein Cronjob hängt also in einer offenen Transaktion seit geraumer Zeit fest?
 Mehr Informationen bekommen wir aus der Prozeßliste:
 
-{% highlight console %}
+```console
 mysql> pager grep cron
 mysql> show processlist;
 ...
 | 146473882 | cron_bp       | mc02cronapp-01:50154 | bp   | Sleep       |   16434 |
 ...
-{% endhighlight %}
+```
 
 Ein Login auf der mc02cronapp-01 und ein "lsof -i -n -P | grep 50154" zeigt
 schnell: Mitnichten ein Cronjob. Ein User hat einen MySQL
@@ -80,9 +80,9 @@ keine Methode, das zu tun - zwar wird der Platz _in_ der Datei
 freigegeben und später wieder genutzt, aber für das Betriebssystem ist der
 Platz verloren.
 
-{% highlight console %}
+```console
 [root@mc01bpmdb-01 ~]# cd /mysql/bp/data
 [root@mc01bpmdb-01 data]# ls -lh ibdata*
 -rw-rw---- 1 mysql mysql 1.3G Apr 28 14:50 ibdata1
-{% endhighlight %}
+```
 

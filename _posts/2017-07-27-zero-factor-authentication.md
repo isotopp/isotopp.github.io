@@ -13,14 +13,14 @@ tags:
 ---
 Dear Internet, Today I Learned that oath-toolkit exists in Homebrew. So, this is a thing:
 
-{% highlight console %}
+```console
 $ brew install oath-toolkit 
 $ alias totp='oathtool --totp -b YOURSECRET32BLA | pbcopy'
-{% endhighlight %} 
+``` 
 
 And so is this:
 
-{% highlight console %}
+```console
 #! /usr/bin/env expect -f
 
 # exp_internal 1
@@ -37,6 +37,6 @@ expect "Two Factor Token:"
 sleep 1
 send "$totp\r\n"
 interact
-{% endhighlight %}
+```
 
 Yup, it's totally possible to laugh and cry at the same time.

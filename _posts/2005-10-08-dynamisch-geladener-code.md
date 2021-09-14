@@ -52,7 +52,7 @@ Standalone-Programme - allen voran den C-Compiler selber. Wie
 coole Sachen könnte man machen, stünde einem Funktionalität wie
 die Folgende bereit.
 
-{% highlight c %}
+```c
 char *code = "void function(void) { printf(\"Hello, World\n\"); }";
 
 void (*f)(void);
@@ -62,7 +62,7 @@ EXEC_T *e = compile(t);
 
 f = find_symbol(e, "function");
 if (f) f();
-{% endhighlight %}
+```
 
 Oder bin ich der einzige, der so etwas cool finden würde?
 
@@ -71,7 +71,7 @@ kann man nützliche Dinge tun. Und das geht so...
 
 ## Ein Stück monolithischer Code
 
-{% highlight c %}
+```c
 #include <stdio.h>
 
 int func(int para) {
@@ -92,14 +92,14 @@ int main(int argc, char *argv[]) {
     printf("main end\n");
     return 0;
 }
-{% endhighlight %}
+```
 
 Das ist ein mächtig aufregendes Programm: Es hat eine Funktion
 `func`, die ihren numerischen Eingabewert mit drei multipliziert
 und zurückgibt. Es besteht aus einem Stück und ist trivial zu
 übersetzen und auszuführen:
 
-{% highlight makefile %}
+```makefile
 .PHONY: clean
 
 prog: prog.c
@@ -107,7 +107,7 @@ prog: prog.c
 
 clean:
     rm prog
-{% endhighlight %}
+```
 
 ## Zwei einzelne Module
 
@@ -115,7 +115,7 @@ Für so ein kleines Testprogramm wie dieses ist das ausreichend, aber wenn
 Programme größer werden, wollen wir sie aufteilen. Wir bekommen drei
 Teilprogramme. Das erste, `func.c`, enthält unsere Rechenfunktion:
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include "func.h"
 
@@ -128,11 +128,11 @@ int func(int para) {
     printf("Leaving func(%d) = %d\n", para, result);
     return result;
 }
-{% endhighlight %}
+```
 
 Der zweite Teil, `prog.c`, ruft diese Funktion nun auf: 
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include "func.h"
 
@@ -144,13 +144,13 @@ int main(int argc, char *argv[]) {
     printf("main end\n");
     return 0;
 }
-{% endhighlight %}
+```
 
 Der dritte Teil, `func.h`, ist winzig klein: 
 
-{% highlight c %}
+```c
 extern int func(int para);
-{% endhighlight %}
+```
 
 Die `"extern`-Anweisung in dieser Include-Datei muß in `prog.c` eingebunden
 werden. Sie macht dem Compiler, der `prog.c` übersetzt, klar, daß es eine
@@ -164,7 +164,7 @@ gefunden und gelinkt werden muß.
 Bevor wir uns das genauer ansehen, hier erst einmal das
 Makefile: 
 
-{% highlight makefile %}
+```makefile
 prog:   prog.o func.o
     cc -o prog $^
 
@@ -181,11 +181,11 @@ clean:
     cc -MM *.c > .dependencies
 
 include .dependencies
-{% endhighlight %}
+```
 
 Ein Testlauf:
 
-{% highlight console %}
+```console
 kris@valiant:~/Source/dlopen/02-multifile> make clean
 rm -f *.o prog .dependencies
 
@@ -202,7 +202,7 @@ Entering func(4)
 Leaving func(4) = 12
 Calling func(4) = 12
 main end
-{% endhighlight %}
+```
 
 Unser Makefile generiert also mit mehreren einzelnen
 Compileraufrufen eine `prog.o` und eine `func.o`-Datei. Ein
@@ -212,7 +212,7 @@ zusammen.
 Wenn wir einmal einen genaueren Blick auf diese Dateien werden,
 erkennen wir, wie das funktioniert:
 
-{% highlight console %}
+```console
 kris@valiant:~/Source/dlopen/02-multifile> nm func.o
 00000000 T func
 U printf
@@ -221,7 +221,7 @@ kris@valiant:~/Source/dlopen/02-multifile> nm prog.o
 U func
 00000000 T main
 U printf
-{% endhighlight %}
+```
 
 Die Datei `prog.o` enthält ein `U func`, ein "undefined symbol"
 für die Funktionen `func` und `printf`. Sie definiert ein Symbol
@@ -249,7 +249,7 @@ lediglich die Zusammenbauanweisung, das Makefile, anpassen.
 
 Unser neues Makefile sieht so aus: 
 
-{% highlight makefile %}
+```makefile
 prog:   prog.o libfunc.a
         cc -o prog prog.o -L. -lfunc
 
@@ -269,11 +269,11 @@ clean:
         cc -MM *.c > .dependencies
 
 include .dependencies
-{% endhighlight %}
+```
 
 und es tut dies: 
 
-{% highlight console %}
+```console
 kris@valiant:~/Source/dlopen/03-staticlib> make
 Makefile:19: .dependencies: Datei oder Verzeichnis nicht gefunden
 cc -MM *.c > .dependencies
@@ -281,7 +281,7 @@ cc -Wall -c prog.c
 cc -Wall -c func.c
 ar rcs libfunc.a func.o
 cc -o prog prog.o -L. -lfunc
-{% endhighlight %}
+```
 
 Wie zuvor übersetzen wir unsere beiden `.c`-Dateien in `.o`-Dateien.
 Alle Bibliotheksmodule fügen wir nun in eine Bibliothek
@@ -347,7 +347,7 @@ physikalischen Speicher.
 
 Damit das funktioniert, ändern wir das Makefile noch einmal ab: 
 
-{% highlight makefile %}
+```makefile
 prog:   prog.o libfunc.so
         cc -o prog prog.o -L`pwd` -lfunc -Wl,-rpath `pwd`
 
@@ -367,11 +367,11 @@ clean:
         cc -MM *.c > .dependencies
 
 include .dependencies
-{% endhighlight %}
+```
 
 Der Build sieht jetzt so aus: 
 
-{% highlight console %}
+```console
 kris@valiant:~/Source/dlopen/04-dynamiclib> make
 Makefile:20: .dependencies: Datei oder Verzeichnis nicht gefunden
 cc -MM *.c > .dependencies
@@ -379,7 +379,7 @@ cc -Wall -c prog.c
 cc -Wall -c func.c
 cc -rdynamic -shared -o libfunc.so func.o
 cc -o prog prog.o -L`pwd` -lfunc -Wl,-rpath,`pwd`
-{% endhighlight %}
+```
 
 Hier werden die Objektmodule ohne eigene `main`-Funktion nicht
 mit `ar` in eine `lib*.a`-Datei überführt, sondern mit einem
@@ -395,9 +395,9 @@ kann.
 
 Der eigentliche Build-Aufruf ist
 
-{% highlight console %}
+```console
 cc -o prog prog.o -L`pwd` -lfunc -Wl,-rpath,`pwd`
-{% endhighlight %}
+```
 
 Die Optionen `-L` und `-l` funktionieren genau wie bei
 statischen Bibliotheken. Mit der Option `-Wl` wird eine Option
@@ -416,7 +416,7 @@ indem er die Shell-Variable `LD_DEBUG` setzt und exportiert. Der
 Wert `help` zeigt einem, auf was für Werte man `LD_DEBUG` setzen
 kann:
 
-{% highlight console %}
+```console
 kris@valiant:~/Source/dlopen/04-dynamiclib> export LD_DEBUG=help
 
 kris@valiant:~/Source/dlopen/04-dynamiclib> ./prog
@@ -435,7 +435,7 @@ help display this help message and exit
 
 To direct the debugging output into a file instead of standard output
 a filename can be specified using the LD_DEBUG_OUTPUT environment variable.
-{% endhighlight %}
+```
 
 ## dlopen()
 
@@ -455,7 +455,7 @@ notwendig.
 
 Das Makefile sieht nun jedoch so aus:
 
-{% highlight makefile %}
+```makefile
 all:    prog libfunc.so
 
 prog:   prog.o
@@ -477,7 +477,7 @@ clean:
         cc -MM *.c > .dependencies
 
 include .dependencies
-{% endhighlight %}
+```
 
 
 Wir haben nun also zwei unabhängige Targets beim Build: Die
@@ -489,7 +489,7 @@ mit `-ldl` die libdl eingebunden, die uns die Funktionen
 
 Der Code in `prog.c` sieht nun so aus: 
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -538,7 +538,7 @@ int main(int argc, char *argv[]) {
     printf("main end\n");
     return 0;
 }
-{% endhighlight %}
+```
 
 Dieser Code definiert eine Variable `f` vom Typ "Zeiger auf eine
 Funktion, die ein int liefert und einen int-Parameter annimmt".

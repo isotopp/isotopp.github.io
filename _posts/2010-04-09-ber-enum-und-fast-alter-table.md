@@ -18,7 +18,7 @@ On 2010-04-08 13:40:57 +0200,
 ENUM hat in MySQL 5.1 einige Eigenschaften, die überraschend sind. Zum
 Beispiel
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table t (id integer unsigned not null primary key, e enum('a', 'b', 'c') not null ) engine = innodb;
 Query OK, 0 rows affected (0.21 sec)
 
@@ -38,7 +38,7 @@ root@localhost [kris]> select id, e, hex(e), e+0 from t;
 |  2 | c | 63     |   3 |
 +----+---+--------+-----+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
  
 Obwohl t.e ein ENUM ist, das per Definition keinen Wert '' zuläßt, hat MySQL
 den Wert '' abspeichern können, wenn auch mit einer Warnung.
@@ -55,12 +55,12 @@ enthalten sind) abzubilden. '' ist nicht in der Wertliste enthalten und wird
 Abhilfe schaffte hier 
 [strict mode](http://dev.mysql.com/doc/refman/5.1/en/server-sql-mode.html), etwa 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set sql_mode = STRICT_ALL_TABLES;
 Query OK, 0 rows affected (0.00 sec)
 root@localhost [kris]> insert into t values (3, '');
 ERROR 1265 (01000): Data truncated for column 'e' at row 1
-{% endhighlight %}
+```
 
 Die 'data truncation warning' wird dann zum Error und läßt den INSERT
 scheitern. Das bringt andere Probleme mit sich, aber das ist eine andere

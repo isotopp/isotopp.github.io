@@ -57,7 +57,7 @@ Oft haben diese Programme Optionen, mit denen man eine Ausgabe in eine Datei lei
 
 Andere Hersteller erlauben solchen Programmen möglicherweise, Umgebungsvariablen auszuwerten oder Shells zu starten, um kurze Shellfragmente aufzurufen - ein `strings` auf solche SUID- oder SGID-Binaries ist meistens sehr erhellend. Sieht man in einem SUID-root Binary strings-Output wie
 
-{% highlight bash %}
+```bash
 #! /bin/sh
 path="`which %s`"
 if [ -z "$path" ]
@@ -75,7 +75,7 @@ else
   exit 0
 fi
 exit 1
-{% endhighlight %}
+```
 
 dann ist es Zeit, den Stahlhelm aufzusetzen und die Gräben zu bemannen. Wen juckt es nicht beim Anblick solcher Zeilen, herauszufinden, woher %s kommt und wie man dort einige Anführungszeichen und Semikoli reinschmuggeln könnte?
 
@@ -92,10 +92,10 @@ Manche Programme mit Privilegien legen auch an einer vorhersagbaren Stelle im Da
 Solche Binaries ruft HP jetzt im Kontext eines WBEM-Webservers auf, der in PHP geschrieben worden ist. Der HP-PHP-Code (HPHP?) verletzt dabei in gerade zu vorbildlicher Weise alle Richtlinien für sichere Webanwendungen, wie sie z.B. 
 [Chris Shiflett in seinen PHP-Security Talks](http://shiflett.org/talks/oscon2004/php-security) demonstriert hat. Schon bei oberflächlicher Durchsicht fallen einem Konstrukte entgegen wie
 
-{% highlight php %}
+```php
 $path = $_SERVER["HTTP_ANWENDUNGSNAME"];
 $cmd = sprintf("/path/zum/privilegierten/binary/additional/data/$path";
-{% endhighlight %}
+```
 
 oder ungeprüfte Übernahme von Daten aus `$_GET`, `$_POST`, `$_COOKIE` oder `$_SERVER["HTTP_*"]`-Variablen. Selbst ohne privilegiertes Binary ist diese PHP-Anwendung ein guter Einstieg in das System.
 

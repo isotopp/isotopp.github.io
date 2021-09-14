@@ -46,7 +46,7 @@ Technically, a table doesn't need to not have a Primary Key. Practically, this c
 
 A column in table `B` that contains primary key values from a table `A` is called a *foreign key*. It defines a relationship. Just the presence of that key column is enough, there need not be any declaration or enforcement for it to be a foreign key.
 
-{% highlight sql %}
+```sql
 create table a (
   a_id integer not null primary key auto_increment,
   a_other_data varchar(200)
@@ -58,18 +58,18 @@ create table b (
   b_other_data varchar(200),
   index a_id (a_id)
 )
-{% endhighlight %}
+```
 
 In this example the table `a` has a primary key `a.a_id`. Table `b` contains a reference to `a` in the form of the column `b.a_id`. This column is a foreign key. Technically, "foreign key" is a meaningless term, so actually "`b.a_id` is a foreign key of `a` in `b`" to be precise. When talking about tables, this is often implicitly clear, so many people omit this and just say "foreign key" and assume you understand what is means.
 
 As can be seen, table `b` is also defined with an `index a_id (a_id)` - what we model here ia a 1:n relationshop between `a` and `b` (an "a" can have many "b"), and we expect to look up all the `b`'s for a given `a` a lot, so having that index is a no-brainer.
 
-{% highlight sql %}
+```sql
 select *
   from a join b
     on a.id = b.a_id
  where somecondition_on_a
- {% endhighlight %}
+ ```
 
  This query will list all the `b`'s that belong to the `a`'s selected by the given condition, and it will only be fast with an index on `b.a_id`.
 
@@ -81,16 +81,16 @@ Foreign Key Constrains are conditions that can be put into table definitions to 
 
 Let's define a useless base table with a primary key:
 
-{% highlight sql %}
+```sql
 create table a (
   a_id integer not null primary key auto_increment 
 );
 Query OK, 0 rows affected (0.05 sec)
-{% endhighlight %}
+```
 
 For this we want a table b that references the base table, and has a constraint for this.
 
-{% highlight sql %}
+```sql
 create table b (
   b_id integer not null primary key auto_increment, 
   a_id integer not null, 
@@ -100,7 +100,7 @@ create table b (
       on delete restrict 
       on update restrict );
 Query OK, 0 rows affected (0.13 sec)
-{% endhighlight %}
+```
 
 There are many things to this, and all of them are required to make this work.
 
@@ -113,17 +113,17 @@ There are many things to this, and all of them are required to make this work.
 
 Thus, the shortest possible definition of `b` would be
 
-{% highlight sql %}
+```sql
 create table b ( 
   b_id integer not null primary key auto_increment,
   a_id integer not null, 
   foreign key (a_id) references a(a_id) 
 );
-{% endhighlight %}
+```
 
 and yields
 
-{% highlight sql %}
+```sql
 mysql> show create table b\G
 *************************** 1. row ***************************
        Table: b
@@ -134,7 +134,7 @@ Create Table: CREATE TABLE `b` (
   KEY `a_id` (`a_id`),
   CONSTRAINT `b_ibfk_1` FOREIGN KEY (`a_id`) REFERENCES `a` (`a_id`)
 ) ENGINE=InnoDB
-{% endhighlight %}
+```
 
 [The Manual](https://dev.mysql.com/doc/refman/8.0/en/create-table-foreign-keys.html) describes the other terms and conditions that apply, and also explains which types of referential actions are valid for the `ON DELETE` and `ON UPDATE` clauses.
 
@@ -142,15 +142,15 @@ Create Table: CREATE TABLE `b` (
 
 Using the definitions of `a` and `b` from above, we are now playing with foreign key constraints a bit:
 
-{% highlight sql %}
+```sql
 mysql> insert into a values (10), (20), (30), (40);
 Query OK, 4 rows affected (0.02 sec)
 Records: 4  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 The values 10, 20, 30 and 40 are now valid primary keys in `a`, and hence valid values for `a_id`in `b`.
 
-{% highlight sql %}
+```sql
 mysql> start transaction read write;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -173,26 +173,26 @@ mysql> select * from b;
 |   40 |   40 |
 +------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 The tuple (50, 50) caused a foreign key validation error on an extended insert statement, the second statement in our transaction. The entire statement was rejected. The first and third statement in our transaction were valid and accepted. The entire transaction was not rejected and committed.
 
 This is potentially dangerous.
 
-{% highlight sql %}
+```sql
 mysql> update b set a_id = 20 where b_id = 10;
 Query OK, 1 row affected (0.00 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
 
 mysql> update b set a_id = 15 where b_id = 10;
 ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`kris`.`b`, CONSTRAINT `b_ibfk_1` FOREIGN KEY (`a_id`) REFERENCES `a` (`a_id`))
-{% endhighlight %}
+```
 
 We can change the `b.aid` to values present in the `a.a_id` table. Changing them to invalid values is being rejected.
 
 Likewise we are prevented from deleting a row from `a` if there are still values in `b.a_id` referencing this row, and summary deletion, truncation or dropping of table `a` are also prevented as long as any reference from `b` to `a` exists.
 
-{% highlight sql %}
+```sql
 mysql> delete from a where a_id = 20;
 ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`kris`.`b`, CONSTRAINT `b_ibfk_1` FOREIGN KEY (`a_id`) REFERENCES `a` (`a_id`))
 
@@ -207,24 +207,24 @@ ERROR 1701 (42000): Cannot truncate a table referenced in a foreign key constrai
 
 mysql> drop table a;
 ERROR 3730 (HY000): Cannot drop table 'a' referenced by a foreign key constraint 'b_ibfk_1' on table 'b'.
-{% endhighlight %}
+```
 
 ## A self-referential structure
 
 We can define tables that describe hierarchies by using recursive foreign key relationships, but we have to take care to allow termination of the recursion.
 
-{% highlight sql %}
+```sql
 create table d (
   id serial,
   parent bigint unsigned not null, 
   foreign key (parent) references d (id) );
-{% endhighlight %}
+```
 
 This is a valid definition that is accepted by MySQL. In order for an insert to succeed, we would have to provide a valid value for `d.parent`, but the table is empty and we did not allow `NULL`.
 
 The only valid thing we could insert is the value we are inserting right now, and that value is then undeletable.
 
-{% highlight sql %}
+```sql
 mysql> insert into d values ( 0, NULL );
 ERROR 1048 (23000): Column 'parent' cannot be null
 
@@ -233,11 +233,11 @@ Query OK, 1 row affected (0.00 sec)
 
 mysql> delete from d where id = 1;
 ERROR 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`kris`.`d`, CONSTRAINT `d_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `d` (`id`))
-{% endhighlight %}
+```
 
 Allowing `NULL` may be making a structure that is a tiny bit easier to maintain. We can now define a tree structure, but we have to do it from the top down.
 
-{% highlight sql%}
+```sql
 mysql> create table c ( id serial, parent bigint unsigned null, foreign key (parent) references c (id) );
 Query OK, 0 rows affected (0.06 sec)
 
@@ -247,7 +247,7 @@ ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint f
 mysql> insert into c values (1, NULL), (2,1), (3,1), (4,2), (5, 2), (6, 3), (7,3), (8,3);
 Query OK, 8 rows affected (0.01 sec)
 Records: 8  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Both statements define the same tree structure, but one does it from the bottom up, the other from the top down. We can see that even inside a single statement referential integrity is enforced at a per-row level and the first statement is impossible to load. Order suddenly matters.
 
@@ -261,7 +261,7 @@ The SQL Standard definies behavior for this - checking referential integrity onl
 
 But at least we can walk our tree, and be sure it is well defined:
 
-{% highlight sql %}
+```sql
 with recursive tree as (
   select c.id, c.parent, 0 as level, convert("1", char(255)) as path
     from c 
@@ -285,7 +285,7 @@ select * from tree;
 |    7 |      3 |     2 | 1,3,7 |
 |    8 |      3 |     2 | 1,3,8 |
 +------+--------+-------+-------+
-{% endhighlight %}
+```
 
 ## What we found so far.
 

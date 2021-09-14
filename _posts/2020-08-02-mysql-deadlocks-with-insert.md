@@ -14,7 +14,7 @@ tags:
 ---
 Support Channel. "Hi, I am getting deadlocks in the database and they occur when I have to rollback the transactions but if we don't have to roll back all transactions get executed." Wait, what? After some back and forth it becomes clear that the Dev experiences deadlocks and has data:
 
-{% highlight sql %}
+```sql
 mysql> pager less
 mysql> show engine innodb status\G
 ...
@@ -23,7 +23,7 @@ somehost.somedomain someuser update
 INSERT into sometable (identifier_id, currency, balance ) VALUES ('d4e84cb1-4d56-4d67-9d16-1d548fd26b55', 'EUR', '0')
 *** (2) HOLDS THE LOCK(S):
 RECORD LOCKS space id 3523 page no 1106463 n bits 224 index PRIMARY of table `somedb`.`sometable` trx id 9843342279 lock mode S locks gap before rec
-{% endhighlight %}
+```
 
 and that is weird because of the `lock mode S locks gap` in the last line. We get the exact same statement with the exact same value on the second thread, but with `lock mode X locks gap`.
 
@@ -38,7 +38,7 @@ Many questions arise:
 
 The last question can be actually answered by the developer, but because they are using Java, in true Java fashion it is almost - but not quite - useless to a database person.
 
-{% highlight java %}
+```java
 @Transactional(propagation = Propagation.REQUIRES_NEW, 
   timeout = MYSQL_TRANSACTION_TIMEOUT,
   rollbackFor = { 
@@ -55,7 +55,7 @@ public void initiateBucketBalanceUpdate(Transaction transaction)
   this.executeBucketBalanceUpdateFlow(transaction);
   this.saveTransactionEntries(transaction);
 }
-{% endhighlight %}
+```
 
 So, where is the SQL?
 
@@ -83,23 +83,23 @@ The `SERIALIZABLE` isolation mode turns a normal `SELECT` statement into a Medus
 
 So instead of a regular Read-Modify-Write
 
-{% highlight sql %}
+```sql
 Session1> START TRANSACTION READ WRITE;
 Session1> SELECT * FROM sometable WHERE id=10 FOR UPDATE; -- X-lock granted on rec or gap
 -- ... Application decides INSERT or UPDATE
 Session1> INSERT INTO sometable (id, ...) VALUES ( 10, ... );
 Session1> COMMIT;
-{% endhighlight %}
+```
 
 we get the following broken Read-Modify-Write, minimum:
 
-{% highlight sql %}
+```sql
 Session1> START TRANSACTION READ WRITE;
 Session1> SELECT * FROM sometable WHERE id=10 FOR SHARE; -- S-lock granted on rec or gap
 -- ... Application decides INSERT or UPDATE
 Session1> INSERT INTO sometable (id, ...) VALUES ( 10, ... ); -- lock escalation to X
 Session1> COMMIT;
-{% endhighlight %}
+```
 
 The `LOCK IN SHARE MODE` or equivalent `FOR SHARE` is not in the code, it is added implicitly by the isolation level `SERIALIZABLE`.
 
@@ -113,7 +113,7 @@ And then that second thread also tries to upgrade their S-lock into an X-lock, w
 
 We can easily reproduce this.
 
-{% highlight sql %}
+```sql
 Session1> set transaction isolation level serializable;
 Session1> start transaction read write;
 Query OK, 0 rows affected (0.00 sec)
@@ -139,13 +139,13 @@ Session1> select * from performance_schema.data_locks\G
 ...
 
 Session1> update kris set value=11 where id =10;
-{% endhighlight %}
+```
 
 We change the isolation level to `SERIALIZABLE` and start a transaction (because, as stated in the manual, autocommit does nothing). We then simply look at a single row, and check `PERFORMANCE_SCHEMA.DATA_LOCKS` afterwards. Lo and behold, S-Locks as promised by the manual.
 
 Now, the setup for the deadlock with a second session, by doing the same thing:
 
-{% highlight sql %}
+```sql
 Session2> set transaction isolation level serializable;
 Session2> start transaction read write;
 Query OK, 0 rows affected (0.00 sec)
@@ -156,30 +156,30 @@ Session2> select * from kris where id = 10;
 +----+-------+
 | 10 |    10 |
 +----+-------+
-{% endhighlight %}
+```
 
 Checking the data_locks table we now see two sets of IS- and S-Locks belonging to two different threads. We go for an `UPDATE` here, because we chose existing rows and row locks, instead of non-existing rows and gap locks:
 
-{% highlight sql %}
+```sql
 Session1> update kris set value=11 where id =10;
 ... hangs ...
-{% endhighlight %}
+```
 
 and in the other connection:
 
-{% highlight sql %}
+```sql
 Session2> update kris set value=13 where id =10;
 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
-{% endhighlight %}
+```
 
 Coming back to the first session, this now reads 
 
-{% highlight sql %}
+```sql
 Session1> update kris set value=11 where id =10;
 ... hangs ...
 Query OK, 1 row affected (2.43 sec)
 Rows matched: 1  Changed: 1  Warnings: 0
-{% endhighlight %}
+```
 
 The timing given is the time I took to switch between terminals and to type the commands.
 
@@ -187,7 +187,7 @@ The timing given is the time I took to switch between terminals and to type the 
 
 Coming back to the support case, the Dev analyzed their code and found out that what they are emitting is actually the sequence
 
-{% highlight sql %}
+```sql
 Session1> SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 Session1> START TRANSACTION READ WRITE;
 Session1> SELECT * FROM sometable WHERE id=10; -- implied S-lock granted on rec or gap
@@ -196,7 +196,7 @@ Session1> SELECT * FROM sometable WHERE id=10; -- implied S-lock granted on rec 
 Session1> SELECT * FROM sometable WHERE id=10 FOR UPDATEl -- lock escalation to X
 Session1> INSERT INTO sometable (id, ...) VALUES ( 10, ... );
 Session1> COMMIT;
-{% endhighlight %}
+```
 
 so their code is already *almost* correct.
 

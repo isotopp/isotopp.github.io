@@ -90,14 +90,14 @@ Tabelle vorstellen, die Daten zwischen mehreren Statements sharen kann, mit
 RECURSIVE bekommt man damit auch Zeigerbäume in SQL sauber implementiert.
 Seit 9.1 kann man eine CTE auch als Datenverschiebe-Statement verwenden:
 
-{% highlight sql %}
+```sql
 WITH transferme AS (
   DELETE FROM active 
   WHERE "date"< 2011-09-01
   RETURNING *
 ) 
 INSERT INTO inactive SELECT * FROM transferme
-{% endhighlight %}
+```
 
 Dies definiert eine temporäre Tabelle transferme als die Daten, die von dem
 Delete-Statement aus active gelöscht werden. Diese werden dann in die

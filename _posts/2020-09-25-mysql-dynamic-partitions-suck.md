@@ -24,7 +24,7 @@ It is possible to prepare and execute dynamic DDL in MySQL, using `PREPARE`, `EX
 
 So I can do the following, if I numb myself sufficiently to actually write and generate code in procedural SQL:
 
-{% highlight sql %}
+```sql
 kris@localhost [kris]> set @next_name := "p3";
 Query OK, 0 rows affected (0.00 sec)
 
@@ -71,7 +71,7 @@ PARTITION BY RANGE (`id`)
  PARTITION p2 VALUES LESS THAN (20000) ENGINE = InnoDB,
  PARTITION p3 VALUES LESS THAN (30000) ENGINE = InnoDB)
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 I could put the logic of the partitioner and dropper into stored procedures and use the MySQL Event Scheduler to have this running in the background at all times to maintain the partitions on the `data` table.
 
@@ -89,7 +89,7 @@ For the time dimension, I should be able to specifify the same, in retention tim
 
 So something like the following made-up syntax:
 
-{% highlight sql %}
+```sql
 -- maintain 10 buckets,
 -- equivalent to
 --   VALUES LESS THAN (<previous value> + 10000)
@@ -119,7 +119,7 @@ create table data (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 PARTITION BY AUTOMATIC TIME RANGE (`created`) (PARTITIONS 10 VALUES (INTERVAL 1 DAY))
-{% endhighlight %}
+```
 
 This would get rid of any manually maintained procedures, events, triggers, and most importantly, implementations, and specify procedurally how and when partitions are created and how long they are kept.
 

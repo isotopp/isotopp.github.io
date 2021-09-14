@@ -63,7 +63,7 @@ Sun ZFS and Linux Btrfs are from 2004, and are a complete deviation from earlier
 
 “Posix requiring a file write to be atomic” comes from the behavior of the original Version 7 Unix and later systems. In there, we find the [write(2)](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/sys2.c#L20) system call, which just calls the [`rdwr()`](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/sys2.c#L30) function.
 
-{% highlight c %}
+```c
 /*
  * write system call 
  */
@@ -71,13 +71,13 @@ write()
 { 
   rdwr(FWRITE);
 }
-{% endhighlight %}
+```
 
 You are looking very old K&R style C code here, which predates even ANSI-C and function prototypes, by the way.
 
 So `rdwr()` a few lines down the function calls `plock()`, for as long as we are not dealing with a device special file (Here is where the Ingres “use raw devices” idea comes into play), then does the I/O and finally calls prele().
 
-{% highlight c %}
+```c
 		if((ip->i_mode&(IFCHR&IFBLK)) == 0)
 			plock(ip);
 		if(mode == FREAD)
@@ -86,11 +86,11 @@ So `rdwr()` a few lines down the function calls `plock()`, for as long as we are
 			writei(ip);
 		if((ip->i_mode&(IFCHR&IFBLK)) == 0)
 			prele(ip);
-{% endhighlight %}
+```
 
 `plock()` is what locks the actual inode and the origin of the observed behavior. It is is a misnomer, it’s not a pipe lock, it’s an inode lock.
 
-{% highlight c %}
+```c
 /*
  * Lock a pipe.
  * If its already locked,
@@ -105,7 +105,7 @@ register struct inode *ip;
 	}
 	ip->i_flag |= ILOCK;
 }
-{% endhighlight %}
+```
 
 See the locking loop here: As as we do not have the lock, indicate desire to get the lock, then sleep on a lock release. When we exit the loop (because the inode is unlocked), lock the inode.
 
@@ -113,7 +113,7 @@ These are simple C Code lines, not special magic macros that translate into spec
 
 Under the lock, `rdwr()` above calls `writei()`. And `writei()` has a do loop which uses variables from the u-Area.
 
-{% highlight c %}
+```c
 	do {
 		bn = u.u_offset >> BSHIFT;
 		on = u.u_offset & BMASK;
@@ -138,7 +138,7 @@ Under the lock, `rdwr()` above calls `writei()`. And `writei()` has a do loop wh
 			ip->i_size = u.u_offset;
 		ip->i_flag |= IUPD|ICHG;
 	} while(u.u_error==0 && u.u_count!=0);
-{% endhighlight %}
+```
 
 The u-Area of a process at that time was a common data structure that the userland and the kernel used to communicate. Here it is being used to shift syscall parameters into the kernel. The write writes the data at `u.u_base` in userland into the current inode, at `u.u_offset` bytes in the file. There are `u.u_count` many bytes to write.
 

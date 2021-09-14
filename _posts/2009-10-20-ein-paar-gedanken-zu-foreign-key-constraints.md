@@ -21,7 +21,7 @@ Also, ich finds ja gut, daß SQLite die Option für Foreign Key Constraints impl
 
 Aber von vorne. Wenn eine Tabelle einen Primary Key hat, dann kann jede Zeile in der Tabelle über diesen Key eindeutig identifiziert werden. Das erlaubt es, in anderen Tabellen auf Zeilen der Ausgangstabelle Bezug zu nehmen: 
 
-{% highlight mysql %}
+```mysql
 CREATE TABLE a (
   aid INTEGER UNSIGNED NOT NULL PRIMARY KEY,
   adata VARCHAR(20) NOT NULL
@@ -32,7 +32,7 @@ CREATE TABLE b (
   aid INTEGER UNSIGNED NOT NULL,
   bdata VARCHAR(20) NOT NULL
 );
-{% endhighlight %}
+```
 
 
 Hier ist `b.aid` der Primärschlüssel von `a`, der in `b` genannt wird. Wir nennen `b.aid` den "Fremdschlüssel von a in b".
@@ -47,14 +47,14 @@ Und schließlich ist es tatsächlich so, daß schon das bloße Anlegen von `b.ai
 
 Solche illegalen Werte in `b.aid` zu verhindern ist die Aufgabe einer FOREIGN KEY CONSTRAINT, aber diese ist vollkommen optional. Wollte man sie haben, definierte man sie so: 
 
-{% highlight mysql %}
+```mysql
 CREATE TABLE b (
   bid INTEGER UNSIGNED NOT NULL PRIMARY KEY,
   aid INTEGER UNSIGNED NOT NULL,
   bdata VARCHAR(20) NOT NULL,
   FOREIGN KEY (aid) REFERENCES a(aid) -- hier noch Optionen
 );
-{% endhighlight %}
+```
 
 und wo der Kommentar Optionen vorsieht könnte man noch Dinge notieren wie DEFERRABLE INITIALLY DEFERRED.
 
@@ -74,12 +74,12 @@ In MySQL ist es nun leider so, daß InnoDB dies etwas dämlich implementiert: Do
 
 Ich kann also in MySQL nicht so vorgehen: 
 
-{% highlight mysql %}
+```mysql
 BEGIN WORK;
 INSERT INTO b (bid, aid, bdata) VALUES (1, 1, "keks");
 INSERT INTO a (aid, adata) VALUES (1, "keks");
 COMMIT;
-{% endhighlight %}
+```
 
 Dies scheitert nach dem ersten Insert, weil die `a.aid = 1` noch nicht existiert, wenn ich die `b.aid = 1` in die Tabelle einfüge. Technisch ist das eigentlich kein Problem, denn da dies alles in einer Transaktion geschieht tauchen beide Werte gleichzeitig erst zum COMMIT in der Datenbank auf, aber die Prüfung erfolgt leider per Statement und nicht per Transaktion. Ich muß also Entwickler als meinen Code passend strukturieren, egal ob das der Anwendungslogik gerecht wird oder nicht.
 

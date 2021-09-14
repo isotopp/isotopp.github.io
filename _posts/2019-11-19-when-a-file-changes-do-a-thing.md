@@ -66,11 +66,11 @@ high level wrapper
 As a test scenario I have a `ship-to-kvm` command that I want to
 run on every file change. It looks like this:
 
-{% highlight console %}
+```console
 rsync -e ssh -t -v --delete --delete-excluded --exclude='.git' -r \
   ~/git_tree/myproject \
   devuser@devbox.example.com:myproject
-{% endhighlight %}
+```
 
 when I save my local file from my local editor so that the tree
 myproject is made available on my devbox.
@@ -88,9 +88,9 @@ execution even when nothing changed, or `q` to end the command.
 
 Various ways to handle changes are provided:
 
-{% highlight console %}
+```console
 $ ls *.js | entr -r node myproject.js
-{% endhighlight %}
+```
 
 The `-r` option here will SIGTERM the node instance, wait for it
 to complete and then restart it.
@@ -100,11 +100,11 @@ directories, which are inferred from a file list. This is done
 with the `-d` option and in fact the command terminates so you
 need to wrap it in a loop:
 
-{% highlight console %}
+```console
 $ while :; do
 >   ls | entr -d ship-to-kvm
 > done
-{% endhighlight %}
+```
 
 There are a few other options, but these two should cover the
 most common use cases.
@@ -124,15 +124,15 @@ subtrees of roots, and are being run on change. A simple
 predicate language and a selection of regex libraries can be
 used to formulate conditions for triggers.
 
-{% highlight console %}
+```console
 $ watchman watch ~/git_tree/myproject # this will start the daemon
 $ watchman -j ship-to-kvm.json        # this defines the job
 ...
-{% endhighlight %}
+```
 
 and the actual job definition is then something like
 
-{% highlight javascript %}
+```javascript
 [
   "trigger", "~/git_tree/myproject",
   {
@@ -141,7 +141,7 @@ and the actual job definition is then something like
     "command": [ "ship-to-kvm" ]
   }
 ]
-{% endhighlight %}
+```
 
 This may look nicer to developers, but I seem to prefer the entr
 way of doing things.
@@ -156,7 +156,7 @@ observer when there are events outstanding.
 
 The example from the manual looks like this:
 
-{% highlight python %}
+```python
 #! /usr/bin/env python
 
 import sys
@@ -185,12 +185,12 @@ if __name__ == "__main__":
         observer.stop()
 
     observer.join()
-{% endhighlight %}
+```
 
 and when run does things like this for a `touch keks; sleep 1;
 rm keks` in a secondary shell:
 
-{% highlight console %}
+```console
 2019-11-19 14:36:40 - Modified directory: ./.git
 2019-11-19 14:36:44 - Created file: ./keks
 2019-11-19 14:36:44 - Modified directory: .
@@ -198,7 +198,7 @@ rm keks` in a secondary shell:
 2019-11-19 14:36:53 - Deleted file: ./keks
 2019-11-19 14:36:53 - Modified directory: .
 2019-11-19 14:36:53 - Modified directory: ./.git
-{% endhighlight %}
+```
 
 The actual observer selection allows a rich palette of event
 classes and filters, so dispatching and filtering events is easy.

@@ -18,7 +18,7 @@ MySQL 8 provides solid support for the JSON data type. The manual has [an overvi
 
 Creating JSON columns is easy: Make the column of the JSON data type, fill in valid JSON data.
 
-{% highlight sql %}
+```sql
 mysql> create table t ( id integer not null primary key auto_increment, j json);
 Query OK, 0 rows affected (0.11 sec)
 
@@ -49,7 +49,7 @@ mysql> select json_type(j) as type, json_valid(j) as valid, isnull(j) as sqlnull
 
 mysql> insert into t (j) values ('["incomplete", "array", "closing bracket"');
 ERROR 3140 (22032): Invalid JSON text: "Missing a comma or ']' after an array element." at position 41 in value for column 't.j'.
-{% endhighlight %}
+```
 
 We learn several things from this experiment:
 
@@ -69,7 +69,7 @@ We learn several things from this experiment:
 
 We can see JSON literal notation already from the previous example. There are also two utility functions to construct JSON array and object structures from SQL scalars. They are `JSON_ARRAY()` and `JSON_OBJECT()`. Note the handling of SQL `NULL` values.
 
-{% highlight sql %}
+```sql
 mysql> select json_array(1, NULL, 2) as ary, json_object("eins", "one", "null",
 NULL, "zwei", "two") as obj;
 +--------------+----------------------------------------------+
@@ -78,11 +78,11 @@ NULL, "zwei", "two") as obj;
 | [1, null, 2] | {"eins": "one", "null": null, "zwei": "two"} |
 +--------------+----------------------------------------------+
 1 row in set (0.01 sec)
-{% endhighlight %}
+```
 
 We can use `JSON_MERGE_PRESERVE()` and `JSON_MERGE_PATCH()` to incrementally build complicated structures. `JSON_MERGE_PRESERVE()` replaces `JSON_MERGE()`, which is deprecated and should no longer be used.
 
-{% highlight sql %}
+```sql
 mysql> select json_merge_preserve('[3, 4, 5]', '[1, 2, 3]') as preserve, json_merge_patch('[1, 2, 3]', '[3, 4, 5]') as patch\G
 preserve: [3, 4, 5, 1, 2, 3]
    patch: [3, 4, 5]
@@ -92,30 +92,30 @@ mysql> select json_merge_preserve('{"eins": "one", "zwei": "two"}', '{"zwei": "t
 preserve: {"drei": "three", "eins": "one", "zwei": ["two", "two"]}
    patch: {"drei": "three", "eins": "one", "zwei": "two"}
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Quotes and quoting can be a bit painful, and even confusing. Let's put the string `A so-called "string".` into a JSON string, inside an SQL statement. To turn this text into a JSON string we need to put double quotes around it, quoting our internal double quotes with backslashes. To produce a backslash literal, we need to write a double backslash.
 
 The result:
 
-{% highlight sql %}
+```sql
 mysql> insert into t (j) values ('"A so-called \\"string\\"."');
 Query OK, 1 row affected (0.02 sec)
 
 mysql> select last_insert_id() as id\G
 id: 9
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 We can get this back as `j`, or use JSON extractors (`JSON_EXTRACT()`, or `->`). The current document is `$`, so:
 
-{% highlight sql %}
+```sql
 mysql> select j, j->'$' as jj, j->>'$' as jj_unquoted from t where id = 9\G
           j: "A so-called \"string\"."
          jj: "A so-called \"string\"."
 jj_unquoted: A so-called "string".
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 This brings us to component access:
 
@@ -138,7 +138,7 @@ We get the following selectors:
 
 So, put into practice:
 
-{% highlight sql %}
+```sql
 mysql> insert into t (id, j) values (10, '{"id": 10, "login": "kris", "fullname": "Kristian \\"Isotopp\\" Köhntopp", "equipment-ids": [10, 11, 12], "borrowed":{ "equipment-ids": [1,2,3]}}');
 Query OK, 1 row affected (0.01 sec)
 
@@ -168,21 +168,21 @@ jj: [10, 11, 12]
 mysql> select json_extract(j, '$**."equipment-ids"') as jj from t where id =10\G
 jj: [[10, 11, 12], [1, 2, 3]]
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 This is cumbersome to write, so we also get `colname->selector` as a shorthand for the `JSON_EXTRACT(colname, selector)` function:
 
-{% highlight sql %}
+```sql
 mysql> select j->'$."equipment-ids"[*]' as jj from t where id = 10\G
 jj: [10, 11, 12]
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 ## From JSON values to SQL values
 
 With our table from above, we are setting us up like this:
 
-{% highlight sql %}
+```sql
 mysql> truncate table t;
 Query OK, 0 rows affected (0.06 sec)
 
@@ -191,11 +191,11 @@ Query OK, 1 row affected (0.02 sec)
 
 mysql> insert into t (j) values ('{"user": "sven", "paid": false, "home": "/home/sven"}');
 Query OK, 1 row affected (0.03 sec)
-{% endhighlight %}
+```
 
 We can ask for the payment status of all our users already, using the syntax from above:
 
-{% highlight sql %}
+```sql
 mysql> select j->"$.user" as user, j->"$.paid" as paid from t;
 +--------+-------+
 | user   | paid  |
@@ -204,11 +204,11 @@ mysql> select j->"$.user" as user, j->"$.paid" as paid from t;
 | "sven" | false |
 +--------+-------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 We cannot SQL `SELECT` all users that have paid, yet:
 
-{% highlight sql %}
+```sql
 mysql> select j->"$.paid" as paid from t where j->"$.paid";
 +-------+
 | paid  |
@@ -227,7 +227,7 @@ mysql> select j->"$.user" as user, j->"$.paid" as paid from t where json_value(j
 | "kris" | true |
 +--------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 The function [`JSON_VALUE()`](https://dev.mysql.com/doc/refman/8.0/en/json-search-functions.html#function_json-value) provides a type cast from JSON to SQL, making extracted JSON values available to SQL comparisons and conditions. Follow the link and look it up. There is no `INTEGER`, you have to be more specific, `SIGNED` or `UNSIGNED`, the types match the ones used in `CAST()`. There are also `ON EMPTY` and `ON ERROR` clauses.
 
@@ -235,7 +235,7 @@ Using `JSON_VALUE()` we can do the work of `JSON_EXTRACT()`, `JSON_UNQUOTE()` an
 
 We could have used cast as well:
 
-{% highlight sql %}
+```sql
 mysql> select j->"$.user" as user,
 ->   j->"$.paid" as paid, 
 ->   cast(j->"$.paid" as signed) as casted, 
@@ -271,7 +271,7 @@ mysql> select j->"$.user" as user,
 | "kris" | true |
 +--------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Note that I left out the `JSON_UNQUOTE()` in the `CAST()` example, because I converted JSON `BOOLEAN` types to SQL `SIGNED` types, so no quoted strings needed handling. `JSON_VALUE(col, selector RETURNING type)` is actually `CAST(JSON_UNQUOTE(JSON_EXTRACT(col, selector)) AS type)`.
 
@@ -281,7 +281,7 @@ Reusing the example above, we can try to update the payment status of a user usi
 
 First, let's check if we can isolate the row we want to see elegantly:
 
-{% highlight sql %}
+```sql
 mysql> select j->"$.user" as user, 
 -> j->"$.paid" as paid,  
 -> json_type(j->"$.paid") as paid from t;
@@ -309,13 +309,13 @@ mysql> select j->"$.user" as user,
 -> from t 
 -> where j->"$.user" = "KRIS";
 Empty set (0.00 sec)
-{% endhighlight %}
+```
 
 We notice: while this works, it is working with JSON character sets, so it is `utf8mb4` with a collation of `utf8mb4_bin`, hence case sensitive comparison.
 
 Using `JSON_SET()` we update the `$.paid` field of that user to `false`, and run into the next problem:
 
-{% highlight sql %}
+```sql
 mysql> update t 
 -> set j=json_set(j, "$.paid", "false" ) 
 -> where j->"$.user" = "kris";
@@ -342,11 +342,11 @@ mysql> select j->"$.user" as user,
 | "sven" | false   | BOOLEAN |
 +--------+---------+---------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 That is not what we want. But did we not insert values `"false"` and `"true"` into JSON fields earlier and got booleans?
 
-{% highlight sql %}
+```sql
 mysql> insert into t (id, j) values (3, "false");
 Query OK, 1 row affected (0.00 sec)
 
@@ -357,13 +357,13 @@ mysql> select id, j, json_type(j) as type from t where id = 3;
 |  3 | false | BOOLEAN |
 +----+-------+---------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Well, yes, but…
 
 Functions in MySQL expect types, and convert to these types. `JSON_SET()` expects JSON, so we do it like this:
 
-{% highlight sql %}
+```sql
 mysql> update t 
 -> set j=json_set(j, "$.paid", false ) 
 -> where j->"$.user" = "kris";
@@ -377,7 +377,7 @@ mysql> select id, j, json_type(j) as type from t where id = 1;
 |  1 | false | BOOLEAN |
 +----+-------+---------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 There is [`JSON_REMOVE()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-remove), "Removes data from a JSON document". There are also [`JSON_SET()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-set), and friends:
 

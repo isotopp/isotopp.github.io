@@ -27,19 +27,19 @@ To be able to print symbols they need a shape, which is defined in a Font. For e
 
 To be able to use symbols with computers they need a binary represenation of their code point, an encoding. In my Terminal we are using utf8. The Text "Köhntopp" is being represented as the byte sequence `4b c3 b6 68 6e 74 6f 70 70`. [LATIN SMALL LETTER O WITH DIARESIS](https://www.compart.com/en/unicode/U+00F6) has the code point `0x00F6`, which is being represented as `C3 B6` in utf8 encoding.
 
-{% highlight console %}
+```console
 $ echo Köhntopp | hexdump -C
 00000000  4b c3 b6 68 6e 74 6f 70  70 0a                    |K..hntopp.|
 0000000a
-{% endhighlight %}
+```
 
 If I change the terminal settings to use ISO-8859-1 ("Latin1") instead, the same text is being encoded differently - `4b f6 68 6e 74 6f 70 70`. The ö is now `F6`.
 
-{% highlight console %}
+```console
 $ echo Köhntopp | hexdump -C
 00000000  4b f6 68 6e 74 6f 70  70 0a                       |K.hntopp.|
 00000009
-{% endhighlight %}
+```
 
 If you have two character sequences and want to compare or sort them, you need a set of comparison and ordering rules, a collation. You can think of a collation as a canonical representation of an encoding for comparison and sorting.
 
@@ -93,24 +93,24 @@ Every string in MySQL is labeled with an charset and a collation. For database o
 
 If you define these without specifying, the column will inherit the table defaults. If you specify no table default, the table will inherit the database default, which in turn inherits from the server default, which is defined in the `my.cnf`:
 
-{% highlight console %}
+```console
 [mysqld]
 default-character-set=utf8mb4
 default-collation=utf8_0900_ai_ci
-{% endhighlight %}
+```
 
 Or you set them at the database level:
 
-{% highlight sql %}
+```sql
 mysql> show create database kris\G
        Database: kris
 Create Database: CREATE DATABASE `kris` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */
 1 row in set (0.01 sec)
-{% endhighlight %}
+```
 
 Or at the table level:
 
-{% highlight sql %}
+```sql
 mysql> show create table chset\G
        Table: chset
 Create Table: CREATE TABLE `chset` (
@@ -121,7 +121,7 @@ Create Table: CREATE TABLE `chset` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 ## String Literals
 
@@ -129,7 +129,7 @@ A string literal in MySQL is written in double quotes, "a string literal". When 
 
 An identifier in MySQL is written as a bare word `tablename` or written in backticks \``weird tablename`\`. When written in backticks, the identifier can contain any utf8 unicode character (unfortunately, not utf8mb4 character, so you have to constrain yourself to the BMP). *Don't do this in production, though.*
 
-{% highlight sql %}
+```sql
 mysql> create table `❤` ( `✔` serial ) ;
 Query OK, 0 rows affected (0.07 sec)
 
@@ -143,7 +143,7 @@ mysql> select * from `❤`;
 |   1 |
 +-----+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 If you check, the table is stored with the filename `@2764.ibd` on disk.
 
@@ -151,7 +151,7 @@ The full notation for a string literal is `_charsetname "string" COLLATE collati
 
 A string literal can also be written as `X'hexcode'`, so this works:
 
-{% highlight sql %}
+```sql
 mysql> select _latin1 X'F6' as umlaut;
 +--------+
 | umlaut |
@@ -159,7 +159,7 @@ mysql> select _latin1 X'F6' as umlaut;
 | ö      |
 +--------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 This creates a string literal from the hex code `0xF6` and labels it as latin1. The statement is then run, produces an Umlaut, and this Umlaut is then emitted as a result table. Because the connection is set to utf8, the Umlaut is converted to utf8, yields `C3 B6` and that is sent to the terminal, where it renders correctly.
 
@@ -167,7 +167,7 @@ This is the automatic conversion at work, that I spoke about earlier.
 
 When we leave the label off, the conversion does not work. When we lie, the result is invalid and rejected:
 
-{% highlight sql %}
+```sql
 mysql> select X'F6' as umlaut;
 +----------------+
 | umlaut         |
@@ -178,7 +178,7 @@ mysql> select X'F6' as umlaut;
 
 mysql> select _utf8 X'F6' as umlaut;
 ERROR 1300 (HY000): Invalid utf8 character string: 'F6'
-{% endhighlight %}
+```
 
 ## Charset on a connection
 
@@ -194,7 +194,7 @@ If I am setting up my terminal to send utf8, and `SET NAMES utf8`, these things 
 
 I can check, using the `HEX()` function to see the actual bytes:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set names utf8;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -205,11 +205,11 @@ root@localhost [kris]> select hex("ö");
 | C3B6      |
 +-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Switching my terminal to latin1, and then telling the database about this with `SET NAMES latin1`, I get:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set names latin1;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -220,7 +220,7 @@ root@localhost [kris]> select hex("ö");
 | F6       |
 +----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 So this actually works.
 
@@ -230,7 +230,7 @@ Now, let's use a utf8-Client to store data into a column into `kris.chset.t`, wh
 
 MySQL converts this automatically and we can show this.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> set names utf8;
 Query OK, 0 rows affected (0.00 sec)
 
@@ -244,7 +244,7 @@ mysql> select hex("ö"), hex(t), t from kris.chset where id = 1;
 | C3B6      | F6     | ö    |
 +-----------+--------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 I am sending `SET NAMES utf8` and I am inserting a row `id=1` into the table `kris.chset` (see above for the definition, which has the charset latin1).
 
@@ -260,7 +260,7 @@ So as long as I am not lying to the database about what my connection sends, val
 
 Normally you will never need this, but it is possible to change the character set of a column or string literal explicitly using the `convert( ... using ... )` function:
 
-{% highlight sql %}
+```sql
 mysql> select hex("ö");
 +-----------+
 | hex("ö")  |
@@ -276,13 +276,13 @@ mysql> select hex(convert("Köhntopp" using latin1)) as example;
 | 4BF6686E746F7070 |
 +------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 After validating that my umlaut is indeed sent as `C3B6`, I am using a string with an Umlaut as an input to `CONVERT( ... USING ... )`. I am converting to latin1, and as you can see, I am indeed getting an `F6` as the second byte.
 
 There are other encodings of unicode, too. Windows systems for example often use ucs2 instead of utf8. That is, each symbol is stored as a 16 bit code:
 
-{% highlight sql %}
+```sql
 mysql> select hex(convert("Köhntopp" using ucs2)) as example;
 +----------------------------------+
 | example                          |
@@ -290,7 +290,7 @@ mysql> select hex(convert("Köhntopp" using ucs2)) as example;
 | 004B00F60068006E0074006F00700070 |
 +----------------------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 My Umlaut ends up being `00f6` on disk.
 
@@ -300,7 +300,7 @@ Other character set have variable length encodings. In utf8, each letter can be 
 
 Depending on what we want to know we have to ask differently:
 
-{% highlight sql %}
+```sql
 mysql> select length("Köhntopp") as len, char_length("Köhntopp") as clen;
 +-----+------+
 | len | clen |
@@ -316,7 +316,7 @@ mysql> select length(convert("Köhntopp" using ucs2)) as len, char_length(conver
 |   16 |    8 |
 +------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 The function `LENGTH()` gives us the length of a symbol or string in bytes, which is dependent on the character set encoding used. The function `CHAR_LENGTH()` gives us the length of the symbol or string in symbols, which is fixed and independent of the character set encoding.
 
@@ -328,7 +328,7 @@ The default character set in MySQL you should be using is `utf8mb4`.
 
 When MySQL originally gained character set support, this was done by implementing a comparison function. The same function was used for sorting and comparison. So when "Köhntopp" sorts as "kohntopp" in the latin1_german1_ci collation, it also means that searching for "Köhntopp" will find "Köhntopp" as well as "kohntopp", because to the comparison function they are the same string.
 
-{% highlight sql %}
+```sql
 mysql> show create table t \G
        Table: t
 Create Table: CREATE TABLE `t` (
@@ -355,7 +355,7 @@ mysql> select * from t where d = "Köhntopp";
 |  2 | kohntopp  |
 +----+-----------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 This was not exactly what most people expected, so in MySQL 8 things are a bit more differentiated when using `utf8mb4`. From [the manual](https://dev.mysql.com/doc/refman/8.0/en/charset-collation-names.html):
 
@@ -386,9 +386,9 @@ Now if you change the character set or the order of symbols in the character set
 
 If you do not do this, a query such as
 
-{% highlight sql %}
+```sql
 mysql> SELECT * FROM t WHERE d = "kohntopp";
-{% endhighlight %}
+```
 
 may find different results depending on the optimizer using an index (pre-update rules apply until the index is recreated) or not using an index (post-update rules apply immediately). This is unpredictable, and hence bad behavior.
 
@@ -410,7 +410,7 @@ Sometimes data ends up inside the database, converted from latin1 to utf8 by an 
 
 For example, if you define a table with a `VARCHAR` column in latin1, and set the connection to latin1, but then send actual utf8 data to the table, you not triggering a conversion (connection and column have the same character set), but the data is not valid latin1.
 
-{% highlight sql %}
+```sql
 mysql> create table t ( id serial, d varchar(20) charset latin1 );
 Query OK, 0 rows affected (0.08 sec)
 
@@ -438,12 +438,12 @@ mysql> select * from t; -- output broken
 |  1 | KÃ¶hntopp   |
 +----+-------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 If we were to convert the column to utf8, the data would als be converted. But since it already is `c3b6`, this must not happen. So this does not work:
 
 
-{% highlight sql %}
+```sql
 mysql> select hex(d) from t;
 +--------------------+
 | hex(d)             |
@@ -463,7 +463,7 @@ mysql> select hex(d) from t; -- broken utf8
 | 4BC383C2B6686E746F7070 |
 +------------------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 The correct solution converts in two steps:
 
@@ -471,7 +471,7 @@ The correct solution converts in two steps:
 2. Convert to the target `VARCHAR` with the target `CHARSET`. This applies the charset label without conversion.
 
 
-{% highlight sql %}
+```sql
 mysql> select hex(d) from t; -- column latin1, data utf8
 +--------------------+
 | hex(d)             |
@@ -495,4 +495,4 @@ mysql> select d, hex(d) from t; -- all works now
 | Köhntopp  | 4BC3B6686E746F7070 |
 +-----------+--------------------+
 1 row in set (0.01 sec)
-{% endhighlight %}
+```

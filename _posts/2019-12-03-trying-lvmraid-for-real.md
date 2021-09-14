@@ -24,12 +24,12 @@ for 120TB of disk storage.
 
 The setup was very straight forward:
 
-{% highlight console %}
+```console
 # pvcreate /dev/nvme*n1
 # vgcreate vg00 /dev/nvme*n1
 # lvcreate -n mysqlvol -L60T vg00
 # lvconvert --type raid1 -m1 /dev/vg00/mysqlVol
-{% endhighlight %}
+```
 
 The objective was to ensure that an existing non-raided volume
 could be converted into a RAID after the fact. My installation
@@ -42,7 +42,7 @@ procedure.
 
 So, this worked:
 
-{% highlight console %}
+```console
 # lvs -a -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
   LV                  VG    Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
   audit               sysvm -wi-ao----    1.95g
@@ -55,7 +55,7 @@ So, this worked:
   [mysqlVol_rimage_1] vg00  Iwi-aor---   60.00t
   [mysqlVol_rmeta_0]  vg00  ewi-aor---    4.00m
   [mysqlVol_rmeta_1]  vg00  ewi-aor---    4.00m
-{% endhighlight %}
+```
 
 
 ## Performance metric
@@ -119,9 +119,9 @@ Today, I monitored the still syncing array and it has been progressing at
 around 250 MB/s equalling around 1.1% per hours over night, and
 is now at 20-something percent synced.
 
-{% highlight console %}
+```console
 # lvchange -maxrecoveryspeed=1000k /dev/vg00/mysqlVol
-{% endhighlight %}
+```
 
 This works, and throttles the sync to just below 1000k per
 second. Conversely, setting a recovery speed of 0k falls back to
@@ -140,20 +140,20 @@ even makes sense.
 If you try to split the Volume while it is still synching, you
 will find that this is not possible.
 
-{% highlight console %}
+```console
 # lvconvert --splitmirrors 1 -n splitlv /dev/vg00/mysqlVol
   Unable to split vg00/mysqlVol while it is not in-sync.
-{% endhighlight %}
+```
 
 Another observationL While lvmraid employs mdraid code, working with
 devicemapper block devices for the data and external metadata, mdraid does
 not see any of this in /proc;
 
-{% highlight console %}
+```console
 # cat /proc/mdstat
 Personalities : [raid6] [raid5] [raid4] [raid1]
 unused devices: <none>
-{% endhighlight %}
+```
 
 You can't use any mdraid tooling to turn knobs inside lvm
 controlled mdraid code.

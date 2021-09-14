@@ -30,13 +30,13 @@ Isotopp> Wonka: Argh!  Master-Master geht nicht mit Replikation.  Nie.
 
 Wonka> huh?
 
-Isotopp> {% highlight sql %}
+Isotopp> ```sql
 -- Thread 1 schreibt auf Master 1:
   insert into t (id, d) values (NULL, 'eins');
 
 -- Zeitgleich schreibt thread 2 auf master 2: 
   insert into t (id, d) values (NULL, 'zwei');
-{% endhighlight %}
+```
   
 Isotopp> Was steht in der Datenbank master1, was steht in der Datenbank
 master 2?  Wenn man mal annimmt, dass MySQL auto_increment_increment und

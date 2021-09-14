@@ -16,7 +16,7 @@ Since we now know how to look at the state of locking in a live database, let's 
 
 We will be using the tables and structures from our previous examples, a simple 1:n relationship between `a` and `b`:
 
-{% highlight sql %}
+```sql
 CREATE TABLE a (
   a_id int NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (a_id)
@@ -33,7 +33,7 @@ CREATE TABLE b (
 );
 
 INSERT INTO b VALUES (10,10), (40,40);
-{% endhighlight %}
+```
 
 or the same definition for `b` without the constraint.
 
@@ -41,7 +41,7 @@ or the same definition for `b` without the constraint.
 
 First, let's look at an insert and update into `b` without any defined constraints:
 
-{% highlight sql %}
+```sql
 mysql> start transaction read write;
 mysql> insert into b values (30,30);
 
@@ -65,7 +65,7 @@ mysql> select * from performance_schema.data_locks\G
           LOCK_STATUS: GRANTED
             LOCK_DATA: 10
 ...
-{% endhighlight %}
+```
 
 We can see that the `INSERT` did just create an intention-lock on the table, but did not actually have to create any row locks. The update had to change an existing table row `b.b_id=10`, and hence needed to X-lock the row 10.
 
@@ -73,7 +73,7 @@ We can see that the `INSERT` did just create an intention-lock on the table, but
 
 Redefining the `b` table as above, with a foreign key constraint defined, produces a much richer set of locks:
 
-{% highlight sql %}
+```sql
 mysql> start transaction read write;
 mysql> insert into b values (30,30);
 
@@ -86,7 +86,7 @@ select object_schema, object_name, index_name, lock_mode, lock_data, lock_type f
 | kris          | a           | NULL       | IS            | NULL      | TABLE     |
 | kris          | a           | PRIMARY    | S,REC_NOT_GAP | 30        | RECORD    |
 +---------------+-------------+------------+---------------+-----------+-----------+
-{% endhighlight %}
+```
 
 In order for the `INSERT` to be valid, we need to check if the `a_id` inserted into table `b` exists in `a` - that is a lookup operation.
 
@@ -94,7 +94,7 @@ We also need to ensure that the value we checked for stays there and is not modi
 
 Continuing our exploration, we can now try to change a row:
 
-{% highlight sql %}
+```sql
 mysql> update b set a_id=20 where b_id=10;
 
 mysql> select object_schema, object_name, index_name, lock_mode, lock_data, lock_type from performance_schema.data_locks;
@@ -108,7 +108,7 @@ mysql> select object_schema, object_name, index_name, lock_mode, lock_data, lock
 | kris          | b           | PRIMARY    | X,REC_NOT_GAP | 10        | RECORD    |
 +---------------+-------------+------------+---------------+-----------+-----------+
 5 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 We get another S-lock on `a.a_id=20` to ensure that our parent record stays unchanged until completion, and as we modify `b.b_id=10`, this is X-locked as in the normal case.
 
@@ -130,7 +130,7 @@ After looking at the locking behavior of these statements, and what we previousl
 
 We can still manipulate all fields as before that are not foreign keys:
 
-{% highlight sql %}
+```sql
 drop table b;
 create table b (
   b_id int not null auto_increment,
@@ -141,28 +141,28 @@ create table b (
   constraint a_id_exists foreign key (a_id) references a (a_id)
 );
 insert into b values (10,10, 10), (40,40,40);
-{% endhighlight %}
+```
 
 And the RMW for writes to `data` is as before:
 
-{% highlight sql %}
+```sql
 start transaction read write;
 select b_id, data from b where b_id = 10 for update;
 ...
 update b set data = ? where b_id = 10';
 commit;
-{% endhighlight %}
+```
 
 When we make changes to the linking between `b` and `a`, we must put a share lock on the new `a.a_id` we intend to link to, to ensure it is present and does not change or vanish until completion.
 
-{% highlight sql %}
+```sql
 start transaction read write;
 select a_id from a where a_id = 20 for share;
 select b_id, a_id, data from b where b_id = 10 for update;
 ...
 update b set a_id = 20 where b_id = 10';
 commit;
-{% endhighlight %}
+```
 
 As this is a linking to be created, we have to use two distinct select statements for this, and the locks need to be in place before we make the change.
 
@@ -170,7 +170,7 @@ As this is a linking to be created, we have to use two distinct select statement
 
 Let's create a tree `c` where we have records distinguished by `c.id`, and with `c.parent` pointing to the parent `c.id`. We then put in a few records, multiple levels deep:
 
-{% highlight sql %}
+```sql
 create table c (
   id integer not null primary key,
   parent integer null,
@@ -179,11 +179,11 @@ create table c (
 );
 
 insert into c values (1, NULL), (2, 1), (3, 1), (4, 2), (5, 2), (6, 3), (7, 3), (8, 3), (9, 8), (10, 8);
-{% endhighlight %}
+```
 
 Again, we insert a new record:
 
-{% highlight sql %}
+```sql
 mysql> start transaction read write;
 mysql> insert into c values (11, 2);
 
@@ -195,13 +195,13 @@ mysql> select object_schema, object_name, index_name, lock_mode, lock_data, lock
 | kris          | c           | PRIMARY    | S,REC_NOT_GAP | 2         | RECORD    |
 +---------------+-------------+------------+---------------+-----------+-----------+
 mysql> rollback;
-{% endhighlight %}
+```
 
 This looks exactly as we would expect from the previous case.
 
 Then we modify an existing record, again, without surprises:
 
-{% highlight sql %}
+```sql
 mysql> start transaction read write;
 mysql> update c set parent=2 where id=10;
 
@@ -216,7 +216,7 @@ mysql> select object_schema, object_name, index_name, lock_mode, lock_data, lock
 3 rows in set (0.00 sec)
 
 mysql> rollback;
-{% endhighlight %}
+```
 
 ## "UPSERT"
 
@@ -230,7 +230,7 @@ The term "UPSERT" is database-speak for "create a record, or if it exists, updat
 
 The generic way for this, without special commands, is again a RMW.
 
-{% highlight sql %}
+```sql
 start transaction read write;
 select * from t where id = ? for update;
 ... if necessary, select referenced records in other tables "for share"
@@ -239,6 +239,6 @@ insert into t (id, ...) values (?, ...)
 OR
 update t set ... where id = ?
 commit;
-{% endhighlight %}
+```
 
 This is also what we would expect any ORM to generate, if it has not implemented special support for the MySQL dialect.

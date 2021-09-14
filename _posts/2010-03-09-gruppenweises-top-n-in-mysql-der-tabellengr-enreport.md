@@ -16,7 +16,7 @@ Jeder Datenbankserver bei uns hat ein Script laufen, daß den Inhalt von
 information_schema.tables jede Nacht einmal in eine Systemdatenbank in das
 DBA Schema kopiert. Dort haben wir dba.table_sizes:
 
-{% highlight sql %}
+```sql
 root@sysmdb [dba]> show create table table_sizes\G
        Table: table_sizes
 Create Table: CREATE TABLE `table_sizes` (
@@ -32,7 +32,7 @@ Create Table: CREATE TABLE `table_sizes` (
   UNIQUE KEY `hostname` (`hostname`,`datadir`,`report_date`,`table_schema`,`table_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Gesucht war nun eine Query, die für jeden Sonntag eine Liste der 10 größten
 Tabellen eines bestimmten Servers 'master' für 2010 produziert.
@@ -40,7 +40,7 @@ Tabellen eines bestimmten Servers 'master' für 2010 produziert.
 Die Lösung ist fragil insofern, als daß sie eine undokumentierte Eigenschaft
 des Servers ausnutzt. Aber sie ist auch schnell.
 
-{% highlight sql %}
+```sql
 set @old := "", @count := 0; 
 select \* from (
   select 
@@ -63,7 +63,7 @@ select \* from (
 where 
   t.c < 10
 ;
-{% endhighlight %}
+```
 
 Wir definieren einen Zustandsspeicher @old, der das report_date der
 folgenden Zeile speichert und einen Zähler @count. Sessionvariablen (die

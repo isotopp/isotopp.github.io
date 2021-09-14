@@ -16,7 +16,7 @@ Größe werden 40 GB Speicher gefüllt und wir kommen sogar ins Swappen."
 Na, das ist mal interessant.  The fragliche Kiste hat 48 GB RAM, und in der
 Tat kaum 6 GB Daten.
 
-{% highlight sql %}
+```sql
 mysql> select 
  -> sum(data_length+index_length)/1024/1024/1024 as gb 
  -> from tables 
@@ -27,13 +27,13 @@ mysql> select
 | 5.832778930664 |
 +----------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Aber in "top" sieht das so aus, und wächst:
 
-{% highlight console %}
+```console
  7552 mysql     15   0 55.1g  43g 6888 S  0.7 91.7 499:13.56 mysqld 
-{% endhighlight %}
+```
 
 Das wird sicher interessant.
 
@@ -46,7 +46,7 @@ der Maschine an.  Aber sie und ihr Zwilling sind gut ausbalanciert.
 
 Der Zwilling:
 
-{% highlight console %}
+```console
 # /usr/local/booking-mysql/numa-maps-summary.pl < /proc/25996/numa_maps 
 N0        :      1777572 (  6.78 GB)
 N1        :      1777759 (  6.78 GB)
@@ -55,7 +55,7 @@ anon      :      3553604 ( 13.56 GB)
 dirty     :      3553605 ( 13.56 GB)
 mapmax    :          237 (  0.00 GB)
 mapped    :         1783 (  0.01 GB)
-{% endhighlight %}
+```
 
 Wir starten den Server mal neu, um zu sehen, ob das Problem reproduzierbar
 ist.  Ich zwinge den InnoDB Buffer Pool auch mal 10 GB kleiner, nur um
@@ -76,7 +76,7 @@ hineinschauen könnte.
 
 Moment mal. Ich kann:
 
-{% highlight sql %}
+```sql
 mysql> select version();
 +--------------+
 | version()    |
@@ -95,13 +95,13 @@ mysql> select table_name
 | INNODB_BUFFER_POOL_STATS |
 +--------------------------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Nach dem Nachlesen von <a
 href='http://dev.mysql.com/doc/refman/5.6/en/innodb-buffer-page-table.html'>INFORMATION_SCHEMA.INNODB_BUFFER_PAGE</a>
 bekomme ich
 
-{% highlight sql %}
+```sql
 mysql> select page_type, 
 -> count(*) * 16384/1024/1024 as mb  
 -> from INNODB_BUFFER_PAGE 
@@ -123,7 +123,7 @@ mysql> select page_type,
 | UNKNOWN           | 21932.60937500 |
 +-------------------+----------------+
 12 rows in set (4.48 sec)
-{% endhighlight %}
+```
 
 und vermutlich ein monumentales globales 5-Sekunden-Lock auf dem Buffer
 Pool, um dieses Ergebnis zu erzeugen.  UNKNOWN ist in Wahrheit freier
@@ -136,7 +136,7 @@ Die Frage ist also: Was ist mit dem ganzen BLOB-Speicher da?  Wo kommt der
 her?  Leider nutzen uns table_name und index_name hier gar nix, wenn der
 page_type BLOB ist:
 
-{% highlight sql %}
+```sql
 mysql> select page_type,
 -> table_name, 
 -> index_name, 
@@ -152,13 +152,13 @@ mysql> select page_type,
 | INDEX             | md2/kb_...                  | PRIMARY               |   141.48437500 |
 | INDEX             | md2/kb_...                  | PRIMARY               |   430.87500000 |
 | BLOB              | NULL                        | NULL                  |  5073.81250000 |
-{% endhighlight %}
+```
 
 
 Aber es gibt eine SPACE id, und die kann über INNODB_SYS_TABLESPACES
 aufgelöst werden.  Schauen wir mal:
 
-{% highlight sql %}
+```sql
 select page_type, 
 -> table_name, 
 -> index_name, 
@@ -174,12 +174,12 @@ select page_type,
 | INDEX             | ...| md2/kb_.................... |   430.87500000 |
 | BLOB              | ...| md2/kb_.................... |  5073.68750000 |
 ...
-{% endhighlight %}
+```
 
 Also haben wir hier eine bestimmte Tabelle, die den ganzen BLOB-Speicher
 aufbraucht.  Die Definition legt das nahe:
 
-{% highlight sql %}
+```sql
 show create table md2.kb_...\G
        Table: kb_hotel_hotelpage
 Create Table: CREATE TABLE `kb_...` (
@@ -192,7 +192,7 @@ Create Table: CREATE TABLE `kb_...` (
   KEY `last_check` (`last_check`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Diese tabelle enthält mehr oder weniger alle Template-Variablen für eine
 id/action-Kombination in serialisierter Form, um die Anzahl von Queries pro
@@ -214,7 +214,7 @@ Wir schließen unser Debugging ab:
 > pro Connection haben...  Jedenfalls ist das grad meine operative Theorie. 
 > MySQL & BLOBs = ganz übler Mist.
 
-{% highlight sql %}
+```sql
 mysql> select min(length(body)), 
 -> max(length(body)), 
 -> avg(length(body)) 
@@ -224,7 +224,7 @@ mysql> select min(length(body)),
 +-------------------+-------------------+-------------------+
 |              3002 |            478883 |        24968.2430 |
 +-------------------+-------------------+-------------------+
-{% endhighlight %}
+```
 
 
 Das heißt, ich vermute, daß das ständige neu Schreiben der BLOBs in InnoDB

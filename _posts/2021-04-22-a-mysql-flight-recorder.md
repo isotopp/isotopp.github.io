@@ -23,7 +23,7 @@ The full script is [available on github](https://github.com/isotopp/mysql-dev-ex
 
 It requires an `*.ini` file, and searches for it in [a number of locations](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-flight-recorder/flight_recorder.py#L299-L314):
 
-{% highlight python %}
+```python
     f = config.read(
         [
             "/etc/mysql/mysql-flight-recorder.ini",
@@ -38,18 +38,18 @@ It requires an `*.ini` file, and searches for it in [a number of locations](http
             "./mysql_flight_recorder.ini",
         ]
     )
-{% endhighlight %}
+```
 
 So it is either `mysql_flight_recorder.ini` or `mysql-flight-recorder.ini` with underbars or dashes, in `/etc/mysql`, in your home as a dotfile or non-dotfile, or in the current directory as a dotfile or non-dotfile.
 
 The `*.ini` files looks like this:
 
-{% highlight console%}
+```console
 [DEFAULT]
 logdir = /home/kris/Python/mysql/mysql-flight-recorder/mysql_flight_recorder
 pidfile = /home/kris/Python/mysql/mysql-flight-recorder/mysql_flight_recorder.pid
 compresscmd= bzip2 -9f
-{% endhighlight %}
+```
 
 That is, the `DEFAULT` section defines
 
@@ -61,13 +61,13 @@ After that, for each host that is to be checked a section is defined. The sectio
 
 The default config shown produces
 
-{% highlight console %}
+```console
 (venv) kris@server:~/Python/mysql/mysql-flight-recorder$ ls -l mysql_flight_recorder/Thu/
 total 48
 -rw-rw-r-- 1 kris kris 21424 Apr 22 23:35 localhost_23_35.bz2
 -rw-rw-r-- 1 kris kris 20975 Apr 22 23:36 localhost_23_36.bz2
 ...
-{% endhighlight %}
+```
 
 
 ## What is being logged?

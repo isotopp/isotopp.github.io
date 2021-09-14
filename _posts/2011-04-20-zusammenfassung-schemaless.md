@@ -44,18 +44,18 @@ aktualisiert und die Zeile dann später zurück geschrieben.
 Verzögerte Migration einer Tabelle von Schemaversion 1 auf Schemaversion 2.
 
 Im Beispiel wird das ursprüngliche 
-{% highlight sql %}
+```sql
 CREATE TABLE t ( 
   id INTEGER UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT, 
   german VARCHAR(20) NOT NULL DEFAULT ''
 ) ENGINE = INNODB
-{% endhighlight %}
+```
 
 um ein späteres 
 
-{% highlight sql %}
+```sql
 ALTER TABLE t ADD COLUMN english VARCHAR(20) NOT NULL DEFAULT ''
-{% endhighlight %}
+```
 
 ergänzt.
 

@@ -38,7 +38,7 @@ So my benchmark is the classical MySQL "16 KB random write is an excellent predi
 
 Each section is run individually, sequentially:
 
-{% highlight console %}
+```console
 [global]
  size=800g
  filename=fio.0
@@ -125,7 +125,7 @@ Each section is run individually, sequentially:
   rw=randwrite
   numjobs=8
   iodepth=2
-{% endhighlight %}
+```
 
 In the `[general]` section I provide the parameters common to all benchmarks: I mount my storage into `/a` and create `/a/fio` as a test directory.
 
@@ -145,7 +145,7 @@ The blktrace can later be fed to [Oakgate Workload Intelligence](https://www.oak
 
 The ugly little bash driver, which will soon be a proper piece of Python:
 
-{% highlight bash %}
+```bash
 #! /bin/bash
 
 # drive under test
@@ -195,7 +195,7 @@ do
     ( cd $drive; tar cvzf $i.tgz $i )
     rm -rf $drive/$i
 done
-{% endhighlight %}
+```
 
 I end up with a directory named after the drive under test, containing the entire description of the test environment, plus subdirectories for each scenario, containing all recorded data. I can tar that up and carry it home for analytics.
 

@@ -89,10 +89,10 @@ Memory data representation is also not efficient disk data representation, by th
 
 Now, RES is smaller than VIRT, so we are using even less of the 128 GB we have. Why is that?
 
-{% highlight console %}
+```console
 [root@prod-replica mysql]# du -sh .
 684G    .
-{% endhighlight %}
+```
 
 We do have enough data, so it is not that we would not like to keep more data in memory.
 
@@ -100,13 +100,13 @@ But, the InnoDB Buffer pool size is actually even lower than this.
 
 From the /etc/my.cnf of the instance above:
 
-{% highlight console %}
+```console
 innodb_buffer_pool_size = 64G
 # innodb_buffer_pool_size defined from memorysize = 125 GB as 107 GB
 # innodb_buffer_pool_size_adjustment of -15 GB 
 # connection memory = 29 GB for max_connections = 30000
 innodb_buffer_pool_instances = 16
-{% endhighlight %}
+```
 
 As you can see, we *would* like to see a Buffer Pool of 107 GB for a memory size of 125 GB (what userland sees after the kernel got its share).
 

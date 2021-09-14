@@ -16,7 +16,7 @@ hand, it drops support for 32-Bit MacOS applications.
 
 Consider the upgrade carefully.
 
-{% highlight console %}
+```console
 $ system_profiler SPApplicationsDataType
 …
     Steam:
@@ -29,7 +29,7 @@ $ system_profiler SPApplicationsDataType
       Signed by: Developer ID Application: Valve Corporation, Developer ID Certification Authority, Apple Root CA
       Location: /Applications/Steam.app
 …
-{% endhighlight %}
+```
 
 Anything listed with `64-Bit (Intel): No` will stop working after the
 upgrade. Check before you upgrade, and consider what you will be losing

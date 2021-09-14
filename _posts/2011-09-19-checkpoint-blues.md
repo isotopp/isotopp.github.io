@@ -26,9 +26,9 @@ man ein wenig herumtricksen.
 
 Angenommen, wir wollen eine Spalte in einer Zeile in der Tabelle t ändern: 
 
-{% highlight sql %}
+```sql
 UPDATE t SET x=17 WHERE id=3
-{% endhighlight %}
+```
 
 Dann muß InnoDB das zunächst einmal in eine Zeilennummer in
 einer Speicherseite übersetzen: InnoDB speichert Daten in Seiten

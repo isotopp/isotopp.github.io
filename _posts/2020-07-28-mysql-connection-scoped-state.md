@@ -60,7 +60,7 @@ disconnect.
 
 Using last_insert_id() looks like this:
 
-{% highlight sql %}
+```sql
 mysql> CREATE TABLE `demo` (
 `id` bigint unsigned NOT NULL AUTO_INCREMENT,
 `data` varbinary(255) NOT NULL,
@@ -82,11 +82,11 @@ mysql> select last_insert_id() as lastid;
 +--------+
 |      2 |
 +--------+
-{% endhighlight %}
+```
 
 After a `KILL` on the connection, this happens:
 
-{% highlight sql %}
+```sql
 (Admin Connection)
 mysql> kill 350542;
 
@@ -101,7 +101,7 @@ Current database: kris
 +--------+
 |      0 |
 +--------+
-{% endhighlight %}
+```
 
 ### Temporary Tables
 
@@ -162,7 +162,7 @@ dangerous, deprecated and can break certain modes of
 replication, but has been done in the past to make TopK queries
 efficient – use Window Functions from MySQL 8 instead.
 
-{% highlight sql %}
+```sql
 mysql> select id from demo;
 +----+
 | id |
@@ -187,7 +187,7 @@ mysql> show warnings;
 Warning | 1287 | Setting user variables within expressions is deprecated 
 and will be removed in a future release. Consider alternatives: 
 'SET variable=expression, ...', or 'SELECT expression(s) INTO variables(s)'.
-{% endhighlight %}
+```
 
 For the purposes of this discussion, @-Variables are part of
 connection scoped state and are lost on disconnect.
@@ -197,12 +197,12 @@ of queries.  They are sometimes necessary to speed things up, to
 handle character sets properly, or to nudge the query optimizer
 into the right direction.
 
-{% highlight sql %}
+```sql
 mysql> SET NAMES utf8mb4;
 …
 mysql> SET SESSION optimizer_prune_level = 0;
 …
-{% endhighlight %}
+```
 
 For this purposes of this discussion, these settings are part of
 the connection scoped state and are lost on disconnect.  On
@@ -223,16 +223,16 @@ statement.
 MySQL solved that by having a number of Magic SET commands, so that the
 statement
 
-{% highlight sql %}
+```sql
 SELECT NOW() as now;
-{% endhighlight %}
+```
 
 was being replicated as
 
-{% highlight sql %}
+```sql
 SET TIMESTAMP=...
 SELECT NOW() as now;
-{% endhighlight %}
+```
 
 and in this setup the `NOW()` function would not return the
 current time, but the time previously set with the Magic SET. 

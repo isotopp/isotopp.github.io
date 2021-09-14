@@ -20,7 +20,7 @@ But first let's do things manually: We create a table `kris` with an integer pri
 
 We then `START TRANSACTION READ WRITE` and `SELECT ... FOR UPDATE` a record:
 
-{% highlight sql %}
+```sql
 Session1> create table kris ( id serial, value integer );
 Session1> insert into kris values (10, 10), (20, 20), (30, 30),(40, 40);
 
@@ -31,11 +31,11 @@ Session1> select * from kris where id = 10 for update;
 +----+-------+
 | 10 |    10 |
 +----+-------+
-{% endhighlight %}
+```
 
 [The table `PERFORMANCE_SCHEMA.DATA_LOCKS`](https://dev.mysql.com/doc/refman/8.0/en/performance-schema-data-locks-table.html) will show us what happened, and [the manual section on locking](https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html) explains what we are looking at and what we can expect.
 
-{% highlight sql %}
+```sql
 Session1> select * from performance_schema.data_locks\G
 ...
             LOCK_TYPE: TABLE
@@ -47,7 +47,7 @@ Session1> select * from performance_schema.data_locks\G
             LOCK_MODE: X,REC_NOT_GAP
           LOCK_STATUS: GRANTED
             LOCK_DATA: 10
-{% endhighlight %}
+```
 
 The `SELECT ... FOR UPDATE` created a `LOCK_TYPE: TABLE` table-level lock with `LOCK_MODE: IX`. This is an intention-lock set by `FOR UPDATE` which indicates the desire to set X-locks (exclusive-locks, write-locks) on rows.
 
@@ -57,14 +57,14 @@ The statement then proceeded to actually create a row-lock, at the record level:
 
 Adding to the preceding transaction, we now also search for a non-existent row, using `FOR UPDATE` to signal our intent to later create this row. Since the row does not exist, the result set is empty:
 
-{% highlight sql %}
+```sql
 Session1> select * from kris where id = 35 for update;
 Empty set (0.00 sec)
-{% endhighlight %}
+```
 
 Reusing the table-level IX lock from before, we now see a third entry in `PERFORMANCE_SCHEMA.DATA_LOCKS`:
 
-{% highlight sql %}
+```sql
 Session1> select * from performance_schema.data_locks;
 ...
             LOCK_TYPE: RECORD
@@ -72,7 +72,7 @@ Session1> select * from performance_schema.data_locks;
           LOCK_STATUS: GRANTED
             LOCK_DATA: 40
 ...
-{% endhighlight %}
+```
 
 This, too, is a record-level lock, but this time it is `LOCK_MODE: X,GAP` and `LOCK_DATA: 40`. What we get here is a lock on the space between the rows `id=30` (excluding) and `id=40` (including), preventing other threads from inserting a row `id=35`.
 
@@ -80,19 +80,19 @@ This, too, is a record-level lock, but this time it is `LOCK_MODE: X,GAP` and `L
 
 We can try do demonstrate that with a second session:
 
-{% highlight sql %}
+```sql
 Session2> start transaction read write;
 Session2> insert into kris values (33, 33);
 ... hangs ...
 ^C^C -- query aborted
 ERROR 1317 (70100): Query execution was interrupted
-{% endhighlight %}
+```
 
 While the `SELECT ... FOR UPDATE` had a where clause of `WHERE id=35`, the lock covers the entire interval (30, 40], and our attempt to insert a record with `id=33` hangs and has to wait until either the locking transaction is committed or our attempt times out. This can be a long wait: by default, `innodb_lock_wait_timeout` is set to 50 seconds.
 
 We can change that:
 
-{% highlight sql %}
+```sql
 Session2> set session innodb_lock_wait_timeout = 3;
 Session2> start transaction read write;
 Session2> select time(now()); insert into kris values (33, 33); select time(now());
@@ -107,7 +107,7 @@ ERROR 1205 (HY000): Lock wait timeout exceeded; try restarting transaction
 +-------------+
 | 17:52:32    |
 +-------------+
-{% endhighlight %}
+```
 
 We are rolling back all our transactions, and reset the table `kris` to the initial 4 tuples ((10,10), (20,20), (30,30), (40,40)).
 
@@ -125,7 +125,7 @@ More complicated scenarios with 3 or more threads and larger circular dependenci
 
 So, let's excercise a deadlock with two sessions:
 
-{% highlight sql %}
+```sql
 Session1> start transaction read write;
 Session1> select * from kris where id = 30 for update;
 +----+-------+
@@ -133,11 +133,11 @@ Session1> select * from kris where id = 30 for update;
 +----+-------+
 | 30 |    30 |
 +----+-------+
-{% endhighlight %}
+```
 
 and in the other session:
 
-{% highlight sql %}
+```sql
 Session2> start transaction read write;
 Session2> select * from kris where id = 10 for update;
 +----+-------+
@@ -145,25 +145,25 @@ Session2> select * from kris where id = 10 for update;
 +----+-------+
 | 10 |    10 |                                          
 +----+-------+
-{% endhighlight %}
+```
 
 Now that both threads hold their first resource, let's get their respective opposite to complete the deadlock. Session1 hangs, because it waits for Session2 to release the lock on `id=10`.
 
-{% highlight sql %}
+```sql
 Session1> select * from kris where id = 10 for update;
 ... hangs ...
-{% endhighlight %}
+```
 
 And Session2, trying to lock `id=30`, which is held by Session1, then is being detected and rolled back forcibly:
 
-{% highlight sql %}
+```sql
 Session2> select * from kris where id = 30 for update;
 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction     
-{% endhighlight %}
+```
 
 At the same time Session1 can complete the statement:
 
-{% highlight sql %}
+```sql
 Session1> select * from kris where id = 10 for update;
 +----+-------+
 | id | value |
@@ -171,13 +171,13 @@ Session1> select * from kris where id = 10 for update;
 | 10 |    10 |
 +----+-------+
 1 row in set (8.74 sec)
-{% endhighlight %}
+```
 
 The time reported is the time this session hung waiting for the lock to be granted.
 
 After the rollback `PERFORMANCE_SCHEMA.DATA_LOCKS` looks like this:
 
-{% highlight sql %}
+```sql
 Session2> select lock_type, lock_mode, lock_data, lock_status from performance_schema.data_locks;
 +-----------+---------------+-----------+-------------+
 | lock_type | lock_mode     | lock_data | lock_status |
@@ -186,7 +186,7 @@ Session2> select lock_type, lock_mode, lock_data, lock_status from performance_s
 | RECORD    | X,REC_NOT_GAP | 30        | GRANTED     |
 | RECORD    | X,REC_NOT_GAP | 10        | GRANTED     |
 +-----------+---------------+-----------+-------------+
-{% endhighlight %}
+```
 
 These locks are owned by Session1, and after executing `ROLLBACK` or `COMMIT` in Session1 they are released and the select-statement on performance_schema comes back empty.
 
@@ -198,7 +198,7 @@ We are running two programs concurrently: One program is counting up the counter
 
 We want to be able to detect this, and restart the transactions. A quick and dirty attempt at this: A function to lock a record by id.
 
-{% highlight python %}
+```python
 def select_update(name, id):
     cmd = f"select counter from {name} where id = {id} for update"
     c = db.cursor()
@@ -210,11 +210,11 @@ def select_update(name, id):
 
     row = c.fetchone()
     return row["counter"]
-{% endhighlight %}
+```
 
 A function to increment a counter in a record we locked this way:
 
-{% highlight python %}
+```python
 def update(name, id, counter):
     cmd = f"update {name} set counter = {counter} where id = {id}"
     c = db.cursor()
@@ -223,11 +223,11 @@ def update(name, id, counter):
     except MySQLdb.Error as e:
         click.echo(f"MySQL Error: {e}")
         sys.exit(0)
-{% endhighlight %}
+```
 
 And a really dirty function with way too many parameters to exercise these two functions for pairs of records:
 
-{% highlight python %}
+```python
 def count_with_locking(name, tag, position1, position2, verbose=False):
         # I would rather have a START TRANSACTION READ WRITE
         # but MySQLdb does not offer this natively.
@@ -261,11 +261,11 @@ def count_with_locking(name, tag, position1, position2, verbose=False):
 
         # and release the locks, too
         db.commit()
-{% endhighlight %}
+```
 
 And two driver functions, one that goes up and another that goes down, wrapped with `click` so that they can be accessed via the command line:
 
-{% highlight python %}
+```python
 @sql.command()
 @click.option("--name", default="demo", help="Table name to count in")
 @click.option("--size", default=1000, help="Number rows in counter table")
@@ -296,11 +296,11 @@ def count_down(name, size, iterations, verbose):
         position2 = ((i - 1) % size) + 1
 
         count_with_locking(name, "down", position1, position2, verbose)
-{% endhighlight %}
+```
 
 When running this, we get deadlocks because we built it this way:
 
-{% highlight console %}
+```console
 $ ./deadlock.py truncate
 Table demo truncated.
 $ ./deadlock.py setup --size 10
@@ -325,7 +325,7 @@ up   6, 7 = 3, 2
 down 5, 4 = 3, 2
 up   7, 8 = 3, 2
 ...
-{% endhighlight %}
+```
 
 As soon as the count-down (6,5) and the count-up (5,6) cross their streams a deadlock happens. The count-up (5,6) is rolled back and needs to retry. After retry the counter values are correctly incremented.
 

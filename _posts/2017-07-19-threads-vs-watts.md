@@ -14,16 +14,16 @@ tags:
 ---
 So I have been testing, again. My hapless test subject this time is a Dell Box, an R630. It has a comfortable 384GB of memory, one of two 25 GBit/s ports active, and it comes with two [E5-2690v4](http://ark.intel.com/products/91770/Intel-Xeon-Processor-E5-2690-v4-35M-Cache-2_60-GHz) CPUs. That gives it 14 cores per die, 28 cores in total, or with hyperthreading, 56 threads.
 
-{% highlight console %}
+```console
 $ cat /proc/cpuinfo | grep 'model name' | uniq -c 
 56 model name : Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz 
 $ ./mprime -v 
 Mersenne Prime Test Program: Linux64,Prime95,v28.10,build 1 
-{% endhighlight %} 
+``` 
 
 I have not been nice, because I have been abusing the box with [mprime95](https://www.mersenne.org/download/) in Torture Test Mode, trying to make it consume as much power as possible.
 
-{% highlight console %}
+```console
 $ cat prime.txt 
 V24OptionsConverted=1 
 WGUID_version=2 
@@ -37,7 +37,7 @@ TortureThreads=56
 
 [PrimeNet] 
 Debug=0 
-{% endhighlight %} 
+``` 
 
 Running this with variable values for TortureThreads allows me to learn the impact of CPU usage on power consumption. When Idle, the box consumes 170W, because we basically prevented it from sleeping. When busy, it’s some 406 to 420W.
 

@@ -31,9 +31,9 @@ Here is how to interact with the key management of MacOS.
 
 The command line utility to interact with the Keychain in MacOS is "security". 
 
-{% highlight console %}
+```console
 $ security add-generic-password -a $LOGNAME -s payslip -w keks 
-{% endhighlight %} 
+``` 
 
 This will create a generic password titled "payslip" in my default keychain,
 in my account, and the password is "keks". If you run "Keychain Access.app"
@@ -73,9 +73,9 @@ You might see fewer (none) or more programs in this list:
 
 - By default, "security", which created the password, adds itself to the access control list.
 - If you do not want "security" adding itself to the list, set "-T" empty to prevent itself from adding: 
-{% highlight console %}
+```console
 $ security add-generic-password -T "" -a $LOGNAME -s payslip -w keks
-{% endhighlight %} 
+``` 
 - Had you hit "Always Allow" instead of "Allow" in the "Show password:"
   dialog, "Keychain Access" would have had itself added as well.
 
@@ -83,9 +83,9 @@ $ security add-generic-password -T "" -a $LOGNAME -s payslip -w keks
 
 Here is how to get the password back: 
 
-{% highlight console %}
+```console
 $ security find-generic-password -w -a $LOGNAME -s payslip
-{% endhighlight %}
+```
 
 If you did not allow "security" to include itself, you will see a permission
 prompt on the desktop:
@@ -100,14 +100,14 @@ will have the command return with an empty password. The "password not
 present" case will additionally write an error message to stderr, but
 unfortunately not set an exit code properly.
 
-{% highlight console %}
+```console
 $ password=$( security find-generic-password -w -a $LOGNAME -s payslip ) $ echo $password keks
-{% endhighlight %}
+```
 
 ## Deleting a password<br />
 
 Just for closure and cleanup: 
 
-{% highlight console %}
+```console
 $ security delete-generic-password -a $LOGNAME -s payslip
-{% endhighlight %}
+```

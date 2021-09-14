@@ -15,13 +15,13 @@ Es ist mal wieder Zeit, sehr alte Hüte rauszukramen. Heute habe ich mir dienstl
 
 Denn schon nach kurzem Suchen findet man Code wie den folgenden: 
 
-{% highlight php %}
+```php
 $theValue = $_REQUEST['theValue'];
 ...
 if ($theValue != "") {
   $where .= " where theColumn = '$theValue'";
 }
-{% endhighlight %}
+```
 
 Eigentlich hat der betrachtete Code eine `cleanup()`-Funktion, die für jeden Wert aufgerufen werden soll, und die nicht nur den Typ des Wertes deklariert, sondern auch das notwendige Escapen der Werte "in place" vornimmt.
 
@@ -29,9 +29,9 @@ Das ist aber in mehrfacher Hinsicht unschön.
 
 Wenn man Code wie 
 
-{% highlight php %}
+```php
 $_REQUEST['theValue'] = cleanup($_REQUEST['theValue'], 'text')
-{% endhighlight %}
+```
 
 schreibt, und vergisst diesen Cleanup-Aufruf einzufügen, dann haben wir keinen bemerkbaren Fehler: Der Folgecode, der auf `$_REQUEST['theValue']` zugreift, bekommt Werte zu sehen und bleibt nicht mit einer Fehlermeldung "Keine Inputreinigung vorgenommen!" stehen.
 
@@ -41,17 +41,17 @@ Außerdem sind die angewendeten Typprüfungen nicht flexibel genug und gehen nic
 
 Kurz gesagt: Was ich möchte ist eigentlich eine Typdeklaration für eine PHP-Seite, die die Eingabeparameter mit Namen und Typprüfungen deklariert.
 
-{% highlight php %}
+```php
 $cleaners = array(
   "county" => array( "check" => "text_regex", "pattern" => "[a-zA-Z0-9]+" ),
   "year"   => array( "check" => "int_minmax", "min" => 1834, "max" => 1864),
   "quarter" => array( "check" => "int_enum", "values" => array(1, 2, 3, 4) )
 );
-{% endhighlight %}
+```
 
 Ich will dann eine Eingabeprüfung, die ein Input-Array durchgeht und die Cleaners der Reihe nach anwendet. Das Resultat ist eine optionale Liste von Fehlern und ein gesäubertes Input-Array `$_CLEAN`, das vom `$_REQUEST`-Array verschieden ist.
 
-{% highlight php %}
+```php
 // simulated input
 $_REQUEST = array(
   "county" => "someword",
@@ -73,7 +73,7 @@ var_dump($_CLEAN);
 // the error messages
 echo "collected errors\n";
 var_dump($_ERROR);
-{% endhighlight %}
+```
 
 Fehlt der `clean()`-Aufruf am Anfang einer Seite, ist `$_CLEAN` leer und späterer Code, der `$_CLEAN` referenziert, kann nicht funktionieren – der Fehler wird sofort bemerkt.
 
@@ -83,7 +83,7 @@ Eine Checkerfunktion hat den Namen `check_...` und gibt ein Paar (Wert, Fehlerme
 
 Diese Bedingungen sind schnell runtergeschrieben und sehen in Code dann so aus:
 
-{% highlight php %}
+```php
 function clean($R, $cleaners, &$E = "") {
   // collected results in $C, collect errors in $E (which is optional)
   $C = array();
@@ -126,7 +126,7 @@ function clean($R, $cleaners, &$E = "") {
   
   return $C;
 }
-{% endhighlight %}
+```
 
 Jetzt müssen wir nur noch Checkfunktionen schreiben, die die eigentlichen Prüfungen ausführen. In unserem Fall wollen wir noch die folgenden Konventionen gelten lassen: 
 
@@ -135,7 +135,7 @@ Jetzt müssen wir nur noch Checkfunktionen schreiben, die die eigentlichen Prüf
 
 Hier ist der `regexp`-Test: 
 
-{% highlight php %}
+```php
 function check_text_regex($k, $v, $par) {
   $pattern     = $par['pattern'];
   $pattern_err = "check_text_regex: ".
@@ -151,13 +151,13 @@ function check_text_regex($k, $v, $par) {
   else
     return array($default, $pattern_err);
 }
-{% endhighlight %}
+```
 
 Der Test prüft, ob der Wert `$v` dem regulären Ausdruck `$par['pattern']` genügt. Wenn ja, wird `$v` ohne Fehlermeldung zurückgegeben. Wenn nein, wird `$par['default']` zusammen mit der Fehlermeldung `$par['pattern_err']` zurückgegeben.
 
 Entsprechend der `minmax`-Test: 
 
-{% highlight php %}
+```php
 function check_int_minmax($k, $v, $par) {
   $min     = $par['min'];
   $min_err = "check_int_minmax: ". 
@@ -178,13 +178,13 @@ function check_int_minmax($k, $v, $par) {
 
   return array($v, NULL);
 }
-{% endhighlight %}
+```
 
 Dieser Test folgt demselben System: Wenn der Wert `$v` zwischen `$min` und `$max` liegt, wird er ohne Fehlermeldung zurückgegeben. Andernfalls wird $default und eine Fehlermeldung erzeugt. Die Fehlermeldungen können dabei als `$min_err` und `$max_err` spezifiziert werden, der `$default` ist `NULL`.
 
 Und der `int_enum`-Test, um das Beispiel vollständig zu machen: 
 
-{% highlight php %}
+```php
 function check_int_enum($k, $v, $par) {
   $values      = $par['values'];
   $valuestring = join(",", $values);
@@ -202,7 +202,7 @@ function check_int_enum($k, $v, $par) {
   return array($v, NULL);
   
 }
-{% endhighlight %}
+```
 
 Auch hier werden die Konventionen befolgt: `$default` und die Fehlermeldung `$values_err`, wenn der gegebene Wert `$v` nicht im `$values`-Array vorkommt, sonst `$v` und keine Fehlermeldung.
 

@@ -486,7 +486,7 @@ dann werden zwei Blöcke M<sub>1</sub> und M<sub>2</sub>, die denselben
 Inhalt haben, auch gleich verschlüsselt - der Klartext der Nachricht scheint
 im Ciphertext durch.
 
-{% highlight console %}
+```console
 KK:~ kris$ dd if=/dev/zero bs=1k count=1 of=x
 1+0 records in
 1+0 records out
@@ -503,7 +503,7 @@ KK:~ kris$ od -t x1 y
 ...
 0002020 72 d6 ba 5e 91 0a 9e 90
 0002030
-{% endhighlight %}
+```
 
 Erzeugt man also ein Kilobyte Nullbytes und verschlüsselt diese mit einem
 ECB-Verfahren (jeden Block also mit demselben Schlüssel 'keks'), dann

@@ -23,7 +23,7 @@ ein COMMIT. Dann geht es sehr viel schneller.
 
 Mit diesen Daten und einem Beispielort kann man experimentieren. 
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> select 
     td.loc_id, td.text_val, tn.name 
 from 
@@ -40,11 +40,11 @@ where
 |  19236 | Kiel     | Name |
 +--------+----------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Zum Beispiel finden wir mal alles, was um den Beispielort herum liegt:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> explain select 
     co.loc_id, td.text_val 
 from 
@@ -91,12 +91,12 @@ possible_keys: text_lid_idx,text_type_idx
          rows: 2344
         Extra: Using where
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wie man sieht wird ein index_merge (intersect) verwendet, wenn man mit
 festen Koordinaten arbeitet. Hier das Ergebnis:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> select
     co.loc_id, td.text_val 
 from 
@@ -120,13 +120,13 @@ text_val: Kiel
   loc_id: 106031
 text_val: Wik
 13 rows in set (0.01 sec)
-{% endhighlight %}
+```
 
 Eine Umkreissuche (BETWEEN) sieht wesentlich schlechter aus - Axel Schwenke
 hat das ja bereits erläutert - der Index-Merge funktioniert derzeit nur bei
 Konstanten:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> explain select 
     co.loc_id, td.text_val 
 from 
@@ -173,11 +173,11 @@ possible_keys: coord_loc_id_idx,coord_lon_idx,coord_lat_idx
          rows: 303
         Extra: Using where
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Hier die Laufzeit: 
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> select 
     co.loc_id, td.text_val
 from 
@@ -201,12 +201,12 @@ text_val: Kiel
   loc_id: 106953
 text_val: Rammsee
 30 rows in set (0.50 sec)
-{% endhighlight %}
+```
 
 Wir können versuchen, mit einem RTREE dabei zu gehen. Dazu brauchen wir die
 Daten in MyISAM:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> create table co 
     like geodb_coordinates;
 Query OK, 0 rows affected (0.18 sec)
@@ -218,21 +218,21 @@ Records: 0  Duplicates: 0  Warnings: 0
 root@localhost [geodb]> insert into co select * from geodb_coordinates;
 Query OK, 60645 rows affected (0.50 sec)
 Records: 60645  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Wir müssen außerdem eine Spalte latlon als POINT anlegen und einen SPATIAL index auf diesen Point setzen: 
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> alter table co 
      add column latlon point not null, 
      add spatial index (latlon);
 Query OK, 60645 rows affected (0.83 sec)
 Records: 60645  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 Die lat und lon Daten müssen nach latlon konvertiert werden: 
 
-{% highlight sql %}
+```sql
 -- 5.1.35 or later
 root@localhost [geodb]> update co 
     set latlon = point(lat, lon);
@@ -240,11 +240,11 @@ Query OK, 60645 rows affected (1.45 sec)
 Rows matched: 60645  Changed: 60645  Warnings: 0
 -- older MySQL: update co 
 --     set latlon = GeomFromText(concat('Point(', lat,',',lon)));
-{% endhighlight %}
+```
 
 Ein kleiner Test: 
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> select 
     astext(latlon)
 from 
@@ -265,11 +265,11 @@ limit 10;
 | POINT(54.15 9.28333)                     |
 +------------------------------------------+
 10 rows in set (0.02 sec)
-{% endhighlight %}
+```
 
 Die Tabelle sieht jetzt so aus: 
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> show create table co\G
 === 1. row ===
        Table: co
@@ -294,19 +294,19 @@ Create Table: CREATE TABLE `co` (
   SPATIAL KEY `latlon` (`latlon`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Wir definieren unseren Suchumkreis einmal als @poly Variable. Danach wird
 einiges einfacher:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> set @poly = 'Polygon((54.3 10.1, 54.4 10.1, 54.4 10.2,54.3 10.2, 54.3 10.1 ))';
 Query OK, 0 rows affected (0.00 sec)
-{% endhighlight %}
+```
 
 Wird unser SPATIAL Index denn auch verwendet? Wir testen:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> explain select 
     co.loc_id 
 from 
@@ -325,12 +325,12 @@ possible_keys: latlon
          rows: 11
         Extra: Using where
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 In der richtigen Suche müssen wir einen STRAIGHT_JOIN forcen, weil sonst die
 Join-Order und die Indexverwendung nicht stimmt:
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> explain select straight_join 
     co.loc_id, td.text_val 
 from 
@@ -376,11 +376,11 @@ possible_keys: type_id,tid_tnames_idx,name_tnames_idx
          rows: 1
         Extra: Using where
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Und hier die Ausgabe: 
 
-{% highlight sql %}
+```sql
 root@localhost [geodb]> select straight_join 
     co.loc_id, td.text_val
 from 
@@ -403,4 +403,4 @@ text_val: Mönkeberg
   loc_id: 19236
 text_val: Kiel
 30 rows in set (0.00 sec)
-{% endhighlight %}
+```

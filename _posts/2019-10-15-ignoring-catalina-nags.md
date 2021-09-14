@@ -11,14 +11,14 @@ tags:
 ---
 Note to self: Ignoring the Catalina Nagscreens is done like this:
 
-{% highlight console %}
+```console
 $ sudo softwareupdate --ignore "macOS Catalina"
 $ defaults write com.apple.systempreferences AttentionPrefBundleIDs 0 && killall Dock
-{% endhighlight %}
+```
 
 And that should make MacOS ignore Catalina until further notice. Further
 notice does look like this:
 
-{% highlight console %}
+```console
 $ /usr/sbin/softwareupdate --reset-ignored
-{% endhighlight %}
+```

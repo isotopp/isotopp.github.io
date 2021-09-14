@@ -18,22 +18,22 @@ And while I have a lot of network namespaces, they are unknown to `ip netns`, as
 
 So these are our container names, we want them as netns names:
 
-{% highlight console %}{% raw %}
+```console{% raw %}
 # docker ps --format='{{.Names}}'
 jitsi-jvb
 ...
-{% endraw %}{% endhighlight %}
+{% endraw %}```
 
 We can turn them into PIDs:
 
-{% highlight console %}{% raw %}
+```console{% raw %}
 # docker inspect -f '{{.State.Pid}}' jitsi-jvb
 3899821
-{% endraw %}{% endhighlight %}
+{% endraw %}```
 
 And with that, we can create a mapping script:
 
-{% highlight console %}{% raw %}
+```console{% raw %}
 #! /bin/bash
 
 names="$(docker ps --format='{{.Names}}')"
@@ -44,12 +44,12 @@ do
   echo $pid $name
   ln -sf /proc/$pid/ns/net "/var/run/netns/$name"
 done
-{% endraw %}{% endhighlight %}
+{% endraw %}```
 
 
 Sure enough, I can now `ip netns` things:
 
-{% highlight console %}{% raw %}
+```console{% raw %}
 # ip netns list
 influxdb (id: 5)
 mosquitto (id: 2)
@@ -68,13 +68,13 @@ java    3900157 docker  152u  IPv4 34917278      0t0  UDP 172.3.0.5:10000
 java    3900157 docker  153u  IPv4 34927830      0t0  TCP 172.3.0.5:59998->172.3.0.2:5222 (ESTABLISHED)
 java    3900157 docker  157u  IPv4 34927885      0t0  UDP *:5000
 java    3900157 docker  159u  IPv6 34927887      0t0  UDP *:5000
-{% endraw %}{% endhighlight %}
+{% endraw %}```
 
 [@ascii158](https://twitter.com/ascii158/status/1269868957458186240) points me at
 
-{% highlight console %}{% raw %}
+```console{% raw %}
 # nsenter -n -t $(docker inspect <containername> -f '{{.State.Pid}}') lsof -i -n -P
-{% endraw %}{% endhighlight %}
+{% endraw %}```
 
 as an alternative solution. That works, but is also quite a lot to type. Like the former solution it needs a script, just a different one. It still is more flexible: works with non-network namespaces and does not need to update a static lookup table.
 

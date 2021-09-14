@@ -18,7 +18,7 @@ It is likely that you have additional requirements on top of this, so it would b
 
 Try this piece of Python 3.7 (or better) as a starting point. It requires `mysqlclient` to be installed with pip (preferrably in a venv).
 
-{% highlight python %}
+```python
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -58,7 +58,7 @@ for t in tables:
   with open(f"{table}.csv", "w") as csvfile:
     w = csv.writer(csvfile)
     w.writerows(data)
-{% endhighlight %}
+```
 
 Then customize as needed.
 

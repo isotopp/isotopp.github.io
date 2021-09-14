@@ -37,7 +37,7 @@ Let's look at this in a concrete fashion, using Python and a Flask app, using th
 
 We want to edit some dummy table without timing out. The table is defined like so:
 
-{% highlight sql %}
+```sql
 CREATE TABLE `editme` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(200) DEFAULT NULL,
@@ -48,13 +48,13 @@ INSERT INTO `editme` VALUES (1,'Name 1','City 1');
 INSERT INTO `editme` VALUES (2,'Name 2','City 2');
 INSERT INTO `editme` VALUES (3,'Name 3','City 3');
 INSERT INTO `editme` VALUES (4,'Name 4','City 4');
-{% endhighlight %}
+```
 
 It has an integer field `id`, which is the primary key, and two data fields, `name`, and `city`. We do not care what that means, it is just an example. We provide some sample data.
 
 The web form shows these values, and as hidden fields, also preserves the pre-edit values. So we get the `id` field to identify rows, and then hidden fields `oldname` and `oldcity`, and the matching visible edit fields `name` and `city`.
 
-{% highlight html %}{% raw %}
+```html{% raw %}
 {% extends "base.html" %}
 {% block content %}
 	{% for row in table %}
@@ -71,13 +71,13 @@ The web form shows these values, and as hidden fields, also preserves the pre-ed
 	</tr>
 	{% endfor %}
 {% endblock %}
-{% endraw %}{% endhighlight %}
+{% endraw %}```
 
 ![](/uploads/2020/06/optimistic-locking-1.png)
 
 Flask and WTForms demand a Form Class to handle this. We name it `EditForm` and define our hidden and visible fields:
 
-{% highlight python %}
+```python
 #! /usr/bin/env python
 
 from flask_wtf import FlaskForm
@@ -92,11 +92,11 @@ class EditForm(FlaskForm):
     name = StringField("name", validators=[DataRequired()])
     city = StringField("city", validators=[DataRequired()])
     submit = SubmitField("Save")
-{% endhighlight %}
+```
 
 Finally we can put all the cabling into our routes:
 
-{% highlight python %}
+```python
 #! /usr/bin/env python
 
 from flask import render_template, flash
@@ -119,7 +119,7 @@ def index():
         flash("No data received.")
     # show the form
     return render_template("index.html", title="Home", table=table, form=form)
-{% endhighlight %}
+```
 
 We register only one action, for the routes `/` and `/index`. This route loads the data from the database, by creating a `FormUpdater` and calling `fetch()` on it.
 
@@ -129,7 +129,7 @@ In any case, we show the table as a form.
 
 Now, the `FormUpdater`:
 
-{% highlight python %}
+```python
 #! /usr/bin/env python
 
 import MySQLdb
@@ -164,7 +164,7 @@ class FormUpdater:
         self.db.commit()
 
         return modified
-{% endhighlight %}
+```
 
 The `fetch()` method simply runs `select id, name, city from editme` and returns all rows. In order to make our life easier, we are using a `DictCursor`, so we get named columns.
 

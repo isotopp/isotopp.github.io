@@ -95,7 +95,7 @@ weiter geschickt - bis es irgendwann einmal das Ziel erreicht.
 
 Das sieht dann so aus: 
 
-{% highlight console %}
+```console
 KK:~ kris$ traceroute priceline.com
 traceroute to priceline.com (64.6.17.5), 64 hops max, 40 byte packets
  1  my.koehntopp.de (192.168.1.1)  1.733 ms  1.241 ms  0.910 ms
@@ -111,7 +111,7 @@ traceroute to priceline.com (64.6.17.5), 64 hops max, 40 byte packets
 11  mdf16-gsr12-1-pos-6-0.nyc2.attens.com (12.122.255.114)  123.526 ms  123.479 ms  122.330 ms
 12  mdf19-bi8k-1-eth-1-2.nyc2.attens.net (63.240.0.106)  122.865 ms  122.209 ms  122.017 ms
 13  * * *
-{% endhighlight %}
+```
 
 Das Programm traceroute verfolgt die Reise eines IP-Paketes von mir daheim
 bis nach Norwalk, CT, oder jedenfalls bis New York. Für jede Station wird

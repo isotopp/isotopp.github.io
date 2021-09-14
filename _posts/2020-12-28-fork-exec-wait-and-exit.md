@@ -72,7 +72,7 @@ So `fork()` is a special system call. You call it once, but the function returns
 Every Unix process always starts their existence by returning from a `fork()` system call with a 0 result, running the same program as the parent process. They can have different fates because the result of the `fork()` system call is different in the parent and child incarnation, and that can drive execution down different `if()` branches.
 
 In Code: 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -93,17 +93,17 @@ main(void) {
 
         exit(0);
 }
-{% endhighlight %}
+```
 
 Running this, we get:
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> make probe1
 cc     probe1.c   -o probe1
 kris@linux:/tmp/kris> ./probe1
 I am the child.
 I am the parent, the child is 16959.
-{% endhighlight %}
+```
 
 We are defining a variable `pid` of the type `pid_t`.
 
@@ -125,13 +125,13 @@ In our example, all variants of the program call `exit()` - we are calling `exit
 
 The shell does exactly the same thing we are doing:
 
-{% highlight console %}
+```console
 bash (16957) --- calls fork() ---> bash (16958) --- becomes ---> probe1 (16958)
 
 probe1 (16958) --- calls fork() ---> probe1 (16959) --> exit()
    |
    +---> exit()
-{% endhighlight %}
+```
 
 `exit()` closes all files and sockets, frees all memory and then terminates the process. The parameter of `exit()` is the only thing that survives and is handed over to the parent process.
 
@@ -143,7 +143,7 @@ This system call is `wait()`.
 
 In Code:
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -178,11 +178,11 @@ main(void) {
 
         exit(0);
 }
-{% endhighlight %}
+```
 
 And the runtime protocol:
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> make probe2
 cc     probe2.c   -o probe2
 kris@linux:/tmp/kris> ./probe2
@@ -190,7 +190,7 @@ I am the child.
 I am the parent, the child is 17399.
 I am the child, 10 seconds later.
 End of process 17399: The process ended with exit(0).
-{% endhighlight %}
+```
 
 The variable `status` is passed to the system call `wait()` as a reference parameter, and will be overwritten by it. The value is a bitfield, containing the exit status and additional reasons explaining how the program ended. To decode this, C offers a number of macros with predicates such as `WIFEXITED()` or `WIFSIGNALED()`. We also get extractors, such as `WEXITSTATUS()` and `WTERMSIG()`. `wait()` also returns the pid of the process that terminated, as a function result.
 
@@ -218,7 +218,7 @@ So while `fork()` makes processes, `exec()` loads programs into processes that a
 
 In Code:
 
-{% highlight c %}
+```c
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -253,11 +253,11 @@ main(void) {
 
         exit(0);
 }
-{% endhighlight %}
+```
 
 The runtime protocol:
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> make probe3
 cc     probe3.c   -o probe3
 
@@ -272,7 +272,7 @@ total 36
 -rwxr-xr-x 1 kris users 7513 2007-01-05 13:42 probe3
 -rw-r--r-- 1 kris users  728 2007-01-05 13:42 probe3.c
 End of process 17690: The process ended with exit(0).
-{% endhighlight %}
+```
 
 Here the code of `probe3` is thrown away in the child process (the `perror("In exec():")` is not reached). Instead the running program is being replaced by the given call to `ls`.
 
@@ -282,7 +282,7 @@ From the protocol we can see the parent instance of `probe3` waits for the `exit
 
 The examples above have been written in C. We can do the same, in `bash`:
 
-{% highlight console %}
+```console
 kris@linux:/tmp/kris> cat probe1.sh
 #! /bin/bash --
 
@@ -302,13 +302,13 @@ The parent is 18070
 Fri Jan  5 13:49:56 CET 2007: Parent waits.
 The child 18071 has the exit status 0
 Fri Jan  5 13:50:06 CET 2007: Parent woke up.
-{% endhighlight %}
+```
 
 ## The actual bash
 
 We can also trace the shell while it executes a single command. The information from above should allow us to understand what goes on, and see how the shell actually works.
 
-{% highlight console %}
+```console
 kris@linux:~> strace -f -e execve,clone,fork,waitpid bash
 kris@linux:~> ls
 clone(Process 30048 attached
@@ -325,7 +325,7 @@ Process 30048 detached
 WCONTINUED) = 30048
 --- SIGCHLD (Child exited) @ 0 (0) ---
 ...
-{% endhighlight %}
+```
 
 Linux uses a generalization of the original Unix `fork()`, named `clone()`, to create child processes. That is why we do not see `fork()` in a Linux system to create a child process, but a `clone()` call with some parameters.
 

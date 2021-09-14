@@ -16,7 +16,7 @@ So you talk to a database, doing transactions. What happens actually, behind the
 
 There is a test table and we write data into it inside a transaction:
 
-{% highlight sql %}
+```sql
 CREATE TABLE t (
   id serial,
   data varbinary(255)
@@ -25,7 +25,7 @@ CREATE TABLE t (
 START TRANSACTION READ WRITE
 INSERT INTO t ( id, data ) VALUES (NULL, RANDOM_BYTES(255))
 COMMIT
-{% endhighlight %}
+```
 
 The MySQL test instance we are talking to is running on a Linux machine, and otherwise idle to make observation easier. Also, we configured it with `innodb_use_native_aio = false` because observing actual physical asynchronous I/O and attributing it to the statement that caused it is really hard.
 
@@ -67,9 +67,9 @@ Only `START TRANSACTION` can do this.
 
 The next statement then can write data to the database:
 
-{% highlight sql %}
+```sql
 INSERT INTO t ( id, data) VALUES ( NULL, RANDOM_BYTES(255))
-{% endhighlight %}
+```
 
 is such a statement. It writes a `NULL` to an `auto_increment` field to get a new counter value, and then generates 255 random bytes of data to be written.
 
@@ -87,9 +87,9 @@ If we were to `ROLLBACK` the transaction now, MySQL would move the data back fro
 
 Finally we finish the transaction and tell the database this using
 
-{% highlight sql %}
+```sql
 COMMIT
-{% endhighlight %}
+```
 
 On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged data base from the table space. The Undo Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.
 
@@ -135,7 +135,7 @@ There is never any data loss – unless there is a loss of the media the data wa
 
 Let’s have a quiet instance of a local MySQL with AIO off, as described above, and check the filehandles for a later strace:
 
-{% highlight console %}
+```console
 # lsof -p 29169
 …
 mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
@@ -145,31 +145,31 @@ mysqld  29169 mysql    9uW  REG              253,0 536870912  68238220 /var/lib/
 mysqld  29169 mysql   10uW  REG              253,0 415236096  68239130 /var/lib/mysql/ibdata1
 mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/mysql/ibtmp1
 …
-{% endhighlight %}
+```
 
 We are using a database `kris` with a test table `t`. The file handles that are relevant for observation are 4 for the ibd file, 3 and 9 for the logfiles and 10 for the ibdata1, which would also be the location of the Double Write Buffer.
 
 We can see the command coming in:
 
-{% highlight console %}
+```console
 [pid 29441] recvfrom(39, "\3insert into t values(NULL, rand"..., 46, MSG_DONTWAIT, NULL, NULL) = 46
-{% endhighlight %}
+```
 
 The database now requires some randomness:
 
-{%highlight console %}
+```console
 [pid 29441] openat(AT_FDCWD, "/dev/urandom", O_RDONLY) = 42
 [pid 29441] read(42, "\207H\241\254O\317\10\fk\3447\201\277\267\223,Oi\202\272\222\16(\210\333\300'&\302g!&", 32) = 32
 [pid 29441] close(42)                   = 0
-{% endhighlight %}
+```
 
 We observe some action on the table metadata and then the log write from the commit:
 
-{% highlight console %}
+```console
 [pid 29441] pread64(10, "H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0"..., 16384, 7028736) = 16384
 [pid 29441] pwrite64(3, "\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267>\0\0\r./k"..., 1024, 34426368) = 1024
 [pid 29441] fsync(3)                    = 0
-{% endhighlight %}
+```
 
 This is the only `fsync` that contributed to commit-Latency. The write is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo log during recovery.
 
@@ -183,26 +183,26 @@ Also, during checkpointing, one Double Write Buffer worth of pages gets written 
 
 Anyway, this is what checkpointing to the the Double Write Buffer, at offset 1M in the ibdata looks like:
 
-{% highlight console %}
+```console
 [pid 29181] pwrite64(10, "\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&\211\225\0\2\0\0\0\0\0\0"..., 32768, 1048576) = 32768
 [pid 29181] fsync(10)                   = 0
-{% endhighlight %}
+```
 
 And there follows again an update of the metadata and a write to the actual tablespace:
 
-{% highlight console %}
+```console
 [pid 29179] pwrite64(10, "\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&\211\225\0\2\0\0\0\0\0\0"..., 16384, 7028736) = 16384
 [pid 29179] pwrite64(4, ".KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&\211\216E\277\0\0\0\0\0\0"..., 16384, 421871616) = 16384
 [pid 29179] fsync(4)                    = 0
 [pid 29179] fsync(10)                   = 0
-{% endhighlight %}
+```
 
 After this, the Redo Log is no longer needed and we can take note of this:
 
-{% highlight console %}
+```console
 [pid 29187] pwrite64(3, "\200\201\23E\1\271\0&\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0\*\201\20\2\0\201"..., 512, 34426880) = 512
 [pid 29187] fsync(3)                    = 0
-{% endhighlight %}
+```
 
 ## Writing really a lot of data
 
@@ -236,11 +236,11 @@ It then deletes all Undo Log even older than this, but no more.
 
 So if you
 
-{% highlight sql %}
+```sql
 START TRANSACTION READ WRITE
 
 INSERT INTO t (id, data) VALUES (NULL, RANDOM_BYTES(255))
-{% endhighlight %}
+```
 
 and then go to lunch, purging of the Undo Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.
 

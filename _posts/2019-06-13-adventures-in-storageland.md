@@ -73,7 +73,7 @@ The result is about half the latency, and a much higher transfer bandwidth. We c
 
 So, in testing, what can we expect? In MySQL land, I/O is done in blocks of 16 KB, and is done as random I/O mostly, in reads as well as writes. So we are writing a benchmark specification for fio that is testing things: A single threaded 16 KB sequential read test for a baseline throughput benchmark, a 16 KB block size random-write benchmark, 8-way parallel for random I/O calibration, and a mixed r/w benchmark, 8 way parallel, to simulate an operational database.
 
-{% highlight console %}
+```console
 [seq-read]
  rw=read
  size=40g
@@ -86,11 +86,11 @@ So, in testing, what can we expect? In MySQL land, I/O is done in blocks of 16 K
  runtime=300
  ioengine=libaio
  time_based
-{% endhighlight %}
+```
 
 This spec defines a 40g test file in a benchmark directory, which is being read without caching, for 300s, linearly and single threaded.
 
-{% highlight console %}
+```console
 [random-write]
  # 8 processes, 5g files each = 40g
  rw=randwrite
@@ -104,11 +104,11 @@ This spec defines a 40g test file in a benchmark directory, which is being read 
  runtime=300
  ioengine=libaio
  time_based
-{% endhighlight %}
+```
 
 The same, but random writes, in 8 threads in parallel. Each writer has their own file, so 8 files at 5GB each, for 40 GB total.
 
-{% highlight console %}
+```console
 [read-write]
  rw=rw
  rwmixread=80
@@ -122,7 +122,7 @@ The same, but random writes, in 8 threads in parallel. Each writer has their own
  runtime=300
  ioengine=libaio
  time_based
-{% endhighlight %}
+```
 
 And the same as the randwrite, only this time 80% reads, 20% writes.
 
@@ -136,7 +136,7 @@ Originally it is designed to make slow hard disks fast, but with SSD as a backin
 
 So here is the baseline for a traditional Dell M630 with a PERC controller and a 1.92TB SSD:
 
-{% highlight console %}
+```console
 # fio --section=seq-read ./fio.cfg
 seq-read: (g=0): rw=read, bs=(R) 16.0KiB-16.0KiB, (W) 16.0KiB-16.0KiB, (T) 16.0KiB-16.0KiB, ioengine=libaio, iodepth=1
 fio-3.1
@@ -173,7 +173,7 @@ Run status group 0 (all jobs):
 Disk stats (read/write):
     dm-4: ios=4588416/35691, merge=0/0, ticks=259207/18045, in_queue=277259, util=86.48%, aggrios=4605315/37547, aggrmerge=274/2057, aggrticks=262279/21346, aggrin_queue=283104, aggrutil=86.21%
   sda: ios=4605315/37547, merge=274/2057, ticks=262279/21346, in_queue=283104, util=86.21%
-{% endhighlight %}
+```
 
 That’s a lot of output, but we are interested into a few key numbers here. This is a sequential benchmark, because we asked for that (–section=). We get 15.300 IO operations per second (IOPS), and a bandwidth of 239 MB/s (with 1024-based metric). In our 300s benchmark, we transferred 70 GB.
 
@@ -185,7 +185,7 @@ We do get a clat histogram in usec, and that is useful: There is a relatively st
 
 For the random write benchmark we get 8 times output like
 
-{% highlight console %}
+```console
 ...
   write: IOPS=2454, BW=38.4MiB/s (40.2MB/s)(11.2GiB/300001msec)
 ...
@@ -196,13 +196,13 @@ For the random write benchmark we get 8 times output like
      | 99.00th=[ 2212], 99.50th=[ 2966], 99.90th=[ 6915], 99.95th=[ 7832],
      | 99.99th=[ 9503]
 ...
-{% endhighlight %}
+```
 
 The total of the IOPS is 19588, and the clat inflection is around the 95th percentile with 200µs to 570µs write latency, and then runaway times in the ms range. Aggregated bandwidth is around 300 MB/s (6 GBit/s are 715 MB/s theoretical max).
 
 And for the r/w mix (80% read/20% write), we get 8 readers and 8 writers, each reporting
 
-{% highlight console %}
+```console
 ...   
   read: IOPS=2153, BW=33.6MiB/s (35.3MB/s)(9.86GiB/300001msec)
 ...
@@ -222,7 +222,7 @@ And for the r/w mix (80% read/20% write), we get 8 readers and 8 writers, each r
      | 99.00th=[  371], 99.50th=[  449], 99.90th=[ 1696], 99.95th=[ 2737],
      | 99.99th=[ 6456]
 ...
-{% endhighlight %}
+```
 
 The sum of all IOPS is 21412, and the clat inflection is at the 95th with 155µs to 873µs for read, and at the 99.50th for write with 60µs to 449µs (and it’s actually more complicated than this for writers, but that’s a different story). We do see a total aggregated bandwidth of 336 MB/s (out of 715 MB/s max).
 
@@ -234,7 +234,7 @@ Write latency is likely 3x that, unbuffered, but like all flash devices it has R
 
 Let’s try a blade without the smart controller, this time a HP BL460c with a directly attached SSD without the caching RAID controller. In this test device, the disk controller is a dumb SATA attachment, no buffering, processing, RAIDing or other “smartness” inbetween.
 
-{% highlight console %}
+```console
    read: IOPS=14.2k, BW=222MiB/s (233MB/s)(64.0GiB/300001msec)
     clat percentiles (usec):
      |  1.00th=[   50],  5.00th=[   51], 10.00th=[   52], 20.00th=[   53],
@@ -242,11 +242,11 @@ Let’s try a blade without the smart controller, this time a HP BL460c with a d
      | 70.00th=[   64], 80.00th=[   64], 90.00th=[   66], 95.00th=[   68],
      | 99.00th=[   77], 99.50th=[   79], 99.90th=[  355], 99.95th=[  537],
      | 99.99th=[ 3130]
-{% endhighlight %}
+```
 
 So 14.2k instead of 15.3k with the expensive controller, and 50-79µs instead of 53-99µs with the expensive controller. For pure writes (times 8):
 
-{% highlight console %}
+```console
   write: IOPS=3458, BW=54.0MiB/s (56.7MB/s)(15.8GiB/300001msec)
     clat percentiles (usec):
      |  1.00th=[  151],  5.00th=[  188], 10.00th=[  194], 20.00th=[  227],
@@ -254,13 +254,13 @@ So 14.2k instead of 15.3k with the expensive controller, and 50-79µs instead of
      | 70.00th=[  262], 80.00th=[  269], 90.00th=[  306], 95.00th=[  375],
      | 99.00th=[  938], 99.50th=[ 1057], 99.90th=[ 3916], 99.95th=[ 4228],
      | 99.99th=[ 5211]
-{% endhighlight %}
+```
 
 So, 28507 IOPS in total (compared to 19588 for the expensive controller), and 150-375µs (compared to 200-570µs for the expensive controller), and better behavior for the runaway times, too.
 
 For the mix (times 8):
 
-{% highlight console %}
+```console
    read: IOPS=2296, BW=35.9MiB/s (37.6MB/s)(10.5GiB/300002msec)
     clat percentiles (usec):
      |  1.00th=[  174],  5.00th=[  202], 10.00th=[  223], 20.00th=[  258],
@@ -275,7 +275,7 @@ For the mix (times 8):
      | 70.00th=[  139], 80.00th=[  155], 90.00th=[  174], 95.00th=[  190],
      | 99.00th=[  223], 99.50th=[  237], 99.90th=[  258], 99.95th=[  273],
      | 99.99th=[  293]
-{% endhighlight %}
+```
 
 That comes out as a total of 23005 IOPS (as opposed to 21412), and for reads, a range of 174-635µs (155-873µs for the expensive controller), while for writes it is 52-237µs (60-449µs).
 
@@ -289,7 +289,7 @@ A colleague donated a NVME based HP box to the test. It actually has 4 NVME devi
 
 The outcome is unexpected and disappointing, or is it?
 
-{% highlight console %}
+```console
    read: IOPS=8459, BW=132MiB/s (139MB/s)(38.7GiB/300001msec)
     clat percentiles (usec):
      |  1.00th=[   97],  5.00th=[  101], 10.00th=[  102], 20.00th=[  102],
@@ -297,13 +297,13 @@ The outcome is unexpected and disappointing, or is it?
      | 70.00th=[  123], 80.00th=[  123], 90.00th=[  124], 95.00th=[  127],
      | 99.00th=[  133], 99.50th=[  145], 99.90th=[  186], 99.95th=[  196],
      | 99.99th=[  221]
-{% endhighlight %}
+```
 
 My colleague claims that a single NVME device is capable of a million IOPS, yet here we see fewer than 10 000, and 100-200µs completion latencies. What’s wrong?
 
 Write test (times 8):
 
-{% highlight console %}
+```console
 write: IOPS=23.3k, BW=365MiB/s (383MB/s)(107GiB/300001msec)
     clat percentiles (usec):
      |  1.00th=[   19],  5.00th=[   19], 10.00th=[   20], 20.00th=[   20],
@@ -311,11 +311,11 @@ write: IOPS=23.3k, BW=365MiB/s (383MB/s)(107GiB/300001msec)
      | 70.00th=[   36], 80.00th=[   47], 90.00th=[   61], 95.00th=[   70],
      | 99.00th=[   95], 99.50th=[  114], 99.90th=[  192], 99.95th=[  293],
      | 99.99th=[ 2409]
-{% endhighlight %}
+```
 
 Total IOPS: 183000, range: 19-200µs. Mix (times 8):
 
-{% highlight console %}
+```console
    read: IOPS=6960, BW=109MiB/s (114MB/s)(31.9GiB/300001msec)
     clat percentiles (usec):
      |  1.00th=[   97],  5.00th=[  103], 10.00th=[  104], 20.00th=[  108],
@@ -330,7 +330,7 @@ Total IOPS: 183000, range: 19-200µs. Mix (times 8):
      | 70.00th=[   22], 80.00th=[   23], 90.00th=[   27], 95.00th=[   30],
      | 99.00th=[   60], 99.50th=[   70], 99.90th=[   95], 99.95th=[  113],
      | 99.99th=[  202]
-{% endhighlight %}
+```
 
 Total IOPS: 70010, range: 19-100µs for writes, and 100-200µs for reads. So we do get a large number of IOPS, but not in the first scenario.
 
@@ -344,7 +344,7 @@ As we can see by going 8-way parallel (for pure writes) or 16 way parallel (8 re
 
 And indeed, a sequential read test with 128 readers in parallel yields (times 128):
 
-{% highlight console %}
+```console
    read: IOPS=5289, BW=82.7MiB/s (86.7MB/s)(24.2GiB/300001msec)
     clat percentiles (usec):
      |  1.00th=[  118],  5.00th=[  126], 10.00th=[  133], 20.00th=[  141],
@@ -352,7 +352,7 @@ And indeed, a sequential read test with 128 readers in parallel yields (times 12
      | 70.00th=[  192], 80.00th=[  215], 90.00th=[  247], 95.00th=[  281],
      | 99.00th=[  367], 99.50th=[  412], 99.90th=[  523], 99.95th=[  586],
      | 99.99th=[ 1090]
-{% endhighlight %}
+```
 
 These are not bad numbers at all: 648223 IOPS in total, at 100-400µs, and even above the 99.50th relatively stable times. The total aggregated bandwidth is 9.9GB/s (80 Gbit/s) with very little jitter (so we are not even maxing this out, we are not even at 1/3 the max for PCIe).
 

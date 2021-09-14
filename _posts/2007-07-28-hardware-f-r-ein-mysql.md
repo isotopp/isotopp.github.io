@@ -91,7 +91,7 @@ Dadurch, daß alle Änderungen so erst einmal im Redo-Log landen, werden Schreib
 
 Wir können Locality abschätzen, indem wir die Größe des Redo-Logs mit der Menge der Pages vergleichen, die dirty sind. In _SHOW ENGINE INNODB STATUS\G_ finden wir: 
 
-{% highlight console %}
+```console
 ---
 LOG
 ---
@@ -104,7 +104,7 @@ BUFFER POOL AND MEMORY
 ----------------------
 ...
 Modified db pages  278
-{% endhighlight %}
+```
 
 Unser Redo-Log hat also bisher Null (0) Umdrehungen gemacht, und der Schreibzeiger steht bei Offset 1994670731, während der hintere Lesezeiger bei Offset 1993477319 steht. Es sind also 1994670731-1993477319 = 1193412 (ca. 1.1M) Redo Log belegt. Dem stehen 278 16K große Seiten (ca. 4.4M) gegenüber, die als Dirty markiert sind. Wenn es uns gelingt, durch Umstrukturierung dieses Verhältnis zu verbessern, also die Anzahl der Seiten, die als Dirty markiert werden zu verkleinern, dann bekommen wir weniger Random-I/O und eine bessere Schreibleistung.
 

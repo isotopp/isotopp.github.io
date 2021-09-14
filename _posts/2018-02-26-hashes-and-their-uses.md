@@ -122,7 +122,7 @@ A naive hash function for strings would for example sum up the byte
 values of the letters of a string, modulo the array size, to place an
 entry in an array. 
 
-{% highlight python %}
+```python
   str = "a text can be very long" 
   sum = 0 
   for i in str: 
@@ -130,7 +130,7 @@ entry in an array.
     print sum, sum%10
 
 2101 1
-{% endhighlight %}
+```
 
 ### Breaking dictionaries
 
@@ -144,7 +144,7 @@ it's easy to create strings that all hash to 0:
 - and that means, any "2" added to the string is neutral (does not change the outcome of the hash result).
 - So "2", "22" and any other sequence of 2's hashes to position 0.
 
-{% highlight python %}
+```python
   str = ["2", "22", "222", "2222"] 
   for s in str: 
     sum = 0
@@ -157,7 +157,7 @@ String 2 has the hash 0
 String 22 has the hash 0
 String 222 has the hash 0
 String 2222 has the hash 0
-{% endhighlight %}
+```
 
 And that is because the ord("2"), the number 50, is an even multiple
 of the array size, 10. So we probably want a prime array size to

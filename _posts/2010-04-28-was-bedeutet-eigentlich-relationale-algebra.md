@@ -123,7 +123,7 @@ Die Elemente unserer Algebra sollen Tabellen sein, also Mengen von Tupeln: {
 (1, 2, 3), (3, 4, 5), ("keks", "cookie", "kex")} zum Beispiel. Auf dieser
 Menge definieren wir nun einen Haufen Operationen. Fünf, um genau zu sein.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table a ( 
 ->  aid integer unsigned not null
 ->) engine = innodb;
@@ -141,7 +141,7 @@ Query OK, 0 rows affected (0.05 sec)
 root@localhost [kris]> insert into b (bid) values (1), (2);
 Query OK, 2 rows affected (0.00 sec)
 Records: 2  Duplicates: 0  Warnings: 0
-{% endhighlight %}
+```
 
 
 ![](/uploads/selektion_projektion.png)
@@ -153,7 +153,7 @@ Die erste Operation ist die **Selektion**. Aus allen Zeilen einer Tabelle
 wählt die Selektion genau die Tupel aus, für die die angegebene Bedingung,
 das angegebene Prädikat, wahr ist.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select aid from a where aid >= 2;
 +-----+
 | aid |
@@ -162,7 +162,7 @@ root@localhost [kris]> select aid from a where aid >= 2;
 |   3 |
 +-----+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Wir haben eine Relation: Die Ergebnismenge ist eine Teilmenge der
@@ -176,7 +176,7 @@ spaltenname ...") oder das Ergebnis einer komplizierteren Funktion sein, die
 ein oder mehr Stellen aus dem alten Tupel als Eingabeparameter nimmt
 ("select a+b ...").
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select aid, aid*1.19  from a;
 +-----+----------+
 | aid | aid*1.19 |
@@ -186,7 +186,7 @@ root@localhost [kris]> select aid, aid*1.19  from a;
 |   3 |     3.57 |
 +-----+----------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 ![](/uploads/a_join_b.png)
 
@@ -196,7 +196,7 @@ Die dritte Operation ist der **Join** oder das **Kreuzprodukt**. Es
 verknüpft zwei Tabellen so, daß jede Zeile aus der ersten Tabelle mit jeder
 Zeile aus der zweiten Tabelle kombiniert wird.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select aid, bid from a, b;
 +-----+-----+
 | aid | bid |
@@ -209,7 +209,7 @@ root@localhost [kris]> select aid, bid from a, b;
 |   3 |   2 |
 +-----+-----+
 6 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Zusammen mit der Selektion kann man so Tabellen sinnvoll miteinander
 verknüpfen (`select * from c, d where c.cid = d.cid`), und mit ein wenig
@@ -228,7 +228,7 @@ Tabellen und Spalten umbenennen. Die Rename-Operation erscheint sinnlos, ist
 aber zwingend notwendig, damit man selbstreferentielle Strukturen wie Bäume
 und Hierarchien abbilden kann.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table emp (
 ->   empid integer unsigned not null, 
 ->   bossid integer unsigned null
@@ -262,7 +262,7 @@ root@localhost [kris]> select
 |           6 |  hat den Boss  |    2 |
 +-------------+----------------+------+
 5 rows in set (0.34 sec)
-{% endhighlight %}
+```
 
 ![](/uploads/group_by.png)
 
@@ -274,7 +274,7 @@ Vergleichen nur eine Stelle, etwa die erste, um das Ergebnis in Gruppen
 einzuteilen. Nehmen wir zum Beispiel noch einmal unsere Mitarbeiterliste mit
 Bossen und Mitarbeitern:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select bossid, empid from emp;
 +--------+-------+
 | bossid | empid |
@@ -287,14 +287,14 @@ root@localhost [kris]> select bossid, empid from emp;
 |      2 |     6 |
 +--------+-------+
 6 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Hier haben wir einen Haufen 2-Tupel. Betrachten wir nur die erste Spalte,
 dann haben wir eine Gruppe von Mitarbeitern, die dem Boss 1 unterstellt
 sind, und eine Gruppe von Mitarbeitern, die dem Boss 2 unterstellt sind. In
 SQL:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select 
 ->    emp.bossid,
 ->    count(*), 
@@ -311,7 +311,7 @@ root@localhost [kris]> select
 |      2 |        3 | 4,5,6       |
 +--------+----------+-------------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 GROUP BY macht genau diese Aggregation - das Einteilen in Gruppen. In einer
@@ -338,7 +338,7 @@ zurück liefern.
 
 Ein einfaches Beispiel: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select sum(bid) from b;
 +----------+
 | sum(bid) |
@@ -358,7 +358,7 @@ root@localhost [kris]> select aid, (
 |   3 |    3 |
 +-----+------+
 3 rows in set (0.03 sec)
-{% endhighlight %}
+```
 
 Hier ist als Teil der SELECT-Clause statt einer Konstanten oder eines
 Spaltennamen ein skalares SELECT eingesetzt worden. Die Spalte bsum ist das
@@ -369,7 +369,7 @@ Diese Query zum Beispiel listet zu jedem Schema auf, wie viele Zeilen die
 größte Tabelle in diesem Schema hat:
 
 
-{% highlight sql %}
+```sql
 root@localhost [test_world]> select 
 ->    table_schema, 
 ->    max(table_rows)
@@ -389,13 +389,13 @@ root@localhost [test_world]> select
 | test_world         |            4079 |
 +--------------------+-----------------+
 7 rows in set (3.92 sec)
-{% endhighlight %}
+```
 
 
 Wenn wir nun den Namen der Tabelle ermitteln wollen, die in diesem Schema
 die meisten Zeilen hat, dann geht das unter anderem so:
 
-{% highlight sql %}
+```sql
 root@localhost [test_world]> create table tables as 
 -> select * from information_schema.tables;
 Query OK, 93 rows affected (1.12 sec)
@@ -423,7 +423,7 @@ root@localhost [test_world]> select
 | test_world      | City           |    4079 |
 +-----------------+----------------+---------+
 8 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 In einem ersten Schritt machen wir hier einen Snapshot von
 information_schema.tables. Das ist nicht nur schneller, sondern es bewirkt
@@ -442,7 +442,7 @@ dieses Problem 'Finde das gruppenweise Maximum' zu lösen -
 Auch in einer WHERE-Clause können wir eine Subquery einbauen. Gemäß dem
 Beispiel von Jan:
 
-{% highlight sql %}
+```sql
 root@localhost [test_world]> select 
 ->    t.table_schema, 
 ->    t.table_name, 
@@ -468,7 +468,7 @@ root@localhost [test_world]> select
 | test_world      | City           |       4079 |
 +-----------------+----------------+------------+
 7 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 
 Das liest sich als: Liste mir alle Tabellen mit ihrer Größe, bei denen die
@@ -485,7 +485,7 @@ von SQL das Weiterrechnen mit den Ergebnissen erlaubt.
 Tabellen sind Mengen von Tupeln, und Tupel sind ein Datentyp in SQL, mit dem
 man arbeiten kann. Mit der Tabelle
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from t;
 +------+-------+------+
 | a    | b     | c    |
@@ -496,11 +496,11 @@ root@localhost [kris]> select * from t;
 | 1    | eins  | one  |
 +------+-------+------+
 4 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 läßt sich die einfache Anfrage 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select a,b,c from t where a = 'eins' and b = 'one';
 +------+------+------+
 | a    | b    | c    |
@@ -508,11 +508,11 @@ root@localhost [kris]> select a,b,c from t where a = 'eins' and b = 'one';
 | eins | one  | 1    |
 +------+------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 auch so schreiben: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select a,b,c from t where (a,b) = ('eins','one');
 +------+------+------+
 | a    | b    | c    |
@@ -520,11 +520,11 @@ root@localhost [kris]> select a,b,c from t where (a,b) = ('eins','one');
 | eins | one  | 1    |
 +------+------+------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 Erweitert kann man auch nach mehr als einem Wert fragen: 
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from t where (a,b) in (('eins','one'), ('zwei', 'two'));
 +------+------+------+
 | a    | b    | c    |
@@ -533,10 +533,10 @@ root@localhost [kris]> select * from t where (a,b) in (('eins','one'), ('zwei', 
 | zwei | two  | 2    |
 +------+------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Manchmal will man nach einem Wert in irgendeiner Spalte suchen: 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select a,b,c from t 
 -> where 'eins' in (a,b,c);
 +------+------+------+
@@ -546,13 +546,13 @@ root@localhost [kris]> select a,b,c from t
 | 1    | eins | one  |
 +------+------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 ist "Finde mir alle Zeilen, in denen in einer Spalte der Wert 'eins'
 vorkommt.". Auch das geht mit Tupeln. In diesem Fall will ich, daß 'eins'
 und 'one' in benachbarten Spalten vorkommen:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select a,b,c from t 
 -> where ('eins','one') in ((a,b),(b,c));
 +------+------+------+
@@ -562,7 +562,7 @@ root@localhost [kris]> select a,b,c from t
 | 1    | eins | one  |
 +------+------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Leider ist MySQL nicht ganz konsequent mit der Umsetzung von Tupeln als
 Datentyp: Man kann den Aufruf einer Stored Procedure ('CALL blah()') nicht

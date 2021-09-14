@@ -26,9 +26,9 @@ theclaw> Hmm. Hab da was nicht verstanden bei der Erklärung. Und zwar: Was sind
 Isotopp> Die Blockadressen von Datenblöcken einer Datei.
 
 theclaw> Ich paste mal was
-{% highlight console %}
+```console
 (0-11):9711-9722, (IND):9723, (12-267):9724-9979, (DIND):9980, (IND):9981, (268-523):9982-10237, (IND):10238, (524-779):10239-10494, (IND):10495, (780-1035):10496-10751, (IND):10752, (1036-1291):10753-11008, (IND):11009, (1292-1547):11010-11265, (IND):11266, (1548-1795):11267-11514
-{% endhighlight %}
+```
 
 Isotopp> Habs im 
 [Originalartikel](({% link _posts/2006-05-08-fragmentierung-f-r-jannik.md %})).
@@ -161,23 +161,23 @@ Isotopp> 8192 bei 1 kb blockgroesse, 32768 bei 4kb
 theclaw> Wie gross ist eine Inode nochmal?
 
 Isotopp> 128 bytes.
-{% highlight c %}
+```c
 #include <linux/ext2_fs.h>
 #include <stdio.h>
 main() {
   struct ext2_inode s;
   printf("%d\n", sizeof(s));
 }
-{% endhighlight %}
+```
 
 und
 
-{% highlight console %}
+```console
 kris@linux:~> make probe
 make: "probe" ist bereits aktualisiert.
 kris@linux:~> ./probe
 128
-{% endhighlight %}
+```
 
 theclaw> Also pro BG ist allein 1MB bzw 4MB an Inodes reserviert?
 
@@ -186,10 +186,10 @@ Isotopp> Ja. Eine bg ist 8 MB oder 128 MB gross.  Schau, hast du ein ext2 da?
 theclaw> ja
 
 Isotopp> Dann mach mal ein `debugfs /dev/...` da drauf. Ist read only, macht also nix kaputt. Dann mach mal `show_super_stats`.
-{% highlight console %}
+```console
 Inodes per group:         2008
 Inode count:              26104
-{% endhighlight %}
+```
 
 für ein `/dev/sda5     ext2     99M  6.7M   87M   8% /boot`
 und `26104*128/1024 = 3263`, also 3263 KB oder 3.2M für alle Inodes.
@@ -236,14 +236,14 @@ theclaw> TOTAL: 1804 und Blockcount: 3608, huh? Warum \*2?
 Isotopp> Hmm, da rechnet jemand mit 512 Byte Hardwaresektoren, warum auch immer.
 
 Isotopp> 
-{% highlight console %}
+```console
 linux:~ # ls -lsi /boot/vmlinuz-2.6.13-15-default
  28 1513 -rw-r--r--  1 root root 1541719 Sep 13  2005 /boot/vmlinuz-2.6.13-15-default
-{% endhighlight %}
+```
 
 Isotopp> Inode 28, 1513 Blöcke auf der Platte, Dateilaenge 15411719 Bytes. Rechnerisch ist  `1541719/1024 = 1505.5849`. 7 Blöcke Verwaltungsoverhead. Und zwar
 
-{% highlight console %}
+```console
 (0-11):11515-11526, 
 (IND):11527, (12-267):11528-11783, 
 (DIND):11784, (IND):11785, (268-523):11786-12041, 
@@ -252,7 +252,7 @@ Isotopp> Inode 28, 1513 Blöcke auf der Platte, Dateilaenge 15411719 Bytes. Rech
               (IND):12556, (1036-1291):12557-12812, 
               (IND):12813, (1292-1505):12814-13027
 TOTAL: 1513
-{% endhighlight %}
+```
 
 Isotopp> (IND):11527, (DIND):11784, (IND):11785, (IND):12299, (IND):12556, (IND):12813 <- das sind 6.
 
@@ -268,19 +268,19 @@ Isotopp> Nein, aber die DIND und IND Blocks. Für die Blöcke 12-267 wird ja ein
 theclaw> Du erklaerst so schnell.
 
 Isotopp> 
-{% highlight console %}
+```console
 linux:/boot # dd if=/dev/zero of=kris bs=1k count=12
 linux:/boot # ls -ls kris
 12 -rw-r--r--  1 root root 12288 Dec 26 16:58 kris
-{% endhighlight %}
+```
 
 12 Blöcke, 12288 Bytes Länge. Und nun:
 
-{% highlight console %}
+```console
 linux:/boot # dd if=/dev/zero of=kris bs=1k count=13
 linux:/boot # ls -ls kris
 14 -rw-r--r--  1 root root 13312 Dec 26 16:58 kris
-{% endhighlight %}
+```
 
 Ein 1k länger, 14 Blocks statt 12.
 
@@ -288,7 +288,7 @@ theclaw> Wie findet man die Groessen der BGs eines dateisystems heraus?
 
 Isotopp> Lies `show_super_stats` von `debugfs`.
 
-{% highlight console %}
+```console
 linux:/boot # export DEBUGFS_PAGER=cat
 linux:/boot # debugfs /dev/sda5
 debugfs 1.38 (30-Jun-2005)
@@ -299,7 +299,7 @@ Block size:               1024
 Blocks per group:         8192
 Inodes per group:         2008
 Inode blocks per group:   251
-{% endhighlight %}
+```
 
 Isotopp> Wird einiges klarer?
 
@@ -375,24 +375,24 @@ Also speichert man die Wertetabelle für die Blöcke 12-267 nicht in der Inode, 
 theclaw> Ich habs soweit gecheckt.
 
 Isotopp> Das kann man beweisen.
-{% highlight console %}
+```console
 linux:/boot # dd if=/dev/zero of=kris bs=1k count=12
-{% endhighlight %}
+```
 
 12 blocks a 1 KB (ich hab ja ein ext2 mit 1 KB blocks).
 
-{% highlight console %}
+```console
 linux:/boot # ls -ls kris
 12** -rw-r--r--  1 root root 12288 Dec 26 17:30 kris
-{% endhighlight %}
+```
 
 12288 bytes lang 12 blocks belegt. Nun mal 13 KB.
 
-{% highlight console %}
+```console
 linux:/boot # dd if=/dev/zero of=kris bs=1k count=13
 linux:/boot # ls -ls kris
 14 -rw-r--r--  1 root root 13312 Dec 26 17:30 kris
-{% endhighlight %}
+```
 
 13312 bytes, aber 14 blocks! Da ist er, der IND.
 
@@ -400,11 +400,11 @@ theclaw> *selbstausprobier* Ist das die Anzahl der Blöcke für das Inode inklus
 
 Isotopp> Das ist die Anzahl der Blöcke OHNE die inode selber (Die belegt 128 byte in der Inodetable), also Daten + IND + DIND + TIND. Kann man auch beweisen.
 
-{% highlight console %}
+```console
 linux:/boot # dd if=/dev/zero of=kris bs=1k count=0
 linux:/boot # ls -ls kris
 0 -rw-r--r--  1 root root 0 Dec 26 17:33 kris
-{% endhighlight %}
+```
 
 Isotopp> File mit 0 Byte belegt 0 Blocks, Inode wird also nicht gezählt.
 
@@ -577,10 +577,10 @@ Isotopp> Naja, statt eines Array mit 2 Gigaentries (Kernelbug!) hast du ein Arra
 theclaw> Aber "falten"? 
 
 Isotopp> So in etwa:
-{% highlight console %}
+```console
    ___
 ___\ /___
-{% endhighlight %}
+```
 
  theclaw> Was stellt das dar?
 

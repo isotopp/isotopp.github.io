@@ -17,9 +17,9 @@ It's not properly updated for current versions of MacOS, but it is still
 useful. "git clone https://github.com/synack/knockknock" and
 "/usr/bin/python knockknock.py" is sufficient to test. 
 
-{% highlight console %}
+```console
 TOTAL ITEMS FOUND: 44
-{% endhighlight %}
+```
 
 That's quite a bit. Apparently, I am starting
 

@@ -69,10 +69,10 @@ Basically it dumps data from the operating system and the
 various MySQL tables into the directory `/var/log/mysql_pl`, where
 we have a weekly ring-buffer like directory structure:
 
-{% highlight console %}
+```console
 [somehierarchy-02 /var/log/mysql_pl]$ ls -F
 Fri/  Mon/  README  Sat/  Sun/  Thu/  Tue/  Wed/
-{% endhighlight %}
+```
 
 When a box crashes or misbehaves, as long as you have access to
 this subtree, you can go there and inspect the files to see what
@@ -80,7 +80,7 @@ the box did just before it crashed. So we go into `Mon`
 subdirectory for Monday, and look into some files, for example
 the 10:20 recordings:
 
-{% highlight console %}
+```console
 [somehierarchy-02 ~]# cd /var/log/mysql_pl/Mon
 [somehierzrchy-02 Mon]# ls -l 10_20*
 -rw-r--r-- 1 root root 19144 Nov 18 10:20 10_20.innodb.xz
@@ -88,7 +88,7 @@ the 10:20 recordings:
 -rw-r--r-- 1 root root 18368 Nov 18 10:20 10_20.xz
 [somehierarchy-02 Mon]# ls -l 10_21.sys*
 -rw-r--r-- 1 root root 14590 Nov 18 10:21 10_21.sys.gz
-{% endhighlight %}
+```
 
 In the 10_20.xz we find the MySQL processlist and a few other
 things, in the 10_20.unix file.xz we find the UNIX processlist,
@@ -97,17 +97,17 @@ file there are various InnoDB related table dumps from this
 point in time. There is also a dump of the entire sys set of
 views every 15 minutes, so 10_21.sys.gz has that.
 
-{% highlight console %}
+```console
 [somehierarchy-02 /var/log/mysql_pl]# head -3 /tmp/x
 Id	User	Host	db	Command	Time	State	Info
 33	system user		NULL	Connect	1	Waiting for dependent transaction to commit	NULL
 34	system user		NULL	Connect	1	System lock	INSERT INTO ...
-{% endhighlight %}
+```
 
 Checking the processlist shows many sleeping connections. We
 filter these and immediately hit paydirt:
 
-{% highlight console %}
+```console
 [somehierarchy-02 tmp]# awk -F"\t" '$5 != "Sleep" { print $5, $6 }' x | wc -l
 27
 [somehierarchy-02 tmp]# awk -F"\t" '$5 != "Sleep" { print $5, $6 }' x
@@ -138,7 +138,7 @@ Query 0
 Query 0
 Query 0
 Query 0
-{% endhighlight %}
+```
 
 The "Connect" only means that these are replication threads.
 Running Queries have "Query" and here the number is the seconds
@@ -146,7 +146,7 @@ of runtime for this query. There are apparently a number of
 queries with a large runtime: 33242 seconds are 9.25 hours -
 they are running since 1 am.
 
-{% highlight console %}
+```console
 [somehierarchy-02 tmp]# awk -F"\t" '($5 == "Query" ) && ($6 > 10000) { printf "%s %s %s %s\n", $2, $3, $6, $7 }' x
 hadoopuser hadoop-07:62112 33242 Sending data
 hadoopuser hadoop-07:62126 33242 Sending data
@@ -154,16 +154,16 @@ hadoopuser hadoop-07:62128 33241 Sending data
 cronuser cronbox-14:34017 24514 Creating sort index
 cronuser cronbox-06:45661 20613 Creating sort index
 cronuser cronbox-14:55920 14924 Creating sort index
-{% endhighlight %}
+```
 
 At around 1:00am the `hadoopuser` connected from hadoop-07 to
 somehierarchy-02 and started a number of queries:
 
-{% highlight console %}
+```console
 SELECT ...
 FROM MessageLog
 WHERE ( `hotelnumber` >= 986116 ) AND ( `hotelnumber` < 1181338 )
-{% endhighlight %}
+```
 
 and similar. They read around 70M rows from MessageLog
 each, a table that itself has 540M rows. That takes time.

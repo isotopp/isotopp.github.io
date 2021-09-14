@@ -11,9 +11,9 @@ tags:
 ---
 We observe a large number of messages of the kind
 
-{% highlight console %}
+```console
 The table '../tmp/#sql…' is full
-{% endhighlight %}
+```
 
 # Before MySQL 8
 
@@ -48,9 +48,9 @@ All pages in the buffer pool need to be backed by files, so that they can be wri
 
 At work, we configure this on our systems with a hard upper limit:
 
-{% highlight console %}
+```console
 innodb_temp_data_file_path=ibtmp1:12M:autoextend:max:100G
-{% endhighlight %}
+```
 
 This means you get a file, `ibtmp1`, in the data directory of MySQL with an initial size of 12 MB. This file is autoextended in increments up to a maximum size of 100 GB - in the default configuration it is not limited.
 

@@ -40,7 +40,7 @@ Versucht mal als Kunde eines solchen ISP zum Beispiel einen SMTP Server bei
 einem freien Webmailer zu erreichen, sieht man stattdessen das SMTP Banner
 des ISP.
 
-{% highlight console %}
+```console
 $ telnet smtp.web.de 25
 Trying 217.72.192.157...
 Connected to smtp.web.de.
@@ -48,13 +48,13 @@ Escape character is '^]'.
 220 smtp.onebb.com ESMTP Sendmail 8.12.11/8.12.11; Fri, 29 Oct 2004 15:40:30 +0800
 quit
 221 2.0.0 smtp.onebb.com closing connection
-{% endhighlight %}
+```
 
 In diesem Fall kann es nützlich sein, statt Port 25 den Port 587 zum
 Mailversand zu verwenden, in der Hoffnung, daß der ISP diesen Port noch
 nicht mit seinem Proxy gedeckelt hat.
 
-{% highlight console %}
+```console
 $ telnet smtp.web.de 587
 Trying 217.72.192.157...
 Connected to smtp.web.de.
@@ -63,4 +63,4 @@ Escape character is '^]'.
 quit
 221 smtp08.web.de closing connection
 Connection closed by foreign host.
-{% endhighlight %}
+```

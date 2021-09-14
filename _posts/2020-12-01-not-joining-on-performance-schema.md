@@ -45,11 +45,11 @@ There are multiple ways to do this.
 
 It used to be that the MySQL optimizer did not resolve simple subqueries properly. So
 
-{% highlight sql %}
+```sql
 mysql> select <complicated stuff> from
     ->   ( select * from performance_schema.sometable ) as t
     -> order by <something>
-{% endhighlight %}
+```
 
 used to work. The subquery `t` would materialize the `P_S` table as whatever your version of MYSQL used for implicit temporary tables, and the rest of the query resolution would happen on the materialized temptable. This is a snapshot, and would be stable.
 
@@ -57,7 +57,7 @@ And it still would not add up to 100%, of course. That is, queries like Dennis K
 
 Anyway, with older versions of MySQL, this results in the query plan we want. Starting with MySQL 5.7, this does no longer work, because the optimizer became too smart. :-)
 
-{% highlight sql %}mysql> select version();
+```sqlmysql> select version();
 +-----------+
 | version() |
 +-----------+
@@ -72,13 +72,13 @@ mysql> explain select * from ( select * from processlist ) as t;
 |  1 | SIMPLE      | processlist | NULL       | ALL  | NULL          | NULL | NULL    | NULL |  256 |   100.00 | NULL  |
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
 1 row in set, 1 warning (0.00 sec)
-{% endhighlight %}
+```
 
 Newer MySQL (5.7 and above) will apply the `derived_merge` optimization and fold the subquery into the outer query, resulting in a rewritten single query that again is executed on `P_S` directly. This is extremely useful, but in this one particular case precisely not what we want.
 
 You either need to `SET SESSION optimizer_switch = "derived_merge=off";` or provide an advanced [MySQL 8 optimizer hint](https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level) to prevent the optimizer from ruining your cunning plan:
 
-{% highlight sql %}
+```sql
 mysql> explain select /*+ NO_MERGE(t) */ * from ( select * from processlist ) as t;
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
 | id | select_type | table       | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra |
@@ -86,7 +86,7 @@ mysql> explain select /*+ NO_MERGE(t) */ * from ( select * from processlist ) as
 |  1 | PRIMARY     | <derived2>  | NULL       | ALL  | NULL          | NULL | NULL    | NULL |  256 |   100.00 | NULL  |
 |  2 | DERIVED     | processlist | NULL       | ALL  | NULL          | NULL | NULL    | NULL |  256 |   100.00 | NULL  |
 +----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
-{% endhighlight %}
+```
 
 Here we get the `DERIVED` table as a non-`P_S` temptable, and then run our "advanced" SQL on that as `PRIMARY` on it.
 
@@ -106,7 +106,7 @@ At work, see this in our own code (still using a deprecated Diamond collector) a
 
 SolarWinds kindly highlights itself:
 
-{% highlight sql %}
+```sql
 -- Most time consuming query - Coming from solar winds monitoring itself ¯\_(ツ)_/¯
 select `ifnull` (`s`.`sql_text` , ?) , `ifnull` (`t`.`processlist_user` , ?) , `ifnull` (`t`.`processlist_host` , ?) 
   from `performance_schema`.`events_statements_history` `s` 
@@ -131,7 +131,7 @@ select `t`.`processlist_user` , `sbt`.`variable_value` , count (*)
   where `sbt`.`variable_name`=? 
     and `t`.`processlist_user` is not null
 group by `t`.`processlist_user` , `variable_value`
-{% endhighlight %}
+```
 
 
 Many of the above examples fail in multiple ways: Using JOIN for bad scalability (this is how we spotted them), at least before MySQL 8 (and you probably want your monitoring to work anywhere). Some are also using unstable sorting.

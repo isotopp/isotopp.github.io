@@ -104,19 +104,19 @@ Nun sollte einmal das Denken einsetzen. Ich erzeuge also eine Datei mit den
 Inhalt "Hallo, Welt!".
 
 Wenn **ich** diese Datei mit meinem Key verschlüssele, dann sieht die Datei so aus: 
-{% highlight console %}
+```console
 KK:~ kris$ openssl enc -e -k g33k -aes-128-cbc -base64 -in /dev/stdin
 Hello, World!
 U2FsdGVkX19isizbD981L7EOV+1Ou8O4xhBMQqDo3nw=
-{% endhighlight %}
+```
 
 
 Wenn **Du** das machst, dann ist der Inhalt der Datei offensichtlich anders: 
-{% highlight console %}
+```console
 KK:~ kris$ openssl enc -e -k s3cr3t -aes-128-cbc -base64 -in /dev/stdin
 Hello, World!
 U2FsdGVkX18Fqrwp51fq8Y23MBas01+z4gJBdFs+vWE=
-{% endhighlight %}
+```
 
 Beide Dateien haben offensichtlich unterschiedliche Prüfsummen, wenn man
 verschlüsselten Content betrachtet. Die Prüfsumme muß also über den

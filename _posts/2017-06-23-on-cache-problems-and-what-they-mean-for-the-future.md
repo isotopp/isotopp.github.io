@@ -22,19 +22,19 @@ at its IOPS limit. At 18:10, the write-back cache and the "intelligent
 read-ahead" are being disabled, that is, the MegaRAID is being force-dumbed
 down to a regular non-smart controller. The effect is stunning. 
 
-{% highlight console %}
+```console
 /opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp NORA -l0 -aALL
 /opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp WT -l0 -aALL 
-{% endhighlight %}
+```
 
 and also, on top of that, 
-{% highlight console %} 
+```console 
 #Direct IO instead of cached 
 /opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp DIRECT -l0 -aALL 
 
 #Force SSD disk write cache (our SSD has super-capacitors, so it safe to enable)
 /opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp -EnDskCache -l0 -aALL 
-{% endhighlight %} 
+``` 
 
 What we observe here is part of an ongoing pattern, and we
 will see more of it, and at more layers of the persistence-stack in our

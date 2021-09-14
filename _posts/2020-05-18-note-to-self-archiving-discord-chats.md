@@ -21,7 +21,7 @@ I needed
 
 and then did a small starter script:
 
-{% highlight bash %}
+```bash
 ~/discord $ cat starter.sh
 #! /bin/bash --
 
@@ -34,7 +34,7 @@ docker run --rm \
   tyrrrz/discordchatexporter:stable export \
       --channel $(cat discord-channel-token.txt) 
       --token $(cat discord-user-token.txt)
-{% endhighlight %}
+```
 
 The [Wiki](https://github.com/Tyrrrz/DiscordChatExporter/wiki) has detailed instructions for [obtaining the tokens](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Obtaining-Token-and-Channel-IDs) and [running the Docker version](https://github.com/Tyrrrz/DiscordChatExporter/wiki/Docker-usage-instructions).
 

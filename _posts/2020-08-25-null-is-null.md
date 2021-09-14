@@ -16,7 +16,7 @@ feature-img: assets/img/background/mysql.jpg
 
 > This is a rewrite of [the same in German from 9 years ago]({% link _posts/2011-11-04-null-is-null.md %}).
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> create table t ( a integer, b integer, unique (a,b));
 Query OK, 0 rows affected (0.09 sec)
 
@@ -25,11 +25,11 @@ Query OK, 1 row affected (0.01 sec)
 
 root@localhost [kris]> insert into t values (1, 2);
 ERROR 1062 (23000): Duplicate entry '1-2' for key 't.a'
-{% endhighlight %}
+```
 
 This does not work, as expected. But this does:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> truncate table t;
 Query OK, 0 rows affected (0.16 sec)
 
@@ -47,7 +47,7 @@ root@localhost [kris]> select * from t;
 |    1 | NULL |
 +------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 Why is that?
 
@@ -69,7 +69,7 @@ Let’s have a look.
 
 In `count()`, a NULL value does not count. Except when it does. The one case where it does is the `count(*)`, which is different from a `count(colname)`.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from t;
 +------+------+
 | a    | b    |
@@ -88,7 +88,7 @@ root@localhost [kris]> select count(*) as count_star, count(b) as count_b, count
 |          4 |       2 |         4 |
 +------------+---------+-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 We have a table with four rows. We can `count(*)`, and the result is 4. We can also `count(a)`, and that is still 4. When we `count(b)`, that’s 2.
 
@@ -100,7 +100,7 @@ That’s a lot easier to read than a set of nested `IFNULL()`. You almost never 
 
 In comparisons, NULL behaves like this:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select 0=0, 1=1, 0=1, NULL=0, NULL=1, NULL=NULL;
 +-----+-----+-----+--------+--------+-----------+
 | 0=0 | 1=1 | 0=1 | NULL=0 | NULL=1 | NULL=NULL |
@@ -108,7 +108,7 @@ root@localhost [kris]> select 0=0, 1=1, 0=1, NULL=0, NULL=1, NULL=NULL;
 |   1 |   1 |   0 |   NULL |   NULL |      NULL |
 +-----+-----+-----+--------+--------+-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 “But I know that!” Yes, but are you aware of the consequences?
 
@@ -116,7 +116,7 @@ There are three outcomes of a comparison involving NULL values. Not two.
 
 Watch this:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from t;
 +------+------+
 | a    | b    |
@@ -153,13 +153,13 @@ root@localhost [kris]> select * from t where b=2
 |    4 | NULL |
 +------+------+
 4 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 The UNION ALL of a predicate and the negated predicate does not yield the full table in the presence of NULL values.
 
 “Hey, `IS NULL`?” Yes, see the logic table above. Anything equals NULL is always NULL, which is not true. So we need a special comparison operator, `IS NULL` (and `IS NOT NULL`).
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from t where b = NULL;
 Empty set (0.00 sec)
 
@@ -171,7 +171,7 @@ root@localhost [kris]> select * from t where b IS NULL;
 |    4 | NULL |
 +------+------+
 2 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 You can now pause this article and grep your SQL for “= NULL”. I will wait for you to return.
 
@@ -179,7 +179,7 @@ This particular case is also why the UNIQUE INDEX from above can have multiple N
 
 That NULL outcome is not limited to equality. Any comparison of anything to NULL is NULL, which is a third value that is not True nor False.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select NULL=NULL, NULL<>NULL, 1=NULL, 1<>NULL, 0=NULL, 0<>NULL;
 +-----------+------------+--------+---------+--------+---------+
 | NULL=NULL | NULL<>NULL | 1=NULL | 1<>NULL | 0=NULL | 0<>NULL |
@@ -187,20 +187,20 @@ root@localhost [kris]> select NULL=NULL, NULL<>NULL, 1=NULL, 1<>NULL, 0=NULL, 0<
 |      NULL |       NULL |   NULL |    NULL |   NULL |    NULL |
 +-----------+------------+--------+---------+--------+---------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 ### NULL and Functions
 
 Perl people know `undef` and see
 
-{% highlight perl %}
+```perl
 KK:~ kris$ perl -e '$a = undef; print "keks${a}keks\n";'
 kekskeks
-{% endhighlight %}
+```
 
 To them, SQL says "no cookie":
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select concat('keks', 'keks') as double_cookie, concat('keks',NULL,'keks') as no_cookie;
 +---------------+-----------+
 | double_cookie | no_cookie |
@@ -208,18 +208,18 @@ root@localhost [kris]> select concat('keks', 'keks') as double_cookie, concat('k
 | kekskeks      | NULL      |
 +---------------+-----------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 And the same is true in math:
 
-{% highlight perl %}
+```perl
 KK:~ kris$ perl -e '$a = undef; print 10+$a,"\n";'
 10
-{% endhighlight %}
+```
 
 but SQL does
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select 10+0, 10+NULL;
 +------+---------+
 | 10+0 | 10+NULL |
@@ -227,13 +227,13 @@ root@localhost [kris]> select 10+0, 10+NULL;
 |   10 |    NULL |
 +------+---------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 ### NULL in aggregates
 
 “So NULL is Antimatter that destroys anything it comes into contact with?” Not exactly. We already know that in `count(colname)` it is skipped. That is also true in other aggregates (with the special case of `count(*)`).
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select count(b), sum(b), min(b), max(b), group_concat(b) from t;
 +----------+--------+--------+--------+-----------------+
 | count(b) | sum(b) | min(b) | max(b) | group_concat(b) |
@@ -241,13 +241,13 @@ root@localhost [kris]> select count(b), sum(b), min(b), max(b), group_concat(b) 
 |        2 |      5 |      2 |      3 | 2,3             |
 +----------+--------+--------+--------+-----------------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 That is a good thing, because `AVG(b)` is defined as `SUM(b)/COUNT(b)`, `5/2 = 2.5`. Go check it yourself.
 
 And be careful what you count and why:
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select b, count(b), count(*) from t group by b;
 +------+----------+----------+
 | b    | count(b) | count(*) |
@@ -257,7 +257,7 @@ root@localhost [kris]> select b, count(b), count(*) from t group by b;
 |    3 |        1 |        1 |
 +------+----------+----------+
 3 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 “But did you not say NULL values compare differently from each other? Why is there only one NULL pile in this GROUP BY?” I did not say that. I did say that NULL compares to anything as NULL, and it depends on what you do with this third result.
 
@@ -270,7 +270,7 @@ So you now know that you cannot use normal predicates (=, >=, <=, <>) with NULL.
 
 There is also the MySQL specific spaceship operator `<=>`, which normalizes NULL. It’s not standard SQL, be considerate in using it.
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select NULL<=>NULL, NULL<=>0, NULL<=>1, 0<=>0, 1<=>1, 0<=>1;
 +-------------+----------+----------+-------+-------+-------+
 | NULL<=>NULL | NULL<=>0 | NULL<=>1 | 0<=>0 | 1<=>1 | 0<=>1 |
@@ -278,11 +278,11 @@ root@localhost [kris]> select NULL<=>NULL, NULL<=>0, NULL<=>1, 0<=>0, 1<=>1, 0<=
 |           1 |        0 |        0 |     1 |     1 |     0 |
 +-------------+----------+----------+-------+-------+-------+
 1 row in set (0.00 sec)
-{% endhighlight %}
+```
 
 and
 
-{% highlight sql %}
+```sql
 root@localhost [kris]> select * from t;
 +------+------+
 | a    | b    |
@@ -315,7 +315,7 @@ root@localhost [kris]> select * from t as a join t as b on a.b <=> b.b;
 |    1 | NULL |    4 | NULL |
 +------+------+------+------+
 6 rows in set (0.00 sec)
-{% endhighlight %}
+```
 
 ## TL;DR
 
