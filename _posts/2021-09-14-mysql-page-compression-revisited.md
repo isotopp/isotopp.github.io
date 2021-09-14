@@ -25,12 +25,12 @@ The first few block numbers were stored in the inode, followed by a pointer to a
 
 *The block list inside an array is folded multiple times, to optimize for the more common case of small files.*
 
-These structures make up the so called lower filesystem, which deals with organizing blocks into numbered files efficiently.
+These structures make up the so-called lower filesystem, which deals with organizing blocks into numbered files efficiently.
 On top of that resides the upper filesystem, which is concerned with managing names of files, and organizing them into directories.
 In our instance the upper filesystem is of no interest, so we are ignoring it completely:
 To us files are sequences of blocks, organized in inodes.
 
-While the folded block array of the original file system served us for many decades, more modern file systems try to shrink these block lists by storing extents. An extent is a pair (start, length) that describes a  contiguous sequence of blocks. On a mostly empty disk, most files can probably arranged in such runs of contiguous blocks, so this is a more efficient way to store things. Also, free lists can in many cases stored more efficiently stored as extents.
+While the folded block array of the original file system served us for many decades, more modern file systems try to shrink these block lists by storing extents. An extent is a pair (start, length) that describes a  contiguous sequence of blocks. On a mostly empty disk, most files can probably be arranged in such runs of contiguous blocks, so this is a more efficient way to store things. Also, free lists can in many cases stored more efficiently stored as extents.
 
 The XFS filesystem is getting a lot of mileage of such extents, and one major a difference between the Linux ext3 and ext4 is the use of extents instead of block lists and bitmaps in many places.
 
@@ -38,13 +38,14 @@ The XFS filesystem is getting a lot of mileage of such extents, and one major a 
 
 Unix always allowed you to seek past the end of a file and write data.
 The following example program creates a file named `testfile` by opening a new file of length 0, seeking to the position 20 GB and writing an integer at that position.
-The resulting file is 20 GB in length, but only occupies a minicule amount of disk space.
+The resulting file is 20 GB in length, but only occupies a minuscule amount of disk space.
 This is called a *sparse file*, a file with holes in it.
 
 Reading a sparse file, the non-existent blocks are returned as blocks filled with zeroes.
-On writing, space is allocated for the sparse file, but probably not in sequence, so on hard disks, a seek occurs that would probably not have occured had the file actually been written properly.
+On writing, space is allocated for the previously unallocated blocks in the sparse file, but probably not in sequence.
+So on hard disks, a seek occurs that would probably not have occurred, had the file actually been written properly.
 
-```C
+```c
 kris@server:~$ cat sparseme.c
 
 #include <stdio.h>
@@ -58,7 +59,7 @@ int main(void) {
         int something = 0;
         FILE *fp = 0;
 
-		/* trunate to 0, or create, position 0 */
+        /* trunate to 0, or create, position 0 */
         fp = fopen("testfile", "w"); 
         if (!fp) {
                 fprintf(stderr, "Cannot open 'testfile', I die.");
@@ -74,7 +75,7 @@ int main(void) {
 }
 ```
 
-When looking at this on the disk we can see that in fact only 4KB of disk space (one block on a modern disk) has been allocated.
+When looking at this on the disk we can see that in fact only 4 KB of disk space (one block on a modern disk) has been allocated.
 
 ```console
 kris@server:~$ cc -o sparseme sparseme.c
@@ -91,7 +92,7 @@ testfile:
 We compile the C-program with `cc -o sparseme sparseme.c`, then run it as `./sparseme`.
 We look at the resulting `testfile` with `ls -lsh testfile`. The size of the file is shown as 21G, but the allocation (in the leftmost column, we asked for that with the `-s` flag) is only 4K.
 
-Using the XFS maintenance program `xfs_bmap` in verbose mode, we get to see the block map (bmap) of the file, as an extent listing. The program operates with sectors of 512 bytes, the unit that was common for many hard disk before we moved to 4K sectors. We see a large hole from offset 0 to 41943039 (times 512 bytes for sector size, this is 20GB). Then there are 8 sectors (one 4K disk drive hardware block) mapped to 8 contiguous blocks (actually one hardware block) at 104705904 from the start of the partition.
+Using the XFS maintenance program `xfs_bmap` in verbose mode, we get to see the block map (bmap) of the file, as an extent listing. The program operates with sectors of 512 bytes, the unit that was common for many hard disk before we moved to 4K sectors. We see a large hole from offset 0 to 41943039 (times 512 bytes for sector size, this is 20 GB). Then there are 8 sectors (one 4K disk drive hardware block) mapped to 8 contiguous blocks (actually one hardware block) at 104705904 from the start of the partition.
 
 We can do the same thing using a `dd` command without writing a C-program:
 
@@ -124,7 +125,7 @@ The GNU `cp` program has a `--sparse` option that tries to handle this, and `rsy
 
 # Hole Punching
 
-Some filesystems allow you to punch holes into files, using the `[fallocate(2)`](https://lwn.net/Articles/415889/) system call.
+Some filesystems allow you to punch holes into files, using the [`fallocate(2)`](https://lwn.net/Articles/415889/) system call.
 This system call can be used to assign blocks to a file, making sure it is not a sparse file, without actually having to write all those bytes and a few other things.
 Using the filesystem dependent `FALLOC_FL_PUNCH_HOLE` flag, extents in the file can be marked as 'unused' and be given back to the filesystem.
 
@@ -196,7 +197,7 @@ He has a series of blog articles on this:
 and earlier
 
 - [First day with InnoDB transparent page compression](http://smalldatum.blogspot.com/2015/08/first-day-with-innodb-transparent-page.html)
-- [Second day with InnoDB transparent page compression])http://smalldatum.blogspot.com/2015/09/second-day-with-innodb-transparent-page.html)
+- [Second day with InnoDB transparent page compression](http://smalldatum.blogspot.com/2015/09/second-day-with-innodb-transparent-page.html)
 - [Third day with InnoDB transparent page compression](http://smalldatum.blogspot.com/2015/09/third-day-with-innodb-transparent-page.html)
 
 and being Mark, he also has a series of bugs open on this.
@@ -207,7 +208,7 @@ This bug is still open in all production Linux kernels.
 
 This seems to make using Page Compression a risky and expensive thing. Mark's estimate in private communication was approximately "a thing such as RocksDB which never overwrites data has an inherent advantage  over anything that does in-place updates when it comes to compression" (my summary of his words), and I think he's correct.
 
-Seems I accidentally did a few things right when I did never even tried to use compressed tables in InnoDB.
+Seems I accidentally did a few things right when I never even tried to use compressed tables in InnoDB.
 
 # Thanks
 
