@@ -43,7 +43,7 @@ Statements that create things often allow you to specify `IF NOT EXISTS` for con
 Creation of the thing will fail if it already exists.
 Using the `IF NOT EXISTS` clause the creation is conditional, so if the thing already exists this is not an error.
 
-This is important for scripting: If the thing already exists, the script will throw an error and depending on settings will stop
+This is important for scripting: If the thing already exists, the script will throw an error and depending on settings will stop.
 It is even more important in replication, because if you replicate the creation statement to a replica, the replication will stop with an error unless it is conditional.
 
 Some `CREATE` statements replicate, but do not offer conditional syntax.
