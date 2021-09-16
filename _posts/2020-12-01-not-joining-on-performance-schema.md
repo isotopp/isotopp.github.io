@@ -57,7 +57,8 @@ And it still would not add up to 100%, of course. That is, queries like Dennis K
 
 Anyway, with older versions of MySQL, this results in the query plan we want. Starting with MySQL 5.7, this does no longer work, because the optimizer became too smart. :-)
 
-```sqlmysql> select version();
+```sql
+mysql> select version();
 +-----------+
 | version() |
 +-----------+
