@@ -64,7 +64,7 @@ These come in various groups, and are called *consumers*.
 
 ![](/uploads/2021/09/performance_schema_filtering.png)
 
-*Data is collected from objects using instruments. Instruments can be turned on and off/. Their collected data is then filtered by Objects, Actors and Threads, and finally dropped into consumers. Many consumers are aggregates, some collect information specific to one query execution.*
+*Data is collected from objects using instruments. Instruments can be turned on and off. Their collected data is then filtered by Objects, Actors and Threads, and finally dropped into consumers. Many consumers are aggregates, some collect information specific to one query execution.*
 
 For each of these things there is a `setup_...` table that controls how event data is collected by the instrumentation, filtered and the consumed in result tables.
 In parallel, object identities are collected in `..._instances` tables, which are needed to resolve object identities.
@@ -588,5 +588,5 @@ The number of queries on P_S necessary to extract information about a single que
 At least filters exist and are on by default, so that I do not have to hear my monitoring noise in my monitoring.
 That is good.
 
-I could really use a single large JSON blog containing the entire package with performance data for a query, at once - one query to trace one query.
+I could really use a single large JSON blob containing the entire package with performance data for a query, at once - one query to trace one query.
 That is, the information from transaction, statement, stages, waits, the execution plan and the memory consumption for a given transaction or statement, in one go.
