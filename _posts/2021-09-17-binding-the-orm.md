@@ -142,7 +142,7 @@ In my case this information will be
 
 I need to find a hook in the server for a plugin.
 The plugin must run after query execution, but with the execution plan, the query string and the P_S data for the query still present.
-I am not yet familiar with this, and need to check the current server about whay is on offer.
+I am not yet familiar with this, and need to check the current server about what is on offer.
 Maybe the hook that the audit plugin uses can be repurposed.
 
 If the trace flag is set, it will need to access
@@ -160,7 +160,7 @@ A file write to an append-only file may also write, if there is a rotation/trunc
 I will then need to take the JSON in my client, transform it some more and send it to a tracing consumer, eg Jaeger, Lightstep, or in my case, Honeycomb.
 
 The trace data will there be joined with spans from other components, including spans around the ORM that made the SQL and the code that called into the ORM.
-This will allow be to view the context of the query without having to grep for it, use modern web tools to analyze query exection in the context that generated it and generally unify SQL debugging with other application debugging.
+This will allow to view the context of the query without having to grep for it, use modern web tools to analyze query execution in the context that generated it and generally unify SQL debugging with other application debugging.
 
 This makes the need for specialized "Database Performance Monitoring" (DPM) software go away, at least for individual developers.
 A DPM can still be useful for operational tasks, but these are usually served by telegrams MySQL collector, Prometheus and Grafana just fine (and these usually scale better than a DPM).
