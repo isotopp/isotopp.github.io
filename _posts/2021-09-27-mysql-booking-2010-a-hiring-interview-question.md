@@ -44,10 +44,10 @@ Possible topics or annotations from a candidate:
   - L2. Huh. Don't do that.
   - DNS updates are slow and complicated. It can be made to work, but you will always have very little control over what is balanced why and how. DNS is better used for a global load balancing of http requests, and not as a database load balancer.
   - Zookeeper could be used to do this with modified clients, but we would have to discuss how exactly that works. That's an interesting subquestion of its own.
-  - MySQL Router or ProxySQL are made for that, but have a lot of interesting subquestions of its own. See below.
+  - MySQL Router or ProxySQL are made for that, but have a lot of interesting subquestions of their own. See below.
 - What else may be different when load balancing database connections instead of http? 
     - Webproxies are not good database proxies. The database protocol is not http, and it is a [stateful protocol]({% link _posts/2020-07-28-mysql-connection-scoped-state.md %}). This requires extra care when load balancing.
-  - Database connections can be long lived. A load balancing action to a different client only ever happens on connect, and if you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS'ed connections, connection setup cost can be high, so longer lived connections amortize better.
+  - Database connections can be long lived. A load balancing action to a different client only ever happens on connect. If you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS'ed connections, connection setup cost can be high, so longer lived connections amortize better.
   - Database connections have a highly variable result set size size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.
   - Proxies can become bottlenecks. Imagine 50 frontends talking to 10 databases via a single proxy on a typical 2010-box with a single (or two) 1 GBit/s network interface, and results contain BLOBs.
 - What else there is to know?
