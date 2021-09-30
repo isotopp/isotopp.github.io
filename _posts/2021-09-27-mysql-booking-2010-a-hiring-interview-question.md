@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  'MySQL: Out MySQL in 2010, a hiring interview question'
+title:  'MySQL: Our MySQL in 2010, a hiring interview question'
 author-id: isotopp
 feature-img: assets/img/background/rijksmuseum.jpg
 date: 2021-09-27 18:52:55 +0200
