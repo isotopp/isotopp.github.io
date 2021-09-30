@@ -13,7 +13,7 @@ tags:
 I ranted about hiring interviews, and the canned questions that people have to answer.
 One of the interviews we do is a systems design interview, where we want to see how (senior) people use components and patterns to design a system for reliability and scaleout.
 
-A sample question:
+A sample question (based on [a Twitter thread](https://twitter.com/isotopp/status/1442443978985586691) in German):
 
 > It is 2010, and the company has a database structure where a fixed number front end machines form a cell.
 > Reads and writes are already split:
