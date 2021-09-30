@@ -75,6 +75,6 @@ The objective is not to reinvent our 2021 setup. The objective is to use this cl
 
 > The concept of H-shaped people is a metaphor used in job recruitment to describe the abilities of individuals in (or outside) the workforce. The vertical bars on the letter H represent the depth of related skills and expertise in a single field or discipline, whereas the horizontal bar is the ability to combine those two disciplines to create value in a way that was hitherto unknown.
 
-"Understands MySQL" and "Understands Python or Go" ("Understands any database" and "Understands a useful programming language") so that I can throw them at our existing codebase and have them useful within 3-6 months - ugh.
+The objective is to find a person that "Understands MySQL" and "Understands Python or Go" ("Understands any database" and "Understands a useful programming language"), so that I can throw them at our existing codebase and have them useful within 3-6 months - ugh.
 
 If I can find one person per year, I am very lucky.
