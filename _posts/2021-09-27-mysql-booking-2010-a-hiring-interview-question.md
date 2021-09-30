@@ -11,16 +11,16 @@ tags:
 ---
 
 I ranted about hiring interviews, and canned questions that people have to answer.
-One of the interview is a systems design interview, where we want to see how (senior) people use components and patterns to design a system for reliability and scaleout.
+One of the interviews is a systems design interview, where we want to see how (senior) people use components and patterns to design a system for reliability and scaleout.
 
 A sample question:
 
-It is 2010, and the company already has a database structure where a fixed number front end machines form a cell.
-Reads and writes are already split:
-Writes go to the primary of a replication tree, and are being replicated to the read instance of the database in each cell.
-Reads go to the database instance that is fixed part of the cell.
+> It is 2010, and the company already has a database structure where a fixed number front end machines form a cell.
+> Reads and writes are already split:
+> Writes go to the primary of a replication tree, and are being replicated to the read instance of the database in each cell.
+> Reads go to the database instance that is fixed part of the cell.
 
-![](/uploads/2021/mysql-2021-1.jpg)
+![](/uploads/2021/09/mysql-2021-1.jpg)
 
 *Read and write handles are split in the application. Clients write to a primary MySQL database, which then replicates to a database instance that is fixed part of a cell. Clients from a cell read from this fixed replica.*
 
