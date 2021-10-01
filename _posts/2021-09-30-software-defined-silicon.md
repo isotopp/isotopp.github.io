@@ -44,7 +44,7 @@ Hyperscaler haben Interesse an immer größeren CPUs mit immer mehr Kernen, und 
 Hyperscaler haben CPU Utilization und Return-per-Core als KPI und wollen Custom Silicon zum Auslagern der Virtualisierung, für das Netz, oder spezielle Tensorflow CPUs.
 
 Normale Kunden sehen das nicht so:
-ein 64C/128T Core in einer 1P (Single Socket) Konfiguration mit 2 TB oder 4 TB RAM ist unter Umständen den gesamten Serverbedarf einer kleineren Firma in einer einzelnen physikalischen Maschine in VMs unterzubringen.
+man kann in einer 64C/128T-Core-Single-Socket-Konfiguration mit 2-4 TB RAM unter Umständen den gesamten Serverbedarf einer kleineren Firma in einer einzelnen physikalischen Maschine in VMs unterbringen.
 Das Problem dabei: Explosionsradius, wenn mal etwas ausfällt.
 
 # Cloud und On-Premise driften auseinander
@@ -73,7 +73,7 @@ Die Stückzahlen und die Preise geben das nicht her.
 # Der Marktdruck zeigt zur Cloud
 
 Wenn aber absehbar ist, daß in 5-10 Jahren die Trennung von Cloud-Hardware und On-Premise Hardware vollzogen sein wird, dann ist es auch klar, daß es nach Ablauf dieser Zeit nicht mehr möglich sein wird, ein Rechenzentrum mit Private Cloud kompetitiv zu betreiben.
-Das wird so kommen, weil die Cloud-Technik schlich proprietär sein wird und für normalsterbliche Kunden nicht zu haben sein wird.
+Das wird so kommen, weil die Cloud-Technik schlicht proprietär und für normalsterbliche Kunden nicht zu haben sein wird.
 
 Bei der Technik- und der Wirtschaftlichkeit zeiten alle Push- und Pull-Faktoren derzeit massiv in Richtung Cloud.
 Wer sein Unternehmen und seine IT darin nicht mit Gewalt und jetzt in die Public Cloud bringt, der wird nach dem Vollzug dieser Trennung in die Röhre schauen.
