@@ -67,7 +67,7 @@ I do in fact hardly care about the solution we end up with.
 My goal is to have a useful discussion about databases, scaleout and resiliency, and about stateful systems and their limits.
 When there are remarks such as "Our environment is smaller, but for us ... works" or "We tried this: ... but observed that often ..." that's actual gold in an interview.
 
-Even things such as "In HTTP one would do ... but I can imagine that with stateful systems that does not work because ..." is already old, because it shows a level of reflection and insight that is rare.
+Even things such as "In HTTP one would do ... but I can imagine that with stateful systems that does not work because ..." is already gold, because it shows a level of reflection and insight that is rare.
 
 The objective is not to reinvent our 2021 setup. The objective is to use this clearly limited setup as a base for a common conversation about database probems.
 
