@@ -11,7 +11,7 @@ tags:
 
 Golem titelt [Intel will Xeon-Funktionen als Lizenz-Update verkaufen](https://www.golem.de/news/software-defined-silicon-intel-will-xeon-funktionen-als-lizenz-update-verkaufen-2109-159912.html):
 
-> Intel will Xeon-Funktionen als Lizenz-Update verkaufen
+> Intel will Xeon-Funktionen als Lizenz-Update verkaufen.
 > 
 > Mit dem Software Defined Silicon will Intel in Xeon-Hardware zunächst abgeschaltete Funktionen künftig als Lizenz-Upgrade bereitstellen. 
 
@@ -35,7 +35,7 @@ Davon gehen 85 % an weniger als 10 Kunden - Hyperscaler in den USA und China.
 Der Rest sind Kleinkunden.
 
 Das ist eine sehr ungesunde Marktstruktur, und Intel weiß um die Probleme, die das mit sich bringt.
-Das ist keine neue Situation, sondern war schon ein Problem, bevor Apple mit ARM losgelegt hat und AMD mit dem EPYC auf den Markt kam.
+Dies ist keine neue Situation, sondern war schon ein Problem, bevor Apple mit ARM losgelegt hat und AMD mit dem EPYC auf den Markt kam.
 Diese beiden Ereignisse haben die Situation aber noch verkompliziert.
 
 Dazu kommt noch, dass die obigen Prozentangaben nach Stückzahlen sind, nicht nach Core-Count.
@@ -49,7 +49,7 @@ Das Problem dabei: Explosionsradius, wenn mal etwas ausfällt.
 
 # Cloud und On-Premise driften auseinander
 
-Effektiv bewirkt dies, daß die Bauweise der Rechner, die in der Public Cloud Dienst tun, und die Bauweise der Rechner in den Rechenzentren normaler Leute stehen auseinander driften.
+Effektiv bewirkt dies, dass die Bauweise der Rechner, die in der Public Cloud Dienst tun, und die Bauweise der Rechner in den Rechenzentren normaler Leute stehen auseinander driften.
 Das fängt heute an, aber der Bruch wird sich in den kommenden 5-10 Jahren noch vertiefen.
 
 Ein Xeon-Markt für Hyperscaler ist groß, aber der Xeon-Markt "Server CPU für Cloud-Feinde" wird eher klein sein und schrumpfen.
@@ -72,10 +72,10 @@ Die Stückzahlen und die Preise geben das nicht her.
 
 # Der Marktdruck zeigt zur Cloud
 
-Wenn aber absehbar ist, daß in 5-10 Jahren die Trennung von Cloud-Hardware und On-Premise Hardware vollzogen sein wird, dann ist es auch klar, daß es nach Ablauf dieser Zeit nicht mehr möglich sein wird, ein Rechenzentrum mit Private Cloud kompetitiv zu betreiben.
+Wenn aber absehbar ist, dass in 5-10 Jahren die Trennung von Cloud-Hardware und On-Premise Hardware vollzogen sein wird, dann ist es auch klar, dass es nach Ablauf dieser Zeit nicht mehr möglich sein wird, ein Rechenzentrum mit Private Cloud kompetitiv zu betreiben.
 Das wird so kommen, weil die Cloud-Technik schlicht proprietär und für normalsterbliche Kunden nicht zu haben sein wird.
 
-Bei der Technik- und der Wirtschaftlichkeit zeiten alle Push- und Pull-Faktoren derzeit massiv in Richtung Cloud.
+Bei der Technik- und der Wirtschaftlichkeit zeigen alle Push- und Pull-Faktoren derzeit massiv in Richtung Cloud.
 Wer sein Unternehmen und seine IT darin nicht mit Gewalt und jetzt in die Public Cloud bringt, der wird nach dem Vollzug dieser Trennung in die Röhre schauen.
 
 Eigene Server vor Ort sind - bei vorhersagbarem Bedarf - auf viele Weisen billiger als in der Cloud zu mieten. 
