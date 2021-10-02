@@ -25,7 +25,7 @@ A sample question (based on [a Twitter thread](https://twitter.com/isotopp/statu
 *Read and write handles are split in the application. Clients write to a primary MySQL database, which then replicates to a database instance that is fixed part of a cell. Clients from a cell read from this fixed replica.*
 
 Unfortunately, this is not very effective:
-The data center has 10 cells, but when a cell overloads its database spare capacity from other cells cannot be utilized.
+The data center has 10 cells, but when a cell overloads its database, spare capacity from other cells cannot be utilized.
 Also, the data center is not redundant.
 
 We want to:
@@ -48,7 +48,7 @@ Possible topics or annotations from a candidate:
 - What else may be different when load balancing database connections instead of http? 
     - Webproxies are not good database proxies. The database protocol is not http, and it is a [stateful protocol]({% link _posts/2020-07-28-mysql-connection-scoped-state.md %}). This requires extra care when load balancing.
   - Database connections can be long lived. A load balancing action to a different client only ever happens on connect. If you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS'ed connections, connection setup cost can be high, so longer lived connections amortize better.
-  - Database connections have a highly variable result set size size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.
+  - Database connections have a highly variable result set size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.
   - Proxies can become bottlenecks. Imagine 50 frontends talking to 10 databases via a single proxy on a typical 2010-box with a single (or two) 1 GBit/s network interface, and results contain BLOBs.
 - What else there is to know?
   - Replication scales only reads. As this is a shared nothing architecture, each instance eventually sees all writes. To scale writes, we have to split or shard the database. That is out of scope for this question.
