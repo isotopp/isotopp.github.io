@@ -75,7 +75,7 @@ Die Stückzahlen und die Preise geben das nicht her.
 Wenn aber absehbar ist, daß in 5-10 Jahren die Trennung von Cloud-Hardware und On-Premise Hardware vollzogen sein wird, dann ist es auch klar, daß es nach Ablauf dieser Zeit nicht mehr möglich sein wird, ein Rechenzentrum mit Private Cloud kompetitiv zu betreiben.
 Das wird so kommen, weil die Cloud-Technik schlicht proprietär und für normalsterbliche Kunden nicht zu haben sein wird.
 
-Bei der Technik- und der Wirtschaftlichkeit zeiten alle Push- und Pull-Faktoren derzeit massiv in Richtung Cloud.
+Bei der Technik und der Wirtschaftlichkeit zeigen alle Push- und Pull-Faktoren derzeit massiv in Richtung Cloud.
 Wer sein Unternehmen und seine IT darin nicht mit Gewalt und jetzt in die Public Cloud bringt, der wird nach dem Vollzug dieser Trennung in die Röhre schauen.
 
 Eigene Server vor Ort sind - bei vorhersagbarem Bedarf - auf viele Weisen billiger als in der Cloud zu mieten. 
