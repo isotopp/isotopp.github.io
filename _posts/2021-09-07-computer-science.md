@@ -47,6 +47,6 @@ As you grow even older, you learn:
 
 [Pizza, People, Projects and Processes]({% link _posts/2020-06-15-pizza-people-projects-and-processes.md %}) has some fundamental things about processes.
 
-"The german government fails at digitization" means from this point of view that the system has lost the ability to understand its own processes and to change them in a controlled what.
+"The german government fails at digitization" means from this point of view that the system has lost the ability to understand its own processes and to change them in a controlled way.
 
 It is ossified and critical organisational knowledge is not available.
