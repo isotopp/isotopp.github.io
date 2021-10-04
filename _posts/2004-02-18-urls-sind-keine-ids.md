@@ -12,17 +12,17 @@ feature-img: assets/img/background/rijksmuseum.jpg
 Ich habe mich
 an [anderer Stelle](http://blog.koehntopp.de/archives/167_Wir_sind_so_geil_.html)
 bereits über Blogs und ihre Technik aufgeregt. Hier eine etwas
-geordnetere Präsentation meiner Gedanken zu diesem Thema:
+besser geordnete Präsentation meiner Gedanken zu diesem Thema:
 
 Die Grundidee, die hinter Blogs steckt, ist ja, ein
-Diskurssystem im Web zu haben. Durch die Einrichtung eines Blogs
+Diskurs-System im Web zu haben. Durch die Einrichtung eines Blogs
 kann sich ein Autor ein Forum verschaffen, in dem er Texte von
 sich veröffentlicht. Diese Texte sind auf jeden Fall
 chronologisch sortiert und außerdem optional durch ein
 Kategoriensystem und durch eine Volltextsuche erschlossen.
 
-Zu einem Diskurssystem wird das ganze dadurch, daß man
-einerseits Kommentare zu den Texten zuläßt, andererseits die
+Zu einem Diskurs-System wird das ganze dadurch, daß man
+einerseits Kommentare zu den Texten zulässt, andererseits die
 Bezugnahme auf die Texte ermöglicht. Bezugnahme erfolgt
 traditionell durch einen Trackback-Link auf einen Artikel:
 Jemand, der zu einem Artikel eine Gegenrede veröffentlicht,
@@ -35,7 +35,7 @@ Implementierung mehr als bescheiden.
 
 Das Problem entsteht schon bei der Bezugnahme auf Artikel. Blogs
 verwenden für diese Bezugnahme in der Regel URLs, aber dieser
-Ansatz hat aus einer ganzen Reihe von Gründen Probleme. Ich muß
+Ansatz hat aus einer ganzen Reihe von Gründen Probleme. Ich muss
 ein wenig ausholen, um diesen Gedanken zu erläutern.
 
 ## Objekte und ihre Namen
@@ -57,8 +57,8 @@ vergleichen.
 Okay, klingt uncool. Wo ist der Trick? 
 
 Man stelle sich die Menge der Objekte als einen Newsspool von
-Artikeln auf einem Newsserver vor - friedolin hat da einige
-Terabyte von. Wenn wir einen neuen Artikel bekommen, müßten wir
+Artikeln auf einem News-Server vor - friedolin hat davon einige
+Terabyte. Wenn wir einen neuen Artikel bekommen, müßten wir
 feststellen, ob wir diesen Artikel schon haben, bevor wir ihn
 einsortieren, denn sonst haben wir Duplikate. Ohne IDs können
 wir diese Feststellung nur treffen, indem wir den Artikel gegen
@@ -91,7 +91,7 @@ abgeglichen werden.
 
 ## Eigenschaften von Namen
 
-Wenn man sich IDs für Objekte überlegt, dann muß man sich über
+Wenn man sich IDs für Objekte überlegt, dann muss man sich über
 einige Dinge Gedanken machen. IDs haben einen Scope, also eine
 Grundmenge oder Welt, innerhalb derer sie gelten und Objekte
 eindeutig bezeichnen.
@@ -138,8 +138,8 @@ NetUSE Hausmesse 2002 gewidmet.
 Genauer: Im Datenbanksinn ändern wir einen Primary Key und
 müssen alle Foreign Keys die diesen PK bezeigen mit updaten.
 "Saublöde Idee" ist das, was ein Datenbanker dazu sagen würde.
-Wir können Kristian auch heiraten lassen, sodaß sich sein Name,
-also der cn ändert. Da Objektinformation Bestandeil des DN ist,
+Wir können Kristian auch heiraten lassen, so daß sich sein Name,
+also der cn ändert. Da Objektinformation Bestandteil des DN ist,
 ändert sich der DN, wenn sich das Objekt verändert - und wieder
 verbasteln wir einen PK. Auch das ist ein typisches LDAP-Problem
 mit seinen nicht-opaken IDs.
@@ -163,7 +163,7 @@ jedes Element mit einem ID-wertigen Attribut mit dem Namen "id="
 ausstatten und so jedem Element einen eindeutigen Bezeichner
 mitgeben. Solche IDs haben Document Scope, müssen also
 zusätzlich mit der URL des Dokumentes gescoped werden, damit sie
-weltweit (naja, DNS-weit, das ist etwas anderes) eindeutig
+weltweit (Na ja, DNS-weit, das ist etwas anderes) eindeutig
 werden.
 
 URLs selber bezeichnen aber Speicherorte, enthalten also mit dem
@@ -180,12 +180,12 @@ und Lebensdauern durchführen.
 
 Das ist zugleich eine weitere wichtige Eigenschaft von IDs: Ihre
 Lebensdauer. Wie lange besteht die ID eines Objektes fort? Damit
-sie als ID funktionieren kann, muß sie mindestens die
+sie als ID funktionieren kann, muss sie mindestens die
 Lebensdauer des Objektes selber haben, so viel ist schon mal
 klar.
 
 Ist es sinnvoll, daß die ID eines Objektes länger besteht als
-das Objekt selber? Ja, das kann sinnvoll sein. Newsserver zum
+das Objekt selber? Ja, das kann sinnvoll sein. News-Server zum
 Beispiel heben die IDs von Nachrichten noch auf, nachdem sie die
 Nachricht bereits weggeworfen haben. Auf diese Weise können sie
 Artikelschleifen immer noch verhindern, auch wenn der
@@ -205,7 +205,7 @@ wird).
 
 ##### URLs sind keine IDs
 
-Wenn man jetzt ein Diskurssystem entwickeln möchte, dann muß man
+Wenn man jetzt ein Diskurs-System entwickeln möchte, dann muss man
 sich unbedingt darüber klar sein, was die Objekte sind, mit
 denen man arbeitet und welche Namen man für diese Objekte wählt.
 
@@ -227,16 +227,16 @@ können XML", sondern eine Webseite, auf der sich neben meinem
 Artikel auch mehr als ein Dutzend weitere Beiträge befinden, auf
 der ein Haufen Navigation herumfliegt, die mit dem Artikel
 nichts zu tun hat und auf der sich wechselnder Content befindet,
-der mit dem Artikel absolut gar nix zu tun hat - ein Buchtipp,
+der mit dem Artikel absolut gar nichts zu tun hat - ein Buchtipp,
 eine Werbung für T-Shirts, Kommentare zu anderen Artikeln und so
 weiter.
 
-Auch an andere Stelle begegnen wir diesem Mißverständnis: 
+Auch an andere Stelle begegnen wir diesem Missverständnis: 
 [http://www.debian.org](http://www.debian.org) bezeichnet zum
 Beispiel die Startseite des Debian-Projekts. Nur - je nachdem,
 welche Sprachpräferenz man in seinem Browser konfiguriert hat,
 erscheint unter dieser URL komplett anderer Text. Die URL ist
-gleich, aber je nach Content-Negotation kommen vollkommen
+gleich, aber je nach Content-Negotiation kommen vollkommen
 verschiedene Inhalte mit vollkommen verschiedenen
 MD5-Prüfsummen. Nicht die URL bezeichnet die Seite, sondern erst
 die Kombination von URL und Sprachpräferenz tut dies.
@@ -248,7 +248,7 @@ wann man diese Seite abruft, erscheinen unter dieser URL
 vollkommen andere Inhalte. Erst die Kombination von URL und
 Zeitangabe liefert eine bestimmte Seite. Zugleich: Auf dieser
 Seite befindet sich nicht ein Artikel-Objekt, sondern die Seite
-enthält eine lange Sequenz von Artikelobjekten. Mit diesem
+enthält eine lange Sequenz von Artikel-Objekten. Mit diesem
 Problem haben zum Beispiel Ratingsysteme zu kämpfen - welches
 Rating hat zum Beispiel
 [http://www.cnn.com](http://www.cnn.com)? Und ist das davon
@@ -257,7 +257,7 @@ von Janet Jackson zeigt? Mein Artikel
 [http://koehntopp.de/kris/artikel/rating_does_not_work/](http://koehntopp.de/kris/artikel/rating_does_not_work/)
 von 1999 dekliniert diesen Gedanken durch.
 
-Man muß sich also klar darüber werden, daß man bei Blogs
+Man muss sich also klar darüber werden, daß man bei Blogs
 eigentlich mit Beiträgen - also Artikeln und Kommentaren -
 hantiert, und daß RSS-Feeds und Webseiten mit Blogs nur die
 *Repräsentation* von Beiträgen sind. Eigentlich will man aber
@@ -281,7 +281,7 @@ mit dem Hostnamen des sendenden Rechners gescoped, aber die
 Message-ID eines Artikels ist kein Storage-Pfad. Stattdessen
 bietet der Dienst News intern einen Lookup-Dienst an, der eine
 Message-ID in einen Storage-Pfad umwandelt. Jeder News-Server
-hat einen solchen Lookup-Dienst und jeder Newsserver liefert für
+hat einen solchen Lookup-Dienst und jeder News-Server liefert für
 dieselbe ID unterschiedliche Pfade (nämlich für seine Kopie des
 Artikels auf seiner Platte). NNTP kann also damit leben, daß es
 mehr als eine Instanz eines Objektes gibt, das macht NNTP sicher
@@ -312,7 +312,7 @@ ja, aber in RSS nein. Da die IDs in Blogs nicht versioniert
 sind, ist auch der Diskurs unklar: Auf welche Version eines
 Beitrages bezieht sich ein Autor, der mich backlinked.
 
-Eines jedoch ist klar: Damit Blogs als Diskurssystem
+Eines jedoch ist klar: Damit Blogs als Diskurs-System
 funktionieren, ist noch jede Menge Arbeit notwendig. Derzeit
 sind elementare Voraussetzungen für den Einsatz von erprobten
 technischen Lösungen noch nicht einsetzbar, weil wir die Dinge,
