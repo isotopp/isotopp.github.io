@@ -13,7 +13,7 @@ feature-img: assets/img/background/mysql.jpg
 
 ![](/uploads/20040314_dolphin.jpg) 
 
-Früher war alles besser. Früher zum Beispiel konnte MySQL gar nix, und der
+Früher war alles besser. Früher zum Beispiel konnte MySQL gar nichts, und der
 Server stand unter der
 [GPL](http://www.gnu.org/licenses/licenses.html#GPL), während der MySQL
 Client unter der
@@ -25,8 +25,8 @@ ist es unter anderem gewesen, das den Siegeszug der
 [LAMP](http://www.onlamp.com/pub/a/onlamp/2001/01/25/lamp.html) Plattform
 begründet hat.
 
-Dann jedoch entschloß man sich bei MySQL einige Dinge zu tun: Erstens nahm
-man Venture Capital an, zweitens stellte man davon einen Haufen Leute ein
+Dann jedoch entschloss man sich bei MySQL einige Dinge zu tun: Erstens nahm
+man Venture-Capital an, zweitens stellte man davon einen Haufen Leute ein
 und drittens schob man auf diese Weise die Weiterentwicklung von MySQL
 kräftig an. Die MySQL 4.x Serie entstand.
 
@@ -46,9 +46,9 @@ MySQL befindet sich dabei in mehr oder weniger derselben Situation wie Linux
 1994: Natürlich ist das Produkt (noch!) nicht so feature-complete wie die
 etablierten Spieler in diesem Markt, aber für den weitaus größten Teil der
 Anwender ist das auch überhaupt nicht notwendig. Für diese Anwender zählen
-nämlich nicht so sehr die fetten Enterprise-Featurelisten, als vielmehr gute
+nämlich nicht so sehr die fetten Enterprise-Feature-Listen, als vielmehr gute
 Dokumentation und leichte Erlernbarkeit, die Verfügbarkeit von billigem
-Personal mit Kenntnissen im Produkt, Einsatz in Hostingumgebungen (Datenbank
+Personal mit Kenntnissen im Produkt, Einsatz in Hosting-Umgebungen (Datenbank
 und Anwendung auf derselben Maschine, Trennung einer physikalischen in
 mehrere logische Datenbanken, Ressource-Quotas usw) und leichte
 Administrierbarkeit.
@@ -60,8 +60,8 @@ Datenbankhersteller-Kriterien zu erfüllen. Unterwegs hat MySQL aber einen
 vollkommen neuen Markt geschaffen und definiert, und dem gesamten
 Datenbankmarkt ein vollkommen neues und von den Benutzerzahlen her
 gigantisches Low-End geschaffen. Von dort, und mit der dort erzeugten
-Userbase, will MySQL jetzt den Datenbankmarkt von unten her kannibalisieren
-und Datenbanken in ein Commodityprodukt umwandeln - die Lizenzpreise
+Benutzerbasis, will MySQL jetzt den Datenbankmarkt von unten her kannibalisieren
+und Datenbanken in ein Commodity-Produkt umwandeln - die Lizenzpreise
 sprechen eine deutliche Sprache.
 
 ### Ein Exkurs in Lizensismus
@@ -74,7 +74,7 @@ Lizenzen gab oder jedenfalls seit der
 [Mozilla Public License](http://www.mozilla.org/MPL/) gibt. Da ist zum einen
 die Edel-Lizenz GPL, die im Grunde nur mit sicher selber kompatibel ist
 (denn alles, was man mit der GPL zusammenbaut wird selber GPL). Dann sind da
-jede Menge freie Softwarelizenzen, die nicht GNU-Lizenzkompatibel sind.
+jede Menge freie Softwarelizenzen, die nicht mit der GPL kompatibel sind.
 Freie Softwarelizenzen sind
 [DFSG-kompatible Lizenzen](http://www.debian.org/social_contract.html#guidelines) außer der
 GPL selber, also so Dinge wie Apache, BSD, Mozilla-Derivate und so weiter
@@ -82,15 +82,15 @@ sowie die LGPL. Und dann sind da kommerzielle Lizenzen und die seltsame Idee
 des Dual Licensing.
 
 Dual Licensing ist, was Managerköpfe zum Platzen bringt: Da der Erzeuger
-eines urheberrechtlich geschützten Werkes dieses Werk selber nach belieben
-lizensieren kann, ist dieser Urheber nicht darauf beschränkt, das Werk nur
+eines urheberrechtlich geschützten Werkes dieses Werk selber nach Belieben
+lizenzieren kann, ist dieser Urheber nicht darauf beschränkt, das Werk nur
 unter einer einzigen Lizenz anzubieten. Man kann
 Software-Funktionsbibliotheken also unter der GPL anbieten, und für Leute,
 denen dies nicht gefällt, auch eine kommerzielle Lizenz zu verkaufen.
 
 "Ja, ist das nun frei oder nicht frei?"
 
-Für die Anbieter von Software, die selber GPL ist und die die Bibliothek
+Für die Anbieter von Software, die selber GPL ist und welche die Bibliothek
 unter Dual Licensing einbinden wollen, ist alles klar. Die nehmen die
 Bibliothek unter der GPL und alles ist gut. Für Anbieter von Software, die
 kommerziell ist, ist auch alles klar. Die nehmen die Software entweder unter
@@ -99,14 +99,15 @@ ihnen das alles zu verwirrend ist.
 
 Für die Anbieter von DFSG-Software ist alles unklar. Wenn ich eine
 Software-Funktionsbibliothek in mein Programm einbinde, und die Bibliothek
-selber ist GPL, dann muß mein Programm auch GPL sein. GPL, nicht "freie
+selber ist GPL, dann muss mein Programm auch GPL sein. GPL, nicht "freie
 Software nach DFSG". Schlecht zum Beispiel für PHP, das inzwischen unter der
-[Apache-Lizenz](http://www.php.net/license/) steht und Zend verwendet, das
-unter der
-[QPL](http://www.trolltech.com/products/qt/freelicense.html) steht (die QPL
-wiederum ist eine modifizierte MPL, falls man mir noch folgen kann) und das
-Dutzende von anderen Projekten und Programmbibliotheken selber einbindet,
-die unter den unterschiedlichsten Lizenzen stehen.
+[Apache-Lizenz](http://www.php.net/license/) steht.
+
+Intern verwendet PHP die Zend-Engine, die unter der
+[QPL](http://www.trolltech.com/products/qt/freelicense.html) lizenziert wird.
+Die QPL wiederum ist eine modifizierte MPL, falls man mir noch folgen kann.
+PHP bindet außerdem Dutzende von anderen Projekten und Programmbibliotheken 
+selber ein, die unter den unterschiedlichsten Lizenzen stehen.
 
 ### Warum ist das für MySQL ein Problem?
 
@@ -114,35 +115,35 @@ die unter den unterschiedlichsten Lizenzen stehen.
 
 Mit MySQL 4.x hat MySQL, die Firma, das Tempo deutlich erhöht: Inzwischen
 sitzen jede Menge kommerzielle Entwickler für Geld daran, MySQL
-voranzubringen. Die Venture Capital Investoren wollen für ihr Geld innerhalb
+voranzubringen. Die Venture-Capital Investoren wollen für ihr Geld innerhalb
 der nächsten drei bis fünf Jahre Return sehen.
 
-MySQL muß also mehr kommerzielle MySQL-Lizenzen verkaufen. Das genau ist bei
+MySQL muss also mehr kommerzielle MySQL-Lizenzen verkaufen. Das genau ist bei
 einem Produkt wie MySQL jedoch ein wenig schwierig: Der MySQL Server ist
 GPL. Man kann ihn also problemlos irgendwo hinstellen und in Betrieb nehmen,
-ohne daß man eine Lizenz kaufen müßte. Man kann, wenn man möchte, bei MySQL
+ohne daß man eine Lizenz kaufen müsste. Man kann, wenn man möchte, bei MySQL
 kommerziellen Support kaufen, guten Support sogar, für relativ kleines Geld.
 Dummerweise ist nur MySQL als Produkt viel zu gut, man kommt gut ohne
 Support hin. Dummerweise ist der MySQL-Server GPL, und liegt deswegen im
-Source vor. Wenn man also genug technisches Wissen im Haus hat, kann man
+Source vor. Falls man also genug technisches Wissen im Haus hat, kann man
 sich auch leicht selber supporten.
 
 Der MySQL Client war LGPL. LGPL ist eine GPL ohne Zähne: Man kann
-LGPL-Funktionsbibliotheken wie den MySQL CLient in sein Programm einbauen,
-ohne daß dieses Programm dann GPL oder LGPL sein müßte - es kann nahezu jede
+LGPL-Funktionsbibliotheken wie den MySQL Client in sein Programm einbauen,
+ohne daß dieses Programm dann GPL oder LGPL sein müsste - es kann nahezu jede
 beliebige Lizenz haben.
 
 ![](/uploads/20040314_kunden.jpg)
 
 Hersteller von kommerzieller Software haben also Programme entwickelt, die
-die MySQL Clientbibliotheken enthalten haben, ohne eine Lizenz zwingend zu
+die MySQL Client-Bibliotheken enthalten haben, ohne eine Lizenz zwingend zu
 brauchen. Benutzer dieser Software haben sich also einen MySQL Server
 hinstellen können, ohne für diesen eine Lizenz zwingend zu brauchen und die
 haben die kommerzielle Software einsetzen können, ohne eine Lizenz zwingend
 zu brauchen.
 
 Das hat funktioniert, solange MySQL, die Firma, ihr Wachstum aus den
-Supporteinnahmen und anderen Quellen selber finanziert haben. Aber mit VC in
+Support-Einnahmen und anderen Quellen selber finanziert haben. Aber mit VC in
 der Firma geht das nicht mehr.
 
 Der MySQL 4.x Client ist also GPL. Genaugenommen ist er Dual Licensed. Wenn
@@ -181,7 +182,7 @@ dieses Problem zu lösen.
 
 Konsequenzen:
 
-Die MySQL Clientbibliotheken liegen PHP nicht mehr bei. Das wird inzwischen
+Die MySQL Client-Bibliotheken liegen PHP nicht mehr bei. Das wird inzwischen
 nicht nur lizenzrechtlich, sondern auch technisch verargumentiert und wird
 deswegen auch dann so bleiben, wenn (sobald) PHP und MySQL sich einigen.
 
@@ -202,7 +203,7 @@ DFSG-Evaluation und dann ist alles gut".
 
 Der meiner Meinung nach unhaltbare Standpunkt, daß unabhängige
 Reimplementierungen des Protokolls auch abgeleitete Werke sind, wird von
-MySQL weiter aufrecht erhalten. Das läßt darauf schließen, daß MySQL auch
+MySQL weiter aufrecht erhalten. Das lässt darauf schließen, daß MySQL auch
 lizenzrechtliche Bedenken gegen Middlewares wie
 [SQLRelay](http://sqlrelay.sourceforge.net/) hat.
 
@@ -213,13 +214,13 @@ SQLRelay eine eigene, von der MySQL-API verschiedene
 Programmierschnittstelle. Da SQLRelay nicht wie MySQL den Standpunkt
 vertritt, daß die GPL auch über TCP/IP "ansteckend" sei, kann also eine
 kommerzielle Anwendung ohne MySQL-Lizenz mit SQLRelay reden. Zak Greant von
-MySQL war gestern abend im Chat zu diesem Thema nur der MySQL-Standardsatz
+MySQL war gestern Abend im Chat zu diesem Thema nur der MySQL-Standardsatz
 zu entlocken: "If you use us with closed source software, we recommend using
 our commercial license."
 
 ![](/uploads/20040314_postgres.gif)
 
-[Posgresql](http://www.postgresql.org/) hat endlich (ich seh da jedes Jahr
+[Postgresql](http://www.postgresql.org/) hat endlich (ich seh da jedes Jahr
 mal nach oder so) eine Website, die den Namen verdient, und da gibt es sogar
 so etwas ähnliches wie Dokumentation. Aktuelles Postgresql kann viele Dinge
 besser als MySQL 3.23 und 4.0, Replikation bleibt ein Problem. Postgresql
@@ -245,7 +246,7 @@ eine Diskussion über den originalen
 [Artikel](http://yro.slashdot.org/article.pl?sid=04/03/13/1414212) auf
 Slashdot angezettelt habe, hatte ich binnen einer halben Stunde Zak Greant
 am Rohr und wir haben den ganzen Kram inklusive SQLRelay versucht einmal
-durchzudeklinieren. Auch wenn wir nicht in allen Punkten zu einem Abschluß
+durchzudeklinieren. Auch wenn wir nicht in allen Punkten zu einem Abschluss
 gekommen sind, bleibt doch der Eindruck, daß MySQL sich bewegt.
 
 Anderseits bewegt sich MySQL unglaublich langsam - das alles war ja schon
@@ -272,7 +273,7 @@ sonst immer schnell dabei sind, die Überlegenheit der GPL gegenüber der LGPL
 zu verargumentieren, wird die FSF allgemein eher dem Gnome (LGPL) denn dem
 KDE/Qt (GPL)-Lager zugerechnet. Seltsam auch, daß die Projekte mit
 kommerziellem Backing (KDE/Qt - Troll, MySQL Database - MySQL AB) genau die
-GPL verfechen, während die Projekte mit nichtkommerziellem Hintergrund
+GPL verfechen, während die Projekte mit nicht kommerziellem Hintergrund
 (Gnome, Postgresql) weniger "pure" Lizenzmodelle (auf der RMS-Skala)
 vertreten.
 
@@ -281,4 +282,4 @@ und wird letztendlich verschwinden (müssen). Wir brauchen sie nur, bis GNU
 eine lauffähige eigene Betriebssystemplattform hat, damit wir uns mit
 existierenden kommerziellen Foundations integrieren können. Generell ist die
 GPL der LGPL jedoch dringend zu bevorzugen." So ganz wirklich vertreten die
-diesen Standpunkt dann doch nicht, wenn es drauf ankommt.
+diesen Standpunkt dann doch nicht, wenn es darauf ankommt.
