@@ -34,6 +34,6 @@ Blogsoftware steckt mit ihren technischen Möglichkeiten und den vorgegebenen La
 
 <blockquote>Durch das rasante Wachstum des Genres in den letzten Jahren ist das Feld weblogbasierter Kommu­nikation hoch dynamisch. Diese begriffliche Skizze sowie die folgende Fallstudie sollen zeigen, dass Weblog-Praktiken Teil eines Institutionalisierungsprozesses sind, in dem sich zwei scheinbar gegen­sätzliche Tendenzen dialektisch aufheben: 1) Die kreative Schaffung neuer Handlungsalternativen durch technische und soziale Innovationen (Öffnung; Rekombination; Kontingenz) und 2) die Ver­festigung existierender oder neuer Handlungsalternativen in Routinen, sozialen Beziehungsstrukturen und Software-Code (Schließung; Persistenz; Determination). Weblog-Praktiken sind dadurch auch Beleg der Dialektik von Struktur und Handeln, die unsere gesamte soziale Welt kennzeichnet.</blockquote>
 
-Weblogs sind spannend, weil sie sich zur Zeit schnell entwickeln, abern eine feste Form und ein festes Layout vorgeben. Wir können hier also aus erster Hand beobachten, wie soziale Handlungsformen entstehen und in Programmcode gegossen werden, etwas das neu ist und noch nicht oft beobachtet wurde.
+Weblogs sind spannend, weil sie sich zur Zeit schnell entwickeln, aber eine feste Form und ein festes Layout vorgeben. Wir können hier also aus erster Hand beobachten, wie soziale Handlungsformen entstehen und in Programmcode gegossen werden, etwas das neu ist und noch nicht oft beobachtet wurde.
 
 <i>Das war soziologisch.</i> (Maus-Djingle und ab)
