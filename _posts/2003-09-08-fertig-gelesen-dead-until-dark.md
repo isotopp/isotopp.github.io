@@ -16,6 +16,6 @@ feature-img: assets/img/background/book.jpg
 ![](/uploads/2003/09/dead_until_dark.jpg)
 
 Nein, es ist keine Geschichte aus dem [Laurell K. Hamilton](https://www.laurellkhamilton.com/)-Universum, auch wenn sich die 
-[Bestandteile](https://www.laurellkhamilton.com/book_series/the-lunatic-cafe/) fast so anhören und entsprechend ist es kein bluttriefendes Gemetzel. Naja, okay, es gibt einen Bodycount, denn schließlich will es ein Krimi sein, aber anders als bei Laurell Hamilton ergießen sich keine Ströme von Blut über die Szenerie...
+[Bestandteile](https://www.laurellkhamilton.com/book_series/the-lunatic-cafe/) fast so anhören und entsprechend ist es kein bluttriefendes Gemetzel. Na ja, okay, es gibt einen Body Count, denn schließlich will es ein Krimi sein, aber anders als bei Laurell Hamilton ergießen sich keine Ströme von Blut über die Szenerie...
 
-Nett, unterhaltsam und schnell wegzulesen. Das Ende ein wenig antiklimaktisch - wie viele Leute gibt es, deren Gedanken Sookie Stackhouse nicht lesen kann und wer von denen kommt als Täter in Frage? - aber letztendlich dennoch nicht langweilig.
+Nett, unterhaltsam und schnell wegzulesen. Das Ende ein wenig antiklimaktisch - wie viele Leute gibt es, deren Gedanken Sookie Stackhouse nicht lesen kann und wer von denen kommt als Täter infrage? - aber letztendlich dennoch nicht langweilig.
