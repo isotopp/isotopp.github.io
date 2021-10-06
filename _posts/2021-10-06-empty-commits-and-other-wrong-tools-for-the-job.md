@@ -10,13 +10,24 @@ tags:
 - development
 ---
 
-This is how you can make an empty commit:
+[This]( https://twitter.com/akrey/status/1445656529877680129) is how you can make an empty commit:
 
 ```console
 $ git commit --allow-empty -m "Kick it"
 ```
 
+This has the disadvantage of also generating a commit message.
+[Another way]( https://twitter.com/akrey/status/1445656529877680129) to achieve this seems to be
+
+```console
+$ git commit --amend --no-edit && git push -f
+```
+
+but that will make people hate you in other ways.
+
+So lets stop and ask:
 Why would you want to make an empty commit?
+
 Most people want this because they attached a server-side action to a commit, a CI/CD activity/
 
 # This is wrong
