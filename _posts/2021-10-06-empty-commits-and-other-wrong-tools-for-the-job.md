@@ -28,7 +28,7 @@ but that will make people hate you in other ways.
 So lets stop and ask:
 Why would you want to make an empty commit?
 
-Most people want this because they attached a server-side action to a commit, a CI/CD activity/
+Most people want this because they attached a server-side action to a commit, a CI/CD activity.
 
 # This is wrong
 
