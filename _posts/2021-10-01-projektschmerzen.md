@@ -47,7 +47,7 @@ Generell steigen die Projektrisiken mit jeder administrativen Grenze überpropor
 hier mein Amt, dort Dein Dienstleister.
 Das ist so, weil sich Zeitverzögerungen auf dem Dienstweg, Nachrichtenverfälschungen durch Stille Post und dergleichen mehr akkumulieren.
 
-Mit einer steigenden Anzahl von Projektpartnern ("administrativen Einheiten") steigen auch die Kommunikationsbeziehungen, der Verhandlungsbedarf, und die auszugleichenden Interessen an: ($$ n * (n-1)/2 -> n^2 $$).
+Mit einer steigenden Anzahl von Projektpartnern ("administrativen Einheiten") steigen auch die Kommunikationsbeziehungen, der Verhandlungsbedarf, und die auszugleichenden Interessen an: ($ n * (n-1)/2 -> n^2 $).
 
 ![](/uploads/2021/10/kommunikations-explosion.png)
 
@@ -90,10 +90,10 @@ Weil wir das eigentliche Feature mit so wenig Entwicklungsaufwand als möglich i
 
 ![](/uploads/2021/10/8-rollouts-3.png)
 
-*Das Experiment dient dazu, eine minimale (oder Fake-) Implementation eines Features auszumessen. Damit ist alleine interessant herauszufinden, ob die Requirements bei echten Usern überhaupt Sinn ergeben.* 
+*Das Experiment dient dazu, eine minimale (oder Fake-) Implementation eines Features auszumessen. Dabei ist ausschließlich interessant herauszufinden, ob die Requirements bei echten Usern überhaupt Sinn ergeben.* 
 
 Wir wissen dann jedoch auch, *wieviel* reicher uns so ein Feature macht, und weil das so ist, können wir den Einsatz von Entwickler-Kapazitäten viel besser steuern:
-Entwickler arbeiten nur an Dingen, von denen wir wissen, daß sie Mehreinnahmen generieren und *wieviel* Mehreinnahmen das sind.
+Entwickler arbeiten nur an Dingen, von denen wir wissen, daß sie Mehreinnahmen generieren, und *wieviel* Mehreinnahmen das sind.
 Wir können dann den Aufwand beim Engineering gegen den Gewinn abwägen.
 
 Das geht nur im Haus. Das kann nicht outsourcen. Denn nur dann ist eine informale, enge Steuerung mit Umsetzungszeiten für Steuerungsinput im Bereich von Stunden möglich .
@@ -103,7 +103,7 @@ Tagen oder gar Wochen würden jede Form von Experimentierung scheitern lassen.
 
 Expertise im Haus ist wichtig, um beurteilen zu können, was Dienstleister machen. Dan Luu hat dazu einen [interessanten Artikel](https://danluu.com/in-house/) geschrieben.
 
-Eigene Experten sind jedoch noch wichtiger, wenn man neue Dinge ausprobiert, und man das Projekt eng steuern muß, weil man neuartige Dinge ausprobiert.
+Eigene Experten sind jedoch noch wichtiger, wenn man neue Dinge ausprobiert, und man deswegen das Projekt eng steuern muss.
 
 ![](/uploads/2021/10/go-away-1.jpg)
 
@@ -115,14 +115,13 @@ Wenn man neue, unerprobte Dinge macht, ist man im Chaotischen Quadranten des [Cy
 Dazu braucht man eine kleine Gruppe von Experten, die sich darauf konzentriert, Regeln und Gesetzmäßigkeiten ("überhaupt Practice") zu finden. 
 
 In der deutschen Pipeline ist das ein Uni-Projekt, in dem Professor/innen irgendwelche Ideen ausprobieren, von denen die Mehrheit auf irgendeine nicht offensichtliche Weise egal oder falsch ist.
-Aber das herauszufinden ist genau Sinn der Sache.
+Aber das herauszufinden ist genau Sinn der Sache: die Mehrheit dieser Versuche scheitert, genau wie wir beim Requirements Engineering 19 von 20 Experimenten im Test scheitern sehen.
 
-"Complex" ist der Engineering-Quadrant, in der wir versuchen, als funktionierend bekannte Grundideen hoch zu skalieren und in der Masse anwendbar zu machen.
-Hier braucht es mehr als ein Team, mit einem der Theoretiker aus der vorigen Phase als Beratung und vielen Praktikern ("Ingenieren") in den Teams, die immer noch so klein als möglich sein sollten.
+"Complex" ist der Engineering-Quadrant, in der wir versuchen, als funktionierend bekannte Grundideen hoch zu skalieren, und in der Masse anwendbar zu machen.
+Hier braucht es mehr als ein Team, mit einem der Theoretiker aus der vorigen Phase als Beratung und vielen Praktikern ("Ingenieuren") in den Teams, die immer noch so klein als möglich sein sollten.
 
 Idealerweise hat man zwei oder drei konkurrierende Ansätze mit überlappenden Zielsetzungen, von denen dann hoffentlich einer diese Phase überlebt.
-Aus dieser bekommt man dann einen Satz Handlungsanweisungen ("Wiederholbare Practice") und gute Ratschläge ("das  da ist kritisch!")
-Das kann man dann schrittweise Ausrollen und mit Feinkorrekturen in die Fläche bringen. 
+Aus dieser bekommt man dann einen Satz Handlungsanweisungen ("Wiederholbare Practice") und gute Ratschläge ("das da ist kritisch!"). Das kann man dann schrittweise Ausrollen und mit Feinkorrekturen in die Fläche bringen. 
 Dabei kommen auch Dienstleister und deren Training ins Spiel.
 
 ![](/uploads/2021/10/go-away-2.jpg)
@@ -135,12 +134,12 @@ Das bedeutet: wenn man Erfahrung hat, was man messen muß und wie - auf beiden S
 Wenn der Prozeß noch nicht reif genug ist und man gar keine Metriken hat, ist Einigkeit zwischen Auftraggeber und -nehmer schwierig.
 Dasselbe Problem hat man, wenn der Prozess noch zu schnell wächst, um ohne grundlegende Änderungen wiederholbar zu sein.
 
-Wenn man aus welchem Grund auch immer solche Metriken nicht hat, oder nicht haben *kann*, weil es noch nicht so weit ist, dann *kann man nicht outsourcen*, also keinen Dienstleister verwenden.
+Wenn man - aus welchem Grund auch immer - solche Metriken nicht hat, oder nicht haben *kann*, weil es noch nicht so weit ist, dann *kann man nicht outsourcen*, also keinen Dienstleister verwenden.
 
 Warum ist das so?
 
-Weil man gar keine Grundlage hat, auf der beide Parteien beurteilen können, was verkauft und was geliefert worden ist und ob das so okay ist.
-Solange das Projekt oder Prozeß-Produkt noch weich ist, weil es noch in der Forschungs- oder Engineering-Phase ist, kann man nicht richtig sinnvoll mit externer Expertise arbeiten, weil *niemand weiss wie es geht*.
+Weil man gar keine Grundlage hat, auf der beide Parteien beurteilen können, was verkauft und was geliefert worden ist, und ob das so okay ist.
+Solange das Projekt oder Prozess-Produkt noch weich ist, weil es noch in der Forschungs- oder Engineering-Phase ist, kann man nicht richtig sinnvoll mit externer Expertise arbeiten, weil *niemand weiss wie es geht*.
 
 Dann ist Expertise *im Haus* absolut notwendig.
 
@@ -163,8 +162,9 @@ Wenn also die Produktion ausfällt, weil Du (aufgrund der Monitoringdaten, des R
 - wenn das Runbook unvollständig oder unklar ist, 
 - oder wenn Du unzureichend ausgebildet worden bist.
 
-Es ist außerdem zu prüfen, ob diese Entscheidung (H) zu machen überhaupt manuell zu treffen ist, und ob dann eine manuelle Handlung initiiert werden muß.
-Kurz: Der Blameless Postmortem konzentriert sich nicht darauf, *wer* die Produktion gecrashed hat, sondern welche Kette von Entscheidungen dazu geführt hat, daß die gerade Dienst habende Person die Produktion crashen mußte.
+Es ist außerdem zu prüfen, ob diese Entscheidung (H) zu machen überhaupt manuell zu treffen ist, und ob dann eine manuelle Handlung initiiert werden muss.
+
+Kurz: Der Blameless Postmortem konzentriert sich nicht darauf, *wer* die Produktion gecrashed hat, sondern welche Kette von Entscheidungen dazu geführt hat, dass die gerade Dienst habende Person die Produktion crashen musste.
 
 So eine Diskussion über die Grenzen von Firmen, Verträgen, Statements of Work und mögliche Schadensersatzforderungen durchzuführen ist nahezu unmöglich, oder jedenfalls im Haus sehr viel einfacher.
 
