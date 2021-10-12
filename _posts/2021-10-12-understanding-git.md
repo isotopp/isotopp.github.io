@@ -15,7 +15,8 @@ You can follow along if you check out [the blog](https://github.com/isotopp/isot
 
 # Refs
 
-All things git live in `.git`. Thing we are working with seem to life in `.git/refs`:
+All things git live in `.git`. 
+The thing we are working with seem to live in `.git/refs`:
 
 ```console
 $ find .git/refs -type f
@@ -67,7 +68,7 @@ $ date -d @1633513546
 Wed Oct  6 11:45:46 CEST 2021
 ```
 We can also check out the things the commit points to:
-We will find that the parent entries also reference commits (the two commits that precede this one), and the tree entry reference a tree object.
+We will find that the parent entries also reference commits (the two commits that precede this one), and the tree entry references a tree object.
 
 ```console
 $ git cat-file -t 75077bc79697ea1e37da496b1210ca26f3c66c2c
@@ -101,12 +102,15 @@ $ git cat-file -p  bf447432a99b33174809dbe10d1df43576a032b3
 ```
 
 The important takeaway seems to be that git does not store changes made to files, it stores full files.
-That is less inefficient than it sounds, because unchanged files will have the same hash and hence will exist only once in storage, no matter in how many commits (or trees) they are being referenced.
+That is less inefficient than it sounds, because unchanged files will have the same hash.
+Things with the same  hash will exist only once in storage, no matter in how many commits (or trees) they are being referenced.
 
 # Blob
 
 And finally files: We can list their content, again, with the same tool.
-Using the `-t` and `-s` options we can also see their type and size:
+Using the `-t` and `-s` options we can also see their type and size.
+
+Using `09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d` for the `CNAME` file from the tree above we get:
 
 ```console
 $ git cat-file -t 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
@@ -121,7 +125,7 @@ blog.koehntopp.info
 
 Diffs do not exist in git.
 They are instead generated on the fly, by comparing two trees.
-This, again, is less inefficient that one might think:
+Again, this is less inefficient that one might think:
 All unchanged files will have also unchanged hashes and therefore need no consideration for a diff.
 
 For objects with different hashes (but identical names), git then generates a diff.
@@ -140,7 +144,7 @@ daad5e3 (HEAD -> main, origin/main, github/main) HEAD@{2}: merge github/main: Me
 ...
 ```
 
-You can use this list of commit hashes to reconstruct what you did, where known good locations are and of course, to return to them.
+You can use this list of commit hashes to reconstruct what you did, where known good locations are, and of course to return to them.
 This is essential to repair a git repository that somehow was changed unintentionally and that still contains important salvageable data.
 
 We find the original data git uses in `.git/logs/HEAD`:
@@ -155,29 +159,31 @@ daad5e31926cdf8a3af0ecff517c4d5892b6f62a 8a650853c5525013800c42f68c92b4d431b7b97
 
 # Object storage
 
-git stores all things with a hashed name in .git/objects. The first byte (the first two letters) of the SHA-1 name make up a directory name, the rest goes into a file name
+git stores all things with a hashed name in .git/objects. 
+The first byte (the first two letters) of the SHA-1 name make up a directory name, the rest goes into a file name.
 File content is stored compressed, using zlib.
 
 We can check that using any programming language that supports zlib.
 Here in Python:
 
-```console
-$ git log | head -1
-commit daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+```python
+# $ git log | head -1
+# commit daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+# 
+# $ python3
+# Python 3.8.10 (default, Jun  2 2021, 10:49:15)
 
-$ python3
-Python 3.8.10 (default, Jun  2 2021, 10:49:15)
-[GCC 9.4.0] on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> with open(".git/objects/da/ad5e31926cdf8a3af0ecff517c4d5892b6f62a", "rb") as f:
-...   fi = f.read()
-...
->>> import zlib
->>> data = zlib.decompress(fi)
->>> str = data.decode("utf-8")
->>> str
-"commit 333\x00tree ba5a4ceb371d42d766832dae545ecf00b9194ea2\nparent 75077bc79697ea1e37da496b1210ca26f3c66c2c\nparent b71d9463ad8c3b71bd279e88e74ce15e01de2aee\nauthor Kristian Koehntopp <kris-git@koehntopp.de> 1633513546 +0200\ncommitter Kristian Koehntopp <kris-git@koehntopp.de> 1633513546 +0200\n\nMerge remote-tracking branch 'github/main' into main\n"
->>> print(str)
+import zlib
+with open(".git/objects/da/ad5e31926cdf8a3af0ecff517c4d5892b6f62a", "rb") as f:
+   fi = f.read()
+data = zlib.decompress(fi)
+str = data.decode("utf-8")
+print(str)
+```
+
+and
+
+```console
 commit 333tree ba5a4ceb371d42d766832dae545ecf00b9194ea2
 parent 75077bc79697ea1e37da496b1210ca26f3c66c2c
 parent b71d9463ad8c3b71bd279e88e74ce15e01de2aee
@@ -187,10 +193,10 @@ committer Kristian Koehntopp <kris-git@koehntopp.de> 1633513546 +0200
 Merge remote-tracking branch 'github/main' into main
 ```
 
-We see the file has a header, terminated by a NULL byte.
+We see the file has a header, `commit 333`, terminated by a NULL byte.
 This assists in reconstruction a `.git` directory from fragments, if any structures are lost.
 
-Then follows the actual file contents, which in this case is a commit, in ASCII.
+It is followed by the actual file contents, which in this case is a commit, in ASCII.
 
 Things in gits object storage can get orphaned or grow without size.
 Maintenance procedures exist that walk the various structures, identify orphaned objects and clean up things.
