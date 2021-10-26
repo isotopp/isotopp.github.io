@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: A job queue in Python</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-a-job-queue-in-python-page">
+	<h1 class="title">
+            MySQL: A job queue in Python
+	</h1>
+
+	<p>Somebody needed a job queue in Python:
+Multiple writers insert into it in random order, and the jobs are written into the MySQL table <code>jobs</code>.
+From the <code>jobs</code> table, multiple consumers claim jobs in batches of <code>n</code> or smaller (n=100), and process them.
+After processing, the consumers delete the jobs. We need concurrent job generation and consumption, with proper and efficient locking.</p>
+<p>The full source for this example can be seen in <a href="https://github.com/isotopp/mysql-dev-examples" target="_blank" rel="noopener">mysql-dev-examples</a>
+
+ in <a href="https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-claim-jobs/mysql-claim-jobs.py" target="_blank" rel="noopener">mysql-claim-jobs.py</a>
+
+.</p>
+<h2 id="base-program">
+    <a href="#base-program">
+	Base Program
+    </a>
+</h2>
+<p>Using our usual includes and setup,</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+<span style="color:#f92672">from</span> random <span style="color:#f92672">import</span> randint
+<span style="color:#f92672">from</span> sys <span style="color:#f92672">import</span> exit
+<span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Process
+
+<span style="color:#f92672">import</span> click
+<span style="color:#f92672">import</span> MySQLdb
+<span style="color:#f92672">import</span> MySQLdb.cursors
+
+
+db_config <span style="color:#f92672">=</span> dict(
+    host<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+    user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;kris&#34;</span>,
+    passwd<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;geheim&#34;</span>,
+    db<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;kris&#34;</span>,
+    cursorclass<span style="color:#f92672">=</span>MySQLdb<span style="color:#f92672">.</span>cursors<span style="color:#f92672">.</span>DictCursor,
+)
+</code></pre></div><h2 id="table-jobs-and-setup">
+    <a href="#table-jobs-and-setup">
+	Table <code>jobs</code> and setup
+    </a>
+</h2>
+<p>we create a MySQL table <code>jobs</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@click.group</span>(help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Generate and consume jobs concurrently&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sql</span>():
+    <span style="color:#66d9ef">pass</span>
+
+
+<span style="color:#a6e22e">@sql.command</span>(help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Recreate jobs table&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">setup_tables</span>():
+sql_setup <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#34;drop table if exists jobs&#34;</span>,
+    <span style="color:#e6db74">&#34;&#34;&#34;create table jobs (
+</span><span style="color:#e6db74">        id integer not null primary key auto_increment,
+</span><span style="color:#e6db74">        d varchar(64) not null,
+</span><span style="color:#e6db74">        e varchar(64) not null,
+</span><span style="color:#e6db74">        status enum(&#34;unclaimed&#34;, &#34;claimed&#34;, &#34;done&#34;) not null,
+</span><span style="color:#e6db74">        owner_id integer null,
+</span><span style="color:#e6db74">        owner_date datetime null,
+</span><span style="color:#e6db74">        index(d),
+</span><span style="color:#e6db74">        index(status)
+</span><span style="color:#e6db74">        )&#34;&#34;&#34;</span>,
+        <span style="color:#e6db74">&#34;commit&#34;</span>,
+    ]
+
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+
+    <span style="color:#66d9ef">for</span> cmd <span style="color:#f92672">in</span> sql_setup:
+        <span style="color:#66d9ef">try</span>:
+            c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+            c<span style="color:#f92672">.</span>execute(cmd)
+        <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+            click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#34;setup_tables: failed {e} with {cmd}.&#34;</span>)
+
+
+sql()
+</code></pre></div><p>In our table, the fields <code>d</code> and <code>e</code> represent the job payload.
+We will later select jobs for processing based on the contents of the <code>d</code> field, so we create an index on that.</p>
+<p>Each job has a <code>status</code> (<code>unclaimed</code> or <code>claimed</code>, and for debugging <code>done</code> instead of being deleted), an owner and an access date which we update when we change the claim status of the job.
+As we access jobs by status, we also index on <code>status</code>.</p>
+<h2 id="multiprocessing">
+    <a href="#multiprocessing">
+	Multiprocessing
+    </a>
+</h2>
+<p>We generate a set of two generators that concurrently insert jobs into the <code>jobs</code> table, and a set of ten consumers that take jobs out of the <code>jobs</code> table.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@sql.command</span>(help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Run job creation and consumer jobs&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start_processing</span>():
+    proc_generator <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>):
+        g <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>generator, args<span style="color:#f92672">=</span>(i,))
+        proc_generator<span style="color:#f92672">.</span>append(g)
+        g<span style="color:#f92672">.</span>start()
+
+    proc_consumer <span style="color:#f92672">=</span> []
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">11</span>):
+        c <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>consumer, args<span style="color:#f92672">=</span>(i,))
+        proc_consumer<span style="color:#f92672">.</span>append(c)
+        c<span style="color:#f92672">.</span>start()
+</code></pre></div><p>From <code>multiprocessing</code>, we are using <code>Process</code> to handle this.
+Each of these processes is getting an identification number as a parameter using the <code>args=</code> named parameter to the constructor.
+We will later use this in the <code>consumer()</code> to track the owner of a claimed job.</p>
+<h2 id="the-generators">
+    <a href="#the-generators">
+	The Generators
+    </a>
+</h2>
+<p>Our generator takes the <code>generator_id</code> as a parameter, but makes no use of it.</p>
+<p>We generate random <code>d</code> and <code>e</code> fields, and use autoincremented numbers to identify the individual jobs.
+The new job has the status of <code>unclaimed</code> and the <code>owner_id</code> and <code>owner_date</code> are <code>NULL</code>.
+For speed, we commit to the jobs table only every tenth job.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">generator</span>(generator_id):
+counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+step <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>
+
+    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;insert into jobs (id,d,e,status,owner_id,owner_date) values (NULL,</span><span style="color:#e6db74">%(d)s</span><span style="color:#e6db74">,</span><span style="color:#e6db74">%(e)s</span><span style="color:#e6db74">,&#39;unclaimed&#39;,NULL,NULL)&#34;</span>
+
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+
+    <span style="color:#66d9ef">while</span> True:
+        data <span style="color:#f92672">=</span> {
+            <span style="color:#e6db74">&#34;d&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join([chr(randint(<span style="color:#ae81ff">97</span>, <span style="color:#ae81ff">97</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">25</span>)) <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">64</span>)]),
+            <span style="color:#e6db74">&#34;e&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join([chr(randint(<span style="color:#ae81ff">97</span>, <span style="color:#ae81ff">97</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">25</span>)) <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">64</span>)]),
+        }
+        c<span style="color:#f92672">.</span>execute(cmd, data)
+        counter <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">if</span> counter <span style="color:#f92672">%</span> step <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            sleep(<span style="color:#ae81ff">0.1</span>)
+            db<span style="color:#f92672">.</span>commit()
+</code></pre></div><h2 id="the-consumers">
+    <a href="#the-consumers">
+	The Consumers
+    </a>
+</h2>
+<p>Our consumers need to claim unclaimed jobs that fulfill a condition from the <code>jobs</code> table.
+For simplicity, we claim rows that start with a random character, for example &lsquo;a%&rsquo;.</p>
+<h3 id="naive-approach-using-update">
+    <a href="#naive-approach-using-update">
+	Naive approach using <code>UPDATE</code>
+    </a>
+</h3>
+<p>In SQL, this could be</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">UPDATE</span> jobs <span style="color:#66d9ef">SET</span>
+  status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;claimed&#39;</span>,
+  owner_id <span style="color:#f92672">=</span> <span style="color:#f92672">?</span>,
+  owner_date <span style="color:#f92672">=</span> now()
+<span style="color:#66d9ef">WHERE</span>
+  status <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;unclaimed&#39;</span> <span style="color:#66d9ef">AND</span>
+  d <span style="color:#66d9ef">LIKE</span> <span style="color:#e6db74">&#39;a%&#39;</span>
+</code></pre></div><p>But if we did it like this, we would run into two problems:</p>
+<ul>
+<li>We do not get the claimed records for processing.
+We would need to select them after claiming them (<code>SELECT id, d, e FROM jobs WHERE status = 'claimed' AND owner_id = ?</code>).</li>
+<li>The <code>UPDATE</code> statement produces X-locks, and these persist until we commit.
+Other processes trying to claim jobs run the risk of running into our X-locks while scanning the table.
+These processes would hang.</li>
+</ul>
+<p>We need another approch to handle this to make it efficent.</p>
+<h3 id="smart-approach-using-select--for-update-skip-locked">
+    <a href="#smart-approach-using-select--for-update-skip-locked">
+	Smart approach using <code>SELECT ... FOR UPDATE SKIP LOCKED</code>
+    </a>
+</h3>
+<p>Starting with MySQL 8, we get the option <code>SKIP LOCKED</code> when running select.
+This is documented in <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking-reads.html" target="_blank" rel="noopener">the manual</a>
+
+ as follows:</p>
+<blockquote>
+<p>A locking read that uses SKIP LOCKED never waits to acquire a row lock.
+The query executes immediately, removing locked rows from the result set.</p>
+</blockquote>
+<p>Using <code>FOR UPDATE</code> we could read the rows we want and mark them for a later <code>UPDATE</code> with X-locks.
+At the same time we ignore the records already marked for later updates by other processes without stopping.</p>
+<p>This is precisely what we need.
+In order to mark only the rows we are intending to claim as locked, we need to access the rows in our <code>SELECT .. .FOR UPDATE SKIP LOCKED</code> statement by primary key.
+That is, our statement needs to have the form <code>SELECT ... FROM jobs WHERE id IN ( 1, 2, 3 ) FOR UPDATE SKIP LOCKED</code>.
+We need another <code>SELECT</code> statement before the locking <code>SELECT</code> in order to translate our condition into a set of primary keys.</p>
+<p>So this is the plan:</p>
+<ol>
+<li>Run a query to find a set of candidate primary keys (100 or fewer).
+This query can run outside of our transaction and could use a replica to find a set of candidate primary keys.</li>
+<li>Start a transaction.
+This happens all the time and automatically in Python.
+<ul>
+<li>In our transaction, run the <code>SELECT ... FROM josb WHERE id IN (...) FOR UPDATE SKIP LOCKED</code> as discussed.</li>
+<li>Using the result of the previous <code>SELECT</code> statement, run the <code>UPDATE</code> to claim the jobs.</li>
+<li>Run <code>COMMIT</code> to drop the X-locks, and make the change visible to other processes.</li>
+</ul>
+</li>
+</ol>
+<p>Note that the set of candidate primary keys can be up to 100 ids in size, but can also be empty:
+We are searching for unclaimed jobs that start with a randomly selected letter, and it may be there are none.</p>
+<p>Note that the set of claimed primary keys can be identical to the candidate primary key set, or smaller.
+It may be empty, even if the candidate set was not:
+In this case all candidates have been snatched up by other consumers before we could.
+We may want to count and log that, in order to detect if our concurrency in consumers is too high.</p>
+<h4 id="finding-candidates">
+    <a href="#finding-candidates">
+	Finding candidates
+    </a>
+</h4>
+<p>In code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">find_candidates</span>(cursor, wanted):
+    candidate_cmd <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;select id from jobs where d like </span><span style="color:#e6db74">%(search_string)s</span><span style="color:#e6db74"> and status = </span><span style="color:#e6db74">%(wanted)s</span><span style="color:#e6db74"> limit 100&#34;</span>
+    search_string <span style="color:#f92672">=</span> chr(randint(<span style="color:#ae81ff">97</span>, <span style="color:#ae81ff">97</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">25</span>)) <span style="color:#f92672">+</span> <span style="color:#e6db74">&#39;%&#39;</span>
+    <span style="color:#66d9ef">try</span>:
+        cursor<span style="color:#f92672">.</span>execute(candidate_cmd, {<span style="color:#e6db74">&#34;search_string&#34;</span>: search_string, <span style="color:#e6db74">&#34;wanted&#34;</span>: wanted})
+    <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#34;find_candidates: {e}&#34;</span>)
+        exit(<span style="color:#ae81ff">1</span>)
+
+    candidate_ids <span style="color:#f92672">=</span> cursor<span style="color:#f92672">.</span>fetchall()
+
+    <span style="color:#66d9ef">return</span> [c[<span style="color:#e6db74">&#34;id&#34;</span>] <span style="color:#66d9ef">for</span> c <span style="color:#f92672">in</span> candidate_ids]
+</code></pre></div><p>We are using some arbitrary SQL condition to find records.
+In our example, we are using <code>WHERE d LIKE 'a%' AND status = 'unclaimed'</code>, for variable intitial letters and for variable status values.
+We are only interested into the primary keys, so we return only these, in a <code>list</code>.</p>
+<h4 id="consuming-jobs">
+    <a href="#consuming-jobs">
+	Consuming jobs
+    </a>
+</h4>
+<p>The actual <code>consumer()</code> then looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">consumer</span>(consumer_id):
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># find potential records to process with the status &#39;unclaimed&#39;</span>
+        candidates <span style="color:#f92672">=</span> find_candidates(c, <span style="color:#e6db74">&#34;unclaimed&#34;</span>)
+
+        <span style="color:#75715e"># we did not find any</span>
+        <span style="color:#66d9ef">if</span> len(candidates) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#75715e"># this is important, it will drop the persistent read view.</span>
+            <span style="color:#75715e"># not doing this means we will never see newly inserted records from the generator</span>
+            db<span style="color:#f92672">.</span>commit()
+            <span style="color:#66d9ef">continue</span>
+
+        <span style="color:#75715e"># with the list of candidate ids, we select them for update, skipping locked records</span>
+        lock_cmd <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;select id, d, e from jobs where status = &#39;unclaimed&#39; and id in </span><span style="color:#e6db74">%(candidates)s</span><span style="color:#e6db74"> for update skip locked&#34;</span>
+        c<span style="color:#f92672">.</span>execute(lock_cmd, {<span style="color:#e6db74">&#34;candidates&#34;</span>: candidates})
+        claimed_records <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>fetchall()  <span style="color:#75715e"># these are the records we want to claim for processing</span>
+
+        <span style="color:#75715e"># make us a list of ids of the claimed records</span>
+        claimed_ids <span style="color:#f92672">=</span> [ r[<span style="color:#e6db74">&#34;id&#34;</span>] <span style="color:#66d9ef">for</span> r <span style="color:#f92672">in</span> claimed_records]
+        claimed_ids_count <span style="color:#f92672">=</span> len(claimed_ids)
+
+        <span style="color:#66d9ef">if</span> len(claimed_ids) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">continue</span>
+
+        <span style="color:#75715e"># we claim the records, updating their status and owner</span>
+        claim_cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;update jobs 
+</span><span style="color:#e6db74">           set status = &#39;claimed&#39;, 
+</span><span style="color:#e6db74">           owner_date = now(), 
+</span><span style="color:#e6db74">           owner_id = </span><span style="color:#e6db74">%(consumer_id)s</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        where id in </span><span style="color:#e6db74">%(claimed_ids)s</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+        c<span style="color:#f92672">.</span>execute(claim_cmd, {<span style="color:#e6db74">&#34;claimed_ids&#34;</span>: claimed_ids, <span style="color:#e6db74">&#34;consumer_id&#34;</span>: consumer_id})
+        db<span style="color:#f92672">.</span>commit()
+
+        <span style="color:#75715e"># doit(claimed_records) -- process the records, that takes some time</span>
+        <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;consumer {consumer_id: } #records = {claimed_ids_count} - {claimed_ids}&#34;</span>)
+        sleep(<span style="color:#ae81ff">0.1</span>)
+
+        <span style="color:#75715e"># after processing we delete them</span>
+        done_cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;delete from jobs where id in </span><span style="color:#e6db74">%(claimed_ids)s</span><span style="color:#e6db74">&#34;</span>
+        c<span style="color:#f92672">.</span>execute(done_cmd, {<span style="color:#e6db74">&#34;claimed_ids&#34;</span>: claimed_ids})
+        db<span style="color:#f92672">.</span>commit()
+</code></pre></div><p>That is, we call <code>find_candidates()</code> to generate a list of candidate ids.
+If we did not find any, we run a <code>db.commit()</code> before we <code>continue</code>.
+This is rather important: We are in a transaction here, and in <code>REPEATABLE READ</code> isolation that means we get a consistent read view.
+If we simply tried again, using only <code>continue</code>, we would stay in the same transaction and would never see the <code>jobs</code> table update.</p>
+<p>Using the set of candidate ids, we then run the locking <code>SELECT</code> as discussed above.
+This does two things:</p>
+<ul>
+<li>it returns the data, which we pick up using <code>claimed_records = c.fetchall()</code></li>
+<li>it also X-locks the rows for claiming them permanently</li>
+</ul>
+<p>We generate a list of <code>claimed_ids</code> from the <code>claimed_records</code>, and check that this list is non-empty.
+If it was empty, we did have a list of candidate ids, but none of these came through.
+That means another concurrent process snatched the candidates from us - all of them.
+We should be recording this, but are not in this example program.</p>
+<p>We then run the actual <code>UPDATE</code> that marks the jobs as claimed, and updates the owner and the datetime of taking possession.
+We need to <code>db.commit()</code> here to write this status change to disk.
+This will now also be visible to other processes.</p>
+<p>We can now proceed to actually process these records at our leisure.
+This may take time, which we simulate with a tiny wait.</p>
+<p>After processing has finished, we delete the jobs from the <code>jobs</code> table, and commit again to make the deletion visible.</p>
+<h2 id="run-log">
+    <a href="#run-log">
+	Run log
+    </a>
+</h2>
+<p>Here is a short test run protocol:</p>
+<pre><code class="language-console" data-lang="console">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py --help
+Usage: mysql-claim-jobs.py [OPTIONS] COMMAND [ARGS]...
+
+Generate and consume jobs concurrently
+
+Options:
+--help  Show this message and exit.
+
+Commands:
+setup-tables      Recreate jobs table
+start-processing  Run job creation and consumer jobs
+(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py setup-tables
+(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py start-processing
+consumer  4 #records = 1 - [1]
+consumer  3 #records = 1 - [5]
+consumer  8 #records = 1 - [17]
+consumer  6 #records = 1 - [13]
+consumer  7 #records = 1 - [15]
+consumer  10 #records = 1 - [11]
+consumer  2 #records = 1 - [12]
+consumer  1 #records = 1 - [9]
+consumer  9 #records = 1 - [3]
+consumer  5 #records = 1 - [7]
+consumer  7 #records = 4 - [36, 59, 62, 109]
+consumer  9 #records = 5 - [44, 85, 113, 119, 127]
+consumer  8 #records = 3 - [72, 79, 126]
+consumer  5 #records = 5 - [45, 63, 80, 94, 95]
+consumer  10 #records = 1 - [51]
+consumer  3 #records = 7 - [2, 14, 22, 53, 68, 120, 140]
+consumer  1 #records = 4 - [23, 97, 115, 122]
+consumer  2 #records = 6 - [4, 47, 65, 99, 103, 105]
+consumer  6 #records = 6 - [26, 32, 43, 77, 83, 86]
+consumer  4 #records = 3 - [48, 84, 130]
+...
+consumer  9 #records = 1 - [12413]
+consumer  3 #records = 2 - [12407, 12445]
+consumer  7 #records = 2 - [12450, 12459]
+consumer  5 #records = 2 - [12446, 12470]
+consumer  1 #records = 3 - [12397, 12426, 12441]
+consumer  8 #records = 1 - [12458]
+consumer  2 #records = 15 - [12282, 12313, 12327, 12350, 12365, 12369, 12385, 12399, 12401,\
+  12425, 12435, 12443, 12452, 12453, 12462]
+consumer  4 #records = 3 - [12421, 12440, 12466]
+^S
+consumer  1 #records = 1 - [12515]
+counter = 6000                                                                                      
+counter = 6000                                                                                      
+consumer  5 #records = 30 - [12525, 12532, 12575, 12592, 12673, 12676, 12680, 12714, 12719, 
+  12732, 12771, 12804, 12882, 12961, 12977, 13010, 13024, 13060, 13068, 13156, 13204, 13214, 
+  13249, 13279, 13280, 13284, 13299, 13307, 13358, 13396]
+consumer  10 #records = 31 - [12516, 12531, 12537, 12541, 12623, 12630, 12638, 12742, 12777,
+  12791, 12792, 12800, 12810, 12819, 12821, 12981, 12990, 13117, 13119, 13131, 13138, 13161, 
+  13180, 13192, 13202, 13259, 13283, 13352, 13367, 13383, 13414]          
+</code></pre><p>We can see how each consumer grabs a variable number of jobs for processing, sometimes single jobs, sometimes many more.
+If we let the thing run for some time, we see that the ids increment.
+When we stop the output with Ctrl-S, we also block the consumers.
+On resume, very many jobs are lingering in the queue, and initially the consumers claim a large list of ids on each grab.
+This quickly goes back to normal levels after the number of jobs in the queue goes down to normal levels, too.</p>
+<p>We can check queue length and status in the database:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> status, <span style="color:#66d9ef">count</span>(status) <span style="color:#66d9ef">from</span> jobs <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> status;
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> status    <span style="color:#f92672">|</span> <span style="color:#66d9ef">count</span>(status) <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> unclaimed <span style="color:#f92672">|</span>            <span style="color:#ae81ff">47</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> claimed   <span style="color:#f92672">|</span>            <span style="color:#ae81ff">23</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><h2 id="summary">
+    <a href="#summary">
+	Summary
+    </a>
+</h2>
+<p>We created a job queue in the database, using a concurrent Python program.
+To select jobs efficiently, we reduce an arbitrary query to a set of candidate primary keys.
+We then use a <code>SELECT ... FROM jobs WHERE id IN ( ... ) FOR UPDATE SKIP LOCKED</code> to create a set of X-locks on the candidate records using <code>FOR UPDATE</code>.
+At the same time, we avoid waiting on other threads' X-locks using the <code>SKIP LOCKED</code> functionality new in MySQL 8.
+We then use the data fetched by the <code>SELECT FOR UPDATE</code> to commit permanent ownership for these records, and also use this data for processing.
+After processing we clean up by deleting the jobs from the table.</p>
+<p>The approach can be scaled further by partitioning the <code>jobs</code> table, if needed.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

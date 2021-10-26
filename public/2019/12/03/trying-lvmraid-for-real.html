@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Trying lvmraid for real</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="trying-lvmraid-for-real-page">
+	<h1 class="title">
+            Trying lvmraid for real
+	</h1>
+
+	<p>So after testing [LVM Raid]({% link _posts/2019-12-02-cloning-and-splitting-logical-volumes.md %})
+in princple, I have been trying it on some real hardware to see
+what happens. The idea was to estimate if it scales and if not,
+how it doesn&rsquo;t. I was expecting to run into all kinds of obscure
+problems in my testing, but in fact, it was a quick and short
+death.</p>
+<p>Here is my box: QuantaGrid D42A-2U with an <a href="https://www.amd.com/en/products/cpu/amd-epyc-7551p" target="_blank" rel="noopener">AMD EPYC 7551P CPU</a>
+
+
+(32C, HT off), 1024 GB of memory, a boot disk and 12x
+Micron_9200_MTFDHAL11TATCW
+(<a href="https://www.micron.com/-/media/client/global/documents/products/product-flyer/9200_ssd_product_brief.pdf" target="_blank" rel="noopener">PDF</a>
+
+)
+for 120TB of disk storage.</p>
+<p>The setup was very straight forward:</p>
+<pre><code class="language-console" data-lang="console"># pvcreate /dev/nvme*n1
+# vgcreate vg00 /dev/nvme*n1
+# lvcreate -n mysqlvol -L60T vg00
+# lvconvert --type raid1 -m1 /dev/vg00/mysqlVol
+</code></pre><p>The objective was to ensure that an existing non-raided volume
+could be converted into a RAID after the fact. My installation
+is half-sized. The actual production version of this would be on
+a machine with 24 of these drives, 12 of them currently filled
+by a 90T database, and I just used a spare box to test the basic
+procedure.</p>
+<h2 id="it-works-slowly">
+    <a href="#it-works-slowly">
+	It works, slowly
+    </a>
+</h2>
+<p>So, this worked:</p>
+<pre><code class="language-console" data-lang="console"># lvs -a -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
+  LV                  VG    Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
+  audit               sysvm -wi-ao----    1.95g
+  log                 sysvm -wi-ao----   10.00g
+  root                sysvm -wi-ao----    9.77g
+  swap                sysvm -wi-ao---- 1000.00m
+  var                 sysvm -wi-ao----   35.00g
+  mysqlVol            vg00  rwi-a-r---   60.00t                                    0.51                                      0 recover
+  [mysqlVol_rimage_0] vg00  iwi-aor---   60.00t
+  [mysqlVol_rimage_1] vg00  Iwi-aor---   60.00t
+  [mysqlVol_rmeta_0]  vg00  ewi-aor---    4.00m
+  [mysqlVol_rmeta_1]  vg00  ewi-aor---    4.00m
+</code></pre><h2 id="performance-metric">
+    <a href="#performance-metric">
+	Performance metric
+    </a>
+</h2>
+<p>For very slow and single threaded values of work: <code>iostat -x -k 10</code></p>
+<p><p class="md__image">
+  <img src="/uploads/2019/12/lvmraid-iostat.png" alt=""  />
+</p>
+
+</p>
+<p>As you can see, nmve0n1 is being read at around 240 MB/s, and
+being written at the same speed to nvme6n1. The rimage_0 is
+dm-8, you can see the reading, and the writing goes to dm-10,
+the rimage_1.</p>
+<p>At this rate, I will get a RAID sync in 3.5 days or so (60*1024/0.22 = 280k
+seconds).</p>
+<h2 id="expected-performance">
+    <a href="#expected-performance">
+	Expected performance
+    </a>
+</h2>
+<p>The expected behavior is to see a request queue deep enough to get the full
+transfer rate from a single NVME device (3.5 GB/s according to the spec
+sheet, anything above 2.5 GB/s sustained is good enough), and on all 6
+device pairs in parallel, for a total of anything above 6x 2.5GB/s = 15 GB/s
+for an unconstrained RAID-1 sync. That is what the hardware can do here. In
+this case, the sync would complete in 4096 seconds, a bit under 1.5h.</p>
+<p>So basically this died in the crib, because it does not leverage any
+parallelism the CPU, the multitude of drives, the deep queues of the NVMEs
+or anything else would have to offer.</p>
+<p>It&rsquo;s from the past.</p>
+<p>LVM is in need of serious overhaul in order to become a tool for the 2020&rsquo;s.
+Outside of toy workloads, snapshots don&rsquo;t work,
+<a href="https://www.systutorials.com/docs/linux/man/7-lvmraid/" target="_blank" rel="noopener">lvmraid</a>
+
+ also does
+not work.</p>
+<h2 id="why-is-this-slow">
+    <a href="#why-is-this-slow">
+	Why is this slow?
+    </a>
+</h2>
+<p>A single NVME drive (we have 2x 6 of them) like the one I used is a 4xPCIe
+3.0 device, so we get a transfer rate on the bus of 32 GByte/s. The internal
+structure of the flash limits the performance here, and according to the
+technical specifications of the device we get 800k-ish IOPS (let&rsquo;s say it&rsquo;s
+a million) and 3.5 GByte/s from it.</p>
+<p>We also can measure the device and see that it does have a read latency of
+around 100-120 microseconds, and a buffered write latency (to the internal
+RAM of the device, assume it has 512 MB or so) of 50 microseconds. If you
+write a lot, writes become unbuffered at, say, 420 micros.</p>
+<p>In order to get 1 million IOPS single threaded at a queue depth of 1, you
+would need a latency of 1 microseconds. You don&rsquo;t get that, so in order to
+get all IOPS, you need to have deep queues (and async IO) or many threads.</p>
+<p>In order to get 3.5 GB/s (say, 4 GB/s) at 4 KB block size, you need 1
+million blocks per second (920k for 3.5 GB/s). Again, you need deep queues
+or many thread to get that.</p>
+<h2 id="addendum-unexpected-performance-limits">
+    <a href="#addendum-unexpected-performance-limits">
+	Addendum: Unexpected performance limits
+    </a>
+</h2>
+<p>Today, I monitored the still syncing array and it has been progressing at
+around 250 MB/s equalling around 1.1% per hours over night, and
+is now at 20-something percent synced.</p>
+<pre><code class="language-console" data-lang="console"># lvchange -maxrecoveryspeed=1000k /dev/vg00/mysqlVol
+</code></pre><p>This works, and throttles the sync to just below 1000k per
+second. Conversely, setting a recovery speed of 0k falls back to
+the default 250 MB/s.</p>
+<p>But: Setting it to 1000000k ups the speed to around 550 MB/s,
+which is the single threaded native speed of the array. I see
+around 4300 requests/s at a size of 256 KB at the NVME level,
+and around 8600 requests/s at a size of 128 KB one level higher
+in the dm-layer. There is also some kind of request merging
+going on somewhere in the stack, which for adjacent requests
+even makes sense.</p>
+<h2 id="addendum-interrupting-the-raid-sync">
+    <a href="#addendum-interrupting-the-raid-sync">
+	Addendum: Interrupting the RAID sync
+    </a>
+</h2>
+<p>If you try to split the Volume while it is still synching, you
+will find that this is not possible.</p>
+<pre><code class="language-console" data-lang="console"># lvconvert --splitmirrors 1 -n splitlv /dev/vg00/mysqlVol
+  Unable to split vg00/mysqlVol while it is not in-sync.
+</code></pre><p>Another observationL While lvmraid employs mdraid code, working with
+devicemapper block devices for the data and external metadata, mdraid does
+not see any of this in /proc;</p>
+<pre><code class="language-console" data-lang="console"># cat /proc/mdstat
+Personalities : [raid6] [raid5] [raid4] [raid1]
+unused devices: &lt;none&gt;
+</code></pre><p>You can&rsquo;t use any mdraid tooling to turn knobs inside lvm
+controlled mdraid code.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

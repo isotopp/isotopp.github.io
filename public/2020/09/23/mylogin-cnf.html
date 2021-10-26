@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: Provisioning .mylogin.cnf</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-provisioning-.mylogin.cnf-page">
+	<h1 class="title">
+            MySQL: Provisioning .mylogin.cnf
+	</h1>
+
+	<p>MySQL uses connection and config parameters from a number of possible sources. The easiest way to find out where it is looking for config files is to run</p>
+<pre><code class="language-console" data-lang="console">$ mysql --help | grep cnf
+                      order of preference, my.cnf, $MYSQL_TCP_PORT,
+/etc/my.cnf /etc/mysql/my.cnf /Users/kkoehntopp/homebrew/etc/my.cnf ~/.my.cnf
+</code></pre><p>As can be seen, my version of the MySQL client checks in this order</p>
+<ul>
+<li>/etc/my.cnf</li>
+<li>/etc/mysql/my.cnf</li>
+<li>/Users/kkoehntopp/homebrew/etc/my/cnf</li>
+<li>~/.my.cnf</li>
+</ul>
+<p>The cnf file is a file in dot-ini syntax, so you have <code>[groups]</code> and each group contains lines with <code>key = value</code> pairs. Which groups are read?</p>
+<pre><code class="language-console" data-lang="console">$ mysql --help | grep &quot;groups are&quot;
+The following groups are read: mysql client
+</code></pre><p>So in my case, I would create a <code>/Users/kkoehntopp/.my.cnf</code> looking like this:</p>
+<pre><code class="language-console" data-lang="console">[client]
+user=kris
+password=geheim
+host=127.0.0.1
+
+[mysql]
+database=kris
+show-warnings
+prompt=\U [\d]&gt;\_
+</code></pre><p>That is, I put general connection parameters such as the host, user and password into the <code>client</code> group, and program specific parameters such as database, prompt and others into program specific groups such as <code>mysql</code>. That way, the <code>mysqldump</code> and <code>mysql</code> programs will connect automatically, but the <code>mysql</code> options will not interfere with <code>mysqldump</code>.</p>
+<h2 id="mylogincnf">
+    <a href="#mylogincnf">
+	.mylogin.cnf
+    </a>
+</h2>
+<p>Some time in 2012, the <code>.mylogin.cnf</code> mechanism and the <code>mysql_config_editor</code> program were added. They provide little value in security as we will see, but allow storage of more than one set of credentials: It is now possible to store a number of login pathes (credential sets) in a mylogin file, and call the client program with <code>--login-path=...</code>. The client program will then read the mylogin file and use the connection parameters from there.</p>
+<p>mylogin files are being made with the <code>mysql_config_editor</code> program, for example</p>
+<pre><code class="language-console" data-lang="console">$ mysql_config_editor set --login-path=test --user=kris --host=localhost --password
+Enter password: geheim
+
+$ mysql_config_editor print --all
+[local]
+user = root
+password = *****
+host = localhost
+[test]
+user = kris
+password = *****
+host = localhost
+</code></pre><p>will create a new mylogin, or amend an existing one, and define a login path named <code>test</code>. It will take the host and the username on the command line, but you cannot specify the password easily - it has to be typed in.</p>
+<p>This makes provisioning hard - templating this in Ansible is not easy and dancing around with <code>expect</code> and friends is just silly.</p>
+<h2 id="working-around-this">
+    <a href="#working-around-this">
+	Working around this
+    </a>
+</h2>
+<p>A small <a href="https://github.com/isotopp/mysql-config-coder" target="_blank" rel="noopener">Python Program</a>
+
+ based on a much older <a href="http://mysqldump.azundris.com/archives/104-.mylogin.cnf-password-recovery.html" target="_blank" rel="noopener">article and PHP program</a>
+
+ of mine changes that.</p>
+<p>It can decode and encode mylogin files, opening them up to Ansible templating. Just provision a valid mylogin file in plain text, encode it and delete the plain text original file.</p>
+<p>The sample session looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> generate a dummy file
+mysql_config_editor <span style="color:#66d9ef">set</span> <span style="color:#75715e">--login-path=local --user=root --host=localhost --password
+</span><span style="color:#75715e"></span>Password: keks
+
+<span style="color:#f92672">#</span> decode this file
+.<span style="color:#f92672">/</span>mysql_config_coder.py decode <span style="color:#f92672">~/</span>.mylogin.cnf mylogin.<span style="color:#66d9ef">out</span>
+cat mylogin.<span style="color:#66d9ef">out</span>
+
+<span style="color:#f92672">#</span> make changes <span style="color:#66d9ef">to</span> mylogin.<span style="color:#66d9ef">out</span> <span style="color:#66d9ef">and</span>
+.<span style="color:#f92672">/</span>mysql_config_coder.py encode mylogin.<span style="color:#66d9ef">out</span> mylogin.cnf
+chmod <span style="color:#ae81ff">600</span> mylogin.cnf
+
+<span style="color:#f92672">#</span> test <span style="color:#66d9ef">with</span> original
+MYSQL_TEST_LOGIN_FILE<span style="color:#f92672">=</span><span style="color:#960050;background-color:#1e0010">$</span>(pwd)<span style="color:#f92672">/</span>mylogin.cnf
+mysql_config_editor <span style="color:#f92672">-</span>v print <span style="color:#75715e">--all
+</span><span style="color:#75715e"></span>my_print_defaults <span style="color:#f92672">-</span>s <span style="color:#66d9ef">local</span>
+
+<span style="color:#f92672">#</span> Note: mysql_config_editor will <span style="color:#66d9ef">not</span> print the password, just five stars
+<span style="color:#f92672">#</span>       but my_print_defaults should also <span style="color:#66d9ef">show</span> the password.
+</code></pre></div><p>The program depends on <code>click</code> and <code>pycrypto</code>, but really any implementation of <code>aes-128-ebc</code> should be easily usable.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

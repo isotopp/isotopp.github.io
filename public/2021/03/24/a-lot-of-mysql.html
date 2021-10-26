@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - That&#39;s a lot of databases</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="thats-a-lot-of-databases-page">
+	<h1 class="title">
+            That&rsquo;s a lot of databases
+	</h1>
+
+	<p>Where I work, we are using MySQL a lot. The databases are being organized in replication hierarchies, and each hierarchy is a tree topology with a single primary and a number of intermediate replicas.</p>
+<h2 id="replication-is-a-tree-managed-by-orchestrator">
+    <a href="#replication-is-a-tree-managed-by-orchestrator">
+	Replication is a tree managed by Orchestrator
+    </a>
+</h2>
+<p>We are using MySQL orchestrator to manage the replication topology.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/03/mysql-many-01.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>MySQL Orchestrator shows a typical replication hierarchy. Each color indicates a different data center/availability zone. Replication is a tree, from the primary to per-AZ intermediate replicas for fan-out to leaf replicas. Clients connect to the primary for writing, and to the leaf replicas for reading. Special instances exist as clone sources and backup instances.</em></p>
+<p>The diagram above is the view presented by <a href="https://github.com/openark/orchestrator" target="_blank" rel="noopener">MySQL Orchestrator</a>
+
+ of a single replication hierarchy. Servers are arranged in a tree-shaped hierarchy. All writes go to the Primary at the tree root, which then replicates to intermediary replicas. These fan out to leaf replicas. Clients write to the Primary, and read from the leaf replicas.</p>
+<p>Special instances exist that are being used as clone sources for new replicas, to make backups and for other internal purposes (such as replication catchup benchmarks, for example).</p>
+<p>Different colors indicate different data centers or availability zones.</p>
+<h2 id="clients-find-servers-in-zookeeper">
+    <a href="#clients-find-servers-in-zookeeper">
+	Clients find servers in Zookeeper
+    </a>
+</h2>
+<p>Leaf replicas (and the Primary) register themselves with a Zookeeper when they are ready to serve traffic. The Zookeeper organizes replicas in the same availability zone in a pool, and offers that pool to clients.</p>
+<p>Clients subscribe to pool changes in the Zookeeper. On change, they get notified and [atomically]({% link _posts/2018-11-29-but-is-it-atomic.md %}) dump the pool to a file on disk. That way, when Zookeeper is unavailable due to Zk internal voting or realignment, the clients still have a roster of endpoints to choose from. Also, they do not have to ask the Zk on each connect, only on each change.</p>
+<p>Some replication hierarchies see use from multiple applications: They are not single tenant, but multiple applications from different teams use the database as a shared data source, and as a way to communicate. That is, because historically there was only a single application, and a single schema, and then we grew and split things off.</p>
+<p>In order to separate possibly interfering workloads from each other, such hierarchies have multiple pools for leaf replicas - one for each application. So there may be an &lsquo;xml-misc&rsquo; hierarchy (which would be the default pool), but also an &lsquo;xml-mobile&rsquo;, or an &lsquo;xml-slow&rsquo;. The latter would contain a number of sacrificial hosts to run queries on that cannot be optimized - that way they would interfere with each other, but not with the rest of the workload.</p>
+<p>In any case, each leaf replica is always a member of at most one of these pools (it may not be in any pool, if it is a special purpose replica).</p>
+<p>Pool name and AZ translate into a Zk path, and into a roster file on disk. Clients request a database handle by pool name, and end up with a connection to a random endpoint in the pool. Connections are direct, so in the MySQL processlist we can see the client host name and port as well as the application user name, which makes a lot of operational things much simpler.</p>
+<p>Zk can also be used to find Primaries, and applications that are Zk aware benefit from that, because Zk updates are close to instantaneous. We also need to provide Primary hostnames via DNS, because there is always the odd shell script or non-Zk aware script in a snowflake language that does not understand pools. At least we do not have to manually split writes and reads from a single database handle, as if it&rsquo;s 2001.</p>
+<h2 id="dynamic-database-architecture">
+    <a href="#dynamic-database-architecture">
+	Dynamic database architecture
+    </a>
+</h2>
+<p>Some replication hierarchies can get pretty large.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/03/mysql-many-02.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>The oldest and largest replication hierarchy as seen in Orchestrator. It is more than 20 years old, and started as a schema on Postgres. But because Postgres could not replicate at all back then the company migrated to MySQL and grew on MySQL replication.</em></p>
+<p>Originally, the company ran on Postgres, over 20 years ago. Back then Postgres could not reliably scale anyway, so the company migrated their stuff to MySQL and grew on MySQL replication. As you can see from the colors, this particular hierarchy spans three AZ. The blue bubbles in the leaf nodes indicate number of leaf replicas in the (compressed) tree view.</p>
+<p>The segmentation of this particular replication hierarchy into pools is not visible within Orchestrator, only by dumping Zk.</p>
+<p>We use MySQL in a [memory saturated]({% link _posts/2021-03-12-memory-saturated-mysql.md %}) setup where possible. As a result there is no additional caching layer between the database and the application – MySQL can use memory and serve results just as fast as Memcache, when you ask it Memcache complexity questions. The boundary between Memcache level queries and true SQL is pretty fluid that way, and you do not have to deal with cache invalidation, cache representation issues and many other things that get in the way. Also, unlike a traditional caching layer, MySQL has a restart and warmup concept, so this operational aspect is also taken care of.</p>
+<p>Instances currently have a livetime of at most 60 days, and we are targeting a recycle time of less than 30 days. Also, the actual number of instances varies depending on the outcome of automated load tests in production and the traffic prediction. That leads to a pretty dynamic environment, but that is easily taken care of by the Zk based discovery, the replication tree management done with Orchestrator and the automated provisioning.</p>
+<h2 id="from-auto-provisioned-bare-metal">
+    <a href="#from-auto-provisioned-bare-metal">
+	From auto-provisioned Bare Metal…
+    </a>
+</h2>
+<p>All of that is extremely old fashioned bare metal stuff. Currently databases run on HP or Dell blades, the smallest pieces of hardware one can reasonably buy: Dual-Silver 4110 machines (16 C/32 HT) with 96 or 128 GB of memory and one or two NVME SSD with 1.92 TB of storage each. We do not use RAID, we have replicas for redundancy.</p>
+<p>In terms of RDS instances, these would map to db.m5.5xl, if these existed, I believe. Look up the list price of a db.m5.4xl, and compare. I believe we are at around 1/20th the cost of a hypothetical db.m5.5xl, and that is with pretty inefficient baremetal.</p>
+<p>Bare metal with local storage is, if autoprovisioned, a wonderful thing – there is perfect workload isolation and no crosstalk, no jitter. Performance is extremely predictable, and the only adversary you are ever going to meet when debugging performance problems is yourself.</p>
+<p>Having autoprovisoned bare metal is a large hurdle, though. There are two teams that have over time provided a bunch of software called ServerDB with many subcomponents related to talking to <a href="https://github.com/bmc-toolbox/bmcbutler" target="_blank" rel="noopener">BMCs</a>
+
+, <a href="https://github.com/bmc-toolbox/dora" target="_blank" rel="noopener">enumerating machine components</a>
+
+ and <a href="https://github.com/bmc-toolbox/bmcfwupd" target="_blank" rel="noopener">managing firmware</a>
+
+. There is another team writing a thing called Nemo, which does the same for network equipment. There is the PowerDNS API, and there is a whole collection of storage APIs to talk to, in order to provision local or remote storage.</p>
+<p>The end result is a command line tool that makes you new databases, one individual copy, or two hundred instances, it almost does not matter.</p>
+<h2 id="-to-something-else">
+    <a href="#-to-something-else">
+	… to something else.
+    </a>
+</h2>
+<p>Unfortunately this does no longer scale. New machinery is so powerful that even the tiniest pieces of hardware are too large for our medium sized databases.</p>
+<p>There are outliers: I have seen instances that run on <a href="https://www.slideshare.net/Storage-Forum/operation-unthinkable-software-defined-storage-bookingcom-peter-buschman#14" target="_blank" rel="noopener">actual storage servers</a>
+
+, but admittedly this particular team is holding it wrong and should rethink the way they are using databases, because an instance with 120 TB local NVME and a single 35 TB table is not a thing that helps with automation at all.</p>
+<p>Normal customers would benefit from running databases in virtual machines that are slices of much larger servers, and that are no larger than, say, 1/4 of the actual hardware, in order to be not overly hard on the packing algorithms of the scheduler.</p>
+<p>But even when running on virtual hardware, predictive autoscaling and long lived instances are a must. Data size matters, and so do optimizations, because lugging around Terabyte sized blocks of data is still carrying a certain operational weight, even in 2021.</p>
+<p>The worst case example would be the very large hierarchy shown above. It has a data directory of 850 GB, plus binlog files, so around one Terabyte of clone work to get up and running. At 400 MB/s instantiation speed, making one instance of these takes not under 45 minutes, and more likely around one hour.</p>
+<p>Assume that you lose one data center branch worth of these (say, the green section in the image above), you would have to reclone that. You would be looking at 100-200 clone operations. Concurrently at 400 MB/s, that&rsquo;s 100 concurrent clones at 400 MB/s, or 40 GB/s. That translates into 400 GBit/s aggregate bandwidth, and that&rsquo;s not happening with a single clone source, and not happening at all unless your network <a href="https://www.packetflow.co.uk/the-history-of-spine-and-leaf-architectures/" target="_blank" rel="noopener">is built for this</a>
+
+.</p>
+<p>So you are looking at a staged rollout with work queues and some orchestration. Plan a multiple day setup time for a thing of that size. And when finished, it starts catching up with replication before it can be useful in production.</p>
+<h2 id="what-i-have-and-what-i-am-looking-for">
+    <a href="#what-i-have-and-what-i-am-looking-for">
+	What I have, and what I am looking for
+    </a>
+</h2>
+<p>At this point in time there is a single Python command <code>dba</code> with subcommands, which talks to all the backend APIs to handle things. It grew out of a collection of shell scripts that did things to a single machine to make DBA life easier, and it still is mostly a local command line application (headless Django). It also is not exposing an API, and cannot be used by other people than DBAs.</p>
+<p>Of course, the number of replication hierarchies does not shrink.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/03/mysql-many-03.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>MySQL Orchestrator Replication Overview screen. Each card is a replication hierarchy with a number of instances organized in one of the trees shown above.</em></p>
+<p>So imagine a thing not unlike a K8s controller, exposing an API, storing a desired state for the entire system of hierarchies and instances, and running a reconciliation loop. But it is not talking to a single K8s cluster, but to a number of backend APis, which may be bare metal hardware, Openstack, EC2, RDS, or K8s.</p>
+<p>It understands MySQL and knows things about the application, like a K8s operator. So it knows <em>This is MySQL</em> and <em>This is how we run MySQL around here.</em> It would understand things like Ownership and Tenancy (&ldquo;This team can make API calls affecting these chains.&quot;) and it would not only understand operational things (&ldquo;Make an instance.&rdquo;, &ldquo;Make a datadir&rdquo;, &ldquo;Connect Replication.&quot;), but also things like Grant Management, Backup and Restore Testing, Production Capacity Testing, Replication Catchup Speed testing and Monitoring, Query Workload subsampling and Alerting.</p>
+<p>I would need to be able to describe a &ldquo;replication chain&rdquo; made from &ldquo;instances&rdquo; in various &ldquo;backend services&rdquo;. Each backend service would need a &ldquo;bootstrap procedure&rdquo; to establish initial presence, and from there clone out instances. Instances then would need to integrate into the chain, catch up, warm caches, register in Zk, and become operational.</p>
+<p>Capacity testing and a predictive scale goal would define the number of instances per backend, so that we are ready for the coming days load, with some margin for failure and Murphy. Backups probably can be made per chain, and not per backend, assuming the bootstrapping works and is tested.</p>
+<p>I would need probably the provisioning/deployment/upgrade and cycling as a procedure per backend, and they likely can be one: MySQL identity is defined by its datadir, and as long as I can keep volumes of datadirs alive independently of the actual database base instance, I should be able to pre-provision fresh instances, detach the volume from an old instance and reattach it to the new instance within a very short time.</p>
+<p>That would allow me to meet a 30d instance age limit easily. I would also be able to move to newer versions of MySQL at will, and even downgrade within datadir binary compatibility limits. Upgrade orchestration is a thing: One has to put newer versions at the leaf nodes, and the gradually move upwards in the replication tree.</p>
+<h2 id="as-a-service">
+    <a href="#as-a-service">
+	&ldquo;as a Service&rdquo;
+    </a>
+</h2>
+<p>Understanding a product is not a thing you can do as the developer and vendor of a product. You can only do it as a products user, because only then you understand the needs.</p>
+<p>A good vendor is running the product itself – that is the one thing that makes me very excited about Oracle MySQL running MySQL in their own cloud. Finally they are running their own product in a production environment and maybe realize all the fiddly things, wrong defaults, useless tuning knobs and operational complications, and all the places where the product is simply missing code. Things like the <a href="https://dev.mysql.com/doc/refman/8.0/en/clone-plugin-remote.html" target="_blank" rel="noopener"><code>CLONE</code> command</a>
+
+ should (and could!) have happened a decade ago.</p>
+<p>Running a product as a user makes you understand the needs… of your organisation. There may be others. A good vendor collects these views, and merges them with their own experience, and then writes The Book™ on the product.</p>
+<p>The Book™ on MySQL currently is a number of half-assed &ldquo;MySQL as a service&rdquo; implementations.</p>
+<p>There is Amazon RDS, which is doing things like it&rsquo;s 2010 – active/passive primary switchover with DRBD, and asynchronous replication for scaleout, limited to a very small number of managed instances, and a rather static hierarchy, without a clear discovery concept. It does interesting things with Grants, Defaults, and a number of other things, and is arguably the most complete service.</p>
+<p>There is a bunch of K8s operators for MySQL, but I consider most of them toys for a multitude of reasons. A K8s operator is a pod that is running a binary that controlls deployments of (persistent) services in K8s, managing instances, data directories (persistent volumes), but all within a single K8s cluster. Of course, that&rsquo;s not resilient and it&rsquo;s also not how you set up MySQL for production – spanning cluster and AZ boundaries is a must.</p>
+<p>Each operator also implements one specific way of running MySQL (&ldquo;Group Replication!&rdquo;, &ldquo;No, traditioanl asynch replication!&quot;) and so on, with very little in the way of policy tuning knobs. So when you look at K8s operators, you are really looking at source code templates to fork and implement your own from that. Not helpful.</p>
+<p>What is missing? Endpoint Discovery, Grant Management and a number of other things are also a must, with K8s even more so than with AWS, because it&rsquo;s more dynamic.</p>
+<p>On top of that, there is all the work that needs to be done for Predictive Scaling, Replication Speed monitoring, Query Monitoring and so on. A lot of that is not well thought out at all, and needs not just engineering, but in part even research.</p>
+<h2 id="tracing-integration">
+    <a href="#tracing-integration">
+	Tracing integration
+    </a>
+</h2>
+<p>For example, Oracle MySQL provides splendid instrumentation for performance monitoring, but getting this stuff out of MySQL is ten to twelve queries (all of which will affect monitoring, too).</p>
+<p>Tracing Microservices is currently converging on a model where you provide a set of three IDs (root id, parent id and request id) and a subsampling mechanism. When a request is born, it is assigned a root id at the load balancer, and as it is propagated on it carries forward the root id, and the id of the immediate parent in the call tree between services, assigning itself its own unique ID.</p>
+<p>Not all requests are being traced, because that would be unwieldy. Instead a certain percentage subset is assigned to tracing. If this would be random, we would get a large number of requests that are sampled only in one subsystem, but not in another, leading to very few requests that are being traced front to back, so you would also need a way to forward the tracing attribute through the hierarchy. That way you get a subset (say, 1%) of all requests that are being traced everywhere.</p>
+<p>Using the root id, you can very quickly select all requests related to one workload, and using the parent id - request id relationship you can arrange them into a call tree.</p>
+<p>It would be really useful for MySQL to have a mechanism that triggers query execution tracing. When a query execution is traced, the assigned ids are carried forward, and at the end of the request the ids, the actual execution plan and all the data accumulated for performance schema associated with this query execution is being dumped into a single, configureable structure. This data cen then be handled in a plugin, which then can do with the data whatever is needful.</p>
+<p>In my case, most likely offload it to a coprocess running on the same host, using UDP. The coprocess would then push this into Honeycomb or another tracing service. That would allow me to see a request, the services that the request touched and all the SQL execution associated with it in a single view. I would be able to see the service that generated the SQL, the generated SQL and its execution trace right here next to each other in the same view, instead of using Grafana, Kibana, gitlab and Vividcortex and trying to align the spike here with the log there and the source over there.</p>
+<h2 id="instance-sizing">
+    <a href="#instance-sizing">
+	Instance sizing
+    </a>
+</h2>
+<p>In clouds, private and public, cost is suddenly an issue. The cost of RDS instances is, compared the to current bare metal, ridiculously high, and moving stuff into a cloud environment will cramp our style considerably for cost reasons.</p>
+<p>Right sizing instances is a need that everybody should have, but for some reason for example working set sizes are not being discussed a lot. What Brendan Gregg did in general <a href="http://www.brendangregg.com/wss.html" target="_blank" rel="noopener">WSS</a>
+
+ work is from six years ago and pretty orphaned. It needs a lot of work to be runnable on modern kernels and safely in production in an automated way.</p>
+<p>MySQL itself, with all the performance schema instrumentation, provides no easy way to count the number of buffer pool pages touched in the large <em>x</em> seconds, or rather a buffer pool access trail analogous to blktace, so that could could bucketize that analogous to the [LBA access histograms]({% link _posts/2021-02-25-mysql-from-below.md %}).</p>
+<p>I don&rsquo;t know why that is, but with all the cost pressure I&rsquo;d have expected more prior art on this.</p>
+<h2 id="yelling-at-the-cloud">
+    <a href="#yelling-at-the-cloud">
+	Yelling at the cloud
+    </a>
+</h2>
+<p><p class="md__image">
+  <img src="/uploads/2021/03/mysql-many-04.png" alt=""  />
+</p>
+
+</p>
+<p>So, yes. The age of bare metal is coming to an end, even where I work. It has served us well for more than two decades. It did, because we have automation for these things – we started that when we had around 100 MySQL instances or so, and we were for a very short time running almost 100 times more than that before we started cleaning up to get cost under control.</p>
+<p>Looking at what is available in &ldquo;cloud&rdquo; environments, I am still disappointed. The grunt work of provisioning is so much easier: One API to rule them all, instead of talking to see many different backends, many of then fidgety and unreliable.</p>
+<p>Still, there is little that looks like it actually has seen production at scale, and there are entire research subjects such as tracing integration and WSS estimation that are largely untouched. Dealing with replication at the level of a single cluster or backend also looks like a non-starter for actual production.</p>
+<p>Then there is the entire topic of CD, Continous Deployment, and &ldquo;gitops&rdquo;, which from where I sit looks like a good idea and also a ridiculously naive simplification at the same time.</p>
+<p>I mean, Continous Integration and testing – sure. Gitlab pipelines, also yes. Deploying &ldquo;stateless&rdquo; code into production automatically for head? Sure, once you trust these pipelines.</p>
+<p>But actual Ops?</p>
+<p>So, yeah, you can terraform instances. That&rsquo;s just 2014&rsquo;s Openstack HEAT with more backends. But try to terraform a thing with state and you will quickly realize how that is complicated.</p>
+<p>It requires a state donor (a MySQL clone source, a backup of the old minecraft server you want to re-instantiate), probably coordination between the outside of the new instance (talking to the EC2 or Openstack) and the inside of several instances (the donor instance and the new instance, for example), coordinated catchup and warmup, and also a working endpoint discovery system.</p>
+<p>And if you do that at scale, <code>instances = 200</code> in terraform, may require some thought in how you provision, with queueing, concurrency limits and stuff, and you did not code that at all when you automated your stuff.</p>
+<p>And that&rsquo;s not even Ops. That&rsquo;s Day 1 stuff.</p>
+<p>Everyday life MySQL land is: Replication is delayed because somebody ran a sequence of <code>DELETE FROM t WHERE 1=1</code> at the primary and they are now filtering downstream to all the replicas, replication delay is 5h and rising before they complained to DBA.</p>
+<p>The fix is &ldquo;replication surgery&rdquo;: Stop the replica and restart with replication disabled, emulate the deletion with truncate or an empty table creation, create an empty transaction for the skipped <code>DELETE</code> with the skipped GTID, and reinstate normal replication.</p>
+<p>Gitops that?</p>
+<p>Everyday life in MySQL land is: Somebody oops&rsquo;ed a table drop. Stop replication, locate a time delayed replica, fast forward it to before the oops&rsquo;ed statement, stop it there, clone from this a new primary and a set of replicas, force feed it a modified replication stream for all the stuff that came after the oops&rsquo;ed statement, and push this alternate history into production as a replacement for the oops&rsquo;ed wreck.</p>
+<p>Everyday life in MySQL land is: A group of replicas died after having a bit of replication delay. Investigation finds a long running query maintaining a read view (sic!), leading to undo log growth, which inexplicably slows down everything on these instances. The fix is to connect to the affected instances and manually <code>KILL</code> the threads that hold the long running read views. Not a thing to be done with a git commit.</p>
+<p>So, yes, &ldquo;continuous deployment&rdquo; is a good idea, and I would like to see more of it. But before we are going to have <em>that</em> with stateful services, a number of hard problems need better solutions.</p>
+<p>And &ldquo;gitops&rdquo; ain&rsquo;t gonna happen soon. We are going to see AIP operations (&ldquo;ass-in-produxction&rdquo;) for quite some time, I am afraid.</p>
+<p>And that is why I wear black and yell at the cloud.</p>
+<p>(based on <a href="https://twitter.com/isotopp/status/1371866917472985095" target="_blank" rel="noopener">a bit of Twitter</a>
+
+)</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

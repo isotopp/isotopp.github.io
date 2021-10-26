@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Not JOINing on PERFORMANCE_SCHEMA</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="not-joining-on-performance_schema-page">
+	<h1 class="title">
+            Not JOINing on PERFORMANCE_SCHEMA
+	</h1>
+
+	<p>The tables in <code>PERFORMANCE_SCHEMA</code> (<code>P_S</code>) are not actually tables. You should not think of them as tables, even if your SQL works on them. You should not JOIN them, and you should not GROUP or ORDER BY them.</p>
+<h2 id="unlocked-memory-buffers-without-indexes">
+    <a href="#unlocked-memory-buffers-without-indexes">
+	Unlocked memory buffers without indexes
+    </a>
+</h2>
+<p>The stuff in <code>P_S</code> has been created with &ldquo;keep the impact on production small&rdquo; in mind. That is, from a users point of view, you can think of them as unlocked memory buffers - the values in there change as you look at them, and there are precisely zero stability guarantees.</p>
+<p>There are also no indexes (<em>EDIT:</em> There actually are secondary indexes on <code>P_S</code> tables in MySQL 8, see below).</p>
+<h3 id="unstable-comparisons">
+    <a href="#unstable-comparisons">
+	Unstable comparisons
+    </a>
+</h3>
+<p>When sorting a table for a GROUP BY or ORDER BY, it may be necessary to compare the value of one row to other rows multiple times in order to determine where the row goes. The value compared to other rows can change while this happens, and will change more often the more load the server has. The end result is unstable. Also, as the table you sort may be larger on a server under load, the row may need more comparisons, making this even more likely to happen.</p>
+<p>The table you look at may produce correct results on your stable, underutilized test systems, but the monitoring you base on this will fail on a loaded test system.</p>
+<p>Do not use GROUP BY or ORDER BY on <code>P_S</code> tables.</p>
+<h3 id="no-indexes-meaning-slow-joins-on-loaded-systems">
+    <a href="#no-indexes-meaning-slow-joins-on-loaded-systems">
+	No indexes, meaning slow joins on loaded systems
+    </a>
+</h3>
+<p>When JOINing a <code>P_S</code> table against other tables, the join is done without indexes (in MySQL up to and including 5.7). There are no indexes defined in <code>P_S</code> before MySQL 8.</p>
+<p>In practice that means your join against the processlist or session variables tables in <code>P_S</code> do little harm in test, but will fail in production environments with many connections. You will be losing monitoring the moment you need it most - under load, in critital situations.</p>
+<p>Do not JOIN <code>P_S</code> tables to anything.</p>
+<h2 id="how-to-monitor">
+    <a href="#how-to-monitor">
+	How to monitor
+    </a>
+</h2>
+<p>About the only type of query you can reliably run on <code>P_S</code> is a single table <code>SELECT * FROM P_S.table</code>, maybe with a simple <code>WHERE</code> clause. That is, you can download and materialize data from a single <code>P_S</code> table at a time, unsorted, unaggregated.</p>
+<p>Connection to other tables, aggregation and sorting should be done on tables that are not <code>P_S</code> tables.</p>
+<p>There are multiple ways to do this.</p>
+<h3 id="subqueries-without-optimization">
+    <a href="#subqueries-without-optimization">
+	Subqueries, without optimization
+    </a>
+</h3>
+<p>It used to be that the MySQL optimizer did not resolve simple subqueries properly. So</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">&lt;</span>complicated stuff<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">from</span>
+    <span style="color:#f92672">-&gt;</span>   ( <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> performance_schema.sometable ) <span style="color:#66d9ef">as</span> t
+    <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> <span style="color:#f92672">&lt;</span>something<span style="color:#f92672">&gt;</span>
+</code></pre></div><p>used to work. The subquery <code>t</code> would materialize the <code>P_S</code> table as whatever your version of MYSQL used for implicit temporary tables, and the rest of the query resolution would happen on the materialized temptable. This is a snapshot, and would be stable.</p>
+<p>And it still would not add up to 100%, of course. That is, queries like Dennis Kaarsemakers &ldquo;How loaded is the SQL_THREAD&rdquo; Replication Load analysis never came out at 100%, because the various values changed while the temporary table would be materialized, so you do not get a consistent snapshot (and by construction, this kind of consistency is impossible in <code>P_S</code>).</p>
+<p>Anyway, with older versions of MySQL, this results in the query plan we want. Starting with MySQL 5.7, this does no longer work, because the optimizer became too smart. :-)</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#66d9ef">version</span>();
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">version</span>() <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span>.<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">22</span>    <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">explain</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> ( <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> processlist ) <span style="color:#66d9ef">as</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> select_type <span style="color:#f92672">|</span> <span style="color:#66d9ef">table</span>       <span style="color:#f92672">|</span> partitions <span style="color:#f92672">|</span> <span style="color:#66d9ef">type</span> <span style="color:#f92672">|</span> possible_keys <span style="color:#f92672">|</span> <span style="color:#66d9ef">key</span>  <span style="color:#f92672">|</span> key_len <span style="color:#f92672">|</span> <span style="color:#66d9ef">ref</span>  <span style="color:#f92672">|</span> <span style="color:#66d9ef">rows</span> <span style="color:#f92672">|</span> filtered <span style="color:#f92672">|</span> Extra <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">SIMPLE</span>      <span style="color:#f92672">|</span> processlist <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>       <span style="color:#f92672">|</span> <span style="color:#66d9ef">ALL</span>  <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>          <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>    <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span>  <span style="color:#ae81ff">256</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">100</span>.<span style="color:#ae81ff">00</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span>, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Newer MySQL (5.7 and above) will apply the <code>derived_merge</code> optimization and fold the subquery into the outer query, resulting in a rewritten single query that again is executed on <code>P_S</code> directly. This is extremely useful, but in this one particular case precisely not what we want.</p>
+<p>You either need to <code>SET SESSION optimizer_switch = &quot;derived_merge=off&quot;;</code> or provide an advanced <a href="https://dev.mysql.com/doc/refman/8.0/en/optimizer-hints.html#optimizer-hints-table-level" target="_blank" rel="noopener">MySQL 8 optimizer hint</a>
+
+ to prevent the optimizer from ruining your cunning plan:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">explain</span> <span style="color:#66d9ef">select</span> <span style="color:#75715e">/*+ NO_MERGE(t) */</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> ( <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> processlist ) <span style="color:#66d9ef">as</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> select_type <span style="color:#f92672">|</span> <span style="color:#66d9ef">table</span>       <span style="color:#f92672">|</span> partitions <span style="color:#f92672">|</span> <span style="color:#66d9ef">type</span> <span style="color:#f92672">|</span> possible_keys <span style="color:#f92672">|</span> <span style="color:#66d9ef">key</span>  <span style="color:#f92672">|</span> key_len <span style="color:#f92672">|</span> <span style="color:#66d9ef">ref</span>  <span style="color:#f92672">|</span> <span style="color:#66d9ef">rows</span> <span style="color:#f92672">|</span> filtered <span style="color:#f92672">|</span> Extra <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">PRIMARY</span>     <span style="color:#f92672">|</span> <span style="color:#f92672">&lt;</span>derived2<span style="color:#f92672">&gt;</span>  <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>       <span style="color:#f92672">|</span> <span style="color:#66d9ef">ALL</span>  <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>          <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>    <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span>  <span style="color:#ae81ff">256</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">100</span>.<span style="color:#ae81ff">00</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>  <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> DERIVED     <span style="color:#f92672">|</span> processlist <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>       <span style="color:#f92672">|</span> <span style="color:#66d9ef">ALL</span>  <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>          <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>    <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span>  <span style="color:#ae81ff">256</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">100</span>.<span style="color:#ae81ff">00</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------------+-------------+------------+------+---------------+------+---------+------+------+----------+-------+
+</span></code></pre></div><p>Here we get the <code>DERIVED</code> table as a non-<code>P_S</code> temptable, and then run our &ldquo;advanced&rdquo; SQL on that as <code>PRIMARY</code> on it.</p>
+<h3 id="in-the-client">
+    <a href="#in-the-client">
+	In the client
+    </a>
+</h3>
+<p>The alternative is, of course, to completely download the tables in question into client side hashes, and then perform the required operations on them on the client side, in memory. The important thing here is to limit the amount of memory spent - do not download unconstrained result sets into your client monitoring program.</p>
+<p>Then use a linearly scaling join method to construct the connections between the tables. Effectively, load data into hashes, and then program a client side hash join. This is additive (n + m) instead of quadratic (n * m), so you can survive this.</p>
+<p>This is the recommended method.</p>
+<h2 id="who-is-doing-it-wrong">
+    <a href="#who-is-doing-it-wrong">
+	Who is doing it wrong?
+    </a>
+</h2>
+<p>Getting monitoring queries that use <code>P_S</code> wrongly is common - it understands SQL, it handles <code>SHOW CREATE TABLE</code>, so it is treated as a table and exposed to full SQL all the time. And on idle test boxen, it even looks like it works.</p>
+<p>At work, see this in our own code (still using a deprecated Diamond collector) and in SolarWinds nee Vividcortex.</p>
+<p>SolarWinds kindly highlights itself:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#75715e">-- Most time consuming query - Coming from solar winds monitoring itself ¯\_(ツ)_/¯
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">select</span> <span style="color:#f92672">`</span>ifnull<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>s<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>sql_text<span style="color:#f92672">`</span> , <span style="color:#f92672">?</span>) , <span style="color:#f92672">`</span>ifnull<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>processlist_user<span style="color:#f92672">`</span> , <span style="color:#f92672">?</span>) , <span style="color:#f92672">`</span>ifnull<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>processlist_host<span style="color:#f92672">`</span> , <span style="color:#f92672">?</span>) 
+  <span style="color:#66d9ef">from</span> <span style="color:#f92672">`</span>performance_schema<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>events_statements_history<span style="color:#f92672">`</span> <span style="color:#f92672">`</span>s<span style="color:#f92672">`</span> 
+  <span style="color:#66d9ef">left</span> <span style="color:#66d9ef">join</span> <span style="color:#f92672">`</span>performance_schema<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>threads<span style="color:#f92672">`</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span> 
+    <span style="color:#66d9ef">using</span> (<span style="color:#f92672">`</span>thread_id<span style="color:#f92672">`</span>) 
+  <span style="color:#66d9ef">where</span> <span style="color:#f92672">`</span>s<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>thread_id<span style="color:#f92672">`=?</span> <span style="color:#66d9ef">and</span> <span style="color:#f92672">`</span>s<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>event_id<span style="color:#f92672">`=?</span>
+ 
+<span style="color:#75715e">-- Coming from the &#34;table ownership write identifier&#34;.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">select</span> <span style="color:#66d9ef">count</span> (<span style="color:#f92672">*</span>) <span style="color:#66d9ef">as</span> <span style="color:#f92672">`</span>cnt<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>digest_text<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>current_schema<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>processlist_user<span style="color:#f92672">`</span> <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">system_user</span> 
+  <span style="color:#66d9ef">from</span> <span style="color:#f92672">`</span>performance_schema<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>events_statements_history<span style="color:#f92672">`</span> <span style="color:#f92672">`</span>esh<span style="color:#f92672">`</span> 
+  <span style="color:#66d9ef">inner</span> <span style="color:#66d9ef">join</span> <span style="color:#f92672">`</span>performance_schema<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>threads<span style="color:#f92672">`</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span> 
+    <span style="color:#66d9ef">on</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>thread_id<span style="color:#f92672">`=`</span>esh<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>thread_id<span style="color:#f92672">`</span> 
+  <span style="color:#66d9ef">where</span> <span style="color:#f92672">`</span>event_name<span style="color:#f92672">`</span> <span style="color:#66d9ef">in</span> (...) 
+    <span style="color:#66d9ef">and</span> <span style="color:#f92672">`</span>current_schema<span style="color:#f92672">`</span> <span style="color:#66d9ef">in</span> (...) 
+  <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> <span style="color:#f92672">`</span>digest_text<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>current_schema<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>processlist_user<span style="color:#f92672">`</span>
+ 
+<span style="color:#75715e">-- Coming from diamond collector
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">select</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>processlist_user<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>sbt<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>variable_value<span style="color:#f92672">`</span> , <span style="color:#66d9ef">count</span> (<span style="color:#f92672">*</span>)
+  <span style="color:#66d9ef">from</span> <span style="color:#f92672">`</span>performance_schema<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>status_by_thread<span style="color:#f92672">`</span> <span style="color:#f92672">`</span>sbt<span style="color:#f92672">`</span> 
+  <span style="color:#66d9ef">join</span> <span style="color:#f92672">`</span>performance_schema<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>threads<span style="color:#f92672">`</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>
+    <span style="color:#66d9ef">using</span> (<span style="color:#f92672">`</span>thread_id<span style="color:#f92672">`</span>) 
+  <span style="color:#66d9ef">where</span> <span style="color:#f92672">`</span>sbt<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>variable_name<span style="color:#f92672">`=?</span> 
+    <span style="color:#66d9ef">and</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>processlist_user<span style="color:#f92672">`</span> <span style="color:#66d9ef">is</span> <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>
+<span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> <span style="color:#f92672">`</span>t<span style="color:#f92672">`</span>.<span style="color:#f92672">`</span>processlist_user<span style="color:#f92672">`</span> , <span style="color:#f92672">`</span>variable_value<span style="color:#f92672">`</span>
+</code></pre></div><p>Many of the above examples fail in multiple ways: Using JOIN for bad scalability (this is how we spotted them), at least before MySQL 8 (and you probably want your monitoring to work anywhere). Some are also using unstable sorting.</p>
+<p>We also see ORDER BY statements in the <a href="https://github.com/influxdata/telegraf/blob/master/plugins/inputs/mysql/mysql.go#L376" target="_blank" rel="noopener">Telegraf MySQL plugin</a>
+
+ in one place. It uses LIMIT, but if the ORDER BY does not work (ie does not actually sort), you cut off randomly.</p>
+<h2 id="is-performance_schema-broken">
+    <a href="#is-performance_schema-broken">
+	Is PERFORMANCE_SCHEMA broken?
+    </a>
+</h2>
+<p>Clearly, it is not. Just badly misunderstood.</p>
+<p>The alternative is <code>INFORMATION_SCHEMA</code>, which often locks, and that can be actually deadly:</p>
+<p>Just <code>select * from INFORMATION_SCHEMA.INNODB_BUFFER_PAGE</code> on a server with a few hundreds of GB of buffer pool, humming at 10k QPS. The query will freeze the server completely for the runtime of the query – which with a large buffer pool size can be substantial.</p>
+<p>I&rsquo;d rather have this in <code>P_S</code> and then deal with the vagaries of the data changing while I read it than lose an important production server. So <code>P_S</code> is much better than <code>I_S</code>, provided that you ask it in the right way.</p>
+<h2 id="addendum">
+    <a href="#addendum">
+	Addendum
+    </a>
+</h2>
+<p>Both <a href="https://twitter.com/ogrovlen/status/1334047725298585600" target="_blank" rel="noopener">Øystein Grøvlen</a>
+
+ and <a href="https://twitter.com/MarkLeith/status/1334075136450945024" target="_blank" rel="noopener">Mark Leith</a>
+
+ remind me that in MySQL 8 <a href="https://dev.mysql.com/doc/refman/8.0/en/performance-schema-optimization.html" target="_blank" rel="noopener">we geht secondary indexes on <code>P_S</code></a>
+
+ - this will address some of the problematic queries above and will need some research on my side.</p>
+<p>The sorting is still complicated. <a href="https://twitter.com/ogrovlen/status/1334056375123632129" target="_blank" rel="noopener">Øystein writes</a>
+
+:</p>
+<blockquote>
+<p>It depends on the sort algorithm used by MySQL.  Many sorts will add all requested columns to the sort buffer, and will not need to fetch anything from the tables after sorting, but it depends on the size of the sort buffer and how much data needs to be fetched.</p>
+</blockquote>
+<p>So there are some sorts that are stable, and some sorts that will always be unstable (those that work with bloblike columns such as <code>SQL_TEXT</code> or <code>DIGEST_TEXT</code> likely), but it is really hard to see this when looking at the query.</p>
+<p>I still maintain my advice of forcing stable copies with subselects and <code>NO_MERGE()</code> hints - this is much easier to teach and guaranteed to be stable.</p>
+<h2 id="another-addendum">
+    <a href="#another-addendum">
+	Another addendum
+    </a>
+</h2>
+<p>In <a href="https://twitter.com/justin_swanhart/status/1334544467987197953" target="_blank" rel="noopener">a tweet</a>
+
+ Justin Swanhart pointed me at <a href="https://github.com/greenlion/PS_HISTORY" target="_blank" rel="noopener">PS_HISTORY</a>
+
+, which makes snapshots of <code>P_S</code> that try to be as consistent as possible.</p>
+<p>It will allow you to replay and review old <code>P_S</code> states and query them, and it will - if you configure it - also automatically expire the old recordings. It may be useful as a kind of flight recorder to debug performance problems that cannot otherwise reproduced.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

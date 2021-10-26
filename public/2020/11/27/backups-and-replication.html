@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Backups and Replication</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="backups-and-replication-page">
+	<h1 class="title">
+            Backups and Replication
+	</h1>
+
+	<p>There was a question at work about MySQL backups and restore. I needed to explain more.</p>
+<p>We use databases to make state persistent. That is: As a developer you can think of your database as a single giant, structured global variable with a weird access method, and to make things worse, concurrent access.</p>
+<blockquote>
+<p>A database is just a global variable to your code</p>
+</blockquote>
+<p>We can log statements that change the state of our database in a log. In MySQL, we call this <em>The Binlog</em>.</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/replication-01.png" alt=""  />
+</p>
+
+</p>
+<p><em>Making a change to the database, and logging the data changing statement to the binlog.</em></p>
+<p>When we make a full backup of the database, we just copy away all tables in the data directory while the database does not change. This can be achieved by simply taking the server offline during the copy, or using more elegant methods that do not interrupt production, yet still look the same when done.</p>
+<p>If the database does not change while we make the backup, the backup is internally referentially consistent, and it is associated with exactly one binlog position. And to keep things simple, the binlog position is  just the pair <code>(newest binlog filename, file length)</code>. So a binlog position looks like <code>(binlog.000004, 7625)</code> or similar.</p>
+<p>The server will periodically start new binlogs: When it becomes too large, when the server restarts, or when we ask it to do so using a <code>FLUSH BINARY LOGS</code> command.</p>
+<p>Each data changing transaction is being assigned a unique binlog position, and this way we also get a total order of all transactions (and that is becoming a problem later in the game).</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/replication-02.png" alt=""  />
+</p>
+
+</p>
+<p><em>We can see the binlog position as the internal clock of the database: Whenever something changes in the database, it is written to the binlog. Each transaction is assigned a unique binlog position, and thus, transactions also have a total order.</em></p>
+<p>When we restore from a backup, we are at the backups binlog position of the past, and can then replay statements – beginning with the backups position – to roll forward, until we are at the desired position.</p>
+<blockquote>
+<p>We can use the binlog to replay history</p>
+</blockquote>
+<p>What the desired position exactly <em>is</em> depends a bit on the problem: If we issued a command we wish we had not, the desired position is, of course, exactly before this statement. We then skip the undesirable statement.</p>
+<p>How we continue after that statement depends on what that statement was. But if we are lucky we can simply continue to replay statements unchanged.</p>
+<p>In complicated cases (We might have changed a table definition wrongly) we might need to replace the content of the binlog with alternate, edited statements. In any case we create a new, different and edited timeline that does not contain the mistake we made.</p>
+<h1 id="replication-is-an-ongoing-live-restore">
+    <a href="#replication-is-an-ongoing-live-restore">
+	Replication is an ongoing live Restore
+    </a>
+</h1>
+<p>As early as MySQL 3.23.15 from May 2000, we have replication:</p>
+<ul>
+<li>We restore our original servers data directory to a new machine, effectively cloning it.</li>
+<li>We tell our clone the binlog position of the parent server it was created from.</li>
+<li>We tell this new machine where the parent server is, and give it login credentials.</li>
+<li>The cloned server will then login to the parent, download the binlog as it is written, and apply it.</li>
+</ul>
+<p>This is exactly the same process as with a restore and then applying the binlog that has been created since the backup was made. But with replication, it is live and ongoing as new binlog is being created. As a result, we get a cloned server that executes the same statements as its upstream parent, keeping its internal state a mirror copy of the parent.</p>
+<p>We called the parent server a <em>master</em> back then, and a <em>primary</em> or <em>source server</em> these days. The cloned server was a <em>slave</em> back then and is now a <em>replica</em>.</p>
+<p>Of course this simplistic approach has all kinds of problems, which then got corrected over time, making replication better, but also more complicated.</p>
+<h1 id="splitting-threads">
+    <a href="#splitting-threads">
+	Splitting Threads
+    </a>
+</h1>
+<p>Early replication had a single thread downloading statements, and then applying them. Of course, some statements take longer than others to execute: a large <code>ALTER TABLE</code> can take hours to run, depending on the size of the table being altered. During that time replication stops and the binlog does not even leave the source server. This is a bit unfortunate should the source fail during that time.</p>
+<p>So the very first thing that got changed is splitting the replication thread in two: The <code>IO_THREAD</code> downloads data from the source as quickly as possible, and writes it to the replica as the relay log. Even when the source goes down we still have our local copy.</p>
+<p>The <code>SQL_THREAD</code> then reads the relay log and executes it in sequence, strictly maintaining transaction order. Whenever it finishes a relay log, it can delete that file and turn to the next one.</p>
+<p>This logic, at the core, is unchanged even today:</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/replication-03.png" alt=""  />
+</p>
+
+</p>
+<p><em>Simple, asynchronous replication as seen even today.</em></p>
+<h1 id="asynchronous-and-semi-synchronous-replication">
+    <a href="#asynchronous-and-semi-synchronous-replication">
+	Asynchronous and Semi-Synchronous Replication
+    </a>
+</h1>
+<p>We call this kind of replication asynchronous: There is no feedback channel from the replica to the source, and consequently no way for the source to delay the commit and have the application wait until the data has left the machine.</p>
+<p>Asynchronous replication scales well, even across long distance links: Applications write to the primary, and don’t wait. The replicas log into the source, download the binlogs and will eventually execute it locally on the replica. Applications reading from the replicas will read outdated state until the replica comes around and catches up.</p>
+<p>The main risk is the source going down due to a fault before the binlog has been copied  off. So one innovation is to make the source delay the commit until at least one copy exists on a replica.</p>
+<p>For that we need add a communication mechanism to the replica, in which it can signal that is has read a transaction from the binary log, and committed it to the local relay log. Only when the transaction is persisted to disk on the replica, in the relay log, we signal the source, which then lets the transaction commit finish so that the application can continue.</p>
+<blockquote>
+<p>Semi-Synchronous Replication is Asynchronous Replication with added delays on the commit.</p>
+</blockquote>
+<p>This is <em>Semi-Synchronous Replication</em>, <em>SSR</em>, in MySQL, and it comes with a number of caveats:</p>
+<ul>
+<li>SSR has a timeout. If a transaction is not acknowledged in time, a message is error logged and the server reverts to regular asynchronous replication. It will flip back to SSR once a replica responds within the timeout window.</li>
+<li>If a source has zero replicas and a really high timeout, it never receives an acknowledgement, and will essentially block all applications. If your requirement is “transactions must be persisted on more than a single machine to be valid”, this is the desired behaviour. If your requirement is “It is more important to persist things at all than to ever hang the business”, then ASR is better than SSR for your use case. Nonetheless we have plenty of outages because of this: primary servers ending up with zero replicas due to bugs or circumstances.</li>
+<li>SSR guarantees that at least one more copy of the transaction exists, but it does not say where. To build a resilient system, you need orchestration to find out where, and make sure you fail to that machine in order to be able to continue. We are using a special program for this kind of orchestration, and it is being ingeniously called <a href="https://github.com/openark/orchestrator" target="_blank" rel="noopener">MySQL Orchestrator</a>
+
+.</li>
+<li>Depending on where your replicas reside, the most advanced replica server may be in the same data center or AZ as the source. In a scenario where the entire AZ fails this does not help you at all.</li>
+</ul>
+<h1 id="statement-and-row-based-replication">
+    <a href="#statement-and-row-based-replication">
+	Statement and Row Based Replication
+    </a>
+</h1>
+<p>MySQL replication logs statements in the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.</p>
+<p>MySQL knows this, and for the obvious cases logs additional code that makes them deterministic.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> flush binary logs;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">02</span> sec)
+
+kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( d double ); <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (rand()); <span style="color:#66d9ef">select</span> d <span style="color:#66d9ef">from</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">11</span> sec)
+
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">03</span> sec)
+
+Note (Code <span style="color:#ae81ff">1592</span>): Unsafe <span style="color:#66d9ef">statement</span> written <span style="color:#66d9ef">to</span> the binary log <span style="color:#66d9ef">using</span> <span style="color:#66d9ef">statement</span> format since BINLOG_FORMAT <span style="color:#f92672">=</span> <span style="color:#66d9ef">STATEMENT</span>. <span style="color:#66d9ef">Statement</span> <span style="color:#66d9ef">is</span> unsafe because it uses a <span style="color:#66d9ef">system</span> <span style="color:#66d9ef">function</span> that may <span style="color:#66d9ef">return</span> a different value <span style="color:#66d9ef">on</span> the slave.
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> d                  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">8351237492962962</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>In the binlog, we find (editing out the cruft):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#960050;background-color:#1e0010">$</span> mysqlbinlog binlog.<span style="color:#ae81ff">000043</span>
+...
+<span style="color:#f92672">#</span><span style="color:#ae81ff">201127</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">45</span>:<span style="color:#ae81ff">02</span> server id <span style="color:#ae81ff">1</span>  end_log_pos <span style="color:#ae81ff">548</span> CRC32 <span style="color:#ae81ff">0</span>x1b4b14a9  Rand
+<span style="color:#66d9ef">SET</span> <span style="color:#f92672">@@</span>RAND_SEED1<span style="color:#f92672">=</span><span style="color:#ae81ff">850981370</span>, <span style="color:#f92672">@@</span>RAND_SEED2<span style="color:#f92672">=</span><span style="color:#ae81ff">491246833</span><span style="color:#75715e">/*!*/</span>;
+<span style="color:#f92672">#</span><span style="color:#ae81ff">201127</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">45</span>:<span style="color:#ae81ff">02</span> server id <span style="color:#ae81ff">1</span>  end_log_pos <span style="color:#ae81ff">654</span> CRC32 <span style="color:#ae81ff">0</span>xa57c1606  Query   thread_id<span style="color:#f92672">=</span><span style="color:#ae81ff">229860</span>     exec_time<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>     error_code<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">TIMESTAMP</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1606470302</span><span style="color:#75715e">/*!*/</span>;
+<span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (rand());
+...
+</code></pre></div><p>What is being logged is</p>
+<ol>
+<li>The RAND_SEED values to make the statement deterministic.</li>
+<li>The timestamp of the server when executing the statement (this will also make the NOW() function deterministic.</li>
+<li>The actual statement.</li>
+</ol>
+<p>Despite the warning, this replicates well, and has done so for the last 20 years. What does not replicate well at all, ever, is stuff like <code>UPDATE t SET x = x+1 LIMIT 10</code>. As this lacks an <code>ORDER BY</code> clause, the server is free to order the row updates as it wishes, and can (and in NDB cluster actually will!) update 10 random rows, different ones on each instance of replication. It is the <code>LIMIT</code> clause that makes this non-deterministic.</p>
+<p>Now that limitations of this approach are clear, we can see: We would be better off with logging the rows changed, instead of logging the statements that change them.</p>
+<p>Counterintuitively, for the workloads we have at work, this is also 50% to 66% smaller than the statement itself, even before optimisation and compression.</p>
+<h1 id="using-row-based-replication">
+    <a href="#using-row-based-replication">
+	Using Row Based Replication
+    </a>
+</h1>
+<p>Let’s do this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> binlog_format <span style="color:#f92672">=</span> <span style="color:#66d9ef">row</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">table</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">03</span> sec)
+
+kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> flush binary logs;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">03</span> sec)
+
+kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( d double ); <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (rand()); <span style="color:#66d9ef">select</span> d <span style="color:#66d9ef">from</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">05</span> sec)
+
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> d                  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">7980042936261783</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>We find:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#960050;background-color:#1e0010">$</span> mysqlbinlog binlog.<span style="color:#ae81ff">000043</span>
+...
+<span style="color:#f92672">#</span><span style="color:#ae81ff">201127</span> <span style="color:#ae81ff">10</span>:<span style="color:#ae81ff">53</span>:<span style="color:#ae81ff">43</span> server id <span style="color:#ae81ff">1</span>  end_log_pos <span style="color:#ae81ff">598</span> CRC32 <span style="color:#ae81ff">0</span>xdae6423f  Write_rows: <span style="color:#66d9ef">table</span> id <span style="color:#ae81ff">233</span> flags: STMT_END_F
+
+BINLOG <span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">p8zAXxMBAAAAMAAAAAAAAAAAAOkAAAAAAAEABGtyaXMAAXQAAQUBCAEBAQCZVfvm
+</span><span style="color:#e6db74">p8zAXx4BAAAALAAAAAAAAAAAAOkAAAAAAAEAAgAB/wABJeZMQInpPz9C5to=
+</span><span style="color:#e6db74">&#39;</span><span style="color:#75715e">/*!*/</span>;
+<span style="color:#f92672">#</span> <span style="color:#66d9ef">at</span> <span style="color:#ae81ff">598</span>
+...
+</code></pre></div><p>(You would need to run <code>mysqlbinlog -vvv</code> to have the mysqlbinlog command decode the BASE64 for you).</p>
+<blockquote>
+<p>Row Based Replication wraps the logged row in a special BINLOG statement, because the binlog can hold only statements.</p>
+</blockquote>
+<p>This is interesting, because it tells us: There is no such thing as a Row Based Binary Log at all, the binlog can hold only statements. MySQL worked around this by implementing a BINLOG statement, which takes a single parameter. The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.</p>
+<p>Seeing this, I should be able to take this <code>BINLOG</code> statement and run it on the command line of my client:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span>   BINLOG <span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">    &#39;</span><span style="color:#f92672">&gt;</span> p8zAXxMBAAAAMAAAAAAAAAAAAOkAAAAAAAEABGtyaXMAAXQAAQUBCAEBAQCZVfvm
+    <span style="color:#e6db74">&#39;&gt; p8zAXx4BAAAALAAAAAAAAAAAAOkAAAAAAAEAAgAB/wABJeZMQInpPz9C5to=
+</span><span style="color:#e6db74">    &#39;</span><span style="color:#f92672">&gt;</span> <span style="color:#e6db74">&#39;/*!*/;
+</span><span style="color:#e6db74">ERROR 1609 (HY000): The BINLOG statement of type `Table_map` was not preceded by a format description BINLOG statement.
+</span></code></pre></div><p>To make a long story short: If you go back and pick up the preceding <code>BINLOG</code> command earlier in the binlog, and then this one, it actually works.</p>
+<p>Also interesting: In the earliest versions of MySQL with Row Based logs, the <code>BINLOG</code> command lacked all access controls, so by handcrafting the appropriate patches, anybody could change all data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line. This bug is now a long time fixed.</p>
+<h2 id="row-based-replication-and-filters">
+    <a href="#row-based-replication-and-filters">
+	Row Based Replication and Filters
+    </a>
+</h2>
+<p>Since the earliest days of replication, we could filter the binlog on the primary (using <code>binlog-do-*</code> config directives) and the relay log on the replica (using <code>replicate-do-*</code> config directives).</p>
+<p>Filtering the binlog is never a good idea: It will break your ability to perform point-in-time restores. Filtering the relay log can be done, but most of the config directives that do this are broken:</p>
+<ul>
+<li><code>replicate-do-db</code> and <code>replicate-ignore-db</code> are matching the current database in statement based replication, and the actual statements database in row based replication. The statement <code>use a; insert into b.t values (...);</code> will be filtered differently in SBR than in RBR under a <code>replicate-do-db=a</code> rule. With the default setting of <code>row-format=MIXED</code>, the behavior is random, depending on the row format chosen by mysql.</li>
+<li><code>replicate-do/ignore-table</code> are tedious, they require you to state each table explicitly, and nobody really wants to use them/</li>
+<li><code>replicate-wild-do/ignore-table</code> work in SBR and RBR, but <a href="https://dev.mysql.com/doc/refman/8.0/en/replication-rules-table-options.html" target="_blank" rel="noopener">precedence</a>
+
+ is complicated, and it is adviseable to use either only positive or only negative logic.</li>
+</ul>
+<p>With group replication, which we do not discuss here, any filtering will break consistency in the group, so any filters are forbidden.</p>
+<p>The summary of all that is basically: Don&rsquo;t use binlog or replication filters, but if you have to, it&rsquo;s best to stick to either <code>replicate-wild-do-table</code> or <code>replicate-wild-ignore-table</code>.</p>
+<h2 id="row-based-replication-and-blob-columns">
+    <a href="#row-based-replication-and-blob-columns">
+	Row Based Replication and BLOB columns
+    </a>
+</h2>
+<p>Row Based Replication also fails in other interesting ways: Consider a table with a BLOB and a counter.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">kris<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( id integer, cnt integer, b blob );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">05</span> sec)
+</code></pre></div><p>When you increment the counter, the entire row is logged, twice: Once as a pre-image, and once again as a post-image. You end up with 4 bytes integer changing, but two full copies of the <code>BLOB</code>, which can be very large.</p>
+<p>This is how we got the setting <code>binlog-row-image</code>, which can be <code>FULL</code> (the default), <code>NOBLOB</code> or <code>MINIMAL</code>. In <code>NOBLOB</code> mode, blobs and text fields are not logged unless they change. In <code>MINIMAL</code> mode, the pre-image contains only the primary key, and the post-image contains only the changed fields new values.</p>
+<p>We can use RBR in <code>FULL</code> mode, not only for replication, but also for Change Data Capture, to feed Hadoop and Kafka with it. On the other hand, with  replication chains that are blobbyrequire <code>NOBLOB</code> or <code>MINIMAL</code> mode to not die on us.</p>
+<h2 id="row-based-replication-and-primary-keys">
+    <a href="#row-based-replication-and-primary-keys">
+	Row Based Replication and Primary Keys
+    </a>
+</h2>
+<p>On the replica, the RBR image needs to be applied. For this, the replica needs to find the row. It uses the pre-image to do this, and when the table has no primary key defined, this can be slow - it ends up being a full table scan.</p>
+<p>This is another fun cause of replication delay: Having a table of even moderate size without a primary key in a replication chain that uses RBR will delay the replica, and it will look very busy. The replica will eat a lot of CPU doing in-memory scans to find rows to change, in the most inefficient way possible.</p>
+<h1 id="more-complications">
+    <a href="#more-complications">
+	More complications…
+    </a>
+</h1>
+<p>Arriving at this stage took MySQL around 10 years:</p>
+<ul>
+<li>We can now reliably replicate, and build simple replication trees that are one level deep.</li>
+<li>Because of the relay log, binlog positions for the same statement vary between servers - transactions are locally renumbered.</li>
+<li>We can replicate, but the <code>SQL_THREAD</code> is a bottleneck: Replication is single-threaded.</li>
+<li>We still don’t have distributed transactions, or a way to handle writes to different primary servers.</li>
+</ul>
+<p>It has taken MySQL another 10 years of changes to improve on this, with Global Transaction IDs, Parallel Replication and Group Replication, but that is for another article.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

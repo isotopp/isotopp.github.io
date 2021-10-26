@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - ObjC - oder warum DCOP so kompliziert ist</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="objc-oder-warum-dcop-so-kompliziert-ist-page">
+	<h1 class="title">
+            ObjC - oder warum DCOP so kompliziert ist
+	</h1>
+
+	<h2 id="methoden-mit-klasse">
+    <a href="#methoden-mit-klasse">
+	Methoden mit Klasse
+    </a>
+</h2>
+<p>Am Wochenende hatte ich mit Till eine recht coole Unterhaltung über die Innereien von Qt. Qt hat den Signal-Slot-Mechanismus, mit dem es Methoden von Objekten aufruft.</p>
+<p>Dazu werden einige Methoden eines Objektes in eine spezielle Runtime-Tabelle der Klasse eingetragen, mit Namen. Das sind Slots.</p>
+<p>Signale sind Platzhalter für Funktionsnamen, die in eine andere Tabelle eingetragen werden können. Mit connect() macht man so einen Eintrag: Man kopiert den Namen einer Funktion (genauer: eines Slots) in den Signalplatzhalter.</p>
+<p>Warum ist das Cool? Weil es Sachen zur Laufzeit macht, die C++ sonst nur zur Compilezeit kann. Damit gewinn man Flexibilität und kann Komponenten zur Laufzeit zusammenstecken, ohne daß man Gigabytes an Stuff neu compilieren muß.</p>
+<p>Es ist außerdem alt.</p>
+<p>In Objective-C hatten wir genau das schon 1994 oder so. Besser sogar noch: In Objective-C sind alle Methoden automatisch immer Slots. Signale hat Objective-C als target (Zeiger auf ein Objekt) und action (Name einer Methode) definiert. Und in Objective-C sind alle Instanzvariablen das, was in Qt die Properties eines Objektes sind.</p>
+<p>Zum Nachlesen: <a href="http://www.koehntopp.de/kris/inkomploehntopp/2495.html" target="_blank" rel="noopener">Artikel von 1997</a>
+
+ und <a href="http://vvv.koehntopp.de/flame/c_c&#43;&#43;/ObjC.pdf" target="_blank" rel="noopener">Objective-C Handbuch</a>
+
+. Im übrigen ist bei Linux auch eine Objective-C Version des gcc dabei.</p>
+<h2 id="dcop">
+    <a href="#dcop">
+	DCOP
+    </a>
+</h2>
+<p>Was hat das mit DCOP zu tun? DCOP ruft remote Methoden auf demselben Rechner auf. Das heißt, irgendein KPart bietet Zeugs an wie &ldquo;Lade Text in Editor-Part&rdquo; oder &ldquo;Save den Mist ab&rdquo; und irgendeine Shell (etwa KDevelop) callt das KPart. Manuell, mit einem essentiell funktionalen Interface.</p>
+<p>In Objective-C hatten wir das genialer gelöst: Hier kann man ein generisches Proxy-Objekt erzeugen. Generisch heißt, daß es nicht Proxy für ein bestimmtes Objekt ist, sondern daß man dem Proxy zur Laufzeit sagt, für was es Proxy ist.</p>
+<p>Das Proxy-Objekt fragt dann seinen Klienten, was es für ein Objekt ist, welche Methoden der Klient hat und welche Instanzvariablen der Klient hat und wird selber zu einem Stand-In für den Client. Nun kann man den Proxy so verwenden wie man den Klienten verwenden würde, wenn er lokal ist.</p>
+<p>Und der Proxy tütet die Callparameter ein, shipped sie per RPC zum Klienten, der rechnet rum, sendet ein Resultat zurück und der Proxy gibt das Resultat zurück. Resultat: RPC mehr oder weniger komplett verborgen, Proxy benutzbar als wär man selber da.</p>
+<h2 id="guide-zum-pdf">
+    <a href="#guide-zum-pdf">
+	Guide zum PDF
+    </a>
+</h2>
+<p>Der eine interessante Teil ist ab Seite 55, wo die Syntax vorgestellt wird. Das kann man überfliegen, denn es ist Zuckerguß, aber wichtig, um die Beispiele lesen zu können.</p>
+<p>Auf Seite 87 stellen sie das Messaging vor. Das ist wichtig, und man kann es direkt auf Qt abbilden. Man lese auch Seite 90, Selectors. Das ist interessant, weil Qt es nicht kann. Auf Seite 92 erklären Sie target-action, was eine Art typenloses SIGNAL für Arme ist. Weil es typenlos ist, braucht man Code wie auf Seite 94.</p>
+<p>Seite 101 ist gruselig, und hat kein Äquivalent in Qt - Categories sind Erweiterungen bestehender Klassen (ich kann also nachträglich die Image-Klasse selbst erweitern, und der Code wird von allen bestehenden Unterklassen von Image erweitert).</p>
+<p>Seite 104 definiert Protocols, die von den meisten Leuten in anderen Sprachen als Interfaces bezeichnet werden. Die entscheidende Syntax ist auf Seite 112ff.</p>
+<p>Einige Speedup-Tricks mit dem Runtime findet man auf Seite 120, mit dem methodForSelector.</p>
+<p>Die Coolness beginnt auf Seite 145-151, Forwarding. Mit dem Dynamic Loading auf Seite 151 zusammen hat man dann ein sehr mächtiges Werkzeug in Form der NSBundle-Klasse, die das verpackt und OO-mäßig typsicher macht. Seite 152 geht dann gleich auf Remote Messaging by Proxy, worüber wir geredet haben.</p>
+<p>Offenbar hat Objective-C aber inzwischen noch ein paar Erweiterungen in der Sprache selber, die die weitere Spezifikation von Parametern erlaubt (&ldquo;bycopy/byref&rdquo;, &ldquo;in/out/inout&rdquo; und &ldquo;oneway&rdquo;). Das war vor sechs Jahren noch nicht so, da hat man sich mit anderen Konstrukten behelfen müssen. :-)</p>
+<p>Ab Seite 163 geht es dann an die Interna, ich halte das für unsere Diskussion nicht mehr so interessant.</p>
+<p>Die Grammatik der Sprache ist auf Seite 211ff dargestellt.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

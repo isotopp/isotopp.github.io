@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Die InnoDB Storage Engine: Konfiguration</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="die-innodb-storage-engine-konfiguration-page">
+	<h1 class="title">
+            Die InnoDB Storage Engine: Konfiguration
+	</h1>
+
+	<p><p class="md__image">
+  <img src="/uploads/innodb-transactions.png" alt=""  />
+</p>
+
+</p>
+<p>Links: Strukturen im Speicher, Rechts: Strukturen auf Disk. Oben:
+Log-Strukturen, Unten: Tablespace-Strukturen.</p>
+<h3 id="wie-eine-transaktion-physikalisch-organisiert-wird">
+    <a href="#wie-eine-transaktion-physikalisch-organisiert-wird">
+	Wie eine Transaktion physikalisch organisiert wird
+    </a>
+</h3>
+<p>Wenn in InnoDB eine neue Transaktion begonnen und erzeugt wird, ist sie ja
+noch nicht comitted und damit hat die Datenbank gegenüber der Anwendung noch
+kein Versprechen gemacht. Entsprechend brauchen die Daten aus einer solchen
+Transaktion auch noch nicht persistent gemacht zu werden.</p>
+<p>InnoDB versucht, eine Transaktion im Speicher zusammen zu bauen. Dies ist
+der <code>innodb_log_buffer</code>. Er sollte ausreichend groß gewählt werden, daß eine
+solche Transaktion in den meisten Fällen im Speicher gehalten werden kann
+und nicht partiell in ein Redo Log geschrieben werden muß. Eine Größe von 1
+MB bis 8 MB ist normal.</p>
+<p>Wenn die Transaktion comitted wird, muß InnoDB die Speicherseite von der
+Platte laden, in der der zu ändernde Record enthalten ist und die Änderung
+im Speicher durchführen - die Seite wird im InnoDB Bufferpool gespeichert.
+Seiten auf der Platte und im InnoDB Bufferpool sind jeweils 16 KB groß, und
+die <code>innodb_buffer_pool_size</code> legt fest, wieviel RAM als Cache für solche
+Seiten zur Verfügung steht. Die modifizierte Speicherseite wird aber noch
+nicht zurück geschrieben. Stattdessen wird die Transaktion an Ende des
+aktuellen Redo-Log auf Platte geloggt und die Seite im Bufferpool im
+Speicher als Dirty (= noch zu schreiben) markiert.</p>
+<p>Als Dirty markierte Seiten werden in den Tablespace hinaus geschrieben, wenn
+einer von drei Fällen eintritt:</p>
+<ol>
+<li>
+<p>Das Redo-Log, das als Ring Puffer organisiert ist, ist voll. Um
+zusätzlichen Platz zu gewinnen müssen als Dirty markierte Seiten in
+Redo-Log Reihenfolge herausgeschrieben werden, sodaß der hintere Zeiger
+des Redo-Log Ringpuffers nach vorne verschoben werden kann und so
+ausreichend Platz im Redo-Log geschaffen wird. Diese Situation nennt man
+einen <code>Innodb_log_wait</code> und sie wird im gleichnamigen Statuscounter
+registriert.</p>
+</li>
+<li>
+<p>InnoDB benötigt für irgendwelche Aufgaben im Bufferpool eine
+Speicherseite, aber findet keine, die frei ist. Normalerweise kann eine
+solche Seite frei gemacht werden, indem man irgendeine Seite aussucht,
+die nicht Dirty ist und sie freigibt: Wenn eine Seite nicht dirty ist,
+bedeutet daß, daß ihr Inhalt irgendwo auf der Platte zum Neu laden
+rumsteht. Wenn aber ausschließlich als Dirty markierte Seiten im
+Bufferpool stehen, geht das nicht und es müssen erst einmal Seiten auf
+Platte geschrieben werden, damit Platz im Bufferpool geschaffen werden
+kann.</p>
+<p>Diese Situation nennt man einen <code>Innodb_buffer_pool_wait_free</code> und sie wird im
+gleichnamigen Statuscounter registriert. InnoDB versucht diese Situation zu
+vermeiden: Wenn mehr als <code>innodb_max_dirty_pages_pct</code> Prozent viele Seiten als
+Dirty markiert sind, wird ein Checkpoint erzwungen und die als Dirty
+markierten Seiten werden herausgeschrieben.</p>
+</li>
+<li>
+<p>InnoDB fühlt sich unterbeschäftigt und beginnt im Sekundentakt damit,
+Batches von jeweils 64 als Dirty markierten Seiten auf die Platte zu
+schubsen. Diese Situation ist normal und wird nicht besonders registriert
+(dreht aber wie alle diese Schreibzugriffe natürlich
+<code>Innodb_pages_written</code> hoch).</p>
+</li>
+</ol>
+<p>Relevante Konfigurationseinträge in der my.cnf:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> Globaler Puffer zum Zusammenbau 
+<span style="color:#f92672">#</span> von Transaktionen vor dem <span style="color:#66d9ef">Commit</span>
+innodb_log_buffer_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>M
+
+<span style="color:#f92672">#</span> Größe des InnoDB Buffer Pools
+<span style="color:#f92672">#</span>   etwa <span style="color:#ae81ff">70</span><span style="color:#f92672">-</span><span style="color:#ae81ff">80</span><span style="color:#f92672">%</span> des Hauptspeichers,
+<span style="color:#f92672">#</span>   auf einer Maschine mit <span style="color:#ae81ff">4</span><span style="color:#66d9ef">G</span> RAM
+<span style="color:#f92672">#</span>   also etwa <span style="color:#ae81ff">3</span><span style="color:#66d9ef">G</span>
+<span style="color:#f92672">#</span>
+<span style="color:#f92672">#</span> (<span style="color:#f92672">/</span>etc<span style="color:#f92672">/</span>sysctl.conf: vm.swappiness <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">!</span>)
+innodb_buffer_pool_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">3072</span>M
+
+<span style="color:#f92672">#</span> Anzahl der InnoDB Bufferpool Seiten
+<span style="color:#f92672">#</span> die Drity sein dürfen bevor ein
+<span style="color:#f92672">#</span> <span style="color:#66d9ef">Checkpoint</span> erzwungen wird
+<span style="color:#f92672">#</span>
+<span style="color:#f92672">#</span> <span style="color:#66d9ef">Default</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">90</span>, ok
+innodb_max_dirty_pages_pct <span style="color:#f92672">=</span> <span style="color:#ae81ff">90</span>
+</code></pre></div><p>Relevante Zähler in <code>SHOW GLOBAL STATUS</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> Statuszähler für das Event <span style="color:#e6db74">&#34;Redo Log voll&#34;</span>
+Innodb_log_waits 
+
+<span style="color:#f92672">#</span> Statuszähler für das Event <span style="color:#e6db74">&#34;Keine Seite
+</span><span style="color:#e6db74"># im Bufferpool frei&#34;</span>
+Innodb_buffer_pool_wait_free
+</code></pre></div><h3 id="eine-sinnvolle-größe-für-das-redo-log-wählen">
+    <a href="#eine-sinnvolle-gr%c3%b6%c3%9fe-f%c3%bcr-das-redo-log-w%c3%a4hlen">
+	Eine sinnvolle Größe für das Redo-Log wählen
+    </a>
+</h3>
+<p><p class="md__image">
+  <img src="/uploads/innodb_writes_to_log.png" alt=""  />
+</p>
+
+</p>
+<p>Ein Write-Burst kann durch das Redo-Log &ldquo;in der Zeit gestreckt&rdquo; und so
+abgeflacht werden. Die zu leistende Arbeit - die Fläche unter der Kurve -
+ist jedoch (nahezu) gleich.</p>
+<p>Das Redo-Log loggt Transaktionen und die Einträge im Log sind proportional
+zur Größe der Transaktion, denn es werden Rows geloggt, keine Pages. Der
+Sinn des Logs ist es, das Zurückschreiben der 16KB großen Seiten in den
+Tablespace verzögern zu können: Vielfach ist es so, daß in einer
+Speicherseite mehr als eine Row abgelegt wird und daß mehrere zeitlich eng
+beeinander liegende Transaktionen Daten in Rows ändern, die in derselben
+Page liegen, oder daß eine Row wieder und wieder überschrieben wird. Durch
+das Schreiben ins Redo-Log werden diese Änderungen alle persistent gemacht,
+aber die Schreibzugriffe können als lineare Writes ohne Seeks recht schnell
+abgewickelt werden. Die Seeks, die beim Schreiben in den Tablespace
+unvermeidlich auftreten würden, können so verzögert und minimiert werden.</p>
+<p>Normalerweise sollte das Redo-Log immer groß genug sein und niemals voll
+laufen. Entsprechend sollte Innodb_log_waits immer 0 sein oder zumindest
+sich nicht bewegen, wenn man zwei Mal in Folge den Wert des Statuscounters
+abruft. Hat man regelmäßig Innodb_log_wait-Events, kann eine von zwei
+Situationen vorliegen: Der Server hat Write-Bursts, die größer sind als das
+aktuelle Redo-Log - das Redo-Log ist zu klein und muß vergrößert werden.
+Oder der Server hat dauerhaft eine sehr große Schreiblast und das Redo-Log
+würde überlaufen, egal wie groß es ist. Dann braucht der Server mehr
+Spindeln, um schneller schreiben zu können oder die Daten müssen
+partitioniert und auf mehrere Server verteilt werden.</p>
+<p>Das Redo-Log besteht per Default aus zwei Dateien
+(<code>innodb_log_files_in_group</code>), die jeweils 5 MB groß sind
+(<code>innodb_log_file_size</code>), ist also 10 MB groß. Dies ist zu klein. Idealerweise
+sollte es aus zwei Dateien bestehen, die jeweils zwischen 64 und 256 MB groß
+sind, also 128 MB bis 512 MB groß sein. Es kann nicht größer sein als 4096
+MB = 4 GB, auch nicht auf einer Maschine mit 64 Bit Architektur.</p>
+<p>Früher (vor MySQL 5.0) war es einmal wesentlich, das Redo-Log nicht zu groß
+zu machen: Wenn der Server crashte, ging InnoDB in die Log Recovery Phase
+und mußte diese erst abarbeiten bevor der Server wieder Verbindungen annahm.
+Seit MySQL 5.0 ist das nicht mehr so: Die Log Recovery Phase kann vom Server
+im Hintergrund abgearbeitet werden, sodaß die Größe des Redo-Logs nicht mehr
+bestimmend für die Dauer der Server-Recovery ist.</p>
+<p>Ändert man diese Variable wenn ib_logfile0 und ib_logfile1 schon existieren,
+wird InnoDB sich weigern zu starten und im Error-Log des Servers eine
+Meldung hinterlassen, die im wesentlichen sagt, daß die Größe von
+vorgefundenen Logfiles nicht mit der Größe der konfigurierten Logfiles
+übereinstimmt.</p>
+<p>Um die Größe des Redo-Logs zu ändern muß der Server runtergefahren werden,
+danach kontrolliert werden, daß der Shutdown sauber war und daß kein
+Serverprozeß mehr läuft. Dann kann man die existierenden ib_logfile?-Dateien
+zur Seite moven und den Wert der Konfigurationsvariablen ändern, um
+schließlich den Server zu starten. InnoDB wird nun Meldungen über neu
+angelegte Logfiles in das Error-Log schreiben und die Files generieren. Ist
+der Server wieder online und betriebsbereit, kann man die alten
+ib_logfile?-Dateien löschen.</p>
+<p>Relevante Konfigurationseinträge in der my.cnf:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> Anzahl der ib_logfile<span style="color:#f92672">?</span>
+innodb_log_files_in_group <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+
+<span style="color:#f92672">#</span> Größe eines ib_logfile<span style="color:#f92672">?</span>
+innodb_log_file_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">256</span>M
+</code></pre></div><h3 id="wie-innodb-die-datendateien-ablegt">
+    <a href="#wie-innodb-die-datendateien-ablegt">
+	Wie InnoDB die Datendateien ablegt
+    </a>
+</h3>
+<p>Wie bereits in
+[dem ersten Artikel]({% link _posts/2008-01-30-die-innodb-storage-engine.md %})
+dieser Reihe angedeutet hat InnoDB zwei verschiedene Betriebsarten, in denen
+es seine Daten unterschiedlich organisiert: Wenn die Konfigurationsvariable
+<code>innodb_file_per_table = 0</code> gesetzt ist, werden die Daten in einem oder
+mehreren ibdata-Tablespacefiles abgelegt. Wenn die <code>innodb_file_per_table = 1</code>
+gesetzt ist, wird stattdessen für jede Tabelle neben der .frm-Datei für die
+Tabelle ein .ibd-File angelegt, das die Daten enthält.</p>
+<p>Die Tablespace-Files werden, wenn ihre Namen nicht als absolute Pfadnamen
+angegeben werden, in <code>innodb_data_home_dir</code> angelegt. Ist auch diese Variable
+leer, wird als Default <code>datadir</code> angenommen. Der Default-String für
+<code>innodb_data_file_path</code> ist <code>ibdata1:10M:autoextend</code>.</p>
+<p>In den meisten Default-Installationen bedindet sich also eine Datei ibdata1
+in /var/lib/mysql. Diese Datei ist zunächst 10M groß und wächst dann in
+Schritten von 8MB (weil innodb_autoextend_increment = 8 per Default auf 8
+steht).</p>
+<p>Diese Defaults sind für den effizienten Betrieb jedoch nicht sehr gut
+gewählt. Zunächst einmal sollte man <code>innodb_file_per_table = 1</code> setzen. Auf
+diese Weise bekommt man pro Tabelle ein .ibd-File. Dadurch hat man die
+Möglichkeit, den Platzverbrauch in der Datenbank Tabellenweise auch von
+außen zu messen und man gewinnt die Möglichkeit, durch ein <code>ALTER TABLE t ENGINE=innodb</code> bzw. ein <code>OPTIMIZE TABLE t</code> den leeren Platz in solchen
+Dateien dem Betriebssystem wieder zur Disposition zur Stellen.</p>
+<p>Wählt man <code>innodb_file_per_table = 1</code>, dann sind die Defaults für
+<code>innodb_data_file_path</code> und <code>innodb_autoextend_increment</code> ausreichend, denn im
+ibdata1-File wird lediglich das InnoDB-interne Shadow-Datadictionary und das
+Undo-Log abgelegt. Auf solchen Installationen erhält man am Ende meist ein
+ibdata1 in der Größe von 256M bis 1024M, je nach Maximalbelastung des
+Undo-Logs.</p>
+<p>Muß oder will man InnoDB mit <code>innodb_file_per_table = 0</code> betreiben, dann
+werden die Daten ebenfalls im ibdata1-File abgelegt. Man sollte vorher
+sicherstellen, daß das Betriebssystem und auch alle Utilities zur
+Datensicherung mit sehr großen Dateien korrekt umgehen können. Ist das nicht
+der Fall, wird man ein sehr kompliziertes innodb_data_file_path-Statement
+benötigen, das ausreichend viele ibdata-Files definiert - jedes von ihnen
+wahrscheinlich so um die 2G groß, oder was immer das Limit hier ist.</p>
+<p>Angenommen der Support im Betriebssystem für sehr große einzelne Files ist
+ausreichend, dann wird man mit Sicherheit die Schrittweite vergrößern
+wollen, in der die ibdata-Datei vergrößert wird -
+<code>inoodb_autoextend_increment = 8</code> sind als Schrittweite sicher zu klein.
+Stattdessen ist es empfehlenswert, sich das Dateisystem anzusehen, auf dem
+die Datei angelegt wird, und als Schrittweite etwa 1% bis 5% der gesamten
+Dateisystemgröße zu wählen. Auf diese Weise wird das Dateisystem nach Bedarf
+in 20 bis 100 Schritten aufgefüllt. Das ist hinreichend klein granular,um
+flexibel zu sein, aber das Betriebssystem hat dennoch ausreichend wenige
+Allocation Requests um die Datei weitgehend unfragmentiert zu erzeugen. Auf
+einem Dateisystem mit 200G Platz wird man also eine Schrittweite von 2048
+(2048M = 1% von 200G) oder gar 10240 (10G = 10240M = 5% von 200G) wählen.</p>
+<p>In jedem Fall sollte ein Tablespace-File so definiert sein, daß es auf
+&ldquo;autoextend&rdquo; konfiguriert ist, insbesondere auch bei <code>innodb_file_per_table = 1</code>. Wenn nämlich durch viele Schreibzugriffe während einer lang andauernden
+Transaktion das Undo Log vorübergehend anschwillt und dabei nicht genug
+Platz im ibdata-File ist, kommt es zu sehr seltsamen und schwer zu
+diagnostizierbaren Fehlermeldungen, obwohl auf Dateisystemebene noch genug
+Platz vorhanden ist.</p>
+<p>Außerdem ist zu bedenken, daß InnoDB mehr Filehandles verbraucht, wenn
+<code>innodb_file_per_table = 1</code> gesetzt ist - entsprechend sollte man
+<code>innodb_open_files</code> größer wählen, zum Beispiel ein Filehandle pro Tabelle.
+Das zieht unter Umständen auch eine Anpassung von <code>open_files_limit</code> nach sich -
+hier müssen aber noch Filehandles für .frm-Dateien und für MyISAM-Tabellen
+mit dazu gerechnet werden.</p>
+<p>Relevante Konfigurationseinträge in der my.cnf (File per Table):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> Soll InnoDB mit einer ibd<span style="color:#f92672">-</span>Datei pro Tabelle betrieben werden
+innodb_file_per_table <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+
+<span style="color:#f92672">#</span> Wo soll die ibdata<span style="color:#f92672">-</span>Datei abgelegt werden (<span style="color:#66d9ef">Default</span>: <span style="color:#960050;background-color:#1e0010">$</span>datadir)
+<span style="color:#f92672">#</span> innodb_data_home_dir
+
+<span style="color:#f92672">#</span> Wie soll die Datei angelegt werden<span style="color:#f92672">?</span>
+innodb_data_file_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ibdata1:10M:autoextend&#34;</span>
+
+<span style="color:#f92672">#</span> <span style="color:#66d9ef">In</span> was für Schritten (MB) soll die Datei wachsen<span style="color:#f92672">?</span>
+innodb_autoextend_increment <span style="color:#f92672">=</span> <span style="color:#ae81ff">8</span>
+
+<span style="color:#f92672">#</span> Filehandles hoch drehen
+<span style="color:#f92672">#</span>  Ein Filehandle pro InnoDB Tabelle
+innodb_open_files <span style="color:#f92672">=</span> <span style="color:#ae81ff">2048</span>
+
+<span style="color:#f92672">#</span> Das hier kann man <span style="color:#66d9ef">in</span> Linux auch 
+<span style="color:#f92672">#</span> getrost richtig hoch drehen
+open_files_limit  <span style="color:#f92672">=</span> <span style="color:#ae81ff">32768</span>
+</code></pre></div><p>Relevante Konfigurationseinträge in der my.cnf (Single-Tablespace):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> Soll InnoDB mit einer ibd<span style="color:#f92672">-</span>Datei pro Tabelle betrieben werden
+innodb_file_per_table <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+
+<span style="color:#f92672">#</span> Wo soll die ibdata<span style="color:#f92672">-</span>Datei abgelegt werden (<span style="color:#66d9ef">Default</span>: <span style="color:#960050;background-color:#1e0010">$</span>datadir)
+<span style="color:#f92672">#</span> innodb_data_home_dir
+
+<span style="color:#f92672">#</span> Wie soll die Datei angelegt werden<span style="color:#f92672">?</span>
+<span style="color:#f92672">#</span>   Tablespace wird hier als <span style="color:#ae81ff">2</span><span style="color:#66d9ef">G</span> große Datei angelegt.
+innodb_data_file_path <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;ibdata1:2048M:autoextend&#34;</span>
+
+<span style="color:#f92672">#</span> <span style="color:#66d9ef">In</span> was für Schritten (MB) soll die Datei wachsen<span style="color:#f92672">?</span>
+<span style="color:#f92672">#</span>   Tablespace wächst hier <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">2</span><span style="color:#66d9ef">G</span> Schritten 
+<span style="color:#f92672">#</span>   (<span style="color:#ae81ff">1</span><span style="color:#f92672">%</span> einer <span style="color:#ae81ff">200</span><span style="color:#66d9ef">G</span><span style="color:#f92672">-</span>Platte)
+innodb_autoextend_increment <span style="color:#f92672">=</span> <span style="color:#ae81ff">2048</span>
+</code></pre></div><h3 id="wie-innodb-seine-daten-auf-die-platte-malt">
+    <a href="#wie-innodb-seine-daten-auf-die-platte-malt">
+	Wie InnoDB seine Daten auf die Platte malt
+    </a>
+</h3>
+<p>Wie wir oben gesehen haben, werden Daten bei der Ausführung von schreibenden
+Kommandos in InnoDB nur gelesen - ein INSERT oder UPDATE-Statement erzeugt
+einen Logbuffer und als Dirty markierte Pages im InnoDB Bufferpool für die
+Daten und das Undo-Log. Bei einem Commit wird der Logbuffer ins Redo-Log
+geschrieben - jedenfalls wenn <code>innodb_flush_log_at_trx_commit = 1</code> gesetzt
+ist. MySQL führt den Commit dann als einen Write ins Redo-Log und eine
+Flush-Operation durch. Letztere leert dann die Betriebssystem-Puffer in die
+Platten-Puffer und die Platten-Puffer auf die Platte.</p>
+<p>Selbst dies ist jedoch eine relativ langsame Operation, bei der Wartezeiten
+von einigen Millisekunden auf eine langsame mechanische Platte auftreten -
+jedenfalls wenn man nicht eine spezielle Platte für das Redo-Log hat, die
+aus batteriegepuffertem RAM besteht. Daher besteht die Möglichkeit, InnoDB
+auf eine Weise zu betreiben, bei das Warten auf die Platte vom Commit mehr
+oder weniger stark entkoppelt wird.</p>
+<p>Bei <code>innodb_flush_log_at_trx_commit = 2</code> ist es so, daß ein Commit die Daten
+aus dem MySQL in die Betriebssystem-Puffer überträgt (&ldquo;WRITE&rdquo;), aber ein
+Schreiben der Betriebssystem-Puffer auf die Platte (&ldquo;FLUSH&rdquo;) nur einmal pro
+Sekunde erzwingt. Dies bewirkt, daß bei einem Absturz des MySQL
+Serverprozesses keine Daten verloren gehen können, bei einem Absturz der
+Server-Hardware jedoch bis zu einer Sekunde Redo-Log fehlen kann. Es
+existieren also möglicherweise Daten, für die der Anwendung signalisiert
+wurde, daß sie geschrieben wurden, die aber nicht geschrieben worden sind.
+Dafür ist diese Betriebsart durch die Wegfallenden Wartezeiten auf die
+langsamen Festplatten sehr viel schneller.</p>
+<p>Je nach Geschäftsprozeß, der hier implementiert wird, kann es sein, daß
+dieser Fehler relevant ist oder nicht - aus der Sicht der Informatik ist
+<code>innodb_flush_log_at_trx_commit = 2</code> eine Verletzung des
+<a href="http://en.wikipedia.org/wiki/ACID" target="_blank" rel="noopener">ACID</a>
+
+-Prinzips nach Codd und daher
+falsch. Aus der Sicht der Betriebswirtschaft kann das Verhalten dennoch
+korrekt sein. Das wäre zum Beispiel dann der Fall, wenn die verlorenen Daten
+reproduzierbar wären, oder wenn die Korrektur der falschen Daten durch
+Kundenservice kostengünstiger wäre als die Hardware, die notwendig wäre, um
+die benötigte Performance bei <code>innodb_flush_log_at_trx_commit = 1</code> zu liefern.</p>
+<p>Bei <code>innodb_flush_log_at_trx_commit = 0</code> wird das Schreibverhalten von InnoDB
+noch weiter gelockert - &ldquo;Commit&rdquo; ist nun eine rein logische Operation, die
+keine Writes und keine Flushes per initiiert. Stattdessen wird das Redo-Log
+einmal pro Sekunde durch &ldquo;WRITE&rdquo; an das Betriebssystem übertragen und danach
+durch &ldquo;FLUSH&rdquo; ein Schreiben der Betriebssystem-Puffer auf die Platte
+erzwungen. Dies ist jedoch nicht wesentlich schneller als die Einstellung
+&ldquo;2&rdquo;.</p>
+<p>In jedem Fall wird die Datenbank nach einem Crash des MySQL-Serverprozesses
+oder der Hardware beim Wiederanlauf recovern müssen. In jedem Fall wird die
+Datenbank wieder in einen konsistenten transaktionalen Zustand recovern,
+unabhängig von den Einstellungen für <code>innodb_flush_log_at_trx_commit</code>.
+Unterschiedlich wird lediglich der Punkt in der Zeit sein (die letzte
+gesehene Transaktionsnummer, zu der hin recovert wird), den die Datenbank
+nach dem Wiederanlauf und der Recovery erreicht.</p>
+<p>Das Verhalten von InnoDB läßt sich außerdem noch mit Hilfe der
+<code>innodb_flush_method</code> beeinflussen. In Unix sind die zugelassenen Werte für
+diese Variable <code>fdatasync</code> (der Default), <code>O_DSYNC</code>, <code>O_DIRECT</code>,
+<code>littlesync</code>, <code>nosync</code>, in Windows werden <code>normal</code> und <code>unbuffered</code> (der
+Default) sowie <code>async_unbuffered</code> (der Default in Windows XP und Windows
+2000) erkannt.</p>
+<p>Die Idee bei <code>O_DSYNC</code> und <code>O_DIRECT</code> ist, die Dateien des Redo-Log auf eine
+Weise zu öffnen, die den Puffermechanismus des Betriebssystems komplett
+ausschaltet - die Datenbank puffert Daten im innodb_buffer_pool und im
+Redo-Log selbst und es besteht gar keine Notwendigkeit für den File System
+Buffer Cache des Betriebssystems. Setzt man <code>innodb_flush_method</code> zum Beispiel
+auf <code>O_DIRECT</code> in Linux, wird InnoDB nur noch WRITE-Aufrufe durchführen, aber
+die Daten nicht mehr mit FLUSH auf die Platte zwingen. Dies ist auch nicht
+mehr notwendig, da ja jeder WRITE bei <code>O_DIRECT</code> ungepuffert direkt auf die
+Platte geht.</p>
+<p>Relevante Konfigurationseinträge in der my.cnf (für Linux):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#f92672">#</span> Gewünschtes Schreibverhalten für viele Anwendungen
+innodb_flush_log_at_trx_commit <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>
+innodb_flush_method <span style="color:#f92672">=</span> O_DIRECT
+
+<span style="color:#f92672">#</span> Alternativ für ACID<span style="color:#f92672">-</span>Compliance:
+innodb_flush_log_at_trx_commit <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>
+innodb_flush_method <span style="color:#f92672">=</span> O_DIRECT
+</code></pre></div><h3 id="concurrency-tickets">
+    <a href="#concurrency-tickets">
+	Concurrency Tickets
+    </a>
+</h3>
+<p>InnoDB funktioniert besser, wenn die Anzahl der Threads begrenzt ist, die
+gerade Operationen innerhalb der Storage Engine ausführen. Es können sich
+gleichzeitig <code>innodb_thread_concurrency</code> viele Threads in InnoDB aufhalten. Es
+existieren verschiedene Formeln, mit denen man auf sinnvolle Werte für diese
+Variable kommen kann (&ldquo;Anzahl der Cores mal zwei&rdquo;, &ldquo;Summe aus Cores und
+Platten = Anzahl der Dinge, die wir in Bewegung halten wollen&rdquo;), aber es ist
+klar, daß aktuelle Versionen von InnoDB schlechtere Performance zeigen, wenn
+der Wert zu hoch wird - derzeit scheint das Limit je nach Load 16 oder 32 zu
+sein.</p>
+<p>Hat man mehr gleichzeitige Transaktionen als <code>innodb_thread_concurrency</code>
+zuläßt, müssen überzählige Threads warten. Oft ist es jedoch so, daß ein
+Thread über das Handler Interface in die Storage Engine hineingeht, dort
+eine Operation wie Key Lookup durchführt, um dann in die MySQL SQL-Schicht
+zurück zu kehren. Um eine einzelne Query zu beantworten sind unter Umständen
+sehr viele solche Übergänge notwendig.</p>
+<p>Damit ein Thread nun nicht jedesmal warten muß, wenn er in die InnoDB
+Storage Engine will, bekommt er <code>innodb_concurrency_tickets</code> viele &ldquo;Tickets&rdquo;,
+wenn ihm Zugang zur Engine gewährt wird. Er kann also entsprechend viele
+Wechsel zwischen SQL-Schicht und Storage Engine machen, ohen daß er erneut
+warten muß. Man kann hier mit verschiedenen Werten experimentieren, wenn man
+eine Maschine mit sehr vielen CPUs und Festplatten hat und eine sehr hohe
+Thread Concurrency für InnoDB hat. Sinnvolle Werte sind &ldquo;Anzahl der Records
+in einem Block&rdquo;, &ldquo;&hellip; in einem Segment&rdquo; oder &ldquo;Anzahl der Records, die in
+dieser Query gelesen werden&rdquo;.</p>
+<p>Eine weitere Variable ist die <code>innodb_commit_concurrency</code>, die die Anzahl der
+Threads limitiert, die gleichzeitig comitten können. Sie begrenzt den
+Speicherverbrauch im Logbuffer und reguliert Contention auf dem Redo-Log.</p>
+<p>Aus historischen Gründen existiert noch eine Variable <code>thread_concurrency</code>.
+Der Wert, der hier übergeben wird, endet im Code direkt in einem Aufruf von
+<code>pthread_setconcurrency()</code>, wird aber sonst nicht weiter verwendet. Diese
+Funktion bewirkt in den aktuellen Implementierungen von pthreads in Linux
+und Solaris gar nichts, in Versionen von pthreads bis einschließlich Solaris
+8 hat sie sich intern auf das Mapping von Threads zu Kernelthreads
+ausgewirkt. Für aktuelle Versionen von Betriebssystemen und MySQL ist die
+Variable und der dort eingestellte Werte nicht mehr relevant.</p>
+<p>Relevante Konfigurationseinträge in der my.cnf:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">innodb_commit_concurrency <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+innodb_thread_concurrency <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span>
+innodb_concurrency_tickets <span style="color:#f92672">=</span> <span style="color:#ae81ff">500</span>
+</code></pre></div><h3 id="metadatenstrukturen">
+    <a href="#metadatenstrukturen">
+	Metadatenstrukturen
+    </a>
+</h3>
+<p>Wenn ich nach dem gehe, was ich bei Kunden vorfinde, dann ist
+<code>innodb_additional_mem_pool_size</code> eine Variable, die sehr häufig auf seltsame
+Werte gesetzt wird. Die Variable bestimmt die Größe eines Puffers für
+Metadatenstrukturen, ist also ein Cache für das interne InnoDB Data
+Dictionary. Der Default-Wert ist 1 MB und im normalen Betrieb braucht dieser
+Puffer niemals größer als 8 MB gesetzt zu werden. Ein Kunde, der Tests mit
+40.000 InnoDB-Tabellen vorgenommen hat, hat hier tatsächlich einmal einen
+Wert von 20 MB benötigt.</p>
+<p>Relevante Konfigurationseinträge in der my.cnf:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">innodb_additional_mem_pool_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>M
+</code></pre></div><h3 id="gesamtübersicht">
+    <a href="#gesamt%c3%bcbersicht">
+	Gesamtübersicht
+    </a>
+</h3>
+<p>Eine Gesamtübersicht über alle InnoDB-Statusvariablen und
+Konfigurationsparameter findet man auf
+<a href="http://dev.mysql.com/doc/refman/5.0/en/innodb-parameters.html" target="_blank" rel="noopener">12.2.4. InnoDB Startup Options and System Variables</a>
+
+
+im Handbuch.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

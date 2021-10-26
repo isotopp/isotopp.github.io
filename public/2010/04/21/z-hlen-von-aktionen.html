@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Zählen von Aktionen</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="z%C3%A4hlen-von-aktionen-page">
+	<h1 class="title">
+            Zählen von Aktionen
+	</h1>
+
+	<p>Hier ist noch ein dreckiges kleines MySQL-Problem. Matthias Fiedler fragt:</p>
+<blockquote>
+<p>Ich möchte in einer Tabelle bestimmte Werte bzw. Datensätze ändern. Das
+läuft in einer Schleife und ich möchte mitzählen, wie viele Datensätze
+wirklich geändert wurden….</p>
+<p>Wenn ich nur Update benutze und der Datensatz in der Tabelle ist identisch
+mit dem neuen, dann wird kein Update ausgeführt. Somit kann ich hier mit
+mysql_affected_rows() die Menge zählen. Das hat aber einen Nachteil:
+Manche Datensätze sind ja noch gar nicht in der Tabelle. Da geht ja dann
+auch kein Update.</p>
+<p>Also müsste ich erst mal per Select prüfen, ob ein Datensatz da ist und
+dann entscheiden, ob ich den per Update ersetze oder per Insert neu
+einstelle oder gar nichts mache. Dann ist zwar das zählen wieder simpel,
+weil man gar keine sql Funktion dazu mehr braucht. Aber ich muß immer erst
+ein Select ausführen.</p>
+<p>Ein Replace oder ein ON DUPLICATE KEY UPDATE machen das halt in einem. Wie
+kann ich nun alle 3 Varianten (also Update, Insert, oder nichts) mit einem
+mysql Befehl abarbeiten und auch noch mitzählen?</p>
+</blockquote>
+<p>Das geht so:</p>
+<p>Lege eine Beispieltabelle an und fülle sie mit Beispielwerten:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( 
+  id integer unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span>, 
+  d integer unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> 
+) engine <span style="color:#f92672">=</span> innodb;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">16</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>), (<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">3</span>);
+Query OK, <span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+Records: <span style="color:#ae81ff">3</span>  Duplicates: <span style="color:#ae81ff">0</span>  Warnings: <span style="color:#ae81ff">0</span>
+</code></pre></div><p>Jetzt initialisiere einen Zähle als Connection-Variable:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#f92672">@</span>x <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Hier kommt dann die Magie: Wir zählen den Zähler in einer Update-Clause
+eines INSERT ON DUPLICATE KEY UPDATE mit hoch. Da wir den eigentlichen
+Zählerwert im Statement selber nicht brauchen, multiplizieren wir ihn mit 0
+und addieren ihn dann irgendwo zu (irgendwas plus 0 ist halt irgendwas -
+neutrales Element der Addition).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">4</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">1</span>), (<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>) 
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> 
+<span style="color:#f92672">-&gt;</span> d<span style="color:#f92672">=</span> <span style="color:#66d9ef">values</span> (d) <span style="color:#f92672">+</span> <span style="color:#ae81ff">0</span><span style="color:#f92672">*</span> ( <span style="color:#f92672">@</span>x :<span style="color:#f92672">=</span> <span style="color:#f92672">@</span>x <span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> );
+
+Query OK, <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+Records: <span style="color:#ae81ff">3</span>  Duplicates: <span style="color:#ae81ff">2</span>  Warnings: <span style="color:#ae81ff">0</span>
+</code></pre></div><p>Kleine Gegenkontrolle: Wie viele UPDATE-Zweige haben wir betreten?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">@</span>x;
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#f92672">@</span>x   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>    <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">4</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wir sollten mit values(id) und einem concat() sogar eine Liste der
+Primärschlüssel bekommen können, die wir angefaßt haben.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#f92672">@</span>id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#f92672">@</span>x <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t 
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">4</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">1</span>), (<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>)
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> 
+<span style="color:#f92672">-&gt;</span> d<span style="color:#f92672">=</span> <span style="color:#66d9ef">values</span> (d) <span style="color:#f92672">+</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">*</span> ( <span style="color:#f92672">@</span>x :<span style="color:#f92672">=</span> <span style="color:#f92672">@</span>x <span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> ), 
+<span style="color:#f92672">-&gt;</span> id <span style="color:#f92672">=</span> concat(<span style="color:#66d9ef">values</span>(id), 
+<span style="color:#f92672">-&gt;</span>   <span style="color:#66d9ef">substring</span>(<span style="color:#f92672">@</span>id :<span style="color:#f92672">=</span> concat(<span style="color:#f92672">@</span>id, <span style="color:#e6db74">&#34;,&#34;</span>, <span style="color:#66d9ef">values</span>(id)) , <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>));
+Query OK, <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+Records: <span style="color:#ae81ff">3</span>  Duplicates: <span style="color:#ae81ff">2</span>  Warnings: <span style="color:#ae81ff">0</span>
+</code></pre></div><p>Und wirklich:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">@</span>x, <span style="color:#f92672">@</span>id;
+<span style="color:#f92672">+</span><span style="color:#75715e">------+------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#f92672">@</span>x   <span style="color:#f92672">|</span> <span style="color:#f92672">@</span>id  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>    <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> ,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Und falls einer von Euch jetzt einwirft &ldquo;Ich wußte nicht, daß man das machen
+kann&rdquo;: Ich auch nicht. Und machen SOLLTE man das wahrscheinlich auch nicht.</p>
+<p><strong>Nachtrag:</strong> Ich habe diesen Aufschrieb dann mal an eine Kollegin
+gesendet. Liz meinte dazu:</p>
+<blockquote>
+<p>Indeed, intriguing…. Now for you at home:  what where the values previous
+to the update, associated with the PK&rsquo;s updated? If we can reliably solve
+that, then we could actually get rid of a lot of selects on the master
+database.</p>
+</blockquote>
+<p>Für ausreichend kleine Werte von Reliable kann man mit einer noch
+dreckigeren Lösung nachsetzen:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">set</span> <span style="color:#f92672">@</span>counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+<span style="color:#66d9ef">set</span> <span style="color:#f92672">@</span>_id <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+<span style="color:#66d9ef">set</span> <span style="color:#f92672">@</span>_d <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>;
+<span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">10</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">20</span>), (<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">30</span>);
+<span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t 
+<span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">4</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">1</span>), (<span style="color:#ae81ff">3</span>, <span style="color:#ae81ff">1</span>)
+ <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> 
+ d<span style="color:#f92672">=</span> <span style="color:#66d9ef">values</span> (d) <span style="color:#f92672">+</span> 
+    <span style="color:#ae81ff">0</span><span style="color:#f92672">*</span> ( <span style="color:#f92672">@</span>counter :<span style="color:#f92672">=</span> <span style="color:#f92672">@</span>counter <span style="color:#f92672">+</span><span style="color:#ae81ff">1</span> ) <span style="color:#f92672">+</span> 
+    <span style="color:#ae81ff">0</span><span style="color:#f92672">*</span> ( <span style="color:#f92672">@</span>_d :<span style="color:#f92672">=</span> concat(<span style="color:#f92672">@</span>_d, <span style="color:#e6db74">&#34;,&#34;</span>, coalesce(d, <span style="color:#e6db74">&#34;&#34;</span>))), 
+ id <span style="color:#f92672">=</span> concat(<span style="color:#66d9ef">values</span>(id), 
+   <span style="color:#66d9ef">substring</span>(<span style="color:#f92672">@</span>_id :<span style="color:#f92672">=</span> concat(<span style="color:#f92672">@</span>_id, <span style="color:#e6db74">&#34;,&#34;</span>, <span style="color:#66d9ef">values</span>(id)) , <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0</span>));
+<span style="color:#66d9ef">select</span> <span style="color:#f92672">@</span>counter, <span style="color:#f92672">@</span>_id, <span style="color:#f92672">@</span>_d;
+</code></pre></div><p>Und das druckt:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">@</span>counter, <span style="color:#f92672">@</span>_id, <span style="color:#f92672">@</span>_d;
+<span style="color:#f92672">+</span><span style="color:#75715e">----------+------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#f92672">@</span>counter <span style="color:#f92672">|</span> <span style="color:#f92672">@</span>_id <span style="color:#f92672">|</span> <span style="color:#f92672">@</span>_d    <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----------+------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>        <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> ,<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span> ,<span style="color:#ae81ff">20</span>,<span style="color:#ae81ff">30</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----------+------+--------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div>
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

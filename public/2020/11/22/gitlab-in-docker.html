@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Gitlab in Docker</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="gitlab-in-docker-page">
+	<h1 class="title">
+            Gitlab in Docker
+	</h1>
+
+	<p>These installation notes are mostly a note to myself, documenting the installation process of a Gitlab Omnibus Container in Docker, plus Gitlab Runners.</p>
+<h2 id="os-setup">
+    <a href="#os-setup">
+	OS Setup
+    </a>
+</h2>
+<p>We are installing into <code>/export/gitlab</code>, a 10G xfs slice from the local flash pool:</p>
+<pre><code class="language-console" data-lang="console"># lvcreate -n gitlab -L 10G data
+# mkfs -t xfs /dev/data/gitlab
+# mkdir /export/gitlab
+# mount /dev/data/gitlab /export/gitlab
+# echo &quot;/dev/data/gitlab\t/export/gitlab\txfs\tbsdgroups,usrquota,grpquota,attr2,nofail,noatime 1 2&quot; &gt;&gt; /etc/fstab
+
+# mkdir /export/gitlab/{gitlab,gitlab-runner}
+# mkdir /export/gitlab/gitlab/{config,data,logs}
+</code></pre><h2 id="docker">
+    <a href="#docker">
+	Docker
+    </a>
+</h2>
+<p>We are using <code>docker-compose</code> to run this, with a <code>.env</code> (dotenv) like so:</p>
+<pre><code class="language-console" data-lang="console"># cat .env
+GITLAB_HOME=/export/gitlab/gitlab
+GITLAB_DOMAIN=gitlab.home.koehntopp.de
+GITLAB_HTTP_PORT=81
+GITLAB_HTTPS_PORT=444
+GITLAB_SSH_PORT=2222
+</code></pre><p>And a <code>docker-compose.yaml</code> like so:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml">---
+<span style="color:#f92672">version</span>: <span style="color:#e6db74">&#34;3&#34;</span>
+
+<span style="color:#f92672">services</span>:
+  <span style="color:#f92672">web</span>:
+    <span style="color:#f92672">container_name</span>: <span style="color:#e6db74">&#34;gitlab&#34;</span>
+    <span style="color:#f92672">hostname</span>: <span style="color:#e6db74">&#34;gitlab&#34;</span>
+    <span style="color:#f92672">image</span>: <span style="color:#e6db74">&#34;gitlab/gitlab-ce:latest&#34;</span>
+    <span style="color:#f92672">restart</span>: <span style="color:#ae81ff">always</span>
+    <span style="color:#f92672">hostname</span>: <span style="color:#e6db74">&#34;${GITLAB_DOMAIN}&#34;</span>
+    <span style="color:#f92672">environment</span>:
+      <span style="color:#f92672">GITLAB_OMNIBUS_CONFIG</span>: |<span style="color:#e6db74">
+</span><span style="color:#e6db74">        </span>        <span style="color:#ae81ff">external_url &#34;https://gitlab.home.koehntopp.de&#34;</span>
+    <span style="color:#f92672">ports</span>:
+      - <span style="color:#e6db74">&#39;${GITLAB_HTTP_PORT}:80&#39;</span>
+      - <span style="color:#e6db74">&#39;${GITLAB_HTTPS_PORT}:443&#39;</span>
+      - <span style="color:#e6db74">&#39;${GITLAB_SSH_PORT}:22&#39;</span>
+    <span style="color:#f92672">volumes</span>:
+      - <span style="color:#e6db74">&#39;${GITLAB_HOME}/config:/etc/gitlab&#39;</span>
+      - <span style="color:#e6db74">&#39;${GITLAB_HOME}/logs:/var/log/gitlab&#39;</span>
+      - <span style="color:#e6db74">&#39;${GITLAB_HOME}/data:/var/opt/gitlab&#39;</span>
+
+<span style="color:#75715e">## vim: syntax=yaml ts=2 sw=2 sts=2 sr et ai</span>
+</code></pre></div><p>When starting this with <code>docker-compose up</code>, we can follow the full horribleness of the installation process in the console: The Gitlab Omnibus container collects a large number of processes internally, including a postgres, puma, nginx and a number of additional components, and configures itself internally using Chef. It is the Anti-Container.</p>
+<h2 id="gitlabrb">
+    <a href="#gitlabrb">
+	gitlab.rb
+    </a>
+</h2>
+<p>The initial run will produce a <code>gitlab.rb</code> config file in <code>/export/gitlab/gitlab/config/gitlab.rb</code>. The file is over 100KB in size, and will contain deactivated config.</p>
+<p>A very minimal, runnable base config for me looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># grep -v &#34;^#&#34; gitlab.rb | uniq</span>
+
+external_url <span style="color:#e6db74">&#39;http://gitlab.home.koehntopp.de&#39;</span>
+
+gitlab_rails<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;smtp_enable&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+
+gitlab_rails<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;gitlab_email_enabled&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+
+gitlab_rails<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;gitlab_default_can_create_group&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+gitlab_rails<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;gitlab_username_changing_enabled&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+
+gitlab_rails<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;gitlab_shell_ssh_port&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2222</span>
+
+gitlab_kas<span style="color:#f92672">[</span><span style="color:#e6db74">&#39;enable&#39;</span><span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+</code></pre></div><h2 id="tls-forwarding-from-host-to-container">
+    <a href="#tls-forwarding-from-host-to-container">
+	TLS Forwarding from host to container
+    </a>
+</h2>
+<p>The internal ports need to be exported to the home network, so we need an Apache TLS forwarding config.</p>
+<p>We are using this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-apache" data-lang="apache"><span style="color:#f92672">&lt;VirtualHost</span> <span style="color:#e6db74">*:80</span><span style="color:#f92672">&gt;</span>
+    ServerName gitlab.home.koehntopp.de
+
+    ErrorLog ${APACHE_LOG_DIR}/gitlab-error.log
+    CustomLog ${APACHE_LOG_DIR}/gitlab-access.log combined
+
+    Alias /.well-known/acme-challenge <span style="color:#e6db74">/var/lib/dehydrated/acme-challenges</span>
+    <span style="color:#f92672">&lt;Directory</span> <span style="color:#e6db74">/var/lib/dehydrated</span><span style="color:#f92672">&gt;</span>
+        Options Indexes FollowSymLinks
+        AllowOverride <span style="color:#66d9ef">None</span>
+        Require <span style="color:#66d9ef">all</span> granted
+    <span style="color:#f92672">&lt;/Directory&gt;</span>
+    <span style="color:#f92672">&lt;If</span> <span style="color:#e6db74">&#34;!-f &#39;%{REQUEST_FILENAME}&#39;&#34;</span><span style="color:#f92672">&gt;</span>
+        RedirectMatch permanent ^/(.*) <span style="color:#e6db74">&#34;https://gitlab.home.koehntopp.de/$1&#34;</span>
+    <span style="color:#f92672">&lt;/If&gt;</span>
+<span style="color:#f92672">&lt;/VirtualHost&gt;</span>
+
+<span style="color:#f92672">&lt;VirtualHost</span> <span style="color:#e6db74">*:443</span><span style="color:#f92672">&gt;</span>
+    ServerName gitlab.home.koehntopp.de
+
+    ErrorLog ${APACHE_LOG_DIR}/gitlab-ssl-error.log
+    CustomLog ${APACHE_LOG_DIR}/gitlab-ssl-access.log combined
+
+    SSLEngine <span style="color:#66d9ef">on</span>
+    SSLCertificateFile <span style="color:#e6db74">/var/lib/dehydrated/certs/home.koehntopp.de/cert.pem</span>
+    SSLCertificateKeyFile <span style="color:#e6db74">/var/lib/dehydrated/certs/home.koehntopp.de/privkey.pem</span>
+    SSLCertificateChainFile <span style="color:#e6db74">/var/lib/dehydrated/certs/home.koehntopp.de/chain.pem</span>
+
+<span style="color:#75715e">#   SSLProxyEngine on</span>
+    ProxyPreserveHost <span style="color:#66d9ef">On</span>
+    ProxyPass <span style="color:#e6db74">&#34;/&#34;</span> <span style="color:#e6db74">&#34;http://127.0.0.1:81/&#34;</span> nocanon
+    ProxyPassReverse <span style="color:#e6db74">&#34;/&#34;</span> <span style="color:#e6db74">&#34;http://127.0.0.1:81/&#34;</span>
+    AllowEncodedSlashes NoDecode
+
+    DocumentRoot <span style="color:#e6db74">/var/www/gitlab.home.koehntopp.de</span>
+<span style="color:#f92672">&lt;/VirtualHost&gt;</span>
+
+<span style="color:#75715e"># vim: syntax=apache ts=4 sw=4 sts=4 sr noet</span>
+</code></pre></div><p>We are terminating the TLS at the Apache and forward plaintext to the nginx, which then forwards to the internal Ruby. This is silly, but I was not feeling like pulling that ball of string apart.</p>
+<p>The <code>ProxyPass ... nocanon</code> and <code>AllowEncodedSlashes NoDecode</code> are necessary to avoid internal Error on various URLs that require passing on of <code>//</code> and <code>/-/</code> URL fragments (several issues, for example <a href="https://gitlab.com/gitlab-org/gitlab/-/issues/211500#note_381651793" target="_blank" rel="noopener">here</a>
+
+).</p>
+<h2 id="basic-setup">
+    <a href="#basic-setup">
+	Basic Setup
+    </a>
+</h2>
+<p>Admin Login is with &ldquo;root&rdquo;, and will guide you through a password change and some basic setup.</p>
+<p>I created users for the family, and groups for my work and for the little one.</p>
+<p>Once you have groups, pushing existing repositories into gitlab is quickly done with</p>
+<pre><code class="language-console" data-lang="console"># git push --set-upstream ssh://git@gitlab.home.koehntopp.de:2222/kris/$(git rev-parse --show-toplevel | xargs basename).git $(git rev-parse --abbrev-ref HEAD)
+</code></pre><p>This will create a repo for the user or group (here: <code>kris</code>) that has a name identical to the current directory. The <code>xargs basename</code> expression can be replaced with the desired literal name instead.</p>
+<p>Afterwards, it may be useful to <code>git remote remove origin</code>, <code>git remote add origin ...</code>. A quick <code>git pull --rebase</code> and <code>git branch --set-upstream-to=origin/master master</code> will exercise and config the local push and pull operations, too.</p>
+<h2 id="a-hello-ci-project">
+    <a href="#a-hello-ci-project">
+	A &ldquo;hello-ci&rdquo; project
+    </a>
+</h2>
+<p>We are creating a basic Python project for gitlab-runner, for testing, <code>kk/probe</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># cat probe.py</span>
+<span style="color:#75715e">#! /usr/bin/env python3</span>
+
+<span style="color:#f92672">import</span> src
+
+<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;Hi, {src.my_name()}!&#39;</span>)
+</code></pre></div><p>and</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e"># cat src/__init__.py</span>
+<span style="color:#f92672">from</span> src.main <span style="color:#f92672">import</span> my_name  <span style="color:#75715e"># noqa</span>
+</code></pre></div><p>and</p>
+<pre><code># cat src/main.py
+def my_name():
+    return &quot;Kris&quot;
+</code></pre><p>In a <code>src/tests/</code> directory, we are running <code>pytest</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#! /usr/bin/env python3</span>
+
+<span style="color:#f92672">import</span> src
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">test_my_name</span>():
+    <span style="color:#66d9ef">assert</span> src<span style="color:#f92672">.</span>my_name() <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;Kris&#34;</span>
+</code></pre></div><p>At the toplevel, we put our <code>requirements.txt</code>:</p>
+<pre><code class="language-console" data-lang="console">flake8
+pytest
+</code></pre><p>and a <code>tox.ini</code>:</p>
+<pre><code class="language-console" data-lang="console">[flake8]
+exclude=.git,__pycache__,docs,*venv
+
+[pytest]
+addopts = -ra -q
+</code></pre><p>We can now build a <code>.gitlab-ci.yml</code>, also at the toplevel:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">default</span>:
+  <span style="color:#f92672">image</span>: <span style="color:#ae81ff">python:3.8</span>
+
+<span style="color:#f92672">before_script</span>:
+  - <span style="color:#ae81ff">python --version</span>
+  - <span style="color:#ae81ff">pip install -r requirements.txt</span>
+
+<span style="color:#f92672">stages</span>:
+  - <span style="color:#ae81ff">Test</span>
+
+<span style="color:#f92672">flake8</span>:
+  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Test</span>
+  <span style="color:#f92672">script</span>:
+    - <span style="color:#ae81ff">flake8</span>
+
+<span style="color:#f92672">pytest</span>:
+  <span style="color:#f92672">stage</span>: <span style="color:#ae81ff">Test</span>
+  <span style="color:#f92672">script</span>:
+  - <span style="color:#ae81ff">pwd</span>
+  - <span style="color:#ae81ff">ls -l</span>
+  - <span style="color:#ae81ff">export PYTHONPATH=&#34;$PYTHONPATH:.&#34;</span>
+  - <span style="color:#ae81ff">python -c &#34;import sys;print(sys.path)&#34;</span>
+  - <span style="color:#ae81ff">pytest src</span>
+</code></pre></div><p>Yes, the testing cruft in the pytest setup can later go away&hellip;</p>
+<p>Now, to make this work, we need to install gitlab-runner in a docker variant, and config it.</p>
+<h2 id="gitlab-runner">
+    <a href="#gitlab-runner">
+	Gitlab Runner
+    </a>
+</h2>
+<p>At this point, the runner still needs to be <code>docker-compose</code>&lsquo;ed. I hacked it for testing like this:</p>
+<pre><code class="language-console" data-lang="console"># mkdir -p /export/gitlab/gitlab-runner
+# cd !$
+# mkdir config
+# cat doit
+docker run -d --name gitlab-runner \
+  --restart always \
+  -v /export/gitlab/gitlab-runner/config:/etc/gitlab-runner \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  gitlab/gitlab-runner:latest
+</code></pre><p>This will create a <code>config.toml</code> in the config directory. We can</p>
+<pre><code class="language-console" data-lang="console"># docker exec -it gitlab-runner bash
+root@ffd124dab4aa:/# gitlab-runner register
+# gitlab-runner  register
+Runtime platform                                    arch=amd64 os=linux pid=47 revision=8fa89735 version=13.6.0
+Running in system-mode.
+
+Enter the GitLab instance URL (for example, https://gitlab.com/):
+https://gitlab.home.koehntopp.de/
+Enter the registration token:
+TheToken
+Enter a description for the runner:
+[ffd124dab4aa]: A test runner
+Enter tags for the runner (comma-separated):
+test
+</code></pre><p>The token required for registration can be obtained as described <a href="https://docs.gitlab.com/runner/register/" target="_blank" rel="noopener">here</a>
+
+.</p>
+<p>I registered group runners for each of my two internal groups, and a shared runner for the (empty) rest.</p>
+<p>All of this will rewrite the <code>config.toml</code>. I then upped the concurrency to 6 (8 threads available in the hardware).</p>
+<p>Later on, it will turn out that the docker images in my Ubuntu are not writeable as needed, a helper image needs to be added.</p>
+<p>The <code>helper_image</code> line has been added manually below, according to <a href="https://gitlab.com/gitlab-org/gitlab-runner/-/issues/26618" target="_blank" rel="noopener">this note</a>
+
+:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-toml" data-lang="toml"><span style="color:#75715e"># cat /export/gitlab/gitlab-runner/config/config.toml</span>
+<span style="color:#a6e22e">concurrent</span> = <span style="color:#ae81ff">6</span>
+<span style="color:#a6e22e">check_interval</span> = <span style="color:#ae81ff">0</span>
+
+[<span style="color:#a6e22e">session_server</span>]
+  <span style="color:#a6e22e">session_timeout</span> = <span style="color:#ae81ff">1800</span>
+
+[[<span style="color:#a6e22e">runners</span>]]
+  <span style="color:#a6e22e">name</span> = <span style="color:#e6db74">&#34;JX_Snack (Docker)&#34;</span>
+  <span style="color:#a6e22e">url</span> = <span style="color:#e6db74">&#34;https://gitlab.home.koehntopp.de&#34;</span>
+  <span style="color:#a6e22e">token</span> = <span style="color:#e6db74">&#34;TheToken
+</span><span style="color:#e6db74">  executor = &#34;</span><span style="color:#a6e22e">docker</span><span style="color:#e6db74">&#34;
+</span><span style="color:#e6db74">  [runners.custom_build_dir]
+</span><span style="color:#e6db74">  [runners.cache]
+</span><span style="color:#e6db74">    [runners.cache.s3]
+</span><span style="color:#e6db74">    [runners.cache.gcs]
+</span><span style="color:#e6db74">    [runners.cache.azure]
+</span><span style="color:#e6db74">  [runners.docker]
+</span><span style="color:#e6db74">    helper_image = &#34;</span><span style="color:#a6e22e">gitlab</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#a6e22e">gitlab</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">runner</span><span style="color:#960050;background-color:#1e0010">-</span><span style="color:#a6e22e">helper</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#a6e22e">x86_64</span><span style="color:#ae81ff">-6</span><span style="color:#a6e22e">fbc7474</span><span style="color:#e6db74">&#34;
+</span><span style="color:#e6db74">    tls_verify = false
+</span><span style="color:#e6db74">    image = &#34;</span><span style="color:#a6e22e">python</span><span style="color:#960050;background-color:#1e0010">:</span><span style="color:#ae81ff">3</span><span style="color:#e6db74">&#34;
+</span><span style="color:#e6db74">    privileged = false
+</span><span style="color:#e6db74">    disable_entrypoint_overwrite = false
+</span><span style="color:#e6db74">    oom_kill_disable = false
+</span><span style="color:#e6db74">    disable_cache = false
+</span><span style="color:#e6db74">    volumes = [&#34;</span><span style="color:#960050;background-color:#1e0010">/</span><span style="color:#a6e22e">cache</span><span style="color:#960050;background-color:#1e0010">&#34;</span>]
+    <span style="color:#a6e22e">shm_size</span> = <span style="color:#ae81ff">0</span>
+...
+</code></pre></div><p>For easier testing, it may be useful to allow CI runs on untagged commits. This can be set up as <code>root</code> in <code>https://.../admin/runners</code> for the desired test runner.</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/gitlab-untagged.png" alt=""  />
+</p>
+
+</p>
+<p><em>Allowing the runner to pick up untagged jobs can be useful for testing. It needs to be disabled later.</em></p>
+<p>With some random committing we can now trigger and debug the pipeline we defined earlier above. Eventually it will actually do something.</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/gitlab-runner.png" alt=""  />
+</p>
+
+</p>
+<p><em>Eventually, a testing success.</em></p>
+<p>Having a gitlab and a CI/CD pipeline allows us to package the Python Discord Bot development process for the little one in a way that allows him to focus on the various stages of the development process sequentially. For now, testing and deployment can happen magically, we will visit that only later.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

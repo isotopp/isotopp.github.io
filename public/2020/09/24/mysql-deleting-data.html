@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: Deleting data</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-deleting-data-page">
+	<h1 class="title">
+            MySQL: Deleting data
+	</h1>
+
+	<p>Completing the data lifecycle is often harder than originally expected: Deleting data can cost sometimes way more than inserting it in the first place. MySQL Partitions can offer a way out. We have an [earlier post]({% link _posts/2020-05-13-deleting-data-from-mysql.md %}) on the subject.</p>
+<h2 id="a-sample-table-and-a-problem-statement">
+    <a href="#a-sample-table-and-a-problem-statement">
+	A sample table, and a problem statement
+    </a>
+</h2>
+<p>Let&rsquo;s define a kind of log table, to which data is added with an <code>auto_increment</code> id value and some data.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#! /usr/bin/env python3</span>
+
+<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+<span style="color:#f92672">from</span> random <span style="color:#f92672">import</span> randint
+<span style="color:#f92672">from</span> multiprocessing <span style="color:#f92672">import</span> Process
+
+<span style="color:#f92672">import</span> click
+<span style="color:#f92672">import</span> MySQLdb
+<span style="color:#f92672">import</span> MySQLdb.cursors
+
+
+db_config <span style="color:#f92672">=</span> dict(
+    host<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;localhost&#34;</span>,
+    user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;kris&#34;</span>,
+    passwd<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;geheim&#34;</span>,
+    db<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;kris&#34;</span>,
+    cursorclass<span style="color:#f92672">=</span>MySQLdb<span style="color:#f92672">.</span>cursors<span style="color:#f92672">.</span>DictCursor,
+)
+
+<span style="color:#a6e22e">@click.group</span>(help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Load and delete data using partitions&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sql</span>():
+    <span style="color:#66d9ef">pass</span>
+
+<span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">setup_tables</span>():
+    sql_setup <span style="color:#f92672">=</span> [
+        <span style="color:#e6db74">&#34;drop table if exists data&#34;</span>,
+        <span style="color:#e6db74">&#34;&#34;&#34; create table data (
+</span><span style="color:#e6db74">                id integer not null primary key auto_increment,
+</span><span style="color:#e6db74">                d varchar(64) not null,
+</span><span style="color:#e6db74">                e varchar(64) not null
+</span><span style="color:#e6db74">        )&#34;&#34;&#34;</span>,
+        <span style="color:#e6db74">&#34;alter table data partition by range (id) ( partition p1 values less than (10000))&#34;</span>,
+        <span style="color:#e6db74">&#34;insert into data (id, d, e) values ( 1, &#39;keks&#39;, &#39;keks&#39; )&#34;</span>,
+        <span style="color:#e6db74">&#34;commit&#34;</span>,
+    ]
+
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+
+    <span style="color:#66d9ef">for</span> cmd <span style="color:#f92672">in</span> sql_setup:
+        <span style="color:#66d9ef">try</span>:
+            c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+            c<span style="color:#f92672">.</span>execute(cmd)
+        <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+            click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#34;setup_tables: failed {e} with {cmd}.&#34;</span>)
+
+
+sql()
+</code></pre></div><p>This is our basic Python framework for experimentation, using the <code>click</code> framework, and a command <code>setup-tables</code>. This command will run a number of SQL statements to initialize our log table named <code>data</code>.</p>
+<p>The log table has three columns: <code>id</code>, an auto_increment counter, and two columns <code>d</code> and <code>e</code>, each containing 64 characters of data. To get things started, we add an initial partition, containing all id-values below 10.000 and an initial row.</p>
+<p>If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from [ALTER TABLE for UUID]({% link _posts/2020-09-22-alter-table-for-uuid.md %}) that the physical order of any InnoDB table is by primary key - our id-counter.</p>
+<p>Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffeled around in the tree.</p>
+<p><p class="md__image">
+  <img src="/uploads/loeschen_einfuegen.png" alt=""  />
+</p>
+
+</p>
+<p><em>New data is added to the right hand side of the B+-Tree, while old data is being deleted at the left hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.</em></p>
+<p>Instead, we are defining partitions. In our case, we are using the simplest definition possible: A <code>PARTITION BY RANGE</code> on the primary key column. We are making bins of 10.000 rows each, because that is convenient for our demonstration here.</p>
+<h2 id="three-processes">
+    <a href="#three-processes">
+	Three processes
+    </a>
+</h2>
+<p>We will be using the Python multiprocessing module to have three processes, an <code>inserter()</code>, a <code>partitioner()</code> and a <code>dropper()</code>. All of them are endless loops.</p>
+<ul>
+<li>The inserter will insert random new data rows into the table as fast as possible.</li>
+<li>The partitioner will make sure that we always have a sufficient number of empty new partitions for the inserter to continue.</li>
+<li>The dropper will limit the number of partitions with data by throwing the oldest partition away.</li>
+</ul>
+<p>We will have small piece of code that starts our processes:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">start_processing</span>():
+    proc_partition <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>partitioner)
+    proc_partition<span style="color:#f92672">.</span>start()
+    proc_drop <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>dropper)
+    proc_drop<span style="color:#f92672">.</span>start()
+    proc_insert <span style="color:#f92672">=</span> Process(target<span style="color:#f92672">=</span>inserter)
+    proc_insert<span style="color:#f92672">.</span>start()
+</code></pre></div><h2 id="the-inserter">
+    <a href="#the-inserter">
+	The Inserter
+    </a>
+</h2>
+<p>The Inserter is an endless loop that generates two random 64 character strings and inserts a new row into the database. Every 10 rows, we commit, every 1000 rows we print a message.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">inserter</span>():
+    counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+    step <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>
+
+    cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;insert into data (id, d, e) values( NULL, </span><span style="color:#e6db74">%(d)s</span><span style="color:#e6db74">, </span><span style="color:#e6db74">%(e)s</span><span style="color:#e6db74"> )&#34;</span>
+
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+
+    <span style="color:#66d9ef">while</span> True:
+        data <span style="color:#f92672">=</span> {
+            <span style="color:#e6db74">&#34;d&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join([chr(randint(<span style="color:#ae81ff">97</span>, <span style="color:#ae81ff">97</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">26</span>)) <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">64</span>)]),
+            <span style="color:#e6db74">&#34;e&#34;</span>: <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join([chr(randint(<span style="color:#ae81ff">97</span>, <span style="color:#ae81ff">97</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">26</span>)) <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">64</span>)]),
+        }
+        c<span style="color:#f92672">.</span>execute(cmd, data)
+        counter <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#66d9ef">if</span> counter <span style="color:#f92672">%</span> step <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            db<span style="color:#f92672">.</span>commit()
+
+        <span style="color:#66d9ef">if</span> counter <span style="color:#f92672">%</span> <span style="color:#ae81ff">1000</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;counter = {counter}&#34;</span>)
+</code></pre></div><p>Without the other two threads, the inserter will generate 10.000 rows and then stop, because there is no <code>MAXVALUE</code> clause.</p>
+<h2 id="the-partitioner">
+    <a href="#the-partitioner">
+	The Partitioner
+    </a>
+</h2>
+<p>The Partitioner is an endless loop that runs an <code>ANALYZE TABLE data</code> command to refresh the statistics, and then queries <code>INFORMATION_SCHEMA.PARTITIONS</code> for the five partitions with the highest <code>PARTITION_ORDINAL_POSITION</code>.</p>
+<p>If there are fewer than 5 partitions in total, we generate new partitions no matter what.</p>
+<p>If there are not at least 5 partitions with no rows int them, we create new partitions.</p>
+<p>If we did nothing, we wait for 1/10th of a second and then check again.</p>
+<p>The new partition gets a range expression with a limit 10.000 values higher than the highest one found, and the partition name is derived from the limit by dividing by 10.000.</p>
+<p>In code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create_partition</span>(db, next_name, next_limit):
+    cmd <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;alter table data add partition ( partition {next_name} values less than ( {next_limit}))&#34;</span>
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;cmd = {cmd}&#34;</span>)
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+    c<span style="color:#f92672">.</span>execute(cmd)
+</code></pre></div><p>This will simply format and run an <code>ALTER TABLE</code> statement to add a new partition to the existing table.</p>
+<p>And the checking loop:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">partitioner</span>():
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># force stats refresh</span>
+        c<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;analyze table kris.data&#34;</span>)
+
+        <span style="color:#75715e"># find the five highest partitions</span>
+        cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;select
+</span><span style="color:#e6db74">          partition_name,
+</span><span style="color:#e6db74">          partition_ordinal_position,
+</span><span style="color:#e6db74">          partition_description,
+</span><span style="color:#e6db74">          table_rows
+</span><span style="color:#e6db74">        from
+</span><span style="color:#e6db74">          information_schema.partitions
+</span><span style="color:#e6db74">        where
+</span><span style="color:#e6db74">          table_schema = &#34;kris&#34; and
+</span><span style="color:#e6db74">          table_name = &#34;data&#34;
+</span><span style="color:#e6db74">        order by
+</span><span style="color:#e6db74">          partition_ordinal_position desc
+</span><span style="color:#e6db74">        limit 5
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        c<span style="color:#f92672">.</span>execute(cmd)
+        rows <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>fetchall()
+        next_limit <span style="color:#f92672">=</span> int(rows[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;PARTITION_DESCRIPTION&#34;</span>]) <span style="color:#f92672">+</span> <span style="color:#ae81ff">10000</span>
+        next_name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;p&#34;</span> <span style="color:#f92672">+</span> str(int(next_limit <span style="color:#f92672">/</span> <span style="color:#ae81ff">10000</span>))
+
+        <span style="color:#66d9ef">if</span> len(rows) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">5</span>:
+            <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;create {next_name} reason: not enough partitions&#34;</span>)
+            create_partition(db, next_name, next_limit)
+            <span style="color:#66d9ef">continue</span>
+
+        sum <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+        <span style="color:#66d9ef">for</span> row <span style="color:#f92672">in</span> rows:
+            sum <span style="color:#f92672">+=</span> int(row[<span style="color:#e6db74">&#34;TABLE_ROWS&#34;</span>])
+        <span style="color:#66d9ef">if</span> sum <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;create {next_name} reason: not enough empty partitions&#34;</span>)
+            create_partition(db, next_name, next_limit)
+            <span style="color:#66d9ef">continue</span>
+
+        sleep(<span style="color:#ae81ff">0.1</span>)
+</code></pre></div><p>This code is mostly a long <code>SELECT</code> on the <code>INFORMATION_SCHEMA.PARTITIONS</code> table, and then two quick checks to see if we need to make more partitions.</p>
+<h2 id="the-dropper">
+    <a href="#the-dropper">
+	The Dropper
+    </a>
+</h2>
+<p>The Dropper structurally mirrors the Partitioner: We have a tiny function to create the actual <code>ALTER TABLE data DROP PARTITION</code> statement:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">drop_partition</span>(db, partition_name):
+    cmd <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;alter table data drop partition {partition_name}&#34;</span>
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;cmd = {cmd}&#34;</span>)
+    c<span style="color:#f92672">.</span>execute(cmd)
+</code></pre></div><p>And we have an endless loop that basically runs a <code>SELECT</code> on <code>INFORMATION_SCHEMA.PARTITIONS</code> and checks the number of partitions that have a non-zero number of <code>TABLE_ROWS</code>. If it is too many, we drop the one with the lowest number (&ldquo;the first one found&rdquo;, using an appropriate sort order in our SQL).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">dropper</span>():
+    db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+
+    <span style="color:#66d9ef">while</span> True:
+        <span style="color:#75715e"># force stats refresh</span>
+        c<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;analyze table kris.data&#34;</span>)
+
+        <span style="color:#75715e">#</span>
+        cmd <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34; select
+</span><span style="color:#e6db74">          partition_name,
+</span><span style="color:#e6db74">          partition_ordinal_position,
+</span><span style="color:#e6db74">          partition_description,
+</span><span style="color:#e6db74">          table_rows
+</span><span style="color:#e6db74">        from
+</span><span style="color:#e6db74">          information_schema.partitions
+</span><span style="color:#e6db74">        where
+</span><span style="color:#e6db74">          table_schema = &#34;kris&#34; and
+</span><span style="color:#e6db74">          table_name = &#34;data&#34; and
+</span><span style="color:#e6db74">          table_rows &gt; 0
+</span><span style="color:#e6db74">        order by
+</span><span style="color:#e6db74">          partition_ordinal_position asc
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        c<span style="color:#f92672">.</span>execute(cmd)
+        rows <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>fetchall()
+        <span style="color:#66d9ef">if</span> len(rows) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">10</span>:
+            partition_name <span style="color:#f92672">=</span> rows[<span style="color:#ae81ff">0</span>][<span style="color:#e6db74">&#34;PARTITION_NAME&#34;</span>]
+            <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;drop {partition_name} reason: too many partitions with data&#34;</span>)
+            drop_partition(db, partition_name)
+            <span style="color:#66d9ef">continue</span>
+
+        sleep(<span style="color:#ae81ff">0.1</span>)
+</code></pre></div><h2 id="a-test-run">
+    <a href="#a-test-run">
+	A test run
+    </a>
+</h2>
+<p>In our test run, we see immediately after startup how the five spare partitions are being created.</p>
+<pre><code class="language-console" data-lang="console">$ ./partitions.py  setup-tables
+$ ./partitions.py  start-processing
+create p2 reason: not enough partitions
+cmd = alter table data add partition ( partition p2 values less than ( 20000))
+create p3 reason: not enough partitions
+cmd = alter table data add partition ( partition p3 values less than ( 30000))
+create p4 reason: not enough partitions
+cmd = alter table data add partition ( partition p4 values less than ( 40000))
+create p5 reason: not enough partitions
+cmd = alter table data add partition ( partition p5 values less than ( 50000))
+create p6 reason: not enough empty partitions
+cmd = alter table data add partition ( partition p6 values less than ( 60000))
+counter = 1000
+counter = 2000
+counter = 3000
+...
+</code></pre><p>Once we cross the threshold of p1, the number of empty partitions is no longer low enough and another one is being created:</p>
+<pre><code class="language-console" data-lang="console">...
+counter = 9000
+counter = 10000
+create p7 reason: not enough empty partitions
+cmd = alter table data add partition ( partition p7 values less than ( 70000))
+counter = 11000
+...
+</code></pre><p>This continues for a while, until we have a sufficient number of data partitions so that we begin dropping, too:</p>
+<pre><code class="language-console" data-lang="console">...
+counter = 90000
+create p15 reason: not enough empty partitions
+cmd = alter table data add partition ( partition p15 values less than ( 150000))
+drop p1 reason: too many partitions with data
+cmd = alter table data drop partition p1
+counter = 91000
+counter = 92000
+...
+</code></pre><p>Now the system reaches a stable state and will add and drop partitions in sync with the Inserter.</p>
+<p>From inside SQL we can see the number of rows in the table rise, and then suddenly drop by 10.000 as we drop a partition.</p>
+<pre><code class="language-sqlkris@localhost" data-lang="sqlkris@localhost">+----------+
+| count(*) |
++----------+
+|    89872 |
++----------+
+1 row in set (0.00 sec)
+
+kris@localhost [kris]&gt; select count(*) from data;
++----------+
+| count(*) |
++----------+
+|    90122 |
++----------+
+1 row in set (0.02 sec)
+
+kris@localhost [kris]&gt; select count(*) from data;
++----------+
+| count(*) |
++----------+
+|    80362 |
++----------+
+1 row in set (0.01 sec)
+</code></pre><p>The complete example is available <a href="https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions" target="_blank" rel="noopener">on github.com</a>
+
+.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

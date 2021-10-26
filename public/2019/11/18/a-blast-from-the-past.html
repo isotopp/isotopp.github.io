@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - A blast from the past</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="a-blast-from-the-past-page">
+	<h1 class="title">
+            A blast from the past
+	</h1>
+
+	<p><strong>TL:DR:</strong> If you have long running transactions, MySQL does not
+deal well with this, and it will slow down the box. That&rsquo;s
+okay as long as you are basically alone on your box, but if you
+aren&rsquo;t, the others will hate you.</p>
+<p>The database machine &lsquo;somehierarchy-02&rsquo; in a general purpose
+load balancer pool for somehierarchy had replication delay.</p>
+<p>It&rsquo;s a MySQL replica and is receiving the same write workload
+than all the other boxen in that pool. Yet, somehierarchy-03 is
+fine, while somehierarchy-02 is not. Both machines have
+comparable hardware: -02 and -03 are both Dell M630 with 128 GB
+of memory and two SSD. They should behave identically, yet one
+runs from memory, but the other is reading 40 MB/s from disk.</p>
+<p><p class="md__image">
+  <img src="/uploads/2019/11/symptom-metrics.png" alt=""  />
+</p>
+
+</p>
+<p>Machine somehierarchy-02 reading up to 40 MB/s from disk. The
+sister box runs from memory.</p>
+<p>The objective was to find the root cause for this, as it was
+causing replication delay and generally making people unhappy.</p>
+<p>Together with a colleague we established that both boxes
+replicate from the same master and that they receive identical
+binlogs. We did find indeed the same set of GTIDs, a similar
+amount of binlog files, and a bit of Ghetto statistics
+(<code>mysqlbinlog -v binlog... | egrep -i '(insert|update|delete)' | awk ... | sort | uniq -c</code>) on the active tables per time also
+found nothing unusual.</p>
+<p>We then did a <code>mysqldump --no-data schemaname</code> to validate
+that the schemas are identical. They indeed were, same tables,
+same table structures, same indexes.</p>
+<h2 id="its-reads-coming-from-a-client">
+    <a href="#its-reads-coming-from-a-client">
+	It&rsquo;s reads, coming from a client
+    </a>
+</h2>
+<p>We can therefore rule out anything related to replication or
+disk writes. The difference must be in the reads, that is, the
+two boxes receive vastly different workload from clients.</p>
+<p>Comparing the active <code>PROCESSLIST</code> between the two boxes did not
+yield results, though. Checking back we found that the problem
+had been going away while we were looking. So whatever we were
+looking for would not be in processlists, only in logs.</p>
+<p>So, do we have logs?</p>
+<h2 id="log_processlist-is-still-a-thing">
+    <a href="#log_processlist-is-still-a-thing">
+	log_processlist is still a thing
+    </a>
+</h2>
+<p>Turns out: we do. The tool
+<a href="http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/" target="_blank" rel="noopener">log_processlist</a>
+
+
+is older than time itself, it goes back to before 2007. Simon
+Mudd and I wrote that once, to have a flight recorder for
+crashed machines.</p>
+<p>Basically it dumps data from the operating system and the
+various MySQL tables into the directory <code>/var/log/mysql_pl</code>, where
+we have a weekly ring-buffer like directory structure:</p>
+<pre><code class="language-console" data-lang="console">[somehierarchy-02 /var/log/mysql_pl]$ ls -F
+Fri/  Mon/  README  Sat/  Sun/  Thu/  Tue/  Wed/
+</code></pre><p>When a box crashes or misbehaves, as long as you have access to
+this subtree, you can go there and inspect the files to see what
+the box did just before it crashed. So we go into <code>Mon</code>
+subdirectory for Monday, and look into some files, for example
+the 10:20 recordings:</p>
+<pre><code class="language-console" data-lang="console">[somehierarchy-02 ~]# cd /var/log/mysql_pl/Mon
+[somehierzrchy-02 Mon]# ls -l 10_20*
+-rw-r--r-- 1 root root 19144 Nov 18 10:20 10_20.innodb.xz
+-rw-r--r-- 1 root root  5836 Nov 18 10:20 10_20.unix.xz
+-rw-r--r-- 1 root root 18368 Nov 18 10:20 10_20.xz
+[somehierarchy-02 Mon]# ls -l 10_21.sys*
+-rw-r--r-- 1 root root 14590 Nov 18 10:21 10_21.sys.gz
+</code></pre><p>In the 10_20.xz we find the MySQL processlist and a few other
+things, in the 10_20.unix file.xz we find the UNIX processlist,
+system memory and other system stuff, and in the 10_20.innodb
+file there are various InnoDB related table dumps from this
+point in time. There is also a dump of the entire sys set of
+views every 15 minutes, so 10_21.sys.gz has that.</p>
+<pre><code class="language-console" data-lang="console">[somehierarchy-02 /var/log/mysql_pl]# head -3 /tmp/x
+Id	User	Host	db	Command	Time	State	Info
+33	system user		NULL	Connect	1	Waiting for dependent transaction to commit	NULL
+34	system user		NULL	Connect	1	System lock	INSERT INTO ...
+</code></pre><p>Checking the processlist shows many sleeping connections. We
+filter these and immediately hit paydirt:</p>
+<pre><code class="language-console" data-lang="console">[somehierarchy-02 tmp]# awk -F&quot;\t&quot; '$5 != &quot;Sleep&quot; { print $5, $6 }' x | wc -l
+27
+[somehierarchy-02 tmp]# awk -F&quot;\t&quot; '$5 != &quot;Sleep&quot; { print $5, $6 }' x
+Command Time
+Connect 1
+Connect 1
+Connect 1
+Connect 1
+Connect 1
+Connect 1
+Connect 2
+Connect 2
+Connect 2
+Connect 2
+Connect 2
+Connect 39412
+Query 33242
+Query 33242
+Query 33241
+Query 24514
+Query 20613
+Query 14924
+Query 6827
+Query 3219
+Query 1
+Query 1
+Query 0
+Query 0
+Query 0
+Query 0
+</code></pre><p>The &ldquo;Connect&rdquo; only means that these are replication threads.
+Running Queries have &ldquo;Query&rdquo; and here the number is the seconds
+of runtime for this query. There are apparently a number of
+queries with a large runtime: 33242 seconds are 9.25 hours -
+they are running since 1 am.</p>
+<pre><code class="language-console" data-lang="console">[somehierarchy-02 tmp]# awk -F&quot;\t&quot; '($5 == &quot;Query&quot; ) &amp;&amp; ($6 &gt; 10000) { printf &quot;%s %s %s %s\n&quot;, $2, $3, $6, $7 }' x
+hadoopuser hadoop-07:62112 33242 Sending data
+hadoopuser hadoop-07:62126 33242 Sending data
+hadoopuser hadoop-07:62128 33241 Sending data
+cronuser cronbox-14:34017 24514 Creating sort index
+cronuser cronbox-06:45661 20613 Creating sort index
+cronuser cronbox-14:55920 14924 Creating sort index
+</code></pre><p>At around 1:00am the <code>hadoopuser</code> connected from hadoop-07 to
+somehierarchy-02 and started a number of queries:</p>
+<pre><code class="language-console" data-lang="console">SELECT ...
+FROM MessageLog
+WHERE ( `hotelnumber` &gt;= 986116 ) AND ( `hotelnumber` &lt; 1181338 )
+</code></pre><p>and similar. They read around 70M rows from MessageLog
+each, a table that itself has 540M rows. That takes time.</p>
+<p>During that time the &ldquo;select&rdquo; statements maintains a read-only
+transaction to create a stable view of the table it is reading.
+That means that as we change rows in MessageLog the old versions
+of the row are being shifted to the Undo log, and while other
+transactions read the new version of the row from the
+tablespace, these transactions read old versions of the row from
+the Undo log.</p>
+<p>Or they try. They hit the tablespace first, see a new version of
+the row, are being sent one version into the past, find that
+this is still too recent, go one step deeper into the past and
+so on. We are essentially traversing a linked list on disk,
+without caching. MySQL is not really meant to deal well with 9h
+old transactions.</p>
+<p>We can monitor this:</p>
+<p><p class="md__image">
+  <img src="/uploads/2019/11/undo-log.png" alt=""  />
+</p>
+
+</p>
+<p>and we will. Not necessarily a thing to alert on at night, but
+certainly a thing to check up on early on in debugging.</p>
+<p>Certainly a blast from the past: Not just from the past of the
+row in a
+<a href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control" target="_blank" rel="noopener">MVCC</a>
+
+
+system, but also a thing <a href="http://mysqldump.azundris.com/archives/101-House-and-Heisenberg-having-Replication-Delay.html" target="_blank" rel="noopener">we have seen
+before</a>
+
+,
+and that was 2012. Certainly a blast from the past.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

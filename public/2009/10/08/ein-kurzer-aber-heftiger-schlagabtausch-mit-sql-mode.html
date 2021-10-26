@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Ein kurzer, aber heftiger Schlagabtausch mit SQL_MODE</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="ein-kurzer-aber-heftiger-schlagabtausch-mit-sql_mode-page">
+	<h1 class="title">
+            Ein kurzer, aber heftiger Schlagabtausch mit SQL_MODE
+	</h1>
+
+	<p>Letzte Woche Montag haben wir beschlossen, den <a href="http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html" target="_blank" rel="noopener">SQL_MODE</a>
+
+ in unseren Entwicklungsservern auf einen strengeren Wert als &quot;&quot; (den Default) zu setzen. Das war ein Fehlschlag und wir haben den Change diese Woche zurück gerollt. Aber von vorne.</p>
+<h2 id="welchen-sql_mode-will-man-denn">
+    <a href="#welchen-sql_mode-will-man-denn">
+	Welchen SQL_MODE will man denn?
+    </a>
+</h2>
+<p>Als Ziel-Einstellung haben wir eine Kombination von</p>
+<pre><code class="language-console" data-lang="console">TRADITIONAL,
+NO_ENGINE_SUBSTITUTION,
+ONLY_FULL_GROUP_BY,
+NO_AUTO_VALUE_ON_ZERO
+</code></pre><p>ins Auge gefaßt.</p>
+<p><code>SQL_MODE</code> ist eine Einstellung in MySQL, mit der das Verhalten des Servers beeinflußt werden kann. Die Variable ist eine Bitmaske von benannten Bits - jedes Bit hat eine im Handbuch definierte Bedeutung. Außerdem haben bestimmte Kombinationen von Bits einen Sammelnamen.</p>
+<p>So steht der Name <code>TRADITIONAL</code> in Wirklichkeit für die Kombination der Bits</p>
+<pre><code class="language-console" data-lang="console">STRICT_TRANS_TABLES,
+STRICT_ALL_TABLES,
+NO_ZERO_IN_DATE,
+NO_ZERO_DATE,
+ERROR_FOR_DIVISION_BY_ZERO,
+NO_AUTO_CREATE_USER
+</code></pre><p>zu der wir dann weiter verschärfend noch</p>
+<pre><code class="language-console" data-lang="console">NO_ENGINE_SUBSTITUTION,
+ONLY_FULL_GROUP_BY
+NO_AUTO_VALUE_ON_ZERO
+</code></pre><p>dazu genommen haben.</p>
+<h3 id="strict-mode">
+    <a href="#strict-mode">
+	Strict Mode
+    </a>
+</h3>
+<p>Die Kombination <code>STRICT_ALL_TABLES,STRICT_TRANS_TABLES</code> schaltet dabei den strict mode ein. Ohne diese Einstellung akzeptiert und rundet MySQL eine Reihe von Werten, die in den Zielspalten gar nicht darstellbar sind.</p>
+<p>Am leichtesten läßt sich das mit ein wenig Code demonstrieren:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( id tinyint unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">11</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">256</span> ), ( <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> );
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected, <span style="color:#ae81ff">2</span> warnings (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+Records: <span style="color:#ae81ff">2</span>  Duplicates: <span style="color:#ae81ff">0</span>  Warnings: <span style="color:#ae81ff">2</span>
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+------------------------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span>   <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message                                              <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+------------------------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Warning <span style="color:#f92672">|</span> <span style="color:#ae81ff">1264</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value adjusted <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;id&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span> Warning <span style="color:#f92672">|</span> <span style="color:#ae81ff">1264</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value adjusted <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;id&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+------------------------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">255</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>   <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">-----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Da niemals jemand in seinem Code die Warnungen abfragt werden die eingefügten Werte also stillschweigend gerundet. Ähnliche Dinge können bei illegalen UTF8-Zeichen in latin1-Spalten, bei zu langen Strings oder anderen Typen passieren.</p>
+<p>Mit strict mode kann man so etwas verhindern:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">from</span> t;
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> strict_all_tables;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">256</span> ), ( <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span> );
+ERROR <span style="color:#ae81ff">1264</span> (<span style="color:#ae81ff">22003</span>): <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value adjusted <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;id&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+Empty <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Und genau das wollten wir haben, insbesondere auch für Enum-Werte:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">table</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( i enum (<span style="color:#e6db74">&#39;eins&#39;</span>, <span style="color:#e6db74">&#39;zwei&#39;</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> ); 
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">12</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#e6db74">&#39;&#39;</span>);
+ERROR <span style="color:#ae81ff">1265</span> (<span style="color:#ae81ff">01000</span>): <span style="color:#66d9ef">Data</span> truncated <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;i&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#e6db74">&#39;drei&#39;</span>);
+ERROR <span style="color:#ae81ff">1265</span> (<span style="color:#ae81ff">01000</span>): <span style="color:#66d9ef">Data</span> truncated <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;i&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+Empty <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Denn ohne strict mode akzeptiert und vermatscht MySQL diese Daten gnadenlos:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#e6db74">&#39;&#39;</span>);
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span>   <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message                                <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Warning <span style="color:#f92672">|</span> <span style="color:#ae81ff">1265</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">Data</span> truncated <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;i&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)     
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#e6db74">&#39;drei&#39;</span>);
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span>   <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message                                <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Warning <span style="color:#f92672">|</span> <span style="color:#ae81ff">1265</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">Data</span> truncated <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;i&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)     
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> i <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>   <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Man beachte hier <code>''</code> in der Tabelle - wo der <code>ENUM</code> doch als <code>ENUM('eins','zwei')</code> definiert ist!</p>
+<h3 id="no_zero_date-und-no_zero_in_date">
+    <a href="#no_zero_date-und-no_zero_in_date">
+	NO_ZERO_DATE und NO_ZERO_IN_DATE
+    </a>
+</h3>
+<p>Auch für Datumsangaben wollen wir das haben, und dazu haben wir <code>NO_ZERO_DATE</code> und <code>NO_ZERO_IN_DATE</code> gesetzt. Ohne <code>SQL_MODE</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">table</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( d date <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">11</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#e6db74">&#39;0000-00-00&#39;</span>), (<span style="color:#e6db74">&#39;2009-10-00&#39;</span>);
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+Records: <span style="color:#ae81ff">2</span>  Duplicates: <span style="color:#ae81ff">0</span>  Warnings: <span style="color:#ae81ff">0</span>
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+Empty <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> d          <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">0000</span><span style="color:#f92672">-</span><span style="color:#ae81ff">00</span><span style="color:#f92672">-</span><span style="color:#ae81ff">00</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span> <span style="color:#ae81ff">2009</span><span style="color:#f92672">-</span><span style="color:#ae81ff">10</span><span style="color:#f92672">-</span><span style="color:#ae81ff">00</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Und mit:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;NO_ZERO_DATE,NO_ZERO_IN_DATE,STRICT_ALL_TABLES&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">from</span> t;
+Query OK, <span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#e6db74">&#39;0000-00-00&#39;</span>);
+ERROR <span style="color:#ae81ff">1292</span> (<span style="color:#ae81ff">22007</span>): Incorrect date value: <span style="color:#e6db74">&#39;0000-00-00&#39;</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;d&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#e6db74">&#39;2009-10-00&#39;</span>);
+ERROR <span style="color:#ae81ff">1292</span> (<span style="color:#ae81ff">22007</span>): Incorrect date value: <span style="color:#e6db74">&#39;2009-10-00&#39;</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;d&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>Man beachte, daß es die Kombination von <code>STRICT_ALL_TABLES</code> und den <code>NO_ZERO*DATE</code> Modi braucht, um hier einen Fehler zu erzeugen. Ohne den strict mode bekommt man nur eine Warnung.</p>
+<h3 id="error_for_division_by_zero---schön-wärs">
+    <a href="#error_for_division_by_zero---sch%c3%b6n-w%c3%a4rs">
+	ERROR_FOR_DIVISION_BY_ZERO - schön wärs
+    </a>
+</h3>
+<p>Die Einstellung <code>ERROR_FOR_DIVISION_BY_ZERO</code> tut nicht ganz das, was wir eigentlich wollen - eine gut und weithin sichtbare Explosion bei einer Division durch 0 - aber ist immerhin besser als nichts:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( i integer <span style="color:#66d9ef">null</span> );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">07</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">0</span> );
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;STRICT_ALL_TABLES,ERROR_FOR_DIVISION_BY_ZERO&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">0</span> );
+ERROR <span style="color:#ae81ff">1365</span> (<span style="color:#ae81ff">22012</span>): Division <span style="color:#66d9ef">by</span> <span style="color:#ae81ff">0</span>
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">0</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">/</span><span style="color:#ae81ff">0</span>  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span>, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span> <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message       <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Error <span style="color:#f92672">|</span> <span style="color:#ae81ff">1365</span> <span style="color:#f92672">|</span> Division <span style="color:#66d9ef">by</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wie man sieht, wird nur beim INSERT (oder UPDATE) in eine Tabelle ein Fehler statt einer NULL produziert. Bei einem normalen Ausdruck bekommt man weiterhin NULL und eine Warning. Folgefalsch also auch hier:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( a integer, b integer );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">05</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span> , <span style="color:#ae81ff">0</span>);
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TRADITIONAL&#39;</span>;  
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> a<span style="color:#f92672">/</span>b <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> a<span style="color:#f92672">/</span>b  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span>, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span> <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message       <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Error <span style="color:#f92672">|</span> <span style="color:#ae81ff">1365</span> <span style="color:#f92672">|</span> Division <span style="color:#66d9ef">by</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+------+---------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><h3 id="no_auto_create_user---auch-zu-schön-um-wahr-zu-sein">
+    <a href="#no_auto_create_user---auch-zu-sch%c3%b6n-um-wahr-zu-sein">
+	NO_AUTO_CREATE_USER - auch zu schön um wahr zu sein
+    </a>
+</h3>
+<p>Ebenfalls nicht das, was man will tut <code>NO_AUTO_CREATE_USER</code>: Es verhindert das versehentliche Anlegen eines Users ohne Paßwort durch ein <code>GRANT</code>-Statement ohne <code>IDENTIFIED BY</code>-Clause, aber es erzwingt nicht das Verwenden von <code>CREATE USER</code> zum Anlegen von Usern: Ein <code>GRANT</code>-Statement mit <code>IDENTIFIED BY</code> kann noch immer nebenbei einen User anlegen.</p>
+<h3 id="only_full_group_by">
+    <a href="#only_full_group_by">
+	ONLY_FULL_GROUP_BY
+    </a>
+</h3>
+<p>Wir haben außerdem <code>ONLY_FULL_GROUP_BY</code> gesetzt. Normalerweise erlaubt MySQL die Anwahl von nicht aggregierten Spalten in <code>SELECT</code>-Statements mit <code>GROUP BY</code>-Ausdrücken:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">table</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( i integer, j integer );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">09</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>), (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>), (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">4</span>), (<span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">5</span>);
+Query OK, <span style="color:#ae81ff">5</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+Records: <span style="color:#ae81ff">5</span>  Duplicates: <span style="color:#ae81ff">0</span>  Warnings: <span style="color:#ae81ff">0</span>
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> i,j,group_concat(j) <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> i;
+<span style="color:#f92672">+</span><span style="color:#75715e">------+------+-----------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> i    <span style="color:#f92672">|</span> j    <span style="color:#f92672">|</span> group_concat(j) <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------+------+-----------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>    <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>             <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>    <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">3</span>,<span style="color:#ae81ff">4</span>             <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>    <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span>               <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">------+------+-----------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>MySQL verhält sich hier so, als stünde das <code>j</code> in einem Funktionaufruf einer hypothetischen Aggregatfunktion <code>ANY(j)</code>. Es wählt also ein beliebiges j aus der Gruppe der j aus, die der Zeile zugeordnet sind und zeigt es als Repräsentant der Äquivalenzklasse an. MySQL hat auch eine ganz reale Funktion <code>ALL()</code>, die die gesamte Äquivalenzklasse anzeigt - sie heißt <code>GROUP_CONCAT()</code>.</p>
+<p>Das Verhalten von MySQL ist hier strikt konform mit dem SQL-Standard und der Mathematik dahinter, aber diese Auslegung des Standards ist einzigartig - alle anderen SQL-Produkte machen es anders. Mit <code>ONLY_FULL_GROUP_BY</code> soll man MySQL in einem Modus schalten, in dem es der verbreiteten Auslegung folgt:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TRADITIONAL,ONLY_FULL_GROUP_BY&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> i,j,group_concat(j) <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> i;
+ERROR <span style="color:#ae81ff">1055</span> (<span style="color:#ae81ff">42000</span>): <span style="color:#e6db74">&#39;koehntopp.t.j&#39;</span> isn<span style="color:#e6db74">&#39;t in GROUP BY
+</span></code></pre></div><p>Leider gibt es kein <code>ANY()</code> in MySQL, sodaß man sich mit <code>MIN()</code> oder <code>MAX()</code> behelfen muß, um deterministisch ein Element der Äquivalenzklasse zu bestimmen.</p>
+<p>Um Entwicklern zu helfen beim Anlegen von Tabellen Fehler mit der Storage Engine zu machen, haben wir <code>NO_ENGINE_SUBSTITUTION</code> eingeschaltet - MySQL ersetzt dann beim Fehlen einer Engine diese nicht stillschweigend durch MyISAM (oder default_storage_engine), sondern mault sichtbar mit einem Fehler.</p>
+<h3 id="no_auto_value_on_zero---knapp-daneben-aber-auch-vorbei">
+    <a href="#no_auto_value_on_zero---knapp-daneben-aber-auch-vorbei">
+	NO_AUTO_VALUE_ON_ZERO - knapp daneben, aber auch vorbei
+    </a>
+</h3>
+<p>Schließlich wollten wir noch <code>NO_AUTO_VALUE_ON_ZERO</code>, um einen lange bestehenden Fehler in MySQL zu korrigieren:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">table</span> t;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( id integer unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> auto_increment );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">16</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#66d9ef">NULL</span> );
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">0</span> );
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">32</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>MySQL weist also neue auto_increment-Werte nicht nur bei NULL zu, sondern auch bei 0. Das ist sehr störend, denn es verhindert, daß bestimmte Fehler gefunden werden.</p>
+<p>Was <code>NO_AUTO_VALUE_ON_ZERO</code> macht ist jedoch auch erst beim 2. Versuch hilfreich:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TRADITIONAL,NO_AUTO_VALUE_ON_ZERO&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#66d9ef">NULL</span> );
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">0</span> );
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">4</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">0</span> );
+ERROR <span style="color:#ae81ff">1062</span> (<span style="color:#ae81ff">23000</span>): Duplicate entry <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">key</span> <span style="color:#ae81ff">1</span>
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">4</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wie man sieht erzeugt die erste Zuweisung keinen auto_increment-Wert, sondern den Primärschlüssel 0, was man in den meisten Fällen auch nicht will. Immerhin explodiert dann die 2. Zuweisung mit einem Duplicate Key Error, sodaß man den fehlerhaften SQL-Code dann zu sehen bekommt.</p>
+<p>So weit die Theorie.</p>
+<h3 id="selbst-gemachte-probleme">
+    <a href="#selbst-gemachte-probleme">
+	Selbst gemachte Probleme
+    </a>
+</h3>
+<p>Und jetzt wie es explodiert.</p>
+<p>Aufgrund einer Migration von einer älteren Version von MySQL haben wir haufenweise Definition von Tabellen mit Code wie diesem:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TRADITIONAL&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( d date <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">default</span> <span style="color:#e6db74">&#39;0000-00-00&#39;</span> );
+ERROR <span style="color:#ae81ff">1067</span> (<span style="color:#ae81ff">42000</span>): Invalid <span style="color:#66d9ef">default</span> value <span style="color:#66d9ef">for</span> <span style="color:#e6db74">&#39;d&#39;</span>
+</code></pre></div><p>Das Setzen von <code>NO_ZERO_DATE</code> zerbricht also diese Tabellen und damit auch alle Tests (da kommt das nämlich in so gut wie jeder Tabelle vor). Das ist kein Fehler von MySQL, sondern ein Problem bei uns, macht aber erst einmal <code>NO_ZERO_DATE</code> für uns unmöglich.</p>
+<h3 id="only_full_group_by-bug-behoben-in-51">
+    <a href="#only_full_group_by-bug-behoben-in-51">
+	ONLY_FULL_GROUP_BY-Bug (behoben in 5.1)
+    </a>
+</h3>
+<p>Dann explodiert <code>ONLY_FULL_GROUP_BY</code> in unserem (zu alten) MySQL 5.0 - in unserem (viel neueren) 5.1 ist der Fehler behoben:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT</span>
+	<span style="color:#66d9ef">MIN</span>(latitude), <span style="color:#66d9ef">MAX</span>(latitude), <span style="color:#66d9ef">MIN</span>(longitude), <span style="color:#66d9ef">MAX</span>(longitude)
+<span style="color:#66d9ef">FROM</span> Objects
+<span style="color:#66d9ef">WHERE</span> id <span style="color:#66d9ef">IN</span> (<span style="color:#ae81ff">99910</span>, <span style="color:#ae81ff">98561</span>, <span style="color:#ae81ff">10200</span>)
+    <span style="color:#66d9ef">AND</span> latitude  <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+    <span style="color:#66d9ef">AND</span> longitude <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>;
+ERROR <span style="color:#ae81ff">1140</span> (<span style="color:#ae81ff">42000</span>): Mixing <span style="color:#66d9ef">of</span> <span style="color:#66d9ef">GROUP</span> columns 
+(<span style="color:#66d9ef">MIN</span>(),<span style="color:#66d9ef">MAX</span>(),<span style="color:#66d9ef">COUNT</span>(),...) <span style="color:#66d9ef">with</span> <span style="color:#66d9ef">no</span> <span style="color:#66d9ef">GROUP</span> columns 
+<span style="color:#66d9ef">is</span> illegal <span style="color:#66d9ef">if</span> there <span style="color:#66d9ef">is</span> <span style="color:#66d9ef">no</span> <span style="color:#66d9ef">GROUP</span> <span style="color:#66d9ef">BY</span> clause
+</code></pre></div><p>Das ist Unsinn - id wird nicht angezeigt und alle angezeigten Spalten sind in Aggregatfunktionen. Die WHERE-Clause verwirrt MySQL.</p>
+<p>Man kann die Query umschreiben, um den Fehler zu umgehen (aber das ist nicht Sinn der Sache):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span>
+  <span style="color:#66d9ef">MIN</span>(latitude), <span style="color:#66d9ef">MAX</span>(latitude), 
+  <span style="color:#66d9ef">MIN</span>(longitude), <span style="color:#66d9ef">MAX</span>(longitude)
+<span style="color:#66d9ef">FROM</span> Objects
+  <span style="color:#66d9ef">WHERE</span> id <span style="color:#66d9ef">IN</span> (<span style="color:#ae81ff">99910</span>, <span style="color:#ae81ff">98561</span>, <span style="color:#ae81ff">10200</span>)
+  <span style="color:#66d9ef">AND</span> latitude  <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+  <span style="color:#66d9ef">AND</span> longitude <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>;
+</code></pre></div><p>Beachte, daß man <code>GROUP BY 1=1</code> schreiben muß und nicht einfach <code>GROUP BY 1</code> machen kann. Letzteres ist eine (obsolete und nicht empfohlene) Schreibweise um nach Spalte 1 zu gruppieren (oder, mit <code>ORDER BY</code>, zu sortieren).</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">
+<span style="color:#66d9ef">SELECT</span>
+  <span style="color:#66d9ef">MIN</span>(latitude), <span style="color:#66d9ef">MAX</span>(latitude),
+  <span style="color:#66d9ef">MIN</span>(longitude), <span style="color:#66d9ef">MAX</span>(longitude)
+<span style="color:#66d9ef">FROM</span> Objects
+  <span style="color:#66d9ef">WHERE</span> id <span style="color:#66d9ef">IN</span> (<span style="color:#ae81ff">99910</span>, <span style="color:#ae81ff">98561</span>, <span style="color:#ae81ff">10200</span>)
+  <span style="color:#66d9ef">AND</span> latitude  <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+  <span style="color:#66d9ef">AND</span> longitude <span style="color:#66d9ef">IS</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> <span style="color:#ae81ff">1</span>;
+ERROR <span style="color:#ae81ff">1056</span> (<span style="color:#ae81ff">42000</span>): Can<span style="color:#e6db74">&#39;t group on &#39;</span><span style="color:#66d9ef">MIN</span>(latitude)<span style="color:#e6db74">&#39;
+</span></code></pre></div><h3 id="insert-on-duplicate-key-update-breakage-i">
+    <a href="#insert-on-duplicate-key-update-breakage-i">
+	INSERT ON DUPLICATE KEY UPDATE Breakage I
+    </a>
+</h3>
+<p>Eine weitere Explosion bekommt man mit <code>INSERT ON DUPLICATE KEY UPDATE</code> hin. Gegeben sei</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (
+  id integer unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> auto_increment,
+  d integer <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+  e integer <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+  f integer <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+  <span style="color:#66d9ef">unique</span> ( d, e ));
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">06</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">0</span>);
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e <span style="color:#f92672">|</span> f <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+---+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Ohne SQL-Mode bekommt man Warnungen, wenn man das folgende versucht:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t (id, f) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> f <span style="color:#f92672">=</span> f<span style="color:#f92672">+</span><span style="color:#66d9ef">values</span>(f);
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected, <span style="color:#ae81ff">2</span> warnings (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span>   <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message                                <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Warning <span style="color:#f92672">|</span> <span style="color:#ae81ff">1364</span> <span style="color:#f92672">|</span> Field <span style="color:#e6db74">&#39;d&#39;</span> doesn<span style="color:#e6db74">&#39;t have a default value | 
+</span><span style="color:#e6db74">| Warning | 1364 | Field &#39;</span>e<span style="color:#e6db74">&#39; doesn&#39;</span>t have a <span style="color:#66d9ef">default</span> value <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e <span style="color:#f92672">|</span> f <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+---+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Ungeachtet der Warnungen tut der Code aber genau das, was er soll. Durch den Strict Mode werden solche Warnungen aber zu Fehlern:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span><span style="color:#e6db74">&#39;TRADITIONAL&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t (id, f) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> f <span style="color:#f92672">=</span> f<span style="color:#f92672">+</span><span style="color:#66d9ef">values</span>(f);
+ERROR <span style="color:#ae81ff">1364</span> (HY000): Field <span style="color:#e6db74">&#39;d&#39;</span> doesn<span style="color:#e6db74">&#39;t have a default value
+</span></code></pre></div><p>Und damit Breakage in der Anwendung.</p>
+<p>Der Fehler bzw. die Warnungen sollten eigentlich gar nicht auftreten - sie müssen auftreten, wenn ein reines <code>INSERT</code> verwendet wird, mit dem <code>INSERT ON DUPLICATE KEY UPDATE</code> Code teilt. Aber sie dürfen eben nicht im <code>INSERT ON DUPLICATE KEY UPDATE</code> auftreten, sondern müssen dort das Weiterreichen an die <code>UPDATE</code>-Clause triggern.</p>
+<p>Oder man sieht von so komplexen Statements wie <code>INSERT ON DUPLICATE KEY UPDATE</code> ab, weil die Fehlerbehandlung in ihnen zu kompliziert wird&hellip;</p>
+<h3 id="extended-insert-und-on-duplicate-key-breakage-ii">
+    <a href="#extended-insert-und-on-duplicate-key-breakage-ii">
+	Extended INSERT und ON DUPLICATE KEY Breakage II
+    </a>
+</h3>
+<p>Dann muß man jedoch auch auf Extended <code>INSERT</code>-Syntax verzichten. Denn:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> sql_mode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;TRADITIONAL&#39;</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t (
+  id TINYINT UNSIGNED <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>, 
+  value TINYINT UNSIGNED <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>, 
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (id)
+);
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> t <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>);
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> t <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">256</span>) <span style="color:#66d9ef">ON</span> DUPLICATE <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">UPDATE</span> value<span style="color:#f92672">=</span><span style="color:#66d9ef">VALUES</span>(value);
+ERROR <span style="color:#ae81ff">1264</span> (<span style="color:#ae81ff">22003</span>): <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;value&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+<span style="color:#f92672">//</span> does <span style="color:#f92672">*</span><span style="color:#66d9ef">not</span><span style="color:#f92672">*</span> break replication
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> wop <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">1</span>),(<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">256</span>) <span style="color:#66d9ef">ON</span> DUPLICATE <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">UPDATE</span> value<span style="color:#f92672">=</span><span style="color:#66d9ef">VALUES</span>(value);
+ERROR <span style="color:#ae81ff">1264</span> (<span style="color:#ae81ff">22003</span>): <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;value&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">2</span>
+<span style="color:#f92672">//</span> <span style="color:#f92672">*</span>BREAKS REPLICATION<span style="color:#f92672">*</span>
+</code></pre></div><p>Das ist das Resultat auf dem Master: Ein halb ausgeführtes Statement. Das Statement hat im letzten Fall jedoch Daten modifiziert und gelangt so in das Binlog zum Slave, jedoch mit der Information, daß es auf dem Master auf halber Strecke abgebrochen wurde. Also bleibt die Replikation zum Slave nun stehen, um Inkonsistenzen zu vermeiden.</p>
+<p>Das wiederum - ein Stehenbleiben der Replikation - können wir uns unter gar keinen Umständen erlauben. Während wir vorher also gemosert und unseren Code gefixt haben, haben wir nun diesen Change komplett zurück gerollt und schauen einmal, wie wir das später ausgerollt bekommen.</p>
+<h2 id="zusammenfassung">
+    <a href="#zusammenfassung">
+	Zusammenfassung
+    </a>
+</h2>
+<p>Es ist  recht offensichtlich, daß nicht viele Leute MySQL mit <code>SQL_MODE</code> fahren und daß eine ganze Menge Fehler oder Ungereimtheiten in <code>SQL_MODE</code> stecken. Das ist sehr schade, denn es ist so leider nicht möglich, MySQL auf eine Weise zu betreiben, mit der man illegale Daten beim Einfügen in die Datenbank in allen Fällen erkennen und verhindern kann.</p>
+<p>Was ist auf der guten Seite geblieben?</p>
+<p>Wir haben einige long standing bugs bei uns gefunden und gefixt - an einigen Stellen haben Entwickler defekte (falsch geschriebene) Werte in ENUMs verwendet und so '' erzeugt. An anderen Stellen sind falsche oder inkomplette Datumsangaben mit auf 00 gesetzten Tagen oder Monaten verwendet worden (man lese die Manpage zu mktime(3), tm_mon vs. tm_mday!).</p>
+<p>Auch so etwas wird durch <code>TRADITIONAL</code> haufenweise gefunden:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t ( i integer <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>, s varchar(<span style="color:#ae81ff">32</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> );
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">06</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> t (i) <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">1</span> );
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected, <span style="color:#ae81ff">1</span> warning (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">66</span> sec)
+
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> warnings;
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">Level</span>   <span style="color:#f92672">|</span> Code <span style="color:#f92672">|</span> Message                                <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------+------+----------------------------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> Warning <span style="color:#f92672">|</span> <span style="color:#ae81ff">1364</span> <span style="color:#f92672">|</span> Field <span style="color:#e6db74">&#39;s&#39;</span> doesn<span style="color:#e6db74">&#39;t have a default value | 
+</span><span style="color:#e6db74">+---------+------+----------------------------------------+
+</span><span style="color:#e6db74">1 row in set (0.00 sec)
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">root@localhost &gt; select * from t;
+</span><span style="color:#e6db74">+---+---+
+</span><span style="color:#e6db74">| i | s |
+</span><span style="color:#e6db74">+---+---+
+</span><span style="color:#e6db74">| 1 |   | 
+</span><span style="color:#e6db74">+---+---+
+</span><span style="color:#e6db74">1 row in set (0.00 sec)
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">root@localhost &gt; set sql_mode = &#39;</span>TRADITIONAL<span style="color:#e6db74">&#39;;
+</span><span style="color:#e6db74">Query OK, 0 rows affected (0.00 sec)
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">root@localhost &gt; insert into t (i) values ( 2 );
+</span><span style="color:#e6db74">ERROR 1364 (HY000): Field &#39;</span>s<span style="color:#e6db74">&#39; doesn&#39;</span>t have a <span style="color:#66d9ef">default</span> value
+root<span style="color:#f92672">@</span>localhost <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;
+<span style="color:#f92672">+</span><span style="color:#75715e">---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> i <span style="color:#f92672">|</span> s <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>   <span style="color:#f92672">|</span> 
+<span style="color:#f92672">+</span><span style="color:#75715e">---+---+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+</code></pre></div><p>Durch das <code>NO_ZERO_DATE</code> haben wir die exzessive Verwendung von <code>DATE NOT NULL DEFAULT '0000-00-00'</code> als Überrest einer Migration von einer älteren Version von MySQL zur Disposition gestellt. Viele Entwickler fragen sich nun, was <code>SELECT * FROM t WHERE somedate = &quot;0000-00-00&quot;</code> wohl für eine Bedeutung haben mag, also was die dort gezeigten Zeilen wohl bedeuten mögen und gehen sorgfältiger mit Default-Werten um. Das hat ebenfalls eine Reihe von Bugs gekillt.</p>
+<p>Alles in allem wär es schön, wenn <code>SQL_MODE</code> von MySQL selbst mehr promoted würde oder gar in neueren Versionen von MySQL ein Default-<code>SQL_MODE</code> wie der oben vorgestellte voreingestellt wäre. Andererseits ist absehbar, daß in der MySQL-Welt dann genau gar kein existierendes SQL mehr laufen würde.</p>
+<p>Und so wird es wohl bei dem Wunsch bleiben.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

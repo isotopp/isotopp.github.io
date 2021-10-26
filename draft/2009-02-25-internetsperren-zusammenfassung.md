@@ -1,0 +1,20 @@
+---
+author-id: isotopp
+date: "2009-02-25T09:32:32Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
+tags:
+- filter
+- jugendschutz
+- politik
+- lang_de
+title: Internetsperren Zusammenfassung
+---
+Die Provider <a href='http://www.heise.de/newsticker/Arbeitsgruppe-zu-Kinderporno-Sperren-ergebnislos-vertagt-Update--/meldung/133287'>wollen nicht</a>, und schon gar nicht ohne Rechtsgrundlage. <blockquote>Die Gesprächsrunde endete eine halbe Stunde früher als geplant, wobei beide Seiten laut Teilnehmerbekunden "gerade noch um einen Eklat herumgekommen sind". Die Gespräche in der großen Runde sollen jetzt am 13. März fortgesetzt werden.</blockquote> Unsere Regierung will dagegen mit aller Macht: <blockquote>Generell soll das Familienministerium die großen Provider massiv bearbeiten. So wurde dem Justiziar eines Zugangsanbieters, der das Sperrvorhaben sehr kritisch sah, nach Informationen aus Branchenkreisen zwischenzeitlich die Zuständigkeit für den Themenbereich entzogen. Mit weiteren "Einzelmassagen" rechnen die beteiligten Provider, zu denen neben Telekom und Vodafone etwa auch 1&1, Alice/Hansenet, Freenet, Kabel Deutschland sowie O2/Telefonica gehören, nun vor dem nächsten Treffen.</blockquote>
+
+Es ist auch schon absehbar, daß es bei <a href='http://www.heise.de/newsticker/Kinderporno-Sperren-im-internationalen-Vergleich--/meldung/133295'>Kinderpornographie nicht bleiben</a> wird, sondern das das nur das Einsteigsthema ist, um eine Filterinfrastruktur zu etablieren. Auch die weitgehend wirkungslosen und leicht zu umgehenden DNS-Sperren werden später sicher perfektioniert. <blockquote>Im aktuellen Zusammenhang mit dem in Schweden stattfindenden Prozess gegen Pirate Bay sollte erwähnt werden, dass die schwedische Polizei im Jahr 2007 versuchte, Pirate Bay auf die Liste mit den gesperrten Kinderporno-Webseiten zu setzen.</blockquote> Auch ist deutlich, daß es sich bei diesen Sperren auch um politische Mittel handelt: <blockquote>Als letztes skandinavisches Land wurde die DNS-Sperre in Finnland errichtet und lieferte mit dem Fall von Matti Nikki ein Paradebeispiel dafür, wie ein Kritiker der Sperrlisten selbst auf die Sperrliste kommt und damit nicht mehr erreichbar ist.</blockquote> Um Kinderpornographie und deren Bekämpfung geht es dabei nur am Rande - so sind auf den skandinavischen Listen sind zum Beispiel jede Menge Sites mit .de-Domains, gegen die viel effektiver an der Quelle vorgegangen werden könnte. Auch mit anderen Ländern funktioniert das so, daß gesperrt statt behoben wird, die Sperrung also effektive Verfolgung von Kinderpornographie im Netz also eher verhindert: <blockquote>Auch in den Niederlanden wurde von den Providern UPC/Chello und KPN in Zusammenarbeit mit der Polizei im Jahre 2007 die Sperrtechnik komplett mit dem Stopp-Server eingerichtet. Diese Sperre ist darum erwähnenswert, weil die niederländische Polizei explizit Finnland als Vorbild nannte. Die Internet-Aktivistin Karin Spaink besorgte sich daraufhin die finnische Sperrliste und fand auf ihr niederländische Firmen und insgesamt 40 Webseiten mit niederländischer Kinderpornographie. Spaink klagte daraufhin die Polizeibehörden öffentlich an, die zwar Kinderpornographie im Internet blockten, aber nicht tätig wurden, um die fraglichen inländischen Firmen juristisch zu belangen.</blockquote>Hadmut Danisch hat sich die Mühe gemacht, die Diskussion um dasselbe Thema von <a href='http://www.danisch.de/blog/2009/02/23/das-bka-jagt-anbieter-von-kinderpornographie/'>vor 11 Jahren</a> heraus zu suchen. Auch dort hat man das alles schon thematisiert und das Netz und die Politik würgen nun nur eine alte Debatte wieder neu hoch.
+
+Der KJM ist das Thema zu heiß: <a href='http://www.heise.de/newsticker/Jugendschutzaufsicht-fuehlt-sich-nicht-fuer-Kinderporno-Sperren-zustaendig--/meldung/133451'>Sie fühlt sich nicht zuständig</a>.
+
+Filter im Netz sind immer auch politisch: Bei <a href='http://opennet.net/about-filtering/2008yearinreview/'>Opennet</a> gibt es zu diesem Thema eine schöne Zeitleiste für 2008.

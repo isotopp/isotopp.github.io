@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Importing account statements and building a data warehouse</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="importing-account-statements-and-building-a-data-warehouse-page">
+	<h1 class="title">
+            Importing account statements and building a data warehouse
+	</h1>
+
+	<p>This is an update and translation of a [much older article]({% link _posts/2006-07-23-mein-privates-datawarehouse-sparen-mit-mysql.md %}), which I wrote in German Language back then. I was experimenting with importing the account statements from my German Sparkasse, which at that time were being made available as a CSV.</p>
+<h2 id="the-initial-data-load">
+    <a href="#the-initial-data-load">
+	The initial data load
+    </a>
+</h2>
+<p>The data looked like this:</p>
+<pre><code class="language-console" data-lang="console">$ head -2 /home/kris/Documents/banking/umsatz-22758031-29122004.csv
+&quot;Local Account&quot;;&quot;Book Date&quot;;&quot;Valuta Date&quot;;&quot;Transaction Type&quot;;
+&quot;Purpose&quot;;
+&quot;Remote Party&quot;;&quot;Remote Account&quot;;&quot;Bank Code&quot;;
+&quot;Amount&quot;;&quot;Currency&quot;;&quot;Info&quot;
+&quot;08154711&quot;;&quot;30.12&quot;;&quot;30.12.05&quot;;&quot;Direct Debit&quot;;
+&quot;DRP 08154711 040441777  INKL. 16% UST 5.38 EUR&quot;;
+&quot;STRATO MEDIEN AG&quot;;&quot;040441777&quot;;&quot;10050000&quot;;
+&quot;-39,00&quot;;&quot;EUR&quot;;&quot;Direct Debit booked&quot;
+</code></pre><p>Because I want to know how I spend my money, I am loading the data into MySQL. Here is how:</p>
+<p>As a first step we are defining a table into which to load the data. The table has columns whose primary purpose it to hold the data. We still have to clean and adjust the data to be able to do things with the data, so we are not looking at the final fields or types at all.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#75715e">-- load data
+</span><span style="color:#75715e"></span>warnings;
+<span style="color:#66d9ef">DROP</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#66d9ef">IF</span> <span style="color:#66d9ef">EXISTS</span> transactions;
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> transactions (
+  localaccount char(<span style="color:#ae81ff">8</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  bookdate_text char(<span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  valutadate_text char(<span style="color:#ae81ff">10</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  transactiontype varchar(<span style="color:#ae81ff">50</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  purpose varchar(<span style="color:#ae81ff">180</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  remoteaccount_name varchar(<span style="color:#ae81ff">100</span>) <span style="color:#66d9ef">NOT</span>  <span style="color:#66d9ef">NULL</span>,
+  remoteaccount_number char(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  remoteaccount_bankcode char(<span style="color:#ae81ff">8</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  amount_text char(<span style="color:#ae81ff">12</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  currentcy char(<span style="color:#ae81ff">3</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  info varchar(<span style="color:#ae81ff">255</span>) <span style="color:#66d9ef">NOT</span>  <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#66d9ef">unique</span> <span style="color:#66d9ef">index</span> ( bookdate_text
+    , transactiontype
+    , purpose
+    , remoteaccount_number
+    , remoteaccount_bankcode
+    , amount_text)
+) ;
+<span style="color:#66d9ef">truncate</span> <span style="color:#66d9ef">table</span> transactions;
+</code></pre></div><p>Sadly, we have no unique transaction identifiers, so I cannot really define a proper primary key. I am trying to make do with a <code>UNIQUE INDEX</code>, but it is likely overly specific.</p>
+<p>The failure scenario is that I have to specify start and end dates when exporting the account statements, and sometimes a few records are exported twice: At the end of the one statement file, and at the beginning of the next statement file again.</p>
+<p>To prevent loading the same line twice if it happens to appear in multiple CSV files this unique index is probably okay.</p>
+<p>I load can load the various CSV files into this table:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">load</span> <span style="color:#66d9ef">data</span> infile  
+  <span style="color:#e6db74">&#39;/home/kris/Documents/banking/umsatz-22758031-29122004.csv&#39;</span> 
+<span style="color:#66d9ef">into</span> <span style="color:#66d9ef">table</span> buchungen 
+fields terminated <span style="color:#66d9ef">by</span> <span style="color:#e6db74">&#34;;&#34;</span> 
+optionally enclosed <span style="color:#66d9ef">by</span> <span style="color:#e6db74">&#39;&#34;&#39;</span> 
+<span style="color:#66d9ef">ignore</span> <span style="color:#ae81ff">1</span> lines;
+<span style="color:#66d9ef">load</span> <span style="color:#66d9ef">data</span> infile 
+  <span style="color:#e6db74">&#39;/home/kris/Documents/banking/umsatz-22758031-24012005.csv&#39;</span> 
+<span style="color:#66d9ef">into</span> <span style="color:#66d9ef">table</span> buchungen 
+fields terminated <span style="color:#66d9ef">by</span> <span style="color:#e6db74">&#34;;&#34;</span> 
+optionally enclosed <span style="color:#66d9ef">by</span> <span style="color:#e6db74">&#39;&#34;&#39;</span> 
+<span style="color:#66d9ef">ignore</span> <span style="color:#ae81ff">1</span> lines;
+...
+</code></pre></div><p>Now it is time to clean up the data. For this we create a target table, and add a primary key to it.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#75715e">-- prepare conversion stage
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">DROP</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#66d9ef">IF</span> <span style="color:#66d9ef">EXISTS</span> b;
+<span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> b <span style="color:#66d9ef">like</span> transactions;
+<span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b <span style="color:#66d9ef">add</span> <span style="color:#66d9ef">column</span> id integer unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> <span style="color:#66d9ef">first</span>;
+<span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b <span style="color:#66d9ef">add</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> (id);
+<span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b change <span style="color:#66d9ef">column</span> id 
+  id integer unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> auto_increment;
+</code></pre></div><h2 id="cleaning-and-changing-the-data">
+    <a href="#cleaning-and-changing-the-data">
+	Cleaning and changing the data
+    </a>
+</h2>
+<p>We can now copy the data over, and in the process clean it up.</p>
+<ul>
+<li>The <code>amount</code> field has to be changed from &ldquo;xxx.xxx,yy&rdquo; (german monetary notation with dots between the thousands, and a comma before the cents) to &ldquo;xxxxxxx.yy&rdquo;.</li>
+<li>We also have to turn the date fields <code>valutadate_text</code> and <code>bookdate_text</code> into iso date syntax.</li>
+<li>We need to add a year to bookdate_text, taking it from the valutadate_text.</li>
+<li>The <code>info</code> column is useless.</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#75715e">-- load data into conversion stage
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> b <span style="color:#66d9ef">select</span> <span style="color:#66d9ef">NULL</span>, transactions.<span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> transactions;
+
+<span style="color:#75715e">-- adapt amount
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">update</span> b <span style="color:#66d9ef">set</span> amount_text <span style="color:#f92672">=</span> <span style="color:#66d9ef">replace</span>(amount_text, <span style="color:#e6db74">&#34;.&#34;</span>, <span style="color:#e6db74">&#34;&#34;</span>);
+<span style="color:#66d9ef">update</span> b <span style="color:#66d9ef">set</span> amount_text <span style="color:#f92672">=</span> <span style="color:#66d9ef">replace</span>(amount_text, <span style="color:#e6db74">&#34;,&#34;</span>, <span style="color:#e6db74">&#34;.&#34;</span>);
+<span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b change <span style="color:#66d9ef">column</span> amount_text 
+  amount decimal(<span style="color:#ae81ff">12</span>,<span style="color:#ae81ff">2</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#75715e">-- adapt valutadate
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">update</span> b <span style="color:#66d9ef">set</span> valutadate_text <span style="color:#f92672">=</span> 
+concat(<span style="color:#e6db74">&#34;20&#34;</span>, 
+   <span style="color:#66d9ef">substring</span>(valutadate_text, <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">2</span>), 
+   <span style="color:#e6db74">&#34;-&#34;</span>, 
+   <span style="color:#66d9ef">substring</span>(valutadate_text, <span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">2</span>), 
+   <span style="color:#e6db74">&#34;-&#34;</span>, 
+   <span style="color:#66d9ef">substring</span>(valutadate_text, <span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>));
+<span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b change <span style="color:#66d9ef">column</span> valutadate_text 
+  valutadate date <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#75715e">-- adapt bookdate
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">update</span> b <span style="color:#66d9ef">set</span> bookdate_text <span style="color:#f92672">=</span> 
+concat(<span style="color:#66d9ef">year</span>(valutadate), 
+   <span style="color:#e6db74">&#34;-&#34;</span>, 
+   <span style="color:#66d9ef">substring</span>(bookdate_text, <span style="color:#ae81ff">4</span>,<span style="color:#ae81ff">2</span>), 
+   <span style="color:#e6db74">&#34;-&#34;</span>, 
+   <span style="color:#66d9ef">substring</span>(bookdate_text, <span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">2</span>));
+<span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b change <span style="color:#66d9ef">column</span> bookdate_text 
+  bookdate date <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>;
+
+<span style="color:#75715e">-- drop info
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">column</span> info;
+</code></pre></div><h2 id="preparing-binning-categories">
+    <a href="#preparing-binning-categories">
+	Preparing binning categories
+    </a>
+</h2>
+<p>I now want to aggregate my expenses. In the raw data, spent money is listed together with the remote account it went to. To aggregate, we need to assign each of these accounts to a category, for example we would assign all gas stations to the &ldquo;fuel&rdquo; category or all supermarkets to the &ldquo;food&rdquo; category.</p>
+<p>I can have a table &ldquo;moneysinks&rdquo; that does this account to category assignment.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#75715e">-- add category
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> b <span style="color:#66d9ef">add</span> <span style="color:#66d9ef">column</span> category varchar(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>;
+</code></pre></div><p>And here is the <code>moneysinks</code> table, which needed manual population (I had to assign a category to each pattern by hand):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">DROP</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#66d9ef">IF</span> <span style="color:#66d9ef">EXISTS</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span>;
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">10</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> auto_increment,
+  <span style="color:#f92672">`</span>pattern<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">100</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>category<span style="color:#f92672">`</span> varchar(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>  (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+);
+
+<span style="color:#66d9ef">LOCK</span> TABLES <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">WRITE</span>;
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">77</span>,<span style="color:#e6db74">&#39;sparkasse&#39;</span>,<span style="color:#e6db74">&#39;account and card&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">78</span>,<span style="color:#e6db74">&#39;ga&#39;</span>,<span style="color:#e6db74">&#39;ATM domestic&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">79</span>,<span style="color:#e6db74">&#39;qsc&#39;</span>,<span style="color:#e6db74">&#39;Internet&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">80</span>,<span style="color:#e6db74">&#39;linux new media&#39;</span>,<span style="color:#e6db74">&#39;Newspaper&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">81</span>,<span style="color:#e6db74">&#39;premiere&#39;</span>,<span style="color:#e6db74">&#39;TV&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">82</span>,<span style="color:#e6db74">&#39;walmart&#39;</span>,<span style="color:#e6db74">&#39;Food&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">83</span>,<span style="color:#e6db74">&#39;kabel bw&#39;</span>,<span style="color:#e6db74">&#39;TV&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">84</span>,<span style="color:#e6db74">&#39;gez&#39;</span>,<span style="color:#e6db74">&#39;TV&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">85</span>,<span style="color:#e6db74">&#39;t-mobile&#39;</span>,<span style="color:#e6db74">&#39;Telefon&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">86</span>,<span style="color:#e6db74">&#39;finanzkasse&#39;</span>,<span style="color:#e6db74">&#39;Tax&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">87</span>,<span style="color:#e6db74">&#39;domainfactory&#39;</span>,<span style="color:#e6db74">&#39;Internet&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">88</span>,<span style="color:#e6db74">&#39;nagel ue&#39;</span>,<span style="color:#e6db74">&#39;Clothing&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">89</span>,<span style="color:#e6db74">&#39;mobilcom&#39;</span>,<span style="color:#e6db74">&#39;Telefon&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">90</span>,<span style="color:#e6db74">&#39;domainfactory&#39;</span>,<span style="color:#e6db74">&#39;Internet&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">91</span>,<span style="color:#e6db74">&#39;strato&#39;</span>,<span style="color:#e6db74">&#39;Internet&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">92</span>,<span style="color:#e6db74">&#39;stadtwerke&#39;</span>,<span style="color:#e6db74">&#39;Gas Water Shit&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">93</span>,<span style="color:#e6db74">&#39;deutsche bahn&#39;</span>,<span style="color:#e6db74">&#39;Rail&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">94</span>,<span style="color:#e6db74">&#39;debeka&#39;</span>,<span style="color:#e6db74">&#39;Insurance&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">95</span>,<span style="color:#e6db74">&#39;ec-ga&#39;</span>,<span style="color:#e6db74">&#39;ATM intl&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">96</span>,<span style="color:#e6db74">&#39;scheck in&#39;</span>,<span style="color:#e6db74">&#39;Food&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">97</span>,<span style="color:#e6db74">&#39;mastercard&#39;</span>,<span style="color:#e6db74">&#39;Kreditkarte&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">98</span>,<span style="color:#e6db74">&#39;dr.&#39;</span>,<span style="color:#e6db74">&#39;Miete&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">99</span>,<span style="color:#e6db74">&#39;a.t.u&#39;</span>,<span style="color:#e6db74">&#39;Auto&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">100</span>,<span style="color:#e6db74">&#39;ungeheuer&#39;</span>,<span style="color:#e6db74">&#39;Auto&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">101</span>,<span style="color:#e6db74">&#39;agip&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">102</span>,<span style="color:#e6db74">&#39;aral&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">103</span>,<span style="color:#e6db74">&#39;avia&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">104</span>,<span style="color:#e6db74">&#39;bab&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">105</span>,<span style="color:#e6db74">&#39;citti&#39;</span>,<span style="color:#e6db74">&#39;Food&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">106</span>,<span style="color:#e6db74">&#39;efa&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">107</span>,<span style="color:#e6db74">&#39;esso&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">108</span>,<span style="color:#e6db74">&#39;expedia&#39;</span>,<span style="color:#e6db74">&#39;Travel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">109</span>,<span style="color:#e6db74">&#39;fantasy&#39;</span>,<span style="color:#e6db74">&#39;RPG&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">110</span>,<span style="color:#e6db74">&#39;gravis&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">111</span>,<span style="color:#e6db74">&#39;foto&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">112</span>,<span style="color:#e6db74">&#39;heinrich&#39;</span>,<span style="color:#e6db74">&#39;Clothing&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">113</span>,<span style="color:#e6db74">&#39;hem&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">114</span>,<span style="color:#e6db74">&#39;hotel&#39;</span>,<span style="color:#e6db74">&#39;Travel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">115</span>,<span style="color:#e6db74">&#39;jet-tank&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">116</span>,<span style="color:#e6db74">&#39;karstadt&#39;</span>,<span style="color:#e6db74">&#39;Food&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">117</span>,<span style="color:#e6db74">&#39;kassen-&#39;</span>,<span style="color:#e6db74">&#39;Tax&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">118</span>,<span style="color:#e6db74">&#39;leichtsinn&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">119</span>,<span style="color:#e6db74">&#39;media markt&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">120</span>,<span style="color:#e6db74">&#39;mios&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">121</span>,<span style="color:#e6db74">&#39;plaza&#39;</span>,<span style="color:#e6db74">&#39;Food&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">122</span>,<span style="color:#e6db74">&#39;rundfunkgebuehren&#39;</span>,<span style="color:#e6db74">&#39;TV&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">123</span>,<span style="color:#e6db74">&#39;saturn&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">124</span>,<span style="color:#e6db74">&#39;sb tank&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">125</span>,<span style="color:#e6db74">&#39;segelkiste&#39;</span>,<span style="color:#e6db74">&#39;Clothing&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">126</span>,<span style="color:#e6db74">&#39;total/&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">127</span>,<span style="color:#e6db74">&#39;trx&#39;</span>,<span style="color:#e6db74">&#39;Travel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">128</span>,<span style="color:#e6db74">&#39;tst. bensheim&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">129</span>,<span style="color:#e6db74">&#39;vobis&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">130</span>,<span style="color:#e6db74">&#39;willenberg&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">131</span>,<span style="color:#e6db74">&#39;shell&#39;</span>,<span style="color:#e6db74">&#39;Fuel&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">132</span>,<span style="color:#e6db74">&#39;spreadshirt&#39;</span>,<span style="color:#e6db74">&#39;Clothing&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">133</span>,<span style="color:#e6db74">&#39;armin meier&#39;</span>,<span style="color:#e6db74">&#39;Clothing&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">134</span>,<span style="color:#e6db74">&#39;itzehoer&#39;</span>,<span style="color:#e6db74">&#39;Insurance&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">135</span>,<span style="color:#e6db74">&#39;ec-pos&#39;</span>,<span style="color:#e6db74">&#39;ATM intl&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">136</span>,<span style="color:#e6db74">&#39;euf-ga&#39;</span>,<span style="color:#e6db74">&#39;ATM intl&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">137</span>,<span style="color:#e6db74">&#39;dell&#39;</span>,<span style="color:#e6db74">&#39;Toys und Gadgets&#39;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>moneysinks<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">138</span>,<span style="color:#e6db74">&#39;yvonne&#39;</span>,<span style="color:#e6db74">&#39;RPG&#39;</span>);
+UNLOCK TABLES;
+</code></pre></div><h2 id="asking-questions">
+    <a href="#asking-questions">
+	Asking Questions
+    </a>
+</h2>
+<p>Using the mapping in <code>moneysinks</code> and the query below I can now permanently assign the <code>category</code> field in <code>b</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">update</span> b <span style="color:#66d9ef">set</span> category <span style="color:#f92672">=</span> ( 
+    <span style="color:#66d9ef">select</span> category 
+      <span style="color:#66d9ef">from</span> moneysinks <span style="color:#66d9ef">as</span> w 
+     <span style="color:#66d9ef">where</span> b.remoteaccount_name <span style="color:#66d9ef">like</span> concat(w.pattern, <span style="color:#e6db74">&#34;%&#34;</span>) 
+  <span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> <span style="color:#66d9ef">length</span>(pattern) <span style="color:#66d9ef">desc</span> 
+    <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">1</span>) <span style="color:#66d9ef">where</span> b.amount <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>;
+</code></pre></div><p>As I complete my list of patters I get a <code>category</code> assigned to everything.</p>
+<p>That enables me to ask questions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span>   remoteaccount_name, 
+         <span style="color:#66d9ef">count</span>(remoteaccount_name) <span style="color:#66d9ef">as</span> income 
+    <span style="color:#66d9ef">from</span> b 
+   <span style="color:#66d9ef">where</span> betrag<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">0</span> 
+<span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> remoteaccount_name 
+<span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> income <span style="color:#66d9ef">desc</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------------------------------------------+-----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> remoteaccount_name                                     <span style="color:#f92672">|</span> income    <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------------------------------------------+-----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> WEB.DE AG AMALIENBADSTR. <span style="color:#ae81ff">41</span>                            <span style="color:#f92672">|</span>        <span style="color:#ae81ff">12</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> MYSQL GMBH                                             <span style="color:#f92672">|</span>         <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> MYSQL GMBH SCHLOSSERSTR. <span style="color:#ae81ff">4</span> <span style="color:#ae81ff">72622</span> NUERTINGEN            <span style="color:#f92672">|</span>         <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> COOP SCHLESWIG<span style="color:#f92672">-</span>HOLSTEIN EG BENZSTR. <span style="color:#ae81ff">10</span>                 <span style="color:#f92672">|</span>         <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------------------------------------------------------+-----------+
+</span></code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span>   remoteaccount_name, 
+         <span style="color:#66d9ef">count</span>(remoteaccount_name) <span style="color:#66d9ef">as</span> payments
+    <span style="color:#66d9ef">from</span> b 
+   <span style="color:#66d9ef">where</span> betrag<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">0</span> 
+<span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> remoteaccount_name
+<span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> payments <span style="color:#66d9ef">desc</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">---------------------------------------------------------+----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> remoteaccount_name                                      <span style="color:#f92672">|</span> payments <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">---------------------------------------------------------+----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> SCHECK <span style="color:#66d9ef">IN</span> CENTER KA DURLACH                             <span style="color:#f92672">|</span>       <span style="color:#ae81ff">36</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> MOBILCOM COMMUNICATIONSTECH                             <span style="color:#f92672">|</span>       <span style="color:#ae81ff">22</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> STRATO MEDIEN AG                                        <span style="color:#f92672">|</span>       <span style="color:#ae81ff">22</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> VERMIETER                                               <span style="color:#f92672">|</span>       <span style="color:#ae81ff">19</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> T<span style="color:#f92672">-</span>MOBILE DEUTSCHLAND GMBH                               <span style="color:#f92672">|</span>       <span style="color:#ae81ff">18</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> DEUTSCHE BAHN KARLSRUHE HB                              <span style="color:#f92672">|</span>       <span style="color:#ae81ff">17</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> KABEL BW GMBH <span style="color:#f92672">&amp;</span> CO. KG                                  <span style="color:#f92672">|</span>       <span style="color:#ae81ff">17</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> QSC AG                                                  <span style="color:#f92672">|</span>       <span style="color:#ae81ff">17</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> STADTWERKE KARLSRUHE                                    <span style="color:#f92672">|</span>       <span style="color:#ae81ff">17</span> <span style="color:#f92672">|</span>
+...
+</code></pre></div><p>Using the <code>category</code> I an also group this and make group totals.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">select</span> category, 
+         <span style="color:#66d9ef">count</span>(amount) <span style="color:#66d9ef">as</span> payments, 
+         <span style="color:#66d9ef">sum</span>(amount) <span style="color:#66d9ef">as</span> total 
+    <span style="color:#66d9ef">from</span> b 
+   <span style="color:#66d9ef">where</span> amount<span style="color:#f92672">&lt;</span><span style="color:#ae81ff">0</span> 
+<span style="color:#66d9ef">group</span> <span style="color:#66d9ef">by</span> category 
+<span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> total;
+</code></pre></div><p>This will tell me how I spend my money.</p>
+<p>Often I want to observe how my spending habits change over time, so I would not just use the categories from the moneysinks table as grouping critieron, but also group over some time dimension (<code>GROUP BY year(bookdate) as year, category</code>).</p>
+<p>As my data warehouse grows, it may be useful to run the aggregation query and save the result in some preaggregated table (by day or month), as a kind of materialized view of the aggregates. I can use these to create coarser grained aggregates faster (take daily sums and counts, and create monthly or yearly aggregates, fast).</p>
+<h2 id="summary-and-outlook">
+    <a href="#summary-and-outlook">
+	Summary and outlook
+    </a>
+</h2>
+<p>Using account statements from a bank, we have built a basic data warehouse. We demonstrated data import, staging and cleaning processes. Using category tables, we demonstrated how bin individual records into larger sets that can be useful in statistical analysis, and we looked at how we could materialize these aggregation into preaggregated tables.</p>
+<p>This is a toy data warehouse, and it poses no challenges in data management due to the small size. Still, it has many properties that are also present in larger structures. Let&rsquo;s look at this in a more generalized way:</p>
+<p>A data warehouse is centered around one or more fact tables. Fact tables always have a time dimension, they have log-like nature.</p>
+<h3 id="literal-attribute-values-resolve-ids">
+    <a href="#literal-attribute-values-resolve-ids">
+	Literal attribute values, resolve id&rsquo;s
+    </a>
+</h3>
+<p>Fact tables contain snapshot data that is not normalized, but contains literal values. In our example: actual account holder names, and account numbers.</p>
+<p>For example in a sales warehouse from a web shop, we are never interested in the current price of an item in a sales-fact table, but always in what we sold it for back then, for each individual sale. We are never interested where the customer lives now, but where we sent the article. Hence we log literal attributes, never ids pointing to the current article or customer record.</p>
+<h3 id="encoding-can-shrink-tables-but-do-only-what-is-necessary">
+    <a href="#encoding-can-shrink-tables-but-do-only-what-is-necessary">
+	Encoding can shrink tables, but do only what is necessary
+    </a>
+</h3>
+<p>This often leads to data duplication. In our example, the string &ldquo;SCHECK IN CENTER KA DURLACH&rdquo; is repeated 36 times. For the amount of data shown in our example this does not matter.</p>
+<p>Even in the one million rows example in [Coding fields for great profit]({% link _posts/2020-09-18-mysql-encoding-fields-for-great-profit.md %}) the gain is not critial, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.</p>
+<h3 id="the-star-and-the-snowflake">
+    <a href="#the-star-and-the-snowflake">
+	The Star and the Snowflake
+    </a>
+</h3>
+<p>When we talk about OLTP databases, we often talk about normalization, and aiming for the 3rd normal form as an idealized schema to work from. For transactional data that is a good model and a good goal.</p>
+<p>In data warehousing, this is obviously not the case - our data has a time dimension, and unlike OLTP, in a data warehouse we are interested in how things were then, not what they are like now. In our example, we are interested in how much we spent for the fuel back then, and not what the same amount would cost us now.</p>
+<p>Conversely, in a data warehouse the logged data usually does not change much after the fact: there can be</p>
+<ul>
+<li>backfilling, due to data arriving late,</li>
+<li>backpropagation of newly added attributes,</li>
+<li>or there can be corrections due to transactions changed after the fact at the business level</li>
+</ul>
+<p>All of these require us to be able to rewrite our logs for some time window. But eventually that window closes and the data becomes immutable, and we can seal it (run <code>OPTIMIZE TABLE</code>, and apply encoding and page level compression).</p>
+<p>In our example, once money is spent, it would not come back (or if, in a second corrective reverse booking), and the amounts booked would never change. The log records are immutable from the outset.</p>
+<p>Things that OLTP structures need to avoid by normalizing - insert, update and delete paradox - do not happen to us in the same way. Also, because our data does not change much (if ever), but grows a lot over time, it is useful to invest the CPU cycles for data compression (using encoding at the data model level, and using page compression at the database engine level, in this order) once the data can be sealed.</p>
+<p>The classical structure of a data warehouse is therefore the star, in which we have a fact table, and a number of category tables aiding binning, plus a number of generated daily/weekly/monthly preaggregates as outputs. All of these auxiliary tables group around the fact table, linked to it in some way, hence the &ldquo;Star Schema&rdquo;.</p>
+<p>In our example, we have the <code>b</code> fact table, and only a single binning input table, <code>moneysinks</code>. More complicated warehouses can have many more of these.</p>
+<p>We have no materialized output tables (<code>expenses per days</code> or similar), because our data set is small enough to do all of this ad-hoc. In larger warehouses, materializing aggregates that help to speed up reports is useful.</p>
+<p>If you add categories of catgeories, or produce multidimensional aggregates, you go from Star to Snowflake Schema.</p>
+<blockquote>
+<p>The Star and the Snowflake are the normal forms for Data Warehosues, Normalization as practiced in transactional databases is not helpful, 3NF is not a thing.</p>
+</blockquote>
+<h3 id="time-dimensional-tables-in-oltp-schemas">
+    <a href="#time-dimensional-tables-in-oltp-schemas">
+	Time Dimensional Tables in OLTP schemas
+    </a>
+</h3>
+<p>Almost every OLTP schema earning money has some tables in it that have a time dimension. It is often visble either in the table name (<code>shop.sales_202009</code>) or in the tables primary key - often a compound primary key which contains a pair of an id and a date.</p>
+<p>It will be visible in any case, if you think about each tables growth.</p>
+<blockquote>
+<p>Assume unchanging conditions - a webshop with a mostly fixed number of articles, and a mostly fixed number of customers buying at a fixed rate, which tables will stay at a fixed size, and which tables will grow without bounds?</p>
+<p>Solution: It is the <code>orders</code> table.</p>
+<p>Find these unbounded structures in your schema.</p>
+</blockquote>
+<p>At the heart of every OLTP schema there is a data warehouse that is struggling to get out. You get it out by completing the data lifecycle for the OLTP phase of things and establishing an <em>Extract, Transform and Load cycle (ETL cycle)</em>.</p>
+<p>In planning a data warehouse, you identify tables without growth boundaries, and decide which data attributes you want to record as literal data for the warehouse.</p>
+<p>In the Extract phase you create a monster join you resolve all id values present in your normalized data, extract the literal attributes of interest, and push them into a CSV or some staging table.</p>
+<p>Data in the OLTP system can now be deleted by the OLTP systems data lifecycle management without concern for other, non-transactional business functions: we have isolated the non-transactional concerns and confined them to the Extraction process (which will have to be adjusted when the OLTP schema changes, so we are a stakeholder in the OLTP schema evolution).</p>
+<p>This isolation of concerns means that the OLTP system of our shop can now delete or archive orders at will after fulfillment or whatever other concerns the transactional system has to serve. Our non-transactional needs are all served from the data gathered in the Extract phase of the ETL process.</p>
+<p>The staged extracted values can now be cleaned, categorized and aggregated, depending on the demands from the non-transactional business concerns (statistics, business intelligence, decision making and so on).</p>
+<p>Identifying data warehousey tables in OLTP systems, and isolating the transactional and non-transactional business concerns is important to keep the OLTP system small and agile.</p>
+<p>Without taking the non-transactional, long term business functions out the OLTP system will grow without bounds, and ultimately transactional performance will suffer - the system will choke on itself. The non-transactional concerns not being isolated and bundled will also impede OLTP schema evolution and choke the development process on the money-earning side.</p>
+<h3 id="data-lifecycle-management-at-the-warehouse">
+    <a href="#data-lifecycle-management-at-the-warehouse">
+	Data Lifecycle Management at the Warehouse
+    </a>
+</h3>
+<p>Fact tables in the data warehouse have a time dimension, and as time passes, they will accumulate more data. In order to manage our data warehouse, we will also have to complete the data lifecycle on this side of the ETL boundary, and establish some deletion policy.</p>
+<p>Queries to the data warehouse table are often time bounded (&ldquo;How did sales change in the last 2 years&rdquo;) and binned by - among other things - a time dimension (&ldquo;How did demand change month-over-month&rdquo;, &ldquo;Which of our products are seasonal?&quot;).</p>
+<p>Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL [when using partitions]({% link _posts/2020-09-24-mysql-deleting-data.md %}).</p>
+<p>In data warehouses, partitions are usually on a time value as the first dimension. That is, we partition our data set by year, month or day and we delete data by dropping old partitions. This leaves all internal B-Trees in all the partitions subtables untouched and as they have been after the import, optimization and compression.</p>
+<p>As queries also have a time dimension, the optimizer profits from this structure as well. It can exclude entire partitions from consideration, making the subset of data to look at much smaller.</p>
+<h3 id="daily-snapshots-are-slow-but-simple">
+    <a href="#daily-snapshots-are-slow-but-simple">
+	Daily Snapshots are slow, but simple
+    </a>
+</h3>
+<p>A daily snapshot ETL import is slow - you do not get realtime data updates - but simple to implement retroactively on existing structures. Realtime structures require more engineering, but can be crafted on top of existing architectures as well. We are going to look at them in some later examples.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

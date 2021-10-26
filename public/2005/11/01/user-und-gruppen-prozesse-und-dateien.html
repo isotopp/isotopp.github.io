@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - User und Gruppen, Prozesse und Dateien</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="user-und-gruppen-prozesse-und-dateien-page">
+	<h1 class="title">
+            User und Gruppen, Prozesse und Dateien
+	</h1>
+
+	<p>Heute im Irc stellte eine Teilnehmerin den folgenden Fragenschwall:</p>
+<blockquote>
+<p>Wie finde ich eigentlich heraus, was für Gruppen es auf einem
+Linuxsystem gibt? Wie füge ich da jemanden hinzu? Lege ich den
+zuerst als User an, ganz normal? Und: Wenn ich einen Ordner
+anlege, der nur für eine bestimmte Gruppe zugänglich sein
+soll, mache ich das doch über File Permissions, oder habe ich
+falsch gedacht?</p>
+</blockquote>
+<p>Die offensichtliche Antwort, das Nachsehen in <code>/etc/group</code>,
+funktioniert bei modernen Unixen nicht mehr zwingend, denn
+Gruppendefinitionen können nicht nur in lokalen Dateien stehen,
+sondern auch aus dem NIS, dem NIS+, einem LDAP oder einem Active
+Directory kommen.</p>
+<p>Die folgenden Dinge wurden mit Suse Linux 10.0 getestet, sollten
+so aber auch auf Solaris funktionieren.</p>
+<h2 id="name-service-switch">
+    <a href="#name-service-switch">
+	Name Service Switch
+    </a>
+</h2>
+<p>Genauer gesagt haben moderne Unixe ein Subsystem namens Name
+Service Switch. Der Name Service Switch erlaubt es dem System,
+für Benutzer, Gruppen, Hostnamen, Protokolle, Service und noch
+ein paar Dinge beliebige Datenquellen zu verwenden, für die
+vorgefertige Module existieren.</p>
+<p>Der Name Service Switch wird durch die Datei
+<code>/etc/nsswitch.conf</code> gesteuert. Dort findet man für jede
+Datenbasis (passwd, group, hosts, &hellip;) einen einzeiligen
+Eintrag. Nach dem Namen der Datenbasis werden durch Leerzeichen
+getrennt die Namen der Datenquellen aufgelistet, und zwar in der
+Reihenfolge, in der sie durchsucht werden sollen.</p>
+<pre><code class="language-console" data-lang="console">passwd: files nis
+shadow: files nis
+group: files nis
+hosts: files dns
+</code></pre><p>Diese Beispielkonfiguration holt ihre Benutzerdaten für Passwd-
+und Shadow-Datei sowie die Gruppen aus den lokalen Dateien und
+danach aus dem NIS, und sie ermittelt Hostnamen aus der lokalen
+<code>/etc/hosts</code> und danach aus dem DNS.</p>
+<p>Die Syntax für die <code>/etc/nsswitch.conf</code> ist noch ein wenig
+komplizierter. Zwischen den Einträgen für Datenquellen können in
+eckigen Klammern nämlich noch Anweisungen für das Verhalten in
+Fehlerfällen stehen. Auf diese Weise sind Setups möglich, die
+ihre Daten normalerweise NUR aus dem NIS ziehen, aber aus den
+lokalen Dateien, falls das NIS einmal nicht erreichbar sein
+sollte.</p>
+<p>Die Datenbasen des Name Service Switch lassen sich mit dem
+Kommando <code>getent</code> testen. <code>getent group</code> listet zum Beispiel die
+gesamte <code>group</code>-Datenbasis auf, <code>getent group disk</code> listet nur
+den Eintrag für die Gruppe <code>disk</code> auf.</p>
+<p>Wir merken uns:</p>
+<blockquote>
+<p>In einem modernen Unix mit Name Service Switch ist es also
+falsch, eine Liste der Gruppen des Systems durch Auslesen von
+<code>/etc/group</code> zu erzeugen. Stattdessen muß die Liste mit
+<code>getent group</code> erzeugt werden.</p>
+</blockquote>
+<p>Das Interface des Name Service Switch ist read-only. Es erlaubt
+nicht die virtualisierte Erzeugung von Gruppen. Schreibzugriffe
+müssen also weiterhin manuell in die richtige Datenbank geroutet
+werden, also in eine lokale Datei oder in ein LDAP geschrieben
+werden.</p>
+<h2 id="prozesse-und-dateien">
+    <a href="#prozesse-und-dateien">
+	Prozesse und Dateien
+    </a>
+</h2>
+<p>User und Gruppen sind nur dann von Bedeutung, wenn sie auch vom
+Systemteilen verwendet werden. Systemteile sind Subjekte, also
+Prozesse, und Objekte, also Dateien.</p>
+<p>Ein Prozeß in Unix hat eine effektive User-ID und eine effektive
+primäre Gruppen-ID. Er kann außerdem eine Reihe von weiteren
+sekundären Gruppen-IDs enthalten.</p>
+<p>Das Kommando &ldquo;id&rdquo; listet die User- und Gruppen-IDs eines Benutzers:</p>
+<pre><code class="language-console" data-lang="console">kris@dhcp-179:~&gt; id -a
+uid=1000(kris) gid=100(users) Gruppen=16(dialout),33(video),100(users)
+</code></pre><p>Der Benutzer kris hat also die User-ID 1000 und die primäre
+Gruppen-ID 100. Er gehört außerdem den Gruppen 16 (dialout) und
+33 (video) an.</p>
+<p>Wenn dieser Prozeß eine Datei erzeugt, dann gehört diese Datei
+ebenfalls dem Benutzer 1000 (kris) und sie wird standardmäßig
+(&ldquo;System V Semantik&rdquo;) der Gruppe 100 (users) angehören, denn
+dies sind die primäre User- und Gruppen-ID dieses Prozesses.</p>
+<p>Es gibt eine andere Betriebsart für Dateisysteme (&ldquo;BSD Semantik&rdquo;), bei der neu angelegte Dateien nicht die primäre Gruppe des anlegenden Prozesses erben, sondern die Gruppe des unmittelbar übergeordneten Verzeichnisses. Man kann das ext2-Dateisystem komplett auf BSD-Semantik umstellen, indem man es mit der Option &ldquo;grpid&rdquo; (alternativ &ldquo;bsdgroups&rdquo;) mounted - der Default ist &ldquo;nogrpid&rdquo; (alternativ &ldquo;sysvgroups&rdquo;). In der Betriebsart &ldquo;nogrpid&rdquo; kann man für ein einzelnes Verzeichnis BSD Semantik wählen, indem man das SGID-Bit an dem Verzeichnis setzt. Hier ein Beispiel:</p>
+<pre><code class="language-console" data-lang="console">dhcp-179:~ # lvcreate -l 10 -n test system
+Logical volume &quot;test&quot; created
+
+dhcp-179:~ # mke2fs -q /dev/system/test
+dhcp-179:~ # mount -o nogrpid /dev/mapper/system-test /export/test
+
+dhcp-179:~ # mkdir /export/test/bla /export/test/fasel
+dhcp-179:~ # chown kris:video /export/test/bla /export/test/fasel
+dhcp-179:~ # chmod g+s /export/test/fasel
+
+dhcp-179:~ # su - kris
+kris@dhcp-179:~&gt; cd /export/test
+
+kris@dhcp-179:/export/test&gt; touch bla/eins fasel/zwei
+kris@dhcp-179:/export/test&gt; ls -l bla/eins fasel/zwei
+-rw-r--r-- 1 kris users 0 2005-11-01 18:59 bla/eins
+-rw-r--r-- 1 kris video 0 2005-11-01 18:59 fasel/zwei
+
+kris@dhcp-179:/export/test&gt; ls -ld bla fasel
+drwxr-xr-x 2 kris video 1024 2005-11-01 18:59 bla
+drwxr-sr-x 2 kris video 1024 2005-11-01 18:59 fasel
+</code></pre><p>In diesem Beispiel wird das logical Volume <code>test</code> in der Volume
+Group <code>system</code> angelegt und mit dem ext2-Dateisystem formatiert.
+Das Dateisystem wird mit der Option <code>nogrpid</code> als /export/test
+gemountet, was der Default für ext2 ist (und bei reiserfs
+unveränderlich immer der Fall ist).</p>
+<p>In <code>/export/test</code> werden die Verzeichnisse <code>bla</code> und <code>fasel</code> anlegt
+und beide auf <code>kris:video</code> gesetzt. An <code>fasel</code> wird zusätzlich noch
+das SGID-Bit gesetzt.</p>
+<p>Legt der User <code>kris:users</code> nun in <code>bla</code> und <code>fasel</code> jeweils eine Datei
+an, wird die Datei in <code>bla</code> (System V Semantik, bzw. nogrpid) der
+Gruppe users angehören. Die Datei in <code>fasel</code> (BSD Semantik, durch
++s umgeschaltet) erbt ihre Gruppenzugehörigkeit jedoch vom
+übergeordneten Verzeichnis, gehört also <code>kris:video</code>.</p>
+<p>Dasselbe Beispiel wie oben für ein Dateisystem, das mit <code>grpid</code>
+gemountet wurde, ergibt dann das folgende Bild:</p>
+<pre><code class="language-console" data-lang="console">kris@dhcp-179:/export/test&gt; touch bla/eins fasel/zwei
+kris@dhcp-179:/export/test&gt; ls -ld bla fasel
+drwxr-xr-x 2 kris video 1024 2005-11-01 19:04 bla
+drwxr-sr-x 2 kris video 1024 2005-11-01 19:04 fasel
+
+kris@dhcp-179:/export/test&gt; ls -l bla/eins fasel/zwei
+-rw-r--r-- 1 kris video 0 2005-11-01 19:04 bla/eins
+-rw-r--r-- 1 kris video 0 2005-11-01 19:04 fasel/zwei
+</code></pre><p>Das SGID-Bit am Verzeichnis hat dann also keine Wirkung mehr,
+weil das Dateisystem an sich hier schon BSD-Semantik hat.</p>
+<p>Reiserfs kennt die Optionen <code>grpid</code> und <code>nogrpid</code> nicht und
+verhält sich immer wie ein ext2-Dateissystem mit <code>nogrpid</code>.</p>
+<p>Wie kann man nun ein Verzeichnis einer Gruppe schenken? Nun, das
+geht einfach mit chgrp:</p>
+<pre><code class="language-console" data-lang="console">kris@dhcp-179:~&gt; mkdir keks
+kris@dhcp-179:~&gt; chgrp video keks
+
+kris@dhcp-179:~&gt; chgrp disk keks
+chgrp: Ändern der Gruppe für „keks“: Die Operation ist nicht erlaubt
+
+kris@dhcp-179:~&gt; chgrp users keks
+</code></pre><p>Offenbar kann man ein Verzeichnis nur Gruppen schenken, denen
+man selbst angehört. Das ist deswegen so, weil Unix die
+Zuordnung von Quotas zu Benutzern und zu Gruppen erlaubt. Indem
+man eine Datei einer Gruppe schenkt, belastet die Datei die
+Quota der Gruppe und natürlich darf man nur die Quota einer
+Gruppe belasten, der man auch angehört.</p>
+<p>Wenn man eine Datei in einem Verzeichnis mit BSD-Semantik
+anlegt, dann erbt diese Datei jedoch immer die Gruppe des
+Verzeichnisses, selbst dann, wenn der Benutzer, der die Datei
+anlegt, nicht dieser Gruppe angehört - hier kann dann ein
+fremder Benutzer die Quota einer Gruppe belasten, der er nicht
+angehört. Es ist also Aufgabe einer Gruppe, die Zugriffsrechte
+an ihren Verzeichnissen so zu setzen, daß dort nicht fremde
+Leute Daten ablegen können und so die Quota der Gruppe belasten.</p>
+<p>Es ist außerdem möglich (wenn auch unwahrscheinlich), daß ein
+Benutzer so eine Datei anlegen kann, die er später nicht mehr
+lesen darf.</p>
+<p>Das Szenario ist konstruiert, aber technisch möglich:</p>
+<pre><code class="language-console" data-lang="console">## Kris legt ein Verzeichnis an
+
+kris@dhcp-179:~&gt; mkdir keks
+kris@dhcp-179:~&gt; chmod a+rwx,g+s keks
+kris@dhcp-179:~&gt; chgrp video keks
+kris@dhcp-179:~&gt; ls -ld keks
+drwxrwsrwx 2 kris video 48 2005-11-01 19:17 keks
+
+## kdebuild legt dort eine Datei an
+
+kdebuild@dhcp-179:/home/kris/keks&gt; umask 0727
+kdebuild@dhcp-179:/home/kris/keks&gt; touch bla
+kdebuild@dhcp-179:/home/kris/keks&gt; ls -l bla
+----r----- 1 kdebuild video 0 2005-11-01 19:18 bla
+kdebuild@dhcp-179:/home/kris/keks&gt; cat bla
+cat: bla: Keine Berechtigung
+</code></pre><p>Das ist für ein Rechtesystem eine unschöne Situation. Fällt
+jemandem ein sinnvoller Anwendungszweck für diese Eigenschaft
+des Unix-Rechtesystems ein?</p>
+<p>Wir merken uns:</p>
+<blockquote>
+<p>Um ein Verzeichnis zu erzeugen, auf das nur eine bestimmte
+Gruppe Zugriff hat, legen wir das Verzeichnis an und schenken
+es der Gruppe mit <code>chgrp</code>, dann setzen wir die Zugriffsrechte
+auf <code>rwxrwx---</code> oder ähnlich.</p>
+<p>Wenn wir außerdem das SGID-Bit am Verzeichnis mit <code>chmod g+s …</code> setzen, werden auch alle Dateien im Verzeichnis der
+Gruppe gehören. Um ein Verzeichnis einer Gruppe schenken zu
+können, muß man selbst Mitglied der Gruppe sein.</p>
+</blockquote>
+<h2 id="zugriffsrechte-an-dateien">
+    <a href="#zugriffsrechte-an-dateien">
+	Zugriffsrechte an Dateien
+    </a>
+</h2>
+<p>In den letzten 30 Jahren war es in Unix immer so, daß eine Datei
+einen Eigentümer und eine Eigentümer-Gruppe hatte. Rechte wurden
+für den Eigentümer und die Eigentümer-Gruppe vergeben. Prozesse
+hatten ebenfalls einen Eigentümer und eine Gruppe, und Unix hat
+stur den folgenden simplen Test durchgeführt, um zu bestimmen,
+welche Rechte für eine Datei gelten:</p>
+<ol>
+<li>Stimmen der Datei-Eigentümer und der Prozeß-Eigentümer
+überein? Wenn ja, dann gelten die User-Rechte, also das erste
+rwx-Tripel. Das ist selbst dann der Fall, wenn in einem anderen
+Tripel bessere Rechte definiert sind.</li>
+<li>Stimmen die Datei-Eigentümergruppe und eine der primären oder
+sekundären Gruppen eines Prozesses überein? Wenn ja, dann gelten
+die Gruppen-Rechte, also das zweite rwx-Tripel. Das ist selbst
+dann der Fall, wenn im 3. Tripel bessere Rechte definiert
+sind.</li>
+<li>In allen anderen Fällen gelten die Rechte aus dem 3. Tripel.</li>
+</ol>
+<h2 id="access-control-lists-acls">
+    <a href="#access-control-lists-acls">
+	Access Control Lists (ACLs)
+    </a>
+</h2>
+<p>Mit modernen Unixen ist es jedoch alles viel komplizierter
+geworden, denn nun können im Prinzip an einer Datei selber auch
+viele Benutzer- und Gruppenrechte kleben.</p>
+<p>Zum Glück nicht per Default.</p>
+<p>Damit die Lage kompliziert wird, muß man das betreffende
+Dateisystem mit der Option <code>acl</code> mounten. Im Beispiel erzeugen
+wir zur Abwechslung mal ein reiserfs und mounten dies mit der
+passenden Option. Mit den Kommandos <code>getfacl</code> und <code>setfacl</code> (&ldquo;get
+and set a file access control list&rdquo;) können wir dann lustig
+individuelle Zugriffsrechte vergeben.</p>
+<pre><code class="language-console" data-lang="console">dhcp-179:~ # lvcreate -l 10 -n test system
+Logical volume &quot;test&quot; created
+
+dhcp-179:~ # mkreiserfs -q /dev/system/test
+mkreiserfs 3.6.18 (2003 www.namesys.com)
+
+dhcp-179:~ # mount -o acl /dev/mapper/system-test /export/test
+dhcp-179:~ # cd /export/test
+
+dhcp-179:/export/test # touch keks
+dhcp-179:/export/test # chmod 000 keks
+dhcp-179:/export/test # setfacl -m u:kris:rwx,mask::rwx,g:video:rwx,u:kdebuild:rx keks
+
+dhcp-179:/export/test # ls -l keks
+----rwx---+ 1 root root 0 Nov 1 19:26 keks
+
+dhcp-179:/export/test # getfacl keks
+# file: keks
+# owner: root
+# group: root
+user::---
+user:kris:rwx
+user:kdebuild:r-x
+group::---
+group:video:rwx
+mask::rwx
+other::---
+</code></pre><p>Eine Datei mit einer ACL wird von ls mit einem &ldquo;+&quot;-Zeichen
+markiert. Statt den Rechten der Gruppe werden dann im  zweiten
+Tripel die Rechte der Mask angezeigt.</p>
+<p>Die Mask limitiert alle anderen Zugriffsrechte an der Datei
+ausgenommen den Eigentümer und Others. Sie legt also quasi die
+maximalen Rechte fest, die irgendjemand außer dem Eigentümer an
+der Datei haben kann, wenn er nicht die Defaultrechte bekommt.</p>
+<p>Dies ist ein Kompatibilitätsmechanismus, der meistens das
+korrekte Verhalten von Programmen bewirken soll, die nichts von
+Zugriffsrechten wissen - sie bekommen durch Auslesen des zweiten
+Rechtetripels einen etwas optimistischen View auf die Rechte,
+die sie wahrscheinlich haben werden. :)</p>
+<p>Das Kommando <code>setfacl</code> kann jetzt die Rechte an einer Datei
+modifizieren. Die Option <code>-m</code> (modify) bewirkt das.</p>
+<p>Im Beispiel werden Rechte für Benutzer (&ldquo;u:&quot;) und Gruppen (&ldquo;g:&quot;)
+sowie eine Mask (&ldquo;m:&quot;) definiert.</p>
+<p>Liest man die ACL mit getfacl aus, wird recht schnell deutlich,
+was hier geschieht:</p>
+<p>Der Eigentümer der Datei hat an ihr keine Rechte, der User kris
+hat die Rechte rwx, der User kdebuild hat die Rechte rx, die
+Defaultgruppe hat keine Rechte, die Gruppe video hat die Rechte
+rwx, und die Maske schränkt die Rechte von kris, kdebuild, video
+und der Defaultgruppe nicht ein.</p>
+<p>Der Rest der Welt hat keine Rechte an dieser Datei.</p>
+<p>Wir merken uns:</p>
+<blockquote>
+<p>Dateisysteme, die mit der Option &ldquo;acl&rdquo; gemounted wurden,
+können beliebig komplizierte Rechteregeln pro Datei haben. Es
+ist mit einem &ldquo;+&rdquo; an der Datei zu erkennen, ob dies der Fall
+ist. Diese ACLs können mit setfacl editiert und mit getfacl
+gelesen werden.</p>
+</blockquote>
+<h2 id="acls-an-verzeichnissen">
+    <a href="#acls-an-verzeichnissen">
+	ACLs an Verzeichnissen
+    </a>
+</h2>
+<p>Um die Sache noch komplizierter zu machen, haben Verzeichnisse
+<em>zwei</em> ACLs:</p>
+<ul>
+<li>Eine normale wie wir sie schon kennen, die für das Verzeichnis
+selber gilt,</li>
+<li>eine <em>default</em> ACL, die für alle Verzeichnisse
+und Dateien gilt, die in dem Verzeichnis erzeugt werden.</li>
+</ul>
+<p>Werte für die Default-ACL werden festgelegt, indem man sie beim
+&ldquo;setfacl&rdquo; mit &ldquo;d:&rdquo; prefixed, also &ldquo;d:u:kris:rwx&rdquo;,
+&ldquo;d:g:video:rwx&rdquo; und &ldquo;d:m::rwx&rdquo;.</p>
+<h2 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h2>
+<p>Wir merken uns:</p>
+<blockquote>
+<p>In den allermeisten Fällen tut das Unix-Rechtesystem mit den
+drei Tripeln &ldquo;ugo&rdquo; und den drei Rechten &ldquo;rwx&rdquo; genau das, was
+man von ihm will.</p>
+<p>Sehr selten braucht man was komplizierteres, und dann steht es
+zur Verfügung.</p>
+<p>Selbst dann ist das Rechtesystem von Unix noch einfacher und
+übersichtlicher zu warten als das von Windows, getreu dem
+Motto &ldquo;Simple things should be simple, and complex things
+should be possible.&rdquo;</p>
+</blockquote>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

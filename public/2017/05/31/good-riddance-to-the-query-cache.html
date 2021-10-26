@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Good Riddance to the Query Cache</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="good-riddance-to-the-query-cache-page">
+	<h1 class="title">
+            Good Riddance to the Query Cache
+	</h1>
+
+	<p><a href="http://mysqlserverteam.com/mysql-8-0-retiring-support-for-the-query-cache/" target="_blank" rel="noopener">MySQL 8.0 will be retiring support for the Query Cache</a>
+
+.
+The MySQL Query cache is a result cache: The MySQL server will
+record all result sets that are small enough to keep in the
+cache, and a hash of the query that produced it.</p>
+<p>If a query meets certain requirements, and the hash of the same
+query string is ever seen again, the query will not be actually
+parsed and executed, but the same result set will be replayed.
+There are mechanisms in place that prevent uncacheable queries
+from being cached in the first place, and that prune outdated
+data from the query cache.</p>
+<p>The query cache exists in the first place, because it was easier
+to create than to teach every PHP CMS developer in the world
+about sessions. So instead of retrieving the current background
+color of the current theme over and over from the database, the
+query cache recognizes the current theme color query again and
+just replays &ldquo;green&rdquo; over and over. But that was
+then.</p>
+<p>The Query Cache was a hash, with a global lock. Whenever a write
+happens to a table, all cached results related to this table
+need to be pruned from the cache. For that, a global lock is
+taken out and all queries are being halted for the duration of
+the prune.</p>
+<p>On a busy server, and with a large query cache, the locking time
+can be long enough to matter. Typically, one would run <code>innotop -m Q -d 0.1</code> or similar, and suppress the display of idle queries.
+Typically a number of busy queries similar to the current load
+on the machine would be shown, so on a server with a load of 12
+one would see 10-14 busy running queries.</p>
+<p>Whenever there is a cache lock taken out and a prune going on,
+the queries would all be halted and pile up for a very short
+time. So on a server going at a brisk 4000-6000 queries per
+second, a few hundred would pile up for a very short time -
+innotop would show 10,12,10,14,532,10,9,11 queries and so on.
+This is called a flash pileup or flash pile.</p>
+<p>As the load grows, write rate increases or the query cache is
+sized up, the flash pile frequency goes up, and eventually you
+get ghost &ldquo;max connections&rdquo; messages in the server log. The
+solution is counterintuitive - increasing max connections won&rsquo;t
+help, increasing the query cache size would make it worse.
+Disabling the query cache will improve the situation by removing
+the cause for the lock and the lock itself.</p>
+<p>A similar thing happens on the upside of 11k QPS with the innodb
+Adaptive Hash index (AHI) for similar reasons on older versions
+of MySQL. Disabling the AHI (or upgrading to a non-broken
+version of MySQL) would help here.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

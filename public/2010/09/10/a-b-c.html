@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - &#39;a&#39; = &#39;b&#39; = &#39;c&#39;</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="a-b-c-page">
+	<h1 class="title">
+            &lsquo;a&rsquo; = &lsquo;b&rsquo; = &lsquo;c&rsquo;
+	</h1>
+
+	<p>Kurzer SQL WTF von heute:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;b&#39;</span>; 
+<span style="color:#ae81ff">0</span>
+
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;b&#39;</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;c&#39;</span>;
+<span style="color:#ae81ff">1</span>
+</code></pre></div><p>Warum ist das so?</p>
+<p>Im MySQL Sourcecode ist in sql/sql_yacc.yy definiert:</p>
+<pre><code class="language-console" data-lang="console">%left   EQ EQUAL_SYM GE GT_SYM LE LT NE IS LIKE REGEXP IN_SYM
+</code></pre><p>Damit ist der Operator EQ (das Vergleichheitszeichen) als links-assoziativ
+definiert. Vergleiche von Vergleichen sind also zugelassen,</p>
+<p><code>1 = 2 = 3</code> ist also ein zulässiges Konstrukt und es wird als <code>( 1 = 2 ) = 3</code> evaluiert.</p>
+<p>Statt links-assoziativ könnte es auch als rechts-assoziativ <code>1 = (2 = 3)</code>
+oder als nicht-assoziativ (ein Mehrfachvergleich ist unzulässig)
+definiert sein.</p>
+<p>Daher ist der boolsche Ausdruck <code>'a' = 'b'</code> offensichtlich falsch, also 0. Und
+damit wird <code>0 = 'c'</code> zu einem Vergleich eines Integers links mit einem
+Character rechts. In einem links-assoziativen Ausdruck bestimmt der linke
+Ausdruck den Typ, zu dem der rechte Teil des Ausdrucks hin konvertiert wird.
+Das <code>c</code> wird also zu einem Integer umgewandelt, also zu <code>0</code>. Damit ist
+<code>0 = 0</code> und das ist wahr, also <code>1</code>.</p>
+<p>Ist es ungewöhnlich, daß MySQL so etwas tut?</p>
+<p>Auch in Sybase und in Oracle ist das Symbol <code>EQ</code> (der
+Vergleichheitszeichen-Operator) ein <code>%left</code>.</p>
+<p>Und Oracle sagt
+<a href="http://download.oracle.com/docs/cd/B10501_01/appdev.920/a96624/02_funds.htm" target="_blank" rel="noopener">im Handbuch</a>
+
+:</p>
+<blockquote>
+<p>PL/SQL is case sensitive within character literals. For example, PL/SQL
+considers the literals &lsquo;Z&rsquo; and &lsquo;z&rsquo; to be different. Also, the character
+literals &lsquo;0&rsquo;..&lsquo;9&rsquo; are not equivalent to integer literals but can be used
+in arithmetic expressions because they are implicitly convertible to
+integers.</p>
+</blockquote>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

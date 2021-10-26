@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: Binding the ORM</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-binding-the-orm-page">
+	<h1 class="title">
+            MySQL: Binding the ORM
+	</h1>
+
+	<p>My task is to collect performance data about a single query, using <code>PERFORMANCE_SCHEMA</code> (P_S for short) in MySQL, to ship it elsewhere for integration with other data.</p>
+<p>In a grander scheme of things, I will need to define what performance data from a query I am actually interested in.
+I will also need to find a way to attribute the query (as seen on the server) to a point in the codebase of the client, which is not always easy when an ORM or other SQL generator is being used.
+And finally I will need to find a way to view the query execution in the context of the client code execution, because the data access is only a part of the system performance.</p>
+<p>This is about marking a query so that it can be identified in source and attributed to its origin in the codebase.</p>
+<p>In my scenario, I have control over the ORM or DAO.
+I can look at the stackframe, identify the caller of the <code>execute</code> function and put filename and line number or other identifying information into the generated query text.
+I could also get identifiers (&quot;<a href="https://github.com/opentracing/specification/blob/master/specification.md" target="_blank" rel="noopener">tracing ids</a>
+
+&quot;) from the caller and pass them on, so the query execution can be a child span of the ORM call that made the SQL and ran it.</p>
+<p>What will work?</p>
+<h1 id="comments-are-stripped-from-p_s">
+    <a href="#comments-are-stripped-from-p_s">
+	Comments are stripped from P_S
+    </a>
+</h1>
+<p>Let&rsquo;s try comments first.
+The <a href="https://dev.mysql.com/doc/refman/8.0/en/comments.html" target="_blank" rel="noopener">manual knows</a>
+
+ three kinds of comments in MySQL:</p>
+<ul>
+<li><code>/* ... */</code> C-like comments.</li>
+<li><code># ...</code> Shell-like comments.</li>
+<li><code>-- ...</code> Not quite SQL-like comments.</li>
+</ul>
+<p>With preserved comments I could put identifying information into the query string, and later extract it from P_S.
+I could use this information to attribute the query and link it to its origin in code.</p>
+<p>In one connection, I issue</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (kris) <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#75715e">/* keks */</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t;m t;
+...
+<span style="color:#ae81ff">8192</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>The result set is irrelevant, but I put a comment with <code>/* ... */</code> into the query string.</p>
+<p>In P_S, I find</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (performance_schema) <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> sql_text <span style="color:#66d9ef">from</span> events_statements_history <span style="color:#66d9ef">where</span> thread_id <span style="color:#f92672">=</span> <span style="color:#ae81ff">47</span> <span style="color:#66d9ef">order</span> <span style="color:#66d9ef">by</span> event_id <span style="color:#66d9ef">desc</span> <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">1</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> sql_text         <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">select</span>  <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">------------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>The comment has been stripped, you can still see the double spaces.</p>
+<p>Old fashioned SQL comments and shell comments seem to die already in the client:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (kris) <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#75715e">-- keks
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">3</span>;
+...
+<span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (kris) <span style="color:#f92672">&gt;</span> <span style="color:#f92672">&lt;</span><span style="color:#66d9ef">cursor</span> up<span style="color:#f92672">&gt;</span>
+mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (kris) <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span>  <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> t <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">3</span>;
+</code></pre></div><p>The same happens with Shell comments: Of course, again, the comment is not in P_S.</p>
+<p>It is unclear why comments are stripped, and where.
+Maybe it is a vestige from the statement conditioning that was installed as a pre-stage to the late query cache, bless its rotten soul.</p>
+<p>There seem to be two mechanisms, one for SQL and Shell comments, and one for C comments:
+When looking at the client history, the Shell and SQL  comments are not recalled by the editor, but the C comment is.</p>
+<p>This difference in treatment makes some sense, because MySQL uses magic C comments to control statement parsing for compatibility: <code>SELECT /*! 80000 NEW_KEYWORD */</code> is parsed as a <code>SELECT</code> by MySQL before version 8.0.0 and as <code>SELECT NEW_KEYWORD</code> by MySQL 8.0.0 and higher. This allows <code>mysqldump</code> and other programs to emit SQL code that degrades gracefully on older versions of MySQL.</p>
+<p>Similar syntax, <code>/*+ ...*/</code> is used to control optimizer hints.</p>
+<h1 id="new-query-attributes">
+    <a href="#new-query-attributes">
+	New: Query attributes
+    </a>
+</h1>
+<p>Query Attributes are a newfangled thing (8.0.23 or newer) that allow a client to annotate a query.
+The annotations are preserved in the server and are being made available in some contexts, but they do nothing.</p>
+<p><a href="https://dev.mysql.com/doc/refman/8.0/en/query-attributes.html" target="_blank" rel="noopener">The manual</a>
+
+ explains this:</p>
+<ul>
+<li>Attributes are defined prior to sending a statement.</li>
+<li>They exist until the statement ends.</li>
+<li>While they exist, they can be accessed on the server side.</li>
+</ul>
+<p>The examples given are exactly my use-case:
+Transporting identifying information from the client into the sevrer, or injecting control information for a plugin from the client into the server in order to affect query processing in the server.</p>
+<p>Query Attributes do nothing in the server.
+The server does not look at them.</p>
+<p>Query Attributes are supported by the C-API client and the MySQL command line client.
+Not much support exists elsewhere, yet.</p>
+<p>The basic exercise to check functions works:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (mysql) <span style="color:#f92672">&gt;</span> INSTALL COMPONENT <span style="color:#e6db74">&#34;file://component_query_attributes&#34;</span>;
+...
+mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (mysql) <span style="color:#f92672">&gt;</span> query_attributes n1 v2 n2 v3
+mysql [localhost:<span style="color:#ae81ff">8025</span>] <span style="color:#960050;background-color:#1e0010">{</span>msandbox<span style="color:#960050;background-color:#1e0010">}</span> (mysql) <span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> 
+ <span style="color:#f92672">-&gt;</span> mysql_query_attribute_string(<span style="color:#e6db74">&#39;n1&#39;</span>) <span style="color:#66d9ef">AS</span> <span style="color:#e6db74">&#39;attr 1&#39;</span>,
+ <span style="color:#f92672">-&gt;</span> mysql_query_attribute_string(<span style="color:#e6db74">&#39;n2&#39;</span>) <span style="color:#66d9ef">AS</span> <span style="color:#e6db74">&#39;attr 2&#39;</span>, 
+ <span style="color:#f92672">-&gt;</span> mysql_query_attribute_string(<span style="color:#e6db74">&#39;n3&#39;</span>) <span style="color:#66d9ef">AS</span> <span style="color:#e6db74">&#39;attr 3&#39;</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">--------+--------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> attr <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> attr <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> attr <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------+--------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> v2     <span style="color:#f92672">|</span> v3     <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">--------+--------+--------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>The plugin component is also visible in memory map of <code>mysqld</code>:</p>
+<pre><code class="language-console" data-lang="console">kris@server:~$ grep query_attr /proc/94982/maps
+7f7590f5b000-7f7590f5c000 r--p 00000000 fd:00 221893305                  /home/kris/opt/mysql/8.0.25/lib/plugin/component_query_attributes.so
+7f7590f5c000-7f7590f5d000 r-xp 00001000 fd:00 221893305                  /home/kris/opt/mysql/8.0.25/lib/plugin/component_query_attributes.so
+7f7590f5d000-7f7590f5e000 r--p 00002000 fd:00 221893305                  /home/kris/opt/mysql/8.0.25/lib/plugin/component_query_attributes.so
+7f7590f5e000-7f7590f5f000 r--p 00002000 fd:00 221893305                  /home/kris/opt/mysql/8.0.25/lib/plugin/component_query_attributes.so
+7f7590f5f000-7f7590f60000 rw-p 00003000 fd:00 221893305                  /home/kris/opt/mysql/8.0.25/lib/plugin/component_query_attributes.so
+</code></pre><h1 id="where-to-go-from-here">
+    <a href="#where-to-go-from-here">
+	Where to go from here?
+    </a>
+</h1>
+<p>I can generate a query in a client I control, and annotate the query with identifying information.
+In my case this information will be</p>
+<ul>
+<li>A trace flag. If the query is to be traced, the trace flag will be present. The detault is: The query will not be traced.</li>
+<li>A set of three identifiers (alphanumeric strings: sha256 MACs, UUIDs or strings representing integer numbers). They are a root id, a parent id and a query id. These identifiers allow be to model a span/parent span relationship in a larger tracing context.</li>
+</ul>
+<p>I need to find a hook in the server for a plugin.
+The plugin must run after query execution, but with the execution plan, the query string and the P_S data for the query still present.
+I am not yet familiar with this, and need to check the current server about what is on offer.
+Maybe the hook that the audit plugin uses can be repurposed.</p>
+<p>If the trace flag is set, it will need to access</p>
+<ul>
+<li>the query attributes</li>
+<li>the query plan that ran, if possible (Need to check what <code>EXPLAIN FOR CONNECTION</code> does)</li>
+<li>the information about the query execution that can be gathered from P_S data</li>
+</ul>
+<p>It needs to transform this information into a single serialized form, for example a JSON string, and then exfil this in a way that does not block the server.</p>
+<p>The generic way to do this in my environment has in the past been to send a UDP packet to localhost.
+UDP to localhost is considered non-lossy, limited to 64K and dropping the data if the listener is not present.
+A file write to an append-only file may also write, if there is a rotation/truncation mechanism.</p>
+<p>I will then need to take the JSON in my client, transform it some more and send it to a tracing consumer, eg Jaeger, Lightstep, or in my case, Honeycomb.</p>
+<p>The trace data will there be joined with spans from other components, including spans around the ORM that made the SQL and the code that called into the ORM.
+This will allow to view the context of the query without having to grep for it, use modern web tools to analyze query execution in the context that generated it and generally unify SQL debugging with other application debugging.</p>
+<p>This makes the need for specialized &ldquo;Database Performance Monitoring&rdquo; (DPM) software go away, at least for individual developers.
+A DPM can still be useful for operational tasks, but these are usually served by telegrams MySQL collector, Prometheus and Grafana just fine (and these usually scale better than a DPM).</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

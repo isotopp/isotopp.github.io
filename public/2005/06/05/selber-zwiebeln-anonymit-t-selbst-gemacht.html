@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Selber Zwiebeln - Anonymität selbst gemacht</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="selber-zwiebeln-anonymit%C3%A4t-selbst-gemacht-page">
+	<h1 class="title">
+            Selber Zwiebeln - Anonymität selbst gemacht
+	</h1>
+
+	<p>Projekt 300 ist der Versuch, die 300 GB Quota pro Monat, die mit dem
+kleinsten Strato Rootserver mitkommen, auszunutzen. Weil dies zu leicht ist,
+sind die Nebenbedingungen &ldquo;legal&rdquo; und &ldquo;sinnvoll&rdquo;. Mit http und Mail komme
+ich bei der Maschine so auf 15-20 GB pro Monat. Also habe ich einen
+Binary-freien Newsserver in Betrieb genommen und habe derzeit
+NNTP-Verbindungen zu ca. 50 weiteren Maschinen. Auf diese Weise komme ich
+auf Platz 170 der Weltrangliste der News-Server und ca. 30 weitere GB
+Traffic im Monat. Es müsse also neue Projekte her, um die Maschine über die
+50 GB-Schwelle zu heben.</p>
+<p>So habe ich mich dafür entschieden, eine
+[tor-Node]({% link _posts/2005-06-02-die-welt-ist-meine-zwiebel.md %})
+auf dem Rechner einzurichten und bandbreitenlimitiert mitlaufen zu lassen.</p>
+<p>Die Installation von tor ist straightforward: Runterladen von
+<a href="http://www.monkey.org/~provos/libevent/" target="_blank" rel="noopener">libevent</a>
+
+,
+<a href="http://tor.eff.org/download.html" target="_blank" rel="noopener">tor</a>
+
+,
+<a href="http://sourceforge.net/project/showfiles.php?group_id=11118" target="_blank" rel="noopener">privoxy</a>
+
+ und
+<a href="http://tsocks.sourceforge.net/download.php" target="_blank" rel="noopener">tsocks</a>
+
+.</p>
+<p>Die Installation von libevent und tor folgt dem üblichen Dreiklang von &ldquo;sh
+configure&rdquo;, &ldquo;make&rdquo; und &ldquo;checkinstall&rdquo;. Für die Inbetriebnahme legt man am
+Besten einen User &ldquo;tor&rdquo; an, etwa mit</p>
+<pre><code class="language-console" data-lang="console"># useradd -u 520 -g 520 -c &quot;Tor Anonymous Service&quot; -d /var/lib/tor tor
+# passwd -l tor
+</code></pre><p>Mein tor sucht seine Konfiguration in <code>/usr/local/etc/tor/torrc</code>. Die
+Konfigurationsdatei habe ich komplett neu geschrieben, statt das
+mitgelieferte Sample zu verwenden, weil ich wissen wollte, welche Optionen
+es überhaupt gibt.</p>
+<p>Das Setup sieht so aus:</p>
+<pre><code class="language-console" data-lang="console">###
+### General Options
+###
+
+##
+## Bei mir läuft tor als User tor in der Gruppe tor, und als dauernd
+## laufender Dämon im chroot.
+##
+Group tor
+User tor
+RunAsDaemon 1
+
+##
+## Netzwerk Ressourcen
+## Diese Anweisungen begrenzen die Dauerbandbreite auf
+## ca. 50 KB/sec. Das sorgt dafür, daß die Karte nicht
+## vollläuft und daß das Kontingent für den Tag nicht
+## zu schnell aufgebraucht wird.
+##
+## Burst Bandwidth kann höher sein, das gibt dem ganzen
+## Setup ein wenig Elastizität.
+##
+BandwidthRate 50 KB
+BandwidthBurst 10 MB
+
+## Statt ein monatliches Trafficlimit festzulegen, habe ich
+## ein tägliches Limit definiert. Das sorgt dafür, daß die
+## Node den ganzen Monat über nützlich ist und nicht am Anfang
+## des Monats auf einmal alle Ressourcen weggelutscht werden
+## können.
+AccountingStart day 00:00
+AccountingMax 2500 MB
+
+## 900 Filedescriptioren für diese Node.
+MaxConn 900
+
+# Directory Server und Status
+DirFetchPeriod 20 minutes
+# DirServer address:port fingerprint
+DirServer 18.244.0.188:9031 FFCB 46DB 1339 DA84 674C 70D7 CB58 6434 C437 0441
+DirServer 18.244.0.114:80 719B E45D E224 B607 C537 07D0 E214 3E2D 423E 74CF
+DirServer 62.116.124.106:9030 847B 1F85 0344 D787 6491 A548 92F9 0493 4E4E B85D
+StatusFetchPeriod 15 minutes
+
+##
+## Dateien und Verzeichnisse
+##
+
+# Logging
+SafeLogging 1
+#Log debug file /var/log/tor/tor.log
+#Log info file /var/log/tor/tor.log
+Log notice file /var/log/tor/tor.log
+
+# PID File
+PIDFile /var/run/tor/tor.pid
+
+# Verzeichnisse
+DataDirectory /var/lib/tor
+
+###
+### Client Options
+###
+
+## Socks Server von außen erreichbar machen
+SOCKSBindAddress 127.0.0.1:8001
+SOCKSBindAddress 81.169.156.174:8001
+
+# Wir reden mit: all of QSC, uns selbst
+SOCKSPolicy accept 212.202.0.0/17
+SOCKSPolicy accept 81.169.156.174/32
+SOCKSPolicy accept 127.0.0.1/8
+SOCKSPolicy reject *:*
+
+# Unverified Nodes sind solche, die nicht im Directory bekannt sind
+# entry|exit|middle|introduction|rendezvous
+AllowUnverifiedNodes middle,rendezvous
+
+###
+### Server Options
+###
+
+# Port
+ORPort 8000
+
+# Admin-Info
+ContactInfo 1024D/32E7CFC3 2005-02-11 Kristian Koehntopp &lt;kris@koehntopp.de&gt;
+MyFamily koehntopp,strato
+Nickname koehntopp
+
+## Die Exit Policy legt fest, welche Dienste in welchen Ranges
+## von diesem Server angesprochen werden. Wir machen aus Prinzip
+## kein Mail (25), aber etwa ssh, imap, irc und natürlich web.
+##
+## Bekannte Filesharing Ports sind gesperrt.
+# Exit-Policy (Was kann dieser Server ansprechen?)
+ExitPolicy reject 169.254.0.0/16
+ExitPolicy reject 127.0.0.0/8
+ExitPolicy reject 192.168.0.0/16
+ExitPolicy reject 10.0.0.0/8
+ExitPolicy reject 172.16.0.0/12
+ExitPolicy accept *:20-22
+ExitPolicy accept *:53
+ExitPolicy accept *:79-81
+ExitPolicy accept *:110
+ExitPolicy accept *:143
+ExitPolicy accept *:443
+ExitPolicy accept *:706
+ExitPolicy accept *:873
+ExitPolicy accept *:993
+ExitPolicy accept *:995
+ExitPolicy accept *:6660-6669
+ExitPolicy accept *:8008
+ExitPolicy accept *:8080
+ExitPolicy accept *:8888
+ExitPolicy reject *:*
+
+###
+### Directory Server
+###
+
+DirPort 8002
+
+# Please coordinate with the other admins at tor-ops@freehaven.net
+AuthoritativeDirectory 0
+RunTesting 0
+
+DirAllowPrivateAddresses 0
+
+###
+### Hidden Service Options
+###
+
+# not used
+</code></pre><p>Jetzt kann ich auf meinem Rechner einen tsocks-Client konfigurieren, um
+meinen Server anzusprechen. Danach kann ich etwa mit &ldquo;tsocks irssi&rdquo; dann
+anonym ircen&hellip;</p>
+<pre><code class="language-console" data-lang="console"># This is the configuration for libtsocks (transparent socks) for use
+# with tor, which is providing a socks server on port 9050 by default.
+#
+# See tsocks.conf(5) and torify(1) manpages.
+
+# server_type = 4
+local = 81.169.156.174/255.255.255.255
+server = 81.169.156.174
+server_port = 8001
+</code></pre>
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

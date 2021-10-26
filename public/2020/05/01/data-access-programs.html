@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Data Access Programs and Pre-SQL systems</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="data-access-programs-and-pre-sql-systems-page">
+	<h1 class="title">
+            Data Access Programs and Pre-SQL systems
+	</h1>
+
+	<p>Let&rsquo;s have a look at very old database systems. Things like dBase or compatible systems (&ldquo;xBases&rdquo;) allowed to manipulate record based files (with indexes) in a procedural way. What does that mean?</p>
+<h2 id="xbase">
+    <a href="#xbase">
+	xBase
+    </a>
+</h2>
+<p>The system allows developers to create files that contain a well defined (fixed size) record structure, basically an array of <code>struct</code> on disk, often together with the definition of on-screen masks designed to show a single record and a (searchable) list of records. Data would be entered in masks and stored automatically on disk in records in the file. Writes would modify records in place, during the write (and the edit of the data in a mask) the record would be locked.</p>
+<p>With an index command, the system would extract the specificed data field from all records and build an index: another array of the form <code>(field, recno)</code>, where <code>field</code> is the name of the field that is to be indexed and <code>recno</code> is the record number from the original data file. Data in the index would be stored sorted in <code>field</code> order, allowing fast lookup through Btree lookups.</p>
+<p>Access to records would be by record number, through a full table scan on an arbitrary column or by leveraging an index - the latter would be manual through code written by a developer. That is, a developer would open the index, perform an index access to fetch the records required and then further whittle down the list by applying additional conditions.</p>
+<p>The developer would have to write a piece of code to open the indexes of interest, position a cursor in there and then manually select the record numbers of the records of interest, then read those records and output the resulting list. This is a data access program.</p>
+<h2 id="procedural-data-access-in-mysql">
+    <a href="#procedural-data-access-in-mysql">
+	Procedural Data Access in MySQL
+    </a>
+</h2>
+<p>We can do the same thing in MySQL.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> emp ( empno integer <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>, name varchar(<span style="color:#ae81ff">40</span>), salary integer <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>, <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> (empno) );
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> emp <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#39;Lucky Eddie&#39;</span>, <span style="color:#ae81ff">100</span>);
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> emp <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">2</span>, <span style="color:#e6db74">&#39;Hagar Horrible&#39;</span>, <span style="color:#ae81ff">200</span>);
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> emp <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">3</span>, <span style="color:#e6db74">&#39;Honi Horrible&#39;</span>, <span style="color:#ae81ff">300</span>);
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> emp <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">4</span>, <span style="color:#e6db74">&#39;Kwack&#39;</span>, <span style="color:#ae81ff">400</span>);
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">index</span> salary <span style="color:#66d9ef">on</span> emp (salary);
+</code></pre></div><p>We create an employee table <code>emp</code> and fill it with some data. We create an additional index on the salary column.</p>
+<p>Using the low level <code>HANDLER</code> command we can perform a procedural data lookup:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">handler</span> emp <span style="color:#66d9ef">open</span> <span style="color:#66d9ef">as</span> e;
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">handler</span> e <span style="color:#66d9ef">read</span> salary <span style="color:#f92672">&lt;=</span> (<span style="color:#ae81ff">200</span>) <span style="color:#66d9ef">limit</span> <span style="color:#ae81ff">10</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> empno <span style="color:#f92672">|</span> name           <span style="color:#f92672">|</span> salary <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>     <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> Hagar Horrible <span style="color:#f92672">|</span>    <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>     <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> Lucky Eddie    <span style="color:#f92672">|</span>    <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">handler</span> e <span style="color:#66d9ef">close</span>;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>In this example we are opening the table <code>emp</code> using the alias <code>e</code>. We then read the table in index order, using the <code>salary</code> index, and fetch up to 10 records that satisfy the condition &lsquo;index value &lt;= 200&rsquo;. The two matching records are listed.</p>
+<p>We could have given the command as <code>handler e read salary &lt;= (200)</code> without the limit clause. This would have returned only one matching record, and positioned the cursor in the index. With <code>handler e read next</code> we would then be able to iterate through the index, reading the records one by one.</p>
+<p>In this case the index returns only data that is of interest to us.</p>
+<p>Suppose we want all employees that have a salary &lt;= 200 and that are members of the Horrible family.</p>
+<p>How would we go about this? There is no index that we can use that will return only valid records fulfilling both conditions, the one on salary as well as the one on name.</p>
+<p>Instead we open the index as before, read the records, but also manually filter out all unwanted records (we want only records <code>WHERE name LIKE '%Horrible'</code>).</p>
+<h2 id="sql">
+    <a href="#sql">
+	SQL
+    </a>
+</h2>
+<p>SQL is a declarative language: We specify <em>what</em> we want, and not <em>how</em> the database is supposed to fetch it. The database planner and optimizer then creates a data access program for us behind the scenes - what it looks like exactly is very much dependent on the database version, and what support structures for data access exist (that is, which indexes are defined).</p>
+<p>But: For any given QL (Query Language) statement, the result set on the same data will always be the same, no matter which version of the database and which indexes exist, or how the data access program can be optimized using these indexes.</p>
+<p>Using the table above, we say what we want: Records with salary &lt;= 200 and names ending in the &ldquo;Horrible&rdquo; family name.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> emp <span style="color:#66d9ef">where</span> salary <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">200</span> <span style="color:#66d9ef">and</span> name <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;%Horrible&#39;</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> empno <span style="color:#f92672">|</span> name           <span style="color:#f92672">|</span> salary <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>     <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> Hagar Horrible <span style="color:#f92672">|</span>    <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+</code></pre></div><p>We then drop the index and re-run the same statement:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">alter</span> <span style="color:#66d9ef">table</span> emp <span style="color:#66d9ef">drop</span> <span style="color:#66d9ef">index</span> salary;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">03</span> sec)
+Records: <span style="color:#ae81ff">0</span>  Duplicates: <span style="color:#ae81ff">0</span>  Warnings: <span style="color:#ae81ff">0</span>
+
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> emp <span style="color:#66d9ef">where</span> salary <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">200</span> <span style="color:#66d9ef">and</span> name <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;%Horrible&#39;</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> empno <span style="color:#f92672">|</span> name           <span style="color:#f92672">|</span> salary <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>     <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> Hagar Horrible <span style="color:#f92672">|</span>    <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------+----------------+--------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>The result is the same. The data access program may or may not have changed - we could check with <code>EXPLAIN</code>, but unless it is slow or otherwise weird we do not actually care.</p>
+<h2 id="so-what">
+    <a href="#so-what">
+	So what?
+    </a>
+</h2>
+<p>Some ten years ago we had an explosion of NoSQL products, many of which were either Key-Value stores (a data structure even simpler than the dBase ISAM-structures shown above), or provided procedural access to data leveraging indexes.</p>
+<p>Cassandra for example is a product that provides the latter type of structure (and so does DynamoDB). When I recently dissed a colleague for promoting a distributed dBase III, that is what I meant. I guess that also dates me.</p>
+<p>The point being that data access programs are boring code</p>
+<ul>
+<li>that nobody wants to write,</li>
+<li>that is <a href="https://stackoverflow.com/a/19140553" target="_blank" rel="noopener">full of arbitrary restrictions</a>
+
+,</li>
+<li>that is hard to change when the query conditions change and</li>
+<li>that often is also not quite correct.</li>
+</ul>
+<p>When we observe code generators mounted on top of NoSQL products that <a href="https://www.datastax.com/blog/2015/03/how-do-joins-apache-cassandratm-and-datastax-enterprise" target="_blank" rel="noopener">eat SQL and output DAPs</a>
+
+ for the NoSQL product underneath, this is why. This is code that is better written on the fly at runtime, by machines, and run largely without human supervision.</p>
+<p>This is what a query planner and executor does for you in relational database products.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

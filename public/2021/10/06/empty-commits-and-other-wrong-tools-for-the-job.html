@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Empty commits and other wrong tools for the job</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="empty-commits-and-other-wrong-tools-for-the-job-page">
+	<h1 class="title">
+            Empty commits and other wrong tools for the job
+	</h1>
+
+	<p><a href="https://twitter.com/akrey/status/1445656529877680129" target="_blank" rel="noopener">This</a>
+
+ is how you can make an empty commit:</p>
+<pre><code class="language-console" data-lang="console">$ git commit --allow-empty -m &quot;Kick it&quot;
+</code></pre><p>This has the disadvantage of also generating a commit message.
+<a href="https://twitter.com/akrey/status/1445656529877680129" target="_blank" rel="noopener">Another way</a>
+
+ to achieve this seems to be</p>
+<pre><code class="language-console" data-lang="console">$ git commit --amend --no-edit &amp;&amp; git push -f
+</code></pre><p>but that will make people hate you in other ways.</p>
+<p>So lets stop and ask:
+Why would you want to make an empty commit?</p>
+<p>Most people want this because they attached a server-side action to a commit, a CI/CD activity.</p>
+<h1 id="this-is-wrong">
+    <a href="#this-is-wrong">
+	This is wrong
+    </a>
+</h1>
+<p>This is wrong in the same way [writing Shell Scripts]({% link _posts/2021-01-05-using-python-to-bash.md %}) is wrong:
+It kind of works, but now you have another, worse problem and still no solution to the original problem.</p>
+<p>You need to stop and question your life choices, and most importantly, wake up the engineer in you.</p>
+<h2 id="but-i-need-to-debug-my-cicd-pipeline">
+    <a href="#but-i-need-to-debug-my-cicd-pipeline">
+	But I need to debug my CI/CD pipeline
+    </a>
+</h2>
+<p>Kick it off using the tooling provided to you.
+Your environment has an API that is specifically built to enable you to do that.
+Use it.</p>
+<p>In Gitlab:
+<a href="https://docs.gitlab.com/ee/ci/triggers/" target="_blank" rel="noopener">Triggering pipelines through the API </a>
+
+</p>
+<p>In GitHub:
+<a href="https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow#running-a-workflow-using-the-rest-api" target="_blank" rel="noopener">Running a workflow using the REST API</a>
+
+</p>
+<p>This not only works reliably, you can get proper error messages.
+On top of that, you just did <em>not</em> pee into your commit history.</p>
+<h2 id="but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance">
+    <a href="#but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance">
+	But I need to redeploy, because I need a Terraform run after I just lost an instance
+    </a>
+</h2>
+<p>This is fractally broken, there is breakage in your breakage.</p>
+<p>The proper solution is a reconciliation loop of the kind Kubernetes has: Measure the existing state and compare it to the desired state. Then execute the actions necessary to transform the measured state into the desired state, in a loop.</p>
+<p>So if you are not on K8s, you need to move to K8s or re-invent K8s for your environment, badly.
+Yes, Terraform, Harness and friends have it all wrong.</p>
+<p>Erecting infrastructure quickly and portably across backends surely is nice, but assumes a properly functioning declarative environment.
+That is an environment where you describe the desired state of the infrastructure and the platform takes care of maintaining that desired state for you.</p>
+<p>Most platforms do not work that way.
+Some fake it, badly.
+For example, nobody uses AWS autoscalers to autoscale, but they surely are useful to protect your instance count.</p>
+<h2 id="the-problem-inside-this-problem">
+    <a href="#the-problem-inside-this-problem">
+	The problem inside this problem
+    </a>
+</h2>
+<p>And since we are talking about CI/CD pipelines:
+Don&rsquo;t YAML them. Don&rsquo;t JSON them. Don&rsquo;t XML them.</p>
+<p>All of these things surely are nice to describe static objects that have static properties.
+You can successfully use any of them to express the desired state of a thing in a declarative way.</p>
+<p>If you see anything that looks like &ldquo;foreach&rdquo;, &ldquo;when&rdquo;, &ldquo;unless&rdquo; or similar, it&rsquo;s procedural.
+These are control structures.
+They are part of programming languages.
+Which any of these three are decidedly not.</p>
+<p>Programming in any of these three is wrong use of tooling, and you should not do it.</p>
+<ul>
+<li>YAML, JSON and XML are for declarative things.</li>
+<li>Python, Go and Rust are for procedural things.</li>
+<li>Bash is for interactive use only.</li>
+</ul>
+<p>Use the proper tooling for the job.
+Be an engineer.</p>
+<p>Otherwise, you&rsquo;ll just get your old bash rsync deployment scripts back, in a harder to debug packaging, and wrapped in conditionals and loops in YAML &ldquo;syntax&rdquo;.</p>
+<p>That is not what progress looks like.
+At all.
+Shoddy engineering begets pager calls, outages and suffering.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

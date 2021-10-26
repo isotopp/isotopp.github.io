@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Ein komplett überflüssiger Artikel</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="ein-komplett-%C3%BCberfl%C3%BCssiger-artikel-page">
+	<h1 class="title">
+            Ein komplett überflüssiger Artikel
+	</h1>
+
+	<p>Diesen Artikel sollte ich eigentlich gar nicht mehr schreiben müssen. Er basiert auf alten Dokumenten, die ich für eine Folge von Consultingjobs in den Jahren 1993, 1994 und 1995 verfaßt habe, und den Erfahrungen mit einer Redhat Enterprise 2.3-Installation mit den HP/Compaq-Packages, die ich heute habe machen dürfen. Ich bin sehr, sehr deprimiert.</p>
+<p>Aber von vorne: Da ist nun also ein neuer Server, nicht unser Standardsystem, sondern etwas anderes, und es befindet sich außer dem Betriebssystem bislang nur ein Sortiment Treiber und Monitoring auf der Kiste. Eine gute Gelegenheit, besagte Betriebssysteminstallation einmal genauer unter die Lupe zu nehmen.</p>
+<p>Es gibt eine Reihe von schnellen Routine-Handgriffen, die man auch ganz ohne &ldquo;Security-Scanner&rdquo; einmal durchgehen kann, um sich einen Überblick über die Kiste zu verschaffen. Diese Handgriffe sind wohlbekannt, und uralt. Jeder Entwickler und Admin sollte sie kennen und einige Male gemacht haben. Aus irgendeinem Grunde werden sie auch 2004, zehn Jahre nachdem ich sie zum ersten Mal für Geld gemacht habe, von den entscheidenden Leuten immer noch nicht gemacht. Oder wenn doch, werden die Ergebnisse ignoriert.</p>
+<h3 id="world-writeable-anything">
+    <a href="#world-writeable-anything">
+	World Writeable Anything
+    </a>
+</h3>
+<p><code>find / \! -type l -perm -0002 -ls &gt; /tmp/world-writeable-files.kris</code> ist ein guter Ansatzpunkt, um einmal zu sehen, was auf der Kiste denn so wirklich ganz kaputt ist. Dieser Aufruf spuckt eine ganze Reihe von <code>/dev</code>-Dateien aus, einige Verzeichnisse und einige Dateien außerhalb von <code>/dev</code>.</p>
+<p>Für die <code>/dev</code>-Dateien muß man sicherstellen, daß für diese Devices auch ein Treiber vorhanden ist. Danach sollte man alle Nonstandard-Devicetreiber einmal abklopfen, um zu sehen, was man für fiese Dinge mit ihnen machen kann, wenn man Schreibzugriff auf die hat.</p>
+<p>Manchmal findet man <code>/dev</code>-Dateien mit kaputten Permissions, auf denen man lustig ioctl(2) spielen kann.</p>
+<p>Wenn Verzeichnisse in der Liste sind, die world-writeable sind, dann verdienen diese besondere Beachtung. Handelt es sich um <code>/tmp</code>, <code>/var/tmp</code>, <code>/var/spool/uucppublic</code> oder incoming-Verzeichnisse, sollte man kontrollieren, ob die Permissions <em>1</em>777 sind - die Permissions 0777 sind bei solchen Verzeichnissen fast immer falsch. Das gesetzte t-Bit an dem Verzeichnis stellt sicher, daß nur der Eigentümer einer Datei, der Eigentümer des Verzeichnisses oder der Systemverwalter Daten löschen können. Ohne t-Bit kann jeder in dem Verzeichnis jede Datei löschen - das ist meiner Erfahrung nach niemals das gewünschte Verhalten.</p>
+<p>Writeable Home-Verzeichnisse sind immer eine willkommene Gelegenheit, um sich an den Punkt-Dateien des Users in diesem Home zu schaffen zu machen. Ein <code>cp /usr/bin/bash /tmp/...; chmod a+s /tmp/...</code> in der <code>.bashrc</code> eines Benutzers und schon hat man nach dem nächsten Login des Users eine bash, die SUID dieser User läuft, und das ist noch eine der harmloseren Aktionen.</p>
+<p>Writeable Directories in <code>/dev</code>, wie sie auf einigen Maschinen durch das Logical Volume Management hinterlassen werden, sind ganz schlecht. Jedermann kann dann mit einem einfach &ldquo;rm&rdquo; die Devicedateien für die Platten des Systems abräumen - bei nächsten Reboot gibt es dann lange Gesichter.</p>
+<p>Writeable Directories die im Pfad liegen - am besten noch im Suchpfad von root! - sind sowieso ein Instant Exploit und eine ganz üble Idee. Vor zehn Jahren hat ein Install von NetView auf einer RS 6000 <code>/usr/bin</code> grundsätzlich 777 hinterlassen, und auf einer HP war damals <code>/usr/local/bin</code> im Pfad und grundsätzlich 777. Und auch heute noch findet man öfter als nicht <code>/home/oracle/ora-env.sh</code> mit <code>o+w</code>-Rechten oder vergleichbare Scripte, wenn man sich die Mühe macht, danach zu suchen.</p>
+<h3 id="zugriffsrechte-an-gerätedateien">
+    <a href="#zugriffsrechte-an-ger%c3%a4tedateien">
+	Zugriffsrechte an Gerätedateien
+    </a>
+</h3>
+<p>Eine Zeit lang gab es Unices, die die Gerätedateien von Bandlaufwerken world-readable hinterlassen haben. Wenn dann noch das Backup-Band vor oder nach dem Backup im Gerät steckt, kann sich also jeder Benutzer des Systems an diesem Band bedienen und nach Wunsch Dateien recovern, ganz egal wie die Rechte an der Datei im System einmal waren.</p>
+<p>Auch viele andere Dateien sind bei älteren Unix-Installationen nachlässig gesetzt, und wenn man auf eine neue, einem unbekannte Installation kommt, lohnt es sich, die Permissions solcher Geräte einmal durchzugehen und nachzusehen, ob man sich nicht irgendwo belustigen kann.</p>
+<h4 id="umask">
+    <a href="#umask">
+	umask
+    </a>
+</h4>
+<p><code>umask</code> ist nur ein Handgriff, aber ein wichtiger Handgriff, wie einem jeder Systemadministrator bestätigen kann, der einmal in seinem Leben mit HP/UX in Kontakt gekommen ist. Ältere Versionen von HP/UX haben beim Booten mit der umask 0 gestartet und daher wurden während des Bootvorgangs (und während der Installation!) jede Menge Dateien angelegt, die einfach zu große Permissions haben.</p>
+<p>In HP/UX hatte dieses kleine Versäumnis sehr weitreichende Folgen: 666 auf den Dateien des Syslogs, 777 auf <code>/usr/local/bin</code> und 777 auf den Directories, die das LVM für die LVM-Devices angelegt hat. Die Folgefehler ziehen sich durch die ganze Installation und es ist eine Heidenarbeit, zu entscheiden, welche Permissions man gefahrlos korrigieren kann und wo man sich vielleicht selber aus dem System aussperrt.</p>
+<h4 id="systemlimits">
+    <a href="#systemlimits">
+	Systemlimits
+    </a>
+</h4>
+<p>Wenn man schon dabei ist, kann man auch gleich die anderen Systemlimits kontrollieren: <code>limit</code> bzw. <code>ulimit</code> sagen dem interessierten Systemtester gleich, wo seine Grenzen sind, und ob es z.B. Coredumps geben wird. In Solaris will man sich außerdem noch &ldquo;coreadm&rdquo; ansehen.</p>
+<h4 id="suid-sgid">
+    <a href="#suid-sgid">
+	SUID, SGID
+    </a>
+</h4>
+<p>Mit einer Variation des oben gezeigten Find-Kommandos findet man auch schnell SUID- und SGID-Programme, die mit dem System gekommen sind:</p>
+<p><code>find / \! -type l -perm -4000 -ls &gt; /tmp/suid-files.kris</code> und <code>find / \! -type l -perm -2000 -ls &gt; /tmp/sgid-files.kris</code> sind zwei Listen von Dateien, die intensiver Aufmerksamkeit bedürfen. Betriebssystemhersteller haben die Angewohnheit, selbstgeschriebene privilegierte Programme sehr nachlässig zu schreiben.</p>
+<p>Oft haben diese Programme Optionen, mit denen man eine Ausgabe in eine Datei leiten kann (a la <code>-l &lt;protokolldatei&gt;</code>). Die Chancen sind gut, daß dieses Programm &ldquo;vergißt&rdquo; seine Privilegien aufzugeben, bevor es diese Datei zum Schreiben öffnet. Ein <code>-l /etc/passwd</code> kann dann lustige Effekte erzielen.</p>
+<p>Andere Hersteller erlauben solchen Programmen möglicherweise, Umgebungsvariablen auszuwerten oder Shells zu starten, um kurze Shellfragmente aufzurufen - ein <code>strings</code> auf solche SUID- oder SGID-Binaries ist meistens sehr erhellend. Sieht man in einem SUID-root Binary strings-Output wie</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#! /bin/sh
+</span><span style="color:#75715e"></span>path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;`which %s`&#34;</span>
+<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$path<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>
+<span style="color:#66d9ef">then</span>
+  <span style="color:#66d9ef">for</span> i in /bin /usr/bin /sbin /usr/bin %s/bin /usr/local/bin
+  <span style="color:#66d9ef">do</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -x <span style="color:#e6db74">&#34;</span>$i<span style="color:#e6db74">/%s&#34;</span> <span style="color:#f92672">]</span>
+    <span style="color:#66d9ef">then</span>
+      echo <span style="color:#e6db74">&#34;</span>$i<span style="color:#e6db74">/%s&#34;</span>
+      exit <span style="color:#ae81ff">0</span>
+    <span style="color:#66d9ef">fi</span>
+  <span style="color:#66d9ef">done</span>
+<span style="color:#66d9ef">else</span>
+  echo $path
+  exit <span style="color:#ae81ff">0</span>
+<span style="color:#66d9ef">fi</span>
+exit <span style="color:#ae81ff">1</span>
+</code></pre></div><p>dann ist es Zeit, den Stahlhelm aufzusetzen und die Gräben zu bemannen. Wen juckt es nicht beim Anblick solcher Zeilen, herauszufinden, woher %s kommt und wie man dort einige Anführungszeichen und Semikoli reinschmuggeln könnte?</p>
+<p>Aber auch alle Zeilen in der Nähe und Umgebung des Suchstrings PATH sind interessant und können oft zu Hinweisen führen, die lustige Effekte erlauben.</p>
+<p>Namen von externen Programmen, die unser privilegiertes Herstellertool aufruft, sich auch lustig. Wird ein Mailer gestartet? Werden vor dem Starten des Mailers Privilegien gedroppt? Meist nicht. Kann man das Subject der Mail beeinflussen, oder wird der vom Benutzer eingestellte Betreff 1:1 an das <code>mailx -s %s</code> durchgereicht? Dergleichen Spielereien gibt es viele, und alleine der persönliche Grad der Perversion setzt dem interessierten Spielkind hier noch Grenzen.</p>
+<p>Manche Programme mit Privilegien legen auch an einer vorhersagbaren Stelle im Dateisystem Dateien an - <code>/tmp/&lt;name der Logdatei&gt;</code>, <code>$HOME/.&lt;statusdatei&gt;</code> und was dergleichen an Standardstellen mehr existiert. Ein <code>strace -e open</code> als Root auf das zu untersuchende Kommando ist dabei des Admins Freund. Danach sollte man das Programm noch einmal aufrufen, aber als User, und dabei zuvor Symlinks angelegt haben, die von der vorhergesagten Stelle im Dateisystem nach <code>/tmp/gotcha</code> zeigen. Existiert nach dem Aufruf <code>/tmp/gotcha</code> und hat die so erzeugte Datei die Rechte des privilegierten Users, hat das Herstellertool ein Problem. Wie leicht hätte das Symlink nach <code>/etc/shadow</code> zeigen können und beim Aufruf aus Versehen die Paßwortdatenbank wegschießen können?</p>
+<h4 id="netzwerkaktivität">
+    <a href="#netzwerkaktivit%c3%a4t">
+	Netzwerkaktivität
+    </a>
+</h4>
+<p><code>lsof -i -n -P &gt; /tmp/open-ports-and-programs.kris</code> generiert eine Liste von Programmen mit offenen Netzwerkports auf der neuen Kiste. Unsere persönlichen Freunde sind dabei Dinge wie WBEM-Server - angeblich &ldquo;Web Based Enterprise Management&rdquo;, aber im Grunde handelt es sich eher um Schnellrootungszugänge. Gerade HP tut sich dabei ganz besonders hervor, indem diese Firma etwa kaputte SUID-root Binaries mit unsicheren, in PHP geschriebenen WBEM-Oberflächen ausstattet: Nicht nur explodiert das SUID-Root Binary selbst bei noch nahezu bestimmungsgemäßen Gebrauch mit einer einem SIGSEGV - schon mal sehr vertrauenerweckend -, sondern es zeigt auch sonst alle Merkmale eines exploitbaren Stück Software. So stammt ein Shell-Fragment ähnlich der oben gezeigten for-Schleife aus dem Strings-Output eines HP WBEM-Binaries.</p>
+<p>Solche Binaries ruft HP jetzt im Kontext eines WBEM-Webservers auf, der in PHP geschrieben worden ist. Der HP-PHP-Code (HPHP?) verletzt dabei in gerade zu vorbildlicher Weise alle Richtlinien für sichere Webanwendungen, wie sie z.B.
+<a href="http://shiflett.org/talks/oscon2004/php-security" target="_blank" rel="noopener">Chris Shiflett in seinen PHP-Security Talks</a>
+
+ demonstriert hat. Schon bei oberflächlicher Durchsicht fallen einem Konstrukte entgegen wie</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">$path <span style="color:#f92672">=</span> $_SERVER[<span style="color:#e6db74">&#34;HTTP_ANWENDUNGSNAME&#34;</span>];
+$cmd <span style="color:#f92672">=</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#34;/path/zum/privilegierten/binary/additional/data/</span><span style="color:#e6db74">$path</span><span style="color:#e6db74">&#34;</span>;
+</code></pre></div><p>oder ungeprüfte Übernahme von Daten aus <code>$_GET</code>, <code>$_POST</code>, <code>$_COOKIE</code> oder <code>$_SERVER[&quot;HTTP_*&quot;]</code>-Variablen. Selbst ohne privilegiertes Binary ist diese PHP-Anwendung ein guter Einstieg in das System.</p>
+<p>Neben WBEM ist auch der Portmapper und die von ihm gestarteten Anwendungen sowie der inetd ein Quell der Freude. Gerade Solaris-Maschinen sind bekannt dafür, daß sie hier einen ganze Strauß unnötiger Dienste starten, von denen mehr als die Hälfte bereits ein- oder mehrmals Anlaß der Vergabe von CAN- oder CVE-Nummern gewesen ist.</p>
+<p>Schließlich ist bei vielen Maschinen nach der Installation auch ein SNMP-Daemon aktiv, und häufiger als nicht redet dieser auf Nachfrage mit jedem und gibt so wertvolle Systeminformation preis. In Zusammenarbeit mit WBEM hat man sogar eine gewisse Chance, daß der SNMP-Daemon nicht nur Read-Aufrufe, sondern auch Writes verarbeitet. Eine saubere Konfiguration, die Prüfung der Security und die Einschränkung auf Adressen aus dem Managementnetz sind hier zentral für das Überlegen der Maschine.</p>
+<p>Ein schnelles Abspulen dieser Dinge auf einer neuen Installation sollte einem erfahrenen Systemadministrator ausreichend Anhaltspunkte geben, um ihn problemlos für einige Tage schlecht schlafen zu lassen.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

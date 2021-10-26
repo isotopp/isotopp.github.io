@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: Locks and Deadlocks</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-locks-and-deadlocks-page">
+	<h1 class="title">
+            MySQL: Locks and Deadlocks
+	</h1>
+
+	<p>In a [previous article]({% link _posts/2020-07-30-mysql-transactions&mdash;writing-data.md %}) we wrote data to the database using atomic update statements, and then using transactions with <code>SELECT ... FOR UPDATE</code>. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also <a href="https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py" target="_blank" rel="noopener">available on github.com</a>
+
+.</p>
+<h2 id="a-simple-row-lock">
+    <a href="#a-simple-row-lock">
+	A simple row lock
+    </a>
+</h2>
+<p>But first let&rsquo;s do things manually: We create a table <code>kris</code> with an integer primary key column and a secondary unindexed data column. We are filling it with some records with gaps between the primary keys.</p>
+<p>We then <code>START TRANSACTION READ WRITE</code> and <code>SELECT ... FOR UPDATE</code> a record:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> kris ( id serial, value integer );
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> kris <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">10</span>), (<span style="color:#ae81ff">20</span>, <span style="color:#ae81ff">20</span>), (<span style="color:#ae81ff">30</span>, <span style="color:#ae81ff">30</span>),(<span style="color:#ae81ff">40</span>, <span style="color:#ae81ff">40</span>);
+
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> value <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span></code></pre></div><p><a href="https://dev.mysql.com/doc/refman/8.0/en/performance-schema-data-locks-table.html" target="_blank" rel="noopener">The table <code>PERFORMANCE_SCHEMA.DATA_LOCKS</code></a>
+
+ will show us what happened, and <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html" target="_blank" rel="noopener">the manual section on locking</a>
+
+ explains what we are looking at and what we can expect.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> performance_schema.data_locks<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+...
+            LOCK_TYPE: <span style="color:#66d9ef">TABLE</span>
+            LOCK_MODE: IX
+          LOCK_STATUS: <span style="color:#66d9ef">GRANTED</span>
+            LOCK_DATA: <span style="color:#66d9ef">NULL</span>
+...
+            LOCK_TYPE: RECORD
+            LOCK_MODE: X,REC_NOT_GAP
+          LOCK_STATUS: <span style="color:#66d9ef">GRANTED</span>
+            LOCK_DATA: <span style="color:#ae81ff">10</span>
+</code></pre></div><p>The <code>SELECT ... FOR UPDATE</code> created a <code>LOCK_TYPE: TABLE</code> table-level lock with <code>LOCK_MODE: IX</code>. This is an intention-lock set by <code>FOR UPDATE</code> which indicates the desire to set X-locks (exclusive-locks, write-locks) on rows.</p>
+<p>The statement then proceeded to actually create a row-lock, at the record level: We see <code>LOCK_TYPE: RECORD</code> with <code>LOCK_DATA: 10</code>, so the record <code>id=10</code> has been locked. The <code>LOCK_MODE: X, REC_NOT_GAP</code> indicates a lock on the record only, not on the gap before the record.</p>
+<h2 id="a-lock-on-a-nonexistent-row">
+    <a href="#a-lock-on-a-nonexistent-row">
+	A lock on a nonexistent row
+    </a>
+</h2>
+<p>Adding to the preceding transaction, we now also search for a non-existent row, using <code>FOR UPDATE</code> to signal our intent to later create this row. Since the row does not exist, the result set is empty:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">35</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+Empty <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Reusing the table-level IX lock from before, we now see a third entry in <code>PERFORMANCE_SCHEMA.DATA_LOCKS</code>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> performance_schema.data_locks;
+...
+            LOCK_TYPE: RECORD
+            LOCK_MODE: X,GAP
+          LOCK_STATUS: <span style="color:#66d9ef">GRANTED</span>
+            LOCK_DATA: <span style="color:#ae81ff">40</span>
+...
+</code></pre></div><p>This, too, is a record-level lock, but this time it is <code>LOCK_MODE: X,GAP</code> and <code>LOCK_DATA: 40</code>. What we get here is a lock on the space between the rows <code>id=30</code> (excluding) and <code>id=40</code> (including), preventing other threads from inserting a row <code>id=35</code>.</p>
+<h2 id="inserting-into-a-locked-gap-with-timeouts">
+    <a href="#inserting-into-a-locked-gap-with-timeouts">
+	Inserting into a locked gap, with timeouts.
+    </a>
+</h2>
+<p>We can try do demonstrate that with a second session:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> kris <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">33</span>, <span style="color:#ae81ff">33</span>);
+... hangs ...
+<span style="color:#f92672">^</span><span style="color:#66d9ef">C</span><span style="color:#f92672">^</span><span style="color:#66d9ef">C</span> <span style="color:#75715e">-- query aborted
+</span><span style="color:#75715e"></span>ERROR <span style="color:#ae81ff">1317</span> (<span style="color:#ae81ff">70100</span>): Query execution was interrupted
+</code></pre></div><p>While the <code>SELECT ... FOR UPDATE</code> had a where clause of <code>WHERE id=35</code>, the lock covers the entire interval (30, 40], and our attempt to insert a record with <code>id=33</code> hangs and has to wait until either the locking transaction is committed or our attempt times out. This can be a long wait: by default, <code>innodb_lock_wait_timeout</code> is set to 50 seconds.</p>
+<p>We can change that:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#66d9ef">session</span> innodb_lock_wait_timeout <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> time(now()); <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> kris <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">33</span>, <span style="color:#ae81ff">33</span>); <span style="color:#66d9ef">select</span> time(now());
+<span style="color:#f92672">+</span><span style="color:#75715e">-------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> time(now()) <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">17</span>:<span style="color:#ae81ff">52</span>:<span style="color:#ae81ff">28</span>    <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------------+
+</span><span style="color:#75715e"></span>ERROR <span style="color:#ae81ff">1205</span> (HY000): <span style="color:#66d9ef">Lock</span> wait timeout exceeded; try restarting <span style="color:#66d9ef">transaction</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> time(now()) <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">17</span>:<span style="color:#ae81ff">52</span>:<span style="color:#ae81ff">32</span>    <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-------------+
+</span></code></pre></div><p>We are rolling back all our transactions, and reset the table <code>kris</code> to the initial 4 tuples ((10,10), (20,20), (30,30), (40,40)).</p>
+<h2 id="innodb-handles-deadlocks">
+    <a href="#innodb-handles-deadlocks">
+	InnoDB handles Deadlocks
+    </a>
+</h2>
+<p>Whenever we collect locks in a non-atomic fashion there is a risk of deadlocking.</p>
+<p>A deadlock is any situation where a thread <code>A</code> holds a resource <code>1</code> and wants to lock a resource <code>2</code>, where at the same time a thread <code>B</code> holds the lock on <code>2</code> and wants a lock on <code>1</code>.</p>
+<p><code>A</code> holds lock <code>1</code> and needs a lock on <code>2</code> to complete and release both locks, while <code>B</code> holds the lock on <code>2</code> and needs the lock on <code>1</code> to complete and release both locks. There is no way to resolve this situation except with intervention from the outside, forcing one transaction to roll back (and hopefully retry). There is no problem for either A or B to complete the operation, but not while both are trying to finish concurrently.</p>
+<p>The deadlock scenario is only possible because <code>A</code> and <code>B</code> do not aquire locks in a canoncial order: Had <code>B</code> also aquired the locks in numerically ascending order (<code>1</code>, <code>2</code>), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.</p>
+<p>More complicated scenarios with 3 or more threads and larger circular dependencies are possible.</p>
+<p>So, let&rsquo;s excercise a deadlock with two sessions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> value <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">30</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">30</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span></code></pre></div><p>and in the other session:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> value <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>                                          
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span></code></pre></div><p>Now that both threads hold their first resource, let&rsquo;s get their respective opposite to complete the deadlock. Session1 hangs, because it waits for Session2 to release the lock on <code>id=10</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+... hangs ...
+</code></pre></div><p>And Session2, trying to lock <code>id=30</code>, which is held by Session1, then is being detected and rolled back forcibly:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">30</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+ERROR <span style="color:#ae81ff">1213</span> (<span style="color:#ae81ff">40001</span>): Deadlock <span style="color:#66d9ef">found</span> <span style="color:#66d9ef">when</span> trying <span style="color:#66d9ef">to</span> <span style="color:#66d9ef">get</span> <span style="color:#66d9ef">lock</span>; try restarting <span style="color:#66d9ef">transaction</span>     
+</code></pre></div><p>At the same time Session1 can complete the statement:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> kris <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">update</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> value <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>    <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+-------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">8</span>.<span style="color:#ae81ff">74</span> sec)
+</code></pre></div><p>The time reported is the time this session hung waiting for the lock to be granted.</p>
+<p>After the rollback <code>PERFORMANCE_SCHEMA.DATA_LOCKS</code> looks like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> lock_type, lock_mode, lock_data, lock_status <span style="color:#66d9ef">from</span> performance_schema.data_locks;
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+---------------+-----------+-------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> lock_type <span style="color:#f92672">|</span> lock_mode     <span style="color:#f92672">|</span> lock_data <span style="color:#f92672">|</span> lock_status <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+---------------+-----------+-------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">TABLE</span>     <span style="color:#f92672">|</span> IX            <span style="color:#f92672">|</span> <span style="color:#66d9ef">NULL</span>      <span style="color:#f92672">|</span> <span style="color:#66d9ef">GRANTED</span>     <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> RECORD    <span style="color:#f92672">|</span> X,REC_NOT_GAP <span style="color:#f92672">|</span> <span style="color:#ae81ff">30</span>        <span style="color:#f92672">|</span> <span style="color:#66d9ef">GRANTED</span>     <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span> RECORD    <span style="color:#f92672">|</span> X,REC_NOT_GAP <span style="color:#f92672">|</span> <span style="color:#ae81ff">10</span>        <span style="color:#f92672">|</span> <span style="color:#66d9ef">GRANTED</span>     <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">-----------+---------------+-----------+-------------+
+</span></code></pre></div><p>These locks are owned by Session1, and after executing <code>ROLLBACK</code> or <code>COMMIT</code> in Session1 they are released and the select-statement on performance_schema comes back empty.</p>
+<h2 id="retrying-transactions">
+    <a href="#retrying-transactions">
+	Retrying transactions
+    </a>
+</h2>
+<p>We can try to formalize what we learned in code: A table <code>demo</code> with 10 counters numbered from 1 to 10 is being set up, the counters are starting at 0.</p>
+<p>We are running two programs concurrently: One program is counting up the counters i and i+1, and the other program is counting up the counters i and i-1. Whenever the two programs generate overlapping transactions, a deadlock situation should arise.</p>
+<p>We want to be able to detect this, and restart the transactions. A quick and dirty attempt at this: A function to lock a record by id.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">select_update</span>(name, id):
+    cmd <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;select counter from {name} where id = {id} for update&#34;</span>
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+    <span style="color:#66d9ef">try</span>:
+        c<span style="color:#f92672">.</span>execute(cmd)
+    <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#34;MySQL Error: {e}&#34;</span>)
+        <span style="color:#66d9ef">return</span> None
+
+    row <span style="color:#f92672">=</span> c<span style="color:#f92672">.</span>fetchone()
+    <span style="color:#66d9ef">return</span> row[<span style="color:#e6db74">&#34;counter&#34;</span>]
+</code></pre></div><p>A function to increment a counter in a record we locked this way:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">update</span>(name, id, counter):
+    cmd <span style="color:#f92672">=</span> f<span style="color:#e6db74">&#34;update {name} set counter = {counter} where id = {id}&#34;</span>
+    c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+    <span style="color:#66d9ef">try</span>:
+        c<span style="color:#f92672">.</span>execute(cmd)
+    <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>Error <span style="color:#66d9ef">as</span> e:
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#34;MySQL Error: {e}&#34;</span>)
+        sys<span style="color:#f92672">.</span>exit(<span style="color:#ae81ff">0</span>)
+</code></pre></div><p>And a really dirty function with way too many parameters to exercise these two functions for pairs of records:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">count_with_locking</span>(name, tag, position1, position2, verbose<span style="color:#f92672">=</span>False):
+        <span style="color:#75715e"># I would rather have a START TRANSACTION READ WRITE</span>
+        <span style="color:#75715e"># but MySQLdb does not offer this natively.</span>
+        db<span style="color:#f92672">.</span>begin()
+
+        <span style="color:#75715e"># read, with FOR UPDATE</span>
+        done <span style="color:#f92672">=</span> False
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">not</span> done:
+            counter1 <span style="color:#f92672">=</span> select_update(name, position1)
+            sleep(<span style="color:#ae81ff">1</span>)
+            counter2 <span style="color:#f92672">=</span> select_update(name, position2)
+            <span style="color:#75715e"># if either counter is None, we had a deadlock and</span>
+            <span style="color:#75715e"># need to retry. Otherwise we are done.</span>
+            <span style="color:#66d9ef">if</span> counter1 <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None <span style="color:#f92672">and</span> counter2 <span style="color:#f92672">is</span> <span style="color:#f92672">not</span> None:
+                done <span style="color:#f92672">=</span> True
+            <span style="color:#66d9ef">else</span>:
+                <span style="color:#66d9ef">if</span> verbose:
+                    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;{tag} *** Retry *** {position1}, {position2} = {counter1}, {counter2}&#34;</span>)
+
+        <span style="color:#75715e"># Once we make it here we are done.</span>
+        <span style="color:#66d9ef">if</span> verbose:
+            <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;{tag} {position1}, {position2} = {counter1}, {counter2}&#34;</span>)
+
+        <span style="color:#75715e"># modify</span>
+        counter1 <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+        counter2 <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+
+        <span style="color:#75715e"># write (and since we have the locks, this will work)</span>
+        update(name, position1, counter1)
+        update(name, position2, counter2)
+
+        <span style="color:#75715e"># and release the locks, too</span>
+        db<span style="color:#f92672">.</span>commit()
+</code></pre></div><p>And two driver functions, one that goes up and another that goes down, wrapped with <code>click</code> so that they can be accessed via the command line:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--name&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;demo&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Table name to count in&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--size&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Number rows in counter table&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--iterations&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Number of increments&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--verbose/--no-verbose&#34;</span>, default<span style="color:#f92672">=</span>False, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Log each commit?&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">count_up</span>(name, size, iterations, verbose):
+    <span style="color:#e6db74">&#34;&#34;&#34;  Increment counters i and i+1, across an array, counting i upwards &#34;&#34;&#34;</span>
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, iterations):
+
+        <span style="color:#75715e"># We will count up position1 and position2</span>
+        position1 <span style="color:#f92672">=</span> (i <span style="color:#f92672">%</span> size) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+        position2 <span style="color:#f92672">=</span> ((i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> size) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+
+        count_with_locking(name, <span style="color:#e6db74">&#34;up  &#34;</span>, position1, position2, verbose)
+
+
+<span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--name&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;demo&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Table name to count in&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--size&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Number rows in counter table&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--iterations&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Number of increments&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--verbose/--no-verbose&#34;</span>, default<span style="color:#f92672">=</span>False, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Log each commit?&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">count_down</span>(name, size, iterations, verbose):
+    <span style="color:#e6db74">&#34;&#34;&#34;  Increment counters i and i+1, across an array, counting i upwards &#34;&#34;&#34;</span>
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(iterations, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>):
+
+        <span style="color:#75715e"># We will count down position1 and position2</span>
+        position1 <span style="color:#f92672">=</span> (i <span style="color:#f92672">%</span> size) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+        position2 <span style="color:#f92672">=</span> ((i <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">%</span> size) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>
+
+        count_with_locking(name, <span style="color:#e6db74">&#34;down&#34;</span>, position1, position2, verbose)
+</code></pre></div><p>When running this, we get deadlocks because we built it this way:</p>
+<pre><code class="language-console" data-lang="console">$ ./deadlock.py truncate
+Table demo truncated.
+$ ./deadlock.py setup --size 10
+Counters 1 to 10 set to 0.
+$ ./deadlock.py count-up --size 10 --iterations 100 --verbose &amp; ./deadlock.py count-down --size 10 --iterations 100 --verbose &amp;
+[1] 3706851
+[2] 3706852
+$ down 1, 10 = 0, 0
+down 10, 9 = 1, 0
+up   1, 2 = 1, 0
+down 9, 8 = 1, 0
+up   2, 3 = 1, 0
+down 8, 7 = 1, 0
+up   3, 4 = 1, 0
+down 7, 6 = 1, 0
+up   4, 5 = 1, 0
+MySQL Error: (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+down 6, 5 = 1, 1
+up   *** Retry *** 5, 6 = 1, None
+up   5, 6 = 2, 2
+up   6, 7 = 3, 2
+down 5, 4 = 3, 2
+up   7, 8 = 3, 2
+...
+</code></pre><p>As soon as the count-down (6,5) and the count-up (5,6) cross their streams a deadlock happens. The count-up (5,6) is rolled back and needs to retry. After retry the counter values are correctly incremented.</p>
+<p>We managed to detect the deadlocks, retry the transactions and set things right. Once more the world is safe.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

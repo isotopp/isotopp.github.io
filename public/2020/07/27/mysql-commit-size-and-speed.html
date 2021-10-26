@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL Commit Size and Speed</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-commit-size-and-speed-page">
+	<h1 class="title">
+            MySQL Commit Size and Speed
+	</h1>
+
+	<p>When writing data to disk, for small transactions the cost of writing the
+commit out do disk dominates the execution time of the script. In order to
+show that, I wrote a little bit of Python.</p>
+<p>The script creates a test table in a database and writes 10.000 rows of test
+data into it, in commit sizes of 1, 2, 4, &hellip;, 1024 rows.</p>
+<pre><code class="language-console" data-lang="console">$ ./mysql.py --help
+Usage: mysql.py [OPTIONS] COMMAND [ARGS]...
+
+  Test commit sizes.
+
+Options:
+  --help  Show this message and exit.
+
+Commands:
+  create    Create the demo table empty.
+  drop      Drop the demo table
+  fill      Write test records into the demo table.
+  truncate  Truncate the demo table.
+</code></pre><p>There is a small driver script to run the test. The driver creates the
+table, truncates it and will then run the fill command of the script over
+and over again, with growing commit-sizes. All powers of 2 from 0 to 10 are
+being tried with 10.000 rows of test data.</p>
+<p>The test system has a very old SSD (Crucial M4-CT512M4SSD2) as a data
+directory.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat driver.sh
+<span style="color:#75715e">#! /bin/bash --</span>
+
+./mysql.py drop
+./mysql.py create
+<span style="color:#66d9ef">for</span> i in <span style="color:#f92672">{</span>0..10<span style="color:#f92672">}</span>
+<span style="color:#66d9ef">do</span>
+        csize<span style="color:#f92672">=</span><span style="color:#66d9ef">$((</span><span style="color:#ae81ff">2</span> <span style="color:#f92672">**</span> $i<span style="color:#66d9ef">))</span>
+        ./mysql.py truncate
+        echo <span style="color:#e6db74">&#34;./mysql.py fill --size=10000 --commit-size=</span>$csize<span style="color:#e6db74">&#34;</span>
+        time ./mysql.py fill --size<span style="color:#f92672">=</span><span style="color:#ae81ff">10000</span> --commit-size<span style="color:#f92672">=</span>$csize
+<span style="color:#66d9ef">done</span>
+</code></pre></div><p>The result of the test run is as follows shown, and since at point 10.000
+rows were not enough, I later added a second test run with 100.000 rows and
+step sizes of 5..14 (32 rows to 16384 rows).</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/07/transactions-benchmark.jpg" alt=""  />
+</p>
+
+</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right">Txn Sz</th>
+<th style="text-align:right">Runtime</th>
+<th style="text-align:right">Rows/s</th>
+<th style="text-align:right">Runtime</th>
+<th style="text-align:right">Rows/s</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right">0</td>
+<td style="text-align:right">127</td>
+<td style="text-align:right">78</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td style="text-align:right">1</td>
+<td style="text-align:right">68.7</td>
+<td style="text-align:right">145</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td style="text-align:right">2</td>
+<td style="text-align:right">38.4</td>
+<td style="text-align:right">260</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td style="text-align:right">3</td>
+<td style="text-align:right">20.93</td>
+<td style="text-align:right">477</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td style="text-align:right">4</td>
+<td style="text-align:right">12.03</td>
+<td style="text-align:right">831</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+</tr>
+<tr>
+<td style="text-align:right">5</td>
+<td style="text-align:right">7.04</td>
+<td style="text-align:right">1420</td>
+<td style="text-align:right">71.01</td>
+<td style="text-align:right">1409</td>
+</tr>
+<tr>
+<td style="text-align:right">6</td>
+<td style="text-align:right">4.38</td>
+<td style="text-align:right">2283</td>
+<td style="text-align:right">46.40</td>
+<td style="text-align:right">2156</td>
+</tr>
+<tr>
+<td style="text-align:right">7</td>
+<td style="text-align:right">2.92</td>
+<td style="text-align:right">3412</td>
+<td style="text-align:right">30.13</td>
+<td style="text-align:right">3319</td>
+</tr>
+<tr>
+<td style="text-align:right">8</td>
+<td style="text-align:right">2.24</td>
+<td style="text-align:right">4464</td>
+<td style="text-align:right">20.94</td>
+<td style="text-align:right">4776</td>
+</tr>
+<tr>
+<td style="text-align:right">9</td>
+<td style="text-align:right">1.77</td>
+<td style="text-align:right">5649</td>
+<td style="text-align:right">17.51</td>
+<td style="text-align:right">5712</td>
+</tr>
+<tr>
+<td style="text-align:right">10</td>
+<td style="text-align:right">1.58</td>
+<td style="text-align:right">6329</td>
+<td style="text-align:right">15.35</td>
+<td style="text-align:right">6515</td>
+</tr>
+<tr>
+<td style="text-align:right">11</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right">14.16</td>
+<td style="text-align:right">7063</td>
+</tr>
+<tr>
+<td style="text-align:right">12</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right">13.63</td>
+<td style="text-align:right">7337</td>
+</tr>
+<tr>
+<td style="text-align:right">13</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right">13.59</td>
+<td style="text-align:right">7359</td>
+</tr>
+<tr>
+<td style="text-align:right">14</td>
+<td style="text-align:right"></td>
+<td style="text-align:right"></td>
+<td style="text-align:right">13.26</td>
+<td style="text-align:right">7542</td>
+</tr>
+</tbody>
+</table>
+<p>We observe: Going from single row commits to 16 row commits, we get a
+10-fold speed increase, and going to 1024 row commits, we are seeing another
+factor of 10. After that, there is hardly any improvement for our chosen
+record size and hardware.</p>
+<h2 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h2>
+<p>A transaction size of 1000 rows or larger does not seem to improve write
+speed (ie in a data load).</p>
+<p>From 1 row/commit to 16 rows/commit, we see an increate of an order of
+magnitude, and another order of magnitude can be had by going from 16
+rows/commit to 1024 rows/commit.</p>
+<h2 id="the-script">
+    <a href="#the-script">
+	The script
+    </a>
+</h2>
+<pre><code class="language-console" data-lang="console">$ cat requirements.txt
+click
+mysqlclient
+$ python3 -mvenv venv
+$ source venv/bin/activate
+(venv) $ pip install --upgrade pip
+...
+(venv) $ pip install wheel
+...
+(venv) $ pip install -r requirements.txt
+...
+(venv) $ pip freeze -r requirements.txt &gt; requirements-frozen.txt
+</code></pre><p>and</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#! /usr/bin/env python3</span>
+
+<span style="color:#f92672">import</span> sys
+<span style="color:#f92672">import</span> random
+<span style="color:#f92672">import</span> string
+
+<span style="color:#f92672">import</span> click
+<span style="color:#f92672">import</span> MySQLdb
+<span style="color:#f92672">import</span> MySQLdb.cursors
+
+<span style="color:#f92672">from</span> pprint <span style="color:#f92672">import</span> pprint
+
+db_config <span style="color:#f92672">=</span> dict(
+    host<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;localhost&#34;</span>,
+    user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;kris&#34;</span>,
+    passwd<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;geheim&#34;</span>,
+    db<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;kris&#34;</span>,
+    cursorclass<span style="color:#f92672">=</span>MySQLdb<span style="color:#f92672">.</span>cursors<span style="color:#f92672">.</span>DictCursor,
+)
+
+sql_drop_table <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;drop table </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span>
+
+sql_create_table <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;&#34;create table </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> (
+</span><span style="color:#e6db74">    id serial,
+</span><span style="color:#e6db74">    data varbinary(255) not null
+</span><span style="color:#e6db74">)&#34;&#34;&#34;</span>
+
+sql_truncate_table <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;truncate table </span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34;</span>
+
+sql_insert_into <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;insert into </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> ( id, data) values ( </span><span style="color:#e6db74">%d</span><span style="color:#e6db74">, &#34;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#34; )&#39;</span>
+
+
+db <span style="color:#f92672">=</span> MySQLdb<span style="color:#f92672">.</span>connect(<span style="color:#f92672">**</span>db_config)
+
+
+<span style="color:#a6e22e">@click.group</span>(help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Test commit sizes.&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">sql</span>():
+    <span style="color:#66d9ef">pass</span>
+
+
+<span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--name&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;demo&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Table name to drop&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">drop</span>(name):
+    <span style="color:#e6db74">&#34;&#34;&#34; Drop the demo table &#34;&#34;&#34;</span>
+    cmd <span style="color:#f92672">=</span> sql_drop_table <span style="color:#f92672">%</span> name
+
+    <span style="color:#66d9ef">try</span>:
+        c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+        c<span style="color:#f92672">.</span>execute(cmd)
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#39;Table &#34;{name}&#34; dropped.&#39;</span>)
+    <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#39;Table &#34;{name}&#34; did not exist.&#39;</span>)
+
+
+<span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--name&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;demo&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Table name to create&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">create</span>(name):
+    <span style="color:#e6db74">&#34;&#34;&#34; Create the demo table empty. &#34;&#34;&#34;</span>
+    cmd <span style="color:#f92672">=</span> sql_create_table <span style="color:#f92672">%</span> name
+
+    <span style="color:#66d9ef">try</span>:
+        c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+        c<span style="color:#f92672">.</span>execute(cmd)
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#39;Table &#34;{name}&#34; created.&#39;</span>)
+    <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#39;Table &#34;{name}&#34; did already exist&#39;</span>)
+
+
+<span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--name&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;demo&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Table name to insert into&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--size&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1000000</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Number of rows to create in total&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--commit-size&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Commit batch size&#34;</span>)
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--verbose/--no-verbose&#34;</span>, default<span style="color:#f92672">=</span>False, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Log each commit?&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">fill</span>(name, size, commit_size, verbose):
+    <span style="color:#e6db74">&#34;&#34;&#34; Write test records into the demo table. &#34;&#34;&#34;</span>
+    <span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, size):
+        str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">.</span>join(
+            random<span style="color:#f92672">.</span>choice(string<span style="color:#f92672">.</span>ascii_uppercase <span style="color:#f92672">+</span> string<span style="color:#f92672">.</span>digits) <span style="color:#66d9ef">for</span> _ <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">20</span>)
+        )
+        cmd <span style="color:#f92672">=</span> sql_insert_into <span style="color:#f92672">%</span> (name, i <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>, str)
+
+        c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+        <span style="color:#66d9ef">try</span>:
+            c<span style="color:#f92672">.</span>execute(cmd)
+        <span style="color:#66d9ef">except</span> MySQLdb<span style="color:#f92672">.</span>Error <span style="color:#66d9ef">as</span> e:
+            click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#34;MySQL Error: {e}&#34;</span>)
+            sys<span style="color:#f92672">.</span>exit()
+
+        <span style="color:#66d9ef">if</span> i <span style="color:#f92672">%</span> commit_size <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            <span style="color:#66d9ef">if</span> verbose:
+                <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#34;Commit at {i}...&#34;</span>)
+            db<span style="color:#f92672">.</span>commit()
+
+    db<span style="color:#f92672">.</span>commit()
+
+
+<span style="color:#a6e22e">@sql.command</span>()
+<span style="color:#a6e22e">@click.option</span>(<span style="color:#e6db74">&#34;--name&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;demo&#34;</span>, help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Table name to truncate here&#34;</span>)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">truncate</span>(name):
+    <span style="color:#e6db74">&#34;&#34;&#34; Truncate the demo table. &#34;&#34;&#34;</span>
+    cmd <span style="color:#f92672">=</span> sql_truncate_table <span style="color:#f92672">%</span> name
+
+    <span style="color:#66d9ef">try</span>:
+        c <span style="color:#f92672">=</span> db<span style="color:#f92672">.</span>cursor()
+        c<span style="color:#f92672">.</span>execute(cmd)
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#39;Table &#34;{name}&#34; truncated.&#39;</span>)
+    <span style="color:#66d9ef">except</span> MySQL<span style="color:#f92672">.</span>OperationalError <span style="color:#66d9ef">as</span> e:
+        click<span style="color:#f92672">.</span>echo(f<span style="color:#e6db74">&#39;Table &#34;{name}&#34; does not exist.&#39;</span>)
+
+
+sql()
+</code></pre></div>
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

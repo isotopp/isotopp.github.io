@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Filesysteme für theclaw (30 Jahre Unix Source)</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="filesysteme-f%C3%BCr-theclaw-30-jahre-unix-source-page">
+	<h1 class="title">
+            Filesysteme für theclaw (30 Jahre Unix Source)
+	</h1>
+
+	<p>&mdash; Log opened Di Dez 26 15:52:09 2006</p>
+<p>theclaw&gt; Hey :] [Spitze erklaerung zu ext2.]({% link _posts/2006-05-08-fragmentierung-f-r-jannik.md %})</p>
+<p>Isotopp&gt; Danke</p>
+<p>theclaw&gt; Bist du Kerneldeveloper?</p>
+<p>Isotopp&gt; Nein. Mysql Consultant.</p>
+<p>theclaw&gt; Hmm. Hab da was nicht verstanden bei der Erklärung. Und zwar: Was sind Datenblockzeiger?</p>
+<p>Isotopp&gt; Die Blockadressen von Datenblöcken einer Datei.</p>
+<p>theclaw&gt; Ich paste mal was</p>
+<pre><code class="language-console" data-lang="console">(0-11):9711-9722, (IND):9723, (12-267):9724-9979, (DIND):9980, (IND):9981, (268-523):9982-10237, (IND):10238, (524-779):10239-10494, (IND):10495, (780-1035):10496-10751, (IND):10752, (1036-1291):10753-11008, (IND):11009, (1292-1547):11010-11265, (IND):11266, (1548-1795):11267-11514
+</code></pre><p>Isotopp&gt; Habs im
+[Originalartikel](({% link _posts/2006-05-08-fragmentierung-f-r-jannik.md %})).</p>
+<p>theclaw&gt; <code>__le32 i_block[EXT2_N_BLOCKS];</code> Das ist das was unter BLOCKS bei debugfs steht?</p>
+<p>Isotopp&gt;
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L211" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L211</a>
+
+: Das ist was auf der Platte steht.</p>
+<p>theclaw&gt; Okay mal durchdenken.</p>
+<p>Isotopp&gt; Die Definition steht in
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L165" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L165</a>
+
+. Es kommen also <code>EXT2_NDIR_BLOCKS</code> direkt, also in der Inode selbst. Das sind (0-11):9711-9722.</p>
+<p>Dann kommt ein <code>EXT2_IND_BLOCK</code>, (IND):9723. Der steht auch in der Inode, aber der zeigt nicht auf Daten, sondern auf einen Indirect Block. Der enthält die Blocknummern der Datenblöcke, (12-267):9724-9979.</p>
+<p>Dann kommt <code>EXT2_DIND_BLOCK</code>. Der wiederum enthält keine Blocknummern von Datenblöcken, sondern die Blocknummern von Indirect Blocks, die wiederum Blocknummern von Datenblöcken enthalten. Daher
+<a href="http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif" target="_blank" rel="noopener">http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif</a>
+
+.</p>
+<p>theclaw&gt; <em>anseh</em></p>
+<p>Isotopp&gt; In der inode steht nur (DIND):9980. In DIND steht dann (IND):9981 und (IND):10238 und so weiter. Und in (IND):9981 stehen dann 9982-10237, in (IND):10238 dann 10239-10494.</p>
+<p>theclaw&gt; DIR steht für &ldquo;direct&rdquo;?</p>
+<p>Isotopp&gt; ja</p>
+<p>theclaw&gt; Muss das jetzt mal kurz mit debugfs ausprobieren.</p>
+<p>Isotopp&gt; Sieh mal
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L665" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L665</a>
+
+. Das <code>ext2_bmap</code> geht über <code>generic_block_bmap</code> nach
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L547" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L547</a>
+
+. Und das wiederum benutzt
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L196" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L196</a>
+
+. Und da siehst du den lookup.</p>
+<p>theclaw&gt; okay langsam kommts</p>
+<p>Isotopp&gt; Wenn <code>i_block</code>&lt;0 -&gt; error. Wenn <code>i_block</code>&lt;<code>direct_blocks</code>, dann direkt. Sonst IND, sonst DIND, sonst TIND. Sonst bumm.</p>
+<p>theclaw&gt; Wart mal, nicht so schnell. Ich kann das nicht alles gleichzeitig aufnehmen. Also, die ersten zwölf Blöcke sind -direkt- in der Inode?</p>
+<p>Isotopp&gt; Ja. Blocknummern. Nicht Blöcke.</p>
+<p>theclaw&gt; <code>i_block</code> ist schon ein element aus <code>i_block[]</code> oder? ;)</p>
+<p>Isotopp&gt; Wo bist du gerade? Also in welcher zeile?</p>
+<p>theclaw&gt; <code>static int ext2_block_to_path</code>. Bei der Definition da.</p>
+<p>Isotopp&gt; Kannst du eine lxr url geben bitte? Sonst wird das schwer hier. Ah, hier :
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L196" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L196</a>
+
+.</p>
+<p>theclaw&gt; ja</p>
+<p>Isotopp&gt; <code>i_block</code> ist der 2. Parameter der Funktion, der Aufruf steht in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L547" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L547</a>
+
+. Da ist es <code>iblock</code>,
+das wird durchgereicht vom 2. Parameter von <code>ext2_get_block</code> <code>iblock</code>. Das wiederum ist
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L665" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L665</a>
+
+, der das über den Umweg von
+<a href="http://lxr.linux.no/source/fs/buffer.c#L2759" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/buffer.c#L2759</a>
+
+ aufruft.</p>
+<p>theclaw&gt; Nicht gerade trivial.</p>
+<p>Isotopp&gt; Für den Kernel schon. Das geht da überall so, inzwischen. Man gewöhnt sich dran, das Lesen zu können. Die
+Alternative ist Code Duplication, und das nervt noch mehr. Anyway, <code>sector_t</code> ist ein unsigned 64 bit
+(long long, 8 byte) in i386. Eine Blocknummer.</p>
+<p>Isotopp&gt; In
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L556" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L556</a>
+
+, das ist die wichtige Stelle, hast du die <code>inode</code> und den <code>iblock</code>.</p>
+<p>Die <code>inode</code> hat das 12-Elemente direct block array usw im Speicher und <code>iblock</code> ist der Offset. Die Frage,
+die in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L556" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L556</a>
+
+ geklärt werden muss
+ist: wie tief müssen wir runter steigen - für die Blöcke 0-11 gar nicht, für die Blöcke 12- einen Level und so weiter.
+Das klärt <code>ext2_block_to_path</code>.</p>
+<p>Den Abstieg sehen wir dann in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L562" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L562</a>
+
+.
+Und der Abstieg klappt entweder, weil das File schon einen Block hat an der Stelle <code>iblock</code>
+(<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L564" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L564</a>
+
+),
+oder es klappt nicht und wir müssen Blöcke beschaffen
+(nach <a href="http://lxr.linux.no/source/fs/ext2/inode.c#L575" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L575</a>
+
+).</p>
+<p>theclaw&gt; Sekunde. Bin kein Kernelmensch ;)</p>
+<p>Isotopp&gt; Aber das ist doch nur gewöhnliches C.</p>
+<p>theclaw&gt; Naja, trotzdem komplex (für mich). Erstmal eine Frage. Man hat ein FS, und will die Inode nummer 23, wie wird die gefunden?</p>
+<p>Isotopp&gt; Über die Verzeichnisse. Wir wissen, / hat die inode 2. Das ist definiert in
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L60" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L60</a>
+
+,
+also lesen wir das File mit der inode 2 durch, und parsen es als
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L510" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L510</a>
+
+ Strukturen.</p>
+<p>theclaw&gt; Sind die indodes nicht nacheinander abgepeichert in den BGs?
+Also die erste BG enthält die ersten X Inodes, die zweite BG die zweiten X usw&hellip;</p>
+<p>Isotopp&gt; Aeh, ah. Ich verstehe. Userland kann nichts mit Inodes machen, nur mit Filenamen. Es gibt kein <code>openi()</code>.
+Also müssen alle Funktionen im Userland immer Namen angeben, und du kommst dann vom Namen zur Inode über das kernel-interne <code>namei()</code>.</p>
+<p>theclaw&gt; Ja, klar. Aber der Kernel will ja Inode X irgendwie kriegen können.</p>
+<p>Isotopp&gt; Ja, intern. Das weiss er, weil im Superblock ja steht wie viele Inodes pro bg vorhanden sind, und er dann aus
+der Inodenummer / inodes_per_bg sofort die bg nummer ausrechnen kann, und dann sofort weiss, wo die inode
+stehen muss auf der Platte. Eine Inode-Nummer ist also implizit auch die Blockadresse der Inode auf der Platte.</p>
+<p>Hier ist der Superblock:
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L341" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L341</a>
+
+,
+und <a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L352" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L352</a>
+
+ ist
+die <code>s_inodes_per_group</code>.</p>
+<p>Und die Inode wird dann in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L998" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L998</a>
+
+ gelesen.</p>
+<p>Meine Rechnung von eben ist hier
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L1012" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L1012</a>
+
+.  <code>(ino - 1) / EXT2_INODES_PER_GROUP(sb);</code>
+und <code>((ino - 1) % EXT2_INODES_PER_GROUP(sb)) * EXT2_INODE_SIZE(sb);</code></p>
+<p>theclaw&gt; Nix für ungut aber für mich ist der Code grad ned so hilfreich.</p>
+<p>Isotopp&gt; Was ist das Problem?</p>
+<p>theclaw&gt; Bin grad bisschen überfordert.</p>
+<p>Isotopp&gt; Du hast eine Inode Nr 23. Du weisst, pro bg hast Du sagen wir 8192 Inodes. Und (23-1) / ext2_indes_per_group(sb) = 0.
+Also ist inode 23 in bg 0.</p>
+<p>theclaw&gt; <em>wartmal</em> 8192?!</p>
+<p>Isotopp&gt; 8192 bei 1 kb blockgroesse, 32768 bei 4kb</p>
+<p>theclaw&gt; Wie gross ist eine Inode nochmal?</p>
+<p>Isotopp&gt; 128 bytes.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;linux/ext2_fs.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>main() {
+  <span style="color:#66d9ef">struct</span> ext2_inode s;
+  printf(<span style="color:#e6db74">&#34;%d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, <span style="color:#66d9ef">sizeof</span>(s));
+}
+</code></pre></div><p>und</p>
+<pre><code class="language-console" data-lang="console">kris@linux:~&gt; make probe
+make: &quot;probe&quot; ist bereits aktualisiert.
+kris@linux:~&gt; ./probe
+128
+</code></pre><p>theclaw&gt; Also pro BG ist allein 1MB bzw 4MB an Inodes reserviert?</p>
+<p>Isotopp&gt; Ja. Eine bg ist 8 MB oder 128 MB gross.  Schau, hast du ein ext2 da?</p>
+<p>theclaw&gt; ja</p>
+<p>Isotopp&gt; Dann mach mal ein <code>debugfs /dev/...</code> da drauf. Ist read only, macht also nix kaputt. Dann mach mal <code>show_super_stats</code>.</p>
+<pre><code class="language-console" data-lang="console">Inodes per group:         2008
+Inode count:              26104
+</code></pre><p>für ein <code>/dev/sda5     ext2     99M  6.7M   87M   8% /boot</code>
+und <code>26104*128/1024 = 3263</code>, also 3263 KB oder 3.2M für alle Inodes.</p>
+<p>theclaw&gt; Aber meine frage ist eine Andere.</p>
+<p>theclaw&gt; 21:40 Isotopp&gt; und das wichtigste in <code>struct: __le32 i_block[EXT2_N_BLOCKS];</code></p>
+<p>theclaw&gt; <code>i_block[12]</code> ist ein indirekter block? <em>aaargh</em> Die Adresse eines indirekten Blockes?</p>
+<p>Isotopp&gt; Ja.
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L165" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L165</a>
+
+. Dort ist
+<code>#define EXT2_IND_BLOCK EXT2_NDIR_BLOCKS</code> und weiter ist
+<code>#define EXT2_NDIR_BLOCKS 12</code></p>
+<p>theclaw&gt; Also 15 <code>EXT2_N_BLOCKS</code>.</p>
+<p>Isotopp&gt; Also ist <code>i_block[0]</code> bis <code>i_block[11]</code> direct, <code>i_block[12]</code> indirect, und <code>i_block[13]</code> DIND und <code>i_block[14]</code> TIND. Alles in allem also 15.</p>
+<p>theclaw&gt; Sind das die Faktoren die die max. Dateigröße in ext2 bestimmen?</p>
+<p>Isotopp&gt; Das sind die Faktoren, die die maximale Blocknummer bestimmen. Dateigröße ist Blockgröße mal maximale Blocknummer.</p>
+<p>theclaw&gt; Also ja ;) Indirekt halt.</p>
+<p>theclaw&gt; 9711-9722: Sind das die &ldquo;Adressen&rdquo;?</p>
+<p>Isotopp&gt; Blocknummern, ja, Adressen auf der Platte. In
+<a href="http://lxr.linux.no/source/include/linux/ext2_fs.h#L234" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/ext2_fs.h#L234</a>
+
+ siehst du als Typ uebrigens <code>__le32</code>. Das ist definiert in
+<a href="http://lxr.linux.no/source/include/linux/types.h#L172" target="_blank" rel="noopener">http://lxr.linux.no/source/include/linux/types.h#L172</a>
+
+ und endet als <code>__u32</code>, also unsigned 32 bit. Mithin also 2^32 Blöcke. Bei 4 KB Blöcken sind das 17592186044416 Bytes, oder 16 TB, bei 1 KB Blöcken nur 4 TB.</p>
+<p>theclaw&gt; Diese Blöcke haben aber nix mit den Blöcken bei ext2 zu tun? Oder doch?</p>
+<p>Isotopp&gt; <code>show_super_stats</code></p>
+<p>Isotopp&gt; <code>Block size:               1024</code></p>
+<p>Isotopp&gt; In meinem Fall also auch maximale Dateigröße 4 TB. 4 Gigablocks.</p>
+<p>theclaw&gt; Okay, dann noch eine Frage:</p>
+<p>theclaw&gt; TOTAL: 1804 und Blockcount: 3608, huh? Warum *2?</p>
+<p>Isotopp&gt; Hmm, da rechnet jemand mit 512 Byte Hardwaresektoren, warum auch immer.</p>
+<p>Isotopp&gt;</p>
+<pre><code class="language-console" data-lang="console">linux:~ # ls -lsi /boot/vmlinuz-2.6.13-15-default
+ 28 1513 -rw-r--r--  1 root root 1541719 Sep 13  2005 /boot/vmlinuz-2.6.13-15-default
+</code></pre><p>Isotopp&gt; Inode 28, 1513 Blöcke auf der Platte, Dateilaenge 15411719 Bytes. Rechnerisch ist  <code>1541719/1024 = 1505.5849</code>. 7 Blöcke Verwaltungsoverhead. Und zwar</p>
+<pre><code class="language-console" data-lang="console">(0-11):11515-11526, 
+(IND):11527, (12-267):11528-11783, 
+(DIND):11784, (IND):11785, (268-523):11786-12041, 
+              (IND):12042, (524-779):12043-12298, 
+              (IND):12299, (780-1035):12300-12555, 
+              (IND):12556, (1036-1291):12557-12812, 
+              (IND):12813, (1292-1505):12814-13027
+TOTAL: 1513
+</code></pre><p>Isotopp&gt; (IND):11527, (DIND):11784, (IND):11785, (IND):12299, (IND):12556, (IND):12813 &lt;- das sind 6.</p>
+<p>Isotopp&gt; 1541719/1024 = 1505.5849 sind 1506. Plus 6 sind 1512.</p>
+<p>Isotopp&gt; Er meint total sei 1513. Wieso?</p>
+<p>theclaw&gt; Ich versteh das sowieso nicht, warum da 1513 angezeigt wird. 1292-1505 ist das letzte und dann total 1513. Evtl noch die Metainfos dazu?</p>
+<p>Isotopp&gt; Nein, aber die DIND und IND Blocks. Für die Blöcke 12-267 wird ja ein IND gebraucht, für die Blöcke 268-1505 wird ein DIND und vier IND gebraucht. 6 blocks Extra. Siehe noch einmal
+<a href="http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif" target="_blank" rel="noopener">http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif</a>
+
+.  Das rechts sind die Daten. In der Inode stehen die ersten paar Datenblocknummern direkt, in der zeichnung 10, in ext2 sind es 12.  Dann steht in der Inode die Nummer vom IND, und im IND die Blocknummern der Datenblöcke, hier 12-267. Das ist also 1 block overhead wenn das file mehr als 12 blocks lang wird. Dann ein DIND, wenn der 268&rsquo;te block gebraucht wird und für jeweils 256 Blocks ein IND dazu.</p>
+<p>theclaw&gt; Du erklaerst so schnell.</p>
+<p>Isotopp&gt;</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # dd if=/dev/zero of=kris bs=1k count=12
+linux:/boot # ls -ls kris
+12 -rw-r--r--  1 root root 12288 Dec 26 16:58 kris
+</code></pre><p>12 Blöcke, 12288 Bytes Länge. Und nun:</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # dd if=/dev/zero of=kris bs=1k count=13
+linux:/boot # ls -ls kris
+14 -rw-r--r--  1 root root 13312 Dec 26 16:58 kris
+</code></pre><p>Ein 1k länger, 14 Blocks statt 12.</p>
+<p>theclaw&gt; Wie findet man die Groessen der BGs eines dateisystems heraus?</p>
+<p>Isotopp&gt; Lies <code>show_super_stats</code> von <code>debugfs</code>.</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # export DEBUGFS_PAGER=cat
+linux:/boot # debugfs /dev/sda5
+debugfs 1.38 (30-Jun-2005)
+debugfs:  show_super_stats
+Inode count:              26104
+Block count:              104388
+Block size:               1024
+Blocks per group:         8192
+Inodes per group:         2008
+Inode blocks per group:   251
+</code></pre><p>Isotopp&gt; Wird einiges klarer?</p>
+<p>theclaw&gt; Ein bisschen. Also wenn ich z.B. block nummer X habe, dann ist (nummer X)/(blocks per group) die BG nummer gell?</p>
+<p>Isotopp&gt; Ja, aber das interessiert nicht. Du redest ja von Blöcken.</p>
+<p>Isotopp&gt; Der n-te Block der Datei x kann irgendwo liegen. Wo, das sagt dir die Inode.  Normal hast du ja ein File, und eine Position in einem File.</p>
+<p>theclaw&gt; Ich kann doch einfach von der Adresse auf der Platte X * bytes_per_block lesen?</p>
+<p>Isotopp&gt; Naja, als root schon. Sonst nicht. debugfs macht das ja, die Disk als raw device auf und dann direkt auf die Blöcke klettern. Niemand sonst tut so etwas ausser  debugfs und fsck. Alle anderen machen FILES auf und lesen dann am OFFSET in dem File. Punkt ist, dass du normal mit Files arbeitest und nicht mit Blöcken. Der Kernel arbeitet mit Blöcken. Und er muss irgendwie vom File + Offset auf den Block kommen.</p>
+<p>theclaw&gt; Ja Klar</p>
+<p>Isotopp&gt; Unser ext2 hier hat 1 kb Blocksize. Wir lesen das File <code>/boot/vmlinuz-2.6.13-15-default</code> (inode 36). Und zwar am Offset 1000000 (1 mio). Der wievielte Block im File ist das?</p>
+<p>theclaw&gt; <em>denk</em>. Erstmal hat man ja nur den Dateinamen.</p>
+<p>Isotopp&gt; Ja, das kümmert uns gerade noch nicht. Offset 1 mio &ndash; welcher block? 1000000/1024 = 976.5625. Also Bytes 0-1023 sind Block 0, Bytes 1024-2047 sind Block 1 und so weiter.  In unserem fall also block 976. 976*1024=999424, 1000000-999424=576. Byte 1 000 000 steht also in Block 976, an Position 576 in diesem Block.</p>
+<p>theclaw&gt; Okay. Stop mal. Hab da gleich ne Frage dazu:</p>
+<p>theclaw&gt; 21:40 Isotopp&gt; und das wichtigste in <code>struct: __le32 i_block[EXT2_N_BLOCKS];</code>
+theclaw&gt; dieser kontext: <code>i_block[976]</code> brauchen wir da also. Ack? Und dazu noch das offset dazu?</p>
+<p>Isotopp&gt; Ja, aber den kriegen wir nicht so.
+<a href="http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif" target="_blank" rel="noopener">http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif</a>
+
+.</p>
+<p>theclaw&gt; Ja, das wollte ich grad sagen :P Blocks 0-11 kriegen wir so. Muss man sich halt den Weg durchhangeln.</p>
+<p>Isotopp&gt; blocks 12-267 kriegen wir über den IND (single indirect block). Und blocks 268- kriegen wir über den DIND und den passenden IND.</p>
+<p>Isotopp&gt; 976-12=964, 964-256=708. 708/256=2.7656. Also müssen wir über den 2. IND des DIND gehen.</p>
+<p>theclaw&gt; Ich weiss nicht ganz was du da rechnest.</p>
+<p>Isotopp&gt; Naja, 1 KB blockgroesse, 4 byte pro blocknummer, also 256 blockadressen pro Block. 976ter Block ist gefragt.</p>
+<p>theclaw&gt; ay</p>
+<p>Isotopp&gt; 12 direct blocks, also 964 blocks dahinter.</p>
+<p>theclaw&gt; Also mit einem &ldquo;indirekten block&rdquo; kann man 256 andere Blöcke adressieren, wie pointer in C</p>
+<p>theclaw&gt; Ich hab noch ganz grundlegende Fragen. Was wird wirklich wollen ist doch das mapping logische Ext2block-Adresse der Datei -&gt; physische Blockadresse. Richtig?</p>
+<p>Isotopp&gt; In diesem speziellen Fall: ja. Die allgemeine Formulierung lautet so: Wir haben ein Quadrupel (major number, minor number, inode number, offset in bytes), das ist ein Device, eine Partition (maj, min),  und in dem Device ein File (inode), und in dem File eine Byteposition. Und wir wollen ein Tripel (maj, min, blockno), also in der partition (maj, min) den zu dieser Datei gehoerenden physikalischen Block.</p>
+<p>theclaw&gt; jo</p>
+<p>Isotopp&gt; Weil (maj, min) bei dieser Abbildung konstant sind (wir arbeiten immer innerhalb derselben partition), vergessen wir maj und min und reden von einer Funktion die (ino, offset) auf (phy block) abbildet. Das nennt man ein Mapping. Und zwar ein Mapping für Datenblöcke. Daher heisst die funktion <code>bmap</code>. Jedes Dateisystem hat so eine Funktion, daher reden wir hier über die bmap funktion von ext2,  die heisst also sinnigerweise <code>ext2_bmap</code>.</p>
+<p>theclaw&gt; Schonmal sauhilfreich. ext2_bmap: Jetzt kann ich mir was darunter vorstellen. Danke. <em>codesuch</em></p>
+<p>Isotopp&gt; Es ist eine diskrete Funktion.</p>
+<p>y = mx+k. Das sind kontinuierliche Funktionen von R-&gt;R.</p>
+<p>Wir arbeiten hier mit diskreten, endlichen Funktionen. Die werden in der Regel als Lookuptable realisiert.</p>
+<p>Es gibt also eine Wertetabelle, die jedem (ino, offset) ein (phy block) zuordnet.</p>
+<p>Die Wertetabelle <em>ist</em> die Inode. Eine Inode ist also ein Array von Blocknummern.</p>
+<p>Wenn es ein naives Array waere, dann waere die Inode variabel groß und für große Dateien sehr, sehr gross. Das ist wenig effizient.</p>
+<p>Daher hat man die Inode komprimiert, für kleine dateien (bis 12 blocks) speichert man die Wertetabelle tatsächlich <em>in</em> der Inode (i_blocks[0-11]),
+aber stell Dir dieses Verfahren mal für 1000 Blocks vor. Das wäre doof.</p>
+<p>Also speichert man die Wertetabelle für die Blöcke 12-267 nicht in der Inode, sondern in einem für diesen Zweck bestellten block, indem indirect block und in der Inode nur den einen Eintrag für diesen Block.</p>
+<p>theclaw&gt; Ich habs soweit gecheckt.</p>
+<p>Isotopp&gt; Das kann man beweisen.</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # dd if=/dev/zero of=kris bs=1k count=12
+</code></pre><p>12 blocks a 1 KB (ich hab ja ein ext2 mit 1 KB blocks).</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # ls -ls kris
+12** -rw-r--r--  1 root root 12288 Dec 26 17:30 kris
+</code></pre><p>12288 bytes lang 12 blocks belegt. Nun mal 13 KB.</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # dd if=/dev/zero of=kris bs=1k count=13
+linux:/boot # ls -ls kris
+14 -rw-r--r--  1 root root 13312 Dec 26 17:30 kris
+</code></pre><p>13312 bytes, aber 14 blocks! Da ist er, der IND.</p>
+<p>theclaw&gt; <em>selbstausprobier</em> Ist das die Anzahl der Blöcke für das Inode inklusive den Daten?</p>
+<p>Isotopp&gt; Das ist die Anzahl der Blöcke OHNE die inode selber (Die belegt 128 byte in der Inodetable), also Daten + IND + DIND + TIND. Kann man auch beweisen.</p>
+<pre><code class="language-console" data-lang="console">linux:/boot # dd if=/dev/zero of=kris bs=1k count=0
+linux:/boot # ls -ls kris
+0 -rw-r--r--  1 root root 0 Dec 26 17:33 kris
+</code></pre><p>Isotopp&gt; File mit 0 Byte belegt 0 Blocks, Inode wird also nicht gezählt.</p>
+<p>theclaw&gt; okay. Das war hilfreich die Erklaerung, danke.</p>
+<p>Isotopp&gt; Also wir haben in der Inode das Lookup Array für eine diskrete Funktion, eine Wertetabelle,
+und die Speicherung des Array ist ulkig. Und wir haben deswegen overhead, weil wir die
+mit 1, 2 und 3 markierten Blöcke in
+<a href="http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif" target="_blank" rel="noopener">http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif</a>
+
+
+irgendwann belegen müssen. Und deswegen siehst du die Sprünge - kein File hat jemals 13 Blocks.</p>
+<p>theclaw&gt; Moment, aber das ist ja sau umständlich eine ganze Datei zu lesen dann? :)</p>
+<p>Isotopp&gt; Ah! Jetzt daemmert es langsam. Ist ja nicht so, dass ext2 GUT wäre.</p>
+<p>Isotopp&gt; So, jetzt gehen wir noch mal in den Code</p>
+<p>Isotopp&gt; Das ist
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L665" target="_blank" rel="noopener">ext2_bmap</a>
+
+, sehr kurz. Du erinnerst dich: JEDES Dateisystem hat ein bmap.
+Darum ist <code>ext2_bmap</code> sehr kurz, es ruft <code>generic_block_bmap</code> auf. Das wiederum ruft dann allerdings
+<code>ext2_get_block</code> auf, das die Arbeit für <code>generic_block_bmap</code> macht. <code>generic_block_bmap</code> kriegt also
+einen Callback nach <code>ext2_get_block</code> mitgegeben. Wir landen also in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L547" target="_blank" rel="noopener">ext2_get_block</a>
+
+. So weit so klar?</p>
+<p>theclaw&gt; Ja warte. Ich schau mir den Code gerade an.</p>
+<p>Isotopp&gt; Tut nicht not. Noch nicht. Erst mal ist nur wichtig, wie wir zu <code>ext2_get_block</code>
+kommen und wieso da ein Umweg über das <code>generic_block_bmap</code> gemacht wird.</p>
+<p>theclaw&gt; Nicht klar. Warte. Wo bei <code>ext2_get_block()</code> ist das Offset?</p>
+<p>Isotopp&gt; in <code>iblock</code> (2. parameter), ist schon umgerechnet in eine blocknummer.</p>
+<p>theclaw&gt; Ah klar, der n. block eines inodes.</p>
+<p>Isotopp&gt; Wir sind also in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L547" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L547</a>
+
+ und sollen <code>iblock</code>
+aus <code>inode</code> (1. parameter) fischen. Also block 976 aus file 36. Wir müssen ja nun je nach
+Blockoffset unterschiedlich kompliziert die Lookuptable runterklettern. Bei blocks 0-11 wäre
+alles ganz einfach, bei 12-267 kommt der IND dazu und bei den folgenden Blöcken der DIND.
+Soweit das Verfahren grundsätzlich klar?</p>
+<p>theclaw&gt; Ich schau mir das .gif nochmal an.</p>
+<p>Isotopp&gt; Es wird leichter, wenn du
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L196" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L196</a>
+
+ liest.
+<code>i_block</code> ist also 976. Dann schau mal in die Zeile 196. Zeile 201: <code>direct_blocks</code> ist 12. <code>indirect_blocks</code> ist ptrs, also 256.</p>
+<p>theclaw&gt; <code>ext2_block_to_path</code>. Das <code>path</code> hat nix mit dem Dateisystempfad zu tun, sondern mit dem Pfad, wie man zum Block kommt. Ahh.</p>
+<p>Isotopp&gt; Es geht um den Path in
+<a href="http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif" target="_blank" rel="noopener">http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif</a>
+
+, ja.</p>
+<p>theclaw&gt; Warte, ich hab eine Frage zu dem GIF. Da z.b. &ldquo;1&rdquo;, also der erste indirekte Block. Der koennte auf 256 weitere zeigen?</p>
+<p>Isotopp&gt; Ja. In unserem Beispiel ist das so, 4 byte pro blocknummer und 1 kb pro block. Bei anderen
+Größen (8 byte pro blocknr, und 4 kb pro block) ist das anders. 4096/8 = 512 pro IND z.B.</p>
+<p>theclaw&gt; hm. Sorry, ich dachte ne Blocknummer ist 32bit?</p>
+<p>Isotopp&gt; Ja, in unserem Beispiel ist das so. Aber es waere ja möglich, das alles mit anderen Sizes zu compilen.
+Und dann soll es auch noch funktionieren. Also coden wir das alles nicht hart rein, sondern speichern die
+Rahmendaten im Superblock des Filesystems und schreiben den Code ordentlich. Soweit so klar?</p>
+<p>theclaw&gt; jo</p>
+<p>Isotopp&gt; Drum auch der Code in
+<a href="http://lxr.linux.no/source/fs/ext2/inode.c#L196" target="_blank" rel="noopener">http://lxr.linux.no/source/fs/ext2/inode.c#L196</a>
+
+, Zeilen 199 bis 203.</p>
+<p>theclaw&gt; Den ich mir grad anschaue. ;)</p>
+<p>Isotopp&gt; Der fragt den Superblock sb nach den Anzahl der Adressen pro Block, und bestimmt dann die <code>direct_blocks</code>,
+die Anzahl der Blockadressen pro indirect Block in <code>indirect_block</code> und die Anzahl der Blockadressen pro Double Indirect Block.</p>
+<p>Der macht das ein wenig komisch. Erst mal <code>direct_blocks</code>. Das ist leicht, da nimmt er nur den #define.
+<code>indirect_blocks</code> ist auch leicht, das ist ptrs, also <code>EXT2_ADDR_PER_BLOCK(...sb)</code>, also mal im Superblock nachschlagen.</p>
+<p><code>[#define EXT2_ADDR_PER_BLOCK(s)          (EXT2_BLOCK_SIZE(s) / sizeof (__u32))](http://lxr.linux.no/source/include/linux/ext2_fs.h#L100)</code>.</p>
+<p>Block size bei uns 1024 und <code>sizeof __u32</code> ist immer 4. Also ist mein beispiel mit 8 derzeit hypothetisch.</p>
+<p>theclaw&gt; ;)</p>
+<p>Isotopp&gt; Ein double block kann ebenfalls ptrs viele Blockadressen enthalten, also 256 Stück. Jede von denen ist ein indirect block, der 256 Datenblöcke enthält.</p>
+<p>theclaw&gt; also 256^2 und ein TIND für 256^3.</p>
+<p>Isotopp&gt; Nun will er das aus irgendeinem Grund nicht so rechnen, sondern mit bit shifts, also macht er 1 &laquo; (ptrs_bits * 2).</p>
+<p>theclaw&gt; Also warte, kann man 256+256^2+256^3 Blöcke adressieren, d.h. kann ne Datei so groß sein?</p>
+<p>Isotopp&gt; Ja, das ist auch noch ein Limit. Aber da wir nur 2^32 viele Blocknummern haben, ist bei 4 Gigablocks Schluss, also bei 4 TB (1 kb Blöcke) oder 16 TB (4 kb Blöcke).</p>
+<p>theclaw&gt; Okay, irgendwie so ;)</p>
+<p>Isotopp&gt; Du müßtest schon die Blocknummern länger machen als ein <code>__u32</code>, damit mehr geht, dann passen aber weniger direct_blocks in eine Inode, oder die Inode wird größer.</p>
+<p>Isotopp&gt; Aber wir wollen mal weiter im Code. Schau in zeile 207. Was machen die da?</p>
+<p>Isotopp&gt; <code> if (i_block &lt; 0) {</code>
+Isotopp&gt; geht das überhaupt?</p>
+<p>theclaw&gt; Warte</p>
+<p>theclaw&gt; Nah, nur durch nen Programmierfehler evtl.</p>
+<p>Isotopp&gt; Welchen typ hat <code>i_block</code>?</p>
+<p>theclaw&gt; unsigned? :) Ja, okay. Das geht überhaupt nicht.</p>
+<p>Isotopp&gt; Steht oben in der Funktion - da ist es ein LONG!</p>
+<p>theclaw&gt; ah, doch ein signed :)</p>
+<p>Isotopp&gt; Aber eine Blocknummer, das haben wir vorher gesehen, ist ein <code>__u32</code>!</p>
+<p>theclaw&gt; Macht das sinn?</p>
+<p>Isotopp&gt; Nein, das ist FAHALSCH!</p>
+<p>theclaw&gt; Sag das doch!</p>
+<p>Isotopp&gt; Du hast gerade deinen ersten Kernelfehler gefunden.</p>
+<p>theclaw&gt; Geil! ;)</p>
+<p>Isotopp&gt; Der Fehler sieht Blocknummern als signed, daher ist also nun schon bei 2 Gigablocks zu, also 2 TB und 8 TB Filesize (für 1 und 4 kb Blocksize). Aber weiter im Text, Zeile 209.</p>
+<p>Isotopp&gt; Weiter zu 212. <code>((i_block -= direct_blocks) &lt; indirect_blocks)</code> ist dir auch klar? Wir zermatschen <code>i_blocks</code> hier als Seiteneffekt.</p>
+<p>theclaw&gt; ja bin ein C-ler. Daran scheitert die Erklaerung nicht ;)</p>
+<p>Isotopp&gt; Also sind wir in 216. Nun ist <code>i_block</code> also 964 und wir ziehen 256 (<code>indirect_blocks</code>) ab. Das sind 708. Und <code>double_blocks</code> ist 256^2. Also true. Also speichern wir in 217: lese <code>EXT2_DIND_BLOCK</code>, dann in 218: lese <code>i_block/256</code> (<code>i_block &gt;&gt; ptrs_bits</code>), und in 219: lese <code>i_block % 256</code> (<code>i_block &amp; ( ptrs - 1)</code>). Dann sind wir fertig.</p>
+<p>Isotopp&gt; Wir sind wieder in <a href="http://lxr.linux.no/source/fs/ext2/inode.c#L547,">http://lxr.linux.no/source/fs/ext2/inode.c#L547,</a> line 557 nun, soweit klar?</p>
+<p>theclaw&gt; Kleinen Moment, das Bitshifting finde ich verwirrend.</p>
+<p>Isotopp&gt; ja</p>
+<p>theclaw&gt; ich weiss jetzt, was <code>ext2_block_to_path</code> macht.</p>
+<p>theclaw&gt; Also warte mal. Lass mich mal zusammenfassen.</p>
+<p>theclaw&gt; Naja, nicht mal so einfach zu beschreiben.</p>
+<p>Isotopp&gt; Doch schon. Dir fehlen nur die Worte.</p>
+<p>theclaw&gt; :] jo</p>
+<p>Isotopp&gt; Wir haben nun offset[0], offset[1] und offset[2]. In offset[0] steht welches Feld aus der Inode wir nehmen (das DIND feld),  Wir haben dann einen Block mit 256 Feldern, und nehmen das Feld offset[1] da draus, lesen den Block und nehmen das Feld offset[2] da draus.</p>
+<p>theclaw&gt; Naja, das sind ja Details. Mich interessiert aber eher das Design als die Implementation ;), Das geht mir schon zu sehr in die Tiefe ehrlich gesagt.</p>
+<p>Isotopp&gt; Allgemeiner: wir haben ein Array, das nicht linear ist, sondern quadratisch steigend durch Indirektion komprimiert wird, und bei unseren Randparametern ist die schrittweite 8 bit (256 entries) pro Block, also 256, 256^2, 256^3, &hellip; und das ist genau die Zeichnung
+<a href="http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif" target="_blank" rel="noopener">http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif</a>
+
+.</p>
+<p>theclaw&gt; Okay. Jetzt sind meine Fragen geklärt oder? Dieses ganze Detailwissen erschlägt mich ;)</p>
+<p>Isotopp&gt; Der Rest sind tatsaechlich Kerneldetails. Das hier war die Logik. Der Punkt ist, dass du in <code>block_to_path</code> durch die Faltlogik geklettert bist. Also die, die das mit DIR, IND, DIND und TIND analysiert und entscheidet.</p>
+<p>theclaw&gt; Naja, Faltlogik?</p>
+<p>Isotopp&gt; Ja, erst 12 direkt, dann 256 einmal gefaltet, dann 256*256 zweimal gefaltet, dann 256*256*256 dreimal gefaltet statt eines einzigen linearen Arrays das zum groessten Teil leer waere.</p>
+<p>theclaw&gt; Hm, ich versteh zwar das System, aber nicht was das mit Falten zu tun hat ;)</p>
+<p>Isotopp&gt; Naja, statt eines Array mit 2 Gigaentries (Kernelbug!) hast du ein Array mit 15 Eintraegen, bei dem die ersten 12 Eintraege für sich selber stehen, der Eintrag 13 für 256 Eintraege, der Eintrag 14 für 256 Eintraege, die für 256 Eintraege stehen, steht, und der Eintrag 15 für 256 Eintraege die für 256 Eintraege, die für 256 Eintraege stehen steht. Also einmal falten, zweimal falten, dreimal falten.</p>
+<p>theclaw&gt; Aber &ldquo;falten&rdquo;?</p>
+<p>Isotopp&gt; So in etwa:</p>
+<pre><code class="language-console" data-lang="console">   ___
+___\ /___
+</code></pre><p>theclaw&gt; Was stellt das dar?</p>
+<p>Isotopp&gt; Ein Eintrag, der für viele steht. Ein Blatt Papier mit zwei Knicks, ein Eintrag (der zwischen \ /) steht für Drei (___)</p>
+<p>Isotopp&gt; Und zum Schluß
+<a href="http://www.tamacom.com/tour.html" target="_blank" rel="noopener">http://www.tamacom.com/tour.html</a>
+
+,
+<a href="http://www.tamacom.com/tour/kernel/unix/" target="_blank" rel="noopener">http://www.tamacom.com/tour/kernel/unix/</a>
+
+,
+<a href="http://www.tamacom.com/tour/kernel/unix/S/97.html#L18" target="_blank" rel="noopener">http://www.tamacom.com/tour/kernel/unix/S/97.html#L18</a>
+
+.</p>
+<p>Das, mein Freund, ist der Urvater aller bmaps, bmap in V7 Unix.</p>
+<p>Rein gehen eine <code>struct inode</code>, die inode,  eine <code>daddr_t bn</code>, eine blocknummer und ein <code>rwflag</code>, das ist aber Wurst. Raus geht eine <code>daddr_t</code> blocknummer.</p>
+<p>Also (ino, block_in_file) -&gt; (phys blocknr). NADDR ist die Anzahl der Eintraege in der Inode. Also sind 0-&gt; NADDR-4 die direct blocks, NADDR-3 der IND,  NADDR-2 der DIND  und NADDR-1 der TIND.</p>
+<p>theclaw&gt; Aber den Code will ich mir jetzt nicht genauer ansehen, sorry ;)</p>
+<p>Isotopp&gt; Das ist derselbe Code, nur noch verquaster. Der ist ja auch 30 Jahre alt.</p>
+<p>theclaw&gt; Den Link bookmarke ich mal, das könnte noch interessant werden.</p>
+<p>Isotopp&gt; Und weil es so schön ist, sind da auch die FreeBSD, NetBSD, OpenBSD und Hurd Versionen von demselben Zeug. Und da kannst du dann sehen wie fundamental das ist, was Du da gerade anfasst. Und wie sich C-Style im Kernel in den letzten 30 Jahren so entwickelt hat. Weil das V7 Zeugs da sind etwa 30 Jahre von hier, das 4.3BSD sind ca. 20 Jahre von hier und das Linux-Zeugs ist von jetzt.</p>
+<p>theclaw&gt; Wenn ich das so seh fällt mir grad auf wie sinnvoll man seine Zeit nützen könnte ;)</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

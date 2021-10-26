@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Filling disk space fast</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="filling-disk-space-fast-page">
+	<h1 class="title">
+            Filling disk space fast
+	</h1>
+
+	<p>Some of the databases at work are a tad on the large side, in the high
+2-digit terabytes of size. Copying these to new machines at the moment takes
+a rather long time, multiple days, up to a week. Speeding it up pays
+twice, because with shorter copy times there is also less binlog to catch
+up.</p>
+<p>I have been looking into disk copy speeds in order to better understand the
+limits. When creating a partition from NVME devices, the most simple layout
+is a concatenation:</p>
+<pre><code class="language-console" data-lang="console"># lvcreate -n kris -L 10t vg00
+# dd if=/dev/zero of=data.0 bs=1024k count=10240
+</code></pre><p>Using a single <code>dd</code> command, I get about 600 MB/sec read or written from it.
+For 50TB, this is 87400 seconds, slightly more than one day.</p>
+<p>The key to NVME saturation is parallel access, so lets do this in parallel
+with multiple processes:</p>
+<pre><code class="language-console" data-lang="console"># seq 1 128 | parallel dd if=/dev/zero of=data.{} bs=1024k count=10240
+</code></pre><p>This will run as many processes in parallel as I have CPUs. On the test
+machine it will keep 32 processes running at all times, filling the queues
+of the NVME device deeply. It can reach 3250 MB/s, so 50 TB translate into
+16130 seconds, 4.5h.</p>
+<p>Had I created the NVME device as a striped RAID-0, I would have gotten even
+better performance:</p>
+<pre><code class="language-console" data-lang="console"># lvcreate -n kris -L 10t -i12 -I64k vg00
+# seq 1 128 | parallel dd if=/dev/zero of=data.{} bs=1024k count=10240
+</code></pre><p>This configuration can reach up to 5.2 GB/s locally, so for 50TB, we get to
+2.75h disk write time.</p>
+<p>Now, what I actually want is unfortunately something different: A copy of
+the original database image from machine A transferred to machine B. So that
+will translate into something along the lines of</p>
+<pre><code class="language-console" data-lang="console"># mkdir /root/kris
+# cd !$
+# fpart -o chunk -n 128 /mysql/testschema
+# find . -type f | parallel rsync --files-from={} / kris@B:/mysql/testschema
+</code></pre><p>but that is still suffering from all the rsync+ssh overhead. It will give
+you around 2.7 GB/s. Using tar, this becomes</p>
+<pre><code class="language-console" data-lang="console"># find . -type f | 
+&gt; parallel 'tar cvf - --files-from={} | ssh kkoehntopp@B &quot;tar -C /a -xf -&quot;'
+</code></pre><p>which is much faster for a clean, non-incremental copy. But that is still
+using ssh to encrypt and can become a bottleneck in some use cases.</p>
+<p>You could run <a href="http://moo.nac.uci.edu/~hjm/tnc" target="_blank" rel="noopener">tnc</a>
+
+ to use tar and netcat
+to get rid of both sources of overhead to speed things up even more and run
+at media speed.
+<a href="http://moo.nac.uci.edu/~hjm/HOWTO_move_data.html" target="_blank" rel="noopener">How to transfer large amounts of data via network</a>
+
+
+in general is a useful resource and has a few more ideas and tools on how to
+handle things.</p>
+<h2 id="tools-used">
+    <a href="#tools-used">
+	Tools used
+    </a>
+</h2>
+<p>GNU <code>parallel</code> - a perl script that is part of CentOS 7, which can
+comfortably construct and run command lines in parallel execution. It has no
+large advantage over <code>xargs -P</code>, but I like the flexibility of the
+substitutions offer.</p>
+<p><code>fpart</code> - a tool that will take a list of filenames or pairs of size and
+filename (du output) and sort it into chunks of files so that each chunk
+contains the approximately same amount of bytes.</p>
+<h2 id="other-tools">
+    <a href="#other-tools">
+	Other tools
+    </a>
+</h2>
+<p><code>fpsync</code> - deprecated tool, part of <code>fpart</code>, does a parallel rsync, badly.
+Do not use this. Also, the successor tool (<code>parsyncfp</code>) is not really
+valuable if you can do fpart and your transfer command of choice yourself.
+Actually doing it yourself is more transparent and easier to test.</p>
+<h2 id="this-requires-nvme">
+    <a href="#this-requires-nvme">
+	This requires NVME
+    </a>
+</h2>
+<p>NVME devices have multiple deep queues. They can utilize parallel access and
+turn it into performance. In fact, getting the full performance out of a
+NVME device probably requires asyncio or parallel processes.</p>
+<p>That is, because a single NVME device can give you around 800000 IOPS or
+more, so you should complete one IO every 1.2 microseconds. On the other
+hand, actual read latency is on the order to 100 micros, and write latency
+buffered/unbuffered is at around 50/450 micros, so a single threaded access
+can realize only a fraction of the total I/O potential of the device.</p>
+<p>NVME devices are using the same flash storage that SSD use, but they remove
+the SATA controller from the equation. Instead the flash resides directly on
+the PCI bus. NVME can be made available locally or remotely, and the way we
+have set our network the network is not the bottleneck. Network access
+inside our data centers will add 20 micros or less in latency.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

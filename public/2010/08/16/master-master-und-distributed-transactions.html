@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Master-Master und Distributed Transactions</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="master-master-und-distributed-transactions-page">
+	<h1 class="title">
+            Master-Master und Distributed Transactions
+	</h1>
+
+	<p>Immer mal wieder kommt jemand im Internet auf die Idee, wie man
+Master-Master und verteilte Transaktionen ganz einfach realisieren kann.
+<a href="http://www.okami.de/2010/08/01/mysql-verteilte-daten/" target="_blank" rel="noopener">MySQL verteilte Daten</a>
+
+ von Okami ist
+ein gutes Beispiel für diese Idee:</p>
+<blockquote>
+<p>Wir nutzen dabei aus, dass MySQL bei zusammengesetzten Indizes einen
+AUTO_INCREMENT-Wert pro distinktem Schlüsselpräfix zählt. Das heißt ganz
+konkret: Wir legen einen Primär-Schlüssel aus zwei Spalten zusammen. In
+der ersten Spalte verwenden wir einen sehr kleinen Wert, der die Quelle
+der Daten kennzeichnet: Source tinyint unsigned NOT NULL; Den zweiten Teil
+legen wir als einfache ID int unsigned NOT NULL AUTO_INCREMENT an. Und ein
+Timestamp-Wert bietet sich für das Triggern der Updates an.</p>
+</blockquote>
+<p>Diese Lösung ist exemplarisch schön, weil sie beide Fehlannahmen enthält,
+die man bei der direkten Lösung des Problems machen kann.</p>
+<ol>
+<li>Erstens setzt sie voraus, daß zusammengesetzte Primärschlüssel mit AUTO_INCREMENT
+portabel sind.</li>
+<li>Zweites setzt sie voraus, daß man mit Timestamps Änderungen replizieren
+kann.</li>
+</ol>
+<h3 id="zusammengesetzte-primärschlüssel">
+    <a href="#zusammengesetzte-prim%c3%a4rschl%c3%bcssel">
+	Zusammengesetzte Primärschlüssel
+    </a>
+</h3>
+<p>Zunächst einmal ist es so, daß in InnoDB ein zusammengesetzter Primärschlüssel mit AUTO_INCREMENT nicht funktioniert.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">source</span> tinyint unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+<span style="color:#f92672">-&gt;</span> id int unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> auto_increment,
+<span style="color:#f92672">-&gt;</span> ts <span style="color:#66d9ef">timestamp</span>,
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> (<span style="color:#66d9ef">source</span>, id)
+<span style="color:#f92672">-&gt;</span> ) engine <span style="color:#f92672">=</span> innodb;
+ERROR <span style="color:#ae81ff">1075</span> (<span style="color:#ae81ff">42000</span>): Incorrect <span style="color:#66d9ef">table</span> definition; there can be <span style="color:#66d9ef">only</span> one auto <span style="color:#66d9ef">column</span> <span style="color:#66d9ef">and</span> it must be <span style="color:#66d9ef">defined</span> <span style="color:#66d9ef">as</span> a <span style="color:#66d9ef">key</span>
+</code></pre></div><p>Dieses Feature existiert nur für MyISAM:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> t (
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">source</span> tinyint unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span>,
+<span style="color:#f92672">-&gt;</span> id int unsigned <span style="color:#66d9ef">not</span> <span style="color:#66d9ef">null</span> auto_increment,
+<span style="color:#f92672">-&gt;</span> ts <span style="color:#66d9ef">timestamp</span>,
+<span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">primary</span> <span style="color:#66d9ef">key</span> (<span style="color:#66d9ef">source</span>, id)
+<span style="color:#f92672">-&gt;</span> ) engine <span style="color:#f92672">=</span> myisam;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">23</span> sec)
+</code></pre></div><p>Es ist eines der Standard-Migrationshindernisse von MyISAM nach InnoDB.</p>
+<p>Das &ldquo;macht&rdquo; nichts, da MySQL einen anderen Mechanismus zur Verfügung stellt,
+der mit einem einfachen AUTO_INCREMENT auskommt und dieselbe Logik
+nachbildet: Die Variablen auto_increment_increment und auto_increment_offset
+erlauben es, einen AUTO_INCREMENT Zähler in Sprüngen hochzuzählen und jedem
+Server einen anderen Modulo-Wert zuzuteilen. Man setzt dazu
+auto_increment_increment auf allen Servern auf die Anzahl der Server (oder
+besser, die maximale Anzahl der Server, die man jemals haben will) und
+auto_increment_offset auf den Wert, den man sonst in source eingespeichert
+hätte. Man teilt also jedem Server einen anderen Startwert zu, und setzt
+eine ausreichend große Schrittweite, sodaß man auch später noch Server
+einfügen kann.</p>
+<h3 id="multi-master-für-mehr-als-insert-2pc">
+    <a href="#multi-master-f%c3%bcr-mehr-als-insert-2pc">
+	Multi-Master für mehr als INSERT: 2PC
+    </a>
+</h3>
+<p>Damit löst man jedoch nur das Problem der INSERT-Statements, nicht das
+Problem von UPDATE- und DELETE-Statements. Zum Beispiel ist es so, daß man
+ein Paar von Servern mit <code>auto_increment_increment = 2</code> betreiben kann und ein
+Server ungerade und der andere gerade IDs erzeugt. Der ungerade Server
+bekommt die geraden IDs per Replikation und umgekehrt.</p>
+<p>Natürlich kann man nun auf dem ungeraden Server und dem geraden Server
+zeitgleich den Datensatz mit der <code>ID = 17</code> ändern, und zwar uneinheitlich,
+d.h. auf einem Server setzt man <code>preis = 2</code> und auf dem anderen zeitgleich
+<code>preis = 3</code>. Es ist nun zufällig, welcher Preis sich systemweit durchsetzt
+und ob das System überhaupt auf einen einheitlichen Preis konvergiert, denn
+es gibt keinen Systemweiten Mechanismus, der das kontrollieren und steuern
+würde.</p>
+<p>MySQL Cluster hat einen solchen Mechanismus,
+<a href="http://en.wikipedia.org/wiki/Two-phase_commit_protocol" target="_blank" rel="noopener">2PC</a>
+
+, und er hat
+einen hohen Preis (Latenz). Ohne einen solchen Mechanismus gibt es jedoch
+keinen Multi-Master, sondern nur lose gekoppelte Server in einem Ring.</p>
+<p>Der Ring jedoch kann ohne ein Protokoll für verteilte Transaktionen
+jederzeit auseinander fallen, wenn man nicht zusätzliche Bedingungen
+aufstellt, wer wann wo schreiben darf. Der Extremfall sind Mogelpackungen
+wie
+<a href="http://code.google.com/p/mysql-master-master/" target="_blank" rel="noopener">MMM</a>
+
+, die sich zwar
+Master-Master nennen, Schreibzugriffe zu jedem gegebenen Zeitpunkt aber nur
+an einer Stelle zulassen.</p>
+<h3 id="timestamps-reichen-nicht-aus-für-eine-replikations-simulation">
+    <a href="#timestamps-reichen-nicht-aus-f%c3%bcr-eine-replikations-simulation">
+	Timestamps reichen nicht aus für eine Replikations-Simulation
+    </a>
+</h3>
+<p>Der zweite häufig gemachte Fehler ist die Annahme, daß Timestamp-Werte
+ausreichend sind für eine Replikations-Simulation (also um Änderungen zu
+tracken). Das fällt zweimal auf die Nase: Timestamps sind extern getaktet,
+so werden also so schnell hochgezählt wie die Auflösung des Timers definiert
+ist. In MySQL also wird maximal eine Änderung pro Sekunde pro Row erfaßt.
+Treten Änderungen schneller als das auf, ist es möglich, daß sich der Wert
+eines Records ändert, aber der Timestamp nicht.</p>
+<p>Die Abhilfe sind Versionszähler, die durch die Änderung selbst getaktet
+werden. Da die Änderung auch den Versionszähler verändert, ist sie auf jeden
+Fall erkennbar, egal wie schnell sie hintereinander auf derselben Row
+erfolgt. Die Grenze ist hier das zum Zählen notwendige Locking, das der
+Zählfrequenz eine obere Grenze setzt.</p>
+<p>Beide Verfahren scheitern jedoch an Löschungen, da ein DELETE die Row
+entfernt und damit auch der Zähler fehlt - man bekommt bei gelöschten Rows
+also gar nicht mit, daß etwas zu machen ist.</p>
+<p>Üblicherweise behilft man sich mit Scheinlöschungen, die ein deleted-Flag in
+der Zeile setzen, die als gelöscht gelten soll. Das wiederum macht alle
+Abfragen komplizierter, da jeder Bedingung ein WHERE deleted = 0 AND &hellip;
+zugefügt werden muß.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

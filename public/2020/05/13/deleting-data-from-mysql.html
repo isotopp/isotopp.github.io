@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Deleting data from MySQL</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="deleting-data-from-mysql-page">
+	<h1 class="title">
+            Deleting data from MySQL
+	</h1>
+
+	<p>I have been pointed at the following question: »Has anyone ever used mySQL events to auto-delete rows from a table after set period? Wondering your experience of doing this.«</p>
+<p><a href="https://twitter.com/wsakaren/status/1260434965810085889" target="_blank" rel="noopener"><p class="md__image">
+  <img src="/uploads/2020/05/mysql-delete.png" alt=""  />
+</p>
+
+</a>
+
+</p>
+<p>There are two ends to this question:</p>
+<ul>
+<li>expiring data from a MySQL table</li>
+<li>doing this with the event scheduler</li>
+</ul>
+<h2 id="mass-deleting-data-from-innodb">
+    <a href="#mass-deleting-data-from-innodb">
+	Mass-deleting data from InnoDB
+    </a>
+</h2>
+<p>You can of course delete data from a table using the SQL <code>DELETE</code> statement with an arbitrary <code>WHERE</code>-clause at any time:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">DELETE</span> <span style="color:#66d9ef">FROM</span> t <span style="color:#66d9ef">WHERE</span> report_date <span style="color:#f92672">&lt;</span> now() <span style="color:#f92672">-</span> INTERVAL <span style="color:#ae81ff">7</span> <span style="color:#66d9ef">DAY</span>
+</code></pre></div><p><em>Delete data from table t that has a report_date more than 7 days in the past. Since the interval expression on the right hand side evaluates to a constant and the left hand side is a bare column name, the planner can leverage an index on the column report_date to find the rows to delete quickly.</em></p>
+<p>The downside of a query like this is that you do not know how many rows you will be deleting, and (especially if there is not an index on <code>report_date</code>) the query may also generate a whole lot of locks. These locks may be getting in the way of other operations on this table.</p>
+<p>In the SQL style guide we use at work, we recommend that developers run a <code>SELECT</code> statement instead. They would be retrieving the ID values of the rows they want to delete and then delete them with <code>WHERE id IN ( &lt;list of constants&gt; )</code> using a reasonable batch size and replication delay monitoring where applicable.</p>
+<p>So something like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    batch_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">1000</span>
+    delete_stmt <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DELETE FROM t WHERE id IN ( </span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> )&#34;</span>
+
+    cursor<span style="color:#f92672">.</span>execute(<span style="color:#e6db74">&#34;SELECT id FROM t WHERE report_date &lt; now() - INTERVAL 7 DAY&#34;</span>)
+    full_set <span style="color:#f92672">=</span> [ id[<span style="color:#ae81ff">0</span>] <span style="color:#66d9ef">for</span> id <span style="color:#f92672">in</span> cursor<span style="color:#f92672">.</span>fetchall() ]
+
+    <span style="color:#66d9ef">for</span> n <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, len(full_set), batch_size):
+        current_set <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;, &#39;</span><span style="color:#f92672">.</span>join(full_set[n:n<span style="color:#f92672">+</span>batch_size])
+        cursor<span style="color:#f92672">.</span>execute(delete_stmt <span style="color:#f92672">%</span> current_set)
+        cursor<span style="color:#f92672">.</span>commit()
+</code></pre></div><p>The ORM we use (a local custom thing) actually provides functionality that automates this, and also checks replication delay on the replicas. It will delay the loop execution if necessary in order to keep the lag on the replicas within the service level.</p>
+<h2 id="why-this-is-expensive">
+    <a href="#why-this-is-expensive">
+	Why this is expensive
+    </a>
+</h2>
+<p>This is not the best way to get rid of data on a schedule, though. MySQL InnoDB stores data in primary key order, and an auto_increment primary key is like a dynamically increasing time stamp. It will organize your table so that more recent data is on the right hand side of the table and older data is on the left hand side. Adds always happen at the very right hand side, and deletes happen always at the very left hand side.</p>
+<p>Now, data in InnoDB primary keys is structured as a B+-Tree. That is a B-Tree where the leaves are the actual data pages (and that is where the order comes from). B-Trees are balanced: The longest path from the root to any leaf page is at maximum one step longer than the shortest path. Rebalancing operations have to happen to maintain this, and in a structure where we append at the right and delete from the left, a maximum number of rebalancing operations have to happen to maintain the ring buffer. InnoDB performs comparatively badly at this.</p>
+<h2 id="partitions-instead">
+    <a href="#partitions-instead">
+	Partitions instead
+    </a>
+</h2>
+<p>The recommended way to do this is to use <a href="https://dev.mysql.com/doc/refman/5.7/en/alter-table-partition-operations.html" target="_blank" rel="noopener">MySQL partitions</a>
+
+ and <a href="https://dev.mysql.com/doc/refman/5.7/en/partitioning-management-range-list.html" target="_blank" rel="noopener">partition by ID ranges</a>
+
+in a sensible way. Then use <code>ALTER TABLE t DROP PARTIION</code> instead of <code>DELETE</code> statements to get rid of data.</p>
+<p>This will hurt way less than deleting data, and also not mess with the structure of the B+-Tree.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> t (
+  id INTEGER <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> auto_increment,
+  ...
+) PARTITION <span style="color:#66d9ef">BY</span> RANGE (id) ()
+    PARTITION p0 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">1000000</span>),
+    PARTITION p1 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">2000000</span>)
+);
+
+<span style="color:#66d9ef">ALTER</span> <span style="color:#66d9ef">TABLE</span> t <span style="color:#66d9ef">ADD</span> PARTITION ( PARTITION p2 <span style="color:#66d9ef">VALUES</span> <span style="color:#66d9ef">LESS</span> <span style="color:#66d9ef">THAN</span> (<span style="color:#ae81ff">3000000</span>)),
+             <span style="color:#66d9ef">DROP</span> PARTITION p0;
+</code></pre></div><p>Because each partition is internally a table of its own, each partition will have their own much tinyier tree, and the actual drop operation is a file system delete instead of a tree rebalancing operation.</p>
+<h2 id="other-systems">
+    <a href="#other-systems">
+	Other systems
+    </a>
+</h2>
+<p>The problem statement sounds a bit like somebody is trying to build a time series database, but there are valid relation system use-cases that sound similar and are not actually a TSDB use case.</p>
+<p>In case of this being a TSDB use-case, there is cassandra as a NoSQL data store with automatic data expiration, as shown <a href="https://docs.datastax.com/en/cql-oss/3.3/cql/cql_using/useExpireExample.html" target="_blank" rel="noopener">in the manual</a>
+
+.</p>
+<p>Prometheus, Influx and Graphite are popular TSDB data stores that work with structures that expire data more efficiently than rebalancing a B+-Tree.</p>
+<h2 id="events-and-code-in-the-database">
+    <a href="#events-and-code-in-the-database">
+	Events (and code in the database)
+    </a>
+</h2>
+<p>In our at-work styleguide we discourage the use of code in the database as a general rule. That means you are not supposed to use events, triggers, stored functions or stored procedures or even foreign key constraints.</p>
+<p>They are hard to version and make migrations and upgrades very painful. They also create magical action at a distance, and they make it close to impossible to judge the cost of a statement by looking at the code. In fact, they often are invisible to developers looking at at checkout of the codebase.</p>
+<p>Code in the database is usually not visible when you look at a piece of code that makes calls to an ORM. When you make changes to that code, or the table definition, in a distributed setup the rollout is often staggered and the old and new version of a thing have to co-exist and maintain compatibility with the changed and unchanged versions of a schema. With code in the database, a lot of complexity and fragility is added, so avoid this.</p>
+<p>With foreign key constraints, it is even worse for a developer, because the cost of a statement is very hard to judge. A simple <code>DELETE FROM hotels WHERE id = 10</code> with an <code>ON DELETE CASCADE</code> can be fast, if there are few reservations dangling off this particular id, or it can literally take hours. Because this is part of the schema, and may be transitive an arbitrary number of relations deep, it is near impossible for developers to judge if this is acceptable. We prefer to code this in the host language instead.</p>
+<p>Similarly, events are invisible and happen magically or don&rsquo;t. They tend to be forgotten and die with the box they are defined on, or are not upgraded properly with the schema they act on.</p>
+<p>We have a distributed cron scheduler that is resilient, and schedule jobs on this, using code written in the host language instead of native SQL. This is visible to developers, and maintained with the rest of the application.</p>
+<p>We ask developers to not use events.</p>
+<p>On the other hand, we are an enterprise and large enough to have counter examples for every rule, usually well considered. But the rule still stands and makes sense.</p>
+<p>So we <em>do</em> use events to create heartbeats in a heartbeat table: The replication master pushes the current timestamp into the heartbeat table and expires heartbeats after a time. Replicas and client applications can check the heartbeat visible on the replica itself and see actual lag.</p>
+<p>This tends to fail when there is a master switchover or failover (it&rsquo;s SPoFfy and discouraged for a reason). Hence we also push the master hostname together with the timestamp, so that at the replica we can see which master pushed the heartbeat, and suddenly a simple idea becomes complex. This system is about to be replaced with an external heartbeat source RSN™.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

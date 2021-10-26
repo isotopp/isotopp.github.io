@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Labyrinths (in Python)</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="labyrinths-in-python-page">
+	<h1 class="title">
+            Labyrinths (in Python)
+	</h1>
+
+	<p>My son wants labyrinths. Ok, let&rsquo;s make them like it&rsquo;s the first semester.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/01/backtracking2.png" alt=""  />
+</p>
+
+</p>
+<p>We need a <code>class Labyrinth</code> that holds the dimensions of our maze, and the actual maze, in <code>grid</code> - a List of Lists of integers. That&rsquo;s not exactly a two-dimensional array (it can have a ragged right edge), but it will do for us.</p>
+<h2 id="a-basic-container-for-labyrinths">
+    <a href="#a-basic-container-for-labyrinths">
+	A basic container for labyrinths
+    </a>
+</h2>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Labyrinth</span>:
+    <span style="color:#e6db74">&#34;&#34;&#34;Store a labyrinth as a List of Lists of Integers.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">    Passages exist in the 4 cardinal directions, N, E, S, and W. We store them
+</span><span style="color:#e6db74">    as bit flags (N=1, E=2, S=4, W=8). When set, a passage exists from the current
+</span><span style="color:#e6db74">    cell into the direction indicated by the bitflag.
+</span><span style="color:#e6db74">    &#34;&#34;&#34;</span>
+
+    <span style="color:#75715e"># Grid size</span>
+    width: int
+    height: int
+    grid: List[List[int]]
+</code></pre></div><p>The integer Zero will indicate an unused cell. We then use bits to store passages to the four cardinal directions: 1 for a passage to the North, 2 for a passage to the East, 4 for a passage to the South, and 8 for a passage to the West.</p>
+<p>When making a passage, we will need to tear down the wall in the current cell, and we will need to tear down the wall in the new cell, making a backwards passage. One could say that our maze is an undirected graph, and making passages connects the vertices forward and backward.</p>
+<p>We will need to work with positions, and we define a type for that: A position is a <code>Pos</code>, a two-tuple of integers.</p>
+<p>We will also need to work with the cardinal directions, and make a type for that: A direction is a <code>Direction</code>, a string. We will also make use of a number of things from <code>random</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> List, Dict, Tuple, Optional, NewType
+<span style="color:#f92672">from</span> random <span style="color:#f92672">import</span> shuffle, randrange, choice, randint
+
+Pos <span style="color:#f92672">=</span> NewType(<span style="color:#e6db74">&#34;Pos&#34;</span>, Tuple[int, int])
+Direction <span style="color:#f92672">=</span> NewType(<span style="color:#e6db74">&#34;Direction&#34;</span>, str)
+</code></pre></div><p>Using this, we can define a few useful things that we will be using a lot. Our bits to encode passages, for example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    _directions: Dict[Direction, int] <span style="color:#f92672">=</span> {
+        Direction(<span style="color:#e6db74">&#34;N&#34;</span>): <span style="color:#ae81ff">1</span>,
+        Direction(<span style="color:#e6db74">&#34;E&#34;</span>): <span style="color:#ae81ff">2</span>,
+        Direction(<span style="color:#e6db74">&#34;S&#34;</span>): <span style="color:#ae81ff">4</span>,
+        Direction(<span style="color:#e6db74">&#34;W&#34;</span>): <span style="color:#ae81ff">8</span>,
+    }
+</code></pre></div><p>Also, the back-connections, because we want an undirected graph of passages:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    opposite: Dict[Direction, Direction] <span style="color:#f92672">=</span> {
+        Direction(<span style="color:#e6db74">&#34;N&#34;</span>): Direction(<span style="color:#e6db74">&#34;S&#34;</span>),
+        Direction(<span style="color:#e6db74">&#34;S&#34;</span>): Direction(<span style="color:#e6db74">&#34;N&#34;</span>),
+        Direction(<span style="color:#e6db74">&#34;W&#34;</span>): Direction(<span style="color:#e6db74">&#34;E&#34;</span>),
+        Direction(<span style="color:#e6db74">&#34;E&#34;</span>): Direction(<span style="color:#e6db74">&#34;W&#34;</span>),
+    }
+</code></pre></div><p>And we need to be able to translate a <code>Direction</code> into a change in coordinates, in order to be able to step:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    dx: Dict[Direction, int] <span style="color:#f92672">=</span> {
+        Direction(<span style="color:#e6db74">&#34;N&#34;</span>): <span style="color:#ae81ff">0</span>,
+        Direction(<span style="color:#e6db74">&#34;S&#34;</span>): <span style="color:#ae81ff">0</span>,
+        Direction(<span style="color:#e6db74">&#34;E&#34;</span>): <span style="color:#ae81ff">1</span>,
+        Direction(<span style="color:#e6db74">&#34;W&#34;</span>): <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,
+    }
+    dy: Dict[Direction, int] <span style="color:#f92672">=</span> {
+        Direction(<span style="color:#e6db74">&#34;N&#34;</span>): <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,
+        Direction(<span style="color:#e6db74">&#34;S&#34;</span>): <span style="color:#ae81ff">1</span>,
+        Direction(<span style="color:#e6db74">&#34;E&#34;</span>): <span style="color:#ae81ff">0</span>,
+        Direction(<span style="color:#e6db74">&#34;W&#34;</span>): <span style="color:#ae81ff">0</span>,
+    }
+</code></pre></div><p>We can now initialize our class:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">   <span style="color:#66d9ef">def</span> __init__(self, width: int <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>, height: int <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span>) <span style="color:#f92672">-&gt;</span> None:
+        <span style="color:#e6db74">&#34;&#34;&#34; Construct a labyrinth with no passages in the given dimensions &#34;&#34;&#34;</span>
+        self<span style="color:#f92672">.</span>width <span style="color:#f92672">=</span> width
+        self<span style="color:#f92672">.</span>height <span style="color:#f92672">=</span> height
+        self<span style="color:#f92672">.</span>grid <span style="color:#f92672">=</span> [[]] <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>height
+        <span style="color:#66d9ef">for</span> y <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, self<span style="color:#f92672">.</span>height):
+            self<span style="color:#f92672">.</span>grid[y] <span style="color:#f92672">=</span> [<span style="color:#ae81ff">0</span>] <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>width
+
+        <span style="color:#66d9ef">return</span>
+</code></pre></div><h2 id="some-basic-python-wiring">
+    <a href="#some-basic-python-wiring">
+	Some basic Python wiring
+    </a>
+</h2>
+<p>We will probably suck and need to be able to dump a labyrinth object, so let&rsquo;s build a <code>__repr__()</code> for it. If you have an instance and print it, Python will try to invoke <code>__str__()</code> for a human readable representation of the object. If that does not exist (or we <code>print(repr(l))</code>), Python will try <code>__repr__()</code> instead. This is supposed to produce a debug representation of a thing.</p>
+<p>So let&rsquo;s make one:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> __repr__(self) <span style="color:#f92672">-&gt;</span> str:
+        <span style="color:#e6db74">&#34;&#34;&#34; Dump the current labyrinths passages as raw integer values &#34;&#34;&#34;</span>
+        s <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
+
+        <span style="color:#66d9ef">for</span> y <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, self<span style="color:#f92672">.</span>height):
+            s <span style="color:#f92672">+=</span> f<span style="color:#e6db74">&#34;{y=}: &#34;</span>
+            <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, self<span style="color:#f92672">.</span>width):
+                s <span style="color:#f92672">+=</span> f<span style="color:#e6db74">&#34;{self.grid[y][x]:04b} &#34;</span>
+            s <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>
+
+        <span style="color:#66d9ef">return</span> s
+
+</code></pre></div><p>Our <code>Labyrinth</code> is mostly a container for these integers representing cells, with a bit of sugar on top. Let&rsquo;s make the cells directly accessible:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> __getitem__(self, item: Pos) <span style="color:#f92672">-&gt;</span> int:
+        <span style="color:#e6db74">&#34;&#34;&#34; Return the passages at position item: Pos from the labyrinth &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>position_valid(item):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Position: {item=}&#34;</span>)
+
+        r <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>grid[item[<span style="color:#ae81ff">1</span>]][item[<span style="color:#ae81ff">0</span>]]
+        <span style="color:#66d9ef">return</span> r
+
+    <span style="color:#66d9ef">def</span> __setitem__(self, key: Pos, value: int) <span style="color:#f92672">-&gt;</span> None:
+        <span style="color:#e6db74">&#34;&#34;&#34; Set the passages at position key: Pos to value: int &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>position_valid(key):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Position: {key=}&#34;</span>)
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (<span style="color:#ae81ff">0</span><span style="color:#f92672">&lt;=</span>value<span style="color:#f92672">&lt;=</span><span style="color:#ae81ff">15</span>):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid cell value: {value=}&#34;</span>)
+
+        self<span style="color:#f92672">.</span>grid[key[<span style="color:#ae81ff">1</span>]][key[<span style="color:#ae81ff">0</span>]] <span style="color:#f92672">=</span> value
+        <span style="color:#66d9ef">return</span>
+</code></pre></div><p>I can now make me a <code>l= Labyrinth</code> and then <code>p = Pos((10, 10))</code> and <code>print(l[p])</code> to print a single element at position <code>(10, 10)</code>. Python will invoke the <code>__getitem__()</code> with this Pos tuple and return me the element. Likeweise I can assign to <code>l</code>: <code>l[p] = 10</code>, and that will invoke <code>__setitem__()</code> with the proper parameters.</p>
+<h2 id="some-important-predicates">
+    <a href="#some-important-predicates">
+	Some important predicates
+    </a>
+</h2>
+<p>The predicate <code>position_valid()</code> is still missing, and we will need similar things for Directions, too.</p>
+<p>Let&rsquo;s make them:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">position_valid</span>(self, p: Pos) <span style="color:#f92672">-&gt;</span> bool:
+        <span style="color:#e6db74">&#34;&#34;&#34; Predicate, true if the p: Pos is valid for this labyrinth &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&lt;=</span> p[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">&lt;</span> self<span style="color:#f92672">.</span>width <span style="color:#f92672">and</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&lt;=</span> p[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">&lt;</span> self<span style="color:#f92672">.</span>height
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">direction_valid</span>(self, d: Direction) <span style="color:#f92672">-&gt;</span> bool:
+        <span style="color:#e6db74">&#34;&#34;&#34; Predicate, true if Direction d is valid &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">return</span> d <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>directions()
+</code></pre></div><p>We also build a getter, <code>directions()</code> that returns the directions from the <code>_directions</code> bit encoder array above, and the same thing randomized under the name of  <code>random_directions()</code>. We grab the list and apply Pythons <code>shuffle()</code>.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">directions</span>(self) <span style="color:#f92672">-&gt;</span> List[Direction]:
+        <span style="color:#66d9ef">return</span> list(self<span style="color:#f92672">.</span>_directions<span style="color:#f92672">.</span>keys())
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">random_directions</span>(self) <span style="color:#f92672">-&gt;</span> List[Direction]:
+        <span style="color:#e6db74">&#34;&#34;&#34;Return all cardinal directions in random order. &#34;&#34;&#34;</span>
+        d <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>directions()
+        shuffle(d)
+
+        <span style="color:#66d9ef">return</span> d
+</code></pre></div><h2 id="stepping-into-the-labyrinth">
+    <a href="#stepping-into-the-labyrinth">
+	Stepping into the Labyrinth
+    </a>
+</h2>
+<p>We now can make a <code>step(pos, direction)</code>, which takes one Pos, and makes a step into the given Direction.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">step</span>(self, p: Pos, d: Direction) <span style="color:#f92672">-&gt;</span> Pos:
+        <span style="color:#e6db74">&#34;&#34;&#34;Starting at Pos p, walk one step into Direction d, return a new position.
+</span><span style="color:#e6db74">           The new position is guaranteed to be valid.&#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>direction_valid(d):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Direction {d=}&#34;</span>)
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>position_valid(p):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Position {p=}&#34;</span>)
+
+        np <span style="color:#f92672">=</span> Pos((p[<span style="color:#ae81ff">0</span>] <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>dx[d], p[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>dy[d]))
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>position_valid(np):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(
+                f<span style="color:#e6db74">&#34;Invalid Position {np=}: Step from {p=} into {d=} leaves the grid.&#34;</span>
+            )
+
+        <span style="color:#66d9ef">return</span> np
+</code></pre></div><p>The new position is guaranteed to be valid. We will raise <code>ValueError</code> for all invalid things - wrong parameters, and wrong results. Some of them may arguably be <code>IndexErrrors</code> instead, but I actually have little need for this distinction here, and it will only make the code more complicated later on.</p>
+<h2 id="tear-down-a-wall">
+    <a href="#tear-down-a-wall">
+	Tear down a wall
+    </a>
+</h2>
+<p>Now I can build me a function that makes a passage from a given Pos, into a given Direction:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">make_passage</span>(self, p: Pos, d: Direction) <span style="color:#f92672">-&gt;</span> None:
+        <span style="color:#e6db74">&#34;&#34;&#34;At Pos p into Direction d, make a passage and back. &#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>direction_valid(d):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Direction {d=}&#34;</span>)
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>position_valid(p):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Position {p=}&#34;</span>)
+
+        np <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>step(p, d)
+        self[p] <span style="color:#f92672">|=</span> self<span style="color:#f92672">.</span>_directions[d]
+        self[np] <span style="color:#f92672">|=</span> self<span style="color:#f92672">.</span>_directions[self<span style="color:#f92672">.</span>opposite[d]]
+
+        <span style="color:#66d9ef">return</span>
+</code></pre></div><p>It may also be useful to have this as a predicate <code>can_make_passage()</code>, which returns true if I can make a passage that is not there, yet.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">can_make_passage</span>(self, p: Pos, d: Direction) <span style="color:#f92672">-&gt;</span> bool:
+        <span style="color:#e6db74">&#34;&#34;&#34;Predicate, true if valid passage that is not there, yet.&#34;&#34;&#34;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>direction_valid(d):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Direction: {d=}&#34;</span>)
+
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>position_valid(p):
+            <span style="color:#66d9ef">raise</span> <span style="color:#a6e22e">ValueError</span>(f<span style="color:#e6db74">&#34;Invalid Position: {p=}&#34;</span>)
+
+        <span style="color:#66d9ef">try</span>:
+            np <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>step(p, d)
+        <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span> <span style="color:#66d9ef">as</span> e:
+            <span style="color:#75715e"># We stepped off the grid.</span>
+            <span style="color:#66d9ef">return</span> False
+
+        <span style="color:#75715e"># Success, if the world would change by removing this wall.</span>
+        pre_elem <span style="color:#f92672">=</span> self[p]
+        post_elem <span style="color:#f92672">=</span> pre_elem <span style="color:#f92672">|</span> self<span style="color:#f92672">.</span>_directions[d]
+        <span style="color:#66d9ef">return</span> pre_elem <span style="color:#f92672">!=</span> post_elem
+</code></pre></div><p>This raises exceptions for invalid input values. It will return <code>False</code> for passages that would lead off grid, and also returns <code>False</code> is this is not a new, but already existing passage.</p>
+<h2 id="recursive-digging">
+    <a href="#recursive-digging">
+	Recursive digging
+    </a>
+</h2>
+<p>Now we can pretty easily and concisely write down a tunnel digging algorithm that will build us a fully connected labyrinth, a random minimal spanning tree for the grid.</p>
+<p>At this point it is a subclass of Labyrinth, but it really should be a strategy of Labyrinth instead. Python on my system has a default recursion nesting limit of 1000, so the longest path can be 1000 steps until we overflow the stack. This is good for a 31x31 grid at best, and we would need to change <code>sys.setrecursionlimit(new_value)</code> for more.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Backtracking</span>(Labyrinth):
+    <span style="color:#e6db74">&#34;&#34;&#34;Build a labyrinth using a backtracking algorithm.&#34;&#34;&#34;</span>
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">carve</span>(self, pos: Optional[Pos] <span style="color:#f92672">=</span> None, show: Any <span style="color:#f92672">=</span> None) <span style="color:#f92672">-&gt;</span> None:
+        <span style="color:#e6db74">&#34;&#34;&#34;carve passages starting at Pos p using recursive backtracking.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">        Carves passages into the labyrinth, starting at Pos p (Default: 0,0),
+</span><span style="color:#e6db74">        using a recursive backtracking algorithm. Uses stack as deeply as the
+</span><span style="color:#e6db74">        longest possible path will be.
+</span><span style="color:#e6db74">        &#34;&#34;&#34;</span>
+        <span style="color:#75715e"># Set start position</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> pos:
+            pos <span style="color:#f92672">=</span> Pos((<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>))
+
+        <span style="color:#75715e"># Probe in random order</span>
+        directions <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>random_directions()
+        <span style="color:#66d9ef">for</span> d <span style="color:#f92672">in</span> directions:
+            <span style="color:#75715e"># try to step into this direction</span>
+            <span style="color:#66d9ef">try</span>:
+                np <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>step(pos, d)
+            <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span>:
+                <span style="color:#75715e"># We stepped off the grid -&gt; ignore this direction</span>
+                <span style="color:#66d9ef">continue</span>
+
+            <span style="color:#66d9ef">if</span> show:
+                show(self, red<span style="color:#f92672">=</span>pos, green<span style="color:#f92672">=</span>np)
+
+            <span style="color:#75715e"># if the position is clean, make a passage, and recurse</span>
+            <span style="color:#66d9ef">if</span> self[np] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+                self<span style="color:#f92672">.</span>make_passage(pos, d)
+                self<span style="color:#f92672">.</span>carve(np, show<span style="color:#f92672">=</span>show)
+</code></pre></div><p>What we have here is a function <code>carve()</code> that will dig a tunnel, starting at <code>pos</code>. If no <code>pos</code> is given, we default to the origin <code>(0,0)</code>.</p>
+<p>For the current position, we will check all possible directions in random order: can we step there? If so, we break down the walls and make a passage, then step there and recurse.</p>
+<p>We have provided the option to supply a callback function <code>show=</code> (for which we skimped on the typing, tsk, tsk!). If such a function is supplied, we call it with the old and the new position as parameters. We need to make sure to pass on the <code>show=</code> function, if there is one, when we recurse.</p>
+<p>Here is a labyrinth generation in progress:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/01/backtracking.png" alt=""  />
+</p>
+
+</p>
+<h2 id="painting-the-labyrinth">
+    <a href="#painting-the-labyrinth">
+	Painting the labyrinth
+    </a>
+</h2>
+<p>Our Labyrinth Painter uses Pygame. It draws cells that are <code>size=</code> wide, and are framed with <code>line_width=</code> thick lines.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sys
+<span style="color:#f92672">from</span> time <span style="color:#f92672">import</span> sleep
+<span style="color:#f92672">from</span> typing <span style="color:#f92672">import</span> Optional
+
+<span style="color:#f92672">import</span> pygame
+<span style="color:#f92672">from</span> src.labyrinth <span style="color:#f92672">import</span> Labyrinth, Pos
+
+
+WHITE <span style="color:#f92672">=</span> (<span style="color:#ae81ff">255</span>, <span style="color:#ae81ff">255</span>, <span style="color:#ae81ff">255</span>)
+BLACK <span style="color:#f92672">=</span> (<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
+RED <span style="color:#f92672">=</span> (<span style="color:#ae81ff">200</span>, <span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">50</span>)
+GREEN <span style="color:#f92672">=</span> (<span style="color:#ae81ff">50</span>, <span style="color:#ae81ff">200</span>, <span style="color:#ae81ff">50</span>)
+LIGHT_BLUE <span style="color:#f92672">=</span> (<span style="color:#ae81ff">230</span>, <span style="color:#ae81ff">230</span>, <span style="color:#ae81ff">255</span>)
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">LabyrinthPainter</span>:
+    surface: pygame<span style="color:#f92672">.</span>surface<span style="color:#f92672">.</span>Surface
+
+    size: int
+    line_width: int
+
+    <span style="color:#66d9ef">def</span> __init__(self, lab, size<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>, line_width<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>) <span style="color:#f92672">-&gt;</span> None:
+        self<span style="color:#f92672">.</span>size <span style="color:#f92672">=</span> size
+        self<span style="color:#f92672">.</span>line_width <span style="color:#f92672">=</span> line_width
+
+        self<span style="color:#f92672">.</span>show_init(lab)
+
+        <span style="color:#66d9ef">return</span>
+
+</code></pre></div><p>We start pygame, and make us a surface in a window:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">show_init</span>(self, lab: Labyrinth) <span style="color:#f92672">-&gt;</span> None:
+        pygame<span style="color:#f92672">.</span>init()
+
+        self<span style="color:#f92672">.</span>surface <span style="color:#f92672">=</span> pygame<span style="color:#f92672">.</span>display<span style="color:#f92672">.</span>set_mode(
+            (
+                self<span style="color:#f92672">.</span>size <span style="color:#f92672">*</span> lab<span style="color:#f92672">.</span>width <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>line_width,
+                self<span style="color:#f92672">.</span>size <span style="color:#f92672">*</span> lab<span style="color:#f92672">.</span>height <span style="color:#f92672">+</span> self<span style="color:#f92672">.</span>line_width,
+            )
+        )
+        self<span style="color:#f92672">.</span>surface<span style="color:#f92672">.</span>fill(WHITE)
+        pygame<span style="color:#f92672">.</span>display<span style="color:#f92672">.</span>flip()
+
+        <span style="color:#66d9ef">return</span>
+</code></pre></div><p>We then implement a show function, which draws a bunch of squares in funny colors:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">show</span>(
+        self, lab: Labyrinth, red: Optional[Pos] <span style="color:#f92672">=</span> None, green: Optional[Pos] <span style="color:#f92672">=</span> None
+    ):
+        <span style="color:#66d9ef">for</span> y <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, lab<span style="color:#f92672">.</span>height):
+            <span style="color:#66d9ef">for</span> x <span style="color:#f92672">in</span> range(<span style="color:#ae81ff">0</span>, lab<span style="color:#f92672">.</span>width):
+                self<span style="color:#f92672">.</span>square(lab, Pos((x, y)), red, green)
+</code></pre></div><p>A square needs to find out what color it should be in, and then needs to be drawn. For that we need corners: North-East, North-West, South-East, and South-West.</p>
+<p>We do not really have many dependencies on Labyrinth: Element access, and we should really use direction names instead of raw bits for decoding here.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">square</span>(
+        self,
+        lab: Labyrinth,
+        pos: Pos,
+        red: Optional[Pos] <span style="color:#f92672">=</span> None,
+        green: Optional[Pos] <span style="color:#f92672">=</span> None,
+    ) <span style="color:#f92672">-&gt;</span> None:
+        xpos, ypos <span style="color:#f92672">=</span> pos[<span style="color:#ae81ff">0</span>], pos[<span style="color:#ae81ff">1</span>]
+        el <span style="color:#f92672">=</span> lab[pos]
+
+        nw <span style="color:#f92672">=</span> (xpos <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size, ypos <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size)
+        ne <span style="color:#f92672">=</span> ((xpos <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size, ypos <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size)
+        sw <span style="color:#f92672">=</span> (xpos <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size, (ypos <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size)
+        se <span style="color:#f92672">=</span> ((xpos <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size, (ypos <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> self<span style="color:#f92672">.</span>size)
+
+        color <span style="color:#f92672">=</span> LIGHT_BLUE
+        <span style="color:#66d9ef">if</span> el <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+            color <span style="color:#f92672">=</span> BLACK
+        <span style="color:#66d9ef">if</span> red <span style="color:#f92672">and</span> pos <span style="color:#f92672">==</span> red:
+            color <span style="color:#f92672">=</span> RED
+        <span style="color:#66d9ef">if</span> green <span style="color:#f92672">and</span> pos <span style="color:#f92672">==</span> green:
+            color <span style="color:#f92672">=</span> GREEN
+        pygame<span style="color:#f92672">.</span>draw<span style="color:#f92672">.</span>rect(self<span style="color:#f92672">.</span>surface, color, nw <span style="color:#f92672">+</span> (self<span style="color:#f92672">.</span>size, self<span style="color:#f92672">.</span>size))
+
+        <span style="color:#75715e"># North Border</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (el <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">1</span>):
+            pygame<span style="color:#f92672">.</span>draw<span style="color:#f92672">.</span>line(self<span style="color:#f92672">.</span>surface, BLACK, nw, ne, width<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>line_width)
+
+        <span style="color:#75715e"># East Border</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (el <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">2</span>):
+            pygame<span style="color:#f92672">.</span>draw<span style="color:#f92672">.</span>line(self<span style="color:#f92672">.</span>surface, BLACK, ne, se, width<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>line_width)
+
+        <span style="color:#75715e"># South Border</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (el <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">4</span>):
+            pygame<span style="color:#f92672">.</span>draw<span style="color:#f92672">.</span>line(self<span style="color:#f92672">.</span>surface, BLACK, sw, se, width<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>line_width)
+
+        <span style="color:#75715e"># West Border</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> (el <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">8</span>):
+            pygame<span style="color:#f92672">.</span>draw<span style="color:#f92672">.</span>line(self<span style="color:#f92672">.</span>surface, BLACK, nw, sw, width<span style="color:#f92672">=</span>self<span style="color:#f92672">.</span>line_width)
+</code></pre></div><p>Nothing of this will be visible until we call <code>flip()</code>. For debugging, we provide the <code>flip()</code> as part of two waiting functions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">    <span style="color:#a6e22e">@staticmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">wait</span>() <span style="color:#f92672">-&gt;</span> None:
+        <span style="color:#75715e"># self.keywait()</span>
+        pygame<span style="color:#f92672">.</span>display<span style="color:#f92672">.</span>flip()
+        <span style="color:#66d9ef">for</span> event <span style="color:#f92672">in</span> pygame<span style="color:#f92672">.</span>event<span style="color:#f92672">.</span>get():
+            <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>QUIT:
+                pygame<span style="color:#f92672">.</span>quit()
+                sys<span style="color:#f92672">.</span>exit()
+            <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>KEYDOWN:
+                <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>key <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>K_ESCAPE:
+                    pygame<span style="color:#f92672">.</span>quit()
+                    sys<span style="color:#f92672">.</span>exit()
+        sleep(<span style="color:#ae81ff">0.05</span>)
+
+    <span style="color:#a6e22e">@staticmethod</span>
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">keywait</span>() <span style="color:#f92672">-&gt;</span> None:
+        pygame<span style="color:#f92672">.</span>display<span style="color:#f92672">.</span>flip()
+
+        <span style="color:#66d9ef">while</span> True:
+            <span style="color:#66d9ef">for</span> event <span style="color:#f92672">in</span> pygame<span style="color:#f92672">.</span>event<span style="color:#f92672">.</span>get():
+                <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>QUIT:
+                    pygame<span style="color:#f92672">.</span>quit()
+                    sys<span style="color:#f92672">.</span>exit()
+                <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>type <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>KEYDOWN:
+                    <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>key <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>K_SPACE:
+                        <span style="color:#66d9ef">return</span>
+                    <span style="color:#66d9ef">if</span> event<span style="color:#f92672">.</span>key <span style="color:#f92672">==</span> pygame<span style="color:#f92672">.</span>K_ESCAPE:
+                        pygame<span style="color:#f92672">.</span>quit()
+                        sys<span style="color:#f92672">.</span>exit()
+            sleep(<span style="color:#ae81ff">0.05</span>)
+</code></pre></div><p>The first function checks the Pygame event queue for a <code>QUIT</code> event (close button on the window has been hit) or an <code>ESC</code> key press. If either of them happened, we exit the program. Otherwise we delay a bit (and should make this a settable parameter).</p>
+<p>The second method busy waits on a space bar press (and also allows quitting) before it continues. It will allow us to step through the program and observe how everything works at our leisure.</p>
+<p>A small driver that puts everything together:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> random <span style="color:#f92672">import</span> randrange
+
+<span style="color:#f92672">from</span> src.backtracking <span style="color:#f92672">import</span> Backtracking, Pos
+<span style="color:#f92672">from</span> src.labyrinth_painter <span style="color:#f92672">import</span> LabyrinthPainter
+
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">show_and_wait</span>(lab: Backtracking, red: Pos, green: Pos):
+    painter<span style="color:#f92672">.</span>show(lab, red, green)
+    LabyrinthPainter<span style="color:#f92672">.</span>wait()
+
+
+labyrinth <span style="color:#f92672">=</span> Backtracking(width<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>, height<span style="color:#f92672">=</span><span style="color:#ae81ff">20</span>)
+painter <span style="color:#f92672">=</span> LabyrinthPainter(labyrinth, size<span style="color:#f92672">=</span><span style="color:#ae81ff">30</span>, line_width<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>)
+
+start <span style="color:#f92672">=</span> Pos((<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">10</span>))
+labyrinth<span style="color:#f92672">.</span>carve(start, show<span style="color:#f92672">=</span>show_and_wait)
+<span style="color:#66d9ef">while</span> True:
+    red <span style="color:#f92672">=</span> Pos((randrange(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">20</span>), randrange(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">20</span>)))
+    green <span style="color:#f92672">=</span> Pos((randrange(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">20</span>), randrange(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">20</span>)))
+    <span style="color:#66d9ef">if</span> red <span style="color:#f92672">!=</span> green:
+        <span style="color:#66d9ef">break</span>
+painter<span style="color:#f92672">.</span>show(labyrinth, red<span style="color:#f92672">=</span>red, green<span style="color:#f92672">=</span>green)
+LabyrinthPainter<span style="color:#f92672">.</span>keywait()
+</code></pre></div><p>We make ourselves a <code>labyrinth</code> instance, and a <code>painter</code> instance. We define a starting position in the middle of the field, then start the carver with a callback. The callback will be activated by the <code>carve()</code> function with the old position <code>pos</code> as red and the new position <code>np</code> as green square. Untouched squares will show up in black, and carves squares will be shown in light blue.</p>
+<p>In the end we display the final labyrinth, showing two random positions as start and end position. This will work because our labyrinth is an undirected minimal spanning tree of the grid, so any two positions are connected by exactly one path.</p>
+<h2 id="not-recursing">
+    <a href="#not-recursing">
+	Not recursing
+    </a>
+</h2>
+<p>We can rewrite the original <code>carve()</code> function to not use recursion. It will look almost the same:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">DepthFirst</span>(Labyrinth):
+    <span style="color:#e6db74">&#34;&#34;&#34;Build a labyrinth using a backtracking algorithm.&#34;&#34;&#34;</span>
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">carve</span>(self, pos: Optional[Pos] <span style="color:#f92672">=</span> None, show: Any <span style="color:#f92672">=</span> None) <span style="color:#f92672">-&gt;</span> None:
+        <span style="color:#e6db74">&#34;&#34;&#34;carve passages starting at Pos p using iteration and a stack.&#34;&#34;&#34;</span>
+        <span style="color:#75715e"># Set start position</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> pos:
+            pos <span style="color:#f92672">=</span> Pos((<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>))
+
+        <span style="color:#75715e"># Stackframe:</span>
+        <span style="color:#75715e"># (pos, directions): positions and the directions that still need checking.</span>
+        stack <span style="color:#f92672">=</span> [(pos, self<span style="color:#f92672">.</span>random_directions())]
+
+        <span style="color:#66d9ef">while</span> stack:
+            <span style="color:#75715e"># print(f&#34;{stack=}&#34;)</span>
+            pos, directions <span style="color:#f92672">=</span> stack<span style="color:#f92672">.</span>pop()
+
+            <span style="color:#66d9ef">while</span> directions:
+                <span style="color:#75715e"># Consume one direction</span>
+                d <span style="color:#f92672">=</span> directions<span style="color:#f92672">.</span>pop()
+
+                <span style="color:#75715e"># Can we go there?</span>
+                <span style="color:#66d9ef">try</span>:
+                    np <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>step(pos, d)
+                <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">ValueError</span>:
+                    <span style="color:#66d9ef">continue</span>
+
+                <span style="color:#66d9ef">if</span> show:
+                    show(self, red<span style="color:#f92672">=</span>pos, green<span style="color:#f92672">=</span>np)
+
+                <span style="color:#75715e"># Is the new position np unused?</span>
+                <span style="color:#66d9ef">if</span> self[np] <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>:
+                    <span style="color:#75715e"># Remove wall</span>
+                    self<span style="color:#f92672">.</span>make_passage(pos, d)
+                    <span style="color:#75715e"># If we still have directions to check, push current position back</span>
+                    <span style="color:#66d9ef">if</span> directions:
+                        stack<span style="color:#f92672">.</span>append((pos, directions))
+                    <span style="color:#75715e"># In any case, add the new position (and all directions)</span>
+                    stack<span style="color:#f92672">.</span>append((np, self<span style="color:#f92672">.</span>random_directions()))
+                    <span style="color:#66d9ef">break</span>  <span style="color:#75715e"># while directions: -&gt; continue with np</span>
+</code></pre></div><p>Instead of recursing we here have a local stack <code>stack</code>. On this stack we put pairs of (pos, directions): For each position we remember the directions at this position that still need checking. We prime this with the starting position and the full list of all four cardinal directions, randomly shuffled.</p>
+<p>We then pop us the current work item, and check if there are still directions we have not processed (there are, we just started). We consume one, and try to go there. If this is a legal position to be in, and the position is empty (0), we tear down that wall.</p>
+<p>Now we push this position and the remaining directions sans the one we just checked back. Then we add the new position and all four directions properly shuffled on top of that. Finally we <code>break</code> out of the <code>while directions:</code> loop.</p>
+<p>This will move us to the outer loop, where we pop the new position and start working on that one: A depth-first search.</p>
+<p>Our <code>stack</code> list is not subject to <code>sys.recursionlimit</code> and so we can process larger grids. We still use the same amount of memory: we remember the same things. On a 100x100 grid, the theoretical longest possible path is 10000 steps long and that would be the biggest possible stack for that grid.</p>
+<h3 id="see-also">
+    <a href="#see-also">
+	See Also
+    </a>
+</h3>
+<ul>
+<li>
+<p><a href="http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking.html" target="_blank" rel="noopener">Maze Generation: Recursive Backtracking</a>
+
+, Jamis Buck, 27-Dec-2010.</p>
+</li>
+<li>
+<p><a href="http://blog.jamisbuck.org/" target="_blank" rel="noopener">Basil &amp; Fabian</a>
+
+, Jamis Buck, April 2014</p>
+</li>
+<li>
+<p><a href="https://github.com/isotopp/labyrinths" target="_blank" rel="noopener">Code in github</a>
+
+</p>
+</li>
+</ul>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

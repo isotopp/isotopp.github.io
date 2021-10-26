@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Ein paar Gedanken zu Foreign Key Constraints</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="ein-paar-gedanken-zu-foreign-key-constraints-page">
+	<h1 class="title">
+            Ein paar Gedanken zu Foreign Key Constraints
+	</h1>
+
+	<p>Ich lese gerade <a href="http://www.sqlite.org/draft/foreignkeys.html" target="_blank" rel="noopener">SQLite Foreign Key Support</a>
+
+ und ich muß sagen, ich kann mir ein leichtes Grinsen nicht verkneifen.</p>
+<p>Also, ich finds ja gut, daß SQLite die Option für Foreign Key Constraints implementiert und ich finds sogar noch besser, daß mit DEFERRABLE INITIALLY DEFERRED sogar die einzig sinnvolle Weise das zu tun bereitgestellt wird, aber ich frag mich schon, wozu das gut sein soll.</p>
+<h2 id="foreign-keys">
+    <a href="#foreign-keys">
+	Foreign Keys
+    </a>
+</h2>
+<p>Aber von vorne. Wenn eine Tabelle einen Primary Key hat, dann kann jede Zeile in der Tabelle über diesen Key eindeutig identifiziert werden. Das erlaubt es, in anderen Tabellen auf Zeilen der Ausgangstabelle Bezug zu nehmen:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#a6e22e">a</span> (
+  aid <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">UNSIGNED</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+  adata <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+);
+
+<span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#a6e22e">b</span> (
+  bid <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">UNSIGNED</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+  aid <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">UNSIGNED</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  bdata <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>
+);
+</code></pre></div><p>Hier ist <code>b.aid</code> der Primärschlüssel von <code>a</code>, der in <code>b</code> genannt wird. Wir nennen <code>b.aid</code> den &ldquo;Fremdschlüssel von a in b&rdquo;.</p>
+<p>Dazu ein paar Anmerkungen, weil es oft nachlässig gehandhabt wird: <code>aid</code> ist kein Fremdschlüssel, sondern <code>aid</code> ist nicht eindeutig. <code>a.aid</code> ist ein Primärschlüssel, <code>b.aid</code> ist &ldquo;der Fremdschüssel von a in b&rdquo; und ohne den &ldquo;von a in b&rdquo;-Teil ist es streng genommen auch wieder nicht eindeutig.</p>
+<p>Dennoch sagen viele Leute &ldquo;aid ist Fremdschlüssel&rdquo; und überlassen es dem Kontext, klarzustellen daß &ldquo;b.aid ist ein Fremdschlüssel von a in b&rdquo; gemeint ist. Da muß man sich dran gewöhnen und das mental korrekt expandieren.</p>
+<p>Und schließlich ist es tatsächlich so, daß schon das bloße Anlegen von <code>b.aid</code> und Befüllen von <code>b.aid</code> mit Werten von <code>a.aid</code> ausreicht, um eine Fremdschlüsselbeziehung zu definieren. Es kann nun sein, daß jemand oder etwas illegale <code>a.aid</code> in <code>b.aid</code> hinterlegt, daß also <code>b.aid</code> existieren, für die es keine passenden <code>a.aid</code>-Einträge gibt, und das führt uns zur folgenden Verschärfung.</p>
+<h2 id="foreign-key-constraints">
+    <a href="#foreign-key-constraints">
+	Foreign Key Constraints
+    </a>
+</h2>
+<p>Solche illegalen Werte in <code>b.aid</code> zu verhindern ist die Aufgabe einer FOREIGN KEY CONSTRAINT, aber diese ist vollkommen optional. Wollte man sie haben, definierte man sie so:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#a6e22e">b</span> (
+  bid <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">UNSIGNED</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span>,
+  aid <span style="color:#66d9ef">INTEGER</span> <span style="color:#66d9ef">UNSIGNED</span> <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  bdata <span style="color:#66d9ef">VARCHAR</span>(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#66d9ef">FOREIGN</span> <span style="color:#66d9ef">KEY</span> (aid) <span style="color:#66d9ef">REFERENCES</span> <span style="color:#a6e22e">a</span>(aid) <span style="color:#75715e">-- hier noch Optionen
+</span><span style="color:#75715e"></span>);
+</code></pre></div><p>und wo der Kommentar Optionen vorsieht könnte man noch Dinge notieren wie DEFERRABLE INITIALLY DEFERRED.</p>
+<p>Einige Datenbanken-Implementierungen verlangen auch noch Nebenbedingungen wie &ldquo;auf a.aid und auf b.aid muß jeweils ein Index definiert sein&rdquo;. Das ist sogar dann sinnvoll, wenn die Implementierung es nicht verlangt, aber im mathematisch-definitorischen Sinne nicht notwendig. Die Implementierungen verlangen so etwas, denn wann immer wir eine CONSTRAINT definieren, muß diese ja auch geprüft werden. Für die Prüfung wollen wir realistischerweise, daß diese effizient durchgeführt wird - das geht aber nur mit einem Index flink.</p>
+<h3 id="eine-kleine-abschweifung-schlüssel-vs-index">
+    <a href="#eine-kleine-abschweifung-schl%c3%bcssel-vs-index">
+	Eine kleine Abschweifung: Schlüssel vs. Index
+    </a>
+</h3>
+<p>Eine kleine Abschweifung: Das ist auch der Grund, warum die Begriffe Schlüssel (Key) und Index von Datenbankern synonym verwendet werden: Ein Schlüssel ist etwas, das eine einzelne Zeile (UNIQUE KEY) oder eine zusammengehörende Gruppe von Zeilen identifiziert, ein Index ist die Struktur, die diese Dinge schnell auffindbar macht.</p>
+<p>Definiert man zum Beispiel eine UNIQUE KEY CONSTRAINT (es kann nur eine Zeile dieses Wertes in einer Tabelle geben), dann muß beim Einfügen von neuen Zeilen ja in der Tabelle nachgesehen werden, ob es diesen Wert vielleicht schon gibt. Ohne einen Index wäre das eine sehr langsame Operation - daher geht eine UNIQUE KEY CONSTRAINT immer mit einem Index auf die Zeile zusammen und daher verwenden die meisten Datenbanker die Begriffe KEY und INDEX austauschbar, auch wenn sie verschiedene Dinge bezeichnen: Ein Schlüssel ist eine Eigenschaft einer Spalte, ein Index ist eine Struktur der Implementierung.</p>
+<h2 id="wozu-fk-constraints">
+    <a href="#wozu-fk-constraints">
+	Wozu FK-Constraints?
+    </a>
+</h2>
+<p>Wie auch immer: Die Aufgabe einer FOREIGN KEY CONSTRAINT ist es, sicherzustellen, daß in der Fremdschlüsselspalte b.aid zu jedem Zeitpunkt immer nur gültige Werte stehen.</p>
+<p>In MySQL ist es nun leider so, daß InnoDB dies etwas dämlich implementiert: Dort wird nämlich - wie in SQLite per Default auch - nach jedem Statement geprüft, ob die Constraint gültig ist oder verletzt wird. Das macht es notwendig, die Reihenfolge von Operationen so zu gestalten, daß die Constraint immer gilt - selbstreferentielle Strukturen nerven besonders, weil man diese quasi nur Top-Down aufbauen kann, und wenn die Struktur zirkulär ist, kann man sie gar nicht errichten, es sei denn, man schaltet die Constraint-Prüfung aus.</p>
+<p>Ich kann also in MySQL nicht so vorgehen:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-mysql" data-lang="mysql">BEGIN WORK;
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#a6e22e">b</span> (bid, aid, bdata) <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;keks&#34;</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#a6e22e">a</span> (aid, adata) <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">1</span>, <span style="color:#e6db74">&#34;keks&#34;</span>);
+COMMIT;
+</code></pre></div><p>Dies scheitert nach dem ersten Insert, weil die <code>a.aid = 1</code> noch nicht existiert, wenn ich die <code>b.aid = 1</code> in die Tabelle einfüge. Technisch ist das eigentlich kein Problem, denn da dies alles in einer Transaktion geschieht tauchen beide Werte gleichzeitig erst zum COMMIT in der Datenbank auf, aber die Prüfung erfolgt leider per Statement und nicht per Transaktion. Ich muß also Entwickler als meinen Code passend strukturieren, egal ob das der Anwendungslogik gerecht wird oder nicht.</p>
+<p>In SQLite darf man immerhin DEFERRABLE INITIALLY DEFERRED angeben, und das will man offenbar auch dringend. In diesem Fall wird die FK-Constraint nicht bei jedem Statement geprüft, sondern erst am Ende einer Transaktion beim COMMIT. Man kann sich also seine Strukturen nach Belieben zusammenbauen, und die Datenbank erzwingt dabei keine besondere Ordnung der Anweisungen im Code, sondern verlangt nur, daß in dem Moment, wenn man seine Änderungen für Dritte sichtbar publiziert, die FK-Constraints eingehalten werden.</p>
+<blockquote>
+<p>Der Sinn von FK-Constraints ist es, gültige Datenstrukturen und insbesondere gültige Verknüpfungen zwischen Daten zu erzwingen, die auf verschiedene Tabellen desselben Schemas oder derselben Instanz verteilt sind. Die FK-Constraint macht diese Prüfung in der Datenbank, denn nur so ist sichergestellt, daß unterschiedliche Anwendungen, die unterschiedliche Bibliotheken und Programmiersprachen verwenden, denselben Bedingungen beim Schreiben hinsichtlich der Gültigkeit von Datenstrukturen unterliegen.</p>
+</blockquote>
+<p>Bitte mal Anhalten und den vorhergehenden Satz ein zweites Mal lesen.</p>
+<p>Im Netz findet man mitunter Diskussionen über Datenmodellierung und dort gibt es in der Regel eine Gruppe von Personen, die vehement die Auffassung vertritt, daß ein Datenmodell, das FK- und andere Constraints nicht im Modell definiert schlicht falsch (ersatzweise &ldquo;Schrott&rdquo;, &ldquo;Müll&rdquo;, &ldquo;Gefrickel&rdquo; und anderes) ist.</p>
+<h2 id="grenzen-und-probleme-von-fk-constraints">
+    <a href="#grenzen-und-probleme-von-fk-constraints">
+	Grenzen und Probleme von FK-Constraints
+    </a>
+</h2>
+<p>In der Aussage oben stecken ein paar Annahmen drin, und die sind nicht unbedingt immer gegeben. Wenn sie nicht gegeben sind, sind FK-Constraints mindestens sinnlos, manchmal sogar schädlich.</p>
+<p>Eine Annahme, nämlich die, die mich angesichts der FK-Constraints von SQLite grinsen ließ, ist wie folgt: Es ist die Rede davon, daß unterschiedliche Anwendungen mit unterschiedlichen Bibliotheken oder Programmiersprachen auf die Datenbank zugreifen. SQLite ist aber eine Embedded Datenbank, die Daten in einer einzelnen Datenbankdatei ablegt und Locking auf der Ebene der gesamten Datenbank betreibt. Auf eine SQLite-Datenbank (etwa die Titelliste von iTunes oder das MacOS Adreßbuch) greift in der Regel nur eine Anwendung (iTunes, das Adreßbuch) schreibend zu. FK-Constraints in SQLite sind… ziemlicher Overkill.</p>
+<p>Auch bei &ldquo;uns&rdquo; in der Produktion haben wir uns entschieden, MySQL FK-Constraints überwiegend nicht zu nutzen. Das hat eine Reihe von Gründen, die zum Teil auch nur gültig sind, weil wir in einer speziellen und sehr günstigen Ausgangslage sind.</p>
+<p>In MySQL ist die Nutzung von FK-Constraints überhaupt nur sinnvoll möglich, wenn die InnoDB Storage Engine verwendet wird. In MyISAM wird die Syntax für Constraint Definitionen zwar geparsed, dann aber nicht beachtet. Wir nutzen InnoDB, aber wir definieren keine neuen Constraints mehr und wir nehmen die existierenden Definitionen schrittweise nach Möglichkeit zurück.</p>
+<p>Das ist so, weil zum einen unser Schema inzwischen größer als eine Instanz ist: Wir haben zwar verschiedenen MySQL-Instanzen, aber diese sind in Wirklichkeit alle nicht alleinstehend, sondern wir haben Bezüge zwischen Daten, die in verschiedenen Instanzen liegen: Daten in Tabellen der &ldquo;av&rdquo;-Instanz beziehen sich auf Datensätze, deren Rows in Tabellen der &ldquo;bp&rdquo;-Instanz liegen. Dies ist mit einer FK-Constraint nicht zu modellieren, und wenn man es modellierte wäre es kaum effizient zu prüfen: Die Netzwerk-Latenzen würden sich akkumulieren und zu sehr bremsen um praktikabel zu sein.</p>
+<p>Es ist auch absehbar, daß wir bald Tabellen haben werden, die größer als eine Instanz sind, daß wir also Sharding betreiben werden müssen. In diesem Fall verschärft sich die Situation noch weiter.</p>
+<p>Es ist weiterhin so, daß wir so sehr auf Performance optimieren müssen, daß wir uns die Kosten von FK-Constraints nicht mehr leisten können und wollen. Wenn man eine FK-Constraint definiert, dann muß diese ja auch geprüft werden - MySQL prüft sie bei jedem Zugriff.</p>
+<p>Das bedeutet aber bei jedem Schreibzugriff gibt es einen weiteren Lookup in der referenzierten Tabelle. Dazu muß die referenzierte Tabelle wiederum zum Teil geladen werden, was den Cache-Footprint bzw. den Working Set der Anwendung auf eine Weise vergrößert, die in bestimmten Situationen fatal sein kann. Die Anwendung kann plötzlich von speichergesättigt in einen disk-bound Zustand übergehen, weil sich der Working Set durch die Lookups so stark vergrößert, daß der aktive Teil der Anwendung nicht mehr im Speicher gehalten werden kann.</p>
+<p>Obendrein kommt im speziellen Fall von InnoDB, daß Schreibzugriffe auf ein Ende einer FK-Constraint nicht nur den beschriebenen Record X-Locken, sondern auch das andere Ende der Beziehung S-Locken, und daß diese Locks außerdem bei kaskadierenden Beziehungen über hierarchische Strukturen noch weiter eskalieren können. Schemata mit vielen FK-Constrains und vielen Schreibzugriffen erzeugen also unter Umständen um Größenordnungen mehr S-Locks und das wiederum kann die Rate von Deadlocks und Lock Timeouts um ein Vielfaches nach oben treiben.</p>
+<p>Bei &ldquo;uns&rdquo; ist es nun so, daß wir in der Produktion ein reines Open Source Umfeld haben. Wir wissen also nicht nur, welche Anwendungen bei uns auf Datenstrukturen in der Datenbank zugreifen, sondern wir kontrollieren auch, wie sie es tun. Wir können erzwingen, daß alle Operationen auf Daten in der Datenbank durch bestimmte Routinen in bestimmten Bibliotheken erfolgen und daß dort bestimmte Dinge erzwungen werden können.</p>
+<p>Wir haben uns also ein System gebaut, daß FK-Constraints außerhalb der Schemadefinition nachbaut. Unsere FK-Constraints können daher Instanzengrenzen überbrücken. Wir können außerdem optional entscheiden, daß wir die Constraintprüfungen nicht live vornehmen wollen, sondern daß wir die Tests stattdessen in Intervallen im Batch auf den bestehenden Daten vornehmen (ähnlich einem fsck).</p>
+<p>Da wir ziemlich intensiv Replikation einsetzen, brauchen wir das auch nicht auf einer produktiven Datenbank zu tun, sondern können das auf Kopien von Instanzen machen, die offline genommen worden sind. Und wir müssen das nicht oft tun, denn wenn wir verifiziert haben, daß der Code, der Änderungen an den Daten vornimmt, diese Änderungen korrekt durchführt, dann können Verletzungen der Constraints nur noch dann vorkommen, wenn Ausnahme-Betriebszustände erreicht wurden.</p>
+<h2 id="on-delete-cascade-ist-noch-mal-ein-extraproblem">
+    <a href="#on-delete-cascade-ist-noch-mal-ein-extraproblem">
+	ON DELETE CASCADE ist noch mal ein Extraproblem
+    </a>
+</h2>
+<p>Schließlich ist es so, daß FK-Constraints auch mit triggerhaften Aktionen verknüpft sein können. ON DELETE CASCADE zum Beispiel ist so eine Aktion: Sie bewirkt, daß alle von einer <code>a.aid</code> abhängigen Zeilen in <code>b</code> gelöscht werden, wenn <code>a.aid</code> gelöscht wird.</p>
+<p>Solche Kaskaden sind aus mehreren Gründen schädlich und man sollte diese Art von Definition grundsätzlich nicht verwenden, selbst wenn man FK-Constraints ansonsten einsetzt oder einsetzen muß: Solche Definitionen fördern schlechten und schwer zu wartenden Code.</p>
+<p>Statt die Datenstrukturen im Code aufzuräumen und etwa abhängige Records explizit zu löschen, wird man einfach ein <code>DELETE FROM a WHERE a.aid = ?</code> programmieren und die FK-Constraints implizit die Arbeit tun lassen. Implizite Aktion macht aber die Funktion des Programmes opak: Dem nächsten Entwickler, der auf den Code schaut, wird nicht klar sein, daß dies eine teure Operation ist, die sehr große Folge-Aktionen und Folgekosten in anderen Tabellen nach sich zieht. Die Wirkung von Statements ist auch nicht mehr auf eine einzelne Tabelle beschränkt, sondern das harmlose kleine DELETE kann eine Spur der Verwüstung durch die gesamte Datenbank ziehen (insbesondere bei Vorhandensein von selbstreferentiellen Strukturen mit FK-Constraints).</p>
+<p>Korrekt wäre die Definition einer FK-Constraint, die die Löschung der 1-Seite einer 1:n-Beziehung verhindert solange noch n-Records existieren, die sich auf den zu löschenden 1-Record beziehen. Der Entwickler ist dann gezwungen, den entsprechenden Löschcode in der Anwendung explizit hinzuschreiben, oder, wenn er schlauer ist, die passende Funktion aufzurufen, die die Löschung für ihn vornimmt. In jedem Fall ist aber durch den Blick auf den Code allein sofort klar, was dort passiert und wie groß der Einschlag ist, den man spürt, wenn dieser Code auf die Datenbank trifft.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

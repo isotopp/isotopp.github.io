@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - INSERT  ON DUPLICATE KEY UPDATE</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="insert-on-duplicate-key-update-page">
+	<h1 class="title">
+            INSERT  ON DUPLICATE KEY UPDATE
+	</h1>
+
+	<p>Auf Yourhelpcenter.de gibt es einen Artikel mit dem irreführenden Titel
+<a href="http://www.yourhelpcenter.de/2010/03/mysql-update-if-exists-else-insert-record-sql-statement/" target="_blank" rel="noopener">Update if exists else insert record</a>
+
+,
+der sich mit INSERT ON DUPLICATE KEY UPDATE beschäftigt.</p>
+<p>Dieses Kommando macht genau nicht das, was der Titel des Artikels suggeriert
+und wünschenswert wäre, sondern er macht genau das, was der SQL-Text des
+Kommandos sagt und leider nervt. Es wäre schön, wenn der Artikel auf
+Yourhelpcenter auch auf diese Probleme eingegangen wäre - da er es nicht tut
+hole ich es hier gerade mal nach.</p>
+<p>Gegeben sei</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> a<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+       <span style="color:#66d9ef">Table</span>: a
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>a<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> tinyint(<span style="color:#ae81ff">3</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>d<span style="color:#f92672">`</span> tinyint(<span style="color:#ae81ff">3</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>e<span style="color:#f92672">`</span> tinyint(<span style="color:#ae81ff">3</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>),
+  <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> <span style="color:#f92672">`</span>d<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>d<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>latin1
+<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">02</span> sec)
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#ae81ff">4</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">6</span>);
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+Records: <span style="color:#ae81ff">2</span>  Duplicates: <span style="color:#ae81ff">0</span>  Warnings: <span style="color:#ae81ff">0</span>
+</code></pre></div><p>Das Kommando INSERT ON DUPLICATE KEY UPDATE ist erst einmal ein INSERT-Statement.</p>
+<p>Es fügt Werte in eine Tabelle ein:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a ( id, d, e) <span style="color:#66d9ef">values</span> ( <span style="color:#ae81ff">7</span>, <span style="color:#ae81ff">8</span>, <span style="color:#ae81ff">9</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> e <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>;
+Query OK, <span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> a;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">6</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">9</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+---+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Man kann sehen, daß der INSERT-Zweig genommen wurde - unter anderem daran,
+daß dort nach dem Statement &lsquo;1 row affected&rsquo; angezeigt wird.</p>
+<p>Wenn beim INSERT ein Duplicate Key Error auftritt, dann schaltet das
+Statement auf die UPDATE-Clause um und führt die Anweisungen dort aus. Dabei
+ist es unwesentlich, ob der Duplicate Key Error auf dem Primärschlüssel oder
+einem anderen Unique Key stattfindet.</p>
+<p>Hier ist das Beispiel:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a (id, d, e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">11</span>,<span style="color:#ae81ff">12</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> e <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>;
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a (id, d, e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">12</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> e <span style="color:#f92672">=</span> <span style="color:#ae81ff">200</span>;
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">02</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> a;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wie man sieht, hat das erste INSERT einen Duplicate Key Error auf dem
+Primärschlüssel für die Row 7 erzeugt und daher ein Update durchgeführt, das
+e auf den Wert 100 setzt. Das zweite INSERT hat ebenfalls einen Duplicate
+Key Error erzeugt, aber auf dem Unique Key (a) und dem Wert 5, dadurch ist e
+auf dem Wert 200 gesetzt worden.</p>
+<p>Wie man auch sehen kann, wird beim aktivieren des UPDATE-Zweiges &lsquo;2 rows
+affected&rsquo; ausgegeben. Das ist ein wenig unsinnig, solange man nicht sieht,
+was intern passiert - mehr dazu weiter unten.</p>
+<p>Haben wir eine solche Kombination von zwei Unique Key Constraints (ein
+Primärschlüssel hat ja auch UNIQUE-Eigenschaft), oder haben wir ein
+Statement, das in der UPDATE-Clause auch am Primärschlüssel rumschreibt,
+können wir trotzdem einen Duplicate Key Error bekommen:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a (id,d,e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">11</span>,<span style="color:#ae81ff">12</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> d<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, e<span style="color:#f92672">=</span><span style="color:#ae81ff">199</span>;
+ERROR <span style="color:#ae81ff">1062</span> (<span style="color:#ae81ff">23000</span>): Duplicate entry <span style="color:#e6db74">&#39;5&#39;</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">key</span> <span style="color:#e6db74">&#39;d&#39;</span>
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a (id,d,e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">11</span>,<span style="color:#ae81ff">12</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> id<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>,d<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>,e<span style="color:#f92672">=</span><span style="color:#ae81ff">198</span>;
+ERROR <span style="color:#ae81ff">1062</span> (<span style="color:#ae81ff">23000</span>): Duplicate entry <span style="color:#e6db74">&#39;4&#39;</span> <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">key</span> <span style="color:#e6db74">&#39;PRIMARY&#39;</span>
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> a;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">01</span> sec)
+</code></pre></div><p>Ein INSERT ON DUPLICATE KEY UPDATE verhindert also Duplicate Key Errors
+nicht automatisch.</p>
+<p>Es wird immer zunächst das INSERT-Statement versucht, und nur dann, wenn das
+INSERT-Statement mit genau einem Duplicate Key Error scheitert wird das
+UPDATE-Statement ausgeführt. Die Reihenfolge der internen Tests von MySQL
+spielt dabei eine Rolle.</p>
+<p>Setzen wir zum Beispiel den SQL_MODE auf TRADITIONAL, dann haben wir unter
+andren auch STRICT_ALL_TABLES und STRICT_TRANS_TABLES. Dadurch haben wir
+keine stillschweigende Wertanpassung mehr.</p>
+<p>Hier die Demo:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> SQL_MODE<span style="color:#f92672">=</span>TRADITIONAL;
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">@@</span>sql_mode<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+<span style="color:#f92672">@@</span>sql_mode: STRICT_TRANS_TABLES,STRICT_ALL_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,NO_AUTO_CREATE_USER
+<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">update</span> a <span style="color:#66d9ef">set</span> e <span style="color:#f92672">=</span> <span style="color:#ae81ff">300</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">7</span>;
+ERROR <span style="color:#ae81ff">1264</span> (<span style="color:#ae81ff">22003</span>): <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;e&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+</code></pre></div><p>Soweit so gut. Was ist nun, wenn wir einen Duplicate Key Error provoziere,
+sodaß INSERT ON DUPLICATE KEY das Update ausführen sollte, zugleich in der
+INSERT-Phase aber auch einen Out Of Range-Error haben?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a (id,d,e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">300</span>) <span style="color:#66d9ef">ON</span> DUPLICATE <span style="color:#66d9ef">KEY</span> <span style="color:#66d9ef">UPDATE</span> e <span style="color:#f92672">=</span> <span style="color:#ae81ff">197</span>;
+ERROR <span style="color:#ae81ff">1264</span> (<span style="color:#ae81ff">22003</span>): <span style="color:#66d9ef">Out</span> <span style="color:#66d9ef">of</span> range value <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">column</span> <span style="color:#e6db74">&#39;e&#39;</span> <span style="color:#66d9ef">at</span> <span style="color:#66d9ef">row</span> <span style="color:#ae81ff">1</span>
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> a;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Eigentlich hätte unser Statement funktionieren können: Wenn MySQL erst die
+Duplicate Key-Violation prüfen würde, um dann zu entscheiden, daß es in den
+UPDATE-Fall des Statements gehen müßte, dann wäre unser Statement
+durchgekommen und id=7 hätte nun e=197. Das e=300 im INSERT-Zweig hätten wir
+nie gesehen - kein Fehler.</p>
+<p>Aber MySQL versucht tatsächlich das INSERT durchzuführen, scheitert auf
+halben Weg, aber eben NICHT mit einem Duplicate Key Error, sondern einem Out
+Of Range Error, und bricht daher das Insert ab, statt in den Update-Zweig
+überzugehen. Es werden also <em>nur</em> Duplicate Key Error im Insert-Fall
+gefangen, nichts sonst, und es werden alle Prüfungen für das INSERT
+durchgeführt und das INSERT tatsächlich ausgeführt, solange bis es scheitert -
+und zwar mit dem richtigen Fehler.</p>
+<p>Daher auch &lsquo;2 rows affected&rsquo; - wir machen das INSERT, das schlägt fehl, dann
+machen wir das UPDATE auf derselben Row noch mal.</p>
+<p>Und schließlich ist INSERT ON DUPLICATE KEY auch noch eine bombige
+Gelegenheit, sich mit naiven Triggern in die Nesseln zu setzen. Bauen wir
+uns einmal eine Demo mit einer Logtabelle und allen 6 Triggern für das
+Debugging:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">delimiter</span> <span style="color:#f92672">//</span>
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> log ( id serial, t text ) engine <span style="color:#f92672">=</span> innodb;<span style="color:#f92672">//</span>
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">trigger</span> bi_a <span style="color:#66d9ef">before</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">on</span> a <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">each</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> log <span style="color:#66d9ef">values</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">&#39;before insert&#39;</span>);<span style="color:#f92672">//</span>
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">35</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">trigger</span> ai_a <span style="color:#66d9ef">after</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">on</span> a <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">each</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> log <span style="color:#66d9ef">values</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">&#39;after insert&#39;</span>);<span style="color:#f92672">//</span>
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">30</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">trigger</span> bu_a <span style="color:#66d9ef">before</span> <span style="color:#66d9ef">update</span> <span style="color:#66d9ef">on</span> a <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">each</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> log <span style="color:#66d9ef">values</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">&#39;before update&#39;</span>);<span style="color:#f92672">//</span>
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">20</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">trigger</span> au_a <span style="color:#66d9ef">after</span> <span style="color:#66d9ef">update</span> <span style="color:#66d9ef">on</span> a <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">each</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> log <span style="color:#66d9ef">values</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">&#39;after update&#39;</span>);<span style="color:#f92672">//</span>
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">18</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">trigger</span> bd_a <span style="color:#66d9ef">before</span> <span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">on</span> a <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">each</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> log <span style="color:#66d9ef">values</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">&#39;before delete&#39;</span>);<span style="color:#f92672">//</span>
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">11</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">trigger</span> ad_a <span style="color:#66d9ef">after</span> <span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">on</span> a <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">each</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> log <span style="color:#66d9ef">values</span> (<span style="color:#66d9ef">NULL</span>, <span style="color:#e6db74">&#39;after delete&#39;</span>);<span style="color:#f92672">//</span>
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">22</span> sec)
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">delimiter</span> ;
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> a;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">100</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Das kann man nun sehr elegant explodieren lassen, indem man einmal den
+UPDATE-Zweig eines INSERT ON DUPLICATE KEY-Update ausführen läßt. Man
+bekommt dies:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">into</span> a (id,d,e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">12</span>,<span style="color:#ae81ff">13</span>) <span style="color:#66d9ef">on</span> duplicate <span style="color:#66d9ef">key</span> <span style="color:#66d9ef">update</span> e <span style="color:#f92672">=</span> <span style="color:#ae81ff">190</span>;
+Query OK, <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">39</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> a;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> d <span style="color:#f92672">|</span> e   <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>   <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">5</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">200</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">7</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">8</span> <span style="color:#f92672">|</span> <span style="color:#ae81ff">190</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---+-----+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> log;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> t             <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">before</span> <span style="color:#66d9ef">insert</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">before</span> <span style="color:#66d9ef">update</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">after</span> <span style="color:#66d9ef">update</span>  <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wie man erkennen kann, ist der &lsquo;before insert&rsquo;-Trigger einmal ausgeführt
+worden, dann sind wir in den Update-Fall eingetreten und dort sind der
+&lsquo;before update&rsquo; und der &lsquo;after update&rsquo;-Trigger gelaufen. Der &lsquo;after
+insert&rsquo;-Trigger ist nie gelaufen.</p>
+<p>Wir haben also eine ungerade, asymmetrische Trigger-Aktivierung und wir
+haben zwei verschiedene Before-Trigger aktiviert.</p>
+<p>Hat man Code mit relativen Updates, etwa der Form &lsquo;update konto set geld =
+geld - old.betrag&rsquo; in einem &lsquo;before insert&rsquo; und einem &lsquo;before
+update&rsquo;-Trigger, dann hat man also zweimal abgebucht, aber nur einmal
+aufgebucht. Die Zähler geraten durcheinander. Man muß bei der Konstruktion
+von Triggern also besondere Vorsicht walten lassen und diesen Fall
+berücksichtigen.</p>
+<p>Das gilt im übrigen auch für das Partnerstatement von INSERT ON DUPLICATE
+KEY UPDATE, also für INSERT IGNORE:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">delete</span> <span style="color:#66d9ef">from</span> log;
+Query OK, <span style="color:#ae81ff">3</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">33</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">insert</span> <span style="color:#66d9ef">ignore</span> <span style="color:#66d9ef">into</span> a (id,d,e) <span style="color:#66d9ef">values</span> (<span style="color:#ae81ff">7</span>,<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">11</span>);
+Query OK, <span style="color:#ae81ff">0</span> <span style="color:#66d9ef">rows</span> affected (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+
+root<span style="color:#f92672">@</span>localhost [kris]<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> log;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> t             <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">6</span> <span style="color:#f92672">|</span> <span style="color:#66d9ef">before</span> <span style="color:#66d9ef">insert</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Auch hier sehen wir eine ungerade Anzahl von Triggern, ein &lsquo;before insert&rsquo;
+ohne &lsquo;after insert&rsquo;.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

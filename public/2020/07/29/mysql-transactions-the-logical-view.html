@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL Transactions - the logical side</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-transactions-the-logical-side-page">
+	<h1 class="title">
+            MySQL Transactions - the logical side
+	</h1>
+
+	<p>After having a look [how MySQL handles transactions physically]({% link
+_posts/2020-07-27-mysql-transactions.md %}), let&rsquo;s have a look at what is
+going on from a logical point of view.</p>
+<p>We are using a test table called demo with an id and a counter field, both
+integer. In it we have 10 counters, all set to 0.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>demo<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> bigint unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> AUTO_INCREMENT,
+  <span style="color:#f92672">`</span>counter<span style="color:#f92672">`</span> int <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span> <span style="color:#66d9ef">DEFAULT</span> <span style="color:#e6db74">&#39;0&#39;</span>,
+  <span style="color:#66d9ef">UNIQUE</span> <span style="color:#66d9ef">KEY</span> <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>)
+)
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>demo<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>);
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>demo<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">0</span>);
+...
+<span style="color:#66d9ef">INSERT</span> <span style="color:#66d9ef">INTO</span> <span style="color:#f92672">`</span>demo<span style="color:#f92672">`</span> <span style="color:#66d9ef">VALUES</span> (<span style="color:#ae81ff">10</span>,<span style="color:#ae81ff">0</span>);
+</code></pre></div><p>In one session, we start a transaction and modify a counter value. We do not
+commit anything.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">update</span> demo <span style="color:#66d9ef">set</span> counter <span style="color:#f92672">=</span> <span style="color:#ae81ff">10</span> <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+</code></pre></div><h2 id="isolation">
+    <a href="#isolation">
+	Isolation
+    </a>
+</h2>
+<p>In a second session, we check the data and notice a few things:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+...
+</code></pre></div><ul>
+<li>We do not see the uncommitted changes to row <code>id=3</code> from Session1.</li>
+<li>We do not have to wait - the uncommitted change on the row <code>id=3</code> does not
+stall us in any way.</li>
+</ul>
+<p>From the previous article we know that MySQL took the older version of the
+row and moved it to the Undo Log. It has to do that in order to still have
+the data around should we decide to <code>ROLLBACK</code>. The new version of the row
+in the actual tablespace contains a pointer to the older version of the Row
+in the Undo Log.</p>
+<p>When looking at the row we see this older version, so something made the
+database read the current values of the rows 1, 2, 4, and so on from the
+tablespace, but for the row <code>id=3</code> sent us to the Undo Log.</p>
+<p>This is also a good thing, because we do not have to wait.</p>
+<h3 id="transaction-isolation-level-read-uncommitted">
+    <a href="#transaction-isolation-level-read-uncommitted">
+	Transaction Isolation Level Read Uncommitted
+    </a>
+</h3>
+<p>This is what MVCC - <a href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control" target="_blank" rel="noopener">Multiversion Concurrency
+Control</a>
+
+
+does: It uses the old versions of the row to present us a consistent view of
+the data, depending on the <code>TRANSACTION ISOLATION LEVEL</code>. This is a thing we
+can change:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">isolation</span> <span style="color:#66d9ef">level</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">uncommitted</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+</code></pre></div><p>So once we <code>SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED</code>, we get to see
+the value 10 written by Session1, despite the fact that it never has been
+committed.  In fact, if we would <code>ROLLBACK</code>, logically it would never have
+been there - but still Session2 saw it.</p>
+<blockquote>
+<p>At <code>TRANSACTION ISOLATION LEVEL READ UNCOMMITTED</code> we are reading stuff
+directly from the tablespace file. This can contain data that is not yet
+committed, and due to <code>ROLLBACK</code> never will be - mere phantasies. The Undo
+Log is never consulted.</p>
+</blockquote>
+<h3 id="transaction-isolation-level-read-committed">
+    <a href="#transaction-isolation-level-read-committed">
+	Transaction Isolation Level Read Committed
+    </a>
+</h3>
+<p>If we <code>SET TRANSACTION ISOLATION LEVEL READ COMMITTED</code> with the transaction
+hanging in Session1 as before , we get to see the counter at row <code>id=3</code> as
+before, at 0.</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">isolation</span> <span style="color:#66d9ef">level</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">committed</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">1</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">2</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>  <span style="color:#ae81ff">4</span> <span style="color:#f92672">|</span>       <span style="color:#ae81ff">0</span> <span style="color:#f92672">|</span>
+</code></pre></div><p>That is, at this isolation level we will only see data that has been
+comitted.</p>
+<blockquote>
+<p>At <code>TRANSACTION ISOLATION LEVEL READ COMMITTED</code> we are reading stuff from
+the tablespace file, unless there is an ongoing transaction for a row. In
+that case, the reader will consult the Undo Log one level deep and show us
+the previous, committed version of the data. We never get to see ephemeral
+data that can be rolled back.</p>
+</blockquote>
+<p>Now, let&rsquo;s commit that change, and check:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">commit</span>;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">isolation</span> <span style="color:#66d9ef">level</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">committed</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">10</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span></code></pre></div><p>In fact, if we incremented the counter in Session1, we also would see that
+in Session2:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">write</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">update</span> demo <span style="color:#66d9ef">set</span> counter <span style="color:#f92672">=</span> counter <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">commit</span>;
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">set</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">isolation</span> <span style="color:#66d9ef">level</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">committed</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">11</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span></code></pre></div><blockquote>
+<p>At <code>TRANSACTION ISOLATION LEVEL READ COMMITTED</code>, if we read the same row
+twice, we can see it changing.</p>
+</blockquote>
+<h3 id="transaction-isolation-level-repeatable-read">
+    <a href="#transaction-isolation-level-repeatable-read">
+	Transaction Isolation Level Repeatable Read
+    </a>
+</h3>
+<p>The default transaction isolation level in MySQL is <code>SET TRANSACTION ISOLATION LEVEL REPEATABLE READ</code>. If you never change anything, this is what
+you get.</p>
+<p>If in Session1 we were to run, this time with autocommit and not inside an
+explicit transaction:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">UPDATE</span> demo <span style="color:#66d9ef">SET</span> counter<span style="color:#f92672">=</span>counter<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">UPDATE</span> demo <span style="color:#66d9ef">SET</span> counter<span style="color:#f92672">=</span>counter<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">UPDATE</span> demo <span style="color:#66d9ef">SET</span> counter<span style="color:#f92672">=</span>counter<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+Session1<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">UPDATE</span> demo <span style="color:#66d9ef">SET</span> counter<span style="color:#f92672">=</span>counter<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+</code></pre></div><p>and in Session2 checked repeatedly, we would see the counter increment, as
+before:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">12</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span>
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">13</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span></code></pre></div><p>But, and that is new, we now get to use read only transactions in Session2.
+And that changes behavior:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">start</span> <span style="color:#66d9ef">transaction</span> <span style="color:#66d9ef">read</span> <span style="color:#66d9ef">only</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">14</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span>Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">14</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span>
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">commit</span>;
+Session2<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#f92672">*</span> <span style="color:#66d9ef">from</span> demo <span style="color:#66d9ef">where</span> id <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> id <span style="color:#f92672">|</span> counter <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>  <span style="color:#ae81ff">3</span> <span style="color:#f92672">|</span>      <span style="color:#ae81ff">16</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----+---------+
+</span></code></pre></div><p>As soon as we <code>START TRANSACTION READ ONLY</code>, in this isolation level, we get
+a consistent read view. In practice that means that our session is frozen in
+time and will no longer see changes to this or any other table that have
+been made after we started the transaction.</p>
+<blockquote>
+<p>At <code>TRANSACTION ISOLATION LEVEL REPEATABLE READ</code> we are reading stuff from
+the tablespace, unless it has been changed after we started our
+transaction. In that case, the reader will consult the Undo Log multiple
+levels deep, in order to present us the newest version of the row that is
+older than our read-only transaction.</p>
+</blockquote>
+<p>As soon as we drop our read-only transaction with commit (nothing changed,
+so nothing is actually committed) our world jumps forward in time to the
+present, skipping any intermediate steps.</p>
+<h3 id="repeatable-read-and-long-running-transactions">
+    <a href="#repeatable-read-and-long-running-transactions">
+	Repeatable Read and Long Running Transactions
+    </a>
+</h3>
+<p>Starting a transaction at the default isolation level will force the Undo
+Log Purge Thread to stop at the position of our read view. Undo Log entries
+will no longer be purged, filling up and growing the Undo Log. Reads and
+Index Lookups become more complicated and slower, slowing down the overall
+performance of the database.</p>
+<p>It is a good idea to not have long running transactions.</p>
+<p>Maintenance Operations such as running <code>mysqldump --single transaction mydatabase</code> to make a logical backup achieve a consistent backup my
+maintaining a consistent read view by starting a long running transaction.
+As the dump of a large database can take some time, it is a good idea to do
+this at a point in time where the database is not so busy.  Specifically
+where the write activity is low.  Otherwise the incoming writes will blow up
+your Undo Log by the size of the data load, and make everything slow.</p>
+<p>While in theory these two operations - a data load and a backup - can happen
+concurrently and should not interfere, nothing is for free and the
+implementation of consistent read views will function better if you do not
+work against it.</p>
+<p>The Undo Log will not shrink, but will be freed internally and re-used,
+should that space ever be needed. But you will end up, depending on your
+version of MySQL, with a very large ibdata1 file or very large Undo Log
+segment files.</p>
+<h2 id="reading-data-without-locks">
+    <a href="#reading-data-without-locks">
+	Reading Data without Locks
+    </a>
+</h2>
+<p>It is also worthwhile to note that all the data reads we have seen so far
+are free from locking: There are no stalls or lock-waits that can happen in
+these scenarios.</p>
+<p>The fact that we have to be able to roll back makes it necessary to make a
+copy of a row before we modify it and keep it around.</p>
+<p>The fact that most transactions successfully commit and not roll back
+suggests that we would do well by putting the new version of the row into
+place properly and move the old version to a temporary storage, the Undo
+Log, before we throw it away by the way of the Purge Thread. Thay way we
+keep the tablespace clean and free from outdated, stale versions of rows.</p>
+<p>Looking at all active transactions in the system we can easily determine the
+lowest, oldest transaction number in the system. By definition nothing else
+can ever reference any row version even oler than that, so these versions
+are fair game for the Purge Thread.</p>
+<p>By linking old versions of a row, we get a thread from the current version
+of the row into the (still visible) past of that row as a linked list.</p>
+<p>By choosing a transaction isolation level at will, per connection, each
+connection can at any point in time choose to read the current, the most
+recently committed or the newest version of the row older than its own
+(read-only) transaction.</p>
+<p>By committing, a read-only transaction gives up its version of the past,
+retiring an older transaction, allowing the Purge Thread to move on and free
+Undo Log space.</p>
+<blockquote>
+<p>At no point in time a read operation is ever stalled by a writer and
+forced to wait. There are no write-locks ever stalling a reader. These two
+operations are completely independent.</p>
+</blockquote>
+<p>For writers, this is quite different, and for good reason.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

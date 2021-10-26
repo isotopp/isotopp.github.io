@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL vs. Gigabit Network</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="mysql-vs.-gigabit-network-page">
+	<h1 class="title">
+            MySQL vs. Gigabit Network
+	</h1>
+
+	<p>Wir generieren eine neue Art von
+[Materialized View]({% link _posts/2012-08-15-materialized-view.md %})
+mit dem bekannten Generator-Setup:</p>
+<p><p class="md__image">
+  <img src="/uploads/queue.png" alt="Materialized View Generator"  />
+</p>
+
+</p>
+<p>Das neue Setup unterscheidet sich in der Logik von denen, die wir bisher
+verwendet haben, und so kommt es beim Testlauf zu einem ungewöhnlichen und
+unerwarteten Ereignis:</p>
+<p><p class="md__image">
+  <img src="/uploads/replication5-network.png" alt="Network: Bytes/second"  />
+</p>
+
+</p>
+<p>Um 14:30: Ein Gigabit-Netzwerk mit 125 MB/sec ausgelastet.</p>
+<p>Bei einem Probelauf gehen die Alarme los, weil der Gigabit-Netzwerkstrang
+zur Datenbank mit 125 MB/sec (Ein Gigabit/sec) vollständig ausgelastet ist.
+Wie man sehen kann, ist die Datenbank zu diesem Zeitpunkt nicht besonders
+beschäftigt:</p>
+<p><p class="md__image">
+  <img src="/uploads/replication4-statement.png" alt="MySQL: Queries/s"  />
+</p>
+
+</p>
+<p>Um 14:30: Keine auffällig hohe Anzahl von Queries/s.</p>
+<p>Auch auf dem Binlog ist nichts besonderes zu sehen:</p>
+<p><p class="md__image">
+  <img src="/uploads/replication3-binlog.png" alt="Binlog: Bytes/s"  />
+</p>
+
+</p>
+<p>Keinerlei Ausschläge bei der Binlog-Größe - Replikation ist ja sonst immer
+wieder gerne genommen, um ein Netzwerksegment vollständig zu füllen.</p>
+<p>Und auch der lokale Change auf der Datenbank hält sich in extrem
+überschaubaren Grenzen:</p>
+<p><p class="md__image">
+  <img src="/uploads/replication2-checkpoint.png" alt="MySQL: InnoDB Checkpoint Age"  />
+</p>
+
+</p>
+<p>Maximal 400 MB aktives Redo-Log auf einer Maschine mit 50GB oder 100GB
+Buffer Pool sind verschwindend gering.</p>
+<p>Wie man sehen kann, ist das Redo-Log der Datenbank zum Zeitpunkt des
+Vorfalls weit unter 400 MB groß.  Auf einer Datenbank mit einem Buffer Pool
+von 50-100 GB bedeutet das einen verschwindend geringen Anteil von noch
+nicht zurückgeschriebenen Änderungen.</p>
+<p>Auch die CPU der Maschine ist unauffällig - ein Multicore-Server mit einer
+Auslastung um die 100% (ein Core Busy) ist extrem entspannt.</p>
+<p><p class="md__image">
+  <img src="/uploads/replication1-cpu.png" alt="System: CPU Usage"  />
+</p>
+
+</p>
+<p>Multicore-Server mit einer CPU-Auslastung in der Gegend von einem Core.</p>
+<p>Was zum Teufel geht hier vor?</p>
+<p>Das wird schnell deutlich, denn man ein paar Dinge prüft, die mit dem Test
+zu tun haben.  Die relevante Tabelle sieht so aus:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">table</span> status <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;...&#39;</span><span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+           Name: ...
+         Engine: InnoDB
+...
+ Avg_row_length: <span style="color:#ae81ff">77539</span>
+...
+<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">create</span> <span style="color:#66d9ef">table</span> ...<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+       <span style="color:#66d9ef">Table</span>: ...
+<span style="color:#66d9ef">Create</span> <span style="color:#66d9ef">Table</span>: <span style="color:#66d9ef">CREATE</span> <span style="color:#66d9ef">TABLE</span> <span style="color:#f92672">`</span>...<span style="color:#f92672">`</span> (
+  <span style="color:#f92672">`</span>id<span style="color:#f92672">`</span> mediumint(<span style="color:#ae81ff">8</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>body<span style="color:#f92672">`</span> mediumblob <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>digest<span style="color:#f92672">`</span> binary(<span style="color:#ae81ff">20</span>) <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>last_change<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">10</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#f92672">`</span>last_check<span style="color:#f92672">`</span> int(<span style="color:#ae81ff">10</span>) unsigned <span style="color:#66d9ef">NOT</span> <span style="color:#66d9ef">NULL</span>,
+  <span style="color:#66d9ef">PRIMARY</span> <span style="color:#66d9ef">KEY</span> (<span style="color:#f92672">`</span>id<span style="color:#f92672">`</span>),
+  <span style="color:#66d9ef">KEY</span> <span style="color:#f92672">`</span>last_check<span style="color:#f92672">`</span> (<span style="color:#f92672">`</span>last_check<span style="color:#f92672">`</span>)
+) ENGINE<span style="color:#f92672">=</span>InnoDB <span style="color:#66d9ef">DEFAULT</span> CHARSET<span style="color:#f92672">=</span>latin1
+<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wir haben hier also ein System, bei dem Daten materialisiert und als Blob
+mit dem Namen &lsquo;body&rsquo; in der Tabelle gespeichert werden.  Ist der Blob schon
+vorhanden und auf Stand, muß der Blob selber nicht geändert werden, aber es
+wird das Feld &lsquo;last_check&rsquo; aktualisiert.</p>
+<p>Außerdem ist Row Based Replication konfiguriert:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">show</span> <span style="color:#66d9ef">global</span> variables <span style="color:#66d9ef">like</span> <span style="color:#e6db74">&#39;binlog_format&#39;</span><span style="color:#960050;background-color:#1e0010">\</span><span style="color:#66d9ef">G</span>
+Variable_name: binlog_format
+        Value: <span style="color:#66d9ef">ROW</span>
+<span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Nun verhält es sich aber mit
+<a href="http://dev.mysql.com/doc/refman/5.6/en/replication-options-binary-log.html#sysvar_binlog_row_image" target="_blank" rel="noopener">RBR folgemdermaßen</a>
+
+:</p>
+<blockquote>
+<p>In MySQL row-based replication, each row change event contains two images,
+a “before” image whose columns are matched against when searching for the
+row to be updated, and an “after” image containing the changes.  Normally,
+MySQL logs full rows (that is, all columns) for both the before and after
+images.</p>
+</blockquote>
+<p>Wir haben also eine Average Row Length von 77539 Bytes, und wir loggen für
+jede Änderung die komplette Row zweimal: einmal in der alten und einmal in
+der neuen Version.  Wir schreiben also im Schnitt 140 KB, wenn ein
+last_changed Feld von 4 Bytes geändert wird.</p>
+<p>Außerdem ist:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql">mysql<span style="color:#f92672">&gt;</span> <span style="color:#66d9ef">select</span> <span style="color:#66d9ef">count</span>(command) <span style="color:#66d9ef">as</span> <span style="color:#66d9ef">c</span> <span style="color:#66d9ef">from</span> processlist <span style="color:#66d9ef">where</span> command <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;binlog dump&#39;</span>;
+<span style="color:#f92672">+</span><span style="color:#75715e">----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span> <span style="color:#66d9ef">c</span>            <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----------+
+</span><span style="color:#75715e"></span><span style="color:#f92672">|</span>       <span style="color:#ae81ff">45</span> <span style="color:#f92672">|</span>
+<span style="color:#f92672">+</span><span style="color:#75715e">----------+
+</span><span style="color:#75715e"></span><span style="color:#ae81ff">1</span> <span style="color:#66d9ef">row</span> <span style="color:#66d9ef">in</span> <span style="color:#66d9ef">set</span> (<span style="color:#ae81ff">0</span>.<span style="color:#ae81ff">00</span> sec)
+</code></pre></div><p>Wir drücken diese 140 KB pro Change also an 45 unabhängige Slaves raus (das
+ist hier hauptsächlich der Tatsache geschuldet, daß das Zielsystem
+eigentlich eine leicht andere Aufgabe hat und für diese Tests, die
+eigentlich keinen meßbaren Impact hätten haben sollen, zweckentfremdet
+wurde).</p>
+<p>Das Problem ist in MySQL 5.6 gelöst, wo man mit der neu eingeführten
+Variable
+<a href="http://dev.mysql.com/doc/refman/5.6/en/replication-options-binary-log.html#sysvar_binlog_row_image" target="_blank" rel="noopener">binlog-row-image</a>
+
+
+und den Modi &lsquo;noblob&rsquo; und &lsquo;minimal&rsquo; auf die Übertragung der ungeänderten
+Blobs verzichten kann.</p>
+<p>In MySQL 5.5 löst man das Problem mit einer künstlichen 1:1- oder
+1:0-Relation, die die Blobs in einer gesonderten Tabelle speichert und so
+isoliert.</p>
+<p>In normalen Umständen, also ohne Blob oder Text-Typen, sind RBR-Logfiles
+zwischen 50% und 66% kleiner als SBR (Statement Based Replication)-Logfiles.
+Nur bei extrem breiten Rows explodiert dies.</p>
+<p>Man beachte, daß der Master diese Last auf der linken Backe absitzt.  Er
+zeigt tatsächlich auch nicht mal meßbar Disk-I/O, weil er seine Slaves aus
+dem File System Buffer Cache bedient.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

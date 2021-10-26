@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Load, Load Testing and Benchmarking</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+	
+
+
+
+<link rel="stylesheet" href="/style.min.c5e5cd61f54911f9aafd1dbe09c2f90667957bfe1002126c87aace57759f3446.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+	<a class="navbar-brand" href="" rel="home" title=".Site.Title">
+	    Die wunderbare Welt von Isotopp
+	</a>
+	<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+		
+		
+		<li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+			
+			<span>About</span>
+			<span class="visually-hidden">(Current)</span>
+		    </a>
+		    
+		</li>
+            </ul>
+            
+	</div>
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid">
+
+            
+
+
+<div class="page">
+    <article class="load-load-testing-and-benchmarking-page">
+	<h1 class="title">
+            Load, Load Testing and Benchmarking
+	</h1>
+
+	<p>(This article also available in [german language]({% link _posts/2012-08-28-load-load-testing-und-benchmarks.md %}).)</p>
+<p>So you have a new system and want to know what the load limits are. For that
+you want to run a benchmark.</p>
+<h2 id="basic-benchmarking">
+    <a href="#basic-benchmarking">
+	Basic Benchmarking
+    </a>
+</h2>
+<p>The main plan looks like this:</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/benchmark_plana.png" alt=""  />
+</p>
+
+</p>
+<p>The basic idea: Find a box, offer load, see what happens, learn.</p>
+<p>You grab a box and find a method to generate load. Eventually the box will
+be fully loaded and you will notice this somehow.</p>
+<p>The first mistake: running the load generator and the system to test on the
+same box. That won&rsquo;t work.</p>
+<p>It&rsquo;s our goal to bring the box to its limits. Actually, we want to push it
+past that in order to see what it is that is limiting it. That will happen
+only when we are able to generate more load than the target system can
+actually process. If the load generator and the target system are sharing
+any resources that will never happen: The starved resource, for example CPU,
+will be slowing down not only the target application but also the load
+generator until we are reaching equilibrium at an unknown point below the
+actual limit.</p>
+<p>That way we will never see what color the smoke is when the box catches
+fire, that is, what the actual system behaviour under overload is. So we
+need to separate the load generator and the target system.</p>
+<p>The second mistake: The target system or the load generated are not close
+enough to production. In database land, typical mistakes are</p>
+<ul>
+<li>The tested system has less memory or a different disk subsystem than production.</li>
+<li>The test data set is smaller than production.</li>
+<li>The test query set or the test data set is biased relative to production.</li>
+</ul>
+<p>In all of these cases we will be learning something, but it will not easily
+port to production. For example, in 2005 the german computer magazine c&rsquo;t
+had a test media shop selling CD and DVD media, and was using this to
+benchmark implementations of the system with different databases.
+The actual benchmark was an equidistribution of queries, so there have been
+no best sellers and no long tail.</p>
+<p>To win the benchmark it was mandatory to disable all caches, because there
+was no set of popular media which would have been gaining from caching. That
+outcome is the opposite of what is necessary in a real world scenario, where
+there is a clear long tail distribution of queries.</p>
+<p>The closer you can bring the test load, the tested system and the test data
+to production the besser the results. Which is why at work we are trying
+very hard to make testing in production safe, and then we test whatever is
+possible in production.</p>
+<h2 id="saturation">
+    <a href="#saturation">
+	Saturation
+    </a>
+</h2>
+<p>When you offer load to a system, the average load on the system will rise.
+But load usually is not constant, but will vary, depending on what users are
+doing and how expensive the individual requests are: Not all operations are
+equally expensive.</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/benchmark1.png" alt=""  />
+</p>
+
+</p>
+<p>A system close to saturation: Average load is slightly below the maximum, but
+individual peaks spike above the saturation line.</p>
+<p>Consequently we are not pushing the system to a limit, but we are raising a
+rolling average in which the actual load is constantly fluctuating and
+oscillating around this average until the peaks exceed the point of
+saturation.</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/benchmark3.png" alt=""  />
+</p>
+
+</p>
+<p>The average offered load is below the 100% saturation line, but the peaks
+are already exceeding the limit.</p>
+<p>That is of course nonsense. The saturation limit is a hard limit, the system
+can&rsquo;t produce more than that, because a necessary resource is exhausted and
+the system is constrained by that resource. So what actually happens is that
+the system will be building a backlog whenever the offered load goes above
+the 100% line. Requests will pile up in some queue and will only be
+processed when the load goes below that limit.</p>
+<p>As we push the system harder, it will exceed the saturation point more and
+more and phases where it can gain on the building backlog will become rarer.
+But since the costs for an individual request vary, it is hard to overload
+the system in a controlled way - harder the higher that variance is.</p>
+<p>That is one of many reasons why we focus on outliers and worst cases first
+when we care about optimization: In order to be able to meet any kind of
+service level objective we need to handle these extremely bad cases first
+and narrow the band of possible response times, even if that does not move
+the mean much. Only then we can try to improve the mean response time of the
+system.</p>
+<h2 id="wait-time-and-the-hockey-stick">
+    <a href="#wait-time-and-the-hockey-stick">
+	Wait time and the hockey stick
+    </a>
+</h2>
+<p>What actually happens at saturation becomes clearer as we transform the
+above graph and take it out of the time domain. We will be graphing offered
+load (requests/s) vs. throughput (responses/s) and offered load (requests/s)
+vs. response time (latency).</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/benchmark2.png" alt=""  />
+</p>
+
+</p>
+<p>Requests/s vs. Response/s (Capacity) and Requests/s vs. Response time
+(Latency). As we raise offered load, the system approaches the 100% line
+(the vertical saturation line), and a backlog builds.</p>
+<p>As we increase load, each request will generate a response: the curve in the
+capacity graph goes up at a 45deg angle. Even as the load rises, requests
+will take approximately the same time to process - we are calling this time
+the think time.</p>
+<p>Once we approach saturation, a resource in our system will be starved and
+constrain capacity. Even if we are offering more load, this will not
+generate more responses. The capacity graph flattens out. Since more
+requests are coming in than we have capacity for, these excess requests will
+be queued. Wait time is being added on top of the think time.</p>
+<p>And since we are continuing to add more requests than we can handle, the
+queue and the wait time will rise rapidly and without bounds. The latency
+curve has the shape of a hockey stick.</p>
+<h2 id="testing-in-production">
+    <a href="#testing-in-production">
+	Testing in production
+    </a>
+</h2>
+<p>That is not a theory, but can be shown in real production systems.</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/benchmark5.png" alt=""  />
+</p>
+
+</p>
+<p>A typical production setup. User requests are entering the system from the
+internet at the top, hitting a load balancer. The request are routed to a
+set of web servers behind the load balancer.</p>
+<p>Assuming that you have a minimum size for load testing with production load:
+You need to have a sufficient number of users, large enough so that
+individual users do not contribute in a meaningful way. You will need a
+frontend load balancer in front of a number of webservers, and you need to
+be able to modify load distribution weights live in this setup.</p>
+<p>The load tests starts with running an Apache Siege load generator at a very
+low setting from the outside against the setup - actually, the Siege is not
+running against the load balancer, but against one individual web server
+which is the one which we will be trying to overload. This is not done to
+generate load, but to measure latency: In normal configuration our system
+will not be overloaded, so the baseline latency we are seeing is think time.</p>
+<p>During the benchmark we are playing with weights in the load balancer in
+order to direct more load to individual web servers. The load balancing
+weight of the web server getting the Siege requests is now being increased
+so that it will need to handle more actual user requests than the other
+servers. Eventually either timeouts will be showing up in the error log, or
+the request latency shown by Siege will be going up dramatically.</p>
+<p>Either signal indicates saturation, and we need to stabilize offered load at
+or very slightly below this point in order to find the saturation point.</p>
+<p>Here is a time domain plot of such an event:</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/load-test-time.png" alt=""  />
+</p>
+
+</p>
+<p>A request graph of a MySQL database slave being load tested. Writes are
+coming in via replication, and are not subject to load testing, hence
+stable. Selects are being load tested and increase at the tests
+commence.</p>
+<p>In the test graph above we are looking at query counters of a MySQL database
+slave during three load test events. Write queries (insert, update, delete)
+are coming in through replication from the upstream master and are not
+affected by the load test. Selects are being increased by load balancer
+manipulation.</p>
+<p>During the third test there is a spike of update statements
+due to a cron script running and affecting the test, invalidating the
+results of that run.</p>
+<p>Taking the results from the above run and plotting them in a latency graph
+results in the following graph. The hockey stick is clearly visible:</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/load-test-comparison.png" alt=""  />
+</p>
+
+</p>
+<p>Latency graph: test1 is shown in blue, test2 in orange.</p>
+<p>The graph shows offered load vs. latency of the configurations test1 and
+test2 from the run above. Configuration test2 is clearly superior. A variant
+of this graph uses larger symbols as the error rate of that measurement
+increases to add another dimension. That way the stability of the system
+under test in overload is being visualized as well.</p>
+
+
+	
+    </article>
+</div>
+
+
+
+            <footer>
+    <p>
+	&copy; Copyright 2021 Someone or something
+    </p>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>
