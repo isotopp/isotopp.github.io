@@ -8,9 +8,9 @@ They can now be found under `content/posts/`.
 If this is being pulled fresh the `hugo-bootstrap-bare` theme needs to be pulled as a git submodule as well.
 
 1. After cloning this repository (or switching to this branch).
-1. Clone the `hugo-bootstrap-bare` submodule with:
+1. Add the `hugo-bootstrap-bare` submodule with:
   ```
-  git clone git@gitlab.com:pixlsus/hugo-bootstrap-bare.git themes/hugo-bootstrap-bare
+  git submodule add -b bootstrap5 git@gitlab.com:pixlsus/hugo-bootstrap-bare.git themes/hugo-bootstrap-bare/
   ```
 1. Fetch the assets in the theme:
   ```
