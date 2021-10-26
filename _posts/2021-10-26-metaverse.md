@@ -25,6 +25,8 @@ Die Überlegung beginnt mit Spielen, die nicht mehr sind, was sie mal waren, son
 - Roblox, eine Plattform zur spielerischen Generierung von Computerspielen, und
 - Minecraft in der Java- und der Bedrock-Edition, um zu zeigen, wie beides auf seine Weise unternehmerische Fehlschläge sind.
 
+## Fortnite
+
 Fortnite war mal Battle Royale, aber ist inzwischen auch eine "Veranstaltungsplattform", man kann dort Skins kaufen, Partnerschaften mit anderem IP, zum Beispiel Marvel/DC Super Heroes.
 Leute haben dort Konzerte gegeben oder andere Veranstaltungen durchgeführt.
 Epic unterstützt das, recht offen, weil es Fortnite so auch bei Leuten bekannt macht, die an Battle Royal und Gamer-Kultur nicht primär interessiert sind.
@@ -32,8 +34,12 @@ Epic unterstützt das, recht offen, weil es Fortnite so auch bei Leuten bekannt 
 Epic Games macht auch die Unreal Engine, und die dazu gehörenden Pipelines zum Erstellen und Editieren von digitalen Game Assets, betreibt einen Markt für diese Dinge und baut auch sonst eine lebendige Infrastruktur zur Spielerzeugung und zur Vermarktung auf.
 Gewissermaßen ist dies die unsichtbare "Rückseite" von Spielen.
 
+## Roblox
+
 Ganz ähnlich, aber viel mehr casual betreibt Roblox sowieso eine Plattform zur Spiele Erzeugung, und macht so Assets, aber auch einen Asset Markt.
 Roblox ist vor allen Dingen bei jungen und sehr jungen Menschen populär, und wird bei älteren Menschen weit unterschätzt.
+
+## Minecraft in zwei Geschmacksrichtungen
 
 Minecraft ist ein Klassiker: Das originale Minecraft ist in Java geschrieben und inzwischen komplett durch Komponenten von Drittherstellern ersetzbar: Es gibt alternative Clients, alternative Server, alternative Assets.
 Das Spiel ist schlecht: Es ist eine Sandbox ohne viel Story und ohne Spielziel mit primitiver Grafik, die originalen Server sind langsam und fehlerhaft.
@@ -55,9 +61,10 @@ Das Bedrock-Modell ist vergleichbar mit dem Apple Entwicklermodell, aber kleiner
 Man kann nicht ernsthaft für Apple entwickeln ohne Apple-ID, Entwickler-Lizenz, Cloud-Nutzung für Handover und Storage und ohne Prozente im Apple Store zu bezahlen.
 Bedrock ist danach modelliert, aber halt kein Computer-Tablet-ökosystem, sondern nur ein Spiel.
 
-# Metaverse
+# Metaverse: Eine erste Definition
 
 Die tatsächliche Definition von "Metaverse" sind also nicht 3D-Brillen, sondern "die Integration der Computerspieleindustrie mit der Wertschöpfungskette der Unterhaltungsindustrie für einen offenen, digitalen Assetmarkt".
+
 Oder offener: Das Anzapfen der Spieleverwertungskette an jeder Stelle im Produktionsfluß, und das Aufwerten der Spieleverwertungskette durch Integration mit Intellectual Property aus Filmen und Büchern.
 
 Es geht also darum, aus dem Lebenszeit-Konsum-Budget einer Person mehr Geld herauszuziehen, ohne zu viel Lebenszeit bei dieser Person zu verbrauchen, also um eine Aufweitung von Ausgaben für "Medien" im allerweitesten Sinne.
@@ -176,7 +183,7 @@ Die marktbeherrschenden Firmen erkennen einander an und konkurrieren semi-kooper
 Es ist wichtiger, den Marktzugang von Disruptoren zu erschweren, und es wird komplexe, schwierig zu implementierende Standards geben, mit Compliance Prüfungen und anderen Kostenfaktoren.
 Das wird dann aber auch - zähneknirschend - zu Interoperabilität führen.
 
-# Was ist das Metaverse?
+# Metaverse, überarbeitete Definition
 
 Das führt uns zur überarbeiteten Definition von Metaverse: 
 Die Integration der Spieleindustrie mit der Unterhaltungsindustrie und die Integration der Wertschöpfungsketten, mit der Möglichkeit die Verwertungskette an jeder Stelle im Produktionsfluß mit einer Art Steuer zu belegen.
