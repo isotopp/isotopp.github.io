@@ -20,11 +20,11 @@ My [german notes and talk prep](https://docs.google.com/document/d/1_OIl_bcrjVcz
 The term "Metaverse" was initially coined by Neal Stephenson in 1992, but in the context of the current discussion it was defined as in [The Metaverse: What It Is, Where to Find it, Who Will Build It, and Fortnite](https://www.matthewball.vc/all/themetaverse) by Matthew Ball. Ball later [wrote a lot more about the same](https://www.matthewball.vc/the-metaverse), and that led to the current Valley Hype around it..
 
 We are starting with games, who no longer are what they started out as, but somehow transcended:
-- 
+
 - Fortnite by Epic Games, which now also hosts non-Fortnite events,
 - Roblox, a platform to make and host low end games, and
 - Minecraft in the Java and Bedrock editions, to show how both fail differently.
--
+ 
 ## Fortnite
 
 Fortnite originally was a Battle Royale game, but is now also a platform that can host events. You can also buy skins for your characters or items, often in a partnership with other IP, for example Marvel/DC super heroes.
