@@ -17,7 +17,7 @@ Meine [Gesprächsnotizen und Vorbereitung](https://docs.google.com/document/d/1_
 
 # Metaverse
 
-Der Begriff "Metaverse" stammt ursprünglich von Neal Stevenson, aus dem Jahre 1992, aber er ist im aktuellen Kontext von Matthew Ball in [The Metaverse: What It Is, Where to Find it, Who Will Build It, and Fortnite](https://www.matthewball.vc/all/themetaverse) mit Sinn gefüllt worden. Ball hat dann später [mehr zum Thema](https://www.matthewball.vc/the-metaverse) geschrieben, und so den aktuellen Silicon Valley Hype erzeugt.
+Der Begriff "Metaverse" stammt ursprünglich von Neal Stephenson, aus dem Jahre 1992, aber er ist im aktuellen Kontext von Matthew Ball in [The Metaverse: What It Is, Where to Find it, Who Will Build It, and Fortnite](https://www.matthewball.vc/all/themetaverse) mit Sinn gefüllt worden. Ball hat dann später [mehr zum Thema](https://www.matthewball.vc/the-metaverse) geschrieben, und so den aktuellen Silicon Valley Hype erzeugt.
 
 Die Überlegung beginnt mit Spielen, die nicht mehr sind, was sie mal waren, sondern irgendwie mehr geworden sind:
 
@@ -41,15 +41,15 @@ Roblox ist vor allen Dingen bei jungen und sehr jungen Menschen populär, und wi
 
 ## Minecraft in zwei Geschmacksrichtungen
 
-Minecraft ist ein Klassiker: Das originale Minecraft ist in Java geschrieben und inzwischen komplett durch Komponenten von Drittherstellern ersetzbar: Es gibt alternative Clients, alternative Server, alternative Assets.
+Minecraft ist ein Klassiker: Das originale Minecraft ist in Java geschrieben und inzwischen komplett durch Komponenten von Drittherstellern ersetzbar. Es gibt alternative Clients, alternative Server, alternative Assets.
 Das Spiel ist schlecht: Es ist eine Sandbox ohne viel Story und ohne Spielziel mit primitiver Grafik, die originalen Server sind langsam und fehlerhaft.
 
 Aber die Grafik ist simpel, sodaß das Spiel auch auf abgelegten Kartoffelcomputern funktioniert.
-Es ist alles in Java geschrieben, das sich leicht reversen und dann unkooperativ erweitern läßt und so gibt es eine reichhaltige Community mit Moddern, Server- und Client-Plugins, und vielen anderen Erweiterungen.
+Es ist alles in Java geschrieben, das sich leicht reversen und dann unkooperativ erweitern läßt, und so gibt es eine reichhaltige Community mit Moddern, Server- und Client-Plugins, und vielen anderen Erweiterungen.
 Das macht das Spiel populär und zu einer "Einstiegsdroge" in die Java-Programmierung bei jungen Menschen, weil es ein unglaubliches Selbstmotivations-Potential bietet.
 
 Nichts davon ist durch den derzeitigen Eigentümer Microsoft monetarisierbar.
-Als IP ist Minecraft für Microsoft gescheitert, weil Microsoft nach dem Kauf nicht mehr Teil der Verwertungskette ist.
+Als IP ist Minecraft für Microsoft gescheitert, weil Microsoft nach dem Kauf des Spiels nicht mehr Teil der Verwertungskette ist.
 
 Daher gibt es von Microsoft "Minecraft Bedrock Edition", performanter und besser designed, und von Grund auf mit einem Asset-Markt integriert.
 Erweiterungen für Bedrock sind im Laden kaufbar, und nur dort.
