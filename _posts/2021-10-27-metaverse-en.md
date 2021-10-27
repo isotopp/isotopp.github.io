@@ -156,7 +156,7 @@ This is the idea of the "Microsoft tax", revitalized.
 Different parties have different starting positions and strengths:
 
 - Epic Games/Fortnite - weak in IP, but some original IP, even if niche. Unreal Engine and other things on the "games invisible back-cover" as a big strength.
-- Robolox - original IP, very young customers, grooms them into future customers, wait 10 years.
+- Roblox - original IP, very young customers, grooms them into future customers, wait 10 years.
 - Microsoft - Minecraft, MS Store et al, too enterprise for success? But Halo, MSFS.
 - Apple (sic!) - no IP, but platform/chain.
 - Disney (sic!) - only IP, but weak markting outside of films/merchandise. Knows the game very well in the real world: Imagine Disneyland princples applied to a Metaverse.

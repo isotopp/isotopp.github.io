@@ -156,7 +156,7 @@ Gewissermaßen will man die Idee der "Microsoft-Tax" in einem anderen Kontext wi
 Unterschiedliche Ausgangspositionen bei
 
 - Epic Games/Fortnite - Schwach bei IP, aber original IP, wenn auch Nische, Unreal Engine und die anderen Dinge auf der "Rückseite" der Spiele als große Stärke.
-- Robolox - original IP, sehr junge Kundschaft, erzieht sich gerade Kinder, 10 Jahre warten, groß unterschätzt.
+- Roblox - original IP, sehr junge Kundschaft, erzieht sich gerade Kinder, 10 Jahre warten, groß unterschätzt.
 - Microsoft - Minecraft, MS Store et al, zu Enterprise um erfolgreich zu sein? Aber Halo, MSFS.
 - Apple (sic!) - kein IP, aber Plattform/Kette.
 - Disney (sic!) - nur IP, aber schwach in Verwertung ausserhalb von Filmen/offline Merchandise.
