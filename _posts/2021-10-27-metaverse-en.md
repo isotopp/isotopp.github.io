@@ -12,7 +12,7 @@ tags:
 ---
 
 I [wrote on Twitter](https://twitter.com/isotopp/status/1450739310546886657) something about the term "Metaverse".
-That led to a contact with [Michael Carl](https://twitter.com/michacarl) geführt, der mich in seinem [Podcast](https://carls-zukunft.de/) haben wollte.
+That led to a contact with [Michael Carl](https://twitter.com/michacarl), who wanted to make an episode for his [Podcast](https://carls-zukunft.de/) with me.
 My [german notes and talk prep](https://docs.google.com/document/d/1_OIl_bcrjVczLQrMrVnt5IoYbitp1504mb2GbQK0EM4/edit#heading=h.wbe6wnc7fg59) are now also available here:
 
 # Metaverse
@@ -28,7 +28,7 @@ We are starting with games, who no longer are what they started out as, but some
 ## Fortnite
 
 Fortnite originally was a Battle Royale game, but is now also a platform that can host events. You can also buy skins for your characters or items, often in a partnership with other IP, for example Marvel/DC super heroes.
-People gave concerts in there, or hosted other events.
+People gave concerts in there, or hosting other events.
 Epic likes to do this, openly, because it establishes Fortnite with people who are not originally interested in Battle Royale or part of gaming culture.
 
 Epic Games also makes the Unreal Engine, and the associated pipelines for creating and editing in-game assets, hosts a market to sell these things, and is building a living infrastructure to produce games, and market them.
@@ -36,12 +36,12 @@ The are in a way the invisible back-cover of many games.
 
 ## Roblox
 
-Similarly, but way more casual, Roblox operates a platform to create, host and market low end games, "making games as a game", and matching this, thet also have assets, and an asset and game marketing outlet.
+Similarly, but way more casual, Roblox operates a platform to create, host and market low end games, "making games as a game", and matching this, they also have assets, and an asset and game marketing outlet.
 Roblox is mostly a thing with young and very young people, and vastly underrated with older people.
 
 ## Minecraft in two flavors
 
-Minecraft is a classic: The original game is written in Java, and meanwhile completely replaceable with third party components There are alternative clients, alternative servers, and alternative assets.
+Minecraft is a classic: The original game is written in Java, and meanwhile completely replaceable with third party components. There are alternative clients, alternative servers, and alternative assets.
 The game is bad: It is a sandbox without much story, an ill defined goal and primitive graphics, the original servers are slow and buggy.
 
 But the graphics are simple enough that even old potatoe computers can render it.
@@ -60,7 +60,7 @@ Compared to the Java Edition, an even bigger failure.
 
 The Bedrock model is comparable to the Apple Developer mode, but smaller in scope:
 You can't seriously develop for Apple machines without having an Apple-ID, a developer license, support for Apple Cloud for handover, and without leaving percentages to the Apple store.
-Bedrock copies taht model, but not as a Computer-Tablet ecosystem, only as a game, and that did not take off.
+Bedrock copies that model, but not as a Computer-Tablet ecosystem, only as a game, and that did not take off.
 
 # Metaverse: A first definition.
 
@@ -91,7 +91,7 @@ We need to up the burn rate.
 Books, movies and especially AAA games are much to valueable per time and their consume binds too much attention for the business to scale up.
 We need a different way to extract money that does not bind as many minutes of person-lifetime and attention.
 
-That is critically important, because there is aslo a lot of free content which competes for attention with our paid for assets, and which often is "good enough" to bind time which we then cannot monetize.
+That is critically important, because there is also a lot of free content which competes for attention with our paid for assets, and which often is "good enough" to bind time which we then cannot monetize.
 
 ## A sidebar: death and inheritances
 
@@ -115,11 +115,11 @@ We can see immediately that this will lead hardly to a loss in revenue for vendo
 
 ## Assets: high budget, little time
 
-Even today, games offer loot boxes, pay-to-win and pay-to-skip purchases, and they sell cosmetics. Unlite the first three, the last one is hardly controversial.
+Even today, games offer loot boxes, pay-to-win and pay-to-skip purchases, and they sell cosmetics. Unlike the first three, the last one is hardly controversial.
 
 - Pay-to-Win: to finish the game successfully you have to buy equipment with real money. Ideally this becomes apparent only of tou already are invested in the game emotionally and with lifetime.
 - Pay-to-Skip: gameplay is often interrupted with annoying delays in which you can't play, except you purchase immediate continuations with real money.
-- Lootboxes: The game sells you containers with "random" in-game assets, some of which are very important in the context of the game. The actual game is just a wrapper for an addictive (and usually rigged) game of chance. The practice is already illegal as unregulated gamling in several EU countries.
+- Lootboxes: The game sells you containers with "random" in-game assets, some of which are very important in the context of the game. The actual game is just a wrapper for an addictive (and usually rigged) game of chance. The practice is already illegal as unregulated gambling in several EU countries.
 
 Contrary to this, cosmetics are widely accepted: These are assets that change the way the character or their equipment looks like, without affecting gameplay. Also, virtual houses and house furnishings that have no effect on gameplay.
 
@@ -159,7 +159,7 @@ Different parties have different starting positions and strengths:
 - Roblox - original IP, very young customers, grooms them into future customers, wait 10 years.
 - Microsoft - Minecraft, MS Store et al, too enterprise for success? But Halo, MSFS.
 - Apple (sic!) - no IP, but platform/chain.
-- Disney (sic!) - only IP, but weak markting outside of films/merchandise. Knows the game very well in the real world: Imagine Disneyland princples applied to a Metaverse.
+- Disney (sic!) - only IP, but weak markting outside of films/merchandise. Knows the game very well in the real world: Imagine Disneyland principles applied to a Metaverse.
 - Facebook - wants in at all costs, "pivot our enterprise": If "social" of the futuee is "here", we need to be "here".
 - Google - all of this is a reason why Stadia still exists, depite being a flop.
 - Amazon - this is where the gaming strategy of Amazon is anchored. Amazon would like to be the AWS of the gaming world, instead of Epic.
@@ -179,7 +179,7 @@ All players grow in a growing market.
 
 As soon as a business model and stable feature lists exists and there is a system for money extraction the market can consolidate.
 As always, 3-5 companies will dominate the market, which is dropping out of hypergrowth.
-The dominating companies acknowledge their respective existence and roles, and compete semi-cooperativelu:
+The dominating companies acknowledge their respective existence and roles, and compete semi-cooperatively:
 It is more important to erect barriers to entry for disruptors than to destroy the existing competition, and hence there will be complex, hard to implement standards with expensive compliance tests.
 This will then, against all wishes, lead to interoperatibility.
 
@@ -190,19 +190,19 @@ The Metaverse is an integration of the gaming industry with the entertainment in
 The objective is to monetize the lifetime intellectual consumption budget of any person, and extending the market of products relevant to that person, decoupling spend from attention.
 
 A main result is that books, films and games bind too much time to consume and limit spend.
-3D assets are a better sale binding less time.
+3D assets are a better sale binding for less time.
 
 This is also the backdrop to read "Epic vs. Apple and Google" properly:
 This is about opening the monpolistic markets these companies have for their hardware products, and allow other companies to monetize their walled gardens with their own offerings directly.
 
 The german outlook is dreary:
 - lacking highspeed, low latency infrastructure for gaming.
-- lacking a german company with identity platyforms ("Login with x").
+- lacking a German company with identity platforms ("Login with x").
 - lacking resources and companies with 3D asset tooling, production, marketplaces.
-- lacking german film/tv/literature IP that can be integrated with any of this, especially on a global scale.
+- lacking German film/tv/literature IP that can be integrated with any of this, especially on a global scale.
 - German companies and culture looks inward, into the own country, not towards a global cultural base.
 
-Compare Korea: korean production chains in K-Pop; korean "cultural technology" that integrated other cultures styles and art and integrates it into K-Pop; production and grooming pipelines for stars and starlets; emerging similar chains for IP.
+Compare with Korea: Korean production chains in K-Pop; Korean "cultural technology" that integrated other cultures styles and art and integrates it into K-Pop; production and grooming pipelines for stars and starlets; emerging similar chains for IP.
 
 In comparison, Germany counts as unarmed.
 
@@ -215,11 +215,11 @@ The platform operators and "tax" authorities have full market transparency and c
 They know what you look at and listen to, what you are using, which styles you like and can sell this data for money to creators. They will also sell access to you to creators.
 
 A friend of mine:
-> HHOS: in the future at birth of child, you will first have to decide which corporate tribe it joins and then find a name compliant with that tribes rules. Switching between trives is as complicated as an emigration to or from North Korea.
+> HHOS: in the future at birth of child, you will first have to decide which corporate tribe it joins and then find a name compliant with that tribes rules. Switching between tribes is as complicated as an emigration to or from North Korea.
 
 A central building block is also DRM, here under the marketing name of "NFT". NFT is the blockchain word for DRM, only with added destruction of the planet.
 
-Unique things are only possible with
+Unique things are only possible with:
 
 - locking the machine
 - TPM,
@@ -263,7 +263,7 @@ URL collection
 
 ## Golem "Auf der Suche nach dem Wal"
 
-"[Auf der Suche nach dem Wal](https://www.golem.de/news/geschaeftsethik-bei-videospielen-auf-der-suche-nach-dem-wal-2110-160163.html)", a video game growth manager (german article).
+"[Auf der Suche nach dem Wal](https://www.golem.de/news/geschaeftsethik-bei-videospielen-auf-der-suche-nach-dem-wal-2110-160163.html)", a video game growth manager (German article).
 
 ## Colorado Law Review Dark Patterns
 
@@ -326,21 +326,21 @@ That is, because "entering VR" is an act (set things up, calibrate), and the gog
 
 ## [Pastry Eth Thread](https://twitter.com/PastryEth/status/1423803492314009606)
 
-Crypto bullshit with a few good dieas, but also illusions/lies about what will happen:
+Crypto bullshit with a few good ideas, but also illusions/lies about what will happen:
 
-- "1/5 of fb now working on AR", FB looks at Metaverse as "Oculus", "VR". That's dangerous tunnel vision.
-- "The "Metaverse" is a virtual space created by the convergence of virtually enhanced physical reality, AR & the internet: Our current 2D search based version of the internet is giving way to a fully 3D immersive reality": bullshit, unless consumption becomes casual. 3D Assets in Pancake Games are easier to sell "Cosmetics"
+- "1/5 of FB now working on AR", FB looks at Metaverse as "Oculus", "VR". That's dangerous tunnel vision.
+- "The "Metaverse" is a virtual space created by the convergence of virtually enhanced physical reality, AR & the Internet: Our current 2D search based version of the Internet is giving way to a fully 3D immersive reality": bullshit, unless consumption becomes casual. 3D Assets in Pancake Games are easier to sell "Cosmetics".
 - "The Metaverse is always “on” & is beyond the control of any individual. It exists in real time, can host any size audience, has a functioning economy, spans across platforms, provides interoperability for digital assets, & consists of the content and experiences its users create." That is 2nd 2nd life as a concept, and  "3D Shoppingmalls" of the early 90ies revived. As a concept not wrong, and at the same time completely wrong.
 - "In the Metaverse, the earning power for young creators won’t be limited to the top 1%. There will be an entire new era of young entrepreneurs making a living in virtual worlds, earning real value and steady income quicker than ever imagined." LOL. Mainly this is about a microsoft tax, that will siphon off money from creators along the way.
 - "Creators who were once limited in their ability by technological constraints, lack of capital, time, or creativity, now have everything that is needed. What happens when physical objects are dematerialized? All formerly scarce materials become abundant." LOL. DRM all the way is a requirement to make this work. Also the permanent promise of creators paradise, when this is really about monopolization of the value chain.
 - 
-Danach: Thread degrades into Laser Eyes Nonsense
+Afterwards: Thread degrades into Laser Eyes Nonsense
 
 ## [Digital Twins](https://www.dezeen.com/2021/07/23/digital-twins-metaverse-david-weir-mccall-epic-games/)
 
 > Digital twins will act as "foundations of the metaverse" and allow people to move between real and virtual spaces
 
-Again "2nd 2nd Life", [Skeumorphism](https://en.wikipedia.org/wiki/Skeuomorph) is what we do with new tech that does not yet have its own design langauge. The first cars looked like coaches, and the first Apple applications mimicked Rolodexes and Moleskines.  "Digital Twins" is the same thing.
+Again "2nd 2nd Life", [Skeumorphism](https://en.wikipedia.org/wiki/Skeuomorph) is what we do with new tech that does not yet have its own design language. The first cars looked like coaches, and the first Apple applications mimicked Rolodexes and Moleskines. "Digital Twins" is the same thing.
 
 Core idea:
 > > In April 2020, music artist Travis Scott staged a virtual concert inside the game that was attended live by 12.3 million people. It was a global phenomenon that sent the American rapper to the top of all music charts and earned him a reported $20 million.
@@ -359,7 +359,6 @@ There is no technical relationship between Oculus and AR.
 This is about hiding the tech in the goggles to make it acceptable, and prevent a Facebook glasshole effect. 
 Also, AR is more casual than VR.
 Fashion also allows easier re-sales of the same item, see also Apple watch accessories.
-Mode erlaubt auch einfacheren Neuverkauft, siehe auch Apple Watch Zubehör.
 
 ## [Laser Eyes](https://twitter.com/Cryptomarsmoon/status/1448249433573904384)
 
