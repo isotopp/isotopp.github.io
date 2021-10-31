@@ -124,13 +124,19 @@ function renderResults(results) {
 
     // Actually, show all the matches...
     results.forEach(function (result) {
+
         var li = document.createElement('li');
         var ahref = document.createElement('a');
-        var taglist = document.createElement('span');
+
+
         ahref.href = result.href;
         ahref.text =  result.title;
+
         li.append( ahref );
+
+        var taglist = document.createElement('span');
         taglist.classList.add("taglist");
+
         Object.keys( result.tags ).forEach( key => {
           taglist.innerText += result.tags[key];
           if( key < result.tags.length -1 ){
@@ -138,6 +144,7 @@ function renderResults(results) {
           }
         });
         li.append( taglist );
+
         $results.appendChild(li);
     });
 }
