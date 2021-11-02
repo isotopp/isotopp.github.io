@@ -8,8 +8,17 @@
     */
     var setSearchForm = document.getElementById('searchForm');
     var setInputPlaceholder = document.getElementById('search');
+    //var submitBtn = document.getElementById('submitBtn');
     setInputPlaceholder.placeholder = "Enter search terms";
     setInputPlaceholder.removeAttribute("name");
+    setInputPlaceholder.disabled = true;
+    setInputPlaceholder.placeholder = "Loading index...";
+    setInputPlaceholder.classList.add('border');
+    setInputPlaceholder.classList.add('border-danger');
+
+    //submitBtn.disabled = true;
+    //submitBtn.classList.add('btn-secondary');
+
     setSearchForm.removeChild( document.getElementById('searchsite') );
     setSearchForm.action = "#";
     setSearchForm.removeAttribute("action");
@@ -52,6 +61,12 @@ function initLunr() {
                     this.add(pagesIndex[i]);
                 }
             });
+            // Index is loaded and search is ready - so allow input
+            setInputPlaceholder.placeholder = "Enter search terms";
+            setInputPlaceholder.disabled = false;
+            setInputPlaceholder.classList.remove('border-danger');
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('btn-secondary');
         } else {
             var err = textStatus + ", " + error;
             console.error("Error getting Hugo index flie:", err);
@@ -128,11 +143,33 @@ function renderResults(results) {
         var li = document.createElement('li');
         var ahref = document.createElement('a');
 
-
         ahref.href = result.href;
         ahref.text =  result.title;
+				ahref.classList.add('d-block');
+				ahref.classList.add('h3');
+				ahref.classList.add('h3');
+				ahref.classList.add('text-decoration-none');
 
+				li.classList.add('mb-4');
+				li.classList.add('border-bottom');
+				li.classList.add('pb-3');
         li.append( ahref );
+
+				var resultMeta = document.createElement('div');
+					resultMeta.classList.add('d-flex');
+					resultMeta.classList.add('w-100');
+					resultMeta.classList.add('justify-content-between');
+					resultMeta.classList.add('text-uppercase');
+					resultMeta.classList.add('text-secondary');
+					resultMeta.style.letterSpacing = '0.1rem';
+
+				var resultDate = document.createElement('span');
+				var postDate = new Date( result.date );
+
+				var options = {year: 'numeric', month: 'long', day: 'numeric' };
+				resultDate.innerText = postDate.toLocaleDateString("en-US", options);
+
+				resultMeta.append( resultDate );
 
         var taglist = document.createElement('span');
         taglist.classList.add("taglist");
@@ -143,7 +180,9 @@ function renderResults(results) {
             taglist.innerText += ", ";
           }
         });
-        li.append( taglist );
+
+				resultMeta.append( taglist );
+				li.append( resultMeta );
 
         $results.appendChild(li);
     });
