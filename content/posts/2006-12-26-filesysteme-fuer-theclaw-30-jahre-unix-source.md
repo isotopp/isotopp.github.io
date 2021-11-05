@@ -12,7 +12,7 @@ title: Filesysteme für theclaw (30 Jahre Unix Source)
 ---
 --- Log opened Di Dez 26 15:52:09 2006
 
-theclaw> Hey :] [Spitze erklaerung zu ext2.]({% link _posts/2006-05-08-fragmentierung-f-r-jannik.md %})
+theclaw> Hey :] [Spitze erklaerung zu ext2.]({% link _posts/2006-05-08-fragmentierung-fuer-jannik.md %})
 
 Isotopp> Danke
 
@@ -30,9 +30,9 @@ theclaw> Ich paste mal was
 ```
 
 Isotopp> Habs im 
-[Originalartikel](({% link _posts/2006-05-08-fragmentierung-f-r-jannik.md %})).
+[Originalartikel](({% link _posts/2006-05-08-fragmentierung-fuer-jannik.md %})).
 
-theclaw> `__le32 i_block[EXT2_N_BLOCKS];` Das ist das was unter BLOCKS bei debugfs steht?
+theclaw> `__le32 i_block[EXT2_N_BLOCKS];` Das ist das, was unter BLOCKS bei debugfs steht?
 
 Isotopp> 
 [http://lxr.linux.no/source/include/linux/ext2_fs.h#L211](http://lxr.linux.no/source/include/linux/ext2_fs.h#L211): Das ist was auf der Platte steht.
@@ -76,7 +76,7 @@ Isotopp> Wo bist du gerade? Also in welcher zeile?
 
 theclaw> `static int ext2_block_to_path`. Bei der Definition da.
 
-Isotopp> Kannst du eine lxr url geben bitte? Sonst wird das schwer hier. Ah, hier : 
+Isotopp> Kannst du eine lxr url geben bitte? Sonst wird das schwer hier. Ah, hier: 
 [http://lxr.linux.no/source/fs/ext2/inode.c#L196](http://lxr.linux.no/source/fs/ext2/inode.c#L196).
 
 theclaw> ja
@@ -113,7 +113,7 @@ theclaw> Sekunde. Bin kein Kernelmensch ;)
 
 Isotopp> Aber das ist doch nur gewöhnliches C.
 
-theclaw> Naja, trotzdem komplex (für mich). Erstmal eine Frage. Man hat ein FS, und will die Inode nummer 23, wie wird die gefunden?
+theclaw> Na ja, trotzdem komplex (für mich). Erstmal eine Frage. Man hat ein FS, und will die Inode nummer 23, wie wird die gefunden?
 
 Isotopp> Über die Verzeichnisse. Wir wissen, / hat die inode 2. Das ist definiert in 
 [http://lxr.linux.no/source/include/linux/ext2_fs.h#L60](http://lxr.linux.no/source/include/linux/ext2_fs.h#L60),
@@ -128,9 +128,9 @@ Also müssen alle Funktionen im Userland immer Namen angeben, und du kommst dann
 
 theclaw> Ja, klar. Aber der Kernel will ja Inode X irgendwie kriegen können.
 
-Isotopp> Ja, intern. Das weiss er, weil im Superblock ja steht wie viele Inodes pro bg vorhanden sind, und er dann aus 
-der Inodenummer / inodes_per_bg sofort die bg nummer ausrechnen kann, und dann sofort weiss, wo die inode 
-stehen muss auf der Platte. Eine Inode-Nummer ist also implizit auch die Blockadresse der Inode auf der Platte.
+Isotopp> Ja, intern. Das weiß er, weil im Superblock ja steht, wie viele Inodes pro bg vorhanden sind, und er dann aus 
+der Inodenummer / inodes_per_bg sofort die bg nummer ausrechnen kann, und dann sofort weiß, wo die inode 
+stehen muss auf der Platte. Eine Inodenummer ist also implizit auch die Blockadresse der Inode auf der Platte.
 
 Hier ist der Superblock: 
 [http://lxr.linux.no/source/include/linux/ext2_fs.h#L341](http://lxr.linux.no/source/include/linux/ext2_fs.h#L341), 
@@ -178,9 +178,9 @@ kris@linux:~> ./probe
 128
 ```
 
-theclaw> Also pro BG ist allein 1MB bzw 4MB an Inodes reserviert?
+theclaw> Also pro BG ist allein 1 MB bzw 4 MB an Inodes reserviert?
 
-Isotopp> Ja. Eine bg ist 8 MB oder 128 MB gross.  Schau, hast du ein ext2 da?
+Isotopp> Ja. Eine bg ist 8 MB oder 128 MB gross. Schau, hast du ein ext2 da?
 
 theclaw> ja
 
@@ -193,11 +193,11 @@ Inode count:              26104
 für ein `/dev/sda5     ext2     99M  6.7M   87M   8% /boot`
 und `26104*128/1024 = 3263`, also 3263 KB oder 3.2M für alle Inodes.
 
-theclaw> Aber meine frage ist eine Andere.
+theclaw> Aber meine Frage ist eine Andere.
 
 theclaw> 21:40 Isotopp> und das wichtigste in `struct: __le32 i_block[EXT2_N_BLOCKS];`
 
-theclaw> `i_block[12]` ist ein indirekter block? *aaargh* Die Adresse eines indirekten Blockes?
+theclaw> `i_block[12]` ist ein indirekter Block? *aaargh* Die Adresse eines indirekten Blockes?
 
 Isotopp> Ja. 
 [http://lxr.linux.no/source/include/linux/ext2_fs.h#L165](http://lxr.linux.no/source/include/linux/ext2_fs.h#L165). Dort ist 
@@ -218,7 +218,7 @@ theclaw> 9711-9722: Sind das die "Adressen"?
 
 Isotopp> Blocknummern, ja, Adressen auf der Platte. In 
 [http://lxr.linux.no/source/include/linux/ext2_fs.h#L234](http://lxr.linux.no/source/include/linux/ext2_fs.h#L234) siehst du als Typ uebrigens `__le32`. Das ist definiert in 
-[http://lxr.linux.no/source/include/linux/types.h#L172](http://lxr.linux.no/source/include/linux/types.h#L172) und endet als `__u32`, also unsigned 32 bit. Mithin also 2^32 Blöcke. Bei 4 KB Blöcken sind das 17592186044416 Bytes, oder 16 TB, bei 1 KB Blöcken nur 4 TB.
+[http://lxr.linux.no/source/include/linux/types.h#L172](http://lxr.linux.no/source/include/linux/types.h#L172) und endet als `__u32`, also unsigned 32 bit. Also 2^32 Blöcke. Bei 4 KB Blöcken sind das 17592186044416 Bytes, oder 16 TB, bei 1 KB Blöcken nur 4 TB.
 
 theclaw> Diese Blöcke haben aber nix mit den Blöcken bei ext2 zu tun? Oder doch?
 
@@ -262,7 +262,7 @@ Isotopp> Er meint total sei 1513. Wieso?
 theclaw> Ich versteh das sowieso nicht, warum da 1513 angezeigt wird. 1292-1505 ist das letzte und dann total 1513. Evtl noch die Metainfos dazu?
 
 Isotopp> Nein, aber die DIND und IND Blocks. Für die Blöcke 12-267 wird ja ein IND gebraucht, für die Blöcke 268-1505 wird ein DIND und vier IND gebraucht. 6 blocks Extra. Siehe noch einmal 
-[http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif](http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif).  Das rechts sind die Daten. In der Inode stehen die ersten paar Datenblocknummern direkt, in der zeichnung 10, in ext2 sind es 12.  Dann steht in der Inode die Nummer vom IND, und im IND die Blocknummern der Datenblöcke, hier 12-267. Das ist also 1 block overhead wenn das file mehr als 12 blocks lang wird. Dann ein DIND, wenn der 268'te block gebraucht wird und für jeweils 256 Blocks ein IND dazu.
+[http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif](http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif). Das rechts sind die Daten. In der Inode stehen die ersten paar Datenblocknummern direkt, in der zeichnung 10, in ext2 sind es 12. Dann steht in der Inode die Nummer vom IND, und im IND die Blocknummern der Datenblöcke, hier 12-267. Das ist also 1 block overhead, wenn das file mehr als 12 blocks lang wird. Dann ein DIND, wenn der 268'te block gebraucht wird und für jeweils 256 Blocks ein IND dazu.
 
 theclaw> Du erklaerst so schnell.
 
@@ -283,7 +283,7 @@ linux:/boot # ls -ls kris
 
 Ein 1k länger, 14 Blocks statt 12.
 
-theclaw> Wie findet man die Groessen der BGs eines dateisystems heraus?
+theclaw> Wie findet man die Größen der BGs eines dateisystems heraus?
 
 Isotopp> Lies `show_super_stats` von `debugfs`.
 
@@ -310,11 +310,11 @@ Isotopp> Der n-te Block der Datei x kann irgendwo liegen. Wo, das sagt dir die I
 
 theclaw> Ich kann doch einfach von der Adresse auf der Platte X \* bytes_per_block lesen?
 
-Isotopp> Naja, als root schon. Sonst nicht. debugfs macht das ja, die Disk als raw device auf und dann direkt auf die Blöcke klettern. Niemand sonst tut so etwas ausser  debugfs und fsck. Alle anderen machen FILES auf und lesen dann am OFFSET in dem File. Punkt ist, dass du normal mit Files arbeitest und nicht mit Blöcken. Der Kernel arbeitet mit Blöcken. Und er muss irgendwie vom File + Offset auf den Block kommen.
+Isotopp> Na ja, als root schon. Sonst nicht. debugfs macht das ja, die Disk als raw device auf und dann direkt auf die Blöcke klettern. Niemand sonst tut so etwas ausser debugfs und fsck. Alle anderen machen FILES auf und lesen dann am OFFSET in dem File. Punkt ist, dass du normal mit Files arbeitest und nicht mit Blöcken. Der Kernel arbeitet mit Blöcken. Und er muss irgendwie vom File + Offset auf den Block kommen.
 
 theclaw> Ja Klar
 
-Isotopp> Unser ext2 hier hat 1 kb Blocksize. Wir lesen das File `/boot/vmlinuz-2.6.13-15-default` (inode 36). Und zwar am Offset 1000000 (1 mio). Der wievielte Block im File ist das?
+Isotopp> Unser ext2 hier hat 1 KB Blocksize. Wir lesen das File `/boot/vmlinuz-2.6.13-15-default` (inode 36). Und zwar am Offset 1000000 (1 mio). Der wievielte Block im File ist das?
 
 theclaw> *denk*. Erstmal hat man ja nur den Dateinamen.
 
@@ -322,13 +322,13 @@ Isotopp> Ja, das kümmert uns gerade noch nicht. Offset 1 mio -- welcher block? 
 
 theclaw> Okay. Stop mal. Hab da gleich ne Frage dazu:
 
-theclaw> 21:40 Isotopp> und das wichtigste in `struct: __le32 i_block[EXT2_N_BLOCKS];`
+theclaw> 21:40 Isotopp> und das Wichtigste in `struct: __le32 i_block[EXT2_N_BLOCKS];`
 theclaw> dieser kontext: `i_block[976]` brauchen wir da also. Ack? Und dazu noch das offset dazu?
 
 Isotopp> Ja, aber den kriegen wir nicht so. 
 [http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif](http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif).
 
-theclaw> Ja, das wollte ich grad sagen :P Blocks 0-11 kriegen wir so. Muss man sich halt den Weg durchhangeln.
+theclaw> Ja, das wollte ich grad sagen. :-P Blocks 0-11 kriegen wir so. Muss man sich halt den Weg durchhangeln.
 
 Isotopp> blocks 12-267 kriegen wir über den IND (single indirect block). Und blocks 268- kriegen wir über den DIND und den passenden IND.
 
@@ -344,13 +344,13 @@ Isotopp> 12 direct blocks, also 964 blocks dahinter.
 
 theclaw> Also mit einem "indirekten block" kann man 256 andere Blöcke adressieren, wie pointer in C
 
-theclaw> Ich hab noch ganz grundlegende Fragen. Was wird wirklich wollen ist doch das mapping logische Ext2block-Adresse der Datei -> physische Blockadresse. Richtig?
+theclaw> Ich hab noch ganz grundlegende Fragen. Was wir wirklich wollen, ist doch das mapping logische Ext2block-Adresse der Datei → physische Blockadresse. Richtig?
 
-Isotopp> In diesem speziellen Fall: ja. Die allgemeine Formulierung lautet so: Wir haben ein Quadrupel (major number, minor number, inode number, offset in bytes), das ist ein Device, eine Partition (maj, min),  und in dem Device ein File (inode), und in dem File eine Byteposition. Und wir wollen ein Tripel (maj, min, blockno), also in der partition (maj, min) den zu dieser Datei gehoerenden physikalischen Block.
+Isotopp> In diesem speziellen Fall: ja. Die allgemeine Formulierung lautet so: Wir haben ein Quadrupel (major number, minor number, inode number, offset in bytes), das ist ein Device, eine Partition (maj, min), und in dem Device ein File (inode), und in dem File eine Byteposition. Und wir wollen ein Tripel (maj, min, blockno), also in der partition (maj, min) den zu dieser Datei gehörenden physikalischen Block.
 
 theclaw> jo
 
-Isotopp> Weil (maj, min) bei dieser Abbildung konstant sind (wir arbeiten immer innerhalb derselben partition), vergessen wir maj und min und reden von einer Funktion die (ino, offset) auf (phy block) abbildet. Das nennt man ein Mapping. Und zwar ein Mapping für Datenblöcke. Daher heisst die funktion `bmap`. Jedes Dateisystem hat so eine Funktion, daher reden wir hier über die bmap funktion von ext2,  die heisst also sinnigerweise `ext2_bmap`.
+Isotopp> Weil (maj, min) bei dieser Abbildung konstant sind (wir arbeiten immer innerhalb derselben partition), vergessen wir maj und min und reden von einer Funktion die (ino, offset) auf (phy block) abbildet. Das nennt man ein Mapping. Und zwar ein Mapping für Datenblöcke. Daher heisst die funktion `bmap`. Jedes Dateisystem hat so eine Funktion, daher reden wir hier über die bmap funktion von ext2, die heisst also sinnigerweise `ext2_bmap`.
 
 theclaw> Schonmal sauhilfreich. ext2_bmap: Jetzt kann ich mir was darunter vorstellen. Danke. *codesuch*
 
@@ -417,7 +417,7 @@ irgendwann belegen müssen. Und deswegen siehst du die Sprünge - kein File hat 
 
 theclaw> Moment, aber das ist ja sau umständlich eine ganze Datei zu lesen dann? :)
 
-Isotopp> Ah! Jetzt daemmert es langsam. Ist ja nicht so, dass ext2 GUT wäre.
+Isotopp> Ah! Jetzt dämmert es langsam. Ist ja nicht so, dass ext2 GUT wäre.
 
 Isotopp> So, jetzt gehen wir noch mal in den Code
 

@@ -4,7 +4,6 @@ date: "2012-02-10T11:50:22Z"
 feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
-- character set
 - mysql
 - umlaut
 - lang_de
@@ -33,7 +32,7 @@ wenn das Label ("_latin1" oder "_utf8") und die Datencodierung von Umlauten
 (0xF6 vs.  0xC3 0xB6) nicht übereinstimmen.
 
 Zum besseren Verständnis gibt es die Artikel 
-[Zeichensatzärger]({% link _posts/2006-08-06-zeichensatz-rger.md %})
+[Zeichensatzärger]({% link _posts/2006-08-06-zeichensatzaerger.md %})
 und 
 [MySQL Zeichensatz Grundlagen]({% link _posts/2006-10-01-mysql-zeichensatz-grundlagen.md %})
 hier im Blog.
