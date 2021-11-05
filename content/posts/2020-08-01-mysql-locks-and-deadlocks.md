@@ -11,7 +11,7 @@ tags:
 - erklaerbaer
 title: 'MySQL: Locks and Deadlocks'
 ---
-In a [previous article]({% link _posts/2020-07-30-mysql-transactions---writing-data.md %}) we wrote data to the database using atomic update statements, and then using transactions with `SELECT ... FOR UPDATE`. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also [available on github.com](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py).
+In a [previous article]({{< ref "/content/posts/2020-07-30-mysql-transactions---writing-data.md" >}}) we wrote data to the database using atomic update statements, and then using transactions with `SELECT ... FOR UPDATE`. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also [available on github.com](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py).
 
 ## A simple row lock
 

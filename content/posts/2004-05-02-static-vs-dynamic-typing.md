@@ -16,7 +16,7 @@ Natürlich habe ich diese Experimente auch in C++ versucht, und mich in kürzest
 
 Aber ich war sowieso schon von der Uni her versaut, wo wir im Rahmen der Vorlesung "Objektorientierte Programmierung" mit Smalltalk und CLOS rumgemacht haben - von dort hatte ich recht konkrete Vorstellungen davon, was ich von einer objektorientierten Sprache erwarte, wenn es darum geht, dem Programmierer Arbeit abzunehmen.
 Kurz danach geriet ich an eine Nextstation und Objective-C und war für die Type Nazis für immer verloren:
-Dynamisch getypte Sprachen [rocken einfach mehr]({% link _posts/2003-10-24-objc-oder-warum-dcop-so-kompliziert-ist.md %}), denn sie nehmen einem Arbeit ab, anstatt welche zu generieren.
+Dynamisch getypte Sprachen [rocken einfach mehr]({{< ref "/content/posts/2003-10-24-objc-oder-warum-dcop-so-kompliziert-ist.md" >}}), denn sie nehmen einem Arbeit ab, anstatt welche zu generieren.
 
 Natürlich habe ich das gerne auch im Netz verargumentiert, und bin von der Static Typing Fraktion mehr als einmal getoastet worden, denn ohne starke Typprüfung durch den Compiler geht angeblich die Welt unter. Angeblich, denn bei mir tat sie es nie. 
 

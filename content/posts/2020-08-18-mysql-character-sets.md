@@ -12,7 +12,7 @@ title: 'MySQL: Some Character Set Basics'
 ---
 This is the updated and english version of some older posts of mine in German. It is likely still incomplete, and will need information added to match current MySQL, but hopefully it is already useful.
 
-Old source articles in German: [1]({% link _posts/2006-10-01-mysql-zeichensatz-grundlagen.md %}), [2]({% link _posts/2006-08-06-zeichensatzaerger.md %}) and [3]({% link _posts/2012-02-10-faq-mein-mysqldump-zerstoert-meine-umlaute.md %}).
+Old source articles in German: [1]({{< ref "/content/posts/2006-10-01-mysql-zeichensatz-grundlagen.md" >}}), [2]({{< ref "/content/posts/2006-08-06-zeichensatzaerger.md" >}}) and [3]({{< ref "/content/posts/2012-02-10-faq-mein-mysqldump-zerstoert-meine-umlaute.md" >}}).
 
 ## Some vocabulary
 

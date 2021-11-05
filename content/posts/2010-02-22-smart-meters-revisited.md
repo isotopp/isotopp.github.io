@@ -12,7 +12,7 @@ title: Smart Meters revisited
 ---
 
 Im Juni letzten Jahres fragte ich 
-"[Wie viel Strom verbraucht ein Stromzähler?]({% link _posts/2009-06-05-wie-viel-strom-verbraucht-ein-stromzaehler.md %})",
+"[Wie viel Strom verbraucht ein Stromzähler?]({{< ref "/content/posts/2009-06-05-wie-viel-strom-verbraucht-ein-stromzaehler.md" >}})",
 und dort haben wir auch am Rande Sicherheitsaspekte und Probleme mit solcher Technologie gestreift.
 
 ![Smartmeter](/uploads/smartmeter_overview.jpg)

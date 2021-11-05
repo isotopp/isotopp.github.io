@@ -176,7 +176,7 @@ innodb_log_file_size = 256M
 ### Wie InnoDB die Datendateien ablegt
 
 Wie bereits in 
-[dem ersten Artikel]({% link _posts/2008-01-30-die-innodb-storage-engine.md %}) 
+[dem ersten Artikel]({{< ref "/content/posts/2008-01-30-die-innodb-storage-engine.md" >}}) 
 dieser Reihe angedeutet hat InnoDB zwei verschiedene Betriebsarten, in denen
 es seine Daten unterschiedlich organisiert: Wenn die Konfigurationsvariable
 `innodb_file_per_table = 0` gesetzt ist, werden die Daten in einem oder

@@ -102,7 +102,7 @@ Quelle der für Laserwaffen notwendigen Kristalle.
 Universalis ist ein guter Plotgenerator - wir haben damit 
 [Splitter des Imperiums](/uploads/uploads.pdf) (PDF) erzeugt. Ich glaube,
 ich kann mir Universalis als eine Formalisierung der
-[Plot-Vorphase eines PtA]({% link _posts/2008-10-05-drsrm-2008-primetime-adventures.md %})
+[Plot-Vorphase eines PtA]({{< ref "/content/posts/2008-10-05-drsrm-2008-primetime-adventures.md" >}})
 gut vorstellen. 
 
 Besonders hat mich beeindruckt, daß das ganze in dem PDF geschilderte

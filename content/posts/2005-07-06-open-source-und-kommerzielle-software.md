@@ -11,7 +11,7 @@ title: Open Source und kommerzielle Software
 ---
 
 In 
-[Open Source Software und Firmen]({% link _posts/2004-12-14-open-source-software-und-firmen.md %}) habe ich versucht zu formulieren, unter welchen Gesichtspunkten es für Firmen rentabel und sinnvoll sein kann, "Intellectual Property mit Gewinn zu verschenken": 
+[Open Source Software und Firmen]({{< ref "/content/posts/2004-12-14-open-source-software-und-firmen.md" >}}) habe ich versucht zu formulieren, unter welchen Gesichtspunkten es für Firmen rentabel und sinnvoll sein kann, "Intellectual Property mit Gewinn zu verschenken": 
 
 > Wenn wir Open Source schreiben, dann tun wir das in dem Bewusstsein, daß wir von vorneherein geschäftsspezifische Logik und allgemeingültigen Code getrennt halten müssen.
 > 

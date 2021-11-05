@@ -14,13 +14,13 @@ alle Artikel zum Thema Wikipedia unter dem Tag Wikipedia. Die Diskussion ist
 seit der Aufnahme für die Sendung schon ein paar Artikel weiter gegangen.
 
 KaiL hatte mich heute im IRC noch auf 
-[Der alljährliche Wikimedia-Spendenaufruf]({% link _posts/2009-11-12-update-der-allj-hrliche-wikimedia-spendenaufruf.md %})
+[Der alljährliche Wikimedia-Spendenaufruf]({{< ref "/content/posts/2009-11-12-update-der-allj-hrliche-wikimedia-spendenaufruf.md" >}})
 angesprochen und ich hatte ihm versprochen, noch einmal genauer
 aufzuschreiben, wieso ich Wikipedia als Projekt für kaputt halte. Dies ist
 der Versuch, meine zunehmende Distanz zum Projekt Wikipedia als positive und
 konstruktive Kritik zu formulieren. Ich hoffe, es hat ein bischen geklappt.
 
-Seit fast [einem Monat]({% link _posts/2009-10-19-wikipedia-l-schwahn.md %})
+Seit fast [einem Monat]({{< ref "/content/posts/2009-10-19-wikipedia-l-schwahn.md" >}})
 läuft die 
 [von einem relevanten Blog initiierte](http://de.wikipedia.org/wiki/Fefes_Blog) Diskussion über die
 Wikipedia.
@@ -154,7 +154,7 @@ Titel dieses Textes.
 
 In anderen Projekten ist das Vorgehen anders. In der de.comp.lang.php FAQ
 zum Beispiel versuchten wir damals
-[Neulinge gezielt zu verändern]({% link _posts/2008-07-23-inhaltliche-und-kulturelle-steuerung-von-foren.md %}) 
+[Neulinge gezielt zu verändern]({{< ref "/content/posts/2008-07-23-inhaltliche-und-kulturelle-steuerung-von-foren.md" >}}) 
 und zu für uns als Gruppe nützlichen Helfern auszubilden. Unsere Eckpunkte
 waren: 
 

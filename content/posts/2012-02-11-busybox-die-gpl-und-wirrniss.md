@@ -24,17 +24,17 @@ Platz verbraucht.  Wegen dieser Eigenschaften wird es gerne in Embedded
 Systemen eingesetzt.
 
 Da Busybox unter der 
-[GPL]({% link _posts/2005-02-07-von-der-gpl.md %})
+[GPL]({{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}})
 steht, viele Firmen sich aber einen Dreck um Copyright scheren, wenn es sie
 selber statt ihre Endkunden betrifft, wird es gerne in Router und andere
 Geräte eingebaut und ist dann Gegenstand einer 
-[Lizenzklage]({% link _posts/2006-09-22-urteilsbegr-ndung-zu-gpl-in-deutschland-vor-gericht-durchgesetzt.md %}).
+[Lizenzklage]({{< ref "/content/posts/2006-09-22-urteilsbegr-ndung-zu-gpl-in-deutschland-vor-gericht-durchgesetzt.md" >}}).
 Eine Klage, die am Ende dazu führt, daß die Firmen ihre Firmware offenlegen müssen, weil
 sie zu faul sind, selber zu programmieren und zu blöd, sich genau das
 Urheberrecht zu halten, für dessen Verschärfung sie Unsummen an die diversen
-[Lobbyfeen]({% link _posts/2011-11-24-von-einem-absturz-tutus-und-einem-neuen-urheberrecht.md %})
+[Lobbyfeen]({{< ref "/content/posts/2011-11-24-von-einem-absturz-tutus-und-einem-neuen-urheberrecht.md" >}})
 bezahlt haben (wir reden hier unter anderem von 
-[Sony]({% link _posts/2011-04-27-wenn-man-sony-ist-hat-man-es-nicht-leicht.md %})).
+[Sony]({{< ref "/content/posts/2011-04-27-wenn-man-sony-ist-hat-man-es-nicht-leicht.md" >}})).
 
 Es gibt eine Reihe von Gruppen im Open Source Umfeld, die sich der
 Durchsetzung von Offenen Lizenzen verschrieben haben.  Da ist einmal das von

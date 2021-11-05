@@ -56,7 +56,7 @@ IOPS per device, so if that is not sufficient, spread across
 many.
 
 The only remaining challenge in this 
-[age of abundance in the data center]({% link _posts/2017-07-07-the-data-center-in-the-age-of-abundance.md %}) 
+[age of abundance in the data center]({{< ref "/content/posts/2017-07-07-the-data-center-in-the-age-of-abundance.md" >}}) 
 is commit (fsync) latency: how long to push things to a
 persistent storage. Even that comes down a lot, with optane or
 NVRAM in the client or as early as possible in the server.

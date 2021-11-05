@@ -12,7 +12,7 @@ tags:
 title: Vokabeln für Netzneutralität
 ---
 Dies ist Teil 1, 
-[Teil 2]({% link _posts/2010-08-06-netzwerk-berlast-vs-netzwerkneutralit-t.md %})
+[Teil 2]({{< ref "/content/posts/2010-08-06-netzwerk-berlast-vs-netzwerkneutralit-t.md" >}})
 gibt es auch noch.
 
 Die Diskussion über Netzneutralität erreicht nun endlich auch Deutschland,
@@ -304,4 +304,4 @@ Dienstanbieter verpflichten sollen:
 > Artikel](http://www.guardian.co.uk/technology/2010/aug/05/gogle-denies-verizon-deal-net-neutrality)
 
 
-Weiter in  [Teil 2]({% link _posts/2010-08-06-netzwerk-berlast-vs-netzwerkneutralit-t.md %}).
+Weiter in  [Teil 2]({{< ref "/content/posts/2010-08-06-netzwerk-berlast-vs-netzwerkneutralit-t.md" >}}).

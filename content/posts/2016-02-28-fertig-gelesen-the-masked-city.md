@@ -18,5 +18,5 @@ Ein Fall von "More of the same", in vergleichbarer Qualität wie Band 1 - gut ge
 "[The Masked City](http://www.amazon.de/dp/B00ZCCXZNU)",  Genevieve Cogman, EUR 5.59
 
 Mehr Reviews:
-- [The Invisible Library]({% link _posts/2016-02-28-fertig-gelesen-the-invisible-library.md %})
-- [The Masked City]({% link _posts/2016-02-28-fertig-gelesen-the-masked-city.md %})
+- [The Invisible Library]({{< ref "/content/posts/2016-02-28-fertig-gelesen-the-invisible-library.md" >}})
+- [The Masked City]({{< ref "/content/posts/2016-02-28-fertig-gelesen-the-masked-city.md" >}})

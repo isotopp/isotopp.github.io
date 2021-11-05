@@ -15,25 +15,25 @@ title: GPL V3 RC3 - Was steht drin?
 Die GPL V3 ist sehr einfach zu lesen - wenn man wissen will, was drin steht, muss man lediglich die Präambel lesen, die in sehr klaren Worten und ohne juristisches Blafasel genau erklärt, was die Ziele und Methoden der GPL V3 sind und wieso sie Lizenz so aussieht wie sie aussieht. 
 Der 
 [dritte Entwurf der GPL V3](http://gplv3.fsf.org/gpl-draft-2007-03-28.html) ist nun fertig und wird weit besser aufgenommen als 
-[der zweite Entwurf]({% link _posts/2006-07-30-gpl-v3-2nd-draft.md %}).
+[der zweite Entwurf]({{< ref "/content/posts/2006-07-30-gpl-v3-2nd-draft.md" >}}).
 
 Die Idee der GPL ist die Schaffung eines geschützten Raums, in dem 
-[kooperiert]({% link _posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md %})
+[kooperiert]({{< ref "/content/posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}})
 werden kann.
 Das bedeutet, daß die GPL einem Nutzer dieser Lizenz 
-[bestimmte Rechte]({% link _posts/2005-02-07-von-der-gpl.md %}) gibt und Zusatzbestimmungen einführt, deren Ziel es ist, dafür zu sorgen, daß diese Rechte immer für jeden gelten, der sich den Bestimmungen der GPL unterwirft.
+[bestimmte Rechte]({{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}}) gibt und Zusatzbestimmungen einführt, deren Ziel es ist, dafür zu sorgen, daß diese Rechte immer für jeden gelten, der sich den Bestimmungen der GPL unterwirft.
 Die Idee ist es, Software aus dem GPL Pool nutzen zu können, im Gegenzug aber die Nutzer dieser Software dazu zu verpflichten, die Dinge, die sie mit dieser Software bauen allen anderen Nutzern dieses Pools unter denselben Bedingungen zur Verfügung zu stellen.
 
 Die GPL ist, 
-[wie]({% link _posts/2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md %}) 
-[anderswo]({% link _posts/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md %}) 
-[erklärt]({% link _posts/2006-11-12-gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.md %}), eine Lizenz - man erwirbt also Rechte an etwas, das man sonst nicht nutzen könnte. 
+[wie]({{< ref "/content/posts/2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md" >}}) 
+[anderswo]({{< ref "/content/posts/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md" >}}) 
+[erklärt]({{< ref "/content/posts/2006-11-12-gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.md" >}}), eine Lizenz - man erwirbt also Rechte an etwas, das man sonst nicht nutzen könnte. 
 Die GPL ist nicht umsonst - man zahlt für diese Rechte damit, daß man im Gegenzug anderen dieselben Rechte an dem gewährt was man geschaffen hat, indem man die GPL-Rechte genutzt hat. 
 
 Das System hat in den vergangenen Jahrzehnten recht gut funktioniert, aber neuere Entwicklungen in der Anwendungsentwicklung und im Urheberrecht haben die FSF dazu gebracht, die GPL zu überarbeiten.
 
 Ich schrieb in 
-[GPL: Marktdurchdringung ist kein Wert an sich]({% link _posts/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md %}):
+[GPL: Marktdurchdringung ist kein Wert an sich]({{< ref "/content/posts/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md" >}}):
 
 > Wenn man die Entwicklung der letzten Jahre nämlich betrachtet, dann wird eines immer klarer: 
 > Es kann keine Koexistenz mit Closed Source geben, sondern nur eine strikte Trennung. 
@@ -43,7 +43,7 @@ Ich schrieb in
 > Die Funktion der GPL ist es, eine Wiederholung eines solchen Szenarios zu verhindern.
 
 Die GPL ist eine wehrhafte Lizenz und die Version 3 paßt sie an die Erfordernisse einer neuen Zeit an, um die 
-[Freiheiten der GPL]({% link _posts/2006-11-12-gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.md %}) unter diesen Bedingungen zu erhalten.
+[Freiheiten der GPL]({{< ref "/content/posts/2006-11-12-gpl-microsoft-novell-samba-org-und-die-freiheiten-der-gpl.md" >}}) unter diesen Bedingungen zu erhalten.
 
 Die Probleme, die die GPL V2 hat, bestehen in zwei Kernnbereichen: 
 - Einmal ist es in den letzten Jahren vermehrt üblich geworden, Software als einen Service anzubieten.

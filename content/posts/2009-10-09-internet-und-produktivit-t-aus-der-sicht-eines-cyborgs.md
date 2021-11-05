@@ -53,7 +53,7 @@ Kundendatenbanken gekommen bin?
 Wenn ein Kunde mich als Consultant mietet oder mich als Mitarbeiter
 einstellt, dann bekommt er nicht bloß mich, sondern er bekommt auch einen
 sehr großen Teil von Infrastruktur, der nicht sichtbar ist - ich bin ein
-[Cyborg]({% link _posts/2008-08-29-cyborg.md %}) und neben einer
+[Cyborg]({{< ref "/content/posts/2008-08-29-cyborg.md" >}}) und neben einer
 biologischen Komponente bestehe ich auch noch aus einer technischen und vor
 allen Dingen auch aus einer sozialen Komponente, einem Netzwerk von
 Verbindungen, Bekanntschaften und Freundschaften, die es mir ermöglichen,
@@ -65,7 +65,7 @@ Durch
 ich
 [Always-On](http://netzwertig.com/2009/10/02/gesellschaft-ueber-das-lebensgefuehl-always-on/).
 Ich schrieb in
-[Falscher Planet, falsches Jahrtausend]({% link _posts/2009-06-23-falscher-planet-falsches-jahrtausend.md %}):
+[Falscher Planet, falsches Jahrtausend]({{< ref "/content/posts/2009-06-23-falscher-planet-falsches-jahrtausend.md" >}}):
 
 > Ich reiste beruflich fast drei Jahre durch Europa und die USA, aber ich
 > war immer zu Hause - Eastern Standard Tribe oder in meinem Fall der Stamm

@@ -10,7 +10,7 @@ tags:
 title: Communityfix
 ---
 Ich schrieb in 
-[Der alljährliche Wikimedia-Spendenaufruf]({% link _posts/2009-11-12-update-der-allj-hrliche-wikimedia-spendenaufruf.md %}):
+[Der alljährliche Wikimedia-Spendenaufruf]({{< ref "/content/posts/2009-11-12-update-der-allj-hrliche-wikimedia-spendenaufruf.md" >}}):
 
 > Bitte seht davon ab, die Spende mit einer Zweckbindung "für …" zu
 > versehen. Das macht der Vereinsbuchhaltung bei Wikipedia geradezu
@@ -109,7 +109,7 @@ mit strittigen Fragen möglich wird? (Persönlich nicht im Sinne von
 hinter den vier Tilden besser bewußt wird') 
 
 Am Ende ist die Frage, wie man die Probleme, die ich in 
-[Communitygift]({% link _posts/2009-11-11-communitygift.md %}) 
+[Communitygift]({{< ref "/content/posts/2009-11-11-communitygift.md" >}}) 
 versucht habe zu skizzieren angeht, und wie man sie durch die äußere Form
 und die Mechanismen der Site selber unterstützt.
 

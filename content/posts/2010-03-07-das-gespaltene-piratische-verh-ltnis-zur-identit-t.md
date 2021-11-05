@@ -61,7 +61,7 @@ So wichtig, daß es zum Teil bis in das Absurde geht, wenn mir etwa gesagt
 wird, daß jemand eine Petition, die ihm wichtig ist, nicht unterzeichnen
 möchte, weil dann sein Name mit dieser politischen Sache in Verbindung
 gebracht werden kann. Nun ist es in der Tat so, daß
-[das Wahlgeheimnis weiter reicht]({% link _posts/2009-06-22-unterst-tzerunterschriften-unterliegen-dem-wahlgeheimnis.md %})
+[das Wahlgeheimnis weiter reicht]({{< ref "/content/posts/2009-06-22-unterst-tzerunterschriften-unterliegen-dem-wahlgeheimnis.md" >}})
 als so mancher annimmt, aber es ist auch so, daß man kaum Politik machen
 kann, ohne dabei als Person in das Licht der Öffentlichkeit zu treten. Man
 wird damit ab einem bestimmten Punkt nun einmal
@@ -78,7 +78,7 @@ zwei Dekaden Onlineerfahrung so meine Probleme habe, mit einem "Horst Acker"
 oder einem "Phil Antrop" über Politik oder politische Personen zu reden.
 Politik sollte mit offenem Visier gemacht werden, denn es geht um Menschen
 und für was sie stehen. Anders ausgedrückt: Ich habe einen Wunsch nach
-[Verkettbarkeit]({% link _posts/2005-05-24-ueber-anonymitaet-reden.md %})
+[Verkettbarkeit]({{< ref "/content/posts/2005-05-24-ueber-anonymitaet-reden.md" >}})
 weil ich, wenn es um Politik geht, einen Wunsch nach
 Reputation habe. Ich will wissen, was ich erwarten kann, wenn ich dieser Person
 vertraue. Denn in der Politik

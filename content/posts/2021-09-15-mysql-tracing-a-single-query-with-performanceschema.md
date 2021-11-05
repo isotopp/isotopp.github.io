@@ -36,7 +36,7 @@ That was probably a good idea, because joining against a table that is changing 
 But because it is so common, and because MySQL itself does this now internally in `sys.*`, secondary indexes to join efficiently now exist.
 That does not make the joins more correct, but at least you get the result faster.
 
-I wrote about all this [in an earlier article]({% link _posts/2020-12-01-not-joining-on-performance-schema.md %}).
+I wrote about all this [in an earlier article]({{< ref "/content/posts/2020-12-01-not-joining-on-performance-schema.md" >}}).
 
 ## Instruments, Objects, Actors, Threads and Consumers
 

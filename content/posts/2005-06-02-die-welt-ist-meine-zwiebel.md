@@ -12,9 +12,9 @@ title: Die Welt ist meine... Zwiebel?
 ![](/uploads/tor.jpg)
 
 IP-Nummern werden
-[überbewertet]({% link _posts/2005-05-23-identifizierung-durch-ip.md %})
+[überbewertet]({{< ref "/content/posts/2005-05-23-identifizierung-durch-ip.md" >}})
 das wußten wir schon. Nach einigen
-[theoretischen Anmerkungen zum Thema Anonymität]({% link _posts/2005-05-24-ueber-anonymitaet-reden.md %})
+[theoretischen Anmerkungen zum Thema Anonymität]({{< ref "/content/posts/2005-05-24-ueber-anonymitaet-reden.md" >}})
 geht es jetzt in die Praxis, denn Anonymität kann man auch selber
 herstellen. Die Grundlage dafür ist
 [Onion Routing](http://en.wikipedia.org/wiki/Onion_routing): Netzknoten

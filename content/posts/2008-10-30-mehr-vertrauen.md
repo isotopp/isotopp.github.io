@@ -27,7 +27,7 @@ title: Mehr Vertrauen...
 > R> Prima, dann brauchen wir das Gesetz ja auch nicht.
 
 Hatten wir diese Töne nicht schon einmal? Siehe 
-[Vertrauensvorschuß]({% link _posts/2007-03-11-vertrauensvorschu.md %})
+[Vertrauensvorschuß]({{< ref "/content/posts/2007-03-11-vertrauensvorschu.md" >}})
 
 Im Heise Forum erinnert man sich 
 - an [Generalverdächtigte fordern mehr Vertrauen in das Grundgesetz!](http://www.heise.de/newsticker/foren/S-Generalverdaechtigte-fordern-mehr-Vertrauen-in-das-Grundgesetz/forum-146611/msg-15790828/read/), 

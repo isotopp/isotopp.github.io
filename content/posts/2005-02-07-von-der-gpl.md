@@ -191,7 +191,7 @@ integriert, modifiziert und dann verschluckt wurde - die Änderungen waren
 für alle anderen Anwender verloren.
 
 In gewisser Weise ist die GPL also eine Lizenz der kooperativen Sphäre (siehe 
-[Ein paar ideologische Steine ins Rollen bringen]({% link _posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md %}), 
+[Ein paar ideologische Steine ins Rollen bringen]({{< ref "/content/posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}}), 
 aber eine wehrhafte solche. Sie zwingt die Nutzer der GPL dazu, nach den
 Regeln der kooperativen Sphäre zu spielen. Verstößt ein Spieler gegen diese
 Regeln, wird er bestraft 
@@ -211,7 +211,7 @@ Nein.
 
 ![](/uploads/accesspoint.jpg)
 
-[GNU GPL in Deutschland]({% link _posts/2004-04-15-gnu-gpl-in-deutschland.md %})
+[GNU GPL in Deutschland]({{< ref "/content/posts/2004-04-15-gnu-gpl-in-deutschland.md" >}})
 zeigt, was passiert, wenn ein Hersteller gegen die GPL verstößt. Ihm kann
 die Weiterverbreitung seines Produktes so lange untersagt werden, wie er
 gegen die GPL verstößt. Er kann diesen Zustand abstellen, indem er entweder

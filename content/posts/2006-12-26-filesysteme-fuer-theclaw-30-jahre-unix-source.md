@@ -12,7 +12,7 @@ title: Filesysteme für theclaw (30 Jahre Unix Source)
 ---
 --- Log opened Di Dez 26 15:52:09 2006
 
-theclaw> Hey :] [Spitze erklaerung zu ext2.]({% link _posts/2006-05-08-fragmentierung-fuer-jannik.md %})
+theclaw> Hey :] [Spitze erklaerung zu ext2.]({{< ref "/content/posts/2006-05-08-fragmentierung-fuer-jannik.md" >}})
 
 Isotopp> Danke
 
@@ -30,7 +30,7 @@ theclaw> Ich paste mal was
 ```
 
 Isotopp> Habs im 
-[Originalartikel](({% link _posts/2006-05-08-fragmentierung-fuer-jannik.md %})).
+[Originalartikel](({{< ref "/content/posts/2006-05-08-fragmentierung-fuer-jannik.md" >}})).
 
 theclaw> `__le32 i_block[EXT2_N_BLOCKS];` Das ist das, was unter BLOCKS bei debugfs steht?
 

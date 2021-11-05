@@ -21,7 +21,7 @@ In MySQL, the “things we access” in the Working Set definition is RAM, Memor
 
 We do care, because memory is fast. How fast is fast?
 
-Images from [Some Latency Numbers Illustrated]({% link _posts/2020-02-28-some-latency-numbers-illustrated.md %})
+Images from [Some Latency Numbers Illustrated]({{< ref "/content/posts/2020-02-28-some-latency-numbers-illustrated.md" >}})
 
 ![](/uploads/2020/02/latency-top.gif)
 
@@ -43,7 +43,7 @@ We do not want disk accesses to rotating rust, and much less we want actual head
 
 SSD is up to 100x better: we get up to 20.000 disk accesses per second (we get 5ms seek time, around 200 disk accesses per second from each piece of data center grade rust), but it is still slow.
 
-[Adventures in Storageland]({% link _posts/2019-06-13-adventures-in-storageland.md %}) explores that in some more depth. In [Not Quite Storage Any More]({% link _posts/2019-06-14-not-quite-storage-any-more.md %}) I get to play with Optane, and now, that is a different thing entirely.
+[Adventures in Storageland]({{< ref "/content/posts/2019-06-13-adventures-in-storageland.md" >}}) explores that in some more depth. In [Not Quite Storage Any More]({{< ref "/content/posts/2019-06-14-not-quite-storage-any-more.md" >}}) I get to play with Optane, and now, that is a different thing entirely.
 
 ## Memory means Buffer Pool
 
@@ -159,7 +159,7 @@ And Aurora? Check out [Migrating to Aurora: Easy except the bill](https://gridiu
 
 In the article, they solved their performance and cost problems (Aurora bills by disk accesses, even reads) by giving it 4x more memory than the conventional RDS instance they had.
 
-In [MySQL from Below]({% link _posts/2021-02-25-mysql-from-below.md %}) I wrote:
+In [MySQL from Below]({{< ref "/content/posts/2021-02-25-mysql-from-below.md" >}}) I wrote:
 
 > You, too, can be a successful database performance consultant:
 >

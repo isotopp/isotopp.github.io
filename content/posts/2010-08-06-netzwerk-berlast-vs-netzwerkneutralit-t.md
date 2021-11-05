@@ -14,7 +14,7 @@ title: Netzwerk-Überlast vs. Netzwerkneutralität
 (Grr, nicht genug Zeit, das so klar zu machen, wie ich es haben will… Egal - ich drück jetzt "Post Article")
 
 Dies ist der Folgeartikel zu 
-[Teil 1]({% link _posts/2010-08-05-vokabeln-f-r-netzneutralit-t.md %}).
+[Teil 1]({{< ref "/content/posts/2010-08-05-vokabeln-f-r-netzneutralit-t.md" >}}).
 
 Medienkonvergenz Phase I heißt, daß ich einen Haufen Dienste, die früher auf
 unterschiedlichen Medien, Übertragungswegen und in unterschiedlichen

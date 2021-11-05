@@ -11,7 +11,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Waistcoats and Weaponry'
 ---
-Siehe auch [Finishing School Series]({% link _posts/2014-01-19-fertig-gelesen-finishing-school-series.md %}) für #1 und #2 der Serie.
+Siehe auch [Finishing School Series]({{< ref "/content/posts/2014-01-19-fertig-gelesen-finishing-school-series.md" >}}) für #1 und #2 der Serie.
 
 [![](/uploads/2015/11/waistcoats.jpg)](https://www.amazon.de/dp/B00LTUCAKS)
 

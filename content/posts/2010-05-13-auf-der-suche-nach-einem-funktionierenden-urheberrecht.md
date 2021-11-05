@@ -13,7 +13,7 @@ tags:
 title: Auf der Suche nach einem funktionierenden Urheberrecht
 ---
 Letztes Jahr um diese Zeit schrieb ich in 
-[Politik, Polemik und eine Agenda]({% link _posts/2009-04-27-politik-polemik-und-eine-agenda.md %})
+[Politik, Polemik und eine Agenda]({{< ref "/content/posts/2009-04-27-politik-polemik-und-eine-agenda.md" >}})
 über die Probleme, die sich aus gemeinsamer Werkschaffung und spontaner
 Kooperation ergeben, wenn man etwa der Herausgeber eines Buches ist oder
 Anime-Filme für den deutschen Markt synchronisiert, aber auch, wie solche
@@ -21,7 +21,7 @@ Projekte in einzelnen Fällen anfangen, ihre ursprüngliche Zielsetzung zu
 transzendieren und beginnen, neue Originale zu schaffen statt anderer Leute
 Werke zu übersetzen, adaptieren oder erweitern. Mit ein wenig Systematik
 kann man das sogar
-[in kooperative Regeln]({% link _posts/2008-10-05-drsrm-2008-universalis.md %})
+[in kooperative Regeln]({{< ref "/content/posts/2008-10-05-drsrm-2008-universalis.md" >}})
 fassen und institutionalisieren.
 
 Dieser Tage lese ich auf Carta einen faszinierenden Artikel 

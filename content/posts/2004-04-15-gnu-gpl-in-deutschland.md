@@ -36,7 +36,7 @@ GPL-Entwicklergemeinde die eigene Arbeit vorzubehalten.
 Wem dies nicht gefällt, der kann versuchen, von dem Urheber des Projektes
 die Rechte zur Nutzung der Quellen unter einer anderen Lizenz zu bekommen.
 MySQL und Qt sind solche mehrfach lizenzierten Projekte, wie ich
-[in einem älteren Artikel]({% link _posts/2004-03-14-mysql-und-die-lizenzen.md %})
+[in einem älteren Artikel]({{< ref "/content/posts/2004-03-14-mysql-und-die-lizenzen.md" >}})
 geschildert habe.
 
 Die einstweilige Verfügung gegen Sitecom ist übrigens noch nett. Sie ist

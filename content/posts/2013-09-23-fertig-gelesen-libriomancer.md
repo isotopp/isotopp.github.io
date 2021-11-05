@@ -28,7 +28,7 @@ Gut angelegtes Geld.
 "[Libriomancer](https://www.amazon.de/Libriomancer-Magic-Ex-Libris-English-ebook/dp/B0855W41M5)", Jim C. Hines, EUR 5.60
 
 Mehr Reviews:
-- [Libriomancer]({% link _posts/2013-09-23-fertig-gelesen-libriomancer.md %})
-- [Codex Born]({% link _posts/2013-09-27-fertig-gelesen-codex-born.md %})
-- [Unbound]({% link _posts/2015-02-14-fertig-gelesen-unbound.md %})
-- [Revisionary]({% link _posts/2016-08-14-fertig-gelesen-revisionary.md %})
+- [Libriomancer]({{< ref "/content/posts/2013-09-23-fertig-gelesen-libriomancer.md" >}})
+- [Codex Born]({{< ref "/content/posts/2013-09-27-fertig-gelesen-codex-born.md" >}})
+- [Unbound]({{< ref "/content/posts/2015-02-14-fertig-gelesen-unbound.md" >}})
+- [Revisionary]({{< ref "/content/posts/2016-08-14-fertig-gelesen-revisionary.md" >}})

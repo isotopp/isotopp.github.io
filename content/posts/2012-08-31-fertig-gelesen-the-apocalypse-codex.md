@@ -18,10 +18,10 @@ Charles Stross, USD 12.99
 ![Stross: The Apocalypse Codex](/uploads/apocalypse_codex.png)
 
 Zu Charles Stross "Laundry" Universum habe ich in
-[Fertig gelesen: The Fuller Memorandum]({% link _posts/2010-08-16-fertig-gelesen-the-fuller-memorandum.md %})
+[Fertig gelesen: The Fuller Memorandum]({{< ref "/content/posts/2010-08-16-fertig-gelesen-the-fuller-memorandum.md" >}})
 ja schon etwas gesagt (siehe auch 
-[Fertig gelesen: Atrocity Archives]({% link _posts/2007-10-08-charles-stross-the-atrocity-archives-deutsch-d-monentor.md %}),
-[Laundry Roleplaying]({% link _posts/2010-03-17-the-laundry.md %}).
+[Fertig gelesen: Atrocity Archives]({{< ref "/content/posts/2007-10-08-charles-stross-the-atrocity-archives-deutsch-d-monentor.md" >}}),
+[Laundry Roleplaying]({{< ref "/content/posts/2010-03-17-the-laundry.md" >}}).
 
 Im Laundryverse ist höhere Mathematik mit schwarzer Magie identisch und kann
 das Gewebe der Realität umdefinieren, und Verschwörungstheorien werden real,

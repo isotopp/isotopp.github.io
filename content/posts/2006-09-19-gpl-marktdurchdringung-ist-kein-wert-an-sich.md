@@ -77,7 +77,7 @@ mußt offen/frei/whatever sein."
 Sie sagt: "**Wenn** Du unseren Code nutzen möchtest, was Du
 nicht mußt, **dann** mußt Du das zu unseren Bedingungen tun."
 Das ist ganz genau das, was jede andere Lizenz auch sagt. Die
-GPL nennt außerdem diese Bedingungen]{% link _posts/2005-02-07-von-der-gpl.md %})
+GPL nennt außerdem diese Bedingungen]{{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}})
 vorab, wie jede andere Lizenz auch. Es gibt keine
 Überraschungen, keine Lizenzbedingungsänderungen und es gibt
 insbesondere keinen Zwang zu irgendwas. Es gibt allerdings eine

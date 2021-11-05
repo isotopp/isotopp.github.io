@@ -20,5 +20,5 @@ Innovativ aufgezogene Parallelweltgeschichte mit Steampunk-Dekoration, kleine LÃ
 "[The Invisible Library](http://www.amazon.de/dp/B00M44051E)", Â Genevieve Cogman, EUR 5.59
 
 Mehr Reviews:
-- [The Invisible Library]({% link _posts/2016-02-28-fertig-gelesen-the-invisible-library.md %})
-- [The Masked City]({% link _posts/2016-02-28-fertig-gelesen-the-masked-city.md %})
+- [The Invisible Library]({{< ref "/content/posts/2016-02-28-fertig-gelesen-the-invisible-library.md" >}})
+- [The Masked City]({{< ref "/content/posts/2016-02-28-fertig-gelesen-the-masked-city.md" >}})

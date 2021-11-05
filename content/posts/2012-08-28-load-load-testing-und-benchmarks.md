@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: Load, Load Testing und Benchmarks
 ---
-(Diesen Artikel gibt es auch in [englischer Sprache]({% link _posts/2017-02-16-load-load-testing-and-benchmarking.md %}).)
+(Diesen Artikel gibt es auch in [englischer Sprache]({{< ref "/content/posts/2017-02-16-load-load-testing-and-benchmarking.md" >}}).)
 
 So. Du willst also wissen, was genau die Leistungsgrenzen Deines Systems
 sind.  Und dazu möchtest Du einen Lasttest fahren, um Ergebnisse zu
@@ -101,7 +101,7 @@ durchschnittlichen Fälle kümmert.  Stattdessen wird man sich zunächst einmal
 um die Outlier und schlimmsten Fällen kümmern müssen.  Das ist auch, warum
 gute Systemarchitekten sich im Grunde nur für die Worst-Case-Performance
 eines Systems oder eines Changes interessieren (siehe 
-[The Importance of FAIL]({% link _posts/2008-05-30-the-importance-of-fail.md %}), 
+[The Importance of FAIL]({{< ref "/content/posts/2008-05-30-the-importance-of-fail.md" >}}), 
 oder jede 2.  Diskussion auf der Linux Kernel Mailingliste).
 
 Es geht zunächst einmal also darum, die Variabilität in der Antwort des

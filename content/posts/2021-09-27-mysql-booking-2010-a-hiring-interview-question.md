@@ -45,7 +45,7 @@ Possible topics or annotations from a candidate:
   - Zookeeper could be used to do this with modified clients, but we would have to discuss how exactly that works. That's an interesting sub-question of its own.
   - MySQL Router or ProxySQL are made for that, but have a lot of interesting sub-questions of their own. See below.
 - What else may be different when load balancing database connections instead of http? 
-    - web-proxies are not good database proxies. The database protocol is not http, and it is a [stateful protocol]({% link _posts/2020-07-28-mysql-connection-scoped-state.md %}). This requires extra care when load balancing.
+    - web-proxies are not good database proxies. The database protocol is not http, and it is a [stateful protocol]({{< ref "/content/posts/2020-07-28-mysql-connection-scoped-state.md" >}}). This requires extra care when load balancing.
   - Database connections can be long-lived. A load balancing action to a different client only ever happens on connect. If you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS'ed connections, connection setup cost can be high, so longer lived connections amortize better.
   - Database connections have a highly variable result set size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.
   - Proxies can become bottlenecks. Imagine 50 frontends talking to 10 databases via a single proxy on a typical 2010-box with a single (or two) 1 GBit/s network interface, and results contain BLOBs.

@@ -20,14 +20,14 @@ wichtigen Rundumschlag und Anknüpfungspunkt darstellt.
 
 ### Ende 2006:
 
-[Bundestrojaner]({% link _posts/2006-12-26-bundestrojaner.md %}) - der
+[Bundestrojaner]({{< ref "/content/posts/2006-12-26-bundestrojaner.md" >}}) - der
 chronologisch erste Artikel zu diesem Thema. Er schließt mit 'Auf dem
 nächsten CCC wird das sicherlich dokumentiert'. Es hat dann noch ein paar
 Jahre länger dauern sollen, aber das war nicht der Verschulden des CCC.
 
 ### Anfang 2007:
 
-[Der Bundestrojaner durchdekliniert]({% link _posts/2007-02-26-der-bundestrojaner-durchdekliniert.md %}) - 
+[Der Bundestrojaner durchdekliniert]({{< ref "/content/posts/2007-02-26-der-bundestrojaner-durchdekliniert.md" >}}) - 
 ein Grundlagenartikel, der die notwendigen Anforderungen bei der
 Beweissicherung (gemäß den Richtlinien zur erfolgreichen Sicherung von
 EDV-Beweismitteln) der Funktionsweise des Bundestrojaners entgegenstellt und
@@ -39,7 +39,7 @@ Folgeartikeln hier im Blog generiert.
 
 ### Anfang 2007:
 
-[Das generelle Mißverständnis beim Bundestrojaner]({% link _posts/2007-03-12-das-generelle-mi-verst-ndnis-beim-bundestrojaner.md %}) -
+[Das generelle Mißverständnis beim Bundestrojaner]({{< ref "/content/posts/2007-03-12-das-generelle-mi-verst-ndnis-beim-bundestrojaner.md" >}}) -
 insbesondere gab es damals auch eine große Menge Medienanfragen, die mehr
 Material und Soundbites haben wollten. Nachdem sich die Politik
 beratungsresistent zeigte, schloß ich den Wortwechsel mit einem Kontakt mit
@@ -49,7 +49,7 @@ das alles engineered, beherrschbar und ein Fortschritt. So wie bei den
 Wahlmaschinen. Oder bei Atomkraftwerken. :) Da muss immer erst eines
 explodieren." Oh, ja.
 
-[Bundestrojaner, Sina-Boxen und Mailüberwachung]({% link _posts/2007-03-11-bundestrojaner-sina-boxen-und-mail-berwachung.md %}) - 
+[Bundestrojaner, Sina-Boxen und Mailüberwachung]({{< ref "/content/posts/2007-03-11-bundestrojaner-sina-boxen-und-mail-berwachung.md" >}}) - 
 damals gab es in der Diskussion eine Verwirrung um den Aufgabenbereich und
 die Funktionsweise der SINA-Boxen, die bei vielen Providern installiert
 werden mußten. Der Artikel stellt das klar, und macht transparent, wie das
@@ -80,7 +80,7 @@ ein anständiger Staat hat schließlich nichts zu verstecken und braucht auch
 nichts zu befürchten." Das beleuchtet einen der zentralen Fehler in der
 ganzen Bundestrojaner-Geschichte.
 
-[Erst mal die Verfassung brechen...]({% link _posts/2007-04-15-erst-mal-die-verfassung-brechen.md %}) - 
+[Erst mal die Verfassung brechen...]({{< ref "/content/posts/2007-04-15-erst-mal-die-verfassung-brechen.md" >}}) - 
 Ausschnitte aus einem Interview mit Thomas de Maizière gegenüber
 Deutschlandradio. Money Quote: "Das muss man probieren, wie weit man gehen
 kann. Und dann ist jeder eingeladen, eine Verfassungsbeschwerde einzulegen,
@@ -97,7 +97,7 @@ potenzielle terroristische Straftäter sein, bei denen die rechtsstaatlichen
 Grenzen genau definiert sind" hat man dann doch noch leicht unterschreiten
 können.
 
-[Unfälle mit dem Bundestrojaner]({% link _posts/2007-05-02-unf-lle-mit-dem-bundestrojaner.md %}) - 
+[Unfälle mit dem Bundestrojaner]({{< ref "/content/posts/2007-05-02-unf-lle-mit-dem-bundestrojaner.md" >}}) - 
 Verweis auf einen Bericht des Deutschlandfunk, der dokumentiert, daß
 behördlichem Blödsinn beim Umgang mit Überwachungssoftware keine Grenzen
 gesetzt sind. "In einem Fall ist der Schädling nach etwa zwei Wochen bemerkt
@@ -107,7 +107,7 @@ worden, das statt Daten blöden Scheiß geuppt hat."
 
 ### Mitte bis Ende 2007:
 
-[Mehr Online-Durchsuchungs-Nebelkerzen]({% link _posts/2007-08-29-mehr-online-durchsuchungs-nebelkerzen.md %}) - 
+[Mehr Online-Durchsuchungs-Nebelkerzen]({{< ref "/content/posts/2007-08-29-mehr-online-durchsuchungs-nebelkerzen.md" >}}) - 
 "Mal sehen, ob ich das richtig geparsed bekomme, was Ziercke da erzählt: Er
 möchte in einer missionskritischen Anwendung in einer Gefahrensituation
 unter Zeitdruck eine ungetestete Software in einer Situation einsetzen, in
@@ -118,23 +118,23 @@ haben, so was zu machen - das sollte einem zu denken geben), sondern
 vorbestrafte Amateure in der Privatwirtschaft zeugst schreiben lassen, den
 man dann von inkompetenten Nichtprogrammierern nicht hat reviewen lassen.
 
-[Bundestrojaner in den Tagesthemen]({% link _posts/2007-10-11-bundestrojaner-in-den-tagesthemen.md %}) - 
+[Bundestrojaner in den Tagesthemen]({{< ref "/content/posts/2007-10-11-bundestrojaner-in-den-tagesthemen.md" >}}) - 
 Tagesthemen-Bericht über den Prozeß zum Thema Bundestrojaner vor dem
 Bundesverfassungsgericht, Auftritt des CCC.
 
 ### Anfang 2008:
 
-[Warum Hacker sich als Bürgerrechtler verstehen]({% link _posts/2008-01-07-warum-hacker-sich-als-b-rgerrechtler-verstehen.md %}) - 
+[Warum Hacker sich als Bürgerrechtler verstehen]({{< ref "/content/posts/2008-01-07-warum-hacker-sich-als-b-rgerrechtler-verstehen.md" >}}) - 
 die Rolle und Mission des CCC.
 
 ### Anfang 2009:
 
-[Mehr Bundestrojaner]({% link _posts/2009-01-23-mehr-bundestrojaner.md %}) - 
+[Mehr Bundestrojaner]({{< ref "/content/posts/2009-01-23-mehr-bundestrojaner.md" >}}) - 
 mehr Nebelkerzen von Ziercke, BKA.
 
 ### Mitte 2009:
 
-[gulli: Bundestrojaner: ein Programmierer erzählt]({% link _posts/2009-08-22-megapanzer.md %}) - 
+[gulli: Bundestrojaner: ein Programmierer erzählt]({{< ref "/content/posts/2009-08-22-megapanzer.md" >}}) - 
 Ein Interview mit einem Mitarbeiter der Schweizer ERA IT Solutions, der an
 den Projekten Mini- und Megapanzer mitgearbeitet hatte.
 

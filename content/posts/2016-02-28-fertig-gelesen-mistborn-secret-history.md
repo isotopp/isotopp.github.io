@@ -18,6 +18,6 @@ Das Buch ist Fan-Service und Cosmere-Klebstoff. Es ist für das Verständnis der
 
 "[Mistborn: Secret History](http://www.amazon.de/dp/B01B0NS93U)", Brandon Sanderson, Euro 4.99
 
-- [Mistborn: The Final Empire, #1-#3]({% link _posts/2015-11-29-fertig-gelesen-mistborn-the-final-empire-the-well-of-ascension-the-hero-of-ages.md %})
-- [Mistborn: The Allow of Law, #4-#6]({% link _posts/2016-02-28-fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.md %})
-- [Mistborn: Secret History]({% link _posts/2016-02-28-fertig-gelesen-mistborn-secret-history.md %})
+- [Mistborn: The Final Empire, #1-#3]({{< ref "/content/posts/2015-11-29-fertig-gelesen-mistborn-the-final-empire-the-well-of-ascension-the-hero-of-ages.md" >}})
+- [Mistborn: The Allow of Law, #4-#6]({{< ref "/content/posts/2016-02-28-fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.md" >}})
+- [Mistborn: Secret History]({{< ref "/content/posts/2016-02-28-fertig-gelesen-mistborn-secret-history.md" >}})

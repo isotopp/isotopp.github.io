@@ -54,11 +54,11 @@ Because it is `O_DIRECT`, the write already writes to disk. There is no need to 
 
 We use XFS. XFS on the average takes twice as long as ext4 to write data to disk, but XFS always takes the same amount of time to write data – it has been specifically designed in a way that there is very low jitter. ext4, on the other hand, is known to have downspikes and large commit wait times every few seconds, and that is really, really bad when you run at 10.000 queries/s.
 
-XFS also is capable of having multiple concurrent writers on a file when the file is open with O_DIRECT. Unlike all other Linux File Systems, [it does not lock the file’s in-memory inode globally]({% link _posts/2018-11-29-but-is-it-atomic.md %}) to guarantee atomic writes in this case. Such a feature is very dear to database people.
+XFS also is capable of having multiple concurrent writers on a file when the file is open with O_DIRECT. Unlike all other Linux File Systems, [it does not lock the file’s in-memory inode globally]({{< ref "/content/posts/2018-11-29-but-is-it-atomic.md" >}}) to guarantee atomic writes in this case. Such a feature is very dear to database people.
 
 The Commit is what users have to wait for. When it is done, the database can do the real data write later, often much later, and in the background. So what we really care for is the actual commit latency.
 
-The real write happens later, in the Checkpoint. [What happens is complicated enough to justify a writeup of its own]({% link _posts/2020-07-27-mysql-transactions.md %}). But, to make it short, we write data to the Doublewrite Buffer in a few very large linear writes as protection against torn pages, and then we writev() a scatter I/O of 16K pages to update in place.
+The real write happens later, in the Checkpoint. [What happens is complicated enough to justify a writeup of its own]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}). But, to make it short, we write data to the Doublewrite Buffer in a few very large linear writes as protection against torn pages, and then we writev() a scatter I/O of 16K pages to update in place.
 
 This is different from Postgres, and enables us to avoid costly vacuum runs. We make an assumption here, and that is: Rollbacks are rare (and expensive in MySQL).
 
@@ -186,7 +186,7 @@ They are also visible in the latency histogram:
 
 # 20.000 commit/s class
 
-The chosen example is a [database as a queue]({% link _posts/2021-01-28-database-as-a-queue.md %}), that logs changes from one data set for processing and creation of a materialized view in another data set. It is an example of [CQRS](https://martinfowler.com/bliki/CQRS.html) in Fowlerspeak.
+The chosen example is a [database as a queue]({{< ref "/content/posts/2021-01-28-database-as-a-queue.md" >}}), that logs changes from one data set for processing and creation of a materialized view in another data set. It is an example of [CQRS](https://martinfowler.com/bliki/CQRS.html) in Fowlerspeak.
 
 It is also very busy.
 

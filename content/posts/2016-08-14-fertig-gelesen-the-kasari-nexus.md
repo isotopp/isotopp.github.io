@@ -11,11 +11,11 @@ tags:
 - scifi
 title: 'Fertig gelesen: The Kasari Nexus'
 ---
-Was bisher geschah: [The Rho Agenda Trilogy]({% link _posts/2011-05-08-fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.md %})
+Was bisher geschah: [The Rho Agenda Trilogy]({{< ref "/content/posts/2011-05-08-fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.md" >}})
 
 Die Geschichte setzt einige Zeit nach Wormhole auf, dem Abschluss der Rho Agenda, und ist zugleich das erste Buch in einer neuen Trilogie "The Rho Agenda Assimilation".
 
-Die Rho Agenda hat als eine Art YA und Coming of Age-Geschichte angefangen und gegen Ende eine ganze Menge dunklerer Themen aufgegriffen. Philipps hat dann mit der "[Rho Agenda Inception]({% link _posts/2015-02-14-fertig-gelesen-once-dead-und-dead-wrong.md %})" eine Trilogie von Thrillern und Agentengeschichten um seine Mary Sue "Jack Gregory" abgeliefert, die man als Urlaubslektüre gut durchziehen konnte und die zeitlich vor der Rho Agenda spielen.
+Die Rho Agenda hat als eine Art YA und Coming of Age-Geschichte angefangen und gegen Ende eine ganze Menge dunklerer Themen aufgegriffen. Philipps hat dann mit der "[Rho Agenda Inception]({{< ref "/content/posts/2015-02-14-fertig-gelesen-once-dead-und-dead-wrong.md" >}})" eine Trilogie von Thrillern und Agentengeschichten um seine Mary Sue "Jack Gregory" abgeliefert, die man als Urlaubslektüre gut durchziehen konnte und die zeitlich vor der Rho Agenda spielen.
 
 "The Kasari Nexus" ist jetzt der erste Teil einer Fortsetzung der Rho Agenda mit den inzwischen erwachsenen Figuren aus der Rho Agenda. Die Teile 2 und 3, The Altreian Enigma und The Meridian Ascent sind auf Amazon bereits angekündigt (Band 2 ist auf Dezember 2016 terminiert, Band 3 auf August 2017) und alle drei Teile sind für Kindle unlimited markiert.
 

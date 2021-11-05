@@ -83,7 +83,7 @@ laufen hatte, kennt genau die Auswirkungen, die ein AOF
 Rewrite hat.
 
 Wie lösen traditionalle Datenbanken wie InnoDB das Problem?  Mit einem 
-[Checkpoint]({% link _posts/2011-09-19-checkpoint-blues.md %}).   
+[Checkpoint]({{< ref "/content/posts/2011-09-19-checkpoint-blues.md" >}}).   
 MySQL unterhält wie Redis ein Bild der aktuellen Daten auf der Platte -
 Redis in Form des point-in-time snapshot, MySQL in Form von InnoDB
 \*.ibd-Files.
@@ -111,7 +111,7 @@ Doublewrite-Buffer und dem Redo-Log ist das immens beeindruckend.
 Das bringt uns zum 2.  Thema: Concurrency.  MySQL InnoDB skaliert, in MySQL
 5.6 skaliert es sogar ziemlich unglaublich: Ein Cluster mit 96 Cores, der
 192 Verbindungen in die Datenbank unterhält, deren einzige Aufgabe es ist,
-[Daten zu berechnen und zu schreiben]({% link _posts/2012-08-15-materialized-view.md %}), 
+[Daten zu berechnen und zu schreiben]({{< ref "/content/posts/2012-08-15-materialized-view.md" >}}), 
 kommt mit der o.a.  Konfiguration auf die genannten 150 MB/sec, und nutzt 
 dabei - Threading sei Dank - die CPU-Kapazität der 12 physikalischen
 Cores (24 virtuellen Hyperthreading-Cores) der Datenbank gut aus.

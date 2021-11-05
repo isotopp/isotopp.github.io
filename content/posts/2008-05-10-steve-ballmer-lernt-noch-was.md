@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: Steve Ballmer lernt noch was
 ---
-[Steve Ballmer schläft derzeit schlecht]({% link _posts/2008-04-20-steve-ballmer-lernt-etwas.md %}).
+[Steve Ballmer schläft derzeit schlecht]({{< ref "/content/posts/2008-04-20-steve-ballmer-lernt-etwas.md" >}}).
 Da bin ich mir ziemlich sicher. Spätestens seit ich bei Till einen EEE-PC
 von Asus in den Fingern hatte.
 

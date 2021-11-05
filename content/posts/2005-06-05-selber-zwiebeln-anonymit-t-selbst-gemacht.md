@@ -20,7 +20,7 @@ Traffic im Monat. Es müsse also neue Projekte her, um die Maschine über die
 50 GB-Schwelle zu heben.
 
 So habe ich mich dafür entschieden, eine 
-[tor-Node]({% link _posts/2005-06-02-die-welt-ist-meine-zwiebel.md %})
+[tor-Node]({{< ref "/content/posts/2005-06-02-die-welt-ist-meine-zwiebel.md" >}})
 auf dem Rechner einzurichten und bandbreitenlimitiert mitlaufen zu lassen.
 
 Die Installation von tor ist straightforward: Runterladen von 

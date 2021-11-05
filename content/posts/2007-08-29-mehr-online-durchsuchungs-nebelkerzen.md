@@ -30,5 +30,5 @@ Ideen können auch Ziercke und seine Berater nicht ausbrüten. Dies ist ganz
 klar eine Nebelkerze, am Ende wird auch hier Encase eingekauft (Siehe die
 Kommentare am Ende von
 
-[Der Bundestrojaner durchdekliniert]({% link _posts/2007-02-26-der-bundestrojaner-durchdekliniert.md %})
+[Der Bundestrojaner durchdekliniert]({{< ref "/content/posts/2007-02-26-der-bundestrojaner-durchdekliniert.md" >}})
 für eine Liste von Materialien zum Thema).

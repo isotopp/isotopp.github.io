@@ -132,7 +132,7 @@ ich sinnvoll brauchen konnte.
 Zusammenfassend kann ich also sagen: Meiner persönlichen Erfahrung nach kann
 ich von der Veröffentlichung von Texten in Zeitschriften oder Büchern ganz
 gut leben. Aber diese Texte sind viel effektiver genutzt,
-[indem ich sie als Werbung benutze]({% link _posts/2005-05-23-internetpiraten-in-der-netzwerk-konomie.md %})
+[indem ich sie als Werbung benutze]({{< ref "/content/posts/2005-05-23-internetpiraten-in-der-netzwerk-konomie.md" >}})
 die die Marke "Kristian Köhntopp" positionieren, um Aufträge für mich oder
 meinen Arbeitgeber herein zu holen: die c't zahlt gut, aber nur ein Tag
 Consulting generiert mehr Umsatz als selbst ein großer c't-Artikel. Die

@@ -28,7 +28,7 @@ Jörg Möllenkamp sieht dies als
 [Phyrrussieg](http://www.c0t0d0s0.org/index.php?url=archives/1989-GPL-vor-Gericht-durchgesetzt.html)
 für die GPL, aber seine Analyse beruht auf einigen Verständnisfehlern.
 
-In [Von der GPL]({% link _posts/2005-02-07-von-der-gpl.md %}) habe ich die
+In [Von der GPL]({{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}}) habe ich die
 GPL V2 einmal en detail erläutert und in der an den Artikel anschließenden
 Diskussion einige Dinge klargestellt. Der Kommentar ist wichtig, denn er
 paßt direkt auf den falschen Gedankengang von Jörg. Hier ist er noch einmal
@@ -50,7 +50,7 @@ so" verweigern, wenn ihm danach ist. Es ist also eine Gute Sache Für Alle
 funktionsfähige und durchsetzbare Lizenz ist.
 
 Die GPL ist eine Lizenz des 
-[kooperativen Lagers]({% link _posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md %}). 
+[kooperativen Lagers]({{< ref "/content/posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}}). 
 Wie jede andere Lizenz muß man sie erwerben, man bekommt sie nicht einfach
 so. Lizenzen kompetetiver Spieler bekommt man entweder gar nicht (weil die
 Lizenz nicht verkäuflich ist), oder man muß sie für Geld kaufen. Lizenzen
@@ -117,7 +117,7 @@ ihren Betrieb gründen. Die GPL ist im Gegensatz zu solchen Lizenzen
 konstruiert.
 
 Ich schrieb schon 
-[damals]({% link _posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md %}):
+[damals]({{< ref "/content/posts/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}}):
 
 > Probleme gibt es immer nur dann, wenn Mitglieder der kompetetiven Sphäre
 > meinen, sie könnten die Regeln der kooperativen Sphäre ignorieren, weil

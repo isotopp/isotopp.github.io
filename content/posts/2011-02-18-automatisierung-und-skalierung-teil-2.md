@@ -11,7 +11,7 @@ tags:
 title: Automatisierung und Skalierung - Teil 2
 ---
 Dies ist der 2. Teil zum Thema Automatisierung von Systemverwaltungsaufgaben. 
-[Den ersten Teil gibt es hier]({% link _posts/2011-02-17-automatisierung-und-skalierung.md %}).
+[Den ersten Teil gibt es hier]({{< ref "/content/posts/2011-02-17-automatisierung-und-skalierung.md" >}}).
 
 In jenem Text habe ich mit dem Beispiel eines Installationsservers gearbeitet und ich schrieb darüber: 
 > Was also wie ein wenig Gescripte aussieht, ist in Wirklichkeit die

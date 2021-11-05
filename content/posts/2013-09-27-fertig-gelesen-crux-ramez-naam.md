@@ -11,7 +11,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Crux'
 ---
-Das Buch ist der 2. Teil von [Nexus]({% link _posts/2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md %}). Entsprechend macht das Buch dort weiter, wo der erste Teil aufgehört hat:
+Das Buch ist der 2. Teil von [Nexus]({{< ref "/content/posts/2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md" >}}). Entsprechend macht das Buch dort weiter, wo der erste Teil aufgehört hat:
 
 [![](/uploads/2013/09/crux.png)](https://www.amazon.de/gp/product/B00TOZI7J8)
 

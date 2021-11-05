@@ -22,7 +22,7 @@ title: IP V6 verkehrt
 >   -- [Heise Netze](http://www.heise.de/netze/meldung/Datenschuetzer-sorgt-sich-wegen-IPv6-1235312.html)
 
 
-Schon seit [vielen Jahren]({% link _posts/2005-05-23-identifizierung-durch-ip.md %})
+Schon seit [vielen Jahren]({{< ref "/content/posts/2005-05-23-identifizierung-durch-ip.md" >}})
 versteifen sich Sicherheitsbehörden, Abmahnszene und viele andere Leute
 auf die Idee, daß eine IP-Nummer (zu einem gegebenen Zeitpunkt) eine
 Person identifiziert. Das führt fast schon traditionell zu abschreckenden
@@ -30,9 +30,9 @@ Person identifiziert. Das führt fast schon traditionell zu abschreckenden
 und anderen seltsamen Randerscheinungen.
 
 Nicht ganz so lange, aber schon fast so lange gibt es die Erkenntnis, daß
-[so eine IP-Nummer irgendwie gar nix beweist]({% link _posts/2008-11-08-ip-nummern-und-elektronische-personalausweise.md %})
+[so eine IP-Nummer irgendwie gar nix beweist]({{< ref "/content/posts/2008-11-08-ip-nummern-und-elektronische-personalausweise.md" >}})
 auch wenn das 
-[den entsprechenden Bedarfsträgern weitgehend egal ist]({% link _posts/2005-06-27-vorratsdatenspeicherung.md %}).
+[den entsprechenden Bedarfsträgern weitgehend egal ist]({{< ref "/content/posts/2005-06-27-vorratsdatenspeicherung.md" >}}).
 
 Anders herum hätten wir nun mit IP V6 endlich die Gelegenheit, feste
 IP-Nummern und sogar Netze für daheim zu bekommen und so allen möglichen
@@ -43,11 +43,11 @@ und
 und wollen daher statische IP-Nummern weg haben.
 
 Die Logik erschließt sich mir nicht. Wenn ich Anonymität haben will, dann
-[muß ich sie selber erzeugen]({% link _posts/2005-06-05-selber-zwiebeln-anonymit-t-selbst-gemacht.md %}).
+[muß ich sie selber erzeugen]({{< ref "/content/posts/2005-06-05-selber-zwiebeln-anonymit-t-selbst-gemacht.md" >}}).
 Das wissen eben genau diese Datenschützer auch, haben sie doch selber
-[AN.ON]({% link _posts/2006-11-24-an-on.md %}) selbst betrieben
+[AN.ON]({{< ref "/content/posts/2006-11-24-an-on.md" >}}) selbst betrieben
 und tor propagiert, und an Papieren über
-[Anonymitätdefinitionen]({% link _posts/2005-05-24-ueber-anonymitaet-reden.md %})
+[Anonymitätdefinitionen]({{< ref "/content/posts/2005-05-24-ueber-anonymitaet-reden.md" >}})
 mitgewirkt.
 
 Die Einlassungen von Herrn Caspar sind auf viele verschiedene Weisen
@@ -57,7 +57,7 @@ ankäme: Inhaber einer dynamischen IP-Nummern zu einem gegebenen Zeitpunkt
 sind aufdeckbar und identifizierbar, die benutzten Werkzeuge sind auch ohne
 IP-Nummer trackbar, und Personentracking funktioniert oft mit mehreren
 Signalen, etwa Browserstrings,
-[Cookies]({% link _posts/2011-02-05-c-is-for-cookie.md %}) und
+[Cookies]({{< ref "/content/posts/2011-02-05-c-is-for-cookie.md" >}}) und
 Flash-Cookies. IP-Nummern zu wechseln hat keine Schutzwirkung.
 
 Der Verzicht auf statische IP-Nummern hat außerdem den Nebeneffekt, daß

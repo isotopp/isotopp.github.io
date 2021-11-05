@@ -124,7 +124,7 @@ So
 - a machine load going up by 2 from 1 to 3 (per thread problem, two queries?)
 - long running
 
-We have [seen this before]({% link _posts/2019-11-18-a-blast-from-the-past.md %}), and we have seen it [a long time before that]({% link _posts/2011-04-28-mysql-undo-log.md %}) as well. Let’s check the undo log size:
+We have [seen this before]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo log size:
 
 ![](/uploads/2020/10/mysql-undo-log.png)
 
@@ -134,9 +134,9 @@ We observe a shark fin in the Undo Log size that perfectly matches the time span
 
 ## We knew this is bad
 
-We know from [MySQL Transactions - the physical side]({% link _posts/2020-07-27-mysql-transactions.md %}) what the Undo Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.
+We know from [MySQL Transactions - the physical side]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) what the Undo Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.
 
-We learned in [MySQL Transactions - the logical side]({% link _posts/2020-07-29-mysql-transactions-the-logical-view.md %}) how the Undo Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.
+We learned in [MySQL Transactions - the logical side]({{< ref "/content/posts/2020-07-29-mysql-transactions-the-logical-view.md" >}}) how the Undo Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.
 
 The part where it says:
 

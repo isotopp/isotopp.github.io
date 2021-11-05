@@ -12,7 +12,7 @@ tags:
 title: Nützliche Kombinationen
 ---
 Das Sony BMG Rootkit aus 
-[Legal, Illegal, Scheißegal]({% link _posts/2005-11-01-legal-illegal-schei-egal.md %})
+[Legal, Illegal, Scheißegal]({{< ref "/content/posts/2005-11-01-legal-illegal-schei-egal.md" >}})
 hat eine dicke Spur von Artikeln nach sich gezogen. Sony bietet jetzt ein
 Toolkit an, mit dem man die Rootkit-Funktionen deinstallieren kann, der
 Filtertreiber (den man in der EULA dennoch nicht abgenickt hat) bleibt aber

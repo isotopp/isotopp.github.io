@@ -19,7 +19,7 @@ Markus fragt:
 
 Die Frage habe ich ihm schon beantwortet, aber versprochen, das Thema noch
 einmal im Blog "in groß" durchzudeklinieren. Hier also der
-[Zeichensatz-Artikel]({% link _posts/2006-08-06-zeichensatzaerger.md %})
+[Zeichensatz-Artikel]({{< ref "/content/posts/2006-08-06-zeichensatzaerger.md" >}})
 redone.
 
 

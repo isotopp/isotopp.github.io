@@ -56,7 +56,7 @@ Webanwendungen haben außerdem ungewöhnliche Anforderungen an Datenbanken und
 andere Systeme: Die sind sehr read-heavy und dabei ist die absolute Anzahl
 der Lesezugriffe bei populären Webanwendungen in der Regel so groß, daß es
 keine einzelne Maschine gibt -
-[geben kann!]({% link _posts/2007-08-11-zehn-zentimeter.md %}) -
+[geben kann!]({{< ref "/content/posts/2007-08-11-zehn-zentimeter.md" >}}) -
 die in der Lage ist, die Last zu stemmen. Man braucht mehr als eine Kiste,
 unter Umständen gar tausende von Maschinen. Daher blickt man zwangsläufig
 auf verteilte, asynchrone Systeme und damit das oben erwähnte BASE, und man

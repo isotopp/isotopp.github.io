@@ -11,9 +11,9 @@ tags:
 title: Netzneutralität - was ist okay und was ist es nicht?
 ---
 (Teil 3, siehe auch 
-[Teil1]({% link _posts/2010-08-05-vokabeln-f-r-netzneutralit-t.md %}) und
+[Teil1]({{< ref "/content/posts/2010-08-05-vokabeln-f-r-netzneutralit-t.md" >}}) und
 [Teil 2]({* link _posts/2010-08-06-netzwerk-berlast-vs-netzwerkneutralit-t.md %}), 
-[Petition hier]({% link _posts/2010-08-11-netzneutralit-t-ist-der-schl-ssel-zur-wahrung-des-freien-internets.md %})
+[Petition hier]({{< ref "/content/posts/2010-08-11-netzneutralit-t-ist-der-schl-ssel-zur-wahrung-des-freien-internets.md" >}})
 
 Mein DSL hat 16 MBit im Downstream. Das heißt, ich bekomme 16 000 000 Bit/s
 geliefert, also etwas unter 2 Megabyte pro Sekunde. Ein Tag hat 86400

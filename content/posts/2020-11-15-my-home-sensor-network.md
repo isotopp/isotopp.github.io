@@ -17,9 +17,9 @@ I am collecting data from a number of plugs with power meters over Wifi, using t
 
 ## What happened so far
 
-- [Plugs with Wifi]({% link _posts/2020-05-12-plugs-with-wifi.md %}): In which I am asking what kind of power plug to use to collect usage data.
-- [Gosund and Tasmota]({% link _posts/2020-05-20-gosund-and-tasmota.md %}): In which I describe how to convert Gosund SP 111 plugs to Tasmota.
-- [Air Quality Sensors]({% link _posts/2020-05-25-air-quality-sensors.md %}): In which I ask for Air Quality sensors, specifically with CO2 level metrics.
+- [Plugs with Wifi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}}): In which I am asking what kind of power plug to use to collect usage data.
+- [Gosund and Tasmota]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}): In which I describe how to convert Gosund SP 111 plugs to Tasmota.
+- [Air Quality Sensors]({{< ref "/content/posts/2020-05-25-air-quality-sensors.md" >}}): In which I ask for Air Quality sensors, specifically with CO2 level metrics.
 
 ## The hardware
 
@@ -98,7 +98,7 @@ The Aqara sensor is not really an outdoor sensor. It works well on the east side
 
 ### Wall Plugs
 
-I bought a very large number of [Gosund SP111 Wall Plugs](https://www.amazon.de/gp/product/B085RFKVW4) and converted them to Tasmota [using Tuya-Convert]({% link _posts/2020-05-20-gosund-and-tasmota.md %}). The plugs are attractive, because they can do the full 16A and are small enough to fit next to each other on a regular plug extender, if the slots are angled at 45deg (the device has a button, and the Gosounds touch each other on small extenders, pressing each others button).
+I bought a very large number of [Gosund SP111 Wall Plugs](https://www.amazon.de/gp/product/B085RFKVW4) and converted them to Tasmota [using Tuya-Convert]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}). The plugs are attractive, because they can do the full 16A and are small enough to fit next to each other on a regular plug extender, if the slots are angled at 45deg (the device has a button, and the Gosounds touch each other on small extenders, pressing each others button).
 
 This is a solder-free conversion, using the WiFi in a Raspi 4. Newer versions of this plug do no longer convert this way, and require wires to reflash initially.
 

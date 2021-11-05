@@ -11,7 +11,7 @@ title: 'Fertig gelesen: You Suck'
 ---
 
 Will sagen, nach 
-[Bloodsucking Fiends]({% link _posts/2007-02-06-fertig-gelesen-bloodsucking-fiends.md %})
+[Bloodsucking Fiends]({{< ref "/content/posts/2007-02-06-fertig-gelesen-bloodsucking-fiends.md" >}})
 hab ich jetzt mal eben 
 [You Suck](http://www.amazon.de/Suck-Love-Story-Christopher-Moore/dp/0060590297)
 weggehauen. 

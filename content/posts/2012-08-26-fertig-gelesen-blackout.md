@@ -37,7 +37,7 @@ Auch Elsberg hat recherchiert und das Ergebnis _seiner_ Recherche ist ein
 Katastrophenroman geworden.  Elsberg haut mit seiner Geschichte in eine
 meiner Lieblingskerben: Das Problem bei Smartmetern ist eben nicht die
 mögliche Verletzung der Privatspähre, sondern 
-[deren Sicherheit]({% link _posts/2010-02-22-smart-meters-revisited.md %}).
+[deren Sicherheit]({{< ref "/content/posts/2010-02-22-smart-meters-revisited.md" >}}).
 Diese Geräte sind die Eingangs-Sensoren für die Steuerung einer
 kontinentalen integrierten Kraftmaschine.  Wenn es gelingt diese zu
 übernehmen und zu blenden, ist es sehr leicht, die gesamte Maschine effektiv

@@ -23,7 +23,7 @@ veröffentlicht.
 > (the "GPL").
 
 Wir erinnern uns: Wie in
-[MySQL und die Lizenzen]({% link _posts/2004-03-14-mysql-und-die-lizenzen.md %})
+[MySQL und die Lizenzen]({{< ref "/content/posts/2004-03-14-mysql-und-die-lizenzen.md" >}})
 dargestellt, hat MySQL mit der 4er Serie des MySQL-Paketes die Lizenz der
 Client-Bibliotheken von LGPL auf GPL geändert. Dabei kam es zu den im
 Artikel dargestellten Lizenzproblemen.

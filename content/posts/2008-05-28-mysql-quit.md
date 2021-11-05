@@ -9,7 +9,7 @@ tags:
 title: mysql> quit;
 ---
 
-Mit dem Ende dieser Woche [endet nicht nur die MySQL Deutschland GmbH]({% link _posts/2008-01-16-sunw-aeh-java.md %})</a>, sondern auch meine Tätigkeit bei MySQL. 
+Mit dem Ende dieser Woche [endet nicht nur die MySQL Deutschland GmbH]({{< ref "/content/posts/2008-01-16-sunw-aeh-java.md" >}})</a>, sondern auch meine Tätigkeit bei MySQL. 
 Den neuen Vertrag bei Sun habe ich, anders als zunächst geplant, nicht unterschrieben - mir ist relativ schnell klar geworden, daß ich mich in einer Firma dieser Größe nicht wohlfühlen werde.
 
 Für MySQL bin ich seit Ende des Jahres 2005 unterwegs gewesen - bis zu 180 Tage im Jahr.
@@ -34,7 +34,7 @@ Sondern mein Job war auch der eines Gesellen auf Wanderschaft, der andere Instal
 So konnte ich das lokale Projekt mit anderen Ansätzen anderswo in Beziehung setzen und dem Kunden so die notwendige Sicherheit und das notwendige Vokabular vermitteln, und auf Grundlage dieser Erfahrungen auf die Ecken und Kanten hinweisen, die auf dem Weg zum Projektende wahrscheinlich noch lauern würden.
 
 Vokabeln und Erfahrungsberichte sind tatsächlich sehr wichtig - bei vielen, was wir machen 
-[verstoßen wir gegen die Regeln]({% link _posts/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md %})
+[verstoßen wir gegen die Regeln]({{< ref "/content/posts/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}})
 traditionellen Datenbankdesigns und tun gegebenenfalls das Gegenteil davon. 
 Eine Liste wie die
 [eBay Best Practices](http://www.infoq.com/articles/ebay-scalability-best-practices)
@@ -58,7 +58,7 @@ Dies ist in vielen Fällen aufwendiger und schwerer zu kontrollieren als ein tra
 Im Job führt das oft zu Konflikten, wenn man auf einen traditionellen DBA oder Architekten trifft. 
 Dann ist es die Aufgabe des Consultants klarzumachen, daß dies eine valide Architektur ist, die sich oft bewiesen hat, ja daß es sogar die einzige Architektur ist, die sich auf globaler Skala unter allen wirklich großen Systemen durchgesetzt hat.
 Das, was traditionelle Architekturen tun ist gut und richtig - wenn man Time To Market minimieren möchte und ein möglichst simpel erstellbares und debugbares System haben möchte.
-Wenn man aber die Größenordnung verlässt, in der man dieses Problem auf einer einzelnen Maschine abhandeln kann, dann setzen [physikalische Effekte ein]({% link _posts/2007-08-11-zehn-zentimeter.md %}), die es zwingend machen, diese einfache und leicht zu kontrollierbare Welt zu verlassen.
+Wenn man aber die Größenordnung verlässt, in der man dieses Problem auf einer einzelnen Maschine abhandeln kann, dann setzen [physikalische Effekte ein]({{< ref "/content/posts/2007-08-11-zehn-zentimeter.md" >}}), die es zwingend machen, diese einfache und leicht zu kontrollierbare Welt zu verlassen.
 
 Diesen Übergang zu lehren und Kunden durch diesen Übergang zu begleiten ohne daß die Kundensysteme dabei offline gehen mussten war oft genug meine Aufgabe und die meiner Kollegen.
 

@@ -262,4 +262,4 @@ With such a function we can do many things.
   that starts with a predetermined number of 0-bits. This is ideally
   possible only by brute-force testing all values for a solution.
 
-Continued in [Hashes in Structures]({% link _posts/2018-03-04-hashes-in-structures.md %})
+Continued in [Hashes in Structures]({{< ref "/content/posts/2018-03-04-hashes-in-structures.md" >}})

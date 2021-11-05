@@ -28,7 +28,7 @@ Different colors indicate different data centers or availability zones.
 
 Leaf replicas (and the Primary) register themselves with a Zookeeper when they are ready to serve traffic. The Zookeeper organizes replicas in the same availability zone in a pool, and offers that pool to clients.
 
-Clients subscribe to pool changes in the Zookeeper. On change, they get notified and [atomically]({% link _posts/2018-11-29-but-is-it-atomic.md %}) dump the pool to a file on disk. That way, when Zookeeper is unavailable due to Zk internal voting or realignment, the clients still have a roster of endpoints to choose from. Also, they do not have to ask the Zk on each connect, only on each change.
+Clients subscribe to pool changes in the Zookeeper. On change, they get notified and [atomically]({{< ref "/content/posts/2018-11-29-but-is-it-atomic.md" >}}) dump the pool to a file on disk. That way, when Zookeeper is unavailable due to Zk internal voting or realignment, the clients still have a roster of endpoints to choose from. Also, they do not have to ask the Zk on each connect, only on each change.
 
 Some replication hierarchies see use from multiple applications: They are not single tenant, but multiple applications from different teams use the database as a shared data source, and as a way to communicate. That is, because historically there was only a single application, and a single schema, and then we grew and split things off.
 
@@ -52,7 +52,7 @@ Originally, the company ran on Postgres, over 20 years ago. Back then Postgres c
 
 The segmentation of this particular replication hierarchy into pools is not visible within Orchestrator, only by dumping Zk.
 
-We use MySQL in a [memory saturated]({% link _posts/2021-03-12-memory-saturated-mysql.md %}) setup where possible. As a result there is no additional caching layer between the database and the application – MySQL can use memory and serve results just as fast as Memcache, when you ask it Memcache complexity questions. The boundary between Memcache level queries and true SQL is pretty fluid that way, and you do not have to deal with cache invalidation, cache representation issues and many other things that get in the way. Also, unlike a traditional caching layer, MySQL has a restart and warmup concept, so this operational aspect is also taken care of.
+We use MySQL in a [memory saturated]({{< ref "/content/posts/2021-03-12-memory-saturated-mysql.md" >}}) setup where possible. As a result there is no additional caching layer between the database and the application – MySQL can use memory and serve results just as fast as Memcache, when you ask it Memcache complexity questions. The boundary between Memcache level queries and true SQL is pretty fluid that way, and you do not have to deal with cache invalidation, cache representation issues and many other things that get in the way. Also, unlike a traditional caching layer, MySQL has a restart and warmup concept, so this operational aspect is also taken care of.
 
 Instances currently have a livetime of at most 60 days, and we are targeting a recycle time of less than 30 days. Also, the actual number of instances varies depending on the outcome of automated load tests in production and the traffic prediction. That leads to a pretty dynamic environment, but that is easily taken care of by the Zk based discovery, the replication tree management done with Orchestrator and the automated provisioning.
 
@@ -146,7 +146,7 @@ In clouds, private and public, cost is suddenly an issue. The cost of RDS instan
 
 Right sizing instances is a need that everybody should have, but for some reason for example working set sizes are not being discussed a lot. What Brendan Gregg did in general [WSS](http://www.brendangregg.com/wss.html) work is from six years ago and pretty orphaned. It needs a lot of work to be runnable on modern kernels and safely in production in an automated way.
 
-MySQL itself, with all the performance schema instrumentation, provides no easy way to count the number of buffer pool pages touched in the large *x* seconds, or rather a buffer pool access trail analogous to blktace, so that could could bucketize that analogous to the [LBA access histograms]({% link _posts/2021-02-25-mysql-from-below.md %}).
+MySQL itself, with all the performance schema instrumentation, provides no easy way to count the number of buffer pool pages touched in the large *x* seconds, or rather a buffer pool access trail analogous to blktace, so that could could bucketize that analogous to the [LBA access histograms]({{< ref "/content/posts/2021-02-25-mysql-from-below.md" >}}).
 
 I don't know why that is, but with all the cost pressure I'd have expected more prior art on this.
 

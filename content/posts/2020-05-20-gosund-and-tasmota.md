@@ -8,7 +8,7 @@ tags:
 - home automation
 title: Gosund and Tasmota
 ---
-(continued from [Plugs with Wifi]({% link _posts/2020-05-12-plugs-with-wifi.md %})) So the Gosund plugs came, as did the Raspi 4. I did cancel the Shelly plug and decomissioned the TP-Link Kaka, because Tasmota on Gosund is awesome and the Gosund hardware is dirt cheap.
+(continued from [Plugs with Wifi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}})) So the Gosund plugs came, as did the Raspi 4. I did cancel the Shelly plug and decomissioned the TP-Link Kaka, because Tasmota on Gosund is awesome and the Gosund hardware is dirt cheap.
 
 ![](/uploads/2020/05/tasmota-grafana.jpg)
 

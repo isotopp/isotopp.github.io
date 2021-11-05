@@ -52,5 +52,5 @@ sinnlosen Frust.
 
 Können wir bitte nächstes Jahr was sinnvolles machen?
 
-([Cyborg]({% link _posts/2008-08-29-cyborg.md %}), 
-[Cyborg]({% link _posts/2009-10-09-internet-und-produktivit-t-aus-der-sicht-eines-cyborgs.md %}))
+([Cyborg]({{< ref "/content/posts/2008-08-29-cyborg.md" >}}), 
+[Cyborg]({{< ref "/content/posts/2009-10-09-internet-und-produktivit-t-aus-der-sicht-eines-cyborgs.md" >}}))

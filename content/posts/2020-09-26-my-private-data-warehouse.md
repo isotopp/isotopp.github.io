@@ -11,7 +11,7 @@ tags:
 - mysqldev
 title: Importing account statements and building a data warehouse
 ---
-This is an update and translation of a [much older article]({% link _posts/2006-07-23-mein-privates-datawarehouse-sparen-mit-mysql.md %}), which I wrote in German Language back then. I was experimenting with importing the account statements from my German Sparkasse, which at that time were being made available as a CSV.
+This is an update and translation of a [much older article]({{< ref "/content/posts/2006-07-23-mein-privates-datawarehouse-sparen-mit-mysql.md" >}}), which I wrote in German Language back then. I was experimenting with importing the account statements from my German Sparkasse, which at that time were being made available as a CSV.
 
 ## The initial data load
 
@@ -319,7 +319,7 @@ For example in a sales warehouse from a web shop, we are never interested in the
 
 This often leads to data duplication. In our example, the string "SCHECK IN CENTER KA DURLACH" is repeated 36 times. For the amount of data shown in our example this does not matter.
 
-Even in the one million rows example in [Coding fields for great profit]({% link _posts/2020-09-18-mysql-encoding-fields-for-great-profit.md %}) the gain is not critial, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.
+Even in the one million rows example in [Coding fields for great profit]({{< ref "/content/posts/2020-09-18-mysql-encoding-fields-for-great-profit.md" >}}) the gain is not critial, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.
 
 ### The Star and the Snowflake
 
@@ -383,7 +383,7 @@ Fact tables in the data warehouse have a time dimension, and as time passes, the
 
 Queries to the data warehouse table are often time bounded ("How did sales change in the last 2 years") and binned by - among other things - a time dimension ("How did demand change month-over-month", "Which of our products are seasonal?").
 
-Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL [when using partitions]({% link _posts/2020-09-24-mysql-deleting-data.md %}).
+Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL [when using partitions]({{< ref "/content/posts/2020-09-24-mysql-deleting-data.md" >}}).
 
 In data warehouses, partitions are usually on a time value as the first dimension. That is, we partition our data set by year, month or day and we delete data by dropping old partitions. This leaves all internal B-Trees in all the partitions subtables untouched and as they have been after the import, optimization and compression.
 

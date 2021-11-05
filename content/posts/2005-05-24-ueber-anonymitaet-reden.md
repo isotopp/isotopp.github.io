@@ -65,7 +65,7 @@ aufgegliedert werden.
 
 Ein Aspekt, den das Papier nicht diskutiert, ist die Qualität von
 Pseudonymen innerhalb desselben Namensraumes: Eine
-[IP-Nummer ist zum Beispiel ein Pseudonym]({% link _posts/2005-05-23-identifizierung-durch-ip.md %})
+[IP-Nummer ist zum Beispiel ein Pseudonym]({{< ref "/content/posts/2005-05-23-identifizierung-durch-ip.md" >}})
 unter dem ein Benutzer im Internet agiert. Aus der IP-Nummer selber können
 aber zunächst keine Eigenschaften des Pseudonyms abgeleitet werden: Es ist
 nicht bekannt, ob die IP-Nummer eine Person oder eine Gruppe von Personen

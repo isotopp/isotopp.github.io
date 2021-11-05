@@ -49,7 +49,7 @@ Also, a location such as `/tmp` or any other world-writeable directory would be 
 
 ## Using data dump and load programs instead
 
-We spoke about dumping a schema into CSV files in [Export the entire database to CSV]({% link _posts/2020-06-20-export-the-entire-database-to-csv.md %}) already.
+We spoke about dumping a schema into CSV files in [Export the entire database to CSV]({{< ref "/content/posts/2020-06-20-export-the-entire-database-to-csv.md" >}}) already.
 
 To complete the discussion we need to provide a way to do the inverse and load data from a CSV file into a table.
 

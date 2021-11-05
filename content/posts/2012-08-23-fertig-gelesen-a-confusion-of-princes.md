@@ -35,6 +35,6 @@ Ausbildung ihn ahnen ließ.
 wunderbare Space Opera, die alles hat, was man von dem Genre erwarten würde. 
 Entsprechend dem Genre "Space Opera" ist das Universum schillernd und
 überlebensgroß, und es gibt viel Fi und wenig Sci.  Nach dem 
-[How to live safely in a science fictional universe]({% link _posts/2012-08-22-fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.md %})
+[How to live safely in a science fictional universe]({{< ref "/content/posts/2012-08-22-fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.md" >}})
 war das genau die richtige Erholung.
 

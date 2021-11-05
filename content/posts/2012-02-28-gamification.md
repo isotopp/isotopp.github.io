@@ -90,7 +90,7 @@ offensichtlich zur Ausbeutung von Schwächen der Spielregeln gemacht werden,
 sind ungültig, auch wenn sie nach den Regeln legal sind.").
 
 Am Ende artet das Ganze in eine Art 
-[NOMIC]({% link _posts/2011-06-05-die-nomic-spieler.md %})-Partie
+[NOMIC]({{< ref "/content/posts/2011-06-05-die-nomic-spieler.md" >}})-Partie
 aus, weil in jeder Gamification die Ziele der realen Welt und der
 spielerischen Verpackung niemals perfekt übereinstimmen.  In dem Moment wo
 man ernsthafte Spieler hat, die das Spiel gewinnen wollen, anstatt sich mit

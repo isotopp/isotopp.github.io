@@ -8,7 +8,7 @@ tags:
 title: MySQL and UUIDs
 ---
 
-In [ALTER TABLE for UUID]({% link _posts/2020-09-22-alter-table-for-uuid.md %}) we discuss currently proper way to store and handle UUID in MySQL. Currently it works, even in a performant way, but it still hurts. It should not.
+In [ALTER TABLE for UUID]({{< ref "/content/posts/2020-09-22-alter-table-for-uuid.md" >}}) we discuss currently proper way to store and handle UUID in MySQL. Currently it works, even in a performant way, but it still hurts. It should not.
 
 ## Definition of UUID
 
@@ -89,7 +89,7 @@ Random UUIDs are completely random. There is nothing to optimize for MySQL here.
 
 Neither is a good choice to use as a kind of application controlled distributed primary key.
 
-Based on the reasoning in [ALTER TABLE for UUID]({% link _posts/2020-09-22-alter-table-for-uuid.md %}), Java developers that are using UUID for this purpose would be well advised to implement and use a Type 1 UUID. It seems that such an implementation is not available by default as part of `java.lang.util`, but [other implementations exist](https://stackoverflow.com/questions/18244897/how-to-generate-time-based-uuids).
+Based on the reasoning in [ALTER TABLE for UUID]({{< ref "/content/posts/2020-09-22-alter-table-for-uuid.md" >}}), Java developers that are using UUID for this purpose would be well advised to implement and use a Type 1 UUID. It seems that such an implementation is not available by default as part of `java.lang.util`, but [other implementations exist](https://stackoverflow.com/questions/18244897/how-to-generate-time-based-uuids).
 
 ## IS_UUID() function
 

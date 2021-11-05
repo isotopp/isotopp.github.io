@@ -12,7 +12,7 @@ tags:
 title: Wieso wir Helden sein wollen
 ---
 Vor drei Jahren schrieb ich etwas zu 
-[Echten Helden]({% link _posts/2007-09-07-echte-helden.md %})
+[Echten Helden]({{< ref "/content/posts/2007-09-07-echte-helden.md" >}})
 und daß das Wunder unserer Zeit darin liegt, daß es leichter denn je ist,
 ein Held zu werden, indem man einfach etwas tut und dadurch die Welt
 fundamental verändert.

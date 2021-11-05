@@ -11,7 +11,7 @@ title: 'Fertig gelesen: The Witcher'
 ---
 So, Netflix' "[The Witcher](https://www.netflix.com/nl-en/title/80189685)" was weird, and could not decide what it wanted to be: A "Hercules Legenday Journey's"-like half-comedy, half-camp series, or something else, darker and denser, with more story and background. It hinted at a better story, better told, that did not make it into the final product, and died somewhere between the scriptwriting and the cutting table.
 
-Investigating, I got myself the equivalent of the [Witcher Boxed Set](https://www.amazon.de/Witcher-Boxed-Set-Destiny-Contempt/dp/1473232279) on the Kindle and started reading. And indeed, just as with [Conan, the Barbarian]({% link _posts/2021-04-07-fertig-gelesen-conan-the-barbarian.md %}), the book is nothing like the film.
+Investigating, I got myself the equivalent of the [Witcher Boxed Set](https://www.amazon.de/Witcher-Boxed-Set-Destiny-Contempt/dp/1473232279) on the Kindle and started reading. And indeed, just as with [Conan, the Barbarian]({{< ref "/content/posts/2021-04-07-fertig-gelesen-conan-the-barbarian.md" >}}), the book is nothing like the film.
 
 We get indeed a dense and increasingly dark story, the story of Geralt and Jennifer, both remnants from a time gone by, and Ciri, the product of an age-old arrangement of breeding and selection, gone wrong in the last few steps, all of them fighting for freedom of will and their choice in life, and ultimately failing.
 

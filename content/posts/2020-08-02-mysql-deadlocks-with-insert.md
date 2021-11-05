@@ -66,7 +66,7 @@ Or, if they understand what goes on with the database, to map this to the code.
 
 In this case it is solvable, though. The `isolation = Isolation.SERIALIZABLE` is the culprit here.
 
-So when we spoke about [transactions and isolation levels]({% link _posts/2020-07-29-mysql-transactions-the-logical-view.md %}) previously, I made the decision to leave the fourth and most useless isolation level out of the picture: `SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`. [The manual says](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html#isolevel_serializable):
+So when we spoke about [transactions and isolation levels]({{< ref "/content/posts/2020-07-29-mysql-transactions-the-logical-view.md" >}}) previously, I made the decision to leave the fourth and most useless isolation level out of the picture: `SET TRANSACTION ISOLATION LEVEL SERIALIZABLE`. [The manual says](https://dev.mysql.com/doc/refman/8.0/en/innodb-transaction-isolation-levels.html#isolevel_serializable):
 
 >  `SERIALIZABLE`
 > 

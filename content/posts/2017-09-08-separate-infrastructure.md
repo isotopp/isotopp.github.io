@@ -74,7 +74,7 @@ that only happens with separated biking infrastructure.
 Biking infrastructure is not just separated bike paths. It also includes
 ways of crossing roads in a safe way. A lot has been learned about this in
 the last 25 years - see 
-[this article in my blog]({% link _posts/2017-03-13-we-learned-a-few-things-about-cycle-path-design-in-the-last-25-years.md %})
+[this article in my blog]({{< ref "/content/posts/2017-03-13-we-learned-a-few-things-about-cycle-path-design-in-the-last-25-years.md" >}})
 
 Ideally, a bike path crosses the road on a bridge 
 ([N205 near Vijfhuizen](https://goo.gl/maps/qS68d34Edop)) or in a tunnel 

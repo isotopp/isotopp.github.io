@@ -222,7 +222,7 @@ There is probably little chance to run the "2000 commit/s" workload class in a s
 
 Both systems max out at around 20000 commit/s when run in their respective "ideal" mode, which happens to be the commit latency to a single flash drive.
 
-Interestingly, [NVME does not matter much here]({% link _posts/2019-06-13-adventures-in-storageland.md %}): NVME can offer 40x more IOPS than SATA SSD, but individual commits will still be at about the same speed as with SATA. You need 40x parallel access to eat all the buffet on offer.
+Interestingly, [NVME does not matter much here]({{< ref "/content/posts/2019-06-13-adventures-in-storageland.md" >}}): NVME can offer 40x more IOPS than SATA SSD, but individual commits will still be at about the same speed as with SATA. You need 40x parallel access to eat all the buffet on offer.
 
 To drive Ceph to 20.000 IOPS, you will have to run 16 threads at a queue depth of 2 (or 32 threads at queue depth 1) consistently, feeding all the driver queues in parallel. This is not a kind of workload a transactional system can easily produce.
 

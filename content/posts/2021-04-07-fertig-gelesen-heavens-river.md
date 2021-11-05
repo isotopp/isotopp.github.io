@@ -15,9 +15,9 @@ title: 'Fertig gelesen: Heaven''s River'
 
 Previously in the Bobiverse:
 
-- [We are Legion (We are Bob)]({% link _posts/2017-03-02-fertig-gelesen-we-are-legion-we-are-bob.md %})
-- [For We Are Many]({% link _posts/2017-07-28-fertig-gelesen-for-we-are-many.md %})
-- [All These Worlds]({% link _posts/2017-11-06-fertig-gelesen-all-these-worlds.md %})
+- [We are Legion (We are Bob)]({{< ref "/content/posts/2017-03-02-fertig-gelesen-we-are-legion-we-are-bob.md" >}})
+- [For We Are Many]({{< ref "/content/posts/2017-07-28-fertig-gelesen-for-we-are-many.md" >}})
+- [All These Worlds]({{< ref "/content/posts/2017-11-06-fertig-gelesen-all-these-worlds.md" >}})
 
 Bob Johannson is a successful software developer, and cashes out. Then he dies, becomes a sentient spaceship and von Neumann probe, and then earth is almost destroyed in a war. Bob moves on, doing the von Neumann thing, and plundering the resources of foreign star systems makes more Bobs.
 

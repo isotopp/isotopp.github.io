@@ -79,7 +79,7 @@ A rack full of Hadoop servers
 
 These machines clock in at between 200-350W per server, and the
 power consumption is very 
-[much dependent on what the machine is doing]({% link _posts/2017-07-19-threads-vs-watts.md %}).
+[much dependent on what the machine is doing]({{< ref "/content/posts/2017-07-19-threads-vs-watts.md" >}}).
 I can make these devices use up to 400W using
 [mprime95](https://www.mersenne.org/download/) in torture test
 mode.

@@ -12,7 +12,7 @@ tags:
 title: Urteilsbegründung zu GPL in Deutschland vor Gericht durchgesetzt
 ---
 Nachtrag zu
-[GPL in Deutschland vor Gericht durchgesetzt]({% link _posts/2004-04-15-gnu-gpl-in-deutschland.md %}):
+[GPL in Deutschland vor Gericht durchgesetzt]({{< ref "/content/posts/2004-04-15-gnu-gpl-in-deutschland.md" >}}):
 
 - [Harald Weltes Blog](http://gnumonks.org/~laforge/weblog/2006/09/22#20060922-dlink-verdict) zum Thema
 - [gpl-violations.org Press Release](http://gpl-violations.org/news/20060922-dlink-judgement_frankfurt.html)

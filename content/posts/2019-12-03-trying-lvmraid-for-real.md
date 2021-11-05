@@ -8,7 +8,7 @@ tags:
 - erklaerbaer
 title: Trying lvmraid for real
 ---
-So after testing [LVM Raid]({% link _posts/2019-12-02-cloning-and-splitting-logical-volumes.md %})
+So after testing [LVM Raid]({{< ref "/content/posts/2019-12-02-cloning-and-splitting-logical-volumes.md" >}})
 in princple, I have been trying it on some real hardware to see
 what happens. The idea was to estimate if it scales and if not,
 how it doesn't. I was expecting to run into all kinds of obscure

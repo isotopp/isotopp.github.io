@@ -27,7 +27,7 @@ Plotdevices ihres Schiffes so riggen, daß sie im Swingby um eine Sonne in
 die reale Realität katapultiert würden.  Wo sie sich dann bei den Autoren
 bitterlich über die Ungerechtigkeiten ihrer Welt beschweren würden.
 
-Scalzi schafft das, was [Charles Yu]({% link _posts/2012-08-22-fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.md %})
+Scalzi schafft das, was [Charles Yu]({{< ref "/content/posts/2012-08-22-fertig-gelesen-how-to-live-safely-in-a-science-fictional-universe.md" >}})
 verreißt: Er kombiniert Klischees, wilde Ideen und ergreifende Schicksale
 auf eine Weise, die fesselnd erzählt ist und die das _Neue_ an der Idee in
 Szene setzt.  Und er schafft es, seinen wahnsinnigen Ritt von einem

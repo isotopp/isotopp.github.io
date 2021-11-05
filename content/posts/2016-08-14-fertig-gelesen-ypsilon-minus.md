@@ -21,7 +21,7 @@ Und so kommt es, daß in Ypsilon minus alle Bürger halb automatisch, halb manue
 
 Ben ist ein R - "Ben Erman" - und ein Rechercheur, der Daten für die Bewertung von Menschen zusammenträgt und erfaßt. Eines Tages bekommt er in einer  PK Dick-haften Wendung ("A Scanner Darkly" erscheint aber erst ein Jahr später, 1977) den Auftrag, sich selbst zu durchleuchten und zu recherchieren und stößt dabei auf eine Zeit von einigen Jahren, an die er sich nicht selbst erinnern kann und auf Leute, von denen er nicht weiß, daß er sie kennt.
 
-Es stellt sich heraus, daß die Welt nicht immer so war, wie sie war, und daß die jetzigen Machthaber vor nichts mehr Angst haben als vor dem Unberechnenbaren und dem nicht Vorhersagbaren (ein Thema, das viele Jahre später Tom Hillenbrand in [Drohnenland]({% link _posts/2014-08-17-fertig-gelesen-drohnenland.md %}) noch einmal aufgenommen hat).
+Es stellt sich heraus, daß die Welt nicht immer so war, wie sie war, und daß die jetzigen Machthaber vor nichts mehr Angst haben als vor dem Unberechnenbaren und dem nicht Vorhersagbaren (ein Thema, das viele Jahre später Tom Hillenbrand in [Drohnenland]({{< ref "/content/posts/2014-08-17-fertig-gelesen-drohnenland.md" >}}) noch einmal aufgenommen hat).
 
 Einen Scifi von 1976 in 2016 zu lesen ist gleichzeitig eine Reise in die Zukunft, in die Gegenwart und in die Vergangenheit, in die von Erman und in meine eigene. Ich habe beim besten Willen keine Idee, wie diese Geschichte auf Euch wirken wird, denn sie ist bei mir durch meine eigenen Kindheitserinnerungen gefärbt, aber… Hey, [Herbert W. Franke](https://de.wikipedia.org/wiki/Herbert_W._Franke). Es wird schon passen.
 

@@ -23,7 +23,7 @@ Epische, auf 10 Bände angelegte Hard-Scifi mit einer gewissen erzählerischen R
 
 "[Leviathan Wakes](http://www.amazon.de/dp/B004XCGKYQ)", James S.A. Corey, Euro 7.99
 
-- [Leviathan Wakes]({% link _posts/2016-02-28-fertig-gelesen-leviathan-wakes.md %})
-- [Caliban's War]({% link _posts/2016-02-28-fertig-gelesen-calibans-war.md %})
-- [Abbadon's Gate]({% link _posts/2016-02-28-fertig-gelesen-abbadons-gate.md %})
-- [Cibola Burn]({% link _posts/2016-02-28-fertig-gelesen-cibola-burn.md %})
+- [Leviathan Wakes]({{< ref "/content/posts/2016-02-28-fertig-gelesen-leviathan-wakes.md" >}})
+- [Caliban's War]({{< ref "/content/posts/2016-02-28-fertig-gelesen-calibans-war.md" >}})
+- [Abbadon's Gate]({{< ref "/content/posts/2016-02-28-fertig-gelesen-abbadons-gate.md" >}})
+- [Cibola Burn]({{< ref "/content/posts/2016-02-28-fertig-gelesen-cibola-burn.md" >}})
