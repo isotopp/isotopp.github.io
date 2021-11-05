@@ -4,7 +4,6 @@ date: "2011-12-05T20:05:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- bge
 - piraten
 - politik
 - wirtschaft
@@ -131,7 +130,7 @@ src='http://static8.businessinsider.com/image/4e94623c69bedd814c000005-590/corpo
 Zu dieser Grafik gibt es eine 
 [Schwestergrafik bei Alternet](http://www.alternet.org/occupywallst/152811/the_shocking%2C_graphic_data_that_shows_exactly_what_motivates_the_occupy_movement_):
 
-<img src='http://images.alternet.org/images/managed/storyimages_1319223516_screenshot20111020at11.27.19am.png' />
+<img src='http://images.alternet.org/images/managed/storyimages_1319223516_screenshot20111020at11.27.19am.png' alt="" />
 
 Die Produktivität der Menschen, die Arbeit haben, steigt an, aber sie
 verdienen dafür nicht mehr. Stattdessen steigen die Gewinne der Unternehmen

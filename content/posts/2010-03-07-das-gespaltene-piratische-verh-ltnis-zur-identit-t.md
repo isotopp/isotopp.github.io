@@ -78,7 +78,7 @@ zwei Dekaden Onlineerfahrung so meine Probleme habe, mit einem "Horst Acker"
 oder einem "Phil Antrop" über Politik oder politische Personen zu reden.
 Politik sollte mit offenem Visier gemacht werden, denn es geht um Menschen
 und für was sie stehen. Anders ausgedrückt: Ich habe einen Wunsch nach
-[Verkettbarkeit]({% link _posts/2005-05-24-ber-anonymit-t-reden.md %})
+[Verkettbarkeit]({% link _posts/2005-05-24-ueber-anonymitaet-reden.md %})
 weil ich, wenn es um Politik geht, einen Wunsch nach
 Reputation habe. Ich will wissen, was ich erwarten kann, wenn ich dieser Person
 vertraue. Denn in der Politik

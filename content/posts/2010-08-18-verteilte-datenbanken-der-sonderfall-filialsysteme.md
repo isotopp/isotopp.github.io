@@ -5,7 +5,7 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - mysql
-- datenbanken
+- database
 - lang_de
 title: 'Verteilte Datenbanken: Der Sonderfall Filialsysteme'
 ---

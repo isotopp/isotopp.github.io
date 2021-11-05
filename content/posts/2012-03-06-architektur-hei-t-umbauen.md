@@ -6,7 +6,6 @@ published: true
 tags:
 - computer
 - development
-- enterprise
 - software
 - lang_de
 title: Architektur heißt umbauen

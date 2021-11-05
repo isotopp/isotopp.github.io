@@ -8,8 +8,7 @@ tags:
 - book
 - review
 - lang_de
-title: 'Fertig gelesen: The Origin Of Wealth, Growing Artificial Societies, The Quark
-  and the Jaguar'
+title: 'Fertig gelesen: The Origin Of Wealth, Growing Artificial Societies, The Quark and the Jaguar'
 ---
 ![](/uploads/origin_of_wealth.jpg)
 

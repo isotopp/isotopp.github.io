@@ -4,14 +4,14 @@ date: "2007-08-11T21:06:08Z"
 feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
-- datenbanken
+- database
 - mysql
 - performance
 - lang_de
 title: Zehn Zentimeter
 ---
 > Kristian, wenn Du über Performance redest, dann redest Du immer von
-> [verteilten, asynchronen Systemen]({% link _posts/2006-07-30-leben-mit-fehlern-der-schl-ssel-zum-scaleout.md %}).
+> [verteilten, asynchronen Systemen]({% link _posts/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md %}).
 > Verteilte, asynchrone Systeme sind doof, schwer zu programmieren und
 > laufen der Theorie zuwider, die ich an der Uni gelernt habe. Ich warte
 > glaube ich lieber auf schnellere Prozessoren.

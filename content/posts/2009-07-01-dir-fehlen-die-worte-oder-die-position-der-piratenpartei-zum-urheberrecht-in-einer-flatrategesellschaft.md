@@ -8,8 +8,7 @@ tags:
 - media
 - piraten
 - lang_de
-title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberrecht
-  in einer Flatrategesellschaft"'
+title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberrecht in einer Flatrategesellschaft"'
 ---
 > Ich bin Mitglied in der Piratenpartei, aber dieser Text hier ist meine
 > Sicht auf das Thema und nicht eine abgestimmte Position der Piratenpartei.

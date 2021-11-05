@@ -6,7 +6,7 @@ published: true
 status: publish
 tags:
 - erklaerbaer
-- datenbanken
+- database
 - performance
 - testing
 - lang_en

@@ -4,7 +4,6 @@ date: "2010-02-25T11:47:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- acta
 - copyright
 - free software
 - politik

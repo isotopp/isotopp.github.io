@@ -4,7 +4,7 @@ date: "2012-08-28T10:01:00Z"
 feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
-- datenbanken
+- database
 - mysql
 - performance
 - testing
@@ -53,7 +53,7 @@ wird nicht unbedingt sinnvoll auf das Produktivsystem übertragbar sein.
 Ein klassisches Beispiel ist etwa der 
 ![Datenbank-Contest](http://www.heise.de/ct/artikel/Gute-Nachbarschaft-290110.html)
 der c't von Mitte/Ende 2005 gewesen (Die Auflösung ist 
-[leider kostenpflichtig](//www.heise.de/artikel-archiv/ct/2006/13/190).
+[leider kostenpflichtig](https://www.heise.de/artikel-archiv/ct/2006/13/190).
 In diesem Benchmark wird die Datenbankstruktur eines CD-Verleih/Verkaufs
 simuliert, jedoch werden in der Lastgenerierung des Benchmarks alle Titel
 gleichverteilt nachgefragt.  Es gibt also keine Bestseller und keine

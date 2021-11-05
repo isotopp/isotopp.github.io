@@ -6,6 +6,7 @@ published: true
 tags:
 - mysql
 - nosql
+- database
 - lang_de
 title: Ein paar Gedanken zum Thema NoSQL
 ---

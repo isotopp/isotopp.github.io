@@ -7,6 +7,8 @@ tags:
 - review
 - media
 - book
+- c
+- unix
 title: 'Fertig gelesen: UNIX: A History and a Memoir'
 ---
 
@@ -18,7 +20,7 @@ The memoir of Brian Kernighan, and the story of how UNIX came to be and what wor
 *"[UNIX: A History and a Memoir](https://www.amazon.de/UNIX-History-English-Brian-Kernighan-ebook/dp/B07ZQHX3R1)", Brian Kernighan*
 
 Kernighan takes us through the history and the setting of Bell Labs, why it existed and what it did.
-He explains the hardware of the time, in terms of size, power and capabilties, and why Bell did get involved into writing an Operating System, and the failure of Multics.
+He explains the hardware of the time, in terms of size, power and capabilities, and why Bell did get involved into writing an Operating System, and the failure of Multics.
 Unix inception and its co-evolution with the C language was a kind of response to the Multics project, at the same time pioneering novel ideas and taking tested salvageable concepts from Multics, making something new and much more useful.
 
 While he roughly follows the timeline of Unix releases, Kernighan takes short detours, including mini-biographies of his colleagues and the influence they had on the design of the system and the ideas embodied in it.

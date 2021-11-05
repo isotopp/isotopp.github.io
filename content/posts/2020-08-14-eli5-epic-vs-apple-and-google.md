@@ -7,7 +7,7 @@ tags:
 - gaming
 - apple
 - google
-- epic games
+- erklaerbaer
 title: 'ELI5: Epic vs Apple and Google'
 ---
 [@jpmens asked](https://twitter.com/jpmens/status/1294156181100007425) on Twitter:
@@ -54,6 +54,6 @@ Apple banned Fortnite from the App Store.
 
 Epic Games is not exactly an underdog, even if they position themselves as this in this corporate conflict - they are valued a 17.3 bn USD company, 50% held by Sweeney. But it takes an underdog this size to have a chance to take a bite of out Apple's Lawyers.
 
-Them winning this is an important step in cracking the App Store monopoly and turning Apple into a better platform. Other companies have taken notice and positioned themselves. Notably all of [Match Group](en.wikipedia.org/wiki/Match_Group), the owner and maker of Tinder, have sided themselves with Epic in this case.
+Them winning this is an important step in cracking the App Store monopoly and turning Apple into a better platform. Other companies have taken notice and positioned themselves. Notably all of [Match Group](https://en.wikipedia.org/wiki/Match_Group), the owner and maker of Tinder, have sided themselves with Epic in this case.
 
 It is noteworthy that Epic also has the same conflict going on with Google - they did exactly the same thing on the Google Play store, were also delisted yesterday, and are also [suing Google](https://www.theverge.com/2020/8/13/21368363/epic-google-fortnite-lawsuit-antitrust-app-play-store-apple-removal) just as they are [suing Apple](https://www.engadget.com/fortnite-maker-epic-games-sues-apple-195415590.html). This is interesting, because OnePlus and LG have been in talks with Epic about preloading Fortnite on the Phone (Ugh, ultimate bloatware!), which is now impossible, because Google prevents this from happening. 

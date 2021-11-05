@@ -20,7 +20,7 @@ und der Tweet verlinkte einen (inzwischen nicht mehr existierenden) Artikel beim
 > Alle Fakten auf den Tisch zu legen und zu fragen: 
 > Warum kam es dazu? 
 > Wo liegen die Probleme?
-> Und daraus musst du dann für das nächste mal lernen.
+> Und daraus musst du dann für das nächste Mal lernen.
 > 
 > Und das ist sehr schwer, wenn du in einem Konglomerat aus Dienstleister und Konsortien sitzt. 
 > Da sind nämlich Verträge und Vertragsstrafen im Weg. 
@@ -44,24 +44,24 @@ Das Projekt wird dadurch schwieriger steuerbar und langsamer, weil jede Anpassun
 
 Generell steigen die Projektrisiken mit jeder administrativen Grenze überproportional an:
 hier mein Amt, dort Dein Dienstleister.
-Das ist so, weil sich Zeitverzögerungen auf dem Dienstweg, Nachrichtenverfälschungen durch Stille Post und dergleichen mehr akkumulieren.
+Das ist so, weil sich Verzögerungen auf dem Dienstweg, Nachrichtenverfälschungen durch Stille Post und dergleichen mehr akkumulieren.
 
-Mit einer steigenden Anzahl von Projektpartnern ("administrativen Einheiten") steigen auch die Kommunikationsbeziehungen, der Verhandlungsbedarf, und die auszugleichenden Interessen an: ($ n * (n-1)/2 -> n^2 $).
+Mit einer steigenden Anzahl von Projektpartnern ("administrativen Einheiten") steigen auch die Kommunikationsbeziehungen, der Verhandlungsbedarf und die auszugleichenden Interessen an: (n * (n-1)/2 → n^2).
 
 ![](/uploads/2021/10/kommunikations-explosion.png)
 
 *Anzahl der Kommunikationsbeziehungen bei 3 (3), 4 (6), 5 (10) und 6 (15) Projektpartnern.*
 
-Das ist einer der Hauptgründe für Kostenexplosionen und Zeitverzögerungen bei solchen Projekten:
+Das ist einer der Hauptgründe für Kostenexplosionen und Verzögerungen bei solchen Projekten:
 Vertragsstrukturen und Kommunikations- und Verhandlungsaufwand machen es schwer, die Ziele aller Projektbeteiligten kohärent zu halten und das Projekt schnell auf geänderte Anforderungen anzupassen.
 
 ## Bärcode
 
-Nun mache ich diese IT-Sache schon mehr als 35 Jahre, und dort ist es meiner Erfahrung nach *immer* so, daß sich die Anforderungen im Laufe des Projektes ändern und man dann das Projekt anpassen muß.
+Nun mache ich diese IT-Sache schon mehr als 35 Jahre, und dort ist es meiner Erfahrung nach *immer* so, daß sich die Anforderungen im Laufe des Projektes ändern und man dann das Projekt anpassen muss.
 
 [![](/uploads/2021/10/baercode.jpg)](https://baercode.de)
 
-Selbst bei so simplen Sachen wie [baercode.de](https://baercode.de), den ich ehrenamtlich beratend begleitet habe, und die technisch korrekt und im Zeit- und Kostenbudget waren ist es so, daß die zusammenbrechende Kontrollpraxis zeigt, daß man einen wirksamen Test- und Covid-Paß eigentlich grundsätzlich anders gestalten muß.
+Selbst bei so simplen Sachen wie [baercode.de](https://baercode.de), den ich ehrenamtlich beratend begleitet habe, und die technisch korrekt und im Zeit- und Kostenbudget waren ist es so, daß die zusammenbrechende Kontrollpraxis zeigt, daß man einen wirksamen Test- und Covid-Pass eigentlich grundsätzlich anders gestalten muss.
 
 In einer weiteren Iteration (die nicht geplant ist) würde man grundsätzlich und viel aufwendiger an das Problem herangehen müssen.
 Das ist aber etwas, das zum Zeitpunkt des Requirement Engineerings nicht absehbar war.
@@ -77,8 +77,8 @@ In meinem Hauptberuf ist es so, daß mein Arbeitgeber deswegen unfertige Feature
 
 Es geht darum, die Requirements zu validieren. "Ist diese Idee wirklich geeignet, das Problem zu lösen?"
 
-Als Webanwendung und als Anwendung, die nicht mit hoheitlichen oder medizininschen Daten arbeitet sind wir da in einer privilegierten Position. 
-Wir können dann mit relativ wenig Aufwand früh experimentieren, solange wir uns aus PII und PCI raus halten.
+Als Webanwendung und als Anwendung, die nicht mit hoheitlichen oder medizinischen Daten arbeitet, sind wir da in einer privilegierten Position. 
+Wir können dann mit relativ wenig Aufwand früh experimentieren, solange wir uns aus PII und PCI heraushalten.
 
 ![](/uploads/2021/10/8-rollouts-2.png)
 
@@ -96,9 +96,9 @@ Entwickler arbeiten nur an Dingen, von denen wir wissen, daß sie Mehreinnahmen 
 Wir können dann den Aufwand beim Engineering gegen den Gewinn abwägen.
 
 Das geht nur im Haus. Das kann nicht outsourcen. Denn nur dann ist eine informale, enge Steuerung mit Umsetzungszeiten für Steuerungsinput im Bereich von Stunden möglich .
-Tagen oder gar Wochen würden jede Form von Experimentierung scheitern lassen.
+Tagen oder gar Wochen würden jede Form von Experimentieren scheitern lassen.
 
-## Insourcing und Outsourcing vs. Marktreife und Prozeßreife 
+## Insourcing und Outsourcing vs. Marktreife und Prozessreife 
 
 Expertise im Haus ist wichtig, um beurteilen zu können, was Dienstleister machen. Dan Luu hat dazu einen [interessanten Artikel](https://danluu.com/in-house/) geschrieben.
 
@@ -106,7 +106,7 @@ Eigene Experten sind jedoch noch wichtiger, wenn man neue Dinge ausprobiert, und
 
 ![](/uploads/2021/10/go-away-1.jpg)
 
-*Slideshare "[Go away or I will replace you with a very tiny shell script](https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script#12)", Marktreife und Prozeßreife*
+*Slideshare "[Go away or I will replace you with a very tiny shell script](https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script#12)", Marktreife und Prozessreife*
 
 Das ist auch alles kein Hexenwerk, sondern lange bekannt.
 
@@ -114,7 +114,8 @@ Wenn man neue, unerprobte Dinge macht, ist man im Chaotischen Quadranten des [Cy
 Dazu braucht man eine kleine Gruppe von Experten, die sich darauf konzentriert, Regeln und Gesetzmäßigkeiten ("überhaupt Practice") zu finden. 
 
 In der deutschen Pipeline ist das ein Uni-Projekt, in dem Professor/innen irgendwelche Ideen ausprobieren, von denen die Mehrheit auf irgendeine nicht offensichtliche Weise egal oder falsch ist.
-Aber das herauszufinden ist genau Sinn der Sache: die Mehrheit dieser Versuche scheitert, genau wie wir beim Requirements Engineering 19 von 20 Experimenten im Test scheitern sehen.
+Aber das herauszufinden ist genau Sinn der Sache: 
+Die Mehrheit dieser Versuche scheitert, genau wie wir beim Requirements Engineering 19 von 20 Experimenten im Test scheitern sehen.
 
 "Complex" ist der Engineering-Quadrant, in der wir versuchen, als funktionierend bekannte Grundideen hoch zu skalieren, und in der Masse anwendbar zu machen.
 Hier braucht es mehr als ein Team, mit einem der Theoretiker aus der vorigen Phase als Beratung und vielen Praktikern ("Ingenieuren") in den Teams, die immer noch so klein als möglich sein sollten.
@@ -128,9 +129,9 @@ Dabei kommen auch Dienstleister und deren Training ins Spiel.
 *Prozessreife: Ohne quantitative Metriken ist Outsourcing meist zum Scheitern verurteilt.*
 
 Das geht halt aber erst genau dann, wenn man Prozesse *mit Metriken* hat.
-Das bedeutet: wenn man Erfahrung hat, was man messen muß und wie - auf beiden Seiten der Vertragsgrenze.
+Das bedeutet: wenn man Erfahrung hat, was man messen muss und wie - auf beiden Seiten der Vertragsgrenze.
 
-Wenn der Prozeß noch nicht reif genug ist und man gar keine Metriken hat, ist Einigkeit zwischen Auftraggeber und -nehmer schwierig.
+Wenn der Prozess noch nicht reif genug ist und man gar keine Metriken hat, ist Einigkeit zwischen Auftraggeber und -nehmer schwierig.
 Dasselbe Problem hat man, wenn der Prozess noch zu schnell wächst, um ohne grundlegende Änderungen wiederholbar zu sein.
 
 Wenn man - aus welchem Grund auch immer - solche Metriken nicht hat, oder nicht haben *kann*, weil es noch nicht so weit ist, dann *kann man nicht outsourcen*, also keinen Dienstleister verwenden.
@@ -138,7 +139,7 @@ Wenn man - aus welchem Grund auch immer - solche Metriken nicht hat, oder nicht 
 Warum ist das so?
 
 Weil man gar keine Grundlage hat, auf der beide Parteien beurteilen können, was verkauft und was geliefert worden ist, und ob das so okay ist.
-Solange das Projekt oder Prozess-Produkt noch weich ist, weil es noch in der Forschungs- oder Engineering-Phase ist, kann man nicht richtig sinnvoll mit externer Expertise arbeiten, weil *niemand weiss wie es geht*.
+Solange das Projekt oder Prozess-Produkt noch weich ist, weil es noch in der Forschungs- oder Engineering-Phase ist, kann man nicht richtig sinnvoll mit externer Expertise arbeiten, weil *niemand weiß, wie es geht*.
 
 Dann ist Expertise *im Haus* absolut notwendig.
 
@@ -154,19 +155,19 @@ wenn irgendwo in einer gut geführten Softwarefirma eine Outage war, dann setzen
 
 Die Annahme ist, daß alle Beteiligten mit den besten Absichten und im Rahmen ihrer Fähigkeiten und zum Zeitpunkt der Entscheidung verfügbaren Informationen gehandelt haben.
 
-Wenn also die Produktion ausfällt, weil Du (aufgrund der Monitoringdaten, des Runbooks und Deiner Erfahrungen) angenommen hast, daß (A) der Fall war und deswegen (H) gemacht hast, aber in Wahrheit lag (B) vor und (H) hat alles gecrashed, ...
+Wenn also die Produktion ausfällt, weil Du (aufgrund der Monitoring-Daten, des Runbooks und Deiner Erfahrungen) angenommen hast, daß (A) der Fall war und deswegen (H) gemacht hast, aber in Wahrheit lag (B) vor und (H) hat alles gecrasht, ...
 
-- dann ist es ein Problem, wenn die Monitoringdaten zu langsam aufbereitet worden sind,
+- dann ist es ein Problem, wenn die Monitoring-Daten zu langsam aufbereitet worden sind,
 - wenn nie alle wichtigen Dinge gemessen worden sind,
 - wenn das Runbook unvollständig oder unklar ist, 
 - oder wenn Du unzureichend ausgebildet worden bist.
 
 Es ist außerdem zu prüfen, ob diese Entscheidung (H) zu machen überhaupt manuell zu treffen ist, und ob dann eine manuelle Handlung initiiert werden muss.
 
-Kurz: Der Blameless Postmortem konzentriert sich nicht darauf, *wer* die Produktion gecrashed hat, sondern welche Kette von Entscheidungen dazu geführt hat, dass die gerade Dienst habende Person die Produktion crashen musste.
+Kurz: Der Blameless Postmortem konzentriert sich nicht darauf, *wer* die Produktion gecrasht hat, sondern welche Kette von Entscheidungen dazu geführt hat, dass die gerade Dienst habende Person die Produktion crashen musste.
 
 So eine Diskussion über die Grenzen von Firmen, Verträgen, Statements of Work und mögliche Schadensersatzforderungen durchzuführen ist nahezu unmöglich, oder jedenfalls im Haus sehr viel einfacher.
 
 Wieder braucht es dazu aber auch in der öffentlichen Verwaltung eine andere Kultur:
-einen grundlegendem Wandel, ein Bekenntnis zu Offenheit, Transparenz, Kooperation und Open Source.
+einen grundlegenden Wandel, ein Bekenntnis zu Offenheit, Transparenz, Kooperation und Open Source.
 Solange sich das nicht ändert, wird sich die Tragödie vom Scheitern der Digitalisierung in der deutschen Verwaltung wieder und wieder und wieder wiederholen.

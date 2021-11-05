@@ -6,7 +6,7 @@ published: true
 status: publish
 tags:
 - media
-- drm
+- copyright
 - lang_en
 title: Why you can't have nice things…
 ---

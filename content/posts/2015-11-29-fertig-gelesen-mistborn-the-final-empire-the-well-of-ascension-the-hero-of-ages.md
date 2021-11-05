@@ -9,8 +9,7 @@ tags:
 - media
 - review
 - fantasy
-title: 'Fertig gelesen: Mistborn, The Final Empire, The Well of Ascension, The Hero
-  of Ages'
+title: 'Fertig gelesen: Mistborn, The Final Empire, The Well of Ascension, The Hero of Ages'
 ---
 Scadrial ist eine Fantasy-Welt, in der die Bösen™ gewonnen haben: Ein ständiger Ascheregen fällt auf die Welt, die ständig im Nebel liegt und in der alle Farbe und alles Grün durch ödes Braun ersetzt sind. Eine Kaste adeliger Magier beutet das seit Jahrhunderten unterdrückte Volk aus. Der Adel wird wiederum von den magisch aufgerüsteten Inquisitoren des unsterblichen Obermagiers, des Lord Ruler, kontrolliert und im Schach gehalten.
 

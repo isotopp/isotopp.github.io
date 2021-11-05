@@ -9,8 +9,7 @@ tags:
 - media
 - review
 - steampunk
-title: 'Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies
-  and Conspiracies)'
+title: 'Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies and Conspiracies)'
 ---
 Fertig gelesen: "Finishing School" Series (Etiquette & Espionage, Curtsies and Conspiracies), Gail Carriger
 

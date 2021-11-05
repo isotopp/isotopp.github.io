@@ -4,9 +4,9 @@ date: "2016-09-01T08:08:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
-- config management
 - computer
 - devops
+- talk
 title: Be simple. Be boring. Be obvious.
 ---
 On Core.Infra day, I was invited to speak. This is my talk. There were many like it, but this was mine.

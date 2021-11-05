@@ -4,7 +4,6 @@ date: "2006-11-01T12:37:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- authentication
 - datenschutz
 - identity
 - politik
@@ -30,7 +29,7 @@ Das Programm der Veranstaltung findet man im
 
 ![](/uploads/zorro.jpg)
 
-[Anonyme Kommunikation]({% link _posts/2005-05-24-ber-anonymit-t-reden.md %})
+[Anonyme Kommunikation]({% link _posts/2005-05-24-ueber-anonymitaet-reden.md %})
 ist in Zeiten der Vorratsdatenspeicherung wichtiger denn je. Sie ist auch
 eine Vorraussetzung für die Durchführung freier, gleicher und geheimer
 Wahlen etwa von Computern zu Hause. Ob und wie AN.ON/JAP nach dem Auslaufen

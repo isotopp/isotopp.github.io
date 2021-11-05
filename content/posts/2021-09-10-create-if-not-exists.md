@@ -85,7 +85,7 @@ In MySQL, a lot of things can be listed with `SHOW` commands, and all things can
 Apparently, a lot of things can not be listed using the `SHOW plural` syntax (`SHOW TABLES`, `SHOW DATABASES`).
 For a few things, a deviant syntax is supported (`SHOW PROCEDURE STATUS`) that also shows the definition of the thing.
 
-For other things you have to acces system tables.
+For other things you have to access system tables.
 These system tables seem to be spread around, some are in I_S (Tablespace), others in mysql.* (servers).
 
 Generally, MySQL seems to favor the syntax `SHOW CREATE thing` to show an SQL statement that would recreate the thing if I dropped it.

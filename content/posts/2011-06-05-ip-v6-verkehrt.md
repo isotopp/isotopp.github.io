@@ -47,7 +47,7 @@ Die Logik erschließt sich mir nicht. Wenn ich Anonymität haben will, dann
 Das wissen eben genau diese Datenschützer auch, haben sie doch selber
 [AN.ON]({% link _posts/2006-11-24-an-on.md %}) selbst betrieben
 und tor propagiert, und an Papieren über
-[Anonymitätdefinitionen]({% link _posts/2005-05-24-ber-anonymit-t-reden.md %})
+[Anonymitätdefinitionen]({% link _posts/2005-05-24-ueber-anonymitaet-reden.md %})
 mitgewirkt.
 
 Die Einlassungen von Herrn Caspar sind auf viele verschiedene Weisen

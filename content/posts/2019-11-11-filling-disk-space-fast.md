@@ -6,7 +6,7 @@ tags:
 - lang_en
 - computer
 - storage
-- datenbanken
+- database
 title: Filling disk space fast
 ---
 Some of the databases at work are a tad on the large side, in the high

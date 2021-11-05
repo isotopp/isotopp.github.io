@@ -7,8 +7,7 @@ tags:
 - politik
 - security
 - lang_de
-title: Was bedeutet eigentlich "Never check for an error condition you don't know
-  how to handle"
+title: Was bedeutet eigentlich "Never check for an error condition you don't know how to handle"
 ---
 Der Informatiker ist ein seltsames Wesen. In seiner Wissenschaft gibt es zum Beispiel ein paar Regeln, die beim ersten Mal gehört sehr seltsam klingen, die aber beim längeren Nachdenken und mit ein bischen Erklärung dazu Weisheiten enthalten, die manchmal auch außerhalb der Informatik von einigem Belang sein können.
 

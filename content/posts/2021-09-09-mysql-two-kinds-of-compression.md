@@ -23,7 +23,7 @@ On load, a second uncompressed page in the buffer pool is allocated, and the dat
 
 On write, the modified uncompressed page is recompressed and put back into the compressed buffer pool page.
 As this happens on write and not on checkpoint, this is not ideal for tables that are written to a lot.
-Compression and uncompression happen in the Query thread, that is, the thread of your connection, and therefore single-threaded.
+Compression and decompression happen in the Query thread, that is, the thread of your connection, and therefore single-threaded.
 
 If buffer pool space it tight, uncompressed pages can be evicted, and recreated as needed by decompressing them again.
 
@@ -32,7 +32,7 @@ This also leads to larger redo logs, which may need to be upsized to allow for t
 
 # Page Compression
 
-Page compresison was added to MySQL already in version 5.7.
+Page compression was added to MySQL already in version 5.7.
 It is a different way of handling compression of data in MySQL:
 A transformer stage is inserted into the IO handlers of MySQL, which on flush compressed a page as it is written out, and on read decompressed the data into the buffer pool page.
 This is much simpler approach that also interacts with a lot fewer parts of the server.
@@ -51,8 +51,8 @@ Old data stays uncompressed.
 In order to compress all pages in a table that has just been switched to page compression, run `OPTIMIZE TABLE` on it.
 This will recreate the table, using the new options.
 
-The write path for page level compression inserts itself into the [InnoDB page cleaners](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_page_cleaners).
-By default the number is 4, and there can be up to 64.
+The write-path for page level compression inserts itself into the [InnoDB page cleaners](https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_page_cleaners).
+By default, the number is 4, and there can be up to 64.
 If your database writes a lot to compressed tables, it may be useful to increase this number.
 Since compression uses CPU, it is not useful to set the number larger than the number of available cores.
 
@@ -136,5 +136,5 @@ On the other hand, this is 2021, and whoever is still running a database on HDD 
 
 # TL;DR
 
-Given all of the above, for my usage scenarios there is probably no use for table compression anywhere for any reason.
+Given all the above, for my usage scenarios there is probably no use for table compression anywhere for any reason.
 I should be using page compression everywhere where I need it.

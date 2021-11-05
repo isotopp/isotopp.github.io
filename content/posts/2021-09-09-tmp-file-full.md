@@ -51,7 +51,7 @@ At work, we configure this on our systems with a hard upper limit:
 innodb_temp_data_file_path=ibtmp1:12M:autoextend:max:100G
 ```
 
-This means you get a file, `ibtmp1`, in the data directory of MySQL with an initial size of 12 MB. This file is autoextended in increments up to a maximum size of 100 GB - in the default configuration it is not limited.
+This means you get a file, `ibtmp1`, in the data directory of MySQL with an initial size of 12 MB. This file is auto-extended in increments up to a maximum size of 100 GB - in the default configuration it is not limited.
 
 If you need more, you are very likely holding the database wrong.
 

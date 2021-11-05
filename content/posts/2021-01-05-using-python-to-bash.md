@@ -5,6 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
 - python
+- bash
 - devops
 title: Using Python to bash
 ---

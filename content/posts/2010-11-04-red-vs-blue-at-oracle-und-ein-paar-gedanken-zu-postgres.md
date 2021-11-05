@@ -6,6 +6,7 @@ published: true
 tags:
 - mysql
 - postgres
+- database
 - lang_de
 title: Red vs Blue at Oracle, und ein paar Gedanken zu Postgres
 ---

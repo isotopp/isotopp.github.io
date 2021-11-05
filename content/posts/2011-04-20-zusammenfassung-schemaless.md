@@ -5,7 +5,7 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - lang_de
-- datenbanken
+- database
 - mysql
 - nosql
 title: Zusammenfassung 'Schemaless'

@@ -58,7 +58,7 @@ mysql [localhost:8025] {msandbox} (performance_schema) > select sql_text from ev
 
 The comment has been stripped, you can still see the double spaces.
 
-Old fashioned SQL comments and shell comments seem to die already in the client:
+Old-fashioned SQL comments and shell comments seem to die already in the client:
 
 ```sql
 mysql [localhost:8025] {msandbox} (kris) > select -- keks
@@ -94,7 +94,7 @@ The annotations are preserved in the server and are being made available in some
 - While they exist, they can be accessed on the server side.
 
 The examples given are exactly my use-case:
-Transporting identifying information from the client into the sevrer, or injecting control information for a plugin from the client into the server in order to affect query processing in the server.
+Transporting identifying information from the client into the server, or injecting control information for a plugin from the client into the server in order to affect query processing in the server.
 
 Query Attributes do nothing in the server.
 The server does not look at them.
@@ -136,8 +136,8 @@ kris@server:~$ grep query_attr /proc/94982/maps
 I can generate a query in a client I control, and annotate the query with identifying information.
 In my case this information will be
 
-- A trace flag. If the query is to be traced, the trace flag will be present. The detault is: The query will not be traced.
-- A set of three identifiers (alphanumeric strings: sha256 MACs, UUIDs or strings representing integer numbers). They are a root id, a parent id and a query id. These identifiers allow be to model a span/parent span relationship in a larger tracing context.
+- A trace flag. If the query is to be traced, the trace flag will be present. The default is: The query will not be traced.
+- A set of three identifiers (alphanumeric strings: sha256 MACs, UUIDs or strings representing integer numbers). They are a root id, a parent id and a query id. These identifiers allow me to model a span/parent span relationship in a larger tracing context.
 
 I need to find a hook in the server for a plugin.
 The plugin must run after query execution, but with the execution plan, the query string and the P_S data for the query still present.
@@ -150,13 +150,13 @@ If the trace flag is set, it will need to access
 - the query plan that ran, if possible (Need to check what `EXPLAIN FOR CONNECTION` does)
 - the information about the query execution that can be gathered from P_S data
 
-It needs to transform this information into a single serialized form, for example a JSON string, and then exfil this in a way that does not block the server.
+It needs to transform this information into a single serialized form, for example a JSON string, and then exfiltrate this in a way that does not block the server.
 
 The generic way to do this in my environment has in the past been to send a UDP packet to localhost.
 UDP to localhost is considered non-lossy, limited to 64K and dropping the data if the listener is not present.
 A file write to an append-only file may also write, if there is a rotation/truncation mechanism.
 
-I will then need to take the JSON in my client, transform it some more and send it to a tracing consumer, eg Jaeger, Lightstep, or in my case, Honeycomb.
+I will then need to take the JSON in my client, transform it some more and send it to a tracing consumer, e.g. Jaeger, Lightstep, or in my case, Honeycomb.
 
 The trace data will there be joined with spans from other components, including spans around the ORM that made the SQL and the code that called into the ORM.
 This will allow to view the context of the query without having to grep for it, use modern web tools to analyze query execution in the context that generated it and generally unify SQL debugging with other application debugging.

@@ -5,7 +5,6 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - computer
-- graph
 - monitoring
 - mysql
 - lang_de

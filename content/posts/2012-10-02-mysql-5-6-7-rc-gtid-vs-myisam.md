@@ -7,7 +7,6 @@ tags:
 - innodb
 - mysql
 - replication
-- gtid
 - lang_en
 title: 'MySQL 5.6.7-RC: GTID vs. MyISAM'
 ---

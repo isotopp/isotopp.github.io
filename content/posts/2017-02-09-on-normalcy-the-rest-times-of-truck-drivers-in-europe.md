@@ -6,7 +6,7 @@ published: true
 status: publish
 tags:
 - post car society
-- europe
+- europa
 - lang_en
 title: 'On Normalcy: The rest times of truck drivers in Europe'
 ---

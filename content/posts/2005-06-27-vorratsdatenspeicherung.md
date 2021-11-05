@@ -4,7 +4,6 @@ date: "2005-06-27T17:47:45Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- authentication
 - identity
 - politik
 - security

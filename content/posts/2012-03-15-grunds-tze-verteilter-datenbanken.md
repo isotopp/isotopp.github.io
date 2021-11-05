@@ -5,7 +5,7 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - cluster
-- datenbanken
+- database
 - distributed computing
 - mysql
 - lang_de

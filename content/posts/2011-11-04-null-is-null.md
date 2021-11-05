@@ -4,7 +4,7 @@ date: "2011-11-04T13:31:00Z"
 feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
-- datenbanken
+- database
 - mysql
 - sql
 - lang_de

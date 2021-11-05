@@ -5,7 +5,6 @@ feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
 - computer
-- ceph
 - storage
 title: Ceph and NVME - not a good combination?
 ---

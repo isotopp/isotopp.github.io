@@ -17,7 +17,7 @@ And finally I will need to find a way to view the query execution in the context
 But this is about query execution in the server, and the instrumentation available to me in MySQL 8, at least to get things started.
 So we take the tour of performance schema, and then run one example query (a simple join) and see what we can find out about this query.
 
-# Performance Schema, the 10.000m view
+# Performance Schema, the 10.000 m view
 
 [The Manual](https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html) has a major chapter that covers P_S in details.
 The original idea of P_S is to have a bunch of preallocated memory areas without locks, presented to the database itself as tables.
@@ -198,7 +198,7 @@ sys.format_time(timer_wait): 341.04 us
 1 row in set (0.00 sec)
 ```
 
-So running this query took 341 Microsends, or 0.341 ms.
+So running this query took 341 Microseconds, or 0.341 ms.
 And sources are named after their location in the server sourcecode, [filename and line number](https://github.com/mysql/mysql-server/blob/8.0/sql/conn_handler/init_net_server_extension.cc#L94-L96).
 
 Events exist in a hierarchy: wait events nest within stage events, which nest within statement events, which nest within transaction events.
@@ -215,15 +215,15 @@ This is a `wait` event, `io` related, specifically `file` I/O, more specific `in
 Looking at other fields in the `events_waits_history` table, we would see the file name as part of the `OBJECT_SCHEMA.OBJECT_NAME` designator for this event.
 That means, we can see how long we waited for I/O coming from this specific file or going to the file.
 
-Further up in the nesting we would at the statement level see the actual `SQL_TEXT`, and also the number of rows scanned.
+Further up in the nesting we would see, at the statement level, the actual `SQL_TEXT`, and also the number of rows scanned.
 That means we can get a rough estimate why this particular statement instance was slow - for example, the plan was good, the number of rows was low, but we see a lot of actual file IO waits, so probably the buffer pool was cold.
 
-The manual page above discusses the instrument names at length and it is important to get an overview of what exists and what is measured.
+The manual page above discusses the instrument names at length, and it is important to get an overview of what exists and what is measured.
 Specifically, for statement level entries the instruments vary during query execution and become more detailed, as they reflect the progress in understanding of the server about the nature of the statement as it is executed.
 
 # An example run
 
-In a freshly restarted idle server, we login a shell and `use world` for the world sample database.
+In a freshly restarted idle server, we log in to a shell and `use world` for the world sample database.
 This is a tiny database, but because the server has been just restarted, nothing of it is cached.
 We run a simple query:
 
@@ -415,11 +415,11 @@ mysql [localhost:8025] {msandbox} (performance_schema) > select
 10 rows in set (0.00 sec)
 ```
 
-These are the various exection stages of our statement - we select by `thread_id` and with the `event_id` of the statement, `5574` as a `nesting_id`, ordered by `event_id`.
+These are the various execution stages of our statement - we select by `thread_id` and with the `event_id` of the statement, `5574` as a `nesting_id`, ordered by `event_id`.
 Time was consumed by the `stage/sql/statistics` phase, looking up table stats for a good execution plan, and then by the actual query execution in `stage/sql/executing`.
 The former took 0.7ms (703.58us), the latter 2.26ms.
 
-We are interested in what took so long, specifically, so we look into waits for event_ids 5611 and 5712 - finding nothing, and also nothing particularly time consuming:
+We are interested in what took so long, specifically, so we look into waits for event_ids 5611 and 5712 - finding nothing, and also nothing particularly time-consuming:
 
 ```sql
 mysql [localhost:8025] {msandbox} (performance_schema) > select
@@ -512,7 +512,7 @@ mysql [localhost:8025] {msandbox} (performance_schema) > select
 9 rows in set (0.00 sec)
 ```
 
-We seem to be unable to attribute time spent loading data from disk to a specific thread, and we seem to unable to account for the runtime of certain stages by looking at waits.
+We seem to be unable to attribute time spent loading data from disk to a specific thread, and we seem to be unable to account for the runtime of certain stages by looking at waits.
 That's unexpected.
 
 # Memory only as summary
@@ -571,7 +571,7 @@ It's the actual execution plan while the query executes, but it is not recorded.
 A lot of information about query execution can be gathered from P_S.
 The query execution can be broken down in statements, stages and waits.
 Specifically, statements collect a lot of interesting quality flags.
-Stages can collect percentages of completion for long running queries and give a general feel about where in the query execution time is spent.
+Stages can collect percentages of completion for long-running queries and give a general feel about where in the query execution time is spent.
 Waits should be able to attribute time to individual operations in the database server, but specifically for file I/O this seems to be more complicated, and I have not been able to solve it.
 
 We can see waits for I/O summary tables, and we can see a lot of other statistical information in other summary tables.

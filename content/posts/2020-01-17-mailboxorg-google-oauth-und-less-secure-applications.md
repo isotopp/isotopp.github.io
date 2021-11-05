@@ -6,7 +6,7 @@ tags:
 - lang_de
 - google
 - security
-- authentication
+- identity
 - datenschutz
 title: Mailbox.org, Google, OAuth und Less Secure Applications
 ---
