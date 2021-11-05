@@ -11,31 +11,30 @@ tags:
 - lang_de
 title: 'GPL: Marktdurchdringung ist kein Wert an sich'
 ---
-[Kommentar]({% link _posts/2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md
-%}) zu GPL in Deutschland vor Gericht durchgesetzt.
+[Kommentar]({{< ref "/content/posts/2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md" >}}) zu GPL in Deutschland vor Gericht durchgesetzt.
 
 > Ich glaube nicht das bei der BSD Lizenz ein
-> Konstruktionsfehler vorliegt. Ich denke es war beabsichtigt
-> das auch "Codeklauer" damit Geld verdienen können.Man könnte
-> auch sagen, das dies die wahre Freiheit ist.Übrigens kann mit
+> Konstruktionsfehler vorliegt. Ich denke, es war beabsichtigt
+> das auch "Codeklauer" damit Geld verdienen können. Man könnte
+> auch sagen, das dies die wahre Freiheit ist. Übrigens kann mit
 > GPL Software auf ähnlicher Weise Geld verdient werden. Was
-> machen denn die Distributoren auch wenn das jetzt etwas
+> machen denn die Distributoren, auch wenn das jetzt etwas
 > überspitzt ist. Es wird niemand daran gehindert GPL Software
 > zu verkaufen. Sie müssen nur die GPL einhalten, was bedeutet
 > die Lizenz mitliefern und dürfen die Hinweise auf die GPL im
 > Code nicht entfernen.
 
 Der wesentliche Punkt der GPL ist ein anderer: Unter der GPL
-muß man den Quelltext - so wie er verwendet worden ist um das
+muss man den Quelltext - so wie er verwendet worden ist, um das
 eigene Produkt zu bauen - mitliefern. Mit allen Rechten und
 gegebenenfalls mit allen Tools, die dazu notwendig sind.
 
 Bei der GPL geht es nicht um Geld - es ist vollkommen egal, ob
 das Produkt, das Du gebaut hast, von Dir für Geld verkauft
 wird, oder ob Du für Geld Support dazu verkaufst oder was auch
-immer. Wenn Du in Deinem Produkt aber (im selben Prozeßraum)
-GPL-Code verwendest, dann muß Dein Produkt auch unter der GPL
-stehen und um der GPL zu genügen, mußt Du den Quelltext und
+immer. Wenn Du in Deinem Produkt aber (im selben Prozessraum)
+GPL-Code verwendest, dann muss Dein Produkt auch unter der GPL
+stehen und um der GPL zu genügen, musst Du den Quelltext und
 die Werkzeuge zum Bauen mitliefern.
 
 Die GPL ist die sich selbst schützende Allmende: Du darfst Code
@@ -54,30 +53,33 @@ aber wenn Du das tust, kommen Deine Milch, Dein Schinken und der
 Dung Deiner Kühe auch in diese Allmende. Darum funktioniert die
 GPL. Sie ist nachhaltig.
 
-Die kooperative und die kompetetive Welt können nicht zusammen
-existieren, ohne daß die Regeln der kompetetiven Welt die
+Die kooperative und die kompetitive Welt können nicht zusammen
+existieren, ohne daß die Regeln der kompetitiven Welt die
 kooperative Welt zerstören. Darum trennt die GPL im Gegensatz
-zu allen anderen Open Source Lizenzen beide Welten und darum ist
-die GPL die einzige Open Source Lizenz die vor dem kompetetiven
+zu allen anderen Open-Source-Lizenzen beide Welten und darum ist
+die GPL die einzige Open-Source-Lizenz, die vor dem kompetitiven
 Lager bestehen kann.
 
 Jörg Möllenkamp führt unsere Diskussion ebenfalls weiter. Er
 schreibt in [GPL-Durchsetzung und die Folgen](http://www.c0t0d0s0.org/archives/2009-GPL-und-die-Folgen.html)
-unter einem kompetetiven Gesichtspunkt:
+unter einem kompetitiven Gesichtspunkt:
 
 > Es ist klar, das ein System nicht notwendigerweise offener
 > wird, wenn sich dort verschiedene nicht freigegebene Module
 > tummeln. Es ist allerdings ein Trugschluss, das man einen
 > Hersteller durch die GPL in die Offenheit zwingen kann.
 
-Das ist das Mißverständnis: Die GPL will niemanden zu irgend
-etwas zwingen. Sie will nur trennen. Die GPL sagt nicht "Du
-mußt offen/frei/whatever sein."
+Das ist das Missverständnis: Die GPL will niemanden zu irgendetwas zwingen. 
+Sie will nur trennen. 
+Die GPL sagt nicht "Du musst offen/frei/whatever sein."
 
-Sie sagt: "**Wenn** Du unseren Code nutzen möchtest, was Du
-nicht mußt, **dann** mußt Du das zu unseren Bedingungen tun."
+Sie sagt: 
+
+> "**Wenn** Du unseren Code nutzen möchtest, was Du
+nicht musst, **dann** musst Du das zu unseren Bedingungen tun."
+
 Das ist ganz genau das, was jede andere Lizenz auch sagt. Die
-GPL nennt außerdem diese Bedingungen]{{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}})
+GPL nennt außerdem diese [Bedingungen]({{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}})
 vorab, wie jede andere Lizenz auch. Es gibt keine
 Überraschungen, keine Lizenzbedingungsänderungen und es gibt
 insbesondere keinen Zwang zu irgendwas. Es gibt allerdings eine
@@ -86,27 +88,27 @@ und ethisch-moralischer Argumente, die dafür sprechen. Aber das
 ist eine ganz andere, und vollkommen ungezwungene Diskussion.
 
 Die GPL will niemanden in die Offenheit zwingen. Sie will nur
-die Spielregel klar machen. Die Spielregel ist ganz simpel:
+die Spielregel klarmachen. Die Spielregel ist ganz simpel:
 [Quid pro quo](http://de.wikipedia.org/wiki/Quid_pro_quo). Unter
 der GPL ist es nicht möglich, Code aus der Allmende zu nehmen
 und etwas proprietäres damit zu machen. Und anders herum: Es
-ist möglich, etwas Propietäres zu machen, aber dann nicht mit
+ist möglich, etwas Proprietäres zu machen, aber dann nicht mit
 GPL-Code.
 
 Es ist lediglich Gier angesichts der überwältigenden Menge von
 GPL-Code von teilweise wirklich ausgezeichneter Qualität die
-manche Menschen oder Firmen glauben läßt, sie könnten an
+manche Menschen oder Firmen glauben lässt, sie könnten an
 diesem Pool teilhaben ohne sich an die Spielregeln halten zu
 müssen. Diese Leute müssen lernen, daß dieser Pool von
 lohnenswertem Zeug nur deswegen existiert, weil all den
-Gierhälsen die glauben, sie könnten hier betrügen mit der
-ganzen härte des neu verschärften Urheberrechts auf ihre
+Gierhälsen die glauben, sie könnten hier betrügen, mit der
+ganzen Härte des neu verschärften Urheberrechts auf ihre
 Spuddelfinger gehauen wird.
 
 Wenn man natürlich ein Geschäftskonzept so baut, daß es ohne
 einen solchen Betrug nicht funktioniert, dann bedeutet das, daß
 man ohne den GPL-Code kein Produkt hat. Das ist aber kein Zwang
-von Seiten der GPL, sondern die Dummheit desjenigen Kriminellen,
+vonseiten der GPL, sondern die Dummheit desjenigen Kriminellen,
 der hier seinen Teilhabern und sich selbst in die Tasche gelogen
 hat. Ich habe da nicht wirklich Mitleid - nicht mit
 [Sony](http://gnumonks.org/~laforge/weblog/2005/11/11/#20051111-sony-rootkit-lame),
@@ -132,7 +134,7 @@ Web Server schreiben müssen. Das hat natürlich nicht
 funktioniert, und zwar unter anderem auch deswegen, weil die
 API-Dokumentation und die tatsächliche API des Servers nicht
 übereinstimmend waren. Diese API-Diskrepanz nachzuweisen war
-sehr sehr schmerzhaft. Ich habe natürlich erst einmal mich
+sehr, sehr schmerzhaft. Ich habe natürlich erst einmal mich
 selbst für zu dumm gehalten, bevor ich Azundris' Grundregel des
 Debuggings angewendet habe ("Wenn Du den Fehler nach 30 Minuten
 nicht gefunden hast, ist es wahrscheinlich nicht Dein Fehler,
@@ -148,7 +150,7 @@ LDAP-Code von PHP, LDAP-Support im Cyrus, .... Ja, ich habe auch
 noch andere Sachen gemacht, aber mein LDAP-Engagement bei NetUSE
 war eine einzige Folge von "Eigentlich will ich Euren Code gar
 nicht hacken, aber da bitte sehr, so tut es mir und Euch am
-wenigsten weh.". Das war gut für mich und gut für den
+wenigsten weh." Das war gut für mich und gut für den
 Hersteller, denn so hat er einen Bug Report oder Feature-Request
 bekommen, der Bug Report war validiert, und ein Patchvorschlag
 kam mit. Das hat für alle Beteiligten das Leben sehr viel
@@ -161,20 +163,20 @@ Bestand, diesen Code zu ändern, sondern daß es sich aus
 persönlichen Bedürfnissen oder einem Projekt so ergeben hat.
 Das Projekt hat seinen Scope spontan geändert und die
 verwendeten GPL-Teile haben das genauso spontan mit getragen.
-Wären dieses Projekte auf der Basis von Closed Source Zeugs
+Wären diese Projekte auf der Basis von Closed Source Zeugs
 realisiert gewesen, dann hätten diese Möglichkeiten nicht
 bestanden und das Projekt wäre auf den Stand "Plattform
-evaluieren" zurück geworfen worden.
+evaluieren" zurückgeworfen worden.
 
 Der andere Punkt ist, daß ich nur im kooperativen Umfeld die
 Möglichkeiten habe, meine Situation über die Paketgrenzen
 hinweg bis zum Grade eines prototypischen oder produktionsreifen
-Patches zu evaluieren ohne mich ressourcentechnisch zu
+Patches zu evaluieren, ohne mich Ressourcen-technisch zu
 verausgaben, und daß ich das dann im Rahmen des Projektes oder
 privater Weiterbildung auch tue.
 
-Input loswerden kann ich auch mit schwächeren Open Source
-Lizenzen, selbst mit [CDDL](http://en.wikipedia.org/wiki/CDDL),
+Input loswerden kann ich auch mit schwächeren Open-Source-Lizenzen,
+selbst mit [CDDL](http://en.wikipedia.org/wiki/CDDL),
 [MPL](http://en.wikipedia.org/wiki/Mozilla_Public_License) oder
 anderen
 [BSD](http://en.wikipedia.org/wiki/Modified_BSD_license)-Lizenzvarianten.
@@ -201,7 +203,7 @@ wenig drüber nachzudenken.
 > Jetzt fordert diese kleine Gruppe etwas, das wahrscheinlich
 > eine ganze Reihe von Geschäftsgeheimnissen offenlegen würde
 > (schönes Beispiel sind da für mich die Treiber von
-> hochgezüchteten Graphikkarten). Warum sollte eine Firma das
+> hochgezüchteten Grafikkarten). Warum sollte eine Firma das
 > tun? Ist es der Firma zu verübeln, Auswege zu suchen, Umwege
 > zu finden und wenn es irgendwie geht, Linux ganz zu vermeiden?
 
@@ -209,12 +211,12 @@ Nein, wenn Du kein GPL willst, dann benutze halt keinen
 GPL-Code. Nur, ähm, das ist nicht der Sachverhalt.
 
 Es ist nicht so, daß da plötzlich eine Gruppe von Leuten ist,
-die plötzlich und unerwartet etwas überraschendes fordert.
+die plötzlich und unerwartet etwas Überraschendes fordert.
 Sondern es ist so, daß der Hersteller einer proprietären
 Software GPL-Code illegal und wider besseres Wissen lizenzwidrig
 verwendet hat. Alles was gefordert wird, und zwar schon immer
 und nicht plötzlich und überraschend, ist eine Einhaltung des
-Lizenzvertrages auf eine der beiden möglichen Arten: Nämlich
+Lizenzvertrages auf eine der beiden möglichen Arten: nämlich
 entweder Offenlegung der Sourcen, aller Sourcen, und der dazu
 notwendigen Werkzeuge. Oder Entfernung des GPL-Codes aus dem
 Produkt. Beides ist legitim und möglich.
@@ -222,12 +224,12 @@ Produkt. Beides ist legitim und möglich.
 Es ist notwendig, daß man sich als Firma vorher Gedanken
 darüber macht, unter welchen Lizenzen man geistiges Eigentum in
 sein Produkt einbringt. Das gilt für selbst erstellten Code
-genau so wie für erworbene Lizenzen Dritter - seien sie nun
-kommerziell oder GPLed. Eine Firma die das nicht macht, hat
+genauso wie für erworbene Lizenzen Dritter - seien sie nun
+kommerziell oder GPLed. Eine Firma, die das nicht macht, hat
 nicht das Recht am Markt zu agieren, denn es handelt sich um
 einen Haufen von Dilettanten.
 
-> Ich weiss aber auch, das dieses Dilemma das Potential hat, der
+> Ich weiß aber auch, das dieses Dilemma das Potenzial hat, der
 > Marktdurchdringung von Linux erheblichen Widerstand zu bieten.
 
 Marktdurchdringung ist für ein GPL-Produkt kein Wert an sich,
@@ -235,28 +237,28 @@ so cool das auch ist, etwa auf einem Kassensystem, einer
 Sina-Box, einem Voip-Telefon, einem WLAN-Router, einem
 Festplattenrecorder oder einem Handy einem Linux beim Booten
 zuzusehen. Der Kick kommt aber nicht vom Pinguin-Logo, sondern
-er kommt von den Möglichkeiten, die damit einher gehen und von
-der Gewißheit, daß eine starke GPL mir diese Möglichkeiten
+er kommt von den Möglichkeiten, die damit einhergehen und von
+der Gewissheit, daß eine starke GPL mir diese Möglichkeiten
 offen hält.
 
 Es ist im engeren Sinne jedoch genaugenommen vollkommen egal wie
 viele Leute Linux, den Gcc, die glibc oder was auch immer unter
-der GPL einsetzen. Linux auf was-auch-immer hat keinen Wert wenn
+der GPL einsetzen. Linux auf was-auch-immer hat keinen Wert, wenn
 man auf diesem was-auch-immer nicht die Möglichkeiten hat, die
-damit einher gehen.
+damit einhergehen.
 
 Und darum ist die klare und informierte Durchsetzung der GPL so
 wichtig: Sie markiert die Trennlinie zwischen dem kooperativen
-und dem kompetetiven Lager. Und es sei daran erinnert, daß es
-die Copyright-Faschisten des kompetetiven Lagers waren, die
+und dem kompetitiven Lager. Und es sei daran erinnert, daß es
+die Copyright-Faschisten des kompetitiven Lagers waren, die
 diese Trennlinie in den letzten fünf Jahren so vermint haben.
 Ich habe noch immer kein Mitleid.
 
 Die Linux-Kernelentwickler auch nicht. Sie haben in der
 Vergangenheit die Treiber-API des Kernels **absichtlich** binär
 inkompatibel verändert, um die Wartungskosten für Entwickler
-proprietärer Kernelmodule unattraktiv hoch zu halten und sie
-gehen nun dazu über, alle Treibermodule, für die kein
+proprietärer Kernelmodule unattraktiv hochzuhalten und sie
+gehen nun dazu über, alle Treiber-Module, für die kein
 Sourcecode bereitgestellt werden kann, ins Userland zu
 verbannen.
 

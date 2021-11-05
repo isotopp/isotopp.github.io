@@ -28,8 +28,7 @@ elsewhere to discuss why you would want to build a cycling city, how to do
 this, how it came to be in the Netherlands, and how solutions elsewhere have
 to be slightly different to accomplish their goal locally.
 
-Interesting read, and a good complement to [Streetfight]({% link _posts/2018-11-04-fertig-gelesen-streetfight.md
-%}), which covers the New York story on the same problem.
+Interesting read, and a good complement to [Streetfight]({{< ref "/content/posts/2018-11-04-fertig-gelesen-streetfight.md" >}}), which covers the New York story on the same problem.
 
 [Building the Cycling City: The Dutch Blueprint for Urban Vitality](https://www.amazon.com/Building-Cycling-City-Blueprint-Vitality-ebook/dp/B07F1S9KVQ), Melissa and Chris Bruntlett, USD 17.00
 

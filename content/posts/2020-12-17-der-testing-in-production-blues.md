@@ -140,7 +140,7 @@ Das geht natürlich nicht in einem Umfeld, das politisch Präsenzunterricht favo
 
 Zum Vergleich: Wo ich wohne ist die Schule meines Kindes (10) Bestandteil des Netzwerkes [Jong Leren](https://jl.nu/). Man verwendet Chromebooks mit Google Edu, und dazu kommen eine Reihe von externen Anwendungen, die sich gegen Edu authentisieren, aber unabhängig realisiert werden. [Gynzy](https://www.gynzykids.com/#/nl-nl/leerling/index/oefenen/) wird zum Beispiel verwendet, um Drillaufgaben zu automatisieren, also Rechnen, Kopfrechnen, Rechtschreibung und andere Dinge einzuüben, die auf Wiederholung basieren.
 
-Im März und auch jetzt wieder gab es deswegen keine großen Technikprobleme, sondern "nur" einen Haufen organisatorische Arbeit. Wir haben Glasfaser daheim (500 Mbit/500 MBit, feste IP, 63 Euro/mo) und die Schule hat natürlich auch eine angemessene Anbindung und managed Wifi, damit die Chromebooks und elektronischen Wandtafeln stabil funktionieren.
+Im März und auch jetzt wieder gab es deswegen keine großen Technikprobleme, sondern "nur" einen Haufen organisatorische Arbeit. Wir haben Glasfaser daheim (500 Mbit/500 MBit, feste IP, 63 Euro/mo) und die Schule hat natürlich auch eine angemessene Anbindung und managed Wi-Fi, damit die Chromebooks und elektronischen Wandtafeln stabil funktionieren.
 
 Die Server stehen natürlich nicht in der Schule, wo sie kaum stabil zu betreiben wären, sondern in einer Reihe von Clouds (Google und wo immer Gynzi und die anderen Anwendungen gehostet werden).
 

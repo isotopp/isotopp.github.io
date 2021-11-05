@@ -10,8 +10,7 @@ tags:
 - mysqldev
 title: MySQL Transactions - the logical side
 ---
-After having a look [how MySQL handles transactions physically]({% link
-_posts/2020-07-27-mysql-transactions.md %}), let's have a look at what is
+After having a look [how MySQL handles transactions physically]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}), let's have a look at what is
 going on from a logical point of view.
 
 We are using a test table called demo with an id and a counter field, both

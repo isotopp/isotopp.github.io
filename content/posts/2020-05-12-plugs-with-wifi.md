@@ -6,7 +6,7 @@ tags:
 - lang_en
 - iot
 - home automation
-title: Plugs with Wifi
+title: Plugs with Wi-Fi
 ---
 So we are baking bread, and for that we have a Wiesheu minimat oven that comes in at a full 16A - supposedly it is using 3kW or more peak plus the condenser hood that comes in at another 500W top power draw. On the other hand, when running the thing is hardly lukewarm, it is running much cooler than the Neff household oven/microwave combo we have.
 
@@ -19,16 +19,16 @@ So Sammy wanted to know what is cheaper to use: The Wiesheu or the Neff. And for
 - 16A (some solutions do only 10A)
 - no cloud account or cloud reporting
 
-I was imagining something that pushes power consumption to syslog every minute or can log to a graphite. I don't actually need on/off relais, but that would be okay to have. I have Wifi on 2.4 GHz and 5 GHz everywhere. I do not actually have use for a cellphone app or control from outside the Wifi.
+I was imagining something that pushes power consumption to syslog every minute or can log to a graphite. I don't actually need on/off relais, but that would be okay to have. I have Wi-Fi on 2.4 GHz and 5 GHz everywhere. I do not actually have use for a cellphone app or control from outside the Wi-Fi.
 
 There was lifely discussion, and I have been pointed to
 
 - [Tasmota](https://tasmota.github.io), an alternative firmware for devices based on the ESP8266 chip, and
   - specifically the [Gosund](https://www.amazon.de/gp/product/B085Q5ZR33) plugs, at 24 Euro for a pair they are dirt cheap. The plugs are to be controlled with a cellphone app that requires cloud usage, but you are not supposed to use this, but reflash them with Tasmota and then use a local MQTT bridge to run them.
 - The [TP-Link Kasa HS110](https://www.amazon.de/gp/product/B017X72IES). The device can be configured with a local cellphone app, not requiring a cloud account, and speaks a simple propietary protocol that has been [reverse engineered](https://www.softscheck.com/en/reverse-engineering-tp-link-hs110/) and [implemented in Python](https://github.com/softScheck/tplink-smartplug). The switch has a number of known security problems, and can be controlled and bricked by anyone having access to your local network. The Kasa plug comes in at 23 Euro/piece.
-- The [Shelly Plug](https://shop.shelly.cloud/shelly-plug-wifi-smart-home-automation#71) (16A device), also available as Plug S (10A device). While the devices come with an app and cloud, they have a [documented API](https://shelly-api-docs.shelly.cloud). It comes in at 32.40 Euro when ordered from the manufacurer.
+- The [Shelly Plug](https://shop.shelly.cloud/shelly-plug-Wi-Fi-smart-home-automation#71) (16A device), also available as Plug S (10A device). While the devices come with an app and cloud, they have a [documented API](https://shelly-api-docs.shelly.cloud). It comes in at 32.40 Euro when ordered from the manufacurer.
 
-The TP-Link Kasa arrived yesterday and was immediately usable: Plug in, install app, skip cloud registration, put plug into Wifi, and start using it. I was only interested into their energy reporting feature and I now know:
+The TP-Link Kasa arrived yesterday and was immediately usable: Plug in, install app, skip cloud registration, put plug into Wi-Fi, and start using it. I was only interested into their energy reporting feature and I now know:
 
 - The oven will consume up to 3200W when heating up.
 - It will consume around 170W while running normally, maintaining level temperature.
@@ -39,7 +39,7 @@ The TP-Link Kasa arrived yesterday and was immediately usable: Plug in, install 
 
 Yesterday the Gosund plugs have been arriving, too. They need a bit of treatment, though. Instructions said to not connect them so that they do not update themselves - it can only make the reflashing harder if the original firmware is current.
 
-I also seem to need a RS232-adapter and/or a Raspi with Wifi in order to flash them over Wifi, so I bought a bit of toys to do that:
+I also seem to need a RS232-adapter and/or a Raspi with Wi-Fi in order to flash them over Wi-Fi, so I bought a bit of toys to do that:
 
 - A Raspi 4B
 - Case for the Raspi

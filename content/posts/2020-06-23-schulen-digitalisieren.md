@@ -19,15 +19,15 @@ Das liege daran, sagt der Artikel, daß für Mittel aus dem Digitalpakt eine Min
 
 Das ist in der Tat ein Problem [1](https://twitter.com/isotopp/status/1275323416959205377) [2](https://twitter.com/isotopp/status/1275334802191912960). Was soll eine Schule auch machen, wenn nicht gewisse Grundvoraussetzungen erfüllt sind?
 
-Damit man mit Notebooks, Tablets oder Chromebooks an einer Schule arbeiten kann, braucht man Strom an jedem Tisch. Den gibt es in deutschen Schulen in der Regel nicht. Aber auch für essentielle Hardware wie Wifi-Accesspoints, Switches oder elektronische Tafeln fehlt es an Anschlüssen.
+Damit man mit Notebooks, Tablets oder Chromebooks an einer Schule arbeiten kann, braucht man Strom an jedem Tisch. Den gibt es in deutschen Schulen in der Regel nicht. Aber auch für essentielle Hardware wie Wi-Fi-Accesspoints, Switches oder elektronische Tafeln fehlt es an Anschlüssen.
 
-Wifi für viele Clients baut man nicht wie daheim, indem man irgendwo einen AP hin klatscht. Man muß eine Ausleuchtungsanalyse machen, Positionen von APs planen, Sendeleistungen und Frequenzen wählen. Man braucht vermutlich einen AP pro Klassenraum, mit gut gewählten Frequenzen und radikal runtergedrehter Sendeleistung damit er die Nachbar-APs in den Nebenräumen und darüber/darunter nicht stört.
+Wi-Fi für viele Clients baut man nicht wie daheim, indem man irgendwo einen AP hin klatscht. Man muß eine Ausleuchtungsanalyse machen, Positionen von APs planen, Sendeleistungen und Frequenzen wählen. Man braucht vermutlich einen AP pro Klassenraum, mit gut gewählten Frequenzen und radikal runtergedrehter Sendeleistung damit er die Nachbar-APs in den Nebenräumen und darüber/darunter nicht stört.
 
 ![](/uploads/2020/06/netspot-whg-berlin-before.png)
 
 *Ausleuchtungsanalyse einer Privatwohnung vor der Optimierung*
 
-Kabel müssen zu den APs führen, denn es ist aussichtslos, den Backhaul für große Schülerzahlen über Wifi zu machen. Die Kabel müssen GBit-Kabel sein, bei modernen APs braucht es deren zwei pro AP. Die APs brauchen Strom, in der Regel Power-over-Ethernet (PoE). Für PoE brauchen die Switches viel Strom, denn sie speisen die APs. Das heißt, sie brauchen Kühlung oder zumindest einen geeigneten Rechnerraum. Dort würde man auch den Breitbandanschluß der Schule terminieren.
+Kabel müssen zu den APs führen, denn es ist aussichtslos, den Backhaul für große Schülerzahlen über Wi-Fi zu machen. Die Kabel müssen GBit-Kabel sein, bei modernen APs braucht es deren zwei pro AP. Die APs brauchen Strom, in der Regel Power-over-Ethernet (PoE). Für PoE brauchen die Switches viel Strom, denn sie speisen die APs. Das heißt, sie brauchen Kühlung oder zumindest einen geeigneten Rechnerraum. Dort würde man auch den Breitbandanschluß der Schule terminieren.
 
 Für eine Schule mit einer drei- oder vierstelligen Anzahl Schüler tut DSL nicht, man muß Glas legen - ein oder besser zehn GBit symmetrisch, je nachdem was geplant ist.
 
@@ -37,7 +37,7 @@ Das ist alles nicht einfach und dauert locker zwei Jahre für die Einführung un
 
 Man hätte 2010 anfangen müssen. An jeder einzelnen Schule - es gibt davon mehr als 30.000 in Deutschland, die Hälfte Grundschulen.
 
-So, jetzt nehmen wir mal an, wir haben eine solche Schule - Glas 10 Gbit symmetrisch, Strom an den Tischen, Wifi pro Raum, und Monitor-Tafelsystem.
+So, jetzt nehmen wir mal an, wir haben eine solche Schule - Glas 10 Gbit symmetrisch, Strom an den Tischen, Wi-Fi pro Raum, und Monitor-Tafelsystem.
 
 Jetzt Schüler ausrüsten. Wie kriegt man das hin, daß man möglichst flexibel ist, die Schüler keine Daten verlieren können und man dabei nicht arm wird? Wir brauchen Hardware in großer Stückzahl, also mit geringen Stückkosten.
 
@@ -63,7 +63,7 @@ Das ist kein haltbarer Zustand, wenn es um die Ausbildung der kommenden Generati
 
 "Ja, sollen wir da nicht was eigenes entwickeln" Kann man machen. Das hätte 2010 sogar Sinn gehabt. Aber inzwischen ist es wichtiger, was zu machen als da noch lange irgendwelche Leuchttürme zu subventionieren und zu warten, daß die mit dem Verprassen der Steuergelder fertig sind, bevor man dann doch zu Google geht.
 
-"Ja, und dann?" Ich lebe als Deutscher in den Niederlanden und habe ein 10-jähriges Kind in der Group 6 (der 4. Klasse) an einer niederländischen Basisschool. Durch das Lehrkonzept hier (Google Edu, Wifi-Chromebook Klassen) kann ich aus eigener Erfahrung sagen, daß der Drill (NL: "geautomatiseerd") etwa beim Kopfrechnen komplett an Webseiten über geht. Statt Eckenrechnen, Kopfrechen-Stafetten, und anderen Klassenspielen, die den Lehrer binden, haben die Kinder Zugriff auf programmierte Unterweisungen und casual games, die die zu drillenden Fertigkeiten einüben. "Löse einfache Kopfrechenaufgaben" oder "Rechtschreibaufgaben" um Space Invaders abzuwehren und ähnlich.
+"Ja, und dann?" Ich lebe als Deutscher in den Niederlanden und habe ein 10-jähriges Kind in der Group 6 (der 4. Klasse) an einer niederländischen Basisschool. Durch das Lehrkonzept hier (Google Edu, Wi-Fi-Chromebook Klassen) kann ich aus eigener Erfahrung sagen, daß der Drill (NL: "geautomatiseerd") etwa beim Kopfrechnen komplett an Webseiten über geht. Statt Eckenrechnen, Kopfrechen-Stafetten, und anderen Klassenspielen, die den Lehrer binden, haben die Kinder Zugriff auf programmierte Unterweisungen und casual games, die die zu drillenden Fertigkeiten einüben. "Löse einfache Kopfrechenaufgaben" oder "Rechtschreibaufgaben" um Space Invaders abzuwehren und ähnlich.
 
 ![](/uploads/2020/06/gynzi-kids.png)
 

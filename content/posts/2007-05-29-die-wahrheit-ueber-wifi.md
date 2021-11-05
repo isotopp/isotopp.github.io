@@ -6,7 +6,7 @@ published: true
 tags:
 - hardware
 - lang_de
-title: Die Wahrheit über WiFi
+title: Die Wahrheit über Wi-Fi
 ---
 
 ![](/uploads/wireless-devices-small.png)

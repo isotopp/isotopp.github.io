@@ -17,12 +17,11 @@ computers are using power.
 
 Let's have a look.
 
-**EDIT:** Second part [Streaming and Energy]({% link
-_posts/2019-12-28-streaming-and-energy.md %}) now available.
+**EDIT:** Second part [Streaming and Energy]({{< ref "/content/posts/2019-12-28-streaming-and-energy.md" >}}) now available.
 
 ## End-User Device.
 
-It's 2019. End user devices are using Wifi, and are running on
+It's 2019. End user devices are using Wi-Fi, and are running on
 Batteries. They are Cellphones, Tablets or Laptops.
 
 Devices that are not connected to grid are more usable if they
@@ -65,7 +64,7 @@ That's an amazing mix of truth and nonsense:
 
 - The smartphone will still use less than 5W, because it can't
   fry itself. 
-- And doing this at home via Wifi will not use mobile
+- And doing this at home via Wi-Fi will not use mobile
   infrastructure but whatever access point is in the house, so
   relatively low power (10W total for AP and phone?).
 - The smartphone can indeed show Full HD, because modern smartphone
@@ -131,8 +130,7 @@ Finally, computer power usage is not linear: Power management on
 a data center CPU turns cores on and off as needed, and thus, a
 CPU uses already circa 50% power at 10% utilisation. From a cost
 and from an environmental perspective it is best to utilise any
-CPU to the fullest. Some older [measurements of mine]({% link
-_posts/2017-07-19-threads-vs-watts.md %}) on this.
+CPU to the fullest. Some older [measurements of mine]({{< ref "/content/posts/2017-07-19-threads-vs-watts.md" >}}) on this.
 
 ## Networking
 
@@ -312,4 +310,4 @@ Networking, especially the last mile, especially mobile
 networking, especially 5G, is a power hog. The amount of signal
 processing that goes into 5G and VDSL is amazing. If you want
 low power networking, use fiber, maybe bridge the last 5 meters
-with Wifi.
+with Wi-Fi.

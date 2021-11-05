@@ -17,7 +17,7 @@ I am collecting data from a number of plugs with power meters over Wi-Fi, using 
 
 ## What happened so far
 
-- [Plugs with Wifi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}}): In which I am asking what kind of power plug to use to collect usage data.
+- [Plugs with Wi-Fi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}}): In which I am asking what kind of power plug to use to collect usage data.
 - [Gosund and Tasmota]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}): In which I describe how to convert Gosund SP 111 plugs to Tasmota.
 - [Air Quality Sensors]({{< ref "/content/posts/2020-05-25-air-quality-sensors.md" >}}): In which I ask for Air Quality sensors, specifically with CO2 level metrics.
 

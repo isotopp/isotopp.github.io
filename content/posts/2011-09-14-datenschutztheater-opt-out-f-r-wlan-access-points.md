@@ -47,9 +47,9 @@ oder Windows7-Telefons:
 1. Das Telefon schaut, ob es genaue Positionsdaten über GPS bekommen kann.
    Das kann es, wenn GPS eingeschaltet ist.
 1. In diesem Fall - und nur in diesem Fall - macht es Sinn, auch
-   auf das Wifi zu gucken, wenn man das kann, und die Feldstärken,
+   auf das Wi-Fi zu gucken, wenn man das kann, und die Feldstärken,
    MAC-Adressen und ESSID-Kennungen der sichtbaren WLAN-Stationen
-   aufzuzeichnen. Das funktioniert, wenn Wifi angeschaltet ist, und es
+   aufzuzeichnen. Das funktioniert, wenn Wi-Fi angeschaltet ist, und es
    funktioniert bei verschlüsselten und unverschlüsselten WLANs, da die
    Beacon-Pakete immer unverschlüsselt gesendet werden. 
 1. Wenn Schritt 1 und Schritt 2 erfolgreich sind, dann lädt das Telefon

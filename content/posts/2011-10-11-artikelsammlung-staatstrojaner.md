@@ -88,7 +88,7 @@ und dann wird Karlsruhe darüber zu entscheiden haben." Das hat Karlsruhe
 dann getan, und die Politik und die Exekutive haben das gemeinschaftlich
 ignoriert.
 
-[Bundestrojaner im Handelsblatt]({% link _posts/2007-04-18-bundestrojaner-im-handelsblatt.md  %}) - 
+[Bundestrojaner im Handelsblatt]({{< ref "/content/posts/2007-04-18-bundestrojaner-im-handelsblatt.md" >}}) - 
 Das Handelsblatt interviewt Thomas Michael Menk, Leiter Konzernsicherheit
 Daimler-Chrysler, vormals im Bundesministerium des Innern und im Bundesamt
 für Verfassungsschutz tätig. Die Soundbites sind entsprechend, aber seine

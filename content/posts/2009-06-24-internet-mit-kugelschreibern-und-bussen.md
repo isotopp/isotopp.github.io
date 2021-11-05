@@ -15,7 +15,7 @@ title: Internet mit Kugelschreibern (und Bussen)
 
 Das da ist Kris.
 
-Mein Rechner hat keine Internet-Karte. Er hat Ethernet, Wifi, Bluetooth, und
+Mein Rechner hat keine Internet-Karte. Er hat Ethernet, Wi-Fi, Bluetooth, und
 wenn er ein wenig älter wär hätte er auch noch ISDN oder einen
 Modem-Anschluß. Aber eine Internet-Karte steckt da nicht drin.
 

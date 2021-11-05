@@ -8,7 +8,7 @@ tags:
 - data center
 title: IT modernisieren und konsolidieren
 ---
-Ich schrieb in einem [Twitter Thread](https://twitter.com/isotopp/status/1313084134168944640) über [Posix Dateisysteme vs. Object Stores]({% link  _posts/2020-10-05-what-are-the-problems-with-posix.md %}):
+Ich schrieb in einem [Twitter Thread](https://twitter.com/isotopp/status/1313084134168944640) über [Posix Dateisysteme vs. Object Stores]({{< ref "/content/posts/2020-10-05-what-are-the-problems-with-posix.md" >}}):
 
 > UNIX FS ist 1974.
 > BSD FFS ist 1984.

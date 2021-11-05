@@ -58,4 +58,4 @@ integrated into their content and shown "as their own". Ad Networks are
 responsible for the way the selectors they offer are being used. 
 
 The German construct of Störerhaftung works in all directions, not just
-against private Wifi offerings.
+against private Wi-Fi offerings.

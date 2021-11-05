@@ -48,7 +48,7 @@ Often these services do create instances for read capacity, and getting fault to
 
 Now, if you switch from local storage to distributed storage, you very often get redundant storage. For transactional workloads this is often a RAID-1 with three copies (`n=3`). Most customers of them don't actually need that: Because they create capacity for read scaleout, they only care about independence of failures, not avoiding them. So again, what they want is anti-affine placement, for example by propagating tags down the stack. 
 
-So imagine [a lot of MySQL databases]({% link _posts/2021-03-24-a-lot-of-mysql.md  %}), for example on Openstack. The volumes of each replication chain are tagged with the replication chain name, like `chain=<x>`. If we could tell the storage to place all volumes with identical `chain` tag values on different physical drives, ideally on different storage nodes in different racks, storing data with `n=1` would be just fine.
+So imagine [a lot of MySQL databases]({{< ref "/content/posts/2021-03-24-a-lot-of-mysql.md" >}}), for example on Openstack. The volumes of each replication chain are tagged with the replication chain name, like `chain=<x>`. If we could tell the storage to place all volumes with identical `chain` tag values on different physical drives, ideally on different storage nodes in different racks, storing data with `n=1` would be just fine.
 
 Cassandra, Elastic and Kafka could work with the same mechanism, because they, too, have native solutions to provide redunancy on JBODs at the application level.
 

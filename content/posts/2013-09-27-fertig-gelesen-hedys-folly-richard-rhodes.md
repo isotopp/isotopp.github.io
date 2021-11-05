@@ -16,7 +16,7 @@ Hedy Lamarr (1914-2000), das Gesicht von der CorelDraw-Packung, war zu ihrer Zei
 
 [Hedy's Folly](https://www.amazon.de/Hedys-Folly-Breakthrough-Inventions-Beautiful/dp/0307742954)
 
-Diese Biographie beschäftigt sich mit dem Leben von Hedy Lamarr und dem Musiker George Antheil, mit der Erfindung des Frequenzsprungverfahrens und der Spread Spectrum Technik, die heute die Grundlage von Wifi, Mobilfunk und Bluetooth ist, und wie das alles zusammen gehört.
+Diese Biographie beschäftigt sich mit dem Leben von Hedy Lamarr und dem Musiker George Antheil, mit der Erfindung des Frequenzsprungverfahrens und der Spread Spectrum Technik, die heute die Grundlage von Wi-Fi, Mobilfunk und Bluetooth ist, und wie das alles zusammen gehört.
 
 Die faszinierende Geschichte von einer Frau, die viel, viel mehr als ein hübsches Gesicht in Hollywood war.
 

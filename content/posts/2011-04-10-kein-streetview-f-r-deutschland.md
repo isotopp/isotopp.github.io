@@ -47,6 +47,6 @@ vergammeln, mindestens bis sich herausgestellt hat, wie doll Microsoft mit
 ihrem Streetview Clone auf das Maul bekommen haben werden.
 
 **Update:** Eine gute Übersicht über Firmen, die 
-[Wifi Positionsdatenbanken](http://wlanbook.com/wifi-positioning-databases/)
+[Wi-Fi Positionsdatenbanken](http://wlanbook.com/Wi-Fi-positioning-databases/)
 aktuell halten. Mit dabei: Jedes iPhone mit iOS 3.2 oder höher (wenn man es
 ihm nicht abgewöhnt).

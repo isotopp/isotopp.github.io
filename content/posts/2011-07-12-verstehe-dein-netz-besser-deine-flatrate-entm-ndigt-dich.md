@@ -42,6 +42,6 @@ Trafficlimits, Weitergabeverbote, gesperrte Dienste oder Adressen?
 |----------:|:--------|
 | Heim-DSL  | 45-60 GB/Monat |
 | Handy 3G  | um die 800 MB/Monat |
-|Handy Wifi | um die 5 GB/Monat |
+|Handy Wi-Fi | um die 5 GB/Monat |
 |      Dedi | 3-4 GB/Tag Blogdedi, 2-3 GB/Tag Maildedi |
 

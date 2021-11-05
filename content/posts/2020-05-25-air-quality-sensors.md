@@ -7,12 +7,12 @@ tags:
 - iot
 title: Air Quality Sensors
 ---
-In an earlier episode I asked for [Plugs with Wifi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}}) and ended up with [Gosund and Tasmota]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
+In an earlier episode I asked for [Plugs with Wi-Fi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}}) and ended up with [Gosund and Tasmota]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
 
 [![](/uploads/2020/05/temp-question.png)](https://twitter.com/isotopp/status/1264943546085322754)
-*Now that I have Powermeter Plugs everywhere: What are good sensors for temperature, humidity and CO2 that can be tasmotified? Wifi, http or mqtt?*
+*Now that I have Powermeter Plugs everywhere: What are good sensors for temperature, humidity and CO2 that can be tasmotified? Wi-Fi, http or mqtt?*
 
-I was pointed to [Xiaomi Aqara](https://www.amazon.de/gp/product/B07SB2C327), but these do not do Wifi, but Zigbee - whatever that is, it is spoken by [Zigbee USB Gateway Sticks](https://www.amazon.de/gp/product/B07PZ7ZHG5) and works with Raspi. We'll see.
+I was pointed to [Xiaomi Aqara](https://www.amazon.de/gp/product/B07SB2C327), but these do not do Wi-Fi, but Zigbee - whatever that is, it is spoken by [Zigbee USB Gateway Sticks](https://www.amazon.de/gp/product/B07PZ7ZHG5) and works with Raspi. We'll see.
 
 [Christian Kahlo](https://twitter.com/ckahlo/status/1264953270298173445) mentioned [GY-BME280](https://www.amazon.de/dp/B07FS95JXT) Sensors, which can be connected to any ESP Tasmota device, and work with the "sensors"-Edition of Tasmota just fine. Worth a try. [Jens Dibbern](https://twitter.com/datengaertner/status/1264949436284899328) points to generic NodeMCU modules and BME Sensors again.
 

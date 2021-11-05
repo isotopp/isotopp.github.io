@@ -8,7 +8,7 @@ tags:
 - sonos
 title: Sonos Recycle Mode
 ---
-Sonos is a company that makes Wifi Connected speakers. They
+Sonos is a company that makes Wi-Fi Connected speakers. They
 offer acceptable sound quality and an extremely good user
 experience. They also so far have never cancelled support for
 any of their speakers.
@@ -23,10 +23,10 @@ in particular their
 - the Connect.
 
 The latter two (the Connect products) are somewhat obsolete as
-they were necessary when normal Wifi was usually not able to
+they were necessary when normal Wi-Fi was usually not able to
 carry sound data at the required reliability, so Sonos speakers
-built their own Wifi Mesh network separately from the usual home
-Wifi. With newer Wifi standards and recently also 5 Ghz this was
+built their own Wi-Fi Mesh network separately from the usual home
+Wi-Fi. With newer Wi-Fi standards and recently also 5 Ghz this was
 no longer necessary.
 
 - The Play:5 (1st generation) speaker, the only one currently
@@ -84,7 +84,7 @@ Especially the limited amount of memory makes it increasingly
 difficult to even install the most current versions of their
 software. New functionality such as Airplay 2, and new services
 require more memory and, in case of Airplay 2 also more CPU and
-more Wifi bandwidth than 10 year old piece of hardware
+more Wi-Fi bandwidth than 10 year old piece of hardware
 has. 
 
 They would like to shrink the installed base of their outdated

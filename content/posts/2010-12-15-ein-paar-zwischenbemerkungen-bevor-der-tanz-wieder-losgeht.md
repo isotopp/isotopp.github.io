@@ -165,7 +165,7 @@ sind offensichtlich unmögliche Forderungen.
 Wir leben in einer Gesellschaft mit Technologie, die es beliebigen Personen -
 auch Kindern - ermöglicht, sich ad-hoc zu vernetzen und Daten
 auszutauschen. Das kann per Speicherkarten gehen, USB-Stick, Bluetooth,
-lokale Wifi-Hotspots, lokale ad-hoc Kabelnetze wie auf LAN-Parties,
+lokale Wi-Fi-Hotspots, lokale ad-hoc Kabelnetze wie auf LAN-Parties,
 P2P-Netzwerkstrukturen auf dem Substrat des Internet oder Darknets wie tor
 und Freenet. Oh, und normalen Internet-Zugriffen, einige davon mit
 unverschlüsseltem http.

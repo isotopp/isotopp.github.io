@@ -29,7 +29,7 @@ It is unclear, if "No Updates" means "No functional updates" or if they will eff
 
 ## What is Sonos focus?
 
-Meanwhile, while Sonos is trying to play in the Home Voice Gadget market, their Sound Experience is increasingly looking long in the tooth. I mean, the actual sound the things make is pretty nice, but getting signals into Sonos Systems is somewhat ugly. I now have a Bluetooth Speaker (Non-Sonos) attached to my Windows Steam Machine, because I can't Wifi my "Elite: Dangerous" to my Sonos easily. How about the Desktop App being a Sound Source for the Speakers? Right, can't do that unless the source is a Mac and the target is… the only IKEA speaker in my home. That's pretty lame.
+Meanwhile, while Sonos is trying to play in the Home Voice Gadget market, their Sound Experience is increasingly looking long in the tooth. I mean, the actual sound the things make is pretty nice, but getting signals into Sonos Systems is somewhat ugly. I now have a Bluetooth Speaker (Non-Sonos) attached to my Windows Steam Machine, because I can't Wi-Fi my "Elite: Dangerous" to my Sonos easily. How about the Desktop App being a Sound Source for the Speakers? Right, can't do that unless the source is a Mac and the target is… the only IKEA speaker in my home. That's pretty lame.
 
 ![](/uploads/2020/03/sonos-airplay.png)
 
