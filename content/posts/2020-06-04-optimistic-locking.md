@@ -53,7 +53,7 @@ It has an integer field `id`, which is the primary key, and two data fields, `na
 
 The web form shows these values, and as hidden fields, also preserves the pre-edit values. So we get the `id` field to identify rows, and then hidden fields `oldname` and `oldcity`, and the matching visible edit fields `name` and `city`.
 
-```html{% raw %}
+```html
 {% extends "base.html" %}
 {% block content %}
 	{% for row in table %}
@@ -70,7 +70,7 @@ The web form shows these values, and as hidden fields, also preserves the pre-ed
 	</tr>
 	{% endfor %}
 {% endblock %}
-{% endraw %}```
+```
 
 ![](/uploads/2020/06/optimistic-locking-1.png)
 
