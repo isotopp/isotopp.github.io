@@ -13,7 +13,7 @@ I have been asked to document my home sensor network. Being married to a person 
 1. No cloud. We are running all services locally.
 2. No control, only metrics.
 
-I am collecting data from a number of plugs with power meters over Wifi, using the MQTT protocol. I am also collecting data from a number of temperature sensors over Zigbee, and convert to MQTT. The MQTT data is ingested into Influx, and then read and plotted in Grafana. All of this is dockered and runs locally on an Ubuntu server.
+I am collecting data from a number of plugs with power meters over Wi-Fi, using the MQTT protocol. I am also collecting data from a number of temperature sensors over Zigbee, and convert to MQTT. The MQTT data is ingested into Influx, and then read and plotted in Grafana. All of this is dockered and runs locally on an Ubuntu server.
 
 ## What happened so far
 
@@ -57,14 +57,13 @@ Bus 002 Device 084: ID 1cf1:0030 Dresden Elektronik
 # ls -l /dev/ttyACM0
 crw-rw---- 1 root dialout 166, 0 Nov 15 11:51 /dev/ttyACM0
 ```
-
-The instructions say you should be connecting the conbee to the device using a USB cable, to keep it away from the device HF. This will improve the reach of the antenna supposedly a lot.
+The instructions say you should be connecting the Conbee to the device using a USB cable, to keep it away from the device HF. This will improve the reach of the antenna supposedly a lot.
 
 ![](/uploads/2020/11/iot-conbee.jpg)
 
 *Dresden Elektronik ConBee attached to the Ubuntu fileserver using a USB cable.*
 
-In my case, the ConBee can see the sensors on the top floor and the floor below, but cannot reach the shed or the ground floor.
+In my case, the ConBee can see the sensors on the top floor and the floor below, but cannot reach the shed or the first floor.
 
 ### Repeaters
 
@@ -74,23 +73,23 @@ What I did was purchase a few [TRÅDFRI Signal repeaters](https://www.ikea.com/u
 
 The repeaters need to be paired with the ConBee. That is done by putting the ConBee into open mode, and then poking a small hole in the TRÅDFRI Signal repeater with a SIM tool or a paper clip. The single LED in the repeater will dim, blink, and 30s later the gateway has picked up the new device.
 
-The repeaters have substantially better antennas than the ConBee. I purchased three, estimating I would need them to chain from the top floor across the first floor and the ground floor into the shed, but actually one repeater on the first floor would have been sufficient. On the other hand these devices are 10 Euro each, so I do not really care.
+The repeaters have substantially better antennas than the ConBee. I purchased three, estimating I would need them to chain from the top floor across the first floor and the first floor into the shed, but actually one repeater on the first floor would have been sufficient. On the other hand these devices are 10 Euro each, so I do not really care.
 
 ### Sensors
 
-I am using Aqara sensors which report temperature, humidity and pressure. The pressure sensors are impressive - they are long term stable, and they register when I take down a sensor from the second floor to the ground floor. The devices are extremely small - they are powered by a CR2032 cell (eg IKEA PLATTBOJ), and can run off it for around a year. The device is about twice as thick as the CR2032, and only slightly larger than the battery.
+I am using Aqara sensors which report temperature, humidity and pressure. The pressure sensors are impressive - they are long term stable, and they register when I take down a sensor from the second floor to the first floor. The devices are tiny - they are powered by a CR2032 cell (e.g. IKEA PLATTBOJ), and can run off it for around a year. The device is about twice as thick as the CR2032, and only slightly larger than the battery.
 
-They come with two double sided adhesive rings, have a pairing button on one side and a tiny blue indicator LED that only signals pairing and is otherwise unused.
+They come with two double-sided adhesive rings, have a pairing button on one side and a tiny blue indicator LED that only signals pairing and is otherwise unused.
 
-They report measurements aynchronously as the data changes, which makes MQTT a much better suited protocol then HTTP.
+They report measurements asynchronously as the data changes, which makes MQTT a much better suited protocol then HTTP.
 
-They are available on Amazon from a number of makers, at vastly different prices and delivery times. I assume that a 100-pack of these directly from Shenzen comes in at 2.50 Euro/pc or so - individual sensors incl. shipping come in at $6.50 at Aliexpress. [Here](https://www.amazon.de/gp/product/B07SB2C327), [here](https://www.amazon.de/gp/product/B07RQTQ4JH) and [here](https://www.amazon.de/gp/product/B088ZT28T6) are some sources, but I have seen them as low as 10-12 Euro/pc.
+They are available on Amazon from a number of makers, at vastly different prices and delivery times. I assume that a 100-pack of these directly from Shenzhen comes in at 2.50 Euro/pc or so - individual sensors incl. shipping come in at $6.50 at Aliexpress. [Here](https://www.amazon.de/gp/product/B07SB2C327), [here](https://www.amazon.de/gp/product/B07RQTQ4JH) and [here](https://www.amazon.de/gp/product/B088ZT28T6) are some sources, but I have seen them as low as 10-12 Euro/pc.
 
 ![](/uploads/2020/11/iot-aqara1.jpg)
 
-*A wireless mouse was delivered in container made from these plastic shells. I used one to protect the Aqare sensor against the weather.*
+*A wireless mouse was delivered in container made from these plastic shells. I used one to protect the Aqara sensor against the weather.*
 
-The Aqara sensor is not really an outdoor sensor. It works well on the east side of the house, but the west side is the local weather side, and needs more water protection. I know this, because the first sensor on this side of the house drowned and shorted out after a rainstorm. I have mounted the replacement sensor in an upside down, open plastic container, and the glued the container to the top bar of a window. The seems to work fine.
+The Aqara sensor is not really an outdoor sensor. It works well on the east side of the house, but the west side is the local weather side, and needs more water protection. I know this, because the first sensor on this side of the house drowned and shorted out after a rainstorm. I have mounted the replacement sensor in an upside down, open plastic container, and then glued the container to the top bar of a window. The seems to work fine.
 
 ![](/uploads/2020/11/iot-aqara2.jpg)
 
@@ -98,15 +97,15 @@ The Aqara sensor is not really an outdoor sensor. It works well on the east side
 
 ### Wall Plugs
 
-I bought a very large number of [Gosund SP111 Wall Plugs](https://www.amazon.de/gp/product/B085RFKVW4) and converted them to Tasmota [using Tuya-Convert]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}). The plugs are attractive, because they can do the full 16A and are small enough to fit next to each other on a regular plug extender, if the slots are angled at 45deg (the device has a button, and the Gosounds touch each other on small extenders, pressing each others button).
+I bought a very large number of [Gosund SP111 Wall Plugs](https://www.amazon.de/gp/product/B085RFKVW4) and converted them to Tasmota [using Tuya-Convert]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}). The plugs are attractive, because they can do the full 16A and are small enough to fit next to each other on a regular plug extender, if the slots are angled at 45deg (the device has a button, and the Gosund plugs are touching each other on small extenders, pressing each other's button).
 
-This is a solder-free conversion, using the WiFi in a Raspi 4. Newer versions of this plug do no longer convert this way, and require wires to reflash initially.
+This is a solder-free conversion, using the Wi-Fi in a Raspi 4. Newer versions of this plug do no longer convert this way, and require wires to re-flash initially.
 
-On the other hand, [DeLOCK WLAN Steckdosen](https://geizhals.de/delock-wlan-steckdosen-schalter-mqtt-mit-energieueberwachung-11827-a2365959.html) are the same device and come pre-tasmotified.
+On the other hand, [DeLOCK WLAN Steckdosen](https://geizhals.de/delock-wlan-steckdosen-schalter-mqtt-mit-energieueberwachung-11827-a2365959.html) are the same device and come with Tasmota preinstalled.
 
 In any case you are looking at around 20 Euro/plug.
 
-The plugs connect to the local 2.4 Ghz Wifi, and after tasmotification speak HTTP(S) and MQTT(s).
+The plugs connect to the local 2.4 Ghz Wi-Fi, and after Tasmota installation speak HTTP(S) and MQTT(s).
 
 ## Software
 
@@ -128,9 +127,9 @@ Filesystem           Type  Size  Used Avail Use% Mounted on
 /dev/mapper/data-iot xfs    30G  7.3G   23G  25% /export/iot
 ```
 
-I am providing sufficient storage for about one year of data. I am using XFS as a file system, because while having higher commit latency than ext4, it has close to no jitter and consequently much better plannable performance.
+I am providing sufficient storage for about one year of data. I am using XFS as a file system, because while having higher commit latency than ext4, it has close to no jitter and consequently much better plan-able performance.
 
-This is a LVM2 partition on the `data` volume group, which containts two Samsung EVO 860 4 GB drives.
+This is a LVM2 partition on the `data` volume group, which contains two Samsung EVO 860 4 GB drives.
 
 ```console
 # pvs | grep data
@@ -156,7 +155,7 @@ Created this way:
 
 I am using [docker-compose](https://docs.docker.com/compose/) to set this up and run it. This works remarkably well, and there is no need to run K8s on a single box, anyway.
 
-A deployment is specified in a file `docker-compose.yml`, which lists a number of containers and optionally a local virtual network segment. The deployment can make use of environmetn variables, which can be put into a file named `.env` (dotenv) in the same directory.
+A deployment is specified in a file `docker-compose.yml`, which lists a number of containers and optionally a local virtual network segment. The deployment can make use of environment variables, which can be put into a file named `.env` (dotenv) in the same directory.
 
 ### mosquitto
 
@@ -374,7 +373,7 @@ As soon as we have data in InfluxDB, we can start to define dashboards.
 
 ### Zigbee2MQTT
 
-And this is where we start configuration for real, the entry point for our data: Once everything is running we shoudl see a `/export/iot/z2m/configuration.yaml`.
+And this is where we start configuration for real, the entry point for our data: Once everything is running we should see a `/export/iot/z2m/configuration.yaml`.
 
 It will look somewhat like this:
 
@@ -397,7 +396,7 @@ That is:
 - We post data to zigbee2mqtt.
 - We need to tell z2m where our ConBee is located, as a device.
 
-When we have done that, and brought the entire apparatus up, we will be able to have devices join and they are being added to the `configration.yaml`.
+When we have done that, and brought the entire apparatus up, we will be able to have devices join, and they are being added to the `configration.yaml`.
 
 After that we can edit the file to give them proper names.
 
@@ -473,7 +472,7 @@ info  2020-11-15 17:42:45: MQTT publish: topic 'zigbee2mqtt/bathroom/SENSOR', pa
 
 The payload here is JSON, which we parse, and push into Influxdb. Or let `telegraf` do that, automatically.
 
-**Why the `service networking restart`?** For some reasons, when downing or stopping services from docker-compose, docker-compose will unconfigure the routes to my Ubuntu. I then need to connect a keyboard, log in and manually run `service networking restart` to fix this.
+**Why the `service networking restart`?** For some reasons, when downing or stopping services from docker-compose, docker-compose will remove all the routes to my Ubuntu. I then need to connect a keyboard, log in and manually run `service networking restart` to fix this.
 
 I have not yet found out why this happens.
 
