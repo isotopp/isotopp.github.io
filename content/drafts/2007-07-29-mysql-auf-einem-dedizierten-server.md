@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-07-29T10:09:07Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - dedicated server
 - hardware

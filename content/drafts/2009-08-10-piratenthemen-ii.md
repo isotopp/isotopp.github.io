@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-08-10T08:47:05Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - piraten

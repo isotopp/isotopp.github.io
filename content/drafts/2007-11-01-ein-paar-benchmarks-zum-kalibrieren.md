@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-11-01T14:38:10Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - benchmark
 - dateisysteme

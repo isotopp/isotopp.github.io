@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-09-26T08:34:19Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - anderswo
 - damals

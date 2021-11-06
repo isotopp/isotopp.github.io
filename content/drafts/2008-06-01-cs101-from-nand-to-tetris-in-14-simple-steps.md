@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-06-01T04:30:35Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - compiler
 - free software

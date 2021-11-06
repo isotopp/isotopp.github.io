@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-06-17T08:35:07Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - routing

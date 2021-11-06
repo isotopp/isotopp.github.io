@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-06-18T08:35:02Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - jugendschutz
 - politik

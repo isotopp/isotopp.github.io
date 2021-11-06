@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-10-10T09:46:49Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - dateisysteme
 - datenbanken
@@ -11,13 +10,14 @@ tags:
 - lang_de
 title: Welches Dateisystem für meinen Datenbankserver
 ---
-<!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> Hier wieder eines meiner berüchtigten Irc-Logs. Ich geh dann mal wieder ins Bett. <blockquote>SiMOON> Weiß einer von Euch, wieviel Dateien ich sinnvollerweise in einem Verzeichnis haben sollte, maximal, ohne daß es langsam wird?
+
+ Hier wieder eines meiner berüchtigten Irc-Logs. Ich geh dann mal wieder ins Bett. <blockquote>SiMOON> Weiß einer von Euch, wieviel Dateien ich sinnvollerweise in einem Verzeichnis haben sollte, maximal, ohne daß es langsam wird?
 e-voc> 255 :)
 e-voc> Oder ist das heute nicht mehr so?
 
 Isotopp> e-voc: Das ist sehr vom Dateisystem abhängig, und im Fall von ext2/ext3 auch davon, ob du Debian verwendest. Wenn du ein Dateisystem verwendest, das Verzeichnisse als Baumstrukturen verwaltet, dann spielt die Anzahl der Dateien in einem Verzeichnis kaum noch eine Rolle. Das ist bei XFS und Reiserfs immer der Fall, und bei ext2/ext3 ist es der Fall, wenn das Dateisystem mit dem Feature dir_index angelegt worden ist.</blockquote>
 
-<blockquote>Isotopp> e-voc: Das Feature dir_index wir von zeitgemäßen Distributionen automatisch als Flag gesetzt, wenn man mke2fs verwendet.
+Isotopp> e-voc: Das Feature dir_index wir von zeitgemäßen Distributionen automatisch als Flag gesetzt, wenn man mke2fs verwendet.
 e-voc> :O
 
 Isotopp> e-voc: Ich kenne jedoch einen Haufen Debian-Installationen, die mke2fs ohne automatisches dir_index verwenden.
@@ -88,4 +88,4 @@ Isotopp> Debian?
 SiMOON> Jep.
 Isotopp> Debian ist sehr langsam darin, wichtige neue Features zu übernehmen. dir_index haben die wohl erst sehr sehr spät per default enabled.
 SiMOON> Kann sein, der Server ist etwas älter. Die, die ich neu gemacht habe, haben es alle eingeschaltet. 
-Isotopp> Ich habe so einige gut gepflegte Vorurteile gegen Debian als Produktionsdistribution, unter anderem wegen solcher Sachen. Aber das ist ein anderer Rant, den ich ein anderes mal schreibe. Jedenfalls, wenn du ein debian haben willst, das funktioniert und skaliert, nimm ein Ubuntu. Danke sehr.</blockquote>
+Isotopp> Ich habe so einige gut gepflegte Vorurteile gegen Debian als Produktionsdistribution, unter anderem wegen solcher Sachen. Aber das ist ein anderer Rant, den ich ein anderes mal schreibe. Jedenfalls, wenn du ein debian haben willst, das funktioniert und skaliert, nimm ein Ubuntu. Danke sehr.

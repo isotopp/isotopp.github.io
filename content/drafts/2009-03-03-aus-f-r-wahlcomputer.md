@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-03-03T09:14:54Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - politik
 - wahl

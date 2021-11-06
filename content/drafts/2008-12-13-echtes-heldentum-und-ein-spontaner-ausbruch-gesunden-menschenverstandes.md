@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-12-13T16:41:42Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - free software
 - politik
@@ -11,7 +10,8 @@ tags:
 - lang_de
 title: Echtes Heldentum und ein spontaner Ausbruch gesunden Menschenverstandes
 ---
-<!-- s9ymdb:4469 --><img width="83" height="110" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/yodaorigami.serendipityThumb.jpg" alt=""  />  Anfang dieser Woche schrieb <a href="http://linuxlock.blogspot.com/2008/12/linux-stop-holding-our-kids-back.html">Ken Starks</a> vom HeliOS Projekt über eine Lehrerin in Austin, die nichts von freier Software und Linux wußte. HeliOS ist eine Initiative, die alte Computer als Spenden entgegen nimmt, sie mit Linux und anderer freier Software aufrüstet und sie Schulkindern ohne eigenen Rechner in Austin, TX zur Verfügung stellt. Einer dieser Schüler gab nun eine Demo seines Rechners und verteilte Linux-CDs, was die Aufmerksamkeit der Lehrerin, Karen, auf sich zog. Sie beschlagnahmte die Software und schrieb eine Mitteilung an Ken, denn: <blockquote>At this point, I am not sure what you are doing is legal. No software is free and spreading that misconception is harmful. These children look up to adults for guidance and discipline. I will research this as time allows and I want to assure you, if you are doing anything illegal, I will pursue charges as the law allows.
+
+Anfang dieser Woche schrieb <a href="http://linuxlock.blogspot.com/2008/12/linux-stop-holding-our-kids-back.html">Ken Starks</a> vom HeliOS Projekt über eine Lehrerin in Austin, die nichts von freier Software und Linux wußte. HeliOS ist eine Initiative, die alte Computer als Spenden entgegen nimmt, sie mit Linux und anderer freier Software aufrüstet und sie Schulkindern ohne eigenen Rechner in Austin, TX zur Verfügung stellt. Einer dieser Schüler gab nun eine Demo seines Rechners und verteilte Linux-CDs, was die Aufmerksamkeit der Lehrerin, Karen, auf sich zog. Sie beschlagnahmte die Software und schrieb eine Mitteilung an Ken, denn: <blockquote>At this point, I am not sure what you are doing is legal. No software is free and spreading that misconception is harmful. These children look up to adults for guidance and discipline. I will research this as time allows and I want to assure you, if you are doing anything illegal, I will pursue charges as the law allows.
 
 Mr. Starks, I along with many others tried Linux during college and I assure you, the claims you make are grossly over-stated and hinge on falsehoods. I admire your attempts in getting computers in the hands of disadvantaged people but putting linux on these machines is holding our kids back.</blockquote> Ken's Antwort auf das Schreiben von Karen erschien auch in seinem Blog, wurde von den einschlägigen Aggregatoren gefunden und machte so eine Riesenwelle.
 

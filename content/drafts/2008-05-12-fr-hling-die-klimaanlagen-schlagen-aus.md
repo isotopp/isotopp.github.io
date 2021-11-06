@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-05-12T05:15:55Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - hardware

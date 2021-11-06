@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-02-16T09:24:47Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - meme
 - sap

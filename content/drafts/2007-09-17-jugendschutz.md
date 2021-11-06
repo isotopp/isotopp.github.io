@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-09-17T06:04:02Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - comic
 - film

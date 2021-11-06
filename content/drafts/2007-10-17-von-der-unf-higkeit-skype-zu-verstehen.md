@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-10-17T11:31:42Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - skype

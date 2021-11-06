@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2006-11-19T10:22:25Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - deutschland
 - geld

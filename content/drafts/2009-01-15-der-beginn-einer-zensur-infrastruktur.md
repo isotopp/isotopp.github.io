@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-01-15T09:25:00Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - jugendschutz

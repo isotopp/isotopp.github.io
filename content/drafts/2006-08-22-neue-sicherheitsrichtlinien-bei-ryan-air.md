@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2006-08-22T14:43:59Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - reisen
 - security

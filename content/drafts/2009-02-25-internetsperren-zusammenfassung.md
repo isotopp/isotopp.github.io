@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-02-25T09:32:32Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - filter
 - jugendschutz

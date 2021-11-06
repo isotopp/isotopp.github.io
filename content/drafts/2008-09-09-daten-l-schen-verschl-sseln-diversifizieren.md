@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-09-09T13:32:24Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - datenschutz
 - identity

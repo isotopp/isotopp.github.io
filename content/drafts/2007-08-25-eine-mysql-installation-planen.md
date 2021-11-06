@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-08-25T20:08:45Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - datenbanken
 - mysql

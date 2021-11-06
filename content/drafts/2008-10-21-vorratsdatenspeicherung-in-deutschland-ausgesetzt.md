@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-10-21T14:07:05Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - politik
 - security

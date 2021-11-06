@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-08-11T09:55:06Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - identity
 - personalausweis

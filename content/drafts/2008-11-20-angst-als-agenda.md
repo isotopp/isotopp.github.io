@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-11-20T10:41:16Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - kultur

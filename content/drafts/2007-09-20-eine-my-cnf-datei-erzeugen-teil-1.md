@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2007-09-20T21:56:32Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - MySQL
 - lang_de

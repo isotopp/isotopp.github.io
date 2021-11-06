@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-10-23T10:38:07Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - media

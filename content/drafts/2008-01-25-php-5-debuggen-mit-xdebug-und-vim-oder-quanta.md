@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-01-25T18:44:33Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - debug
 - php

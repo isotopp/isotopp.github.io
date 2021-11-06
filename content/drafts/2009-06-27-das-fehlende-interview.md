@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2009-06-27T06:39:17Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - jugendschutz
 - piraten
@@ -14,7 +13,7 @@ title: Das fehlende Interview
 ---
 <a href='http://www.zeit.de/online/2009/26/leyen-heine-netzsperren?page=all'>Das Interview</a>, die ich eigentlich gerne gelesen hätte, das aber leider niemals geführt worden ist: <blockquote><b>ZEIT ONLINE</b>: Frau von der Leyen, Frau Heine, in den letzten Monaten haben Sie eine Art Fernduell geführt. Heute reden Sie hier in der ZEIT zum ersten Mal miteinander: Sie, Frau von der Leyen, haben ein Gesetz zur Sperrung von Kinderpornografie im Internet durchgesetzt, und Sie, Frau Heine, haben gegen dieses Gesetz eine Protestbewegung im Netz initiiert. Fassen wir die Ausgangslage zusammen: Was soll das Gesetz bewirken, Frau Ministerin?</blockquote>
 
-<blockquote></b>Ursula von der Leyen</b>: Das Gesetz macht deutlich: Kinderpornografie, also Bilder und Filme über Vergewaltigungen von Kindern und Säuglingen, wird grundsätzlich geächtet in unserem Land. Und wir setzen diese gesellschaftliche Ächtung auch durch, in der realen wie in der virtuellen Welt. Im Internet gelten keine anderen Freiheiten als anderswo. Denn wer kinderpornografische Bilder im Netz anklickt, der missbraucht die Kinder erneut und gibt einen Anreiz für die Produktion immer neuer Bilder.
+<b>Ursula von der Leyen</b>: Das Gesetz macht deutlich: Kinderpornografie, also Bilder und Filme über Vergewaltigungen von Kindern und Säuglingen, wird grundsätzlich geächtet in unserem Land. Und wir setzen diese gesellschaftliche Ächtung auch durch, in der realen wie in der virtuellen Welt. Im Internet gelten keine anderen Freiheiten als anderswo. Denn wer kinderpornografische Bilder im Netz anklickt, der missbraucht die Kinder erneut und gibt einen Anreiz für die Produktion immer neuer Bilder.
 
 Das heißt, wenn wir den Zugang zu solchen Bildern im Netz mit technischen Mitteln sperren, tragen wir auch zur Produktionsblockade bei. Eine ganze Reihe von Ländern tut das schon seit Jahren. Da habe ich mich gefragt, warum wird dieses Instrument nicht auch in Deutschland genutzt? Dagegen gab es immer zwei Argumente: Sperren seien technisch und juristisch unmöglich. Das erste Argument hat sich schnell erledigt: Warum soll die deutsche Telekom nicht schaffen, was der British Telecom möglich ist? Die rechtlichen Fragen mussten wir diskutieren, das hat sich auch gelohnt. Jetzt haben wir ein Gesetz verabschiedet, das ziemlich gut ist, wie ich finde, ausgewogen und vielschichtig.
 
@@ -36,6 +35,8 @@ Und das alles tut dieses Gesetz auf eine Weise, die nicht nur die Gewaltenteilun
 
 Und als krönenden Abschluß würde auch nichts nützen: der Staats- und Verfassungsrechtler Matthias Bäcker hält das Gesetz schon formal für verfassungswidrig, da eine solche Sperrung eine Medien- und keine Wirtschaftssache sei und der Bund daher gar keine Regelungskompetenz habe. Dieses Problem ist bei aller Bastelei am Inhalt niemals diskutiert worden: Wahrscheinlich kann der Bund hier lange herumschrauben, schon wegen dieser Art von Detail wird das vom Bundesverfassungsgericht in Nullkommanix wahrscheinlich einkassiert werden. Es ist diese Art von handwerklichem Fehler, die schon das Nichtraucherschutzgesetz abgeschossen hat und unsere Regierung macht diesen Fehler gleich noch einmal. Die Richter in Karlruhe müssen sich das nicht mal inhaltlich ansehen: Die nehmen das Gesetz gleich, führen das in den Schloßgarten in Karlsruhe und geben ihm in einer ruhigen Ecke den Gnadenschuß.
 
-Da frage ich mich doch, was dieser Zirkus wirklich soll! Diese Konstruktion ist so unglaublich schlecht, haben sie niemanden, der sich mit so etwas auskennt?</blockquote> Wenn Leute kritisieren, daß wir rethorisch schlecht sind, wenn Leute kritisieren, daß wir unsere Meinung nicht aggressiv genug vortragen und wenn Leute kritisieren, daß wir uns zu oft unterbrechen lassen, dann meinen sie das.
+Da frage ich mich doch, was dieser Zirkus wirklich soll! Diese Konstruktion ist so unglaublich schlecht, haben sie niemanden, der sich mit so etwas auskennt? 
+
+Wenn Leute kritisieren, daß wir rethorisch schlecht sind, wenn Leute kritisieren, daß wir unsere Meinung nicht aggressiv genug vortragen und wenn Leute kritisieren, daß wir uns zu oft unterbrechen lassen, dann meinen sie das.
 
 Das da oben ist die Message, die die Piraten, der AK Zensur und alle anderen hätten kommunizieren müssen. Der Fehler ist nicht, daß wir nicht auf die Argumente der Gegenseite eingehen. Der Fehler ist genau, daß wir es tun. Das ist kein Diskurs, der mit uns geführt wird und es ist kein Diskurs, den wir führen müssen. Wir reden nicht mit einer Gegenseite, wir reden mit einer Öffentlichkeit, auch wenn Interview drauf steht. Und wir müssen denen unsere Thesen füttern - Frau von der Leyen hört sowieso nicht zu. Das hat sie ja oft genug bewiesen.

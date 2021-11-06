@@ -3,7 +3,6 @@ author-id: isotopp
 date: "2008-05-06T07:46:14Z"
 draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - media
 - politik
