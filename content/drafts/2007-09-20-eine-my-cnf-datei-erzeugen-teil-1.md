@@ -1,13 +1,13 @@
 ---
-layout: post
-published: true
-title: Eine my.cnf Datei erzeugen (Teil 1)
 author-id: isotopp
-date: 2007-09-20 21:56:32 UTC
+date: "2007-09-20T21:56:32Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - MySQL
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Eine my.cnf Datei erzeugen (Teil 1)
 ---
 <!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> Was bisher geschah:
 Wir hatten einen <a href="http://blog.koehntopp.de/archives/1775-Hardware-fuer-ein-MySQL.html">coolen neuen Server</a> für MySQL gekauft und <a href="http://blog.koehntopp.de/archives/1804-Eine-MySQL-Installation-planen.html">MySQL drauf installiert</a>.
@@ -29,14 +29,14 @@ Jeder Server braucht eine eindeutige Server-ID, damit es später bei Einsatz von
 Außerdem sollten "port" und "socket"-Statements vorhanden sein, die die Portnummer und die Socketadresse festlegen, auf denen der Server lauscht. Wenn man den Server nicht von außen ansprechen können soll, weil etwa der Webserver auf derselben Maschine wie der Datenbankserver läuft, dann kann man auch bind-address = 127.0.0.1 festlegen. Für einen Cluster wird man stattdessen ein bind_address an die Virtual IP des geclusterten MySQL-Dienstes setzen wollen. Die Konfigurationsanweisung skip-networking ist überholt und wird durch bind-address = 127.0.0.1 ersetzt.
 
 
-{% highlight console %}
+{{< highlight console >}}
 basedir = /usr/local/mysql-enterprise-gpl-5.0.46-linux-i686-glibc23
 datadir = /mysql/data/produktion
 server_id = 3340
 port= 3340
 socket= /mysql/data/produktion/mysql.sock
 bind-address = cluster1.intern.koehntopp.de
-{% endhighlight %}
+{{< / highlight >}}
 
 
 [b]Optionen, die das Serververhalten ändern[/b]
@@ -50,13 +50,13 @@ Die Option "default_storage_engine" legt fest, mit welcher Storage-Engine Tabell
 [b]Zeichensätze[/b]
 
 
-{% highlight console %}
+{{< highlight console >}}
 lower_case_table_names = 1
 sql_mode = STRICT_ALL_TABLES,NO_AUTO_CREATE_USER,\
      NO_AUTO_VALUE_ON_ZERO,NO_ENGINE_SUBSTITUTION,\
      NO_ZERO_DATE,NO_ZERO_IN_DATE,ONLY_FULL_GROUP_BY
 default-storage-engine=MyISAM
-{% endhighlight %}
+{{< / highlight >}}
 
 
 Seit Version 4.1 hat MySQL flexible Zeichensatzunterstützung. Die Details sind in den Artikeln <a href="http://blog.koehntopp.de/archives/1360-Zeichensatzaerger.html">Zeichensatzärger</a> und <a href="http://blog.koehntopp.de/archives/1424-MySQL-Zeichensatz-Grundlagen.html">MySQL Zeichensatz-Grundlagen</a> genauer erklärt. Mit der Option "character_set_server" wird der Default-Zeichensatz des Servers festgelegt - dieser Zeichensatz wird an CREATE DATABASE-Statements vererbt, bei denen der Zeichensatz nicht explizit angegeben wird. Entsprechend legt "collation_server" die Default-Collation fest, die an solche CREATE DATABASE-Statements vererbt wird.
@@ -66,10 +66,10 @@ In keinem Fall sollte ein Multibyte-Zeichensatz als Default für den Server oder
 Da MySQL Zeichensätze individuell für jedes Column-Objekt festlegen kann und Columns außerdem nachträglich von einem Zeichensatz ohne Datenverlust in einen anderen konvertieren kann, ist ein solcher Singlebyte-Zeichensatz kein Problem. Spalten, die Benutzereingaben aufnehmen sollen, die Zeichen enthalten können, die sich nur in utf8 darstellen lassen, können einzeln explizit als utf8 deklariert werden oder nachträglich in solche umgewandelt werden. Der Singlebyte-Zeichensatz als Default sorgt aber für sichere und sparsame Defaults.
 
 
-{% highlight console %}
+{{< highlight console >}}
 character_set_server = latin1
 collation_server = latin1_german1_ci
-{% endhighlight %}
+{{< / highlight >}}
 
 
 [b]Filehandles und Table Cache[/b]
@@ -78,10 +78,10 @@ MySQL legt Daten in Dateien ab. Je nach gewählter Konfiguration und Schemadefin
 Beim Öffnen einer Tabelle liest MySQL die Format-Datei der Tabelle (".frm"-Datei) ein, parsed sie und cached diese Definition. Außerdem wird das Filehandle zu der geöffneten Tabelle ebenfalls gecached. In MySQL bis Version 5.0 sind beide Caches noch gekoppelt und über die Variable "table_cache" kontrollierbar. Der Table Cache ist dabei in der Größe durch das open_files_limit beschränkt. Wenn man kann, sollte man den table_cache so groß machen, daß er größer als die Anzahl der aktiv verwendeten Tabellen im System ist.
 
 
-{% highlight console %}
+{{< highlight console >}}
 open_files_limit = 32768
 table_cache = 2048
-{% endhighlight %}
+{{< / highlight >}}
 
 
 [b]Threads und Thread Cache[/b]
@@ -91,12 +91,12 @@ Immer wenn eine Verbindung zu MySQL aufgebaut wird, erzeugt MySQL einen Connecti
 In einer JDBC-Verbindung oder einem anderen Umfeld mit Connection Pools ist der Thread Cache nutzlos und eine (zugegeben kleiner) Verschwendung von Ressourcen. In einem Umfeld, das nicht poolt und ständig Verbindungen auf- und abbaut, etwa eine typische PHP-Umgebung, ist er sinnvoll dimensioniert recht nützlich.
 
 
-{% highlight console %}
+{{< highlight console >}}
  # JDBC
 thread_cache_size = 8
 # PHP (für PHP gerne auch mehr)
 # thread_cache_size = 80
-{% endhighlight %}
+{{< / highlight >}}
 
 
 [b]Logs[/b]
@@ -108,13 +108,13 @@ Der Binlog-Cache ist ein Stück Speicher, in dem wir Transaktionen im Speicher z
 Ein Binlog wird als Datei immer größer, bis es max_binlog_size überschreitet. Dann wird ein neues Binlog begonnen. Ein neues Binlog wird auch begonnen, wenn der Server ein FLUSH LOGS-Kommando ausführt oder wenn der Server neu gestartet wird. Immer dann prüft er auch, ob Binlog-Files existieren, die älter als "expire_binlogs_days" Tage alt sind und löscht diese. "sync_binlog" verlangt, daß wir das Binlog transaktionssicher schreiben - wenn wir das auf 1 setzen, wird der Server aber sehr, sehr langsam.
 
 
-{% highlight console %}
+{{< highlight console >}}
 log_bin=/mysql/log/produktion/mysql-bin
 binlog_cache_size = 32K
 expire_logs_days = 7
 max_binlog_size = 100M
 sync_binlog = 0
-{% endhighlight %}
+{{< / highlight >}}
 
 
 Das globale Statement-Log wird mit "log" aktiviert und benannt. Da es alle Queries mitloggt, wird es sehr schnell sehr groß und kann durch das heftige Logschreiben auch den Server ausbremsen. Es sollte nicht aktiviert werden. Wer Queries mitloggen will, sollte sich stattdessen mit dem MySQL Proxy befassen.
@@ -126,7 +126,7 @@ Das Slow-Query-Log loggt alle Statements mit, deren Ausführung länger als "lon
 Schließlich bestimmen "tmpdir" und "slave_load_tmpdir" wo im Dateisystem der Server temporäre Tabellen und zu ladende Tempfiles ablegt. Es ist natürlich sinnvoll, solche Verzeichnisse auf das schnelle Array zu legen.
 
 
-{% highlight console %}
+{{< highlight console >}}
 #log=/mysql/log/produktion/full-query.log # do not use
 log_error=/mysql/log/produktion/mysql.err
 log_warnings=2
@@ -137,7 +137,7 @@ long_query_time=2
 
 tmpdir=/mysql/log/tmp
 slave_load_tmpdir=/mysql/log/tmp
-{% endhighlight %}
+{{< / highlight >}}
 
 
 (Im Teil 2: Threads + per Thread Limits)

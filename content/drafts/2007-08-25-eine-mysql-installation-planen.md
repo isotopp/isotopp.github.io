@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Eine MySQL Installation planen
 author-id: isotopp
-date: 2007-08-25 20:08:45 UTC
+date: "2007-08-25T20:08:45Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - datenbanken
 - mysql
 - work
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Eine MySQL Installation planen
 ---
 <!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> Für einen <a href="http://blog.koehntopp.de/archives/1775-Hardware-fuer-ein-MySQL.html">neuen MySQL-Server</a> muß nun die Installation geplant und durchgeführt werden und dann eine Konfiguration geschrieben werden.
 

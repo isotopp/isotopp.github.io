@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: 'Big Brother: Der Gipfel'
 author-id: isotopp
-date: 2006-11-19 10:22:25 UTC
+date: "2006-11-19T10:22:25Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - deutschland
 - geld
 - politik
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: 'Big Brother: Der Gipfel'
 ---
 Die umstrittene Produktion "<a href="http://blog.koehntopp.de/archives/1415-Heiligendamm-Ein-45-Mio-Euro-Knast.html">Big Brother: Der Gipfel</a>" soll nun doch in Heiligendamm prodziert werden. Für die nur 3 Tage dauernde Produktion, die zwischen dem 6.6 und dem 8.6. 2007 aus Heiligendamm ausgestrahlt werden soll, ist der Produktionsetat inzwischen auf 90 Millionen Euro angewachsen.
 

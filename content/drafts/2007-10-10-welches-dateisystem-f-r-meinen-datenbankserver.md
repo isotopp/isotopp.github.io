@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Welches Dateisystem für meinen Datenbankserver
 author-id: isotopp
-date: 2007-10-10 09:46:49 UTC
+date: "2007-10-10T09:46:49Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - dateisysteme
 - datenbanken
 - mysql
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Welches Dateisystem für meinen Datenbankserver
 ---
 <!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> Hier wieder eines meiner berüchtigten Irc-Logs. Ich geh dann mal wieder ins Bett. <blockquote>SiMOON> Weiß einer von Euch, wieviel Dateien ich sinnvollerweise in einem Verzeichnis haben sollte, maximal, ohne daß es langsam wird?
 e-voc> 255 :)

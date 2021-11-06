@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Daten - löschen, verschlüsseln, diversifizieren
 author-id: isotopp
-date: 2008-09-09 13:32:24 UTC
+date: "2008-09-09T13:32:24Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - datenschutz
 - identity
 - security
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Daten - löschen, verschlüsseln, diversifizieren
 ---
 <a href="http://www.heise.de/newsticker/Gestohlene-PwC-Datensaetze-fuer-Missbrauch-von-Click-Buy-benutzt-Update--/meldung/115621">Gestohlene Datensätze von PwC mißbraucht</a> titelt Heise. Das Problem dahinter ist sehr weit verbreitet und in Firmen schwer zu bekämpfen: <blockquote>Die große Zahl der Daten kam offenbar zustande, weil PwC die Bewerberdaten aus vergangenen Jahren auch bei längst abgeschlossenen Verfahren aufbewahrt hatte.</blockquote> Ich weiß aus eigener Erfahrung, daß es unsagbar schwer ist in Firmen Datenlöschungsprozesse aufzusetzen. Dabei spielt es nur eine untergeordnete Rolle, ob eine solche Löschung gesetzlich gefordert ist, beschlossen wurde oder sinnvoll ist.
 

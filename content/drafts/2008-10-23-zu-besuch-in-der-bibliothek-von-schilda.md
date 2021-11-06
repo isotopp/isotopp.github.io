@@ -1,16 +1,16 @@
 ---
-layout: post
-published: true
-title: Zu Besuch in der Bibliothek von Schilda
 author-id: isotopp
-date: 2008-10-23 10:38:07 UTC
+date: "2008-10-23T10:38:07Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - internet
 - media
 - politik
 - web
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Zu Besuch in der Bibliothek von Schilda
 ---
 <div class="serendipity_imageComment_center" style="width: 491px"><div class="serendipity_imageComment_img"><a class='serendipity_image_link' href='http://www.bgblportal.de/BGBL/bgbl1f/bgbl108s2013.pdf'><!-- s9ymdb:4837 --><img class="serendipity_image_center" width="491" height="250"  src="/uploads/screenshot-kris-20081023-1.png" alt="" /></a></div><div class="serendipity_imageComment_txt">Verordnung über die Pflichtablieferung von Medienwerken an die Deutsche Nationalbibliothek (Pflichtablieferungsverordnung - PflAV). Ausdrucken der Verordnung verboten.</div></div>
 

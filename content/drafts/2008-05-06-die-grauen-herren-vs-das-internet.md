@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Die Grauen Herren vs. das Internet
 author-id: isotopp
-date: 2008-05-06 07:46:14 UTC
+date: "2008-05-06T07:46:14Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - media
 - politik
 - tv
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Die Grauen Herren vs. das Internet
 ---
 <a href="http://www.orionmagazine.org/index.php/articles/article/2962">The Gospel of Consumption</a>: <blockquote>[ ... ] despite the apparent tidal wave of new consumer goods and what appeared to be a healthy appetite for their consumption among the well-to-do, industrialists were worried. They feared that the frugal habits maintained by most American families would be difficult to break. Perhaps even more threatening was the fact that the industrial capacity for turning out goods seemed to be increasing at a pace greater than people&#8217;s sense that they needed them.
 

@@ -1,16 +1,15 @@
 ---
-layout: post
-published: true
-title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberrecht
-  in einer Flatrategesellschaft"'
 author-id: isotopp
-date: 2009-07-01 22:05:08 UTC
+date: "2009-07-01T22:05:08Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - copyright
 - media
 - piraten
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberrecht in einer Flatrategesellschaft"'
 ---
 [quote]Ich bin Mitglied in der Piratenpartei, aber dieser Text hier ist meine Sicht auf das Thema und nicht eine abgestimmte Position der Piratenpartei. -- Kris[/quote]
 

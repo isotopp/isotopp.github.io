@@ -1,9 +1,9 @@
 ---
-layout: post
-published: true
-title: Der Beginn einer Zensur-Infrastruktur
 author-id: isotopp
-date: 2009-01-15 09:25:00 UTC
+date: "2009-01-15T09:25:00Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - internet
 - jugendschutz
@@ -11,7 +11,7 @@ tags:
 - politik
 - security
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Der Beginn einer Zensur-Infrastruktur
 ---
 Jetzt wird mal so richtig durchreguliert, daß es nur so kracht! Aktueller Vorwand ist mal wieder der <a href="http://www.spiegel.de/netzwelt/web/0,1518,601179,00.html">Jugendschutz</a> und speziell die böse Kinderpornografie. Mehr Regulation und mehr Technik ist dringend notwendig, auch wenn <a href="http://www.spiegel.de/netzwelt/web/0,1518,601256,00.html">eine Studie der Harvard University</a> gerade rausgefunden hat, daß das Internet gar nicht so schlimm ist: <blockquote>Das Internet soll ein für Kinder gefährlicher Sündenpfuhl sein: An allen virtuellen Ecken lauern angeblich die Verführer. Ein Problem, sagt nun eine hochkarätige US-Studie zum Thema, sei das zwar durchaus - aber nur ein relativ kleines. Schlimm sei dagegen, was die Kids sich gegenseitig antun.</blockquote> Nicht wirklich <a href="http://blog.koehntopp.de/archives/772-Kinder,-Identitaetsmanagement,-Jugendschutz-und-das-Internet.html">eine neue Erkenntnis</a>.
 

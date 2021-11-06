@@ -1,14 +1,14 @@
 ---
-layout: post
-title:  'Someting Kubernetes Containers'
 author-id: isotopp
+date: "2017-06-03T14:52:26Z"
+draft: true
 feature-img: assets/img/background/rijksmuseum.jpg
-date: 2017-06-03 14:52:26 +0200
 tags:
 - lang_en
 - talk
 - containers
 - kubernetes
+title: Someting Kubernetes Containers
 ---
 
 002

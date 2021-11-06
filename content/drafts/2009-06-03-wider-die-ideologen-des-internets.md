@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Wider die Ideologen des Internets?
 author-id: isotopp
-date: 2009-06-03 14:05:53 UTC
+date: "2009-06-03T14:05:53Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - internet
 - politik
 - zensur
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Wider die Ideologen des Internets?
 ---
 Heinrich Wefing darf für die Zeit in <a href='http://www.zeit.de/2009/23/Internet-Grenze'>Wider die Ideologen des Internets!</a> einen Strohmann bauen. Er fragt scheinheilig: <blockquote>Nein, um Kinderpornografie im Internet geht es schon lange nicht mehr. Oder allenfalls noch am Rande. … Welche Regeln, so lautet die Frage, gelten im Internet? Ist dort alles erlaubt?</blockquote> und beantwortet die Frage sofort und korrekt »Das Recht gilt, offline wie online«.
 

@@ -1,14 +1,14 @@
 ---
-layout: post
-published: true
-title: Aus für Wahlcomputer
 author-id: isotopp
-date: 2009-03-03 09:14:54 UTC
+date: "2009-03-03T09:14:54Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - politik
 - wahl
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Aus für Wahlcomputer
 ---
 <a href='http://blog.koehntopp.de/plugin/tag/wahl'>Wahlcomputer</a> waren hier ja auch in der Vergangenheit schon einmal Thema. Das Bundesverfassungsgericht hat vor einer Viertelstunde gerade erklärt, daß der Einsatz von Wahlcomputern bei der Bundestagswahl 2005 verfassungswidrig war. Die <a href='http://www.bundesverfassungsgericht.de/pressemitteilungen/bvg09-019.html'>Pressemitteilung</a> erklärt die Entscheidungsgründe näher.
 

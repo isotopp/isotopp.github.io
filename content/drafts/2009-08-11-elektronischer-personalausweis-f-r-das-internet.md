@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Elektronischer Personalausweis für das Internet
 author-id: isotopp
-date: 2009-08-11 09:55:06 UTC
+date: "2009-08-11T09:55:06Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - identity
 - personalausweis
 - piraten
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Elektronischer Personalausweis für das Internet
 ---
 Allgemeine Entrüstung allerorten als Reaktion auf <a href='http://www.golem.de/0908/68966.html'>Regierung erwägt rückverfolgbaren "Internetausweis" für alle</a>.
 

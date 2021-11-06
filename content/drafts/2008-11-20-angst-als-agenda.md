@@ -1,16 +1,16 @@
 ---
-layout: post
-published: true
-title: Angst als Agenda
 author-id: isotopp
-date: 2008-11-20 10:41:16 UTC
+date: "2008-11-20T10:41:16Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - internet
 - kultur
 - media
 - politik
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Angst als Agenda
 ---
 Markus Beckedahl von <a href="http://www.netzpolitik.org">Netzpoltik.org</a> schreibt einen <a href="http://www.taz.de/1/debatte/kommentar/artikel/1/die-angst-vor-dem-user/">Kommentar</a> über den 3. IT-Gipfel der Bundesregierung und trifft den Nagel auf den Kopf: <blockquote>… Schon mit ihrem ersten IT-Gipfel 2006 hatte die Bundesregierung die Fachwelt irritiert. Statt eine offene Debatte über wichtige Fragen rund um die Informationsgesellschaft zu führen, berief sie eine geschlossene Veranstaltung ein, zu der selbst der Bundesdatenschutzbeauftragte nicht eingeladen wurde. Viele relevante gesellschaftliche Gruppen, die teils schon seit Jahrzehnten in diesem Themenfeld aktiv sind - vom Chaos Computer Club über die Gewerkschaften bis hin zu den Verbraucherschutzzentralen -, mussten draußen bleiben. …
 

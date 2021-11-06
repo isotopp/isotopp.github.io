@@ -1,14 +1,14 @@
 ---
-layout: post
-published: true
-title: Von der Unfähigkeit, Skype zu verstehen
 author-id: isotopp
-date: 2007-10-17 11:31:42 UTC
+date: "2007-10-17T11:31:42Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - computer
 - skype
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Von der Unfähigkeit, Skype zu verstehen
 ---
 <!-- s9ymdb:3523 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/skype.serendipityThumb.png" alt="" /> 
 Immer mal wieder, wenn Skype durch die Nachrichten läuft, finden sich <a href="http://www.echox.de/blog/archives/475-Warum-Skype-boese-ist.html">Hetzartikel</a> gegen Skype, meist gepaart mit dem Aufruf, sich doch an "standardkonforme" Software auf SIP-Basis zu halten. Dem liegt ein fundamentales Mißverständnis zugrunde, nämlich daß SIP/RTP-basierende Software das leisten könnte, was Skype leistet, bzw. ein fundamentales Unverständnis gegenüber dem, was Skype eigentlich darstellt.

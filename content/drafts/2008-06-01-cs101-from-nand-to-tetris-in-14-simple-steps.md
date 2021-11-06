@@ -1,9 +1,9 @@
 ---
-layout: post
-published: true
-title: 'CS101: From NAND to Tetris in 14 simple steps'
 author-id: isotopp
-date: 2008-06-01 04:30:35 UTC
+date: "2008-06-01T04:30:35Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - compiler
 - free software
@@ -11,7 +11,7 @@ tags:
 - informatik
 - software
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: 'CS101: From NAND to Tetris in 14 simple steps'
 ---
 Shimon Schocken preist seinen Kurs "From NAND to Tetris in 14 steps" an: 
 <object width="425" height="355"><param name="movie" value="http://www.youtube.com/v/JtXvUoPx4Qs&hl=en"></param><param name="wmode" value="transparent"></param><embed src="http://www.youtube.com/v/JtXvUoPx4Qs&hl=en" type="application/x-shockwave-flash" wmode="transparent" width="425" height="355"></embed></object> 

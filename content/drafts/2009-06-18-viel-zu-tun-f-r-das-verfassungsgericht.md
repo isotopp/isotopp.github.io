@@ -1,16 +1,16 @@
 ---
-layout: post
-published: true
-title: Viel zu tun für das Verfassungsgericht
 author-id: isotopp
-date: 2009-06-18 08:35:02 UTC
+date: "2009-06-18T08:35:02Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - jugendschutz
 - politik
 - überwachung
 - zensur
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Viel zu tun für das Verfassungsgericht
 ---
 Verfassungswidrige Gesetze sind eine seltsame Sache - auf der einen Seite ist hier Gesetz geworden, was gegen unsere Verfassung verstößt, auf der anderen Seite ist dies ein Verbrechen, das konsequenzenlos ist. Das Verfassungsgericht hat zur Zeit viel zu tun - auf dem <a href='http://twitter.com/BVerfG'>Twitterfeed</a> von @BVerfG kann man nachlesen, was so alles verfassungswidrig ist - fünf in diesem Monat und er ist erst halb rum.
 

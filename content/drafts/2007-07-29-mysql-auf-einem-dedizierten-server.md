@@ -1,16 +1,16 @@
 ---
-layout: post
-published: true
-title: MySQL auf einem dedizierten Server
 author-id: isotopp
-date: 2007-07-29 10:09:07 UTC
+date: "2007-07-29T10:09:07Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - dedicated server
 - hardware
 - mysql
 - work
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: MySQL auf einem dedizierten Server
 ---
 <!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> "Ich hab hier einen Dedi und da soll ein MySQL drauf" ist die kleinere Version der Frage aus <a href="http://blog.koehntopp.de/archives/1775-Hardware-fuer-ein-MySQL.html">Hardware für ein MySQL</a>. Das in diesem Artikel gesagte gilt natürlich auch im Großen und Ganzen hier, nur daß man bei der Auswahl der Hardware und der Konfiguration mehr oder weniger eingeschränkt ist. Insbesondere kann man in der Regel kein RAM nachlegen oder mehr Platten einbauen lassen.
 
@@ -34,10 +34,10 @@ Auf einem Dedi mit 4G Speicher soll ein MySQL installiert werden. Ein GB Speiche
 Für den Query Cache geben wir 32M bis 64M Speicher, für die von max_connections abhängigen Puffer werden wir so um die 200M verbrauchen und InnoDB wird nicht verwendet, sodaß wir 800M bis 1000M in den Key_buffer investieren könnnen. Die Prozeß-Zielgröße wird in der Prozeßliste als "VIRT" angezeigt, der tatsächlich belegte Speicher ist in der Spalte RES/RSS sichtbar. Wenn der Server neu gestartet ist, ist RES/RSS zunächst sehr klein und nähert sich dann langsam der VIRT-Größe an, wenn sich die Caches des Servers langsam auf Betriebstemperatur erwärmen.
 
 
-{% highlight console %}
+{{< highlight console >}}
   PID USER      PR  NI  VIRT   RES  SHR S %CPU %MEM    TIME+  COMMAND
 12862 mysql     15   0 1023m  919m 4088 S  0.0  2.0   0:09.70 mysqld-max
-{% endhighlight %}
+{{< / highlight >}}
 
 
 Es kann außerdem sinnvoll sein, die Swapneigung des Systems durch Setzen von vm.swappiness = 0 in /etc/sysctl.conf zu begrenzen.

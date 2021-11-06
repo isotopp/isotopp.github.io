@@ -1,16 +1,16 @@
 ---
-layout: post
-published: true
-title: Frühling - die Klimaanlagen schlagen aus
 author-id: isotopp
-date: 2008-05-12 05:15:55 UTC
+date: "2008-05-12T05:15:55Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - computer
 - hardware
 - karlsruhe
 - klima
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Frühling - die Klimaanlagen schlagen aus
 ---
 <!-- s9ymdb:4730 --><img class="serendipity_image_center" width="580" height="333" style="border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/klimaanlage.jpg" alt="" />
 

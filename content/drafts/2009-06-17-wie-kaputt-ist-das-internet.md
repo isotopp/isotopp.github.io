@@ -1,14 +1,14 @@
 ---
-layout: post
-published: true
-title: Wie 'kaputt' ist das Internet?
 author-id: isotopp
-date: 2009-06-17 08:35:07 UTC
+date: "2009-06-17T08:35:07Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - internet
 - routing
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Wie 'kaputt' ist das Internet?
 ---
 Jemand fragt mich per Mail: <blockquote>Was ich wissen möchte:  Wieviel Geräte "im Internet", also bei Providern (nicht bei einem speziellen, sondern bei allen) und im Backbone, sind typischerweise zu einem Zeitpunkt "kaputt" (falsch konfiguriert, abgeraucht, in Wartung, nicht verfügbar)?
 

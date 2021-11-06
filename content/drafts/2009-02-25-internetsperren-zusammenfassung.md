@@ -1,15 +1,15 @@
 ---
-layout: post
-published: true
-title: Internetsperren Zusammenfassung
 author-id: isotopp
-date: 2009-02-25 09:32:32 UTC
+date: "2009-02-25T09:32:32Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - filter
 - jugendschutz
 - politik
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Internetsperren Zusammenfassung
 ---
 Die Provider <a href='http://www.heise.de/newsticker/Arbeitsgruppe-zu-Kinderporno-Sperren-ergebnislos-vertagt-Update--/meldung/133287'>wollen nicht</a>, und schon gar nicht ohne Rechtsgrundlage. <blockquote>Die Gesprächsrunde endete eine halbe Stunde früher als geplant, wobei beide Seiten laut Teilnehmerbekunden "gerade noch um einen Eklat herumgekommen sind". Die Gespräche in der großen Runde sollen jetzt am 13. März fortgesetzt werden.</blockquote> Unsere Regierung will dagegen mit aller Macht: <blockquote>Generell soll das Familienministerium die großen Provider massiv bearbeiten. So wurde dem Justiziar eines Zugangsanbieters, der das Sperrvorhaben sehr kritisch sah, nach Informationen aus Branchenkreisen zwischenzeitlich die Zuständigkeit für den Themenbereich entzogen. Mit weiteren "Einzelmassagen" rechnen die beteiligten Provider, zu denen neben Telekom und Vodafone etwa auch 1&1, Alice/Hansenet, Freenet, Kabel Deutschland sowie O2/Telefonica gehören, nun vor dem nächsten Treffen.</blockquote>
 

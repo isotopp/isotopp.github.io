@@ -1,14 +1,14 @@
 ---
-layout: post
-published: true
-title: PHP 5 Debuggen mit Xdebug und vim oder Quanta
 author-id: isotopp
-date: 2008-01-25 18:44:33 UTC
+date: "2008-01-25T18:44:33Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - debug
 - php
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: PHP 5 Debuggen mit Xdebug und vim oder Quanta
 ---
 Als alter Sack bin ich ja einiges gewohnt, so auch das Debuggen von PHP Scripten mit echo, wenn es sein muß. Muß es aber nicht mehr, denn es gibt ja für PHP die Xdebug-Extension und für KDE den HTML-Editor Quanta, der das Xdebug-Protokoll "dbgp" sprechen kann, sagt die Doku. Xdebug ist ein richtiger Debugger für PHP, so wie man das kennt mit Breakpoints, Single Step und Watchpoints und Backtraces und allem.
 
@@ -21,7 +21,7 @@ Also einmal die Einzelteile zusammensetzen und gucken, was passiert.
 Zunächst einmal muß die Xdebug-Extension in PHP5 installiert werden. Suse Linux tut das nicht per Default, und bietet diese auch nicht zum Runterladen an. Indem man das Paket "php5-devel" installiert, bekommt man jedoch das Programm "pear" installiert, das einem PHP-Extensions aus dem Repository runterladen und installieren kann.
 
 Ich mache also 
-{% highlight console %}
+{{< highlight console >}}
 linux:~ # rpm -q php5-devel
 php5-devel-5.2.5-8.1
 linux:~ # pear install pecl/xdebug
@@ -61,9 +61,9 @@ Installing '/usr/lib/php5/extensions/xdebug.so'
 install ok: channel://pecl.php.net/xdebug-2.0.2
 configuration option "php_ini" is not set to php.ini location
 You should add "extension=xdebug.so" to php.ini
-{% endhighlight %}
+{{< / highlight >}}
  Die Meldung am Ende über die php.ini, die nicht geändert werden kann, ist normal in Suse Linux. Suse hat in PHP wie auch im Webserver Modularitätswahn, und man muß da manuell bei. Das tun wir dann auch gleich mal. Aber erst mal verifizieren wir unser Zeugs: 
-{% highlight console %}
+{{< highlight console >}}
 linux:~ # pear list-files pecl/xdebug
 Installed Files For pecl/xdebug
 ===============================
@@ -77,18 +77,18 @@ doc  /usr/share/php5/PEAR/doc/xdebug/xt.vim
 src  /usr/lib/php5/extensions/xdebug.so
 linux:~ # ls -l /usr/lib/php5/extensions/xdebug.so
 -rw-r--r-- 1 root root 613021 Jan 25 18:04 /usr/lib/php5/extensions/xdebug.so
-{% endhighlight %}
+{{< / highlight >}}
  Das ist das, was wir in unserem PHP5 laden wollen. Suse hat nun in /etc/php5 ein conf.d, das für jedes Modul eine Config enthält und für jede SAPI ein Verzeichnis, das die Basis-Ini für diese SAPI enthält, hier also /etc/php5/apache2 für den Webserver und /etc/php5/cli für das Kommandozeilen-PHP. Beide lesen alle Files aus conf.d ein. 
-{% highlight console %}
+{{< highlight console >}}
 linux:~ # cd /etc/php5/
 linux:/etc/php5 # ls -l
 total 1
 drwxr-xr-x 2 root root  72 Jan 14 21:53 apache2
 drwxr-xr-x 2 root root 104 Jan 25 13:34 cli
 drwxr-xr-x 2 root root 552 Jan 25 17:51 conf.d
-{% endhighlight %}
+{{< / highlight >}}
  Wir legen also einfach ein /etc/php5/conf.d/xdebug.ini an und konfigurieren dort. Danach sollten wir ein Kommandozeilen-PHP mit Xdebug bekommen. 
-{% highlight console %}
+{{< highlight console >}}
 linux:/etc/php5 # cd conf.d
 linux:/etc/php5/conf.d # cat xdebug.ini
 zend_extension=/usr/lib/php5/extensions/xdebug.so
@@ -99,9 +99,9 @@ xdebug.remote_port = 9000
 xdebug.remote_host = localhost
 ; xdebug.profiler_enable = 1
 ; xdebug.profiler_output_dir = /var/tmp
-{% endhighlight %}
+{{< / highlight >}}
  Ein schneller Aufruf von "php -m" sollte nun das Xdebug zweimal listen: Einmal als Zend-Extension und noch einmal als PHP-Modul, mit dem man die Zend-Extension durch <a href="http://www.xdebug.org/docs/all_functions">PHP-Funktionen</a> zerkonfigurieren kann. Hier die Probe: 
-{% highlight console %}
+{{< highlight console >}}
 kris@linux:~> php -v
 PHP 5.2.5 with Suhosin-Patch 0.9.6.2 (cli) (built: Dec 12 2007 03:47:43)
 Copyright (c) 1997-2007 The PHP Group
@@ -115,14 +115,14 @@ xdebug
 
 [Zend Modules]
 Xdebug
-{% endhighlight %}
+{{< / highlight >}}
  Man beachte, daß einmal xdebug und einmal Xdebug gelistet wird.
 
 Wenn wir jetzt ein Script schreiben, wird es sich [b]nicht[/b] an den Debugger connecten, wenn wir nicht darum bitten. Dazu brauchen wir eine geeignetes Script, einen geeigneten Debugger und eine geeignete Bitte.
 
 [b]Ein Testscript für die Kommandozeile[/b]
 
-{% highlight console %}
+{{< highlight console >}}
 kris@linux:~> cat probe.php
 #! /usr/bin/php5 -q
 <?php
@@ -135,7 +135,7 @@ kris@linux:~> cat probe.php
 
   echo fac(10);
 ?>
-{% endhighlight %}
+{{< / highlight >}}
 
 
 [b]Ein geeigneter Debugger (und die geeignete Bitte um Debug)[/b]
@@ -143,14 +143,14 @@ kris@linux:~> cat probe.php
 Vim enthält, wenn er mit "+python" und "+signs" übersetzt worden ist, die möglichkeit, ein Xdebug-Debuggerpaket zu installieren. Der Default-vim, wie er von Suse installiert wird, hat diese Möglichkeit nicht. Man kann das mit dem Kommando ":version" in vim schnell kontrollieren.
 
 Ich habe vim-enhanced von <a href="http://ftp.belnet.be/mirror/ftp.opensuse.org/distribution/10.3/repo/oss/suse/i586/vim-enhanced-7.1-44.i586.rpm">Belnet</a> über Smart installiert und dieses Paket hat die notwendigen Optionen. Hat man das, kann man sich ein $HOME/.vim anlegen und <a href="http://www.vim.org/scripts/script.php?script_id=1929">Sam Ghods DBGp Client</a> installieren. Das debugger.zip wird nach $HOME/.vim ausgepackt und liegt dann in $HOME/.vim/plugin: 
-{% highlight console %}
+{{< highlight console >}}
 kris@linux:~/.vim/plugin> l
 total 56K
 drwxr-xr-x 2 kris users   43 2008-01-25 15:18 ./
 drwxr-xr-x 3 kris users   19 2008-01-25 15:18 ../
 -rw-r--r-- 1 kris users  48K 2007-06-20 03:21 debugger.py
 -rw-r--r-- 1 kris users 7.6K 2007-06-22 00:27 debugger.vim
-{% endhighlight %}
+{{< / highlight >}}
  Jetzt setzt man einen idekey in der XDEBUG_CONFIG-Variablen und startet vim mit dem zu debuggenden Script, dann drück man F5 im Vim. Vim lauscht nur für einige Sekunden auf Port 9000 auf das Script. <div class="serendipity_imageComment_center" style="width: 608px"><div class="serendipity_imageComment_img"><!-- s9ymdb:4636 --><img width="608" height="652"  src="/uploads/xdebug1.png" alt="" /></div><div class="serendipity_imageComment_txt">Zu langsam: vim lauscht nur 5 Sekunden auf den Connect vom Script, dann gibt er auf.</div></div> Mit Return und nach dem Schließen einiger Fenster mit ":n" und ":q!" haben wir den vim wieder in seinen Normalzustand versetzt und können noch einmal versuchen. F5, und dann schnell auf dem anderen Screen das Script gestartet - man sieht auch das Setzen des idekeys, der im vim und im Script gleich sein muß. <div class="serendipity_imageComment_center" style="width: 608px"><div class="serendipity_imageComment_img"><!-- s9ymdb:4637 --><img width="608" height="652"  src="/uploads/xdebug2.png" alt="" /></div><div class="serendipity_imageComment_txt">Setzen des idekey in XDEBUG_CONFIG und dann starten des Scripts. Im "vim"-Tab wartet ein vim mit demselben idekey und gedrückten F5.</div></div> Hat man alles richtig gemacht, bekommt man einen vim im Debugmodus, bei dem nicht weniger als 4 Subfenster geöffnet werden. Man sollte also ein Terminalfenster angemessener Größe bereitgestellt haben.
 
 <div class="serendipity_imageComment_right" style="width: 110px"><div class="serendipity_imageComment_img"><a class='serendipity_image_link' href='/uploads/xdebug3.png'><!-- s9ymdb:4638 --><img width="110" height="100"  src="/uploads/xdebug3.serendipityThumb.png" alt="" /></a></div><div class="serendipity_imageComment_txt">vim-Debugger</div></div> Der Screenshot kann durch Anklicken vergrößert werden. Er zeigt einen vim beim Debuggen des Beispielscriptes. Im linken Fenster ist die aktuelle Codeposition durch einen Highlight markiert. Rechts sind vier Fenster zu sehen. Von oben nach unten sind dies: Variablen Watchwindow, ein Help-Fenster mit den aktuellen Tastenbelegungen, ein Stack-Window und ein Kommandotrace. Im Stackfenster sind sehr schön die Rekursionsebenen unserer rekursiven Funktion zu erkennen und im Watch-Window sind die abgerufenen Ausführungskontexte und Variablen zu sehen.
@@ -166,7 +166,7 @@ Jetzt spielen wir dasselbe Spiel noch einmal, aber mit Quanta, einer KDE-Gui zur
 [b]Quanta[/b]
 
 Der Web Editor Quanta ist in Suse Linux Bestandteil des Paketes "kdewebdev3". "smart info --urls kdewebdev3" listet das Paket bei mir wie folgt: 
-{% highlight console %}
+{{< highlight console >}}
 linux:~ # smart info --urls kdewebdev3
 Loading cache...
 Updating cache...                       #################################################### [100%]
@@ -178,7 +178,7 @@ Version: 3.5.7-61.2@i586
 URLs:
  Latest KDE packages
     http://ftp-1.gwdg.de/pub/opensuse/repositories/KDE:/KDE3/openSUSE_10.3/i586/kdewebdev3-3.5.8-8.9.i586.rpm (6.2MB)
-{% endhighlight %}
+{{< / highlight >}}
  In Quanta definieren wir ein neues Projekt für $HOME/~kris, und binden probe.php dort ein.
 
 <div class="serendipity_imageComment_center" style="width: 776px"><div class="serendipity_imageComment_img"><!-- s9ymdb:4640 --><img width="776" height="619"  src="/uploads/xdebug5.png" alt="" /></div><div class="serendipity_imageComment_txt">Ein Testprojekt, dessen Files "lokal" liegen und daher nicht uploaded werden müssen. Wir könnten auch fish, webdav oder ftp verwenden, um Zeugs irgendwo auf einen entfernten Server zu schießen.</div></div>

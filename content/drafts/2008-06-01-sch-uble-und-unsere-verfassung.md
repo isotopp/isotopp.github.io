@@ -1,13 +1,13 @@
 ---
-layout: post
-published: true
-title: Schäuble und unsere Verfassung
 author-id: isotopp
-date: 2008-06-01 05:02:19 UTC
+date: "2008-06-01T05:02:19Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - politik
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Schäuble und unsere Verfassung
 ---
 Wie weit unser Verfassungsminister vom Boden der freiheitlich-demokratischen Grundordnung, die zu verteidigen er geschworen hat, entfernt ist, wird sehr schön deutlich, wenn man die Artikel von  <a href="http://www.genevainformation.ch/2008/05/31/datenschutz-selbstverpflichtung-statt-rechtsstaat/">Alexander Finger</a> und <a href="http://www.lawblog.de/index.php/archives/2008/06/01/burger-von-schaubles-gnaden/">Udo Vetter</a> einmal liest. 
 

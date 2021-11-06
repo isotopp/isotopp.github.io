@@ -1,14 +1,14 @@
 ---
-layout: post
-published: true
-title: Wann soll ich verschlüsseln?
 author-id: isotopp
-date: 2008-11-17 09:36:07 UTC
+date: "2008-11-17T09:36:07Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - kryptographie
 - security
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Wann soll ich verschlüsseln?
 ---
 Drüben bei <a href="http://securosis.com/2006/12/21/the-three-laws-of-data-encryption/">Securosis</a> gibt es schon seit einiger  Zeit einen feinen Artikel zum Thema "Wann soll ich Daten verschlüsseln?". Die drei Regeln dort sind die sinnvollste Zusammenfassung zu diesem Thema, die ich seit langer Zeit gesehen habe. <ol><li>Transportverschlüsselung ist nicht nur okay, sondern ein Muß. Bei Transportverschlüsselung werden Daten verschlüsselt, die bewegt werden. Es existiert aber zu jedem Zeitpunkt eine Klartextkopie der Daten. Transportverschlüsselung hat man bei SMTP mit TLS, bei HTTPS und mit Einschränkung bezüglich der Klartextkopie auch bei Backups oder bei Laptops.</li><li>Um Trennung von Rollen zu erzwingen, wenn Access Control Lists das nicht erreichen können. Das heißt in der Regel, wenn man sich gegen die eigenen Administratoren schützen will, denn in allen anderen Fällen greifen ACLs ja.</li><li>Wenn jemand es vorschreibt ("verordnete Verschlüsselung"), es also durch einen Vertrag oder eine Übereinkunft erzwungen wird.</li></ol> Warum will man sonst nicht verschlüsseln?
 

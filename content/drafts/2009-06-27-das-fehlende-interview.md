@@ -1,16 +1,16 @@
 ---
-layout: post
-published: true
-title: Das fehlende Interview
 author-id: isotopp
-date: 2009-06-27 06:39:17 UTC
+date: "2009-06-27T06:39:17Z"
+draft: true
+feature-img: assets/img/background/rijksmuseum.jpg
+published: true
 tags:
 - jugendschutz
 - piraten
 - überwachung
 - zensur
 - lang_de
-feature-img: assets/img/background/rijksmuseum.jpg
+title: Das fehlende Interview
 ---
 <a href='http://www.zeit.de/online/2009/26/leyen-heine-netzsperren?page=all'>Das Interview</a>, die ich eigentlich gerne gelesen hätte, das aber leider niemals geführt worden ist: <blockquote><b>ZEIT ONLINE</b>: Frau von der Leyen, Frau Heine, in den letzten Monaten haben Sie eine Art Fernduell geführt. Heute reden Sie hier in der ZEIT zum ersten Mal miteinander: Sie, Frau von der Leyen, haben ein Gesetz zur Sperrung von Kinderpornografie im Internet durchgesetzt, und Sie, Frau Heine, haben gegen dieses Gesetz eine Protestbewegung im Netz initiiert. Fassen wir die Ausgangslage zusammen: Was soll das Gesetz bewirken, Frau Ministerin?</blockquote>
 
