@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: Integer Overflow</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="mysql-integer-overflow-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            MySQL: Integer Overflow
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>January 4, 2008</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <!-- s9ymdb:3519 --><img width="110" height="57" style="float: right; border: 0px; padding-left: 5px; padding-right: 5px;" src="/uploads/mysql_logo.serendipityThumb.gif" alt="" /> Der Fotodienst <a href="http://de.wikipedia.org/wiki/Flickr#Geschichte">Flickr</a> wurde vor 5 Jahren in Betrieb genommen. Am 29. Dezember wurde <a href="http://www.flickr.com/photo_exif.gne?id=2147483647">das Foto 2147483647</a> auf Flickr hochgeladen. Diese Zahl ist 2 hoch 31 minus 1, also MAXINT für einen 32 Bit Signed Integer. Dies hat zu einem <a href="http://blog.driftr.com/post/20">Integer Overflow in einer Bibliothek</a> geführt, die Signed Integer als ID für Flickr-Bilder verwendet hat.
+<p>Hier sind ein paar simple Abfragen von INFORMATION_SCHEMA, mit denen man offensichtliche Designdummheiten bei Datenbankschemata finden kann:
+{% highlight console %}
+mysql&gt; select table_schema, table_name, column_name, column_type
+from information_schema.columns
+where table_schema not in (&ldquo;information_schema&rdquo;, &ldquo;mysql&rdquo;)
+and column_name like &ldquo;%id%&rdquo;
+&ndash; and column_type not like &ldquo;%unsigned%&quot;;
++&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| table_schema | table_name | column_name | column_type         |
++&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+| rootforum    | counter    | id          | bigint(20) unsigned |
+| rootforum    | s          | id          | bigint(20) unsigned |
+| rootforum    | t          | id          | bigint(20) unsigned |
+| rootforum    | telefon    | id          | bigint(20) unsigned |
++&mdash;&mdash;&mdash;&mdash;&ndash;+&mdash;&mdash;&mdash;&mdash;+&mdash;&mdash;&mdash;&mdash;-+&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;+
+4 rows in set (0.01 sec)
+{% endhighlight %}</p>
+<p>Diese Query durchsucht INFORMATION_SCHEMA.COLUMNS nach allen Spalten, die ein &ldquo;id&rdquo; im Namen haben, aber, wenn man den auskommentierten Teil aktiviert, nicht als UNSIGNED definiert sind. Das ist schon mal ein recht offensichtlicher Fehler, den man sich von vorne herein schenken kann. Für die meisten Menschen - im Grunde jeder außer Flickr - sollte ein INTEGER UNSIGNED als PRIMARY KEY ausreichen. Ein BIGINT UNSIGNED ist doppelt so groß, und speichert 2^32 mal mehr Daten. Kann man benutzen, muß man aber nicht dringend tun und hat so ein wenig was von Größenwahn.</p>
+<p>Dieselbe Regel kann man auch auf Spalten anwenden, die etwa ein &ldquo;price&rdquo; oder &ldquo;%age%&rdquo; im Namen haben (oder die mit INET_ATON() in INTEGER UNSIGNED umgewandelte IP V4 Nummern abspeichern sollen).</p>
+<p>Wenig bekannt: Auch eine SERVER_ID ist in MySQL ein INTEGER UNSIGNED. Sollte man bedenken, wenn man Werkzeuge zur Administration von MySQL-Servern entwickelt.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2fdrafts%2fmysql-integer-overflow.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2fdrafts%2fmysql-integer-overflow.html&text=MySQL%3a%20Integer%20Overflow%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2fdrafts%2fmysql-integer-overflow.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/drafts/php-5-debuggen-mit-xdebug-und-vim-oder-quanta.html">PHP 5 Debuggen mit Xdebug und vim oder Quanta</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/drafts/ein-paar-benchmarks-zum-kalibrieren.html">Ein paar Benchmarks zum kalibrieren</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>
