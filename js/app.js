@@ -32,7 +32,7 @@ var lunrIndex,
 // Initialize lunrjs using our generated index file
 function initLunr() {
     var request = new XMLHttpRequest();
-    request.open('GET', 'index.json', true);
+    request.open('GET', 'https://blog.koehntopp.info/index.json', true);
 
     request.onload = function () {
         if (request.status >= 200 && request.status < 400) {
