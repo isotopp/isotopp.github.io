@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL Transactions - writing data</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="mysql-transactions-writing-data-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            MySQL Transactions - writing data
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>July 30, 2020</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>Using the framework for testing we created in earlier articles, let&rsquo;s try to
+modify some data. We are writing a small program that increments a counter.
+Our table looks like this, and contains 10 counters:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">demo</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span><span class="w">
+</span><span class="w">  </span><span class="o">`</span><span class="n">counter</span><span class="o">`</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="w">
+</span><span class="w">  </span><span class="k">UNIQUE</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">demo</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">demo</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="p">...</span><span class="w">
+</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">demo</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span></code></pre></div><p>We are using some very simple programming to increment a counter:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to count in&#34;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--id&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Counter to use&#34;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of increments&#34;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">count</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34; Increment counter --id by --count many steps in table --name &#34;&#34;&#34;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;update </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> set counter=counter+1 where id = </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#34;</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div><h2 id="incrementing-a-single-counter-1000-times">
+    <a href="#incrementing-a-single-counter-1000-times">
+	Incrementing a single counter, 1000 times
+    </a>
+</h2>
+<p>In this code, we run the SQL <code>update demo set counter=counter+1 where id=3</code>
+or similar in order to increment a counter, and commit immediately. The loop
+will run 1000 iterations, and we can time it. The speed of the loop is
+completely dependent on how fast our hardware can commit data to disk.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py count --id <span class="m">3</span>
+<span class="err">
+</span><span class="err"></span><span class="go">real    0m14.457s
+</span><span class="go">user    0m0.146s
+</span><span class="go">sys     0m0.037s
+</span></code></pre></div><p>14.4 seconds for 1000 commits are 14ms per commit, to an old SATA SSD - not
+very fast at all, but this is 10 years old hardware. This is slow, because
+the <code>db.commit()</code> issues a single fsync to the Redo Log, waiting for it to
+return - we have shown this <a href="/2020/07/27/mysql-transactions.html">in an earlier article</a>
+
+.</p>
+<p>We can globally reconfigure MySQL to write to disk unsafely:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>mysql -uroot -p -e <span class="s1">&#39;set global innodb_flush_log_at_trx_commit=2&#39;</span>
+<span class="go">Enter password:
+</span><span class="go"></span><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py count --id <span class="m">3</span>
+<span class="err">
+</span><span class="err"></span><span class="go">real    0m6.240s
+</span><span class="go">user    0m0.126s
+</span><span class="go">sys     0m0.032s 
+</span></code></pre></div><p>In this configuration, MySQL will on commit still write the data into the
+file system buffer cache, but will no longer force the buffer cache to disk,
+foregoing the disk write and the wait for its completion. The server will
+flush data to disk in the background in 1s intervals.</p>
+<p>Should the database server process crash, but the server hardware does not,
+nothing is lost: The file system buffer cache will eventually be written out
+do disk.</p>
+<p>Should the server hardware crash, up to one second of data is being lost,
+but the database will still be consistent - just not at the transaction
+everybody expects.</p>
+<p>Relaxing the disk write constraints speeds up writing considerably, because
+we no longer have to wait for the slow disk to acknowledge the writes.</p>
+<p>Further relaxing the disk write constraints does not make things faster,
+just more dangerous:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">(venv) kris@server:~/Python/mysql$ mysql -uroot -p -e &#39;set global innodb_flush_log_at_trx_commit=0&#39;
+</span><span class="go">Enter password:
+</span><span class="go">(venv) kris@server:~/Python/mysql$ ./counter.py truncate
+</span><span class="go">Table demo truncated.
+</span><span class="go">(venv) kris@server:~/Python/mysql$ ./counter.py setup --size 10
+</span><span class="go">(venv) kris@server:~/Python/mysql$ time ./counter.py count --id 3
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">real    0m6.101s
+</span><span class="go">user    0m0.118s
+</span><span class="go">sys     0m0.032s  
+</span></code></pre></div><p>In this mode, the database server will not even push data into the file
+system buffer cache on commit, but only once per second initiate a batch
+write and fsync.  On any crash, up to one second of data will be lost, but
+at least it will be at a transaction boundary.</p>
+<p>To make things more interesting, we will now run multiple copies of this
+programs in various ways.</p>
+<h3 id="incrementing-two-counters-concurrently-1000-times-each">
+    <a href="#incrementing-two-counters-concurrently-1000-times-each">
+	Incrementing two counters concurrently, 1000 times each
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py count --id <span class="m">3</span> <span class="p">&amp;</span>  <span class="nb">time</span> ./counter.py count --id <span class="m">9</span> <span class="p">&amp;</span>
+<span class="go">[1] 728954
+</span><span class="go">[2] 728955
+</span><span class="go"></span><span class="gp">$
+</span><span class="gp">
+</span><span class="gp"></span>real    0m20.450s
+<span class="go">user    0m0.164s
+</span><span class="go">sys     0m0.019s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">real    0m20.454s
+</span><span class="go">user    0m0.131s
+</span><span class="go">sys     0m0.056s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">[1]-  Done                    time ./counter.py count --id 3
+</span><span class="go">[2]+  Done                    time ./counter.py count --id 9
+</span><span class="go"></span><span class="gp">$ </span>mysql -u kris -pgeheim -e <span class="s1">&#39;select * from demo where id in (3, 9)&#39;</span> kris
+<span class="go">+----+---------+
+</span><span class="go">| id | counter |
+</span><span class="go">+----+---------+
+</span><span class="go">|  3 |    1000 |
+</span><span class="go">|  9 |    1000 |
+</span><span class="go">+----+---------+
+</span></code></pre></div><p>We can see the program counted correctly, both counters have the expected
+target value. We can also see how the program took a lot longer to execute:
+While we have multiple cores, and are running two copies of Python and two
+thread in the database concurrently, there is still interference between the
+two threads, and things are slower (20.4 seconds instead of 14.4 seconds).</p>
+<h3 id="incrementing-the-same-counter-with-two-processes-1000-times-each">
+    <a href="#incrementing-the-same-counter-with-two-processes-1000-times-each">
+	Incrementing the same counter with two processes, 1000 times each
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py count --id <span class="m">3</span> <span class="p">&amp;</span>  <span class="nb">time</span> ./counter.py count --id <span class="m">3</span> <span class="p">&amp;</span>
+<span class="go">[1] 730874
+</span><span class="go">[2] 730875
+</span><span class="go"></span><span class="gp">$
+</span><span class="gp"></span>real    0m25.306s
+<span class="go">user    0m0.159s
+</span><span class="go">sys     0m0.038s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">real    0m25.311s
+</span><span class="go">user    0m0.162s
+</span><span class="go">sys     0m0.033s
+</span><span class="go"></span><span class="gp">$ </span>mysql -u kris -pgeheim -e <span class="s1">&#39;select * from demo where id = 3&#39;</span> kris
+<span class="go">+----+---------+
+</span><span class="go">| id | counter |
+</span><span class="go">+----+---------+
+</span><span class="go">|  3 |    2000 |
+</span><span class="go">+----+---------+ 
+</span></code></pre></div><p>What happens here is that we are running two instances of the script
+concurrently, each of which is incrementing the same row <code>id=3</code>. As updating
+a row will also exclusively lock it, the second writer has to wait a bit
+until the first one commits (which will also drop the lock). Then the second
+writer can get access, and do its thing while the first writer has to wait.</p>
+<p>Execution time goes up further, from 20.4s to 25.3s.</p>
+<h3 id="read-modify-write-gone-wrong">
+    <a href="#read-modify-write-gone-wrong">
+	Read-Modify-Write, gone wrong
+    </a>
+</h3>
+<p>We can query the database differently, in a two stage process, allowing for
+more complex updates. Here we read a value from the database into the
+application (read phase), change it applicationn side (modify phase) and
+then write the changed value back.</p>
+<p>Doing this is called a read-modify-write cycle.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to count in&#34;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--id&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Counter to use&#34;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of increments&#34;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">rmw_false</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34; Increment counter --id by --count many steps in table --name &#34;&#34;&#34;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+
+        <span class="c1"># read</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;select counter from </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> where id = </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="c1"># modify</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&#34;counter&#34;</span><span class="p">]</span> <span class="o">+</span><span class="mi">1</span>
+
+        <span class="c1"># write</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;update </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> set counter = </span><span class="si">{</span><span class="n">counter</span><span class="si">}</span><span class="s2"> where id = </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> 
+</code></pre></div><p>In this piece of code we again count to 1000, but we are doing it in a three
+step process, called a read-modify-write cycle. We also implemented it
+wrongly for demonstration purposes:</p>
+<ul>
+<li>
+<p>The read phase is done with a <code>SELECT</code> statement that retrieves the
+current counter value from the database.</p>
+</li>
+<li>
+<p>The modify phase increments the counter, application side, in memory. This
+can in real applications be an arbitrarily complicated process that takes
+a non-trivial amount of time and maybe even connects to different backend
+systems and services.</p>
+</li>
+<li>
+<p>The write phase then uses <code>UPDATE</code> to write back the previously read value
+to the database.</p>
+</li>
+</ul>
+<p>There is no error handling, and - for the purposes of demonstration - no
+locking.</p>
+<p>We are running this, standalone, and then in multiple copies:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py rmw-false --id <span class="m">3</span>
+<span class="err">
+</span><span class="err"></span><span class="go">real    0m13.331s
+</span><span class="go">user    0m0.207s
+</span><span class="go">sys     0m0.106s
+</span></code></pre></div><p>This is not slower than the single update statement, despite the fact that
+we have to talk to the database in two round trips instead of one.</p>
+<p>But, when we are running this twice, we can see that due to the missing
+locking the results are wrong:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py rmw-false --id <span class="m">3</span> <span class="p">&amp;</span> <span class="nb">time</span> ./counter.py rmw-false --id <span class="m">3</span> <span class="p">&amp;</span>
+<span class="go">[1] 1521914
+</span><span class="go">[2] 1521915
+</span><span class="go"></span><span class="gp">$ 
+</span><span class="gp"></span>real    0m13.361s
+<span class="go">user    0m0.235s
+</span><span class="go">sys     0m0.069s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">real    0m13.362s
+</span><span class="go">user    0m0.240s
+</span><span class="go">sys     0m0.069s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">[1]-  Done                    time ./counter.py rmw-false --id 3
+</span><span class="go">[2]+  Done                    time ./counter.py rmw-false --id 3
+</span><span class="go"></span><span class="gp">$ </span>mysql -u kris -pgeheim -e <span class="s1">&#39;select * from demo where id = 3&#39;</span> kris
+<span class="go">+----+---------+
+</span><span class="go">| id | counter |
+</span><span class="go">+----+---------+
+</span><span class="go">|  3 |    1000 |
+</span><span class="go">+----+---------+ 
+</span></code></pre></div><p>The way we write this code, we extract the value from the database into the
+application, getting a value - say 10, and increment that.</p>
+<p>Meanwhile the other instance also reads the database, and gets the same
+value, also 10.</p>
+<p>We increment, and write back the new value, 11. Then the other instance does
+the same, and also writes back 11. Two increment events in two processes
+have been executed, but the counter has been incremented effectively only
+one step, because the rmw-cycles overlapped.</p>
+<p>We need to lock the row <code>id=3</code> when we <em>take out</em> the value from the
+database into the application like we would take out a book from the
+library. We can give up the lock when we write back and commit. The second
+process, attempting to take out the same value we just took out, would stall
+and hang, waiting for the (new) value to become available, and only then can
+proceed.</p>
+<h3 id="read-modify-write-done-right">
+    <a href="#read-modify-write-done-right">
+	Read-Modify-Write, done right
+    </a>
+</h3>
+<p>We modify the program to use <code>SELECT ... FOR UPDATE</code> instead of a simple
+<code>SELECT</code> when taking out the value during the read phase of the rmw
+operation.</p>
+<blockquote>
+<p><code>SELECT ... FOR UPDATE</code> is a read statement, but locks the rows it fetches
+as if it were a write statement. In doing that, it anticipates the
+<code>UPDATE</code> operation that is to follow.</p>
+</blockquote>
+<p>What happens is that the <code>SELECT ... FOR UPDATE</code> creates X-locks on <em>at
+least</em> the rows it returns. An X-lock or exclusive lock is a lock that
+guarantees that only one thread (us) can access the row while the lock is
+being held. All other attempts to read that row are stalled and have to wait
+until the lock is released, at <code>COMMIT</code>.</p>
+<p>Our program now counts correctly. Locks mean waiting, so of course it is
+slower.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./counter.py truncate
+<span class="go">Table demo truncated.
+</span><span class="go"></span><span class="gp">$ </span>./counter.py setup --size <span class="m">10</span>
+<span class="gp">$ </span><span class="nb">time</span> ./counter.py rmw-correct --id <span class="m">3</span> <span class="p">&amp;</span> <span class="nb">time</span> ./counter.py rmw-correct --id <span class="m">3</span> <span class="p">&amp;</span>
+<span class="go">[1] 1523980
+</span><span class="go">[2] 1523981
+</span><span class="go"></span><span class="gp">$
+</span><span class="gp"></span>real    0m26.284s
+<span class="go">user    0m0.293s
+</span><span class="go">sys     0m0.097s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">real    0m26.293s
+</span><span class="go">user    0m0.292s
+</span><span class="go">sys     0m0.099s
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">[1]-  Done                    time ./counter.py rmw-correct --id 3
+</span><span class="go">[2]+  Done                    time ./counter.py rmw-correct --id 3
+</span><span class="go"></span><span class="gp">$ </span>mysql -u kris -pgeheim -e <span class="s1">&#39;select * from demo where id = 3&#39;</span> kris
+<span class="go">+----+---------+
+</span><span class="go">| id | counter |
+</span><span class="go">+----+---------+
+</span><span class="go">|  3 |    2000 |
+</span><span class="go">+----+---------+
+</span></code></pre></div><p>And this is what the code looks like:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to count in&#34;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--id&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Counter to use&#34;</span><span class="p">)</span>
+<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of increments&#34;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">rmw_correct</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+    <span class="s2">&#34;&#34;&#34; Increment counter using rmw logic &#34;&#34;&#34;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+
+        <span class="c1"># I would rather have a START TRANSACTION READ WRITE</span>
+        <span class="c1"># but MySQLdb does not offer this natively.</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+
+        <span class="c1"># read, with FOR UPDATE</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;select counter from </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> where id = </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2"> for update&#34;</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+        <span class="c1"># modify</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s2">&#34;counter&#34;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># write</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;update </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> set counter = </span><span class="si">{</span><span class="n">counter</span><span class="si">}</span><span class="s2"> where id = </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#34;</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</code></pre></div>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2020%2f07%2f30%2fmysql-transactions-writing-data.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2020%2f07%2f30%2fmysql-transactions-writing-data.html&text=MySQL%20Transactions%20-%20writing%20data%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2020%2f07%2f30%2fmysql-transactions-writing-data.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2020/08/01/mysql-locks-and-deadlocks.html">MySQL: Locks and Deadlocks</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2020/07/29/mysql-transactions-the-logical-view.html">MySQL Transactions - the logical side</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

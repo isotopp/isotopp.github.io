@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - fork und exec vs. CreateProcess</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="fork-und-exec-vs.-createprocess-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            fork und exec vs. CreateProcess
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>January 7, 2007</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p><strong>Disclaimer:</strong> Meine Windows-Kenntnisse sind beschränkt, veraltet und ausschließlich theoretischer Natur. Im Zweifel erzählt dieser Artikel Unsinn nach Hörensagen.</p>
+<p>Nach dem Artikel <a href="/2007/01/07/fork-exec-wait-und-exit.html">form, exec, wait und exit</a>
+
+ habe ich mir aber einmal meine Kopie von Jeffrey Richters <a href="http://www.amazon.de/Microsoft-Windows-Programmierung-fuer-Experten/dp/3860633899/" target="_blank" rel="noopener">Windows - Programmierung für Experten (Advanced Windows)</a>
+
+ (1997) gegriffen und dort nachgeschlagen, wie man sich das mit den Prozessen und Programmen unter Windows vorstellt (oder jedenfalls vor 10 Jahren vorgestellt hat).</p>
+<p>Windows hat zu diesem Zweck die Systemfunktion <a href="http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/createprocess.asp" target="_blank" rel="noopener">CreateProcess</a>
+
+(10 Parameters). Die liest sich so:</p>
+<blockquote>
+<p>BOOL WINAPI CreateProcess(  LPCTSTR lpApplicationName,  LPTSTR lpCommandLine,  LPSECURITY_ATTRIBUTES lpProcessAttributes,  LPSECURITY_ATTRIBUTES lpThreadAttributes,  BOOL bInheritHandles,  DWORD dwCreationFlags,  LPVOID lpEnvironment,  LPCTSTR lpCurrentDirectory,  LPSTARTUPINFO lpStartupInfo,  LPPROCESS_INFORMATION lpProcessInformation);</p>
+</blockquote>
+<p>Die Funktion erzeugt einen neuen Prozeß und lädt in diesen ein neues Programm. Dieses wird dann gestartet. lpApplicationName ist der Pfadname des auszuführenden Programmes.</p>
+<p>lpCommandLine ist die Kommandozeile (der argv) des neuen Programmes. Sie wird als String und nicht als Vektor von Strings übergeben. Das Parsen der Kommandozeile in Wort wird also durch das Betriebssystem übernommen und kann nicht durch den Aufrufer kontrolliert werden. In Unix muß man bei execve() einen Vektor von Strings übergeben, das Zerlegen der Kommandozeile in Worte muß also durch den Aufrufer, z.B. die Shell übernommen werden. Die anderen Funktionen der exec-Familie sind Bibliotheksfunktionen, die einem hier einen Teil der Arbeit abnehmen.</p>
+<p>lpApplicationName und lpCommandLine interagieren: lpApplicationName darf NULL sein, dann wird das erste Wort von lpCommandLine nach der Zerlegung in Worte als lpApplicationName interpretiert. lpApplicationName darf ohne Endung angegeben werden, dann rät Windows die Extension bzw. probiert eine Liste von ausführbaren System-Extensions aus.</p>
+<p>lpApplicationName darf auch ein unqualifizierter Pfadname sein. In diesem Fall wird das Absuchen eines System-Suchpfades wird durch diese Funktion von Windows übernommen. In Unix führt execve() genau das Binary aus, dessen Pfadnamen man angegeben hat. Will man einen Suchpfad absuchen, muß man execve() in einer Schleife so lange ausführen, bis es nicht mehr zurück kommt.</p>
+<p>lpProcessAttributes ist kein einzelner Parameter, sondern ein Zeiger auf eine <a href="http://msdn2.microsoft.com/en-us/library/aa379560.aspx" target="_blank" rel="noopener">SECURITY_ATTRIBUTES</a>
+
+-Struktur, die man ausfüllen kann und die viele Parameter enthalten kann. Die Struktur enthält eine ACL für die Discretionary Access Control, bestimmt also im wesentlichen, wer diesen Prozeß anfassen und was mit ihm machen darf. In Unix gibt es kein vergleichbares Konzept für Prozesse: Ein Prozeß hat entweder die entsprechende Capability (etwa CAP_KILL oder CAP_SYS_PTRACE) oder nicht.</p>
+<p>lpThreadAttributes erzeugt ist der passende Parameter für den in dem Prozeß zwingend enthaltenen Thread. bInheritHandles definiert, ob vererbbare Handles auf Objekte von dem neu erzeugten Prozeß geerbt werden.</p>
+<p>dwCreationFlags legt die Priorität des Prozesses und <a href="http://msdn2.microsoft.com/en-us/library/ms684863.aspx" target="_blank" rel="noopener">weitere Flags</a>
+
+ für den neuen Prozeß fest. In Unix würde man all dies zwischen dem fork() und dem exec() mit einzelnen Calls machen, etwa mit Calls aus der setpriority()-Familie oder mit Aufrufen nach setpgrp().</p>
+<p>lpEnvironment entspricht konzeptuell, aber nicht im Format dem envp von execve.</p>
+<p>lpCurrentDirectory ist das aktuelle Verzeichnis des neuen Prozesses. In Unix würde man den identischen Effekt erreichen, indem man zwischen dem fork() und dem exec()-Systemaufruf ein chdir() (oder chroot()) aufruft.</p>
+<p>lpStartupInfo ist ein Zeiger auf eine eine Struktur <a href="http://msdn2.microsoft.com/en-us/library/ms686331.aspx" target="_blank" rel="noopener">STARTUPINFO</a>
+
+, die keine Entsprechung in Unix hat, weil hier Dinge angegeben werden, die mit den Fenstern einer Anwendung zu tun haben. Unix handhabt diese Dinge komplett vom Betriebssystemkern getrennt und daher finden wir in den Betriebssystem-Primitiven zu Prozessen keine Fensterinformationen. Genaugenommen ist lpStartupInfo entweder ein Zeiger auf eine STARTUPINFO oder STARTUPINFOEX-Struktur. Was es genau ist wird mit einem Flag in dwCreationFlags angegeben. Das ist nicht typsicher, und das ist bemerkenswert, weil Windows an anderer Stelle sehr viel Wert auf solche Dinge legt.</p>
+<p>Der letzte Parameter von CreateProcess, lpProcessInformation, ist ein Referenzparameter auf eine <a href="http://msdn2.microsoft.com/en-us/library/ms684873.aspx" target="_blank" rel="noopener">PROCESS_INFORMATION</a>
+
+-Struktur, die von Windows überschrieben und ausgefüllt wird. Wir finden dort die Handles zu unserem Prozeß und dem darin enthaltenen Thread sowie eine ProcessId und eine ThreadId.</p>
+<p>Will man das Äquivalent zu einem setuid()-Eignerwechsel in Unix in Windows durchführen, kommt dieses Konzept an seine Grenzen - so etwas ist trotz der Vielzahl der Parameter von CreateProcess() in Windows nicht vorgesehen. Man braucht eine neue Funktion, <a href="http://msdn2.microsoft.com/en-us/library/ms682429.aspx" target="_blank" rel="noopener">CreateProcessAsUser</a>
+
+(11 Parameter).</p>
+<h2 id="analyse">
+    <a href="#analyse">
+	Analyse
+    </a>
+</h2>
+<p>Hier wird der grundlegende Unterschied zwischen den Konzepten von Windows und Unix deutlich: Die Unix-API stammt von Mitte der 70er Jahre und hat sich in den vergangenen mehr als 30 Jahren nicht wesentlich verändert.</p>
+<p>Sie genügt heutigen Ansprüchen, weil sie alle Ansprüche nicht erfüllt - sie liefert stattdessen relativ atomare primitive Funktionen und trennt sogar auf den ersten, flüchtigen Blick zusammengehörende Dinge wie Erzeugen von Prozessen und Laden von Programmen. Dadurch muß ein Programmierer einer Anwendung entweder eine Bibliotheksfunktion verwenden, die fork() und exec() in etwas bequemeres einpackt (etwa system() oder popen()) oder all die Dinge selber machen, die Windows im Kernel für den Programmierer erledigt. fork() hat keine Parameter und execve() hat deren drei.</p>
+<p>Will man mehr, hat man die Gelegenheit, das Environment des neuen Prozesses nach dem fork() vor dem Start des neuen Programmes mit execve() von innen zu verändern.</p>
+<p>Windows dagegen erzeugt eine alles-in-einem Funktion, die für den häufigen Anwendungsfall und alle denkbaren Varianten Extraparameter hat. Windows hat dabei die Sicht von außen auf den Kindprozeß. Dies führt zu nützlichen Dingen wie einer Thread- und Prozeß DACL, ist aber konzeptuell nicht gut erweiterbar. Dinge wie ein setuid()-Aufruf zwischen fork() und exec() sind mit CreateProcess() nicht abbildbar und machen weitere Funktionen erforderlich, die noch mehr Parameter haben.</p>
+<p>Das Konzept von Unix ist auf den ersten Blick umständlich und wenig intuitiv. Es genügt von der Aufteilung her jedoch den Ansprüchen, die man als Datenbanker an eine Normalform hätte und ist daher flexibel und ohne Änderungen am Kern erweiterbar - unabhängige Konzepte sind als unabhängige Funktionen implementiert und Erweiterung erfolgt durch Einschieben weiterer Aufrufe zwischen fork() und exec(). Neben dem Vorteil der Erweiterbarkeit hat dies den Nachteil, daß mehr Systemaufrufe notwendig sind als bei Windows (Unix-Systemaufrufe müssen schnell sein, damit dieses Konzept aufgeht) und daß man unter Umständen ein Problem mit der Atomizität bekommen kann.</p>
+<p>Beispiel ist hier die Aufgabe: &ldquo;Starte aus einem Debugger einen Programm in einem Kindprozeß und zwar so, daß der Kindprozeß ohne Racecondition auf der ersten Anweisung des Kindes stoppt und debugbar ist.&rdquo;. Das Problem war lange Zeit nicht lösbar, und wurde von Linux durch das PTRACE_TRACEME-Flag zu ptrace() gelöst, das neben einigen anderen Dingen bewirkt, daß ein Kindprozeß nach einem execve() erst mal mit einem SIGTRAP stehen, bleibt bevor er irgendwas selber macht. Bemerkenswert ist, daß die Erweiterung möglich war, ohne das bestehende 30 Jahre alte Konzept von fork, exec und wait verändern zu müssen.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2007%2f01%2f07%2ffork-und-exec-vs-createprocess.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2007%2f01%2f07%2ffork-und-exec-vs-createprocess.html&text=fork%20und%20exec%20vs.%20CreateProcess%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2007%2f01%2f07%2ffork-und-exec-vs-createprocess.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2007/01/17/legal-illegal.html">Legal, Illegal, ...</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2007/01/07/fork-exec-wait-und-exit.html">fork, exec, wait und exit</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

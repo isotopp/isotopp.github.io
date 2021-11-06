@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL from Below</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="mysql-from-below-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            MySQL from Below
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>February 25, 2021</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>When you insert data into a database and run COMMIT you expect things to be there: <a href="https://en.wikipedia.org/wiki/ACID" target="_blank" rel="noopener">Atomically, Consistent, Isolated and Durable</a>
+
+, like Codd commanded us 40 years ago, but also quickly. There is a surprising amount of sophistication being poured into this, but since I do not want to shame MongoDB and Redis developers in this post, I am not going to talk about that much in this place.</p>
+<p>We are instead trying to understand what our databases are doing all day, from the point of view of the storage stack.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/linux_observability_tools.png" alt=""  />
+</p>
+
+</p>
+<p><em>That Brendan Gregg Graphics</em></p>
+<p>Here is your performance tooling (sans EBPF) as shown by Brendan Gregg in various iterations. We are interested into the various blues in this graphic, VFS and downwards. The most detailed information of what goes on in the blue stack is given by blktrace. It’s an I/O request recorder.</p>
+<p>Unfortunately, blktrace tooling sucks big time. You have the choice between blkparse, iowatcher and seekwatcher, and they either give you unappealing and hard to read ASCII dumps, or are hard to use and abandoned to boot. A colleague threw <a href="https://www.oakgatetech.com/applications/analytics" target="_blank" rel="noopener">Workload Analytics</a>
+
+ around. And with that you can actually see what goes on.</p>
+<p>So, let’s have a look.</p>
+<h1 id="workload-classes">
+    <a href="#workload-classes">
+	Workload Classes
+    </a>
+</h1>
+<p>When you go to our Grafana, and ask nicely, you can basically divide our databases into three load classes: “200 commit/s”, “2000 commit/s”, and “20.000 commit/s”, so “low write load”, “busy write load” and “should be thinking about what they are doing really soon” write load.</p>
+<p>I am using representatives from every workload class to point out a few things.</p>
+<h2 id="but-what-about-reads">
+    <a href="#but-what-about-reads">
+	But what about Reads?
+    </a>
+</h2>
+<p>Amazingly, at work we do not really care much about disk reads from databases.</p>
+<p>We build our databases, especially customer facing databases, in a way that we try to hold the working set of the database in memory.</p>
+<p>The “working set” of anything is the set of things that you will be needing in the near future. Unfortunately, predicting the future is hard, so what we define as the working set instead is “the set of things that we have most recently used and are therefore hoping to use in the near future again”, which works reasonably well until there is a change in workload pattern.</p>
+<p>In our databases, the “anything” that matters is a 16 KB database page as it resides in the InnoDB Buffer Pool. So what we do is simple: We spend money on memory, warm up the InnoDB Buffer Pool and then serve data from memory.
+We can prove that works: InnoDB can do point reads from memory at memcache speeds, which is why we don’t use much of memcache and Redis in the first place – they don’t help.</p>
+<p>We can also capacity test our databases, and we will find that as we increase the load the number of disk reads does not go up. Data is served from memory, and not from disk.</p>
+<p>So what we care about is disk writes. They are the same on every instance of a replication chain, because of the shared nothing architecture of replication: Each chain member must apply the same set of changes from the primary down to all leaf replicas.</p>
+<h2 id="the-write-model">
+    <a href="#the-write-model">
+	The Write Model
+    </a>
+</h2>
+<p>On Commit, we write out 1 KB (or more) of Redo Log. The write happens with <code>O_DIRECT</code> to XFS, and there is a lot of thought that goes into these few words.</p>
+<p>Because it is <code>O_DIRECT</code>, the write already writes to disk. There is no need to <code>fsync()</code> or <code>fdatasync()</code> or anything else.</p>
+<p><code>O_DIRECT</code> writes also bypass the file system buffer cache, which is good, because then there is less memory pressure and less risk of paging out the database server. Usually when that happens (memory pressure forces paging on mysqld), you die a horrible and hard to debug death in latency problems and SLO violations.</p>
+<p>We use XFS. XFS on the average takes twice as long as ext4 to write data to disk, but XFS always takes the same amount of time to write data – it has been specifically designed in a way that there is very low jitter. ext4, on the other hand, is known to have downspikes and large commit wait times every few seconds, and that is really, really bad when you run at 10.000 queries/s.</p>
+<p>XFS also is capable of having multiple concurrent writers on a file when the file is open with O_DIRECT. Unlike all other Linux File Systems, <a href="/2018/11/29/but-is-it-atomic.html">it does not lock the file’s in-memory inode globally</a>
+
+ to guarantee atomic writes in this case. Such a feature is very dear to database people.</p>
+<p>The Commit is what users have to wait for. When it is done, the database can do the real data write later, often much later, and in the background. So what we really care for is the actual commit latency.</p>
+<p>The real write happens later, in the Checkpoint. <a href="/2020/07/27/mysql-transactions.html">What happens is complicated enough to justify a writeup of its own</a>
+
+. But, to make it short, we write data to the Doublewrite Buffer in a few very large linear writes as protection against torn pages, and then we writev() a scatter I/O of 16K pages to update in place.</p>
+<p>This is different from Postgres, and enables us to avoid costly vacuum runs. We make an assumption here, and that is: Rollbacks are rare (and expensive in MySQL).</p>
+<h2 id="the-test-write-model">
+    <a href="#the-test-write-model">
+	The Test Write Model
+    </a>
+</h2>
+<p>All that complexity is basically nonsense for benchmarking.</p>
+<p>If you want to know if a thing can run MySQL, and how well, you simply randwrite 16KB pages in <code>O_DIRECT</code> and see what happens. That’s a gross simplification compared to above, but holds up surprisingly well as a model for predicting MySQL speed and capacity.</p>
+<h1 id="the-200-commits-class">
+    <a href="#the-200-commits-class">
+	The 200 Commit/s Class
+    </a>
+</h1>
+<p>In order to see what real databases do to their disks, I went to the chosen representative for the 200-class and <code>blktrace</code>’ed it.</p>
+<p>It turns out that you can’t <code>blktrace</code> a single disk database machine, because the disk writes from the <code>blktrace</code> will mess up the metrics from the database. It also turns out that <code>systemd</code> mounts a 12GB ramdisk as <code>/run/user/&lt;uid&gt;</code> that can hold a 10 minute <code>blktrace</code> with no problems.</p>
+<p>When we feed that trace to Workload Intelligence, we get this:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-iops.png" alt=""  />
+</p>
+
+</p>
+<p><em>The low red line is the 200 IOPS baseline load. Turns out, there are spikes, up and past 2000 IOPS.</em></p>
+<p>The first thing we learn: Kris is right. There are no reads.</p>
+<p>The second thing we learn: 200 IO Operations per Second it may be, but there are spikes, up to and past 2000 IOPS even. They are not long, but they happen often enough.</p>
+<p>So how long does it take to write to disk? Well, there is no disk. There is Flash Storage, and it does not even have a disk interface any more – it sits directly on the PCI bus. A Flash drive that is directly on the PCI bus is called NVME instead of SSD (it is otherwise the same drive).</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-latency.png" alt=""  />
+</p>
+
+</p>
+<p><em>Most of the time there is very little wait.</em></p>
+<p>Flash is not fast, but NVME is: The drive not only has flash, it also has (large capacitor buffered) non-volatile memory it uses to buffer write and rearrange things in the background. It also has its own ARM processor with its own operating system.</p>
+<p>Sometimes we have to wait a bit, but most of the time it’s really, really fast. How fast? We need to go deeper:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-latency-detail.png" alt=""  />
+</p>
+
+</p>
+<p><em>30µs or 0.03ms is the time it takes to write to memory over the PCI bus.</em></p>
+<p>When we talk to the remote NVRAM on the other side of the PCI bus, it takes 30µs, or 0.03ms. As long as we do not overwhelm the NVRAM buffers of the drive, we have a 30µs commit latency on local memory.</p>
+<p>Another number, which will come in handy later, is the time to cross our entire network stack within the same data center: That’s around 6 switches and routers, and it will add another 60µs to any round trip across the network in the best of all cases. So a remote flash drive never can be faster than around 100µs or 0.1ms.</p>
+<p>Where do the writes go? We can plot the Linear Block Addresses and see:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-lba.png" alt=""  />
+</p>
+
+</p>
+<p><em>LBA over time. See the position of the log files, and the checkpoints.</em></p>
+<p>When you plot “addresses written to over time”, you will see that there is a bunch of blocks that get written to again and again. These are the various logs and write buffers the database uses.</p>
+<p>The drive internally has a flash translation layer (FTL), which makes sure that these block rewrites are actually distributed across all the positions in the flash you have. This kind of Wear Leveling makes sure the drive actually can live 7-10 years before the flash wears out.</p>
+<p>The SD card or USB memory stick you are using in your local Raspi does not have that, and neither has the on board flash in the entertainment module of your Tesla. That is why they fail rapidly as actual fixed blocks of flash are being rewritten a few thousand times. Use a proper drive with a proper FTL and that does not happen.</p>
+<p>In the graphics above you can also see the checkpoints scatter writes happen, and you can see how they are spaced apart widely, many tens of thousands of transactions. Checkpointing allows the database to aggregate changes in in-memory pages (and the log, for persistence). All that complexity is actually saving you disk writes!</p>
+<p>Flash does not have a single write head as disk drives do. They are not forced to do things sequentially, but in fact all the various chips in your drive can do things concurrently. Deep disk write queues are necessary to keep all these channels fed for NVME, while they are poison of SSD and HDD.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-qdepth.png" alt=""  />
+</p>
+
+</p>
+<p><em>Queue Depth over time</em></p>
+<p>A low concurrency hierarchy such as this one is not even touching the true write potential of a single NVME: A single drive can do 20.000 disk writes per second, sequentially in a single thread, if you are pushing really hard, but it can do 800.000 disk writes per second if you are feeding it with sufficient concurrency.</p>
+<p>These are two other important numbers to keep in mind. They are the reason why “IOPS Quotas” should be a thing of the past – it is impossible for any reasonable workload to actually exhaust a single NVME drive, and distributed storages usually have hundreds of them.</p>
+<p>Let’s have a look at the latency diagram from above, again, and check the distribution of completion times in a Latency Histogram. It tells us how prevalent slow writes are over the observation window:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-latency-histo.png" alt=""  />
+</p>
+
+</p>
+<p><em>It&rsquo;s called Flash for a reason.</em></p>
+<p>So even with these curtains in the latency over time diagram, we can see that 90% of all writes happen in the 30µs window, and there are noteworthy amounts of writes in the &gt;100µs class (they do exist, but they are so rare, they do not show up in the histogram).</p>
+<p>Write sizes over time:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-200-iosize.png" alt=""  />
+</p>
+
+</p>
+<p><em>Write sizes: Loads of small writes</em></p>
+<p>We can see that the grossly simplified 16 KB Randwrite model is actually not wrong, even if it is an oversimplification. Modelling more precisely does not significantly impact predictive performance, though, and this way it’s only a few lines of fio to get data.</p>
+<p>So that’s our tour of the 200-class from the underside – this is how your storage sees your commits.</p>
+<h1 id="2000-commits-class">
+    <a href="#2000-commits-class">
+	2000 Commit/s Class
+    </a>
+</h1>
+<p>I chose this particular database as a member of the 2000 Commit/s Class, also because it is the oldest and wildest of the database replication hierarchies that we have. At a time it was our performance bottleneck and was running over 20.000 queries/s with spikes into the 32.000, and with the hardware of that time that was not stable at all.</p>
+<p>We are much better now. I am not missing the old times at all.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-2000-iops.png" alt=""  />
+</p>
+
+</p>
+<p><em>IOPS over time, 2000 with Spikes to 5000.</em></p>
+<p>»Yes, Kris, we know about your “Look, Mom, no reads” already!«</p>
+<p>True, but see, even a big and old monster such as this one can live with the working set in memory, completely. You, too, can be a successful database performance consultant: Say “Buy more memory!” and “There is an index missing” as needed (add “That’s going to be expensive”, if you work for SAP or Oracle).</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-2000-qdepth.png" alt=""  />
+</p>
+
+</p>
+<p><em>Our Write Queues are more busy.</em></p>
+<p>A quick look at the Write Queue Depth over Time: NVME loves this.</p>
+<p>Write Latencies from the helicopter looks a bit worrysome:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-2000-latency.png" alt=""  />
+</p>
+
+</p>
+<p><em>These 5ms Curtains, how dense are they compared to the baseline?</em></p>
+<p>We can zoom in: They are not bad.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-2000-latency-detail.png" alt=""  />
+</p>
+
+</p>
+<p><em>We can see horizontal latency bands at fixed latencies. They expose internal structure of the Flash storage that I have not enough knowledge of. Grumble!</em></p>
+<p>We do see dark green, fixed bands of latency layers at 30µs, 120µs and 220µs. The higher layers show a repeating pattern over time. These are shenanigans of the FTL that are visible as delays to external users, but they are way below any critical level. I do not know enough about flash internals to explain these things, and that bothers me. A lot.</p>
+<p>They are also visible in the latency histogram:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-2000-latency-histo.png" alt=""  />
+</p>
+
+</p>
+<p><em>Our 30µs, 120µs and 220µs bands as bumps in the histogram. Anything below 500µs is probably immaterial in terms of worry.</em></p>
+<h1 id="20000-commits-class">
+    <a href="#20000-commits-class">
+	20.000 commit/s class
+    </a>
+</h1>
+<p>The chosen example is a <a href="/2021/01/28/database-as-a-queue.html">database as a queue</a>
+
+, that logs changes from one data set for processing and creation of a materialized view in another data set. It is an example of <a href="https://martinfowler.com/bliki/CQRS.html" target="_blank" rel="noopener">CQRS</a>
+
+ in Fowlerspeak.</p>
+<p>It is also very busy.</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-20000-iops.png" alt=""  />
+</p>
+
+</p>
+<p><em>During the sampling, 2500 baseline, with spikes up to 7500.</em></p>
+<p>During the sampling, they ran at 2500 commit/s, with spikes up to 7500. The hardware will do up to 20.000 with them, and at times the queue will do as well.</p>
+<p>So what can NVME do for us?</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-20000-qdepth.png" alt=""  />
+</p>
+
+</p>
+<p><em>Queues in our Queues!</em></p>
+<p>Turns out, writes to a Queue Databases keep the Queues to the NVME busy to their fullest potential.</p>
+<p>Is that bad for latency?</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-20000-latency.png" alt=""  />
+</p>
+
+</p>
+<p><em>Latency Curtains for Writes</em></p>
+<p>Well, if you kept up to this point you are probably not surprised to see write latency curtains, and you will probably also be seeing that they mirror the queue depth changes without me pointing that out specifically.</p>
+<p>Let’s zoom in a bit:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-20000-latency-detail.png" alt=""  />
+</p>
+
+</p>
+<p><em>We do see the curtains under the microscope, true, but look at this dark green band of fast writes below all of this.</em></p>
+<p>As you can see in the dark green band of fast writes below all of the curtains, the FTL of this particular drive is kept well busy. It is also worth it’s money - no gross delays due to internal reorg is what you get when you pay for enterprise flash instead of home equipment.</p>
+<p>As a histogram:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-20000-latency-histo.png" alt=""  />
+</p>
+
+</p>
+<p><em>By far the most writes are still to NVRAM drive-side. Above 0.25ms we are basically clean.</em></p>
+<p>Smooth customer experience, even with an abusive customer such as this queue-database – bring it on, we can take your writes.</p>
+<p>Histograms are fun, by the way. We can for example count disk writes per block address:</p>
+<p><p class="md__image">
+  <img src="/uploads/2021/02/class-20000-lba-histo.png" alt=""  />
+</p>
+
+</p>
+<p><em>We basically always change the same few pages.</em></p>
+<p>In a database as a queue, if all works well, the tables change a lot, but never grow. There are very few actual data pages that make up the small queue table, but very many inserts and deletes. We have to persist them to disk to be ACID, in the log. But there is hardly any need to checkpoint, and even then it’s very few full pages to write out.</p>
+<p>Here you can see how much log writes dominate checkpoints in this extreme scenario.</p>
+<p>If you made it this far, welcome and get your storage nerd badge at the counter.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2021%2f02%2f25%2fmysql-from-below.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2021%2f02%2f25%2fmysql-from-below.html&text=MySQL%20from%20Below%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2021%2f02%2f25%2fmysql-from-below.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2021/02/28/rechenaufgaben-loesen.html">Rechenaufgaben lösen</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2021/02/24/validating-storage.html">Validating storage</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

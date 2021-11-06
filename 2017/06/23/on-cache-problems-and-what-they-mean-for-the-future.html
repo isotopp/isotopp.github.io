@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - On cache problems, and what they mean for the future</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="on-cache-problems-and-what-they-mean-for-the-future-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            On cache problems, and what they mean for the future
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>June 23, 2017</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p><p class="md__image">
+  <img src="/uploads/2017/06/ssd-problem.jpg" alt=""  />
+</p>
+
+</p>
+<p>This is a disk utilization graph on a heavily loaded Graphite box. In this
+case, a Dell with a MegaRAID, but that actually does not matter too much.</p>
+<p>Go-carbon was lagging and buffering on the box, because the SSD was running
+at its IOPS limit. At 18:10, the write-back cache and the &ldquo;intelligent
+read-ahead&rdquo; are being disabled, that is, the MegaRAID is being force-dumbed
+down to a regular non-smart controller. The effect is stunning.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">/opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp NORA -l0 -aALL
+</span><span class="go">/opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp WT -l0 -aALL 
+</span></code></pre></div><p>and also, on top of that,</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">#</span>Direct IO instead of cached 
+<span class="go">/opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp DIRECT -l0 -aALL 
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="gp">#</span>Force SSD disk write cache <span class="o">(</span>our SSD has super-capacitors, so it safe to <span class="nb">enable</span><span class="o">)</span>
+<span class="go">/opt/MegaRAID/MegaCli/MegaCli64 -LDSetProp -EnDskCache -l0 -aALL 
+</span></code></pre></div><p>What we observe here is part of an ongoing pattern, and we
+will see more of it, and at more layers of the persistence-stack in our
+systems.</p>
+<h2 id="iops-are-a-solved-problem">
+    <a href="#iops-are-a-solved-problem">
+	IOPS are a solved problem
+    </a>
+</h2>
+<p>At the lowest layers, IOPS are now a solved problem, and will become even
+more so. SSD are limited mostly now because of their interfaces, and so we
+go from IDE-interfaces to NVME to get rid of that overhead.</p>
+<p>That makes disk-seek operations very cheap - going from 200 IOPS on rotating
+rust past 20k IOPS was only the first step, single drives now are offering
+200k IOPS and more.</p>
+<p>Bandwidth can also be provided at bus speeds through aggregation, so this is
+mostly a package engineering problem.</p>
+<p>Latency is still a problem. Even more than ever, actually, because now the
+time to send a packet from a core through the network to a SSD at the other
+end of the data center is comparable to or even dominating the time spent
+reading or writing that remote media.</p>
+<p>SSD still are disk-like devices. We are reading sectors at a time instead of
+individual bytes, and especially in writes we are re-flashing large blocks,
+64 KB in size or larger, depending on the hardware. Smart internal
+controllers in SSDs are trying to take care of these things in the
+background.</p>
+<p>With Optane, this block structure of disks can and will go away. The proper
+abstraction for Optane is not a file, but is memory - persistent, byte
+addressable memory within an order of magnitude of RAM speed.</p>
+<p>On top of the actual drive sits a large stack of caches and transformation
+layers. In this case, one layer, the disk controller and the logic in it,
+became a bottleneck: A CPU considerably smaller than the actual system
+processor, and with limited memory, was reading ahead file contents that do
+not benefit from reading ahead. It was also buffering writes, in order
+reorder and merge them, trying to exploit properties of a spinning medium
+that was no longer present. The write-pressure from the systems processor
+and the data volume became so large that either the CPU on the controller or
+the size of the controller-cache became a bottleneck.</p>
+<p>A disk behind the controller would have been even slower than the
+controller, but a SSD can actually cope and be faster than the controller
+sitting between it and the system CPU. Taking the controller out of the path
+speeds things up.</p>
+<p>The commands above take out one layer in the deep and rich storage stack,
+but there are many more. Each of them now has the potential to become the
+next bottleneck. Or as one of my database colleagues has been known to say
+in one form or the other more than once:</p>
+<blockquote>
+<p>&ldquo;Forget caches, just make everything fast all the time.&rdquo; &ndash; Nicolai Plum</p>
+</blockquote>
+<h2 id="hadoop-in-the-face-of-many-iops">
+    <a href="#hadoop-in-the-face-of-many-iops">
+	Hadoop in the face of many IOPS
+    </a>
+</h2>
+<p>We will see more of this, and at more levels of the system. Take Hadoop for
+example. The two core premises on which Hadoop is built are</p>
+<ol>
+<li>Seeks are expensive. We scan data front to back, and build data
+processing on linear I/O (of compressed CSV or JSON files, even!).Even if we
+are reading much more data than we need, even if we have to costly
+uncompress and parse the data, this method of processing is way faster than
+any database could ever be, and we can easily leverage the power of
+parallelism.</li>
+<li>Code is smaller than our data. So we create small Java classes with our
+code and ship it to the systems where the data we need is stored locally in
+order to process it.This is a convoluted way to express our wants within the
+rigid framework of Map/Reduce, but it&rsquo;s the only way to code, because
+reading all that data and shipping it across the net to where the code lives
+is literally impossible.</li>
+</ol>
+<p>Premise #2 is no longer valid since
+<a href="https://conferences.sigcomm.org/sigcomm/2015/pdf/papers/p183.pdf" target="_blank" rel="noopener">Jupiter Rising</a>
+
+.
+We can disaggregate processing and storage again, because we can build data
+center networks that are as fast and wide as system buses, so that any core
+in the data center can talk to any disk in the same data center.
+<a href="https://www.youtube.com/watch?v=NfxvjWSgplU" target="_blank" rel="noopener">This talk</a>
+
+ demonstrates this by
+creating ephemeral Hadoop processing clusters at the press of a button for
+the processing of single queries, by kubernetizing the Hadoop Mappers and
+Reducers. In this case, the relationship between the Mapper and the data
+this Mapper processes is simply not local at all - the Mapper may in fact
+run anywhere in the data center and is no longer tied to where the data is
+stored at all. Or, as one of the networking colleagues of mine puts it:</p>
+<blockquote>
+<p>&ldquo;Any sufficiently funded technology is indistinguishable from Magic.&rdquo;
+(Brian Sayler on the networking underneath a containerized Hadoop and
+Compute/Storage disaggregation)</p>
+</blockquote>
+<p>Premise #1 is going out of the window as well. Next year, latest the year
+after that, we likely will stop buying rotating rust even for the Hadoop
+servers. But that means we could seek again, which means that we could be
+using index data structures efficiently to work with data larger than main
+memory again. Which means that all these de-normalized, scannable,
+inefficiently nested and hard to parse JSON structures will be becoming more
+and more of a problem: As I/O takes a smaller percentage of the time spent
+on handling the data, we need to optimize the actual data decompression,
+parsing and handling more. <em>Hadoop in the current form is a dead man
+walking.</em> There is no alternative piece of software visible at the horizon
+at this moment, so these will be interesting times. And there will be more
+changes: File I/O is, even at much smaller levels, a lot about reformatting
+data from in-memory representations of things to on-disk representations.
+In-memory structures are pointered and traversable, aligned to n-byte
+boundaries, often lockable structures, because at memory speed these
+optimization matter. For persistence, we serialize them in complicated ways:</p>
+<ul>
+<li>Databases like MySQL have all kinds of densely packable data types (1- and
+3-byte integers, for example),</li>
+<li>references are IDs, which require lookup, instead of being traversable
+pointers</li>
+<li>the process of serialization often requires traversing nested,
+multidimensional data structures of ADTs and creating a linear, frozen
+representation of them.</li>
+</ul>
+<p>Shallow and deep copies need to be considered, depending on the problem.</p>
+<p>It&rsquo;s a fully fledged phase transition where the data is going from a
+gaseous, loosely packed form to a densely packed frozen, solid form for
+storage. The things beyond SSD, Optane/3D-Xpoint and similar storage, are
+more like memory than they are like disks, and hence they likely to some
+extent are able to handle &lsquo;gaseous&rsquo; unserialized data and make that
+persistent at the same time.</p>
+<p>In the end, the death of the file handle, and hence the death of Unix</p>
+<p>That challenges the fundamental abstraction of Unix, though, because in Unix
+everything is a file, which is a linear array of bytes, and is being
+accessed through a file handle. Now, with Optane persistent data may be no
+longer behind a file handle, but a special kind of memory, and data does not
+have to be crystallized into serialized structures before persistence. In
+fact, the memory may be so fast that we might not have time to do that. We
+require a different compute abstraction instead.</p>
+<p>Which means, when we have it, the result will finally, after five decades,
+not really Unix any more.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2017%2f06%2f23%2fon-cache-problems-and-what-they-mean-for-the-future.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2017%2f06%2f23%2fon-cache-problems-and-what-they-mean-for-the-future.html&text=On%20cache%20problems%2c%20and%20what%20they%20mean%20for%20the%20future%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2017%2f06%2f23%2fon-cache-problems-and-what-they-mean-for-the-future.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2017/06/26/fermi-vs-fhtagn.html">Fermi vs. Fhtagn</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2017/06/20/25-years-individual-network-e-v.html">25 years &#34;Individual Network e.V.&#34;</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

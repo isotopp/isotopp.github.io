@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Materialized View</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="materialized-view-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            Materialized View
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>August 15, 2012</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>Daten in einer SQL-Datenbank werden in einer Tabelle abgelegt, also einer
+Struktur mit Spalten, die Namen und in vielen Fällen auch einen Datentyp
+haben.  Eine Tabelle besteht dann aus 0 oder mehr Zeilen, die in dieses
+Spaltenschema passen.</p>
+<p>Für das Schreiben von Daten möchte man diese dann
+<a href="http://mysqldump.azundris.com/archives/20-Nermalisation.html" target="_blank" rel="noopener">Normalform</a>
+
+
+bringen, um
+<a href="http://de.wikipedia.org/wiki/Anomalie_%28Informatik%29#Anomalien_im_Einbenutzerbetrieb" target="_blank" rel="noopener">Anomalien</a>
+
+
+bei Änderungen von Daten zu verhindern und um die Datenmenge kompakt zu
+halten.  Kompakte Daten haben den Vorteil, daß sie von der Datenbank ganz
+oder in wesentlichen Teilen im Speicher gehalten werden können, sodaß
+lediglich tatsächliche Schreibzugriffe irgendwann die Platte treffen.</p>
+<p>In den meisten Fällen wird man Daten nicht übernormalisieren wollen, weil
+sonst die Rekonstruktion von für die Anwendung nutzbaren Daten zur Laufzeit
+ziemlich kompliziert wird.  Für Datenbanken, die hinreichend volatile Daten
+enthalten, wird man meistens eine Darstellung in der Nähe der 3.  Normalform
+finden.</p>
+<p><p class="md__image">
+  <img src="/uploads/normalized_view.png" alt="Normalisierte Darstellung von Daten"  />
+</p>
+
+</p>
+<p>Normalisierte Darstellung von Daten: 1:n-Relation (Ein Hotel kann 0 oder
+mehr Reviews haben).</p>
+<p>Webanwendungen zeichnen sich häufig dadurch aus, daß sie weitaus mehr
+Lesezugriffe als Schreibzugriffe haben - Benutzer einer Webanwendung sehen
+große Datenmengen durch, nehmen aber im Vergleich wenig Änderungen vor: Sie
+&lsquo;browsen&rsquo;.  Daher ist es oft lohnend, Daten für Webanwendungen in eine Form
+zu bringen, die für Lesezugriffe optimiert ist.  Das ist eine
+Denormalisierung: Die Daten, die für die Darstellung einer einzelnen
+Webseite benötigt werden, werden ausgejoined und in die von dieser Seite
+benötigte Form gebracht.</p>
+<p>Dies kann zur Laufzeit geschehen und man kann die entsprechende Query in der
+Datenbank selbst abspeichern, in der Form eines Views:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="k">AS</span><span class="w">
+</span><span class="w">  </span><span class="k">select</span><span class="w"> </span><span class="p">...</span><span class="w">  </span><span class="k">from</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="n">t1id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">t1id</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="p">...</span><span class="w">
+</span></code></pre></div><p>In diesem Fall wird jedoch die Join-Operation auf frischen Daten jedesmal
+durchgeführt, wenn ein Lesezugriff auf den View erfolgt.</p>
+<p>Alternativ speichert man nicht die Query selber, sondern cached auch ihr
+Resultat in einer Tabelle:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">mv</span><span class="w"> </span><span class="k">AS</span><span class="w"> 
+</span><span class="w">  </span><span class="k">select</span><span class="w"> </span><span class="p">...</span><span class="w">  </span><span class="k">from</span><span class="w"> </span><span class="n">t1</span><span class="w"> </span><span class="k">join</span><span class="w"> </span><span class="n">t2</span><span class="w"> </span><span class="k">on</span><span class="w"> </span><span class="n">t1</span><span class="p">.</span><span class="n">t1id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">t2</span><span class="p">.</span><span class="n">t1id</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="p">...</span><span class="w">
+</span></code></pre></div><p>und wenn man schlau ist definiert man auch noch ein paar passende Indices da
+mit drauf.  Hier hat man den Resultset der Query materialisiert, und kann
+nun Anfragen darauf fahren, ohne daß man die Operation zur Generierung des
+Resultats jedes Mal wieder neu ausführen muß.  Das kann - muß aber nicht!  -
+sehr viel schneller sein.</p>
+<p><p class="md__image">
+  <img src="/uploads/materialized_view.png" alt="Materialized View"  />
+</p>
+
+</p>
+<p>Materialized View: Ausgejointe 1:n Beziehung zwischen Hotels und Reviews.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="err">#</span> <span class="err">JSON-Repräsentation</span> <span class="err">des</span> <span class="err">Join-Ergebnisses</span>
+<span class="p">{</span>
+  <span class="nt">&#34;hotel&#34;</span><span class="p">:</span> <span class="s2">&#34;citizen M&#34;</span><span class="p">,</span>
+  <span class="nt">&#34;location&#34;</span><span class="p">:</span> <span class="err">...</span><span class="p">,</span>
+  <span class="err">reviews:</span> <span class="err">{</span>
+    <span class="err">review:</span> <span class="err">{</span> <span class="nt">&#34;score&#34;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="err">...</span> <span class="p">}</span><span class="err">,</span>
+    <span class="err">review:</span> <span class="p">{</span> <span class="nt">&#34;score&#34;</span><span class="p">:</span> <span class="mf">9.8</span><span class="p">,</span> <span class="nt">&#34;text&#34;</span><span class="p">:</span> <span class="err">...</span><span class="p">}</span>
+  <span class="err">}</span>
+<span class="err">}</span>
+</code></pre></div><p>Der materialisierte Resultset hat den Nachteil, daß er einen Schnappschuß
+der möglicherweise sehr volatilen Daten zu einem bestimmten Zeitpunkt
+darstellt und daß die Daten in dem materialisierten View unter Umständen
+nicht aktuell sind.  Viele SQL-Datenbanksysteme
+<a href="http://dcx.sybase.com/1200/en/dbusage/workingwdb-s-3165842.html" target="_blank" rel="noopener">stellen</a>
+
+
+<a href="http://wiki.postgresql.org/wiki/Materialized_Views" target="_blank" rel="noopener">elaborate</a>
+
+
+<a href="http://docs.oracle.com/cd/B19306_01/server.102/b14200/statements_6002.htm" target="_blank" rel="noopener">Systeme</a>
+
+
+bereit, um Materialized Views zu definieren und Aktualisierungsregeln dafür
+zu definieren.  Definierbar sind meistens der Zeitpunkt der Aktualisierung -
+manuell, per Kommando; automatisch nach Fahrplan, auf der Grundlage einer
+Zeitsteuerung; oder automatisch bei jeder Änderung, ON COMMIT.  Definierbar
+ist oft auch der Änderungsalgorithmus, also eine komplette Neuerstellung des
+Materialized View von Null, oder ein Einarbeiten der Änderungungen in die
+bestehenden Daten (&lsquo;Delta-Processing&rsquo;) wo das möglich ist.</p>
+<p>Man ist aber bei der Definition von solchen Systemen gar nicht auf
+Datenbankmechanismen angewiesen, und tatsächlich ist dies in vielen Fällen
+auch nicht opportun.  Dann nämlich, wenn die zu materialisierenden
+Datenmengen sehr groß sind, oder wenn der Umwandlungsprozeß aus der
+normalisieren Darstellung in die denormalisiere Darstellung besser in einer
+richtigen Programmiersprache statt in SQL dargestellt wird, läßt man den
+Prozeß besser extern laufen.</p>
+<p>Dazu wird man Änderungen an den normalisierten Daten aufzeichnen wollen,
+damit man dem externen Umwandlungsprozeß die Primärschlüssel der geänderten
+Zeilen zur Verfügung stellen kann und man einen Delta-Processing Prozeß
+betreiben kann.  Dies kann man mit Triggern in der Datenbank machen, aber
+das hat zumindest in MySQL den Nachteil, daß es synchron zur Datenänderung
+ausgeführt wird und so die Schreibzugriffe selber beeinflußt.  Alternativ
+kann man diese Änderungen auch einfach in der Anwendung selber ausführen,
+wenn man Kontrolle über den Quelltext aller Schreiber auf die normalisierten
+Daten hat.</p>
+<p><p class="md__image">
+  <img src="/uploads/queue.png" alt="Denormalisierungsmaschine"  />
+</p>
+
+</p>
+<p>Denormalisierungsmaschine</p>
+<p>Ein solches Setup sieht in einem mir bekannten Beispiel so aus, daß eine
+Quelldatenbank existiert, die in den Hauptspeicher einer Maschine paßt - die
+Gesamtdatenmenge besteht aus ca.  200GB Daten.  Die Datensätze sind relativ
+klein, rein numerisch: IDs von Entities in anderen Datenbanken und
+Preisdaten.  Die Daten haben eine recht hohe Change-Rate: Externe Bearbeiter
+und entfernte Systeme ändern die Daten laufend und so schnell, daß es
+durchaus sinnvoll ist, daß die Darstellung normalisiert und schreiboptimiert
+erfolgt.</p>
+<p>Zur Erzeugung eines read-optimierten Views wurde das System so geändert, daß
+die schreibenden Prozesse auch die geänderten IDs in einer Work Queue
+hinterlegen.  Von dort greifen ca.  100 Worker parallel die Arbeitsaufträge
+ab, transformieren die Daten in eine read-optimierte Darstellung und legen
+das Resultat ihrer Bemühungen in einer anderen, getrennten Datenbankinstanz
+ab.</p>
+<p>Die Schreibraten, die dabei entstehen, können beachtlich sein: Der
+Datenbestand wird durch das Ausmultiplizieren der Joins und das Entfalten
+der verschiedenen Datendimensionen in der Regel sehr viel größer - in dem
+genannten Beispiel besteht die Denormalisierte Darstellung in der Tat aus
+vier Maschinen, auf denen die Daten geshardet abgelegt werden und jede
+dieser vier Maschinen hat ihre Daten auf zwei SSD in einer RAID-0
+Konfiguration.</p>
+<p>Die Schreibraten sind insbesondere im Fall einer kompletten Neugenerierung
+des denormalisierten Bestandes so groß, daß MySQL 5.5 nicht mithalten kann.</p>
+<p>MySQL 5.6 hat verschiedene Lockingprobleme im InnoDB Kern gelöst und kann
+Redo-Logs größer als 4 GB handhaben.  Dadurch kann auf dem oben erwähnten
+SSD-Setup eine dauerhafte pro Instanz Schreibrate von 150 MB/sec netto (also
+auf Datenbankseite) erreicht werden, sodaß das ganze System recht entspannt
+auf eine aggregierte dauerhafte Schreibrate von 600 MB/sec kommt.</p>
+<p>Natürlich ist eine solche Schreibrate zu hoch als daß MySQL Replikation noch
+mithalten könnte.  Man kann dann anfangen, das Schema auf einer Maschine in
+unabhängige Subschemata zu unterteilen und mit MySQL 5.6 Parallel
+Replication herum zu experimentieren.  Aber wenn man den Code sowieso
+anfassen muß, dann kann man auch stattdessen in den Queue Workern einfach
+parallel auf mehrere Instanzen direkt schreiben und Replikation komplett
+umgehen.</p>
+<p>Die denormalisierte Darstellung ist in unserem Fall geeignet, eine bestimmte
+Klasse von Abfragen um Größenordnungen zu beschleunigen und - noch wichtiger -
+bestimmte pathologische Arten von Abfragen genau so schnell auszuführen
+wie normale Abfragen.  Outlier in der Systemleistung werden also eliminiert,
+eine bestimmte Sorte von Slow Query tritt nie mehr auf.</p>
+<p><em>Anekdote:</em> Leider ist MySQL 5.6 noch nicht GA und eine der von uns getesteten
+Versionen hat einen Crash Bug gehabt, den wir zuverlässig triggern konnten.
+Um das zu debuggen brauchten wir einen Core Dump.  Einen 200 GB Core-Dump
+auf SSD zu schreiben dauert ca.  15 Minuten.  Die Redo Log Recovery von
+25-aus-32 GB Redo Log dauert dann weitere 45 Minuten, nach denen die
+Datenbank dann wieder produktiv ist.</p>
+<p><em>Anekdote:</em> Während der Entwicklung haben wir die Generierung sehr oft
+komplett durchlaufen lassen müssen.  Dabei haben wir die volle Schreibrate
+der SSD tatsächlich über Wochen voll ausgenutzt und uns ist tatsächlich in
+zwei Kisten die SSD durchgebrannt.  Wir haben schon gewitzelt, daß HP Server
+bauen muß, wo hinten auf so einer Rutsche neue Platten nachrutschen, wenn
+die aktive SSD als ausgebrannt erkannt wird.  Dann kann man per
+Rechenzentrum einen Heizer haben wie auf einer Dampflok, nur daß der Platten
+schaufelt statt Kohlen.</p>
+<p>Im Wirkbetrieb normalisiert sich das dann recht schnell auf sinnvolle
+erwartete Lebensdauern.</p>
+<p><p class="md__image">
+  <img src="/uploads/ssd_estimated_lifetime.png" alt="Graph: SSD Lifetime"  />
+</p>
+
+</p>
+<p>Erwartete Lebensdauern für die SSD in einem Beispielrechner.</p>
+<p><strong>TL;DR:</strong> Durch Denormalisierung lassen sich Daten read-optimiert speichern,
+was bei Webanwendungen oft sinnvoll ist.  Die führende Darstellung sollte
+jedoch normalisiert sein, wenn man an seinen Daten hängt.  Denormalisierung
+kann Datenmengen explodieren lassen und bei großen Datenmengen und hohem
+Churn massiven Hardwareeinsatz erfordern.  In diesem Fall führt man die
+Materialisierung besser außerhalb der Datenbank durch.</p>
+<p>Die architekturellen Kosten dieses Ansatzes sind Update-Verzögerung und eine
+hohe Schreibrate, die bestimmte Technologien wie MySQL Replikation
+unattraktiv machen kann.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2012%2f08%2f15%2fmaterialized-view.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2012%2f08%2f15%2fmaterialized-view.html&text=Materialized%20View%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2012%2f08%2f15%2fmaterialized-view.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2012/08/17/fertig-gelesen-the-religion-virus.html">Fertig gelesen: The Religion Virus</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2012/07/22/mit-dem-schnuppel-im-tierpark.html">Mit dem Schnuppel im Tierpark</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - Scaling, automatically and manually</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="scaling-automatically-and-manually-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            Scaling, automatically and manually
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>August 9, 2017</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>There is an interesting article by Brendan Gregg out there, about
+<a href="http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html" target="_blank" rel="noopener">the actual data that goes into the Load Average</a>
+
+
+metrics of Linux. The article has a few funnily contrasting lines. Brendan
+Gregg states</p>
+<blockquote>
+<p>Load averages are an industry-critical metric – my company spends
+millions auto-scaling cloud instances based on them and other metrics
+[…]</p>
+</blockquote>
+<p>but in the article we find Matthias Urlichs saying</p>
+<blockquote>
+<p>The point of &ldquo;load average&rdquo; is to arrive at a number relating how busy the
+system is from a human point of view.</p>
+</blockquote>
+<p>and the article closes with Gregg quoting a comment by Peter Zijlstra in the
+kernel source:</p>
+<blockquote>
+<p>This file contains the magic bits required to compute the global loadavg
+figure. <strong>Its a silly number but people think its important.</strong> We go
+through great pains to make it work on big machines and tickless kernels.</p>
+</blockquote>
+<p>Let&rsquo;s go back to the start. What&rsquo;s the problem to solve here?</p>
+<p>Brendan Gregg wants his company to scale his virtual machines to demand,
+because they are paying per use and so they have an incentive to use enough
+capacity to hold the service level objectives, but not more.</p>
+<p>The default mechanism to achieve this is a reactive <em>autoscaler</em> using
+<em>loadav</em> from inside virtual machines as a <em>scale signal</em>.</p>
+<p>We need to unpack that. So there is a mechanism that will scale his
+deployment by launching more instances of a thing if a condition is true. By
+default, the condition is loadav, but Gregg suggests other, less broken
+metrics in his article: Different CPU and Scheduler metrics, disk metrics,
+or other system metrics.</p>
+<p>In a conversation with Tobias Klausmann, he suggested application level
+latencies as a signal. I agree in that these are the best indicator to
+signal the existence of a problem. In <a href="/2017/02/16/load-load-testing-and-benchmarking.html">Load, Load Testing and
+Benchmarking</a>
+
+,
+there is the hockey stick:</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/02/benchmark2.png" alt=""  />
+</p>
+
+</p>
+<p>Requests/s vs. Response/s (Capacity) and Requests/s vs. Response time
+(Latency). As we raise offered load, the system approaches the 100% line
+(the vertical saturation line), and a backlog builds.</p>
+<p>The lower graph shows a system under increasing load. Response times will be
+almost level while the system is not saturated. If the system reaches
+saturation, it is about to receive more requests than it can handle, and
+wait time adds to the think time, so response times go up. Sharply.</p>
+<p>Unfortunately, this is a good indicator which is always late. Latency based
+autoscaling will react to a system that is saturated when it is saturated,
+never before. For a system 10% before saturation and a system 5% before
+saturation, the latencies will be almost the same, so that among the jitter
+and noise there will be no useful signal to initiate scale-up. Only when we
+have saturation the latencies go up to trigger a proper signal, but at that
+point the user experience is already going down the drain. And that is kind
+of the real problem here.</p>
+<p>The default mechanism to achieve this is a <em>reactive</em> autoscaler using
+loadav from inside virtual machines as a scale signal.</p>
+<p>The scaling mechanism is reactive. It has to be, because any predictive
+autoscaling is not generic. It can&rsquo;t be built into the platform. A
+predictive autoscaler knows something about the application, or maybe even
+the business. For example, you might know from benchmarking that your
+application requires an instance of the type <em>Z</em> for every <em>m</em> requests/s
+going into the system. So you could monitor the request rate and just before
+you reach that limit you are ordering the next instance.</p>
+<p><p class="md__image">
+  <img src="/uploads/2017/08/Screen-Shot-2017-08-09-at-10.10.06-640x204.png" alt=""  />
+</p>
+
+</p>
+<p>Image from <a href="%27https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology">The virtues of boring technology</a>
+
+,
+Slide #12</p>
+<p>Or you already know the pattern of your business over a year and over a day
+and actually will know what the request rate is likely going to be tomorrow
+at 9am on August 9, 2017. In that case you can schedule the appropriate
+amount of instances in time before the load hits your systems and still have
+time to warm up all caches.</p>
+<p>In some environments, supply management is kind of critical: For example,
+when you sell hotel rooms, you need to know which trade shows are having
+what kind of impact on the availability of beds around the event site and
+make sure that you have sufficient supply before the demand materialises.
+It&rsquo;s a thing you have to do anyway, for the business.</p>
+<p>But if you are already building demand models for business reasons, you can
+also use this data to build demand models for hardware utilisation and use
+it to move from reactive autoscaling to predictive autoscaling.</p>
+<p>So here are some alternatives to autoscaling with loadav:</p>
+<ul>
+<li>Build predictive models using business data. It will make the business and
+your management of it better, and it will make life easier in the machine
+room, so it pays for itself over and over.</li>
+<li>Use benchmarking in production to get an idea of the shape of the hockey
+stick in your environment. Latencies &gt;&gt; every other metric, Real world
+metrics &gt;&gt; any guess you can have.
+<ul>
+<li>Latency goes up when a thing is saturated. That&rsquo;s the thing your
+performance is bound by. You can&rsquo;t survive anything ever, unless you
+know precisely what that things is and until it is being monitored
+properly.</li>
+</ul>
+</li>
+<li>Get a clue about the request pipeline and identify (latency) metrics that
+are early warning indicators, if you have any. Then use them for reactive
+autoscaling. Also, fix your predictive model if you ever scale reactively.</li>
+</ul>
+<p>TL;DR: Reactive autoscaling sucks. Get out of it. Model your shit.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2017%2f08%2f09%2fscaling-automatically-and-manually.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2017%2f08%2f09%2fscaling-automatically-and-manually.html&text=Scaling%2c%20automatically%20and%20manually%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2017%2f08%2f09%2fscaling-automatically-and-manually.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html">Monitoring - the data you have and the data you want</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2017/08/08/evaluating-the-changing-causes-of-photovoltaics-cost-reduction.html">Evaluating the Changing Causes of Photovoltaics Cost Reduction</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

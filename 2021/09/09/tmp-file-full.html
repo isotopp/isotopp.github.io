@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - MySQL: The table &#39;../tmp/#sql…&#39; is full</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="mysql-the-table-../tmp/#sql-is-full-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            MySQL: The table &lsquo;../tmp/#sql…&rsquo; is full
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>September 9, 2021</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>We observe a large number of messages of the kind</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">The table &#39;../tmp/#sql…&#39; is full
+</span></code></pre></div><h1 id="before-mysql-8">
+    <a href="#before-mysql-8">
+	Before MySQL 8
+    </a>
+</h1>
+<p>In older Versions of MySQL, implied temporary tables are being created, whenever your <code>EXPLAIN</code> contained the phrase <code>using temporary</code>.</p>
+<p>In this case, MySQL would create an in-memory temporary table to materialize an intermediate query result, and then continue to process the data from there. If that temporary table was larger than some configurable limit, the temporary table would instead be converted to a MyISAM table on disk, streamed out, and then work would continue with this.</p>
+<p>This has a large number of disadvantages:</p>
+<ul>
+<li>A table in the <code>MEMORY</code> storage engine can have no variable length columns. That means, any <code>VARCHAR</code> column gets converted to a <code>CHAR</code> column in the <code>MEMORY</code> version of that table.
+<ul>
+<li><strong>Example:</strong> Your 5 byte (plus overhead) long &lsquo;<code>hello</code>&rsquo; in a <code>VARCHAR(255) CHARSET utf8</code> would turn into a 765 byte <code>CHAR(255) CHARSET utf8</code> monstrosity, right-padded with spaces.</li>
+</ul>
+</li>
+<li>Memory used by <code>MEMORY</code> engine tables would be dynamically allocated on top of the other buffers the database uses, making the process size quite variable, depending on how many concurrent threads need to use temporary tables right now. This can lead to memory exhaustion and a visit from the OOM killer, or worse, to a paged out database server.</li>
+<li>When being streamed out to disk, the original variable length data types would be used, so you would not even see what caused the temporary table on disk in many cases, unless you looked very hard at the schema.</li>
+<li>Memory for efficient MyISAM table processing is usually not configured on an InnoDB MySQL instance.</li>
+</ul>
+<p>Because of that, we encouraged our users at work to be wary of plans with <code>using temporary</code>, to avoid use of utf8 columns except for human generated data, and to employ certain techniques for writing queries that handle strings in a nicer way.</p>
+<h1 id="mysql-8-fixes-this">
+    <a href="#mysql-8-fixes-this">
+	MySQL 8 fixes this
+    </a>
+</h1>
+<p>Starting with MySQL 8, implicit temporary tables are using the InnoDB storage engine exclusively. That means, temporary tables have largely the same properties as any ordinary table.</p>
+<ul>
+<li>It is safe to use <code>VARCHAR(...) CHARSET utf8mb4</code>, and at work we now recommend that you use this to represent strings. Variable length data types are handled just fine. It is fine to use single byte character sets for internal strings (names of status fields and other internal strings), but even that is no longer necessary.</li>
+<li>There is no preconfigured limit to where the table is being streamed to disk.</li>
+</ul>
+<p>This is being done by creating (internally and invisibly to you) a special tablespace for tmp tables. Tables created in this tablespace are InnoDB tables, but they are not redo-logged, because there is no need for them to be crash-safe. After all, tmp tables are supposed to be gone after a server restart.</p>
+<p>This saves a ton of I/O and makes these tables very fast, while they are still compatible with the rest of the InnoDB engine.</p>
+<p>tmp tables are now also using the InnoDB buffer pool, the fixed giant data structure that all other data in the server is using, so the memory consumption of the server process fluctuates a lot less.</p>
+<p>All pages in the buffer pool need to be backed by files, so that they can be written out if space in the buffer pool becomes tight. For MySQL, this is the <code>innodb_temp_data_file_path config</code> variable.</p>
+<p>At work, we configure this on our systems with a hard upper limit:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">innodb_temp_data_file_path=ibtmp1:12M:autoextend:max:100G
+</span></code></pre></div><p>This means you get a file, <code>ibtmp1</code>, in the data directory of MySQL with an initial size of 12 MB. This file is auto-extended in increments up to a maximum size of 100 GB - in the default configuration it is not limited.</p>
+<p>If you need more, you are very likely holding the database wrong.</p>
+<h1 id="i-am-getting-this-error-message">
+    <a href="#i-am-getting-this-error-message">
+	&ldquo;I am getting this error message&rdquo;
+    </a>
+</h1>
+<p>Isolate the offending query, <code>EXPLAIN FORMAT=JSON</code> the plan and check if you can get rid of the <code>using temporary</code>. If it is using up a 100 GB temporary file space, something is very wrong.</p>
+<p>You should not increase the 100 GB limit: The <code>ibtmp1</code> file will eat all your disk space, and you won&rsquo;t get it back, as tablespace files never shrink.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2021%2f09%2f09%2ftmp-file-full.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2021%2f09%2f09%2ftmp-file-full.html&text=MySQL%3a%20The%20table%20%27..%2ftmp%2f%23sql%e2%80%a6%27%20is%20full%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2021%2f09%2f09%2ftmp-file-full.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2021/09/10/mysql-million-challenge.html">MySQL: The Million Challenge</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2021/09/09/mysql-two-kinds-of-compression.html">MySQL: Two kinds of compression</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

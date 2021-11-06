@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - My home sensor network</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="my-home-sensor-network-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            My home sensor network
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>November 15, 2020</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>I have been asked to document my home sensor network. Being married to a person with a background in web security sets boundary conditions:</p>
+<ol>
+<li>No cloud. We are running all services locally.</li>
+<li>No control, only metrics.</li>
+</ol>
+<p>I am collecting data from a number of plugs with power meters over Wi-Fi, using the MQTT protocol. I am also collecting data from a number of temperature sensors over Zigbee, and convert to MQTT. The MQTT data is ingested into Influx, and then read and plotted in Grafana. All of this is dockered and runs locally on an Ubuntu server.</p>
+<h2 id="what-happened-so-far">
+    <a href="#what-happened-so-far">
+	What happened so far
+    </a>
+</h2>
+<ul>
+<li><a href="/2020/05/12/plugs-with-wifi.html">Plugs with Wi-Fi</a>
+
+: In which I am asking what kind of power plug to use to collect usage data.</li>
+<li><a href="/2020/05/20/gosund-and-tasmota.html">Gosund and Tasmota</a>
+
+: In which I describe how to convert Gosund SP 111 plugs to Tasmota.</li>
+<li><a href="/2020/05/25/air-quality-sensors.html">Air Quality Sensors</a>
+
+: In which I ask for Air Quality sensors, specifically with CO2 level metrics.</li>
+</ul>
+<h2 id="the-hardware">
+    <a href="#the-hardware">
+	The hardware
+    </a>
+</h2>
+<h3 id="server">
+    <a href="#server">
+	Server
+    </a>
+</h3>
+<p>I have a rather old server machine at home that acts as a file server and docker host.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lscpu  <span class="p">|</span> egrep <span class="s1">&#39;^Model name|^CPU\(s\):&#39;</span>
+<span class="go">CPU(s):                          8
+</span><span class="go">Model name:                      Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
+</span><span class="go"></span><span class="gp"># </span>free -m
+<span class="go">              total        used        free      shared  buff/cache   available
+</span><span class="go">Mem:          32061       16697         261          32       15102       15516
+</span><span class="go">Swap:         32767         881       31886
+</span><span class="go"></span><span class="gp"># </span>vgs
+<span class="go">  VG     #PV #LV #SN Attr   VSize   VFree
+</span><span class="go">  data     2  13   0 wz--n-   7.28t   3.48t
+</span><span class="go">  hdd      1   5   0 wz--n-   9.08t   5.00g
+</span><span class="go">  system   1   4   0 wz--n- 466.94g 274.94g
+</span><span class="go"></span><span class="gp"># </span>cat /etc/lsb-release
+<span class="go">DISTRIB_ID=Ubuntu
+</span><span class="go">DISTRIB_RELEASE=20.04
+</span><span class="go">DISTRIB_CODENAME=focal
+</span><span class="go">DISTRIB_DESCRIPTION=&#34;Ubuntu 20.04.1 LTS&#34;
+</span></code></pre></div><h3 id="gateway">
+    <a href="#gateway">
+	Gateway
+    </a>
+</h3>
+<p>This machine is hosting a <a href="https://www.amazon.de/gp/product/B07PZ7ZHG5" target="_blank" rel="noopener">ConBee from Dresden Elektronik</a>
+
+:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lsusb <span class="p">|</span> grep -i Dresden
+<span class="go">Bus 002 Device 084: ID 1cf1:0030 Dresden Elektronik
+</span><span class="go"></span><span class="gp"># </span>ls -l /dev/ttyACM0
+<span class="go">crw-rw---- 1 root dialout 166, 0 Nov 15 11:51 /dev/ttyACM0
+</span></code></pre></div><p>The instructions say you should be connecting the Conbee to the device using a USB cable, to keep it away from the device HF. This will improve the reach of the antenna supposedly a lot.</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/iot-conbee.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>Dresden Elektronik ConBee attached to the Ubuntu fileserver using a USB cable.</em></p>
+<p>In my case, the ConBee can see the sensors on the top floor and the floor below, but cannot reach the shed or the first floor.</p>
+<h3 id="repeaters">
+    <a href="#repeaters">
+	Repeaters
+    </a>
+</h3>
+<p>This is fixed using any Zigbee device with mains power, because they all act as Zigbee signal repeaters, forming a mesh network. The exception here is Philipps HUE equipment, which does not in general do this.</p>
+<p>What I did was purchase a few <a href="https://www.ikea.com/us/en/p/tradfri-signal-repeater-30400407/" target="_blank" rel="noopener">TRÅDFRI Signal repeaters</a>
+
+. These are USB-to-USB connectors that act as signal repeaters and a USB plug, powering the thing. You can plug the entire device chain into a wall plug, or run the basic USB-to-USB adapter from any USB socket that happens to be available.</p>
+<p>The repeaters need to be paired with the ConBee. That is done by putting the ConBee into open mode, and then poking a small hole in the TRÅDFRI Signal repeater with a SIM tool or a paper clip. The single LED in the repeater will dim, blink, and 30s later the gateway has picked up the new device.</p>
+<p>The repeaters have substantially better antennas than the ConBee. I purchased three, estimating I would need them to chain from the top floor across the first floor and the first floor into the shed, but actually one repeater on the first floor would have been sufficient. On the other hand these devices are 10 Euro each, so I do not really care.</p>
+<h3 id="sensors">
+    <a href="#sensors">
+	Sensors
+    </a>
+</h3>
+<p>I am using Aqara sensors which report temperature, humidity and pressure. The pressure sensors are impressive - they are long term stable, and they register when I take down a sensor from the second floor to the first floor. The devices are tiny - they are powered by a CR2032 cell (e.g. IKEA PLATTBOJ), and can run off it for around a year. The device is about twice as thick as the CR2032, and only slightly larger than the battery.</p>
+<p>They come with two double-sided adhesive rings, have a pairing button on one side and a tiny blue indicator LED that only signals pairing and is otherwise unused.</p>
+<p>They report measurements asynchronously as the data changes, which makes MQTT a much better suited protocol then HTTP.</p>
+<p>They are available on Amazon from a number of makers, at vastly different prices and delivery times. I assume that a 100-pack of these directly from Shenzhen comes in at 2.50 Euro/pc or so - individual sensors incl. shipping come in at $6.50 at Aliexpress. <a href="https://www.amazon.de/gp/product/B07SB2C327" target="_blank" rel="noopener">Here</a>
+
+, <a href="https://www.amazon.de/gp/product/B07RQTQ4JH" target="_blank" rel="noopener">here</a>
+
+ and <a href="https://www.amazon.de/gp/product/B088ZT28T6" target="_blank" rel="noopener">here</a>
+
+ are some sources, but I have seen them as low as 10-12 Euro/pc.</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/iot-aqara1.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>A wireless mouse was delivered in container made from these plastic shells. I used one to protect the Aqara sensor against the weather.</em></p>
+<p>The Aqara sensor is not really an outdoor sensor. It works well on the east side of the house, but the west side is the local weather side, and needs more water protection. I know this, because the first sensor on this side of the house drowned and shorted out after a rainstorm. I have mounted the replacement sensor in an upside down, open plastic container, and then glued the container to the top bar of a window. The seems to work fine.</p>
+<p><p class="md__image">
+  <img src="/uploads/2020/11/iot-aqara2.jpg" alt=""  />
+</p>
+
+</p>
+<p><em>Aqara sensor mounted on the top bar of a window. The plastic container is open to the bottom, but acts as a shield against rain and weather.</em></p>
+<h3 id="wall-plugs">
+    <a href="#wall-plugs">
+	Wall Plugs
+    </a>
+</h3>
+<p>I bought a very large number of <a href="https://www.amazon.de/gp/product/B085RFKVW4" target="_blank" rel="noopener">Gosund SP111 Wall Plugs</a>
+
+ and converted them to Tasmota <a href="/2020/05/20/gosund-and-tasmota.html">using Tuya-Convert</a>
+
+. The plugs are attractive, because they can do the full 16A and are small enough to fit next to each other on a regular plug extender, if the slots are angled at 45deg (the device has a button, and the Gosund plugs are touching each other on small extenders, pressing each other&rsquo;s button).</p>
+<p>This is a solder-free conversion, using the Wi-Fi in a Raspi 4. Newer versions of this plug do no longer convert this way, and require wires to re-flash initially.</p>
+<p>On the other hand, <a href="https://geizhals.de/delock-wlan-steckdosen-schalter-mqtt-mit-energieueberwachung-11827-a2365959.html" target="_blank" rel="noopener">DeLOCK WLAN Steckdosen</a>
+
+ are the same device and come with Tasmota preinstalled.</p>
+<p>In any case you are looking at around 20 Euro/plug.</p>
+<p>The plugs connect to the local 2.4 Ghz Wi-Fi, and after Tasmota installation speak HTTP(S) and MQTT(s).</p>
+<h2 id="software">
+    <a href="#software">
+	Software
+    </a>
+</h2>
+<p>I need a database for time series that collects measurements from the sensors and the wall plugs. In my case that is <a href="https://www.influxdata.com/" target="_blank" rel="noopener">Influx</a>
+
+. Visualization is from Influx to <a href="https://grafana.com/" target="_blank" rel="noopener">Grafana</a>
+
+, because that is known to work well.</p>
+<p>The MQTT transport is implemented using <a href="https://mosquitto.org/" target="_blank" rel="noopener">Mosquitto</a>
+
+, again, because that is known to work well.</p>
+<p>Data transport from Mosquitto to Influx can be done with <a href="https://www.influxdata.com/time-series-platform/telegraf/" target="_blank" rel="noopener">Telegraf</a>
+
+, or <a href="https://github.com/isotopp/python-mqtt-bridge/blob/master/bridge.py" target="_blank" rel="noopener">a small Python script</a>
+
+ - I started out with the Python, but only later learned that it could have been done completely in Telegraf. My setup still uses the Python.</p>
+<p>Conversion and transport from Zigbee to MQTT is done using <a href="https://www.zigbee2mqtt.io/" target="_blank" rel="noopener">zigbee2mqtt</a>
+
+.</p>
+<h3 id="storage">
+    <a href="#storage">
+	Storage
+    </a>
+</h3>
+<p>All data and config resides in <code>/export/iot</code> in my setup.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>df -Th /export/iot/
+<span class="go">Filesystem           Type  Size  Used Avail Use% Mounted on
+</span><span class="go">/dev/mapper/data-iot xfs    30G  7.3G   23G  25% /export/iot
+</span></code></pre></div><p>I am providing sufficient storage for about one year of data. I am using XFS as a file system, because while having higher commit latency than ext4, it has close to no jitter and consequently much better plan-able performance.</p>
+<p>This is a LVM2 partition on the <code>data</code> volume group, which contains two Samsung EVO 860 4 GB drives.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>pvs <span class="p">|</span> grep data
+<span class="go">  /dev/sde1  data   lvm2 a--    3.64t   2.32t
+</span><span class="go">  /dev/sdf1  data   lvm2 a--    3.64t   1.16t
+</span><span class="go"></span><span class="gp"># </span>vgs data
+<span class="go">  VG   #PV #LV #SN Attr   VSize VFree
+</span><span class="go">  data   2  13   0 wz--n- 7.28t 3.48t
+</span></code></pre></div><p>Created this way:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvcreate -n iot -L 30g data
+<span class="go">...
+</span><span class="go"></span><span class="gp"># </span>mkfs -t xfs /dev/data/iot
+<span class="go">...
+</span><span class="go"></span><span class="gp"># </span>mkdir /export/data
+<span class="gp"># </span>mount /dev/data/iot /export/data
+</code></pre></div><h3 id="docker-compose">
+    <a href="#docker-compose">
+	docker-compose
+    </a>
+</h3>
+<p>I am using <a href="https://docs.docker.com/compose/" target="_blank" rel="noopener">docker-compose</a>
+
+ to set this up and run it. This works remarkably well, and there is no need to run K8s on a single box, anyway.</p>
+<p>A deployment is specified in a file <code>docker-compose.yml</code>, which lists a number of containers and optionally a local virtual network segment. The deployment can make use of environment variables, which can be put into a file named <code>.env</code> (dotenv) in the same directory.</p>
+<h3 id="mosquitto">
+    <a href="#mosquitto">
+	mosquitto
+    </a>
+</h3>
+<p>We make use of this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># cd /export/iot</span><span class="w">
+</span><span class="w"></span><span class="c"># cat .env</span><span class="w">
+</span><span class="w"></span><span class="l">DATA_DIR=/export/iot</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">MQTT_PORT=1883</span><span class="w">
+</span><span class="w"></span><span class="l">INFLUX_PORT=8086</span><span class="w">
+</span><span class="w"></span><span class="l">GRAFANA_PORT=3000</span><span class="w">
+</span><span class="w"></span><span class="l">ZIGBEE_DEVICE=/dev/ttyACM0</span><span class="w">
+</span><span class="w"></span><span class="l">TZ=Europe/Amsterdam</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="l">DOCKER_HOST_ADDRESS=192.168.1.10</span><span class="w">
+</span></code></pre></div><p>These are being used in the <code>docker-compose.yml</code> in the same directory. We specify the version, and enumerate the services we want.</p>
+<p>Here is our service <code>mosquitto</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="nn">---</span><span class="w">
+</span><span class="w"></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;3&#34;</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="nt">services</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">mosquitto</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;eclipse-mosquitto:latest&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;mosquitto&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;mosquitto&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${MQTT_PORT}:1883&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;./mosquitto/users:/mosquitto/config/users&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/mosquitto/data:/mosquitto/data&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/mosquitto/log:/mosquitto/log&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;always&#34;</span><span class="w">
+</span></code></pre></div><p>We are defining a container named &ldquo;mosquitto&rdquo;, which uses the docker internal hostname &ldquo;mosquitto&rdquo;. Our other services will be able to connect to this container using this hostname. We try to run this as the user with the UID 1000, but unfortunately this is mostly a vain effort using Docker - a lot of stuff needs to run privileged. The server inside the container is running on port 1883, and we make it available on the outside on <code>$MQTT_PORT</code> from the dotenv.</p>
+<p>We overwrite the internal config file <code>/mosquitto/config/mosquitto.conf</code> with the file <code>./mosquitto/mosquitto.conf</code> (<code>/export/iot/mosquitto/mosquitto.conf</code>) and so on.</p>
+<p>We also define a <a href="https://docs.docker.com/compose/compose-file/#restart" target="_blank" rel="noopener">restart</a>
+
+ rule.</p>
+<h3 id="influx">
+    <a href="#influx">
+	Influx
+    </a>
+</h3>
+<p>Next up: we want an Influx instance.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">influxdb</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;influxdb:latest&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;influxdb&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;influxdb&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${INFLUX_PORT}:8086&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/influxdb:/var/lib/influxdb&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;always&#34;</span><span class="w">
+</span></code></pre></div><p>Again, we may the internal port (8086) to what is defined in the dotenv, and we overwrite the internal <code>/var/lib/influxdb</code> with <code>$DATA_DIR/influxdb</code> (<code>/export/iot/influxdb</code>).</p>
+<p>We can prove this works: Enter the docker container, create a file, leave the docker container, see the file.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>docker <span class="nb">exec</span> -it influxdb bash
+<span class="gp"># </span><span class="nb">cd</span> /var/lib/influxdb/
+<span class="go">/var/lib/influxdb# touch keks
+</span><span class="go">/var/lib/influxdb# exit
+</span><span class="go"></span><span class="gp"># </span>ls -l /export/iot/influxdb/keks
+<span class="go">-rw-r--r-- 1 root root 0 Nov 15 15:58 /export/iot/influxdb/keks
+</span><span class="go"></span><span class="gp"># </span>rm /export/iot/influxdb/keks
+</code></pre></div><p>This gets us an instance of Influx.</p>
+<h3 id="grafana">
+    <a href="#grafana">
+	Grafana
+    </a>
+</h3>
+<p>Next then, the Grafana instance:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">grafana</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;grafana/grafana:latest&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;grafana&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;grafana&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="l">influxdb</span><span class="w">
+</span><span class="w">    </span><span class="nt">ports</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${GRAFANA_PORT}:3000&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/grafana/data:/var/lib/grafana&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/grafana/log:/var/log/grafana&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/grafana/config:/etc/grafana&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;always&#34;</span><span class="w">
+</span></code></pre></div><p>We can only run Grafana, when Influx is up and running, so we provide a <code>depends_on</code> attribute to the service. Again, we map the port, and also the various directories of interest inside the container are made available to the outside.</p>
+<h3 id="zigbee2mqtt">
+    <a href="#zigbee2mqtt">
+	Zigbee2MQTT
+    </a>
+</h3>
+<p>The bridge from Zigbee to MQTT is defined as before:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">z2m</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;koenkk/zigbee2mqtt&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;z2m&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;z2m&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">devices</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${ZIGBEE_DEVICE}:${ZIGBEE_DEVICE}&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">privileged</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w">    </span><span class="nt">environment</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;TZ=${TZ}&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">volumes</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;${DATA_DIR}/z2m:/app/data&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;/run/udev:/run/udev:ro&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;mosquitto&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;always&#34;</span><span class="w">
+</span></code></pre></div><p>This one is special, because it needs device access to the device file of the ConBee inside the container. So the container is <code>privileged</code>, we import the device file, and a <code>ro</code> instance of <code>udev</code>. It also needs access to the <code>TZ</code> environment variable from dotenv.</p>
+<p>Our Zigbee2MQTT data is in <code>$DATA_DIR/z2m</code> (<code>/export/iot/z2m</code>).</p>
+<h3 id="our-python-project-mqttbridge">
+    <a href="#our-python-project-mqttbridge">
+	Our python project, mqttbridge
+    </a>
+</h3>
+<p>The final component is our mqttbridge, which is a dockerized Python script we provide. Alternatively we could have used telegraf for this, but I realized that only later.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="w">  </span><span class="nt">bridge</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;./bridge&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;isotopp/mqttbridge&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;mqttbridge&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">hostname</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;mqttbridge&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">user</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;1000&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;influxdb&#34;</span><span class="w">
+</span><span class="w">      </span>- <span class="s2">&#34;mosquitto&#34;</span><span class="w">
+</span><span class="w">    </span><span class="nt">restart</span><span class="p">:</span><span class="w"> </span><span class="s2">&#34;always&#34;</span><span class="w">
+</span></code></pre></div><p>Our script resides in <code>./bridge</code> (<code>/export/iot/bridge</code>), and runs with the hostname and container name <code>mqttbridge</code>, as UID 1000. It makes sense to run it only when it can read data from mosquitto and write to Influx, so we <code>depends_on</code> these.</p>
+<p>Inside the <code>./bridge</code> directory, we provide a <code>Dockerfile</code> and the script:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-docker" data-lang="docker"><span class="c"># cat bridge/Dockerfile</span><span class="err">
+</span><span class="err"></span><span class="k">FROM</span><span class="s"> python:3.8-alpine</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">LABEL</span> <span class="nv">maintainer</span><span class="o">=</span><span class="s2">&#34;isotopp&#34;</span> <span class="se">\
+</span><span class="se"></span>      <span class="nv">description</span><span class="o">=</span><span class="s2">&#34;MQTT to InfluxDB Bridge&#34;</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">COPY</span> requirements-frozen.txt /tmp/requirements.txt<span class="err">
+</span><span class="err"></span><span class="k">RUN</span> pip install -r /tmp/requirements.txt<span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">COPY</span> ./bridge.py /app<span class="err">
+</span><span class="err"></span><span class="k">WORKDIR</span><span class="s"> /app</span><span class="err">
+</span><span class="err">
+</span><span class="err"></span><span class="k">CMD</span> <span class="p">[</span> <span class="s2">&#34;python3&#34;</span><span class="p">,</span> <span class="s2">&#34;-u&#34;</span><span class="p">,</span> <span class="s2">&#34;bridge.py&#34;</span> <span class="p">]</span><span class="err">
+</span></code></pre></div><p>This makes use of the Python 3.8 Alpine base image. We copy our requirements file into the container, run <code>pip</code> to install the requirements, copy the <code>bridge.py</code> file into the /app directory and then start that script with the appropriate options (<code>-u</code> - run Python unbuffered).</p>
+<p>The <a href="https://github.com/isotopp/python-mqtt-bridge/blob/master/bridge.py" target="_blank" rel="noopener">actual script</a>
+
+ understands the channels I use internally for Aqara, Mijia, and Gosund data.</p>
+<h2 id="configuration">
+    <a href="#configuration">
+	Configuration
+    </a>
+</h2>
+<p>The various components need configuration.</p>
+<h3 id="mosquitto-1">
+    <a href="#mosquitto-1">
+	Mosquitto
+    </a>
+</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>cat /export/iot/mosquitto/mosquitto.conf
+<span class="go">persistence true
+</span><span class="go">persistence_location /mosquitto/data/
+</span><span class="go">log_dest file /mosquitto/log/mosquitto.log
+</span></code></pre></div><p>We also need a <code>/export/iot/mosquitto/users</code> file, and create a <code>mqttuser</code> with <code>mosquitto_passwd -c /export/iot/mosquitto/users mqttuser</code>.</p>
+<p>The logfile in <code>/export/iot/mosquitto/log/mosquitto.log</code> will need expiration.</p>
+<h3 id="influx-1">
+    <a href="#influx-1">
+	Influx
+    </a>
+</h3>
+<p>Influx will need a bit more configuration, but this is interactive, and a bit longer. It will be provided in another article.</p>
+<h3 id="grafana-1">
+    <a href="#grafana-1">
+	Grafana
+    </a>
+</h3>
+<p>Grafana comes up empty, and needs an admin password and manual configuration after initial startup. To make things work, we need to configure our InfluxDB as a server-side data source (Grafana connects to Influxdb, not the Browser connects to Influxdb).</p>
+<p>We can then use the hostnames we defined to access the database:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">- Name: InfluxDB
+</span><span class="go">- Default: enabled
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">URL: http://influxdb:8086
+</span><span class="go">Access: Server (default)
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">...
+</span><span class="go"></span><span class="err">
+</span><span class="err"></span><span class="go">Database: home_db (we are going to set this up later)
+</span><span class="go">User: and Password: as needed (by default: empty)
+</span></code></pre></div><p>As soon as we have data in InfluxDB, we can start to define dashboards.</p>
+<h3 id="zigbee2mqtt-1">
+    <a href="#zigbee2mqtt-1">
+	Zigbee2MQTT
+    </a>
+</h3>
+<p>And this is where we start configuration for real, the entry point for our data: Once everything is running we should see a <code>/export/iot/z2m/configuration.yaml</code>.</p>
+<p>It will look somewhat like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># cat configuration.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">homeassistant</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w"></span><span class="nt">permit_join</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span><span class="w"></span><span class="nt">mqtt</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">base_topic</span><span class="p">:</span><span class="w"> </span><span class="l">zigbee2mqtt</span><span class="w">
+</span><span class="w">  </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;mqtt://mosquitto/&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">serial</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l">/dev/ttyACM0</span><span class="w">
+</span></code></pre></div><p>That is:</p>
+<ul>
+<li>We run without home assistant, so we disable this.</li>
+<li>We need to open the z2m to allow devices to join, so <code>permit_join</code> needs to be true.</li>
+<li>Our mosquitto is at the host of that name.</li>
+<li>We post data to zigbee2mqtt.</li>
+<li>We need to tell z2m where our ConBee is located, as a device.</li>
+</ul>
+<p>When we have done that, and brought the entire apparatus up, we will be able to have devices join, and they are being added to the <code>configration.yaml</code>.</p>
+<p>After that we can edit the file to give them proper names.</p>
+<h2 id="starting-it">
+    <a href="#starting-it">
+	Starting it
+    </a>
+</h2>
+<p>So we <code>cd /export/iot</code> and <code>docker-compose build</code>, them <code>docker-compose up</code> the entire thing.</p>
+<p>Among all the other things we also get our bridge process and the node process from z2m:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>ps axuwwww <span class="p">|</span> grep <span class="o">[</span>b<span class="o">]</span>ridge.py
+<span class="go">kris     2982402  0.0  0.0  24136 18120 ?        Ss   Nov10   5:20 python3 -u bridge.py
+</span><span class="go"></span><span class="gp"># </span>ps axuwwww <span class="p">|</span> grep index.j<span class="o">[</span>s<span class="o">]</span>
+<span class="go">root      441693  0.8  0.1 314256 57840 ?        Sl   12:12   2:53 node index.js
+</span></code></pre></div><p>We can switch to the z2m log directory and tail the log:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>tail -F <span class="k">$(</span>ls -1tr */log* <span class="p">|</span> tail -1<span class="k">)</span>
+<span class="go">info  2020-11-15 12:12:56: Logging to console and directory: &#39;/app/data/log/2020-11-15.12-12-56&#39; filename: log.txt
+</span><span class="go">info  2020-11-15 12:12:56: Starting zigbee2mqtt version 1.14.0 (commit #9009de2)
+</span><span class="go">info  2020-11-15 12:12:56: Starting zigbee-herdsman...
+</span><span class="go">info  2020-11-15 12:12:56: zigbee-herdsman started
+</span><span class="go">info  2020-11-15 12:12:56: Coordinator firmware version: &#39;{&#34;type&#34;:&#34;ConBee2&#34;,&#34;meta&#34;:{&#34;transportrev&#34;:0,&#34;product&#34;:0,&#34;majorrel&#34;:38,&#34;minorrel&#34;:74,&#34;maintrel&#34;:0,&#34;revision&#34;:&#34;0x264a0700&#34;}}&#39;
+</span><span class="go">...
+</span><span class="go">warn  2020-11-15 12:12:56: `permit_join` set to  `true` in configuration.yaml.
+</span><span class="go">warn  2020-11-15 12:12:56: Allowing new devices to join.
+</span><span class="go">warn  2020-11-15 12:12:56: Set `permit_join` to `false` once you joined all devices.
+</span><span class="go">info  2020-11-15 12:12:56: Zigbee: allowing new devices to join.
+</span><span class="go">info  2020-11-15 12:12:56: Connecting to MQTT server at mqtt://mosquitto/
+</span><span class="go">info  2020-11-15 12:12:56: Connected to MQTT server
+</span></code></pre></div><p>We could now try to have a device join the setup, by holding it close to the antenna and pressing the button. For the IKEA bridges, we need to push a paper clip into the small hole at the front, for the Aqara devices we press the button.</p>
+<p>We should see a log message for each of the devices. After everything has joined, we can <code>docker-compose stop z2m; service networking restart</code> and edit the <code>configuration.yaml</code> to closed state, and name the devices.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="c"># cat configuration.yaml</span><span class="w">
+</span><span class="w"></span><span class="nt">homeassistant</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w"></span><span class="nt">permit_join</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="w"></span><span class="nt">mqtt</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">base_topic</span><span class="p">:</span><span class="w"> </span><span class="l">zigbee2mqtt</span><span class="w">
+</span><span class="w">  </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="s1">&#39;mqtt://mosquitto/&#39;</span><span class="w">
+</span><span class="w"></span><span class="nt">serial</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l">/dev/ttyACM0</span><span class="w">
+</span><span class="w"></span><span class="nt">devices</span><span class="p">:</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x00158d0004075772&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">eastside/SENSOR</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x00158d00048735ab&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">bathroom/SENSOR</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x00158d00045c09a9&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">schuppen/SENSOR</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x00158d00053effba&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">westside/SENSOR</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0xec1bbdfffe18b39d&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">bibliothek/BRIDGE</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x842e14fffe75eda0&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">wohnzimmer/BRIDGE</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x00158d000486341e&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">wohnzimmer/SENSOR</span><span class="w">
+</span><span class="w">  </span><span class="nt">&#39;0x680ae2fffe9c847d&#39;</span><span class="p">:</span><span class="w">
+</span><span class="w">    </span><span class="nt">friendly_name</span><span class="p">:</span><span class="w"> </span><span class="l">schuppen/BRIDGE</span><span class="w">
+</span></code></pre></div><p>z2m will now post messages to the MQTT bus, building the topic from the <code>base_topic</code>and the <code>friendly_name</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">info  2020-11-15 17:42:00: MQTT publish: topic &#39;zigbee2mqtt/schuppen/SENSOR&#39;, payload &#39;{&#34;battery&#34;:97,&#34;voltage&#34;:2995,&#34;temperature&#34;:11.85,&#34;humidity&#34;:81.23,&#34;pressure&#34;:1002,&#34;linkquality&#34;:96}&#39;
+</span><span class="go">info  2020-11-15 17:42:45: MQTT publish: topic &#39;zigbee2mqtt/bathroom/SENSOR&#39;, payload &#39;{&#34;battery&#34;:74,&#34;voltage&#34;:2955,&#34;temperature&#34;:21.41,&#34;humidity&#34;:59.62,&#34;pressure&#34;:997.4,&#34;linkquality&#34;:96}&#39;
+</span></code></pre></div><p>The payload here is JSON, which we parse, and push into Influxdb. Or let <code>telegraf</code> do that, automatically.</p>
+<p><strong>Why the <code>service networking restart</code>?</strong> For some reasons, when downing or stopping services from docker-compose, docker-compose will remove all the routes to my Ubuntu. I then need to connect a keyboard, log in and manually run <code>service networking restart</code> to fix this.</p>
+<p>I have not yet found out why this happens.</p>
+<p>When doing it like this, I keep the connection and do not need to fix the Ubuntu box.</p>
+<h2 id="listening-to-the-bus">
+    <a href="#listening-to-the-bus">
+	Listening to the bus
+    </a>
+</h2>
+<p>Using the <code>mosquitto_sub</code> command we can listen to multiple topics on the bus. For that we need to provide the <code>-t</code> option one or more times. Topics can be literal like <code>zigbee2mqtt/bathroom/SENSOR</code> or can contain a single level wildcard (<code>+</code>) or multilevel wildcards (<code>#</code>).</p>
+<p>We run</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go"> # mosquitto_sub -F &#34;%J&#34;  -t zigbee2mqtt/+/SENSOR
+</span><span class="go">{&#34;tst&#34;:1605459438,&#34;topic&#34;:&#34;zigbee2mqtt/westside/SENSOR&#34;,&#34;qos&#34;:0,&#34;retain&#34;:0,&#34;payloadlen&#34;:100,&#34;payload&#34;:{&#34;battery&#34;:91,&#34;voltage&#34;:2985,&#34;temperature&#34;:10.63,&#34;humidity&#34;:84.22,&#34;pressure&#34;:997.5,&#34;linkquality&#34;:97}}
+</span><span class="go">{&#34;tst&#34;:1605459438,&#34;topic&#34;:&#34;zigbee2mqtt/westside/SENSOR&#34;,&#34;qos&#34;:0,&#34;retain&#34;:0,&#34;payloadlen&#34;:100,&#34;payload&#34;:{&#34;battery&#34;:91,&#34;voltage&#34;:2985,&#34;temperature&#34;:10.63,&#34;humidity&#34;:83.12,&#34;pressure&#34;:997.5,&#34;linkquality&#34;:97}}
+</span><span class="go">{&#34;tst&#34;:1605459438,&#34;topic&#34;:&#34;zigbee2mqtt/westside/SENSOR&#34;,&#34;qos&#34;:0,&#34;retain&#34;:0,&#34;payloadlen&#34;:100,&#34;payload&#34;:{&#34;battery&#34;:91,&#34;voltage&#34;:2985,&#34;temperature&#34;:10.63,&#34;humidity&#34;:83.12,&#34;pressure&#34;:997.8,&#34;linkquality&#34;:97}}
+</span><span class="go"></span><span class="err">
+</span></code></pre></div><p>in one window, and <code>tail -f /export/iot/z2m/log/*/log.txt</code> in a second window. When log messages appear in <code>log.txt</code>, we should also see JSON payloads being dumped by <code>mosquitto_sub</code>.</p>
+<p>We now know that zigbee2mqtt is up and running, has a configuration and is posting messages to the MQTT, using the proper topic names.</p>
+<h2 id="debugging-the-topology">
+    <a href="#debugging-the-topology">
+	Debugging the topology
+    </a>
+</h2>
+<p>Zigbee is a mesh network. Our IKEA signal repeaters will act as intermediate relays, forwarding the messages to the coordinator.</p>
+<p>We can <a href="https://www.zigbee2mqtt.io/information/mqtt_topics_and_message_structure.html#zigbee2mqttbridgenetworkmap" target="_blank" rel="noopener">dump the current topology</a>
+
+, as seen by the zigbee2mqtt gateway, by running the following command in one window:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go"> mosquitto_sub -h localhost -C 1  -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng &gt; map.$(date +%Y%m%d%H%M%S).png
+</span></code></pre></div><p>and running the matching pub command in a second window:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>mosquitto_pub -h localhost -t zigbee2mqtt/bridge/networkmap -m graphviz
+</code></pre></div><p>The sfdp command is part of the <code>graphviz</code> package.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>dpkg -S <span class="k">$(</span>which sfdp<span class="k">)</span>
+<span class="go">graphviz: /usr/bin/sfdp
+</span></code></pre></div><p>The result is a network map. The map is always only a current snapshot, and the actual configuration may vary depending on network conditions.</p>
+<p><a href="/uploads/2020/11/iot-mesh-large.png"><p class="md__image">
+  <img src="/uploads/2020/11/iot-mesh.png" alt=""  />
+</p>
+
+</a>
+
+</p>
+<p><em>The MQTT network map shows the devices and how they connect between each other. Unlinked devices connect directly to the coordinator.</em></p>
+<p>To be continued with a section on Influx configuration.</p>
+<h2 id="i-could-not-have-done-this-alone">
+    <a href="#i-could-not-have-done-this-alone">
+	I could not have done this alone
+    </a>
+</h2>
+<p>There are many people who have helped me to set this up. The one that stands out most is <a href="https://unixe.de" target="_blank" rel="noopener">Marianne Spiller</a>
+
+. She wrote <a href="https://www.rheinwerk-verlag.de/smart-home-mit-openhab-2-einrichten-steuern-automatisieren/" target="_blank" rel="noopener">Smart Home mit openHAB 2</a>
+
+, the book on openHAB and home automation, and while I did not go down that route, she inspired me to research the topic. She also <a href="https://www.unixe.de/yaja-yet-another-jitsi-article/" target="_blank" rel="noopener">motivated me to look into docker-compose</a>
+
+ and she is running the fantastic <a href="https://www.tabsvongesternnacht.de/" target="_blank" rel="noopener">#tabsvongesternnacht</a>
+
+ Stammtisch every Friday. Thank you, <a href="https://twitter.com/sys_adm_ama" target="_blank" rel="noopener">@sys_adm_ama</a>
+
+.</p>
+<p>Another useful resource was <a href="https://github.com/Nilhcem/home-monitoring-grafana" target="_blank" rel="noopener">https://github.com/Nilhcem/home-monitoring-grafana</a>
+
+ and the article in <a href="http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana" target="_blank" rel="noopener">Home sensor data monitoring with MQTT, InfluxDB and Grafana</a>
+
+, which I took as a blueprint for my setup.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2020%2f11%2f15%2fmy-home-sensor-network.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2020%2f11%2f15%2fmy-home-sensor-network.html&text=My%20home%20sensor%20network%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2020%2f11%2f15%2fmy-home-sensor-network.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2020/11/19/on-the-observability-of-outliers.html">On the Observability of Outliers</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2020/11/01/rechenzentren-und-ihren-stromverbrauch-regulieren.html">Rechenzentren und ihren Stromverbrauch regulieren</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>

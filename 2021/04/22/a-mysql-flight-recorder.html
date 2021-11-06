@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Die wunderbare Welt von Isotopp - A MySQL flight recorder</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+
+
+
+
+
+    
+
+
+
+<link rel="stylesheet" href="/style.min.e525cc19e18f2cbf426091105e559b85dfd95ed4f6e083666ffc41242d16af82.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+  <div class="container-fluid">
+
+    <a class="navbar-brand justify-content-center" href="" rel="home" title=".Site.Title">
+      <img height='48' width='48' src='/assets/img/kris.jpg' class='p-0 me-3 d-block d-lg-inline'>
+      <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+    </a>
+
+    <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+      <ul class="navbar-nav ms-auto">
+
+      
+
+      
+        <li class="nav-item ">
+                        <a class="nav-link" href="/about/">
+          
+          <span>About</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/contribute/">
+          
+          <span>Contribute</span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/search/">
+          <svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        <li class="nav-item ">
+                        <a class="nav-link" href="/tags/">
+          <svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg>
+          <span></span>
+          <span class="visually-hidden">(Current)</span>
+            </a>
+            
+        </li>
+      </ul>
+        
+    </div>
+
+  </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+<div class="page">
+  <article class="a-mysql-flight-recorder-page">
+    <div class='row justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            A MySQL flight recorder
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+              <img src='/assets/img/kris.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+              <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+              </a>
+            
+
+            
+              <span class='d-none d-lg-inline'>-</span> 
+              <div class='d-block d-lg-inline'>April 22, 2021</div>
+            
+
+          </div>
+        </div>
+        <img src='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg'>
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>Sometimes things go wrong, and it surely would be nice if you at least knew afterwards what happened. Where I work, we are running a shell script older than time itself, once a minute. The script writes files to <code>/var/log/mysql_pl</code>, into a directory named after the current weekday and named after the current hour and minute.</p>
+<p>So when a box crashes on Thursday at 22:09, as long as I can login to it, I still can try to look at <code>/var/log/mysql_pl/Thu/22_0?</code> and try to reconstruct what happened before the crash. Often the buildup to catastrophe is clearly visible.</p>
+<h2 id="a-version-in-python">
+    <a href="#a-version-in-python">
+	A version in Python
+    </a>
+</h2>
+<p>Our shell script is not really portable or viable outside the work environment, so I rewrite a similar thing in Python. It has no dependencies outside of a base install of a modern Python, except for <code>mysqlclient</code> (<code>MySQLdb</code>) to connect to the database.</p>
+<p>The full script is <a href="https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-flight-recorder" target="_blank" rel="noopener">available on github</a>
+
+.</p>
+<h2 id="ini-file">
+    <a href="#ini-file">
+	ini file
+    </a>
+</h2>
+<p>It requires an <code>*.ini</code> file, and searches for it in <a href="https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-flight-recorder/flight_recorder.py#L299-L314" target="_blank" rel="noopener">a number of locations</a>
+
+:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="n">f</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="s2">&#34;/etc/mysql/mysql-flight-recorder.ini&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;/etc/mysql/mysql_flight_recorder.ini&#34;</span><span class="p">,</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&#34;~/.mysql-flight-recorder.ini&#34;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&#34;~/.mysql_flight_recorder.ini&#34;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&#34;~/mysql-flight-recorder.ini&#34;</span><span class="p">),</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&#34;~/mysql_flight_recorder.ini&#34;</span><span class="p">),</span>
+            <span class="s2">&#34;./.mysql-flight-recorder.ini&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;./.mysql_flight_recorder.ini&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;./mysql-flight-recorder.ini&#34;</span><span class="p">,</span>
+            <span class="s2">&#34;./mysql_flight_recorder.ini&#34;</span><span class="p">,</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+</code></pre></div><p>So it is either <code>mysql_flight_recorder.ini</code> or <code>mysql-flight-recorder.ini</code> with underbars or dashes, in <code>/etc/mysql</code>, in your home as a dotfile or non-dotfile, or in the current directory as a dotfile or non-dotfile.</p>
+<p>The <code>*.ini</code> files looks like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[DEFAULT]
+</span><span class="go">logdir = /home/kris/Python/mysql/mysql-flight-recorder/mysql_flight_recorder
+</span><span class="go">pidfile = /home/kris/Python/mysql/mysql-flight-recorder/mysql_flight_recorder.pid
+</span><span class="go">compresscmd= bzip2 -9f
+</span></code></pre></div><p>That is, the <code>DEFAULT</code> section defines</p>
+<ul>
+<li>logdir: a direcory where to put the logfiles.</li>
+<li>pidfile: It also needs a filename (as an absolute pathname) for a pidfile, which is being used to prevent concurrent execution.</li>
+<li>compresscmd: And finally, the logfiles can be compressed, and the compress command needs to be specified. The compress command needs to be given in a way that existing compressed files are overwritten, that is why in the example the <code>-f</code> option is given.</li>
+</ul>
+<p>After that, for each host that is to be checked a section is defined. The section name defines the log file prefix, the <code>compresscmd</code> controls the suffix. In each section, we need to specify username, password, host and port for the connection. No attempt at using TLS is being made in my quick hack.</p>
+<p>The default config shown produces</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">(venv) kris@server:~/Python/mysql/mysql-flight-recorder$ ls -l mysql_flight_recorder/Thu/
+</span><span class="go">total 48
+</span><span class="go">-rw-rw-r-- 1 kris kris 21424 Apr 22 23:35 localhost_23_35.bz2
+</span><span class="go">-rw-rw-r-- 1 kris kris 20975 Apr 22 23:36 localhost_23_36.bz2
+</span><span class="go">...
+</span></code></pre></div><h2 id="what-is-being-logged">
+    <a href="#what-is-being-logged">
+	What is being logged?
+    </a>
+</h2>
+<p>We run</p>
+<ul>
+<li><code>select version() as version</code></li>
+<li><code>show global status like 'Uptime'</code></li>
+<li><code>show full processlist</code></li>
+<li><code>show slave status</code> (this will need a version gate soon to use <code>show replica status</code>)</li>
+<li><code>show engine innodb status</code></li>
+<li><code>select * from information_schema.innodb_trx</code></li>
+<li><code>select * from information_schema.innodb_locks</code> (this has a version gate and uses <code>select * from performance_schema.data_locks</code> on 8.0)</li>
+<li><code>select * from information_schema.innodb_lock_waits</code> (this has a version gate and uses <code>select * from performance_schema.data_lock_waits</code> on 8.0)</li>
+<li><code>select * from information_schema.innodb_cmp</code></li>
+<li><code>select * from information_schema.innodb_cmpmem</code></li>
+<li><code>select * from information_schema.innodb_metrics</code></li>
+<li><code>show global status</code></li>
+<li><code>show global variables</code></li>
+</ul>
+<p>That&rsquo;s a lot of data, but bzip2 compressed it to around 20KB per minute. At 10000 files per week this ends up using 200 MB of disk space, which is reasonable for a post-mortem data stash.</p>
+<h2 id="possible-extensions">
+    <a href="#possible-extensions">
+	Possible extensions
+    </a>
+</h2>
+<p>The original shell script has better support for TLS based communication, because it works using the command line client. The Python script needs TLS added.</p>
+<p>The original shell script has some more version gating to handle older versions of MySQL and MariaDB. It tolerates missing data tables instead of terminating with an error.</p>
+<p>The original shell script has a PMP trigger logic and can attach a gdb to the mysqld when certain conditions are met in order to PMP it. As we work only remotely in this version of the script, this is conceptually not supported.</p>
+
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-3'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=%2f2021%2f04%2f22%2fa-mysql-flight-recorder.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=%2f2021%2f04%2f22%2fa-mysql-flight-recorder.html&text=A%20MySQL%20flight%20recorder%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20%2f2021%2f04%2f22%2fa-mysql-flight-recorder.html' target='_blank'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top'>
+      <div class='col-lg-4 text-center text-lg-start'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Next Post
+            </div>
+            <a class='text-decoration-none' href="/2021/05/14/fertig-gelesen-titan.html">Fertig gelesen: Titan</a>
+          </div>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+         
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="/2021/04/07/fertig-gelesen-children-of-ruin.html">Fertig gelesen: Children of Ruin</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/index.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="/js/bootstrap.js"></script>
+
+
+
+
+<script src="/js/lunr.js"></script>
+
+
+
+
+
+<script src="/js/app.js"></script>
+
+
+    </body>
+</html>
