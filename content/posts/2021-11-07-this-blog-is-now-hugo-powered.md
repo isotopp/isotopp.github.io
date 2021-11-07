@@ -14,10 +14,10 @@ My patches to fix things touched almost all files, and were rejected, because th
 
 So I was looking around for something better, and the good people on `ircnet:#php.de` recommended [Serendipity](https://docs.s9y.org/).
 I have been using this for many years, contributed a few improvements and sponsored a few others.
-Unfortunately, when Mobile became a thing, I had to theme that went well with that.
+Unfortunately, when Mobile became a thing, I had no theme that went well with that.
 I also needed 2FA for obvious reasons.
 
-So for I time, I used Google+ a lot, but we all know how that went. 
+So for a time, I used Google+ a lot, but we all know how that went. 
 After that I installed WordPress, but not only was that slow, but the constant patching and  the Antispam became a drag.
 
 I revived the blog by moving all my content to Markdown, and putting it up as a 
