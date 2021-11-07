@@ -68,6 +68,10 @@ There are still many visual and other bugs, but this is on GitHub: You can open 
 The build time is down from 120s to 8s, for the entire site.
 Thanks, @patdavid, I'd say!
 
+![](/uploads/2021/11/frontend-build.png)
+
+*The new build time for the entire site is down to 8s.*
+
 Also, using this and the Bootstrap and GitHub workflow documentation, I am even learning things now, and actually was able to fix [the first bug](https://github.com/isotopp/isotopp.github.io/commit/869c4962fbbc24c8ae9c3343bcaa25c140241f6b) on my blog on my own. Kris doing frontend, take cover. :smile:
 
 Ah, and JetBrains. I have the all-in subscription, and started using WebStorm with this setup.
