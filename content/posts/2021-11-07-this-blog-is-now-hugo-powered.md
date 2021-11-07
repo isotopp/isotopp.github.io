@@ -65,8 +65,13 @@ I tried to get things to work, but I failed, and gave up:
 who took it upon himself to create a foundation for me to build on, and this weekend I was able to provisionally move over things from Jekyll to Hugo.
 There are still many visual and other bugs, but this is on GitHub: You can open issues, and even better, provide PRs.
 
-The build time is down from 120s to 8s, for the entire site.
-Thanks, @patdavid, I'd say!
+![](/uploads/2021/11/frontend-rebuild.png)
+
+*When running `hugo serve`, the website is built in memory and served from `http://localhost:1313`. A file watcher detects changes, and "on save" rebuilds the minimal change set, then triggers an automatic reload in the browser.
+I have the browser open on the left, WebStorm on the right, and whenever I hit `Ctrl-S` or change tabs, the article I am looking automatically refreshes. Build time is 0.272s, approximately human reaction time - it's instant.*
+
+The build time for `hugo --cleanDestinationDir` is down from 120s to 8s, for the entire site.
+"Thanks, @patdavid!" and "Thanks, Hugo!", I'd say!
 
 ![](/uploads/2021/11/frontend-build.png)
 
