@@ -1,16 +1,54 @@
 <meta charset="utf-8">
 <meta http-equiv="x-ua-compatible" content="ie=edge">
-<title>{{ block "title" . }}{{ .Site.Title }}{{ if .Title }} - {{ .Title }}{{ end }}{{ end }}</title>
-<meta name="description" content="">
+<title>{{ block "title" . }}{{ .Param "title" }}{{ end }}</title>
+<meta name="description" content="{{ .Site.Params.description }}">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="manifest" href="site.webmanifest">
-<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png"><!-- TODO: provide such an icon -->
 <link rel="favicon.ico" rel="icon" type="image/ico">
-<!-- Place favicon.ico in the root directory -->
-
+<link rel="canonical" href="{{ .Site.BaseURL }}">
 
 <!-- RSS feed -->
 {{ with .OutputFormats.Get "rss" -}}
 <link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink | safeURL }}" title="{{ $.Site.Title }}">
 {{ end -}}
+
+<!-- based on https://github.com/jekyll/jekyll-seo-tag/blob/master/lib/template.html -->
+<!-- TODO: proper config.yaml data model and parametrized here -->
+{{ hugo.Generator }}
+<meta property="og:title" content='{{ .Param "title" }}' />
+<meta property="og:site_name" content='{{ .Site.Title }}' />
+
+{{ if in .Params.tags "lang_de" }}
+<meta property="og:locale" content="de_DE" />
+{{ else }}
+<meta property="og:locale" content="en_US" />
+{{ end }}
+
+<meta name="description" content="{{ .Site.Params.description}}" />
+<meta property="og:description" content="{{ .Site.Params.description }}" />
+
+<link rel="canonical" href="{{ .Site.BaseURL }}" />
+<meta property="og:url" content="{{ .Site.BaseURL }}" />
+
+{{ if .Page.Date }}
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='{{ .PublishDate.Format "2006-01-02T15:04:05Z07:00"  }}' />
+{{ else }}
+<meta property="og:type" content="website" />
+{{ end }}
+<meta property="og:image" content='{{ .Param "feature-img" }}' />
+<meta property="twitter:image" content='{{ .Param "feature-img" }}' />
+<meta property="twitter:title" content='{{ .Param "title" }}' />
+<meta name="twitter:card" content="summary_large_image" />
+<!-- apparently the dict is emitted as JSON automatically --><script type="application/ld+json">
+    {{ dict
+        "@type" "WebSite"
+        "url" .Site.BaseURL
+        "image" (relURL (.Param "feature-img"))
+        "headline" (.Param "title")
+        "description" (.Param "description")
+        "name" .Site.Title
+        "@context" "https://schema.org"
+    }}
+</script>
