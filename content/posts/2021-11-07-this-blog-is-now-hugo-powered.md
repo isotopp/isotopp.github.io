@@ -10,7 +10,7 @@ tags:
 
 I started blogging almost 20 years ago, because a piece of software I was using to manage calendars and discussion boards to organize the "Dienstag" also offered blogging functionality.
 That software was very buggy and full of HTML injections.
-My patches to fix things touched almost all files, and were rejected, because they... touched to many files.
+My patches to fix things touched almost all files, and were rejected, because they... touched too many files.
 
 So I was looking around for something better, and the good people on `ircnet:#php.de` recommended [Serendipity](https://docs.s9y.org/).
 I have been using this for many years, contributed a few improvements and sponsored a few others.
