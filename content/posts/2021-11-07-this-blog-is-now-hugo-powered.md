@@ -58,7 +58,7 @@ I tried to get things to work, but I failed, and gave up:
 
 > Bin Privatperson, Blog nicht monetarisiert, kann nur symbolisch zahlen, wenn es jemand es für Geld tun will, sollte das Resultat ebenfalls MIT oder frei verfügbar sein.
 
-[@Darix](https://twitter.com/darixzen/status/1451567686484467723) as a member of the [Pixls.us](https://pixls.us/) project then made contact with me, and recommended [Pat David](https://github.com/patdavid):
+[@Darixzen](https://twitter.com/darixzen/status/1451567686484467723) as a member of the [Pixls.us](https://pixls.us/) project then made contact with me, and recommended [Pat David](https://github.com/patdavid):
 
 > I'm a member of the GIMP team, occasional photographer, digital dabbler, and lover of Free Software. Started @pixlsus https://pixls.us
 
