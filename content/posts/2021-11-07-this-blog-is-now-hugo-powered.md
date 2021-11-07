@@ -76,4 +76,4 @@ Also, using this and the Bootstrap and GitHub workflow documentation, I am even 
 
 Ah, and JetBrains. I have the all-in subscription, and started using WebStorm with this setup.
 I am constantly amazed how fast and incredibly useful their stuff is.
-If you to stuff with software for a living and are not using their products, you are doing it wrong.
+If you do stuff with software for a living, and are not using their products, you are doing it wrong.
