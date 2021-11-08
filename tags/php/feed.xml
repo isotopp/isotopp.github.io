@@ -6,7 +6,7 @@
     <description>Recent content in php on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 08 Nov 2021 19:16:49 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/php/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 08 Nov 2021 19:18:21 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/php/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Watchman</title>
       <link>https://blog.koehntopp.info/2018/02/01/watchman.html</link>
@@ -514,42 +514,6 @@ laufen.&lt;/p&gt;
 &lt;p&gt;Nebenbei bemerkt: Falls Ihr &lt;em&gt;immer&lt;/em&gt; noch PHP 4 einsetzt - heute wäre ein
 guter Tag, ein PHP 5.3 zu installieren und den Kram da hin zu migrieren. PHP
 5 erschien am 13. Juli 2004. Das ist beinahe 6 Jahre her.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Connection Scoped State bei MySQL</title>
-      <link>https://blog.koehntopp.info/2009/04/19/connection-scoped-state-bei-mysql.html</link>
-      <pubDate>Sun, 19 Apr 2009 11:14:27 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2009/04/19/connection-scoped-state-bei-mysql.html</guid>
-      <description>&lt;p&gt;Aus einer Diskussion in der deutschsprachigen MySQL Gruppe im USENET. Dort ging es um die Frage, warum phpMyAdmin ein eingeschränktes Werkzeug ist und bei vielen Helfern im Netz unbeliebt. Meine Antwort lautete so:&lt;/p&gt;
-&lt;p&gt;phpMyAdmin unterliegt wie auch viele grafische Werkzeuge für MySQL (darunter auch jene, die von MySQL selbst bereitgestellt werden) einigen besonderen Einschränkungen. Diese sind prinzipbedingt und daher auch nicht leicht zu beheben.&lt;/p&gt;
-&lt;p&gt;Aber von vorne:&lt;/p&gt;
-&lt;p&gt;In MySQL ist es so, daß die Connection einen besonderen Kontext oder Scope darstellt. Mindestens die folgenden Dinge sind mit dem Scope der Connection definiert:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Transaktionen. Ein Disconnect entspricht einen ROLLBACK.&lt;/li&gt;
-&lt;li&gt;Transaktionen können mit SELECT &amp;hellip; FOR UPDATE oder LOCK TABLES auch Locks erzeugen. Diese sind bei einem Disconnect wieder weg.&lt;/li&gt;
-&lt;li&gt;Die mit LAST_INSERT_ID() abrufbare zuletzt von auto_increment vergebene ID wird in der Connection gespeichert. Sie ist nach einem Disconnect nicht mehr verfügbar.&lt;/li&gt;
-&lt;li&gt;Mit CREATE TEMPORARY TABLE erzeugte Tabellen. Sie werden bei Disconnect gelöscht.&lt;/li&gt;
-&lt;li&gt;Prepared Statements und der vorgeparste Code von Stored Code (CREATE PROCEDURE und CREATE FUNCTION) werden pro Connection verwaltet, auch wenn das technisch eine falsche Lösung ist.&lt;/li&gt;
-&lt;li&gt;@-Variablen. &lt;code&gt;SET @bla = 10&lt;/code&gt; oder &lt;code&gt;SELECT @bla := count(*) FROM keks;&lt;/code&gt; definieren jeweils eine Connectionvariable mit dem Namen &lt;code&gt;@bla&lt;/code&gt;, die beim Disconnect verloren ist.&lt;/li&gt;
-&lt;li&gt;SESSION-Parameter. &lt;code&gt;SET SESSION mysiam_sort_buffer_size = 1024*1024*64&lt;/code&gt; oder &lt;code&gt;SET @@session.myisam_sort_buffer_size = 1024*1024*64&lt;/code&gt; sind nach einen Disconnect verloren. Dies gilt auch für die häufig gesetzten Character Sets (&lt;code&gt;SET NAMES&lt;/code&gt; ist nur ein Kürzel für drei bestimmte &lt;code&gt;SET SESSION ...&lt;/code&gt;).&lt;/li&gt;
-&lt;li&gt;Replikationsspezifische SET-Kommandos wie &lt;code&gt;SET TIMESTAMP&lt;/code&gt; oder &lt;code&gt;SET LAST_INSERT_ID&lt;/code&gt; können das Verhalten von Funktionen wie &lt;code&gt;SELECT NOW()&lt;/code&gt; oder &lt;code&gt;SELECT LAST_INSERT_ID()&lt;/code&gt; beeinflussen.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Wir nennen so etwas Zustand im Scope der Connection oder Connection Scoped State (CSS, mal wieder).&lt;/p&gt;
-&lt;p&gt;Ein Client, der also unkontrolliert disconnected oder bei dem ein Disconnect nicht korrekt gemeldet wird, ist defekt in dem Sinne, daß die o.a. Funktionalität nicht wie erwartet verfügbar ist.&lt;/p&gt;
-&lt;p&gt;Das gilt für viele grafische Clients - viele von denen machen nach dem Absenden der Query und dem Lesen des Resultsets einen Disconnect und verbinden sich für die folgende Query neu, darunter auch der MySQL Query Browser.&lt;/p&gt;
-&lt;p&gt;Das gilt auch für einige veraltete Versionen von Connectoren. Eine Zeit lang dachte das MySQL Connector/J-Team zum Beispiel, es sei eine gute Idee, Auto-Reconnect bei Verlust der Connection aus welchem Grund auch immer zu machen. Korrekt ist stattdessen, eine Java Exception dafür zu schmeissen, damit die Anwendung auch eine Chance hat, den Verlust des Session-Zustandes mitzubekommen. Denn wenn einem der Session-Verlust mitten in einer Transaktion passiert, und der Connector dann einfach wieder verbindet statt die Exception zu werfen, kann man ein paar echt schwer zu findende Heisenbugs bauen.&lt;/p&gt;
-&lt;p&gt;Und das gilt prinzipbedingt auch für jeden Webclient wie phpMyAdmin einer ist. Es ist nun mal so, daß etwa Apache einen Haufen Worker Slaves hat und daß ein eingehender http-Request einen zufälligen Worker Slave zugeteilt wird. Es wäre also selbst mit &lt;code&gt;mysql_pconnect()&lt;/code&gt; nicht möglich einen phpMyAdmin zu schreiben, der CSS korrekt behandelt.&lt;/p&gt;
-&lt;h2 id=&#34;kann-dein-client-css&#34;&gt;
-    &lt;a href=&#34;#kann-dein-client-css&#34;&gt;
-	Kann Dein Client CSS?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Definiere in einer Query eine Sessionvariable: &lt;code&gt;SET @bla = &#39;Ich bin korrekt&#39;;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;In einer zweiten Query frage den Wert der Variaben ab: &lt;code&gt;SELECT @bla;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;Wenn Dein Client mit &amp;lsquo;Ich bin korrekt&amp;rsquo; antwortet, kann er CSS verwalten. Ansonsten ist er unbrauchbar und gehört auf den Müll - wer will schon einen Datenbankclient, mit dem man nicht mal eine Transaktion korrekt verwalten kann?&lt;/p&gt;
 </description>
     </item>
     
