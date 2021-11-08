@@ -6,6 +6,7 @@ tags:
 - lang_en
 - devops
 - docker
+- git
 - development
 title: Gitlab in Docker
 ---

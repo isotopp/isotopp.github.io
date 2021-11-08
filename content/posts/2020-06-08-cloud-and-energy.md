@@ -5,6 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
 - climate
+- cloud
 - data center
 - energy
 - erklaerbaer

@@ -4,7 +4,7 @@ date: "2008-09-19T06:02:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- perl
+- fluffy fluff
 - lang_de
 title: OOP in Perl
 ---

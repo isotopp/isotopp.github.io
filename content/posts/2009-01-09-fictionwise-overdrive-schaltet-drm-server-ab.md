@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - media
-- print
+- copyright
 - lang_de
 title: Fictionwise/Overdrive schaltet DRM-Server ab
 ---

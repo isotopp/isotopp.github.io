@@ -5,7 +5,6 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - berlin
-- flug
 - reisen
 - lang_de
 title: Tempelhof

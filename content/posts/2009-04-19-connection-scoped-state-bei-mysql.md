@@ -5,9 +5,9 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - erklaerbaer
+- database
 - mysql
-- php
-- phpmyadmin
+- mysqldev
 - lang_de
 title: Connection Scoped State bei MySQL
 ---

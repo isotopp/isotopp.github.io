@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - cookie
-- datenschutz
+- privacy
 - identity
 - security
 - lang_de

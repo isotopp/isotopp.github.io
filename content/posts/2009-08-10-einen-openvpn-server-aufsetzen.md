@@ -4,7 +4,8 @@ date: "2009-08-10T07:59:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- openvpn
+- security
+- privacy
 - lang_de
 title: Einen  openvpn Server aufsetzen
 ---

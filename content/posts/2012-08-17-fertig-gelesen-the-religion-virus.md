@@ -8,7 +8,7 @@ tags:
 - review
 - media
 - religion
-- wissenschaft
+- science
 - lang_de
 title: 'Fertig gelesen: The Religion Virus'
 ---

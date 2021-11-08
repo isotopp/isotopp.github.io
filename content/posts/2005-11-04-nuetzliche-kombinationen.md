@@ -12,7 +12,7 @@ tags:
 title: Nützliche Kombinationen
 ---
 Das Sony BMG Rootkit aus 
-[Legal, Illegal, Scheißegal]({{< ref "/content/posts/2005-11-01-legal-illegal-schei-egal.md" >}})
+[Legal, Illegal, Scheißegal]({{< ref "/content/posts/2005-11-01-legal-illegal-scheissegal.md" >}})
 hat eine dicke Spur von Artikeln nach sich gezogen. Sony bietet jetzt ein
 Toolkit an, mit dem man die Rootkit-Funktionen deinstallieren kann, der
 Filtertreiber (den man in der EULA dennoch nicht abgenickt hat) bleibt aber
@@ -22,7 +22,7 @@ In
 [World of Warcraft hackers using Sony BMG rootkit](http://www.securityfocus.com/brief/34)
 auf Securityfocus wird inzwischen von einer sinnvollen Anwendung des Sony
 BMG Rootkits berichtet: Es ist offenbar problemlos möglich, auf einer
-Maschine, die mit einer Sony CD versucht worden ist, Cheats für World of
+Maschine, die mit einer Sony CD verseucht worden ist, Cheats für World of
 Warcraft zu installieren, die von der Spyware, die Blizzard mit dem Spiel
 zusammen installiert, nicht entdeckt werden kann.
 

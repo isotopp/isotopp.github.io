@@ -7,7 +7,6 @@ tags:
 - book
 - review
 - media
-- strom
 - lang_de
 title: 'Fertig gelesen: Blackout'
 ---

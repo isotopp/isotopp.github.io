@@ -6,7 +6,6 @@ published: true
 tags:
 - bash
 - computer
-- shell
 - unix
 - lang_de
 title: '#!/bin/bash -- Brace Expansion'

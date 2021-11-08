@@ -6,8 +6,6 @@ published: true
 tags:
 - copyright
 - free software
-- novell
-- sco
 - unix
 - lang_de
 title: Acht Jahre SCO-Prozeß

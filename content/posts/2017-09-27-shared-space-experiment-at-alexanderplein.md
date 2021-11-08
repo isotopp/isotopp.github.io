@@ -6,7 +6,7 @@ published: true
 status: publish
 tags:
 - netherlands
-- post car society
+- mobility
 - lang_en
 title: Shared Space Experiment at Alexanderplein
 ---

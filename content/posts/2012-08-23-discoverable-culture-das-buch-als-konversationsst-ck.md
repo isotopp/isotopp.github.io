@@ -7,7 +7,6 @@ tags:
 - kultur
 - media
 - privacy
-- usability
 - lang_de
 title: 'Discoverable culture: Das Buch als Konversationsstück'
 ---

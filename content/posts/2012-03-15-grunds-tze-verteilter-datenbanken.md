@@ -6,6 +6,7 @@ published: true
 tags:
 - cluster
 - database
+- erklaerbaer
 - distributed computing
 - mysql
 - lang_de

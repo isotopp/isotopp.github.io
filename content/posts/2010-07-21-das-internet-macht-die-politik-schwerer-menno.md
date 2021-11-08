@@ -6,7 +6,6 @@ published: true
 tags:
 - internet
 - politik
-- transparenz
 - lang_de
 title: Das Internet macht die Politik schwerer... Menno.
 ---

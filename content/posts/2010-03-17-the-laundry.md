@@ -5,7 +5,6 @@ feature-img: assets/img/background/book.jpg
 published: true
 tags:
 - media
-- print
 - roleplay
 - scifi
 - stross

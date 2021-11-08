@@ -4,9 +4,7 @@ date: "2020-06-15T10:37:23Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
-- project
-- process
-- management
+- devops
 - erklaerbaer
 title: Pizza, People, Projects and Processes
 ---

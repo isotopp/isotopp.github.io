@@ -4,7 +4,6 @@ date: "2010-05-11T08:54:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- apache
 - blog
 - performance
 - s9y

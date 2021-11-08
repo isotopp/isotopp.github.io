@@ -8,7 +8,6 @@ tags:
 - book
 - media
 - review
-- horror
 title: 'Fertig gelesen: "101 Cthulhu Mythos Haiku"'
 ---
 Does exactly what it says on the tin. Endlessly brillant. 89 cent.

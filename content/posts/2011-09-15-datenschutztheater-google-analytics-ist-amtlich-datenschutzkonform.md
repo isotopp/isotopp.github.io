@@ -4,7 +4,7 @@ date: "2011-09-15T10:28:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- datenschutz
+- privacy
 - google
 - spackeria
 - terror

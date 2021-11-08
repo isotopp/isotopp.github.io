@@ -8,7 +8,6 @@ tags:
 - book
 - media
 - review
-- horror
 title: 'Fertig gelesen: Madness on the Orient Express'
 ---
 16 Kurzgeschichten, die sich um den Orient Express und um den tentakulösen Horror von H.P.Lovecraft drehen. Autoren sind unter anderem Robin D. Laws, Kenneth Hite und James L. Sutter, aber auch Penelope Love, Elaine Cunningham und Lisa Morton.

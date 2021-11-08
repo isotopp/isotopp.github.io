@@ -6,9 +6,7 @@ published: true
 tags:
 - free software
 - git
-- perl
 - software
-- versionsverwaltung
 - lang_de
 title: Git "gewinnt"
 ---

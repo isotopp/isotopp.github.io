@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 status: publish
 tags:
-- post car society
+- mobility
 - lang_en
 title: Solar plus Storage in Australia
 ---

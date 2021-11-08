@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - kiel
-- strand
+- anderswo
 - lang_de
 title: Ode an Kiel
 ---

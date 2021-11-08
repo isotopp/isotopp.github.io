@@ -4,7 +4,6 @@ date: "2009-11-12T20:32:25Z"
 feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
-- europa
 - mysql
 - oracle
 - sun

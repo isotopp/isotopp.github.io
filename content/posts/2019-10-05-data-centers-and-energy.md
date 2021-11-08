@@ -4,6 +4,7 @@ date: "2019-10-05T11:44:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - climate
+- cloud
 - data center
 - energy
 - erklaerbaer

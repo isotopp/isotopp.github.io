@@ -6,7 +6,7 @@ published: true
 tags:
 - google
 - internet
-- werbung
+- advertising
 - lang_de
 title: Google verkauft Deine Daten an den Teufel!
 ---

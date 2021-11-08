@@ -4,8 +4,7 @@ date: "2010-05-14T15:14:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- admin
-- domain name system
+- devops
 - internet
 - lang_de
 title: DENIC erklärt sich

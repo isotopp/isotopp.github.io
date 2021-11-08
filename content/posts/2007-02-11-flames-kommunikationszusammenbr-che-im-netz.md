@@ -5,12 +5,9 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - ccc
-- dienstag
-- dtb
+- talk
 - karlsruhe
-- schulung
 - stuttgart
-- usenet
 - lang_de
 title: Flames - Kommunikationszusammenbrüche im Netz
 ---

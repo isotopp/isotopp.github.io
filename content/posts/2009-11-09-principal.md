@@ -5,7 +5,6 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - identity
-- irc
 - security
 - lang_de
 title: '''Principal''?'

@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - computer
-- admin
+- devops
 - linux
 - unix
 - lang_de

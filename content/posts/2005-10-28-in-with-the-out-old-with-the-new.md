@@ -6,7 +6,6 @@ published: true
 tags:
 - karlsruhe
 - mysql
-- united internet
 - work
 - lang_de
 title: In with the out, old with the new...

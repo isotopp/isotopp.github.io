@@ -6,9 +6,11 @@ published: true
 status: publish
 tags:
 - computer
+- free software
 - lang_en
 title: When you commit to git, how long does it matter?
 ---
+
 [![](/uploads/2017/03/git-git-768x473.png)](https://erikbern.com/2016/12/05/the-half-life-of-code.html)
 
 [Commit to git](https://erikbern.com/2016/12/05/the-half-life-of-code.html)

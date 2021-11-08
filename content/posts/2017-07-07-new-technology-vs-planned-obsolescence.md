@@ -7,7 +7,6 @@ status: publish
 tags:
 - computer
 - erklaerbaer
-- europa
 - lang_en
 title: New Technology vs Planned Obsolescence
 ---

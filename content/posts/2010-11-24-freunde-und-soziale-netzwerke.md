@@ -4,7 +4,6 @@ date: "2010-11-24T14:43:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- facebook
 - internet
 - social networking
 - lang_de
@@ -24,14 +23,14 @@ an Facebook, und versteigt sich bei den Freunden von Jeff Jarvis über Dunbar
 und Montaigne zu Aristoteles. Die falsche Richtung. Guck nach vorne Miriam:
 Was macht ein '+1' oder ein Like-Button genau?
 
-Genau, er abonniert ein Statusabo - ich bekomme einen Kanal mehr, den
+Genau, er abonniert ein Statusabonnement - ich bekomme einen Kanal mehr, den
 Facebook auf meinem Wall aggregiert und unter die Meldungen meiner anderen
 Abos mischt. Er macht also genau das, was ein RSS 'subscribe' macht, und
-könnte genau so gut auch 'subscribe' heißen. Anders als ein RSS Abo ist
+könnte genauso gut auch 'subscribe' heißen. Anders als ein RSS Abo ist
 Facebook aber symmetrisch: Ich abonniere Deine Statusupdates und Du bekommst
 dafür meine.
 
-Dabei ist Facebook unglaublich schlecht, und trennt zum Beispiel nicht
+Dabei ist Facebook unglaublich schlecht und trennt zum Beispiel nicht
 automatisch nach Sprachen, nutzt den Social Graph nicht zur automatischen
 Gruppierung und bietet auch sonst nur sehr rudimentäre Filterfunktionen an.
 Zudem wäre es in vielen Fällen sinnvoll, tatsächlich wie bei RSS oder

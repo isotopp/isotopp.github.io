@@ -6,7 +6,6 @@ tags:
 - lang_en
 - gaming
 - elite dangerous
-- x.52 hotas
 title: Disable Saitek X.52 pro Clutch Mode
 ---
 This post is a memo to self, and describes how to disable the

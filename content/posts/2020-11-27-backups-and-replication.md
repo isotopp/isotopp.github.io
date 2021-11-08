@@ -6,7 +6,8 @@ tags:
 - lang_en
 - mysql
 - mysqldev
-title: Backups and Replication
+- replication
+title: "MySQL: Backups and Replication"
 ---
 There was a question at work about MySQL backups and restore. I needed to explain more.
 

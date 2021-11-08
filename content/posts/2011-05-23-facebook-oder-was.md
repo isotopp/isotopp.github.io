@@ -4,7 +4,6 @@ date: "2011-05-23T18:42:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- facebook
 - internet
 - social networking
 - lang_de
@@ -21,7 +20,7 @@ Tag und die Anzahl der Minuten pro Tag pro User auf der Site. Facebook hat
 dort unglaublich astronomische Werte, weil die Site konsequent so angelegt
 ist, daß die User sich regelmäßig einloggen und dann auch dort bleiben.
 Haupt-Treiber sind Spiele und Chat: Die Spiele sorgen dafür, daß die
-Benutzer laufend wieder zurück kommen und
+Benutzer laufend wieder zurückkommen und
 [ihre Kuh klicken](http://www.bogost.com/blog/cow_clicker_1.shtml).
 Und der Chat sorgt dafür, daß die User laufend eine Facebook-Seite offen
 haben, auf der sie im Chat erreichbar sind.
@@ -29,7 +28,7 @@ haben, auf der sie im Chat erreichbar sind.
 Sites, deren Fokus auf Bewerbungen und Lebensläufen liegt, haben da keinen
 Stich: So oft wechseln die meisten Leute ihren Job halt nicht. Das macht
 sich dann in den Minutenstatistiken der Werbeverkäufer nicht so gut - aber
-man sollte sich trösten: es ist es nicht so, daß ich oder sonst irgendjemand
+man sollte sich trösten: Es ist es nicht so, daß ich oder sonst irgendjemand
 auf Facebook irgendwas machen würde, was wichtig ist oder Geld bedeutet. Das
 passiert anderswo. Klar bin ich bei weitem kein Standardnutzer (0 Facebooks
 Apps, tendenz sinkend), aber ich nutze die verschiedenen Netzwerke zu
@@ -40,33 +39,33 @@ Facebook verwandeln.
 Andererseits ist es so, daß diese anderen Social Networks wegen ihrer
 Facebook-Fixation den Wert ihrer Daten und den wahren Zweck ihres Daseins
 nicht erkennen können und daher verzweifelt auf ihren Daten sitzen, anstatt
-damit etwas sinnvolles zu tun.
+damit etwas Sinnvolles zu tun.
 
 Da ist zum Beispiel Xing. Xing ist ein "Business Netzwerk", also eine
 Sammlung von Kontaktadressen, verdateten Lebensläufen und
 Empfehlungsschreiben. Trotzdem hat es nicht nur ungefähr Jahrzehnte
-gedauert, bis man die Adreßdaten seiner Kontakte mal runterladen und in ein
-lokales Adreßbuch importieren konnte, sondern die ursprüngliche Xing-App für
-Android kam zum Beispiel ohne Adreßbuch-synchronisieren-Funktion heraus.
+gedauert, bis man die Adressdaten seiner Kontakte mal herunterladen und in ein
+lokales Adressbuch importieren konnte, sondern die ursprüngliche Xing-App für
+Android kam zum Beispiel ohne Adressbuch-synchronisieren-Funktion heraus.
 Noch heute ist diese Funktion nicht etwa als Android-Sync-Conduit realisiert
 und über das normale Setup zu erreichen, sondern Bestandteil der Xing-App
 mit einem eigenen, inkompatiblen User-Interface.
 
-Mit den Lebensläufen in Xing kann man genau gar nix anfangen: Xing
+Mit den Lebensläufen in Xing kann man genau gar nichts anfangen: Xing
 propagiert kein standardisiertes Austauschformat für Lebensläufe und es ist
 nicht so, daß man als Xing-User etwa eine digitale Bewerbung an die
 Personalabteilung einer Firma schießen könnte, die ein Xing-Profil hat. Die
-Funktion für Empfehlungenschreiben/Referenzen war als externe Anwendung
+Funktion für Empfehlungsschreiben/Referenzen war als externe Anwendung
 realisiert, hatte die Daten des Lebenslaufes einmal aus Xing importiert und
 sie dann nie wieder aktualisiert - keine Ahnung, ob das inzwischen behoben
 ist, ich habe nach diesem Ultrafail das Interesse an der Funktion verloren.
 
 Xing-Connect ist ein U-Boot Projekt und wird auch jetzt immer noch nicht von
 Xing richtig unterstützt (Und web.de versucht nicht mal, Login-Anbieter zu
-sein m( ).
+sein).
 
 Daß die meisten Xing-Anwender mit der Freigabe von Kontaktdaten in Xing ein
-wenig sparsam sind kann man dem Betreiber nicht wirklich anlasten.
+wenig sparsam sind, kann man dem Betreiber nicht wirklich anlasten.
 Deutschland leidet da unter dem Streetview-Effekt: Größter
 <strike>Spanner</strike>Nutzer in Streetview sind die Deutschen, und die
 größten Schreihälse betreffend Verpixelung sind sie auch. In etwa das kann
@@ -82,15 +81,15 @@ wäre es, hätte man eine Funktion zur Definition von Gruppen ("Arbeit",
 ja, Business-Telefon ja, privat nicht") zuweisen. Und über die Gruppe "Alle"
 global ändern, statt sich die Maus blutig zu klicken.
 
-Plaxo leistet sehr ähnliches wie Xing betreffend seiner Eigenschaft als
-Adreßbuch - für Android-User im Gegensatz zu iPhone und Crackberry aber nur
-für Plaxo Premium User, weil diese Funktion bei Android das Google Contacts
+Plaxo leistet sehr ähnliches wie Xing hinsichtlich seiner Eigenschaft als
+Adressbuch - für Android-User im Gegensatz zu iPhone und Blackberry aber nur
+für Plaxo Premium-User, weil diese Funktion bei Android das Google Contacts
 Sync benötigt, und das wiederum nur im Plaxo Premium Paket enthalten ist.
 Schade, Plaxo, wär schön gewesen, wenn Du nützlich gewesen wärest.
 
 LinkedIn - tja, den Sinn dieser Site habe ich noch nicht ganz verstanden.
 Wie Xing auch versendet LinkedIn keine elektronischen Bewerbungen und
-Lebensläufe. Die meisten Leute haben da auch keine sinnvollen Adreßdaten
+Lebensläufe. Die meisten Leute haben da auch keine sinnvollen Adressdaten
 drin, die ich zweckmäßigerweise auf das Telefon synchronisieren könnte. Und
 auch LinkedIn hält sich inzwischen wie Xing für Facebook und kackt mir mit
 einer Timeline den Bildschirm zu, wenn ich stattdessen doch nur arbeiten

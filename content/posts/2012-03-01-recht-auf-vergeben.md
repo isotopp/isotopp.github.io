@@ -58,7 +58,7 @@ wird.  Der größere Kontext ist hier zur korrekten Interpretation zwingend
 notwendig.
 
 Dennoch ist es von dort nur 
-[ein kleiner Schritt zur Spackeria]({{< ref "/content/posts/2011-05-12-von-der-spackeria-von-aluh-ten-und-vom-kontrollverlust.md" >}}),
+[ein kleiner Schritt zur Spackeria]({{< ref "/content/posts/2011-05-12-von-der-spackeria-von-aluhueten-und-vom-kontrollverlust.md" >}}),
 die im wesentlichen sagt: 
 
 1. Die Welt ist so, das ist eine Eigenschaft der Technik und Gesetze werden

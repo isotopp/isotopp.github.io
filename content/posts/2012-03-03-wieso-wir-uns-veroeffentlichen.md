@@ -4,10 +4,10 @@ date: "2012-03-03T16:05:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- facebook
 - google
 - social networking
 - spackeria
+- privacy
 - lang_de
 title: Wieso wir uns veröffentlichen
 ---

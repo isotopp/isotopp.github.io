@@ -5,6 +5,7 @@ feature-img: assets/img/background/book.jpg
 tags:
 - lang_en
 - review
+- usenet
 - media
 title: 'Fertig gelesen: Linkers'
 ---

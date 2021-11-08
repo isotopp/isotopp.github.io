@@ -7,7 +7,6 @@ tags:
 - google
 - media
 - politik
-- vp8
 - lang_de
 title: 'Google opensourced VP8 Video-Codec: WebM Project'
 ---

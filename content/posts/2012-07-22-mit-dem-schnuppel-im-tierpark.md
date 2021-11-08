@@ -7,7 +7,6 @@ tags:
 - berlin
 - image
 - schnuppel
-- jahreszeiten
 - lang_de
 title: Mit dem Schnuppel im Tierpark
 ---

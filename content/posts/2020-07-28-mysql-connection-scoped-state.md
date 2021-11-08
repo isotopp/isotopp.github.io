@@ -3,10 +3,11 @@ author-id: isotopp
 date: "2020-07-28T15:40:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
-- lang_en
+- erklaerbaer
 - database
 - mysql
 - mysqldev
+- lang_en
 title: MySQL Connection Scoped State
 ---
 MySQL speaks its own proprietary protocol.  It cannot be routed

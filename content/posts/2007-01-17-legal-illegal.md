@@ -6,7 +6,7 @@ published: true
 tags:
 - copyright
 - media
-- video
+- film
 - lang_de
 title: Legal, Illegal, ...
 ---

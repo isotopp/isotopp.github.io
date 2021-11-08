@@ -4,8 +4,7 @@ date: "2010-05-16T08:11:32Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- admin
-- management
+- devops
 - monitoring
 - security
 - lang_de

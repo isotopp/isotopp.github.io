@@ -6,8 +6,6 @@ published: true
 tags:
 - kirche
 - politik
-- recht
-- staat
 - lang_de
 title: Staatskirchenrecht
 ---

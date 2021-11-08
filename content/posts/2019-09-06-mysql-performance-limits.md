@@ -4,8 +4,8 @@ date: "2019-09-06T15:30:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - mysql
+- database
 - performance
-- mysql8
 - lang_en
 title: MySQL Performance Limits
 ---

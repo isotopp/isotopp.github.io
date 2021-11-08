@@ -6,6 +6,7 @@ published: true
 tags:
 - computer
 - damals
+- usenet
 - lang_de
 title: Alte Säcke online
 ---

@@ -7,7 +7,7 @@ tags:
 - google
 - security
 - identity
-- datenschutz
+- privacy
 title: Mailbox.org, Google, OAuth und Less Secure Applications
 ---
 Heise schreibt in
