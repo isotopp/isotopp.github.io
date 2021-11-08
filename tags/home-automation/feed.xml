@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>home automation on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/home-automation.html</link>
+    <description>Recent content in home automation on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 15 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/home-automation/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>My home sensor network</title>
+      <link>https://blog.koehntopp.info/2020/11/15/my-home-sensor-network.html</link>
+      <pubDate>Sun, 15 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/11/15/my-home-sensor-network.html</guid>
+      <description>&lt;p&gt;I have been asked to document my home sensor network. Being married to a person with a background in web security sets boundary conditions:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;No cloud. We are running all services locally.&lt;/li&gt;
+&lt;li&gt;No control, only metrics.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;I am collecting data from a number of plugs with power meters over Wi-Fi, using the MQTT protocol. I am also collecting data from a number of temperature sensors over Zigbee, and convert to MQTT. The MQTT data is ingested into Influx, and then read and plotted in Grafana. All of this is dockered and runs locally on an Ubuntu server.&lt;/p&gt;
+&lt;h2 id=&#34;what-happened-so-far&#34;&gt;
+    &lt;a href=&#34;#what-happened-so-far&#34;&gt;
+	What happened so far
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/05/12/plugs-with-wifi.html&#34;&gt;Plugs with Wi-Fi&lt;/a&gt;
+
+: In which I am asking what kind of power plug to use to collect usage data.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/05/20/gosund-and-tasmota.html&#34;&gt;Gosund and Tasmota&lt;/a&gt;
+
+: In which I describe how to convert Gosund SP 111 plugs to Tasmota.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/05/25/air-quality-sensors.html&#34;&gt;Air Quality Sensors&lt;/a&gt;
+
+: In which I ask for Air Quality sensors, specifically with CO2 level metrics.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-hardware&#34;&gt;
+    &lt;a href=&#34;#the-hardware&#34;&gt;
+	The hardware
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;server&#34;&gt;
+    &lt;a href=&#34;#server&#34;&gt;
+	Server
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I have a rather old server machine at home that acts as a file server and docker host.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lscpu  &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; egrep &lt;span class=&#34;s1&#34;&gt;&amp;#39;^Model name|^CPU\(s\):&amp;#39;&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;CPU(s):                          8
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Model name:                      Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;free -m
+&lt;span class=&#34;go&#34;&gt;              total        used        free      shared  buff/cache   available
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Mem:          32061       16697         261          32       15102       15516
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Swap:         32767         881       31886
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgs
+&lt;span class=&#34;go&#34;&gt;  VG     #PV #LV #SN Attr   VSize   VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data     2  13   0 wz--n-   7.28t   3.48t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  hdd      1   5   0 wz--n-   9.08t   5.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 274.94g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;cat /etc/lsb-release
+&lt;span class=&#34;go&#34;&gt;DISTRIB_ID=Ubuntu
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;DISTRIB_RELEASE=20.04
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;DISTRIB_CODENAME=focal
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;DISTRIB_DESCRIPTION=&amp;#34;Ubuntu 20.04.1 LTS&amp;#34;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;gateway&#34;&gt;
+    &lt;a href=&#34;#gateway&#34;&gt;
+	Gateway
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;This machine is hosting a &lt;a href=&#34;https://www.amazon.de/gp/product/B07PZ7ZHG5&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ConBee from Dresden Elektronik&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lsusb &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep -i Dresden
+&lt;span class=&#34;go&#34;&gt;Bus 002 Device 084: ID 1cf1:0030 Dresden Elektronik
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -l /dev/ttyACM0
+&lt;span class=&#34;go&#34;&gt;crw-rw---- 1 root dialout 166, 0 Nov 15 11:51 /dev/ttyACM0
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The instructions say you should be connecting the Conbee to the device using a USB cable, to keep it away from the device HF. This will improve the reach of the antenna supposedly a lot.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/iot-conbee.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Dresden Elektronik ConBee attached to the Ubuntu fileserver using a USB cable.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In my case, the ConBee can see the sensors on the top floor and the floor below, but cannot reach the shed or the first floor.&lt;/p&gt;
+&lt;h3 id=&#34;repeaters&#34;&gt;
+    &lt;a href=&#34;#repeaters&#34;&gt;
+	Repeaters
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;This is fixed using any Zigbee device with mains power, because they all act as Zigbee signal repeaters, forming a mesh network. The exception here is Philipps HUE equipment, which does not in general do this.&lt;/p&gt;
+&lt;p&gt;What I did was purchase a few &lt;a href=&#34;https://www.ikea.com/us/en/p/tradfri-signal-repeater-30400407/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;TRÅDFRI Signal repeaters&lt;/a&gt;
+
+. These are USB-to-USB connectors that act as signal repeaters and a USB plug, powering the thing. You can plug the entire device chain into a wall plug, or run the basic USB-to-USB adapter from any USB socket that happens to be available.&lt;/p&gt;
+&lt;p&gt;The repeaters need to be paired with the ConBee. That is done by putting the ConBee into open mode, and then poking a small hole in the TRÅDFRI Signal repeater with a SIM tool or a paper clip. The single LED in the repeater will dim, blink, and 30s later the gateway has picked up the new device.&lt;/p&gt;
+&lt;p&gt;The repeaters have substantially better antennas than the ConBee. I purchased three, estimating I would need them to chain from the top floor across the first floor and the first floor into the shed, but actually one repeater on the first floor would have been sufficient. On the other hand these devices are 10 Euro each, so I do not really care.&lt;/p&gt;
+&lt;h3 id=&#34;sensors&#34;&gt;
+    &lt;a href=&#34;#sensors&#34;&gt;
+	Sensors
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I am using Aqara sensors which report temperature, humidity and pressure. The pressure sensors are impressive - they are long term stable, and they register when I take down a sensor from the second floor to the first floor. The devices are tiny - they are powered by a CR2032 cell (e.g. IKEA PLATTBOJ), and can run off it for around a year. The device is about twice as thick as the CR2032, and only slightly larger than the battery.&lt;/p&gt;
+&lt;p&gt;They come with two double-sided adhesive rings, have a pairing button on one side and a tiny blue indicator LED that only signals pairing and is otherwise unused.&lt;/p&gt;
+&lt;p&gt;They report measurements asynchronously as the data changes, which makes MQTT a much better suited protocol then HTTP.&lt;/p&gt;
+&lt;p&gt;They are available on Amazon from a number of makers, at vastly different prices and delivery times. I assume that a 100-pack of these directly from Shenzhen comes in at 2.50 Euro/pc or so - individual sensors incl. shipping come in at $6.50 at Aliexpress. &lt;a href=&#34;https://www.amazon.de/gp/product/B07SB2C327&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&lt;/a&gt;
+
+, &lt;a href=&#34;https://www.amazon.de/gp/product/B07RQTQ4JH&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+ and &lt;a href=&#34;https://www.amazon.de/gp/product/B088ZT28T6&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+ are some sources, but I have seen them as low as 10-12 Euro/pc.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/iot-aqara1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A wireless mouse was delivered in container made from these plastic shells. I used one to protect the Aqara sensor against the weather.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The Aqara sensor is not really an outdoor sensor. It works well on the east side of the house, but the west side is the local weather side, and needs more water protection. I know this, because the first sensor on this side of the house drowned and shorted out after a rainstorm. I have mounted the replacement sensor in an upside down, open plastic container, and then glued the container to the top bar of a window. The seems to work fine.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/iot-aqara2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Aqara sensor mounted on the top bar of a window. The plastic container is open to the bottom, but acts as a shield against rain and weather.&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&#34;wall-plugs&#34;&gt;
+    &lt;a href=&#34;#wall-plugs&#34;&gt;
+	Wall Plugs
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I bought a very large number of &lt;a href=&#34;https://www.amazon.de/gp/product/B085RFKVW4&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gosund SP111 Wall Plugs&lt;/a&gt;
+
+ and converted them to Tasmota &lt;a href=&#34;https://blog.koehntopp.info/2020/05/20/gosund-and-tasmota.html&#34;&gt;using Tuya-Convert&lt;/a&gt;
+
+. The plugs are attractive, because they can do the full 16A and are small enough to fit next to each other on a regular plug extender, if the slots are angled at 45deg (the device has a button, and the Gosund plugs are touching each other on small extenders, pressing each other&amp;rsquo;s button).&lt;/p&gt;
+&lt;p&gt;This is a solder-free conversion, using the Wi-Fi in a Raspi 4. Newer versions of this plug do no longer convert this way, and require wires to re-flash initially.&lt;/p&gt;
+&lt;p&gt;On the other hand, &lt;a href=&#34;https://geizhals.de/delock-wlan-steckdosen-schalter-mqtt-mit-energieueberwachung-11827-a2365959.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DeLOCK WLAN Steckdosen&lt;/a&gt;
+
+ are the same device and come with Tasmota preinstalled.&lt;/p&gt;
+&lt;p&gt;In any case you are looking at around 20 Euro/plug.&lt;/p&gt;
+&lt;p&gt;The plugs connect to the local 2.4 Ghz Wi-Fi, and after Tasmota installation speak HTTP(S) and MQTT(s).&lt;/p&gt;
+&lt;h2 id=&#34;software&#34;&gt;
+    &lt;a href=&#34;#software&#34;&gt;
+	Software
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I need a database for time series that collects measurements from the sensors and the wall plugs. In my case that is &lt;a href=&#34;https://www.influxdata.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Influx&lt;/a&gt;
+
+. Visualization is from Influx to &lt;a href=&#34;https://grafana.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Grafana&lt;/a&gt;
+
+, because that is known to work well.&lt;/p&gt;
+&lt;p&gt;The MQTT transport is implemented using &lt;a href=&#34;https://mosquitto.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mosquitto&lt;/a&gt;
+
+, again, because that is known to work well.&lt;/p&gt;
+&lt;p&gt;Data transport from Mosquitto to Influx can be done with &lt;a href=&#34;https://www.influxdata.com/time-series-platform/telegraf/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Telegraf&lt;/a&gt;
+
+, or &lt;a href=&#34;https://github.com/isotopp/python-mqtt-bridge/blob/master/bridge.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a small Python script&lt;/a&gt;
+
+ - I started out with the Python, but only later learned that it could have been done completely in Telegraf. My setup still uses the Python.&lt;/p&gt;
+&lt;p&gt;Conversion and transport from Zigbee to MQTT is done using &lt;a href=&#34;https://www.zigbee2mqtt.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;zigbee2mqtt&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h3 id=&#34;storage&#34;&gt;
+    &lt;a href=&#34;#storage&#34;&gt;
+	Storage
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;All data and config resides in &lt;code&gt;/export/iot&lt;/code&gt; in my setup.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;df -Th /export/iot/
+&lt;span class=&#34;go&#34;&gt;Filesystem           Type  Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/mapper/data-iot xfs    30G  7.3G   23G  25% /export/iot
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I am providing sufficient storage for about one year of data. I am using XFS as a file system, because while having higher commit latency than ext4, it has close to no jitter and consequently much better plan-able performance.&lt;/p&gt;
+&lt;p&gt;This is a LVM2 partition on the &lt;code&gt;data&lt;/code&gt; volume group, which contains two Samsung EVO 860 4 GB drives.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvs &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep data
+&lt;span class=&#34;go&#34;&gt;  /dev/sde1  data   lvm2 a--    3.64t   2.32t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdf1  data   lvm2 a--    3.64t   1.16t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgs data
+&lt;span class=&#34;go&#34;&gt;  VG   #PV #LV #SN Attr   VSize VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data   2  13   0 wz--n- 7.28t 3.48t
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Created this way:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n iot -L 30g data
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkfs -t xfs /dev/data/iot
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir /export/data
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mount /dev/data/iot /export/data
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;docker-compose&#34;&gt;
+    &lt;a href=&#34;#docker-compose&#34;&gt;
+	docker-compose
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I am using &lt;a href=&#34;https://docs.docker.com/compose/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;docker-compose&lt;/a&gt;
+
+ to set this up and run it. This works remarkably well, and there is no need to run K8s on a single box, anyway.&lt;/p&gt;
+&lt;p&gt;A deployment is specified in a file &lt;code&gt;docker-compose.yml&lt;/code&gt;, which lists a number of containers and optionally a local virtual network segment. The deployment can make use of environment variables, which can be put into a file named &lt;code&gt;.env&lt;/code&gt; (dotenv) in the same directory.&lt;/p&gt;
+&lt;h3 id=&#34;mosquitto&#34;&gt;
+    &lt;a href=&#34;#mosquitto&#34;&gt;
+	mosquitto
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;We make use of this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;c&#34;&gt;# cd /export/iot&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;c&#34;&gt;# cat .env&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;DATA_DIR=/export/iot&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;MQTT_PORT=1883&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;INFLUX_PORT=8086&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;GRAFANA_PORT=3000&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;ZIGBEE_DEVICE=/dev/ttyACM0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;TZ=Europe/Amsterdam&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;DOCKER_HOST_ADDRESS=192.168.1.10&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;These are being used in the &lt;code&gt;docker-compose.yml&lt;/code&gt; in the same directory. We specify the version, and enumerate the services we want.&lt;/p&gt;
+&lt;p&gt;Here is our service &lt;code&gt;mosquitto&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nn&#34;&gt;---&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;3&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;services&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;mosquitto&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;eclipse-mosquitto:latest&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mosquitto&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mosquitto&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;1000&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;ports&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${MQTT_PORT}:1883&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;./mosquitto/users:/mosquitto/config/users&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/mosquitto/data:/mosquitto/data&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/mosquitto/log:/mosquitto/log&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;always&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We are defining a container named &amp;ldquo;mosquitto&amp;rdquo;, which uses the docker internal hostname &amp;ldquo;mosquitto&amp;rdquo;. Our other services will be able to connect to this container using this hostname. We try to run this as the user with the UID 1000, but unfortunately this is mostly a vain effort using Docker - a lot of stuff needs to run privileged. The server inside the container is running on port 1883, and we make it available on the outside on &lt;code&gt;$MQTT_PORT&lt;/code&gt; from the dotenv.&lt;/p&gt;
+&lt;p&gt;We overwrite the internal config file &lt;code&gt;/mosquitto/config/mosquitto.conf&lt;/code&gt; with the file &lt;code&gt;./mosquitto/mosquitto.conf&lt;/code&gt; (&lt;code&gt;/export/iot/mosquitto/mosquitto.conf&lt;/code&gt;) and so on.&lt;/p&gt;
+&lt;p&gt;We also define a &lt;a href=&#34;https://docs.docker.com/compose/compose-file/#restart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;restart&lt;/a&gt;
+
+ rule.&lt;/p&gt;
+&lt;h3 id=&#34;influx&#34;&gt;
+    &lt;a href=&#34;#influx&#34;&gt;
+	Influx
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Next up: we want an Influx instance.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;influxdb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;influxdb:latest&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;influxdb&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;influxdb&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;ports&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${INFLUX_PORT}:8086&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/influxdb:/var/lib/influxdb&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;always&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Again, we may the internal port (8086) to what is defined in the dotenv, and we overwrite the internal &lt;code&gt;/var/lib/influxdb&lt;/code&gt; with &lt;code&gt;$DATA_DIR/influxdb&lt;/code&gt; (&lt;code&gt;/export/iot/influxdb&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;We can prove this works: Enter the docker container, create a file, leave the docker container, see the file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it influxdb bash
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /var/lib/influxdb/
+&lt;span class=&#34;go&#34;&gt;/var/lib/influxdb# touch keks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/var/lib/influxdb# exit
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -l /export/iot/influxdb/keks
+&lt;span class=&#34;go&#34;&gt;-rw-r--r-- 1 root root 0 Nov 15 15:58 /export/iot/influxdb/keks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;rm /export/iot/influxdb/keks
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This gets us an instance of Influx.&lt;/p&gt;
+&lt;h3 id=&#34;grafana&#34;&gt;
+    &lt;a href=&#34;#grafana&#34;&gt;
+	Grafana
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Next then, the Grafana instance:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;grafana&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;grafana/grafana:latest&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;grafana&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;grafana&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;1000&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;depends_on&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;influxdb&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;ports&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${GRAFANA_PORT}:3000&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/grafana/data:/var/lib/grafana&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/grafana/log:/var/log/grafana&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/grafana/config:/etc/grafana&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;always&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can only run Grafana, when Influx is up and running, so we provide a &lt;code&gt;depends_on&lt;/code&gt; attribute to the service. Again, we map the port, and also the various directories of interest inside the container are made available to the outside.&lt;/p&gt;
+&lt;h3 id=&#34;zigbee2mqtt&#34;&gt;
+    &lt;a href=&#34;#zigbee2mqtt&#34;&gt;
+	Zigbee2MQTT
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The bridge from Zigbee to MQTT is defined as before:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;z2m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;koenkk/zigbee2mqtt&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;z2m&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;z2m&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;devices&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${ZIGBEE_DEVICE}:${ZIGBEE_DEVICE}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;privileged&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;environment&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;TZ=${TZ}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;${DATA_DIR}/z2m:/app/data&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;/run/udev:/run/udev:ro&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;depends_on&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;mosquitto&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;always&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This one is special, because it needs device access to the device file of the ConBee inside the container. So the container is &lt;code&gt;privileged&lt;/code&gt;, we import the device file, and a &lt;code&gt;ro&lt;/code&gt; instance of &lt;code&gt;udev&lt;/code&gt;. It also needs access to the &lt;code&gt;TZ&lt;/code&gt; environment variable from dotenv.&lt;/p&gt;
+&lt;p&gt;Our Zigbee2MQTT data is in &lt;code&gt;$DATA_DIR/z2m&lt;/code&gt; (&lt;code&gt;/export/iot/z2m&lt;/code&gt;).&lt;/p&gt;
+&lt;h3 id=&#34;our-python-project-mqttbridge&#34;&gt;
+    &lt;a href=&#34;#our-python-project-mqttbridge&#34;&gt;
+	Our python project, mqttbridge
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The final component is our mqttbridge, which is a dockerized Python script we provide. Alternatively we could have used telegraf for this, but I realized that only later.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;bridge&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;build&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;./bridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;isotopp/mqttbridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mqttbridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mqttbridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;1000&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;depends_on&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;influxdb&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;mosquitto&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;always&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Our script resides in &lt;code&gt;./bridge&lt;/code&gt; (&lt;code&gt;/export/iot/bridge&lt;/code&gt;), and runs with the hostname and container name &lt;code&gt;mqttbridge&lt;/code&gt;, as UID 1000. It makes sense to run it only when it can read data from mosquitto and write to Influx, so we &lt;code&gt;depends_on&lt;/code&gt; these.&lt;/p&gt;
+&lt;p&gt;Inside the &lt;code&gt;./bridge&lt;/code&gt; directory, we provide a &lt;code&gt;Dockerfile&lt;/code&gt; and the script:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-docker&#34; data-lang=&#34;docker&#34;&gt;&lt;span class=&#34;c&#34;&gt;# cat bridge/Dockerfile&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;s&#34;&gt; python:3.8-alpine&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;LABEL&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;maintainer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;isotopp&amp;#34;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;      &lt;span class=&#34;nv&#34;&gt;description&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;MQTT to InfluxDB Bridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;COPY&lt;/span&gt; requirements-frozen.txt /tmp/requirements.txt&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;RUN&lt;/span&gt; pip install -r /tmp/requirements.txt&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;COPY&lt;/span&gt; ./bridge.py /app&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WORKDIR&lt;/span&gt;&lt;span class=&#34;s&#34;&gt; /app&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CMD&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;python3&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;-u&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;bridge.py&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This makes use of the Python 3.8 Alpine base image. We copy our requirements file into the container, run &lt;code&gt;pip&lt;/code&gt; to install the requirements, copy the &lt;code&gt;bridge.py&lt;/code&gt; file into the /app directory and then start that script with the appropriate options (&lt;code&gt;-u&lt;/code&gt; - run Python unbuffered).&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://github.com/isotopp/python-mqtt-bridge/blob/master/bridge.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;actual script&lt;/a&gt;
+
+ understands the channels I use internally for Aqara, Mijia, and Gosund data.&lt;/p&gt;
+&lt;h2 id=&#34;configuration&#34;&gt;
+    &lt;a href=&#34;#configuration&#34;&gt;
+	Configuration
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The various components need configuration.&lt;/p&gt;
+&lt;h3 id=&#34;mosquitto-1&#34;&gt;
+    &lt;a href=&#34;#mosquitto-1&#34;&gt;
+	Mosquitto
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;cat /export/iot/mosquitto/mosquitto.conf
+&lt;span class=&#34;go&#34;&gt;persistence true
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;persistence_location /mosquitto/data/
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;log_dest file /mosquitto/log/mosquitto.log
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We also need a &lt;code&gt;/export/iot/mosquitto/users&lt;/code&gt; file, and create a &lt;code&gt;mqttuser&lt;/code&gt; with &lt;code&gt;mosquitto_passwd -c /export/iot/mosquitto/users mqttuser&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The logfile in &lt;code&gt;/export/iot/mosquitto/log/mosquitto.log&lt;/code&gt; will need expiration.&lt;/p&gt;
+&lt;h3 id=&#34;influx-1&#34;&gt;
+    &lt;a href=&#34;#influx-1&#34;&gt;
+	Influx
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Influx will need a bit more configuration, but this is interactive, and a bit longer. It will be provided in another article.&lt;/p&gt;
+&lt;h3 id=&#34;grafana-1&#34;&gt;
+    &lt;a href=&#34;#grafana-1&#34;&gt;
+	Grafana
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Grafana comes up empty, and needs an admin password and manual configuration after initial startup. To make things work, we need to configure our InfluxDB as a server-side data source (Grafana connects to Influxdb, not the Browser connects to Influxdb).&lt;/p&gt;
+&lt;p&gt;We can then use the hostnames we defined to access the database:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;- Name: InfluxDB
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;- Default: enabled
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;URL: http://influxdb:8086
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Access: Server (default)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Database: home_db (we are going to set this up later)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;User: and Password: as needed (by default: empty)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;As soon as we have data in InfluxDB, we can start to define dashboards.&lt;/p&gt;
+&lt;h3 id=&#34;zigbee2mqtt-1&#34;&gt;
+    &lt;a href=&#34;#zigbee2mqtt-1&#34;&gt;
+	Zigbee2MQTT
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;And this is where we start configuration for real, the entry point for our data: Once everything is running we should see a &lt;code&gt;/export/iot/z2m/configuration.yaml&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;It will look somewhat like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;c&#34;&gt;# cat configuration.yaml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;homeassistant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;permit_join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;true&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;mqtt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;base_topic&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;zigbee2mqtt&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;mqtt://mosquitto/&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;/dev/ttyACM0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We run without home assistant, so we disable this.&lt;/li&gt;
+&lt;li&gt;We need to open the z2m to allow devices to join, so &lt;code&gt;permit_join&lt;/code&gt; needs to be true.&lt;/li&gt;
+&lt;li&gt;Our mosquitto is at the host of that name.&lt;/li&gt;
+&lt;li&gt;We post data to zigbee2mqtt.&lt;/li&gt;
+&lt;li&gt;We need to tell z2m where our ConBee is located, as a device.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When we have done that, and brought the entire apparatus up, we will be able to have devices join, and they are being added to the &lt;code&gt;configration.yaml&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;After that we can edit the file to give them proper names.&lt;/p&gt;
+&lt;h2 id=&#34;starting-it&#34;&gt;
+    &lt;a href=&#34;#starting-it&#34;&gt;
+	Starting it
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;So we &lt;code&gt;cd /export/iot&lt;/code&gt; and &lt;code&gt;docker-compose build&lt;/code&gt;, them &lt;code&gt;docker-compose up&lt;/code&gt; the entire thing.&lt;/p&gt;
+&lt;p&gt;Among all the other things we also get our bridge process and the node process from z2m:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ps axuwwww &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;b&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;ridge.py
+&lt;span class=&#34;go&#34;&gt;kris     2982402  0.0  0.0  24136 18120 ?        Ss   Nov10   5:20 python3 -u bridge.py
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ps axuwwww &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep index.j&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;s&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;root      441693  0.8  0.1 314256 57840 ?        Sl   12:12   2:53 node index.js
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can switch to the z2m log directory and tail the log:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;tail -F &lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;ls -1tr */log* &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tail -1&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Logging to console and directory: &amp;#39;/app/data/log/2020-11-15.12-12-56&amp;#39; filename: log.txt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Starting zigbee2mqtt version 1.14.0 (commit #9009de2)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Starting zigbee-herdsman...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: zigbee-herdsman started
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Coordinator firmware version: &amp;#39;{&amp;#34;type&amp;#34;:&amp;#34;ConBee2&amp;#34;,&amp;#34;meta&amp;#34;:{&amp;#34;transportrev&amp;#34;:0,&amp;#34;product&amp;#34;:0,&amp;#34;majorrel&amp;#34;:38,&amp;#34;minorrel&amp;#34;:74,&amp;#34;maintrel&amp;#34;:0,&amp;#34;revision&amp;#34;:&amp;#34;0x264a0700&amp;#34;}}&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;warn  2020-11-15 12:12:56: `permit_join` set to  `true` in configuration.yaml.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;warn  2020-11-15 12:12:56: Allowing new devices to join.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;warn  2020-11-15 12:12:56: Set `permit_join` to `false` once you joined all devices.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Zigbee: allowing new devices to join.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Connecting to MQTT server at mqtt://mosquitto/
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 12:12:56: Connected to MQTT server
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We could now try to have a device join the setup, by holding it close to the antenna and pressing the button. For the IKEA bridges, we need to push a paper clip into the small hole at the front, for the Aqara devices we press the button.&lt;/p&gt;
+&lt;p&gt;We should see a log message for each of the devices. After everything has joined, we can &lt;code&gt;docker-compose stop z2m; service networking restart&lt;/code&gt; and edit the &lt;code&gt;configuration.yaml&lt;/code&gt; to closed state, and name the devices.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;c&#34;&gt;# cat configuration.yaml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;homeassistant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;permit_join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;mqtt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;base_topic&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;zigbee2mqtt&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;mqtt://mosquitto/&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;/dev/ttyACM0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;devices&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x00158d0004075772&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;eastside/SENSOR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x00158d00048735ab&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;bathroom/SENSOR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x00158d00045c09a9&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;schuppen/SENSOR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x00158d00053effba&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;westside/SENSOR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0xec1bbdfffe18b39d&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;bibliothek/BRIDGE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x842e14fffe75eda0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;wohnzimmer/BRIDGE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x00158d000486341e&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;wohnzimmer/SENSOR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#39;0x680ae2fffe9c847d&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;friendly_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;schuppen/BRIDGE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;z2m will now post messages to the MQTT bus, building the topic from the &lt;code&gt;base_topic&lt;/code&gt;and the &lt;code&gt;friendly_name&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 17:42:00: MQTT publish: topic &amp;#39;zigbee2mqtt/schuppen/SENSOR&amp;#39;, payload &amp;#39;{&amp;#34;battery&amp;#34;:97,&amp;#34;voltage&amp;#34;:2995,&amp;#34;temperature&amp;#34;:11.85,&amp;#34;humidity&amp;#34;:81.23,&amp;#34;pressure&amp;#34;:1002,&amp;#34;linkquality&amp;#34;:96}&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;info  2020-11-15 17:42:45: MQTT publish: topic &amp;#39;zigbee2mqtt/bathroom/SENSOR&amp;#39;, payload &amp;#39;{&amp;#34;battery&amp;#34;:74,&amp;#34;voltage&amp;#34;:2955,&amp;#34;temperature&amp;#34;:21.41,&amp;#34;humidity&amp;#34;:59.62,&amp;#34;pressure&amp;#34;:997.4,&amp;#34;linkquality&amp;#34;:96}&amp;#39;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The payload here is JSON, which we parse, and push into Influxdb. Or let &lt;code&gt;telegraf&lt;/code&gt; do that, automatically.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Why the &lt;code&gt;service networking restart&lt;/code&gt;?&lt;/strong&gt; For some reasons, when downing or stopping services from docker-compose, docker-compose will remove all the routes to my Ubuntu. I then need to connect a keyboard, log in and manually run &lt;code&gt;service networking restart&lt;/code&gt; to fix this.&lt;/p&gt;
+&lt;p&gt;I have not yet found out why this happens.&lt;/p&gt;
+&lt;p&gt;When doing it like this, I keep the connection and do not need to fix the Ubuntu box.&lt;/p&gt;
+&lt;h2 id=&#34;listening-to-the-bus&#34;&gt;
+    &lt;a href=&#34;#listening-to-the-bus&#34;&gt;
+	Listening to the bus
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Using the &lt;code&gt;mosquitto_sub&lt;/code&gt; command we can listen to multiple topics on the bus. For that we need to provide the &lt;code&gt;-t&lt;/code&gt; option one or more times. Topics can be literal like &lt;code&gt;zigbee2mqtt/bathroom/SENSOR&lt;/code&gt; or can contain a single level wildcard (&lt;code&gt;+&lt;/code&gt;) or multilevel wildcards (&lt;code&gt;#&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;We run&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt; # mosquitto_sub -F &amp;#34;%J&amp;#34;  -t zigbee2mqtt/+/SENSOR
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#34;tst&amp;#34;:1605459438,&amp;#34;topic&amp;#34;:&amp;#34;zigbee2mqtt/westside/SENSOR&amp;#34;,&amp;#34;qos&amp;#34;:0,&amp;#34;retain&amp;#34;:0,&amp;#34;payloadlen&amp;#34;:100,&amp;#34;payload&amp;#34;:{&amp;#34;battery&amp;#34;:91,&amp;#34;voltage&amp;#34;:2985,&amp;#34;temperature&amp;#34;:10.63,&amp;#34;humidity&amp;#34;:84.22,&amp;#34;pressure&amp;#34;:997.5,&amp;#34;linkquality&amp;#34;:97}}
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#34;tst&amp;#34;:1605459438,&amp;#34;topic&amp;#34;:&amp;#34;zigbee2mqtt/westside/SENSOR&amp;#34;,&amp;#34;qos&amp;#34;:0,&amp;#34;retain&amp;#34;:0,&amp;#34;payloadlen&amp;#34;:100,&amp;#34;payload&amp;#34;:{&amp;#34;battery&amp;#34;:91,&amp;#34;voltage&amp;#34;:2985,&amp;#34;temperature&amp;#34;:10.63,&amp;#34;humidity&amp;#34;:83.12,&amp;#34;pressure&amp;#34;:997.5,&amp;#34;linkquality&amp;#34;:97}}
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#34;tst&amp;#34;:1605459438,&amp;#34;topic&amp;#34;:&amp;#34;zigbee2mqtt/westside/SENSOR&amp;#34;,&amp;#34;qos&amp;#34;:0,&amp;#34;retain&amp;#34;:0,&amp;#34;payloadlen&amp;#34;:100,&amp;#34;payload&amp;#34;:{&amp;#34;battery&amp;#34;:91,&amp;#34;voltage&amp;#34;:2985,&amp;#34;temperature&amp;#34;:10.63,&amp;#34;humidity&amp;#34;:83.12,&amp;#34;pressure&amp;#34;:997.8,&amp;#34;linkquality&amp;#34;:97}}
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;in one window, and &lt;code&gt;tail -f /export/iot/z2m/log/*/log.txt&lt;/code&gt; in a second window. When log messages appear in &lt;code&gt;log.txt&lt;/code&gt;, we should also see JSON payloads being dumped by &lt;code&gt;mosquitto_sub&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;We now know that zigbee2mqtt is up and running, has a configuration and is posting messages to the MQTT, using the proper topic names.&lt;/p&gt;
+&lt;h2 id=&#34;debugging-the-topology&#34;&gt;
+    &lt;a href=&#34;#debugging-the-topology&#34;&gt;
+	Debugging the topology
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Zigbee is a mesh network. Our IKEA signal repeaters will act as intermediate relays, forwarding the messages to the coordinator.&lt;/p&gt;
+&lt;p&gt;We can &lt;a href=&#34;https://www.zigbee2mqtt.io/information/mqtt_topics_and_message_structure.html#zigbee2mqttbridgenetworkmap&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dump the current topology&lt;/a&gt;
+
+, as seen by the zigbee2mqtt gateway, by running the following command in one window:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt; mosquitto_sub -h localhost -C 1  -t zigbee2mqtt/bridge/networkmap/graphviz | sfdp -Tpng &amp;gt; map.$(date +%Y%m%d%H%M%S).png
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and running the matching pub command in a second window:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mosquitto_pub -h localhost -t zigbee2mqtt/bridge/networkmap -m graphviz
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The sfdp command is part of the &lt;code&gt;graphviz&lt;/code&gt; package.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;dpkg -S &lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;which sfdp&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;graphviz: /usr/bin/sfdp
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The result is a network map. The map is always only a current snapshot, and the actual configuration may vary depending on network conditions.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/uploads/2020/11/iot-mesh-large.png&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/iot-mesh.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The MQTT network map shows the devices and how they connect between each other. Unlinked devices connect directly to the coordinator.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;To be continued with a section on Influx configuration.&lt;/p&gt;
+&lt;h2 id=&#34;i-could-not-have-done-this-alone&#34;&gt;
+    &lt;a href=&#34;#i-could-not-have-done-this-alone&#34;&gt;
+	I could not have done this alone
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;There are many people who have helped me to set this up. The one that stands out most is &lt;a href=&#34;https://unixe.de&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Marianne Spiller&lt;/a&gt;
+
+. She wrote &lt;a href=&#34;https://www.rheinwerk-verlag.de/smart-home-mit-openhab-2-einrichten-steuern-automatisieren/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Smart Home mit openHAB 2&lt;/a&gt;
+
+, the book on openHAB and home automation, and while I did not go down that route, she inspired me to research the topic. She also &lt;a href=&#34;https://www.unixe.de/yaja-yet-another-jitsi-article/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;motivated me to look into docker-compose&lt;/a&gt;
+
+ and she is running the fantastic &lt;a href=&#34;https://www.tabsvongesternnacht.de/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;#tabsvongesternnacht&lt;/a&gt;
+
+ Stammtisch every Friday. Thank you, &lt;a href=&#34;https://twitter.com/sys_adm_ama&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@sys_adm_ama&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Another useful resource was &lt;a href=&#34;https://github.com/Nilhcem/home-monitoring-grafana&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/Nilhcem/home-monitoring-grafana&lt;/a&gt;
+
+ and the article in &lt;a href=&#34;http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Home sensor data monitoring with MQTT, InfluxDB and Grafana&lt;/a&gt;
+
+, which I took as a blueprint for my setup.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Gosund and Tasmota</title>
+      <link>https://blog.koehntopp.info/2020/05/20/gosund-and-tasmota.html</link>
+      <pubDate>Wed, 20 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/05/20/gosund-and-tasmota.html</guid>
+      <description>&lt;p&gt;(continued from &lt;a href=&#34;https://blog.koehntopp.info/2020/05/12/plugs-with-wifi.html&#34;&gt;Plugs with Wi-Fi&lt;/a&gt;
+
+) So the Gosund plugs came, as did the Raspi 4. I did cancel the Shelly plug and decomissioned the TP-Link Kaka, because Tasmota on Gosund is awesome and the Gosund hardware is dirt cheap.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/05/tasmota-grafana.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Power consumption of the local data grave, with too old a mainboard and CPU and way too much storage&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;But lets start at the beginning:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.de/dp/B082XR5C6J&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;4 Pack of Gosund SP111 V1.1&lt;/a&gt;
+
+, so they come in at around 10 Euro/pc. They come with a chinese cloud application that is utterly useless, and I never even tried to get them running with it. This is recommended, because running that app might update the native firmware of these things and potentially lock it.&lt;/p&gt;
+&lt;p&gt;There is &lt;a href=&#34;https://github.com/ct-Open-Source/tuya-convert&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tuya-convert&lt;/a&gt;
+
+ for solder-free flashing. The software needs to run on a machine with a controllable Wi-Fi chip, in my case a Raspi 4. It fakes a trustworthy firmware update hotspot and then flashes an alternate firmware onto the plug. For me, this was an entirely pain-free process.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Clarification:&lt;/em&gt; tuya-convert is a solder-free conversion process that exploits a firmware update vulnerability in the original firmware. For some plugs or ESP devices in general it can work, and if it does, it is a breeze.&lt;/p&gt;
+&lt;p&gt;Some Tuya devices are locked. In this case it is always possible to convert them by connecting a serial port to the GPIO pins of the ESP chip. This can be done with a &lt;a href=&#34;https://www.amazon.de/gp/product/B07TC2BK1X&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Raspi 4&lt;/a&gt;
+
+ (&lt;a href=&#34;https://www.amazon.de/gp/product/B085795KPX&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Case&lt;/a&gt;
+
+, &lt;a href=&#34;https://www.amazon.de/gp/product/B07ZCK2B8J&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Power&lt;/a&gt;
+
+, &lt;a href=&#34;https://www.amazon.de/gp/product/B073JYVKNX&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SD Card&lt;/a&gt;
+
+), a &lt;a href=&#34;https://www.amazon.de/gp/product/B01N7KA3OO&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RS232 adapter&lt;/a&gt;
+
+, and some headers and breadboard wires. Sometimes the connection can be made without soldering using the breadboard wires, and always with a quick solder drop to make the connection more reliable. In my case all of that was not necessary for the Gosund plugs, tuya-convert worked.&lt;/p&gt;
+&lt;p&gt;In my home, the new firmware is &lt;a href=&#34;https://github.com/arendst/Tasmota&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tasmota&lt;/a&gt;
+
+ - there is also esphome. Tasmota does http, mqtt (both with TLS, if you wish) and syslog.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/05/tasmota-ui.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Tasmota UI in Admin mode. When configured, it can be locked to only show the data and the ON/OFF toggle. Control is then only possible via MQTT. It can also be basic-auth protected.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;After conversion, the plug is a hotspot. You join with a cellphone and enter the &amp;ldquo;login to hotspot&amp;rdquo; screen. You see a config for Wi-Fi credentials. The plug joins your local Wi-Fi, and config continues via normal Wi-Fi, using http or mqtt.&lt;/p&gt;
+&lt;p&gt;Apart from the obvious config through http, you want&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#34;NAME&amp;#34;:&amp;#34;SP111 v1.1&amp;#34;,&amp;#34;GPIO&amp;#34;:[56,0,158,0,132,134,0,0,131,17,0,21,0],&amp;#34;FLAG&amp;#34;:0,&amp;#34;BASE&amp;#34;:45}
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;as the template of choice for the v1.1 plug. Tasmota Templates select the binary function module that controls the plug, here 45 - Blitzwolf SHP6 - and then assigns functions to the GPIO pins.&lt;/p&gt;
+&lt;p&gt;Apart from setting up syslog, MQTT and Wi-Fi, you also want to run some Console commands:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;VoltageSet 235
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;SetOption21 1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The former sets the base voltage the plug sees, calibrating things, and the latter makes the plug report voltage even when the relais is off.&lt;/p&gt;
+&lt;p&gt;Some people also recommend to shorten the power consumption reporting interval. The minimum is 10s. This can be done in the web interface, or with a console command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;TelePeriod 10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Additionally, the number of digits after the comma can be dialled up. If you trust the equipment to actually deliver this precision, do configure like this, and also set a NTP server.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;Backlog AmpRes 3; EnergyRes 5; FreqRes 3; VoltRes 3; WattRes 3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;NtpServer http://ptbtime1.ptb.de
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;http://nilhcem.com/iot/home-monitoring-with-mqtt-influxdb-grafana&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MQTT to Influx and Grafana&lt;/a&gt;
+
+ contains instructions for dockering Influx and Grafana and a small piece of Python that can be trivially adjusted to grab the power reports from the plug and load them into the Influx.&lt;/p&gt;
+&lt;p&gt;I added a total of 10 plugs to the household and may have need for another 10. I am also looking at a potential IPv4 shortage at home and may need to expand beyond a single /24.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Plugs with Wi-Fi</title>
+      <link>https://blog.koehntopp.info/2020/05/12/plugs-with-wifi.html</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/05/12/plugs-with-wifi.html</guid>
+      <description>&lt;p&gt;So we are baking bread, and for that we have a Wiesheu minimat oven that comes in at a full 16A - supposedly it is using 3kW or more peak plus the condenser hood that comes in at another 500W top power draw. On the other hand, when running the thing is hardly lukewarm, it is running much cooler than the Neff household oven/microwave combo we have.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/05/wiesheu.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Wiesheu minimat with condenser hood. Convection oven with 3 trays (for buns) or a single layer of stone plate for bread. Can do 3x12 buns (20 min) or 2-3 loaves of bread (1h). Power draw 3kW + 0.5kW for the hood. Intended use is a show oven in the sales room of a bakery, or as PoS oven in a gas station or supermarket.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;So Sammy wanted to know what is cheaper to use: The Wiesheu or the Neff. And for that I needed a way to measure and report power dram of a wall plug. I &lt;a href=&#34;https://twitter.com/isotopp/status/1258765170219892736&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;asked Twitter&lt;/a&gt;
+
+ for solutions that can do&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;16A (some solutions do only 10A)&lt;/li&gt;
+&lt;li&gt;no cloud account or cloud reporting&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I was imagining something that pushes power consumption to syslog every minute or can log to a graphite. I don&amp;rsquo;t actually need on/off relais, but that would be okay to have. I have Wi-Fi on 2.4 GHz and 5 GHz everywhere. I do not actually have use for a cellphone app or control from outside the Wi-Fi.&lt;/p&gt;
+&lt;p&gt;There was lifely discussion, and I have been pointed to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://tasmota.github.io&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tasmota&lt;/a&gt;
+
+, an alternative firmware for devices based on the ESP8266 chip, and
+&lt;ul&gt;
+&lt;li&gt;specifically the &lt;a href=&#34;https://www.amazon.de/gp/product/B085Q5ZR33&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gosund&lt;/a&gt;
+
+ plugs, at 24 Euro for a pair they are dirt cheap. The plugs are to be controlled with a cellphone app that requires cloud usage, but you are not supposed to use this, but reflash them with Tasmota and then use a local MQTT bridge to run them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The &lt;a href=&#34;https://www.amazon.de/gp/product/B017X72IES&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;TP-Link Kasa HS110&lt;/a&gt;
+
+. The device can be configured with a local cellphone app, not requiring a cloud account, and speaks a simple propietary protocol that has been &lt;a href=&#34;https://www.softscheck.com/en/reverse-engineering-tp-link-hs110/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;reverse engineered&lt;/a&gt;
+
+ and &lt;a href=&#34;https://github.com/softScheck/tplink-smartplug&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;implemented in Python&lt;/a&gt;
+
+. The switch has a number of known security problems, and can be controlled and bricked by anyone having access to your local network. The Kasa plug comes in at 23 Euro/piece.&lt;/li&gt;
+&lt;li&gt;The &lt;a href=&#34;https://shop.shelly.cloud/shelly-plug-Wi-Fi-smart-home-automation#71&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Shelly Plug&lt;/a&gt;
+
+ (16A device), also available as Plug S (10A device). While the devices come with an app and cloud, they have a &lt;a href=&#34;https://shelly-api-docs.shelly.cloud&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;documented API&lt;/a&gt;
+
+. It comes in at 32.40 Euro when ordered from the manufacurer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The TP-Link Kasa arrived yesterday and was immediately usable: Plug in, install app, skip cloud registration, put plug into Wi-Fi, and start using it. I was only interested into their energy reporting feature and I now know:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The oven will consume up to 3200W when heating up.&lt;/li&gt;
+&lt;li&gt;It will consume around 170W while running normally, maintaining level temperature.&lt;/li&gt;
+&lt;li&gt;It consumes around 54W when on and running idle.&lt;/li&gt;
+&lt;li&gt;It consumes 3.5W when switched off in standby.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/05/wiesheu-power.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Yesterday the Gosund plugs have been arriving, too. They need a bit of treatment, though. Instructions said to not connect them so that they do not update themselves - it can only make the reflashing harder if the original firmware is current.&lt;/p&gt;
+&lt;p&gt;I also seem to need a RS232-adapter and/or a Raspi with Wi-Fi in order to flash them over Wi-Fi, so I bought a bit of toys to do that:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A Raspi 4B&lt;/li&gt;
+&lt;li&gt;Case for the Raspi&lt;/li&gt;
+&lt;li&gt;Power supply for the Raspi&lt;/li&gt;
+&lt;li&gt;SD-card for the Raspi&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.amazon.de/gp/product/B01N7KA3OO&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CH340G&lt;/a&gt;
+
+ Adapter for local flashing&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;There seem to be two procedures for reflashing, one &lt;a href=&#34;https://www.malachisoord.com/2019/11/24/flashing-custom-firmware-on-a-gosund-sp111/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;wired&lt;/a&gt;
+
+, and one &lt;a href=&#34;https://github.com/ct-Open-Source/tuya-convert&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;over the air using tuya-convert&lt;/a&gt;
+
+. Having a modern Raspi is not wrong, so we will see where that goes, but the wired procedure looks more stable to me.&lt;/p&gt;
+&lt;p&gt;Next week I will know more.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

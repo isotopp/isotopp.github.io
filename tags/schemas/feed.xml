@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>schemas on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/schemas.html</link>
+    <description>Recent content in schemas on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 28 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/schemas/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Some rules for primary keys</title>
+      <link>https://blog.koehntopp.info/2020/01/28/some-rules-for-primary-keys.html</link>
+      <pubDate>Tue, 28 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/01/28/some-rules-for-primary-keys.html</guid>
+      <description>&lt;p&gt;On Twitter, &lt;a href=&#34;https://twitter.com/CaptainEyesight/status/1221889419654787073&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@CaptainEyesight&lt;/a&gt;
+
+ asked a question:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/CaptainEyesight/status/1221889419654787073&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/pk-question.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;»Database architecture question: For deleting records, instead of a DELETE, UPDATE the id to the negative (i.e. 1 becomes -1) and then add &lt;code&gt;AND id &amp;gt; 0&lt;/code&gt; to every query. Great idea? or Greatest idea?«&lt;/p&gt;
+&lt;p&gt;I was honestly a bit confused, because this idea is so weird that I took this question for a joke. But then I decided that this is a case for &lt;a href=&#34;https://xkcd.com/1053/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;XKCD 1053&lt;/a&gt;
+
+: »You are one of today&amp;rsquo;s lucky 10.000.« So let&amp;rsquo;s do this properly.&lt;/p&gt;
+&lt;h2 id=&#34;physical-innodb-data-structure&#34;&gt;
+    &lt;a href=&#34;#physical-innodb-data-structure&#34;&gt;
+	Physical InnoDB data structure
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In InnoDB, data is stored as a B+-Tree indexed by the primary key. A B+-Tree is a B-Tree in which the leaf pages contain the actual data records. That means that data is (within limits) stored physically, on disk, in primary key order. A record with a lower primary key value will be &amp;ldquo;further left&amp;rdquo; in the B+-Tree than a record with a higher primary key value, and within limits will also be on a disk block with a lower or equal number than blocks with higher primary key values.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/pk-innodb-order.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;InnoDB structure as a tree index blocks pointing to other index blocks, and the leaf nodes containing the actual data.&lt;/p&gt;
+&lt;p&gt;The limitation is here that InnoDB allocates data in chunks (of 64 pages of 16 KB by default, for segments of 1 MB), and filesystems of course do not really guarantee &amp;ldquo;low to high disk space allocation&amp;rdquo;. Another, weaker and slightly better way to describe the physical ordering would be that two primary key values with a small value difference are more likely to be phsically closer on the storage medium, but it is still a kind of best effort estimate.&lt;/p&gt;
+&lt;p&gt;In any case in InnoDB, the physical record position is a function of the primary key. Changing a PK the way described will physically move the record from &amp;ldquo;right&amp;rdquo; in the B+ tree to the left, inducing a lot of rebalancing operations, page splits and merges. Ultimately actually deleting always from the left and appending always on the right is producing the worst physical page structure InnoDB could have: Permanent page merges on the left, permanent page splits at the right and a permanent maximal rebalancing of the entire tree.&lt;/p&gt;
+&lt;p&gt;This is an abysmally slow data structure. I wrote about it in german language in &lt;a href=&#34;http://blog.koehntopp.info/2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ein paar Gedanken zu Zeitreihendaten&lt;/a&gt;
+
+ in 2009, where I have been discussing the way Nagios NDO Schema abuses the database on the Open Source Monitoring Conference in Nürnberg.&lt;/p&gt;
+&lt;h2 id=&#34;foreign-key-complications&#34;&gt;
+    &lt;a href=&#34;#foreign-key-complications&#34;&gt;
+	Foreign Key complications
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;There is another problem layered on top of the physical data structure problem, and that is that primary keys of one table &lt;code&gt;t&lt;/code&gt; may be used in other tables &lt;code&gt;r&lt;/code&gt; and &lt;code&gt;s&lt;/code&gt; as pointers to records in &lt;code&gt;t&lt;/code&gt;. Such usage is called a foreign key. If you change primary keys, all foreign keys will become invalid and will point at the wrong or non-existent recoords.&lt;/p&gt;
+&lt;p&gt;There is a way around that, manually or automatically change the foreign keys.&lt;/p&gt;
+&lt;p&gt;If you want the change to happen automatically, you can do that with foreign key contstraints, and &lt;code&gt;ON UPDATE CASCADE&lt;/code&gt; and &lt;code&gt;ON DELETE CASCADE&lt;/code&gt; clauses. The problem that people will run into in practice is that such clauses make it very hard to estimate the performance of a statement by just looking at the SQL. Chaning a primary key value will cause an update of all dependent foreign key rows, and the actual number of these rows is unknown, may be variable and that makes the runtime of the statement data-dependent and completely unpredictable.&lt;/p&gt;
+&lt;p&gt;Consider a table of hotels with a hotel_id as a primary key. Consider a second table of hotel_reviews, with a review_id as a primary key, and a foreign key hotel_id pointing back at the hotel being reviewed. Now assume a hotel closes and we renumber it from 4711 to -4711. We will have to change all reviews of that hotel in the hotel_review table, so any number of reviews will have their hotel_id changed from 4711 to -4711, too. That can be none, or few, if the hotel was not very popular, or it can be literally 10.000s of records. It will create problems in production. I know that because I was around when exactly this happened.&lt;/p&gt;
+&lt;h2 id=&#34;some-axioms-about-primary-keys&#34;&gt;
+    &lt;a href=&#34;#some-axioms-about-primary-keys&#34;&gt;
+	Some Axioms about Primary Keys
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;As a general rule, the following things are in my experience good rules:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Never change a primary key value.&lt;/strong&gt; Primary key values should be considered immutable.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Never reuse a primary key value.&lt;/strong&gt; Primary key values used in foreign keys tend to stick around, even outside of the database, in bookmarks, notes, file dumps and other data sources that you do not track, control or index. If you re-use a primary key value, these URLs, notes, or other pointers will now point to different, entirely random data instead of producing a lookup error. Don&amp;rsquo;t do that to yourself.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Never encode additional information in a primary key value.&lt;/strong&gt; Primary key values encode the identity of a row. Nothing else. Flags such as &lt;code&gt;is_deleted&lt;/code&gt;, &lt;code&gt;is_made_to_order&lt;/code&gt; or other special things are not ranges, signs or other special properies of the actual primary key. They should be extra columns, made explicit, documented, and be indexable on their own. Everything else is broken.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I once had to work with a database that contained orderable part numbers for camper trailers, and if the part number started with an &amp;lsquo;8&amp;rsquo; or an &amp;lsquo;e&amp;rsquo;, that part was made to measure and not generally available in stock - things like window blinds or seat cushions. That&amp;rsquo;s extremely broken, and there should have been a &lt;code&gt;made_to_measure&lt;/code&gt; flag and another &lt;code&gt;in_stock&lt;/code&gt; flag.&lt;/p&gt;
+&lt;h2 id=&#34;poisoning-transactional-data-with-crud&#34;&gt;
+    &lt;a href=&#34;#poisoning-transactional-data-with-crud&#34;&gt;
+	Poisoning transactional data with crud
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In Openstack in 2015, about any of the Keystone, Neutron, Nova and other databases did not delete things, but each row had an &lt;code&gt;is_deleted&lt;/code&gt; flag. Every query is the actual query plus an &lt;code&gt;AND is_deleted = 0&lt;/code&gt;. This makes queries more complicated, confuses the optimizer and every developer and, even worse, requires an expiration cron job, which by default was not delivered, much less installed.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;is_deleted&lt;/code&gt; flags are usually not very selective. In the beginning, there will be very few deleted records, and over time they will dominate the data, so that most records will actually be deleted. Most optimizers have problems handling biased key distributions properly, and indexes on low cardinality columns are another problem entirely.&lt;/p&gt;
+&lt;p&gt;In any case, there will likely be dead records on each page loaded into memory, poisoning your expensive caches with dead data. This is not a good use of your money or hardware budget. The recommendation is to keep only live data in transactional tables. Actually delete completed transactions from your transactional tables. Keep your transactional system small. A transactional system ideally never reads data, because it can keep the pages of the working set of your current transactions in memory. Only writes happen, to persist the actual transactions.&lt;/p&gt;
+&lt;p&gt;You will need a log of changes, for compliance reasons, for business intelligence (BI) reasons and for reporting as well as many other use cases. You can implement an Extract-Transform-Load (ETL) process into a data warehouse, with the usual DW transaction from online transaction processing normalized schemas into data warehousey star and snowflake schemas. That is, in the DW you will not store ids, but actual data values, because you are not interested where customer_id 17 lives now in 2020, but that the item &amp;ldquo;USB Memory Stick 128 GB&amp;rdquo; was actually priced &amp;ldquo;24.99 EUR&amp;rdquo; when you delivered it to a customer in 24110, Germany in August 2013. So part of the ETL process is to join all the things, keep the values you want to archive and then archive them into a giant fact table (and maybe recompressing the values back to DW ids in sideways lookup tables for space reasons). Then you create daily aggregate along the dimensions of reporting, creating a star or snowflake from the fact table timeline.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/pk-innodb-order-2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Deleting from a monster fact table where primary keys corrospond to temporal data is just as bad. Use partitions instead, and drop expired days.&lt;/p&gt;
+&lt;p&gt;Ideally, the fact table is partitioned, so that you to not shuffle through the B+-Tree again for deletion. Instead, you &lt;code&gt;ALTER TABLE ... DROP PARTITION&lt;/code&gt; instead, which is much, much, much faster.&lt;/p&gt;
+&lt;p&gt;Another way to get changed recorded is instead Change Data Capture (CDC), which you configure a server as a database master writing full row based replication binlog, in which each DML statement will log the full before- and after-image of each changed row. A binlog eater processes this data to produce an ongoing live update of the DW. You will still have to take each logged row, extract the IDs and join them to get the data values of all the other tables you need to log for the ETL process. That can create race conditions, so you may instead opt for changing the application, which would then write twice, once into your OLTP system and once into the DW in denormalized star form.&lt;/p&gt;
+&lt;h2 id=&#34;coexistence-is-impossible&#34;&gt;
+    &lt;a href=&#34;#coexistence-is-impossible&#34;&gt;
+	Coexistence is impossible
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Transactional and reporting queries do not coexist nicely on the same hardware at scale. It is useful to keep transaction processing systems and reporting/BI systems physically separated.&lt;/p&gt;
+&lt;p&gt;An OLTP system is ideally memory saturated - the working set fits into memory, if you can make that happen. Transactions are short lived, query latency matters. The system is write-heavy by definition - it&amp;rsquo;s sole purpose in life is to record state changes on disk in order to model real-world state changes such as orders, order fullfillment and billing. The schema is likely normalized and close to 3rd normal form in order to make update volume manageable. Uptime matters, so having a small data set size will help meeting availability requirements: One that business is interested in is a short MTTR, and MTTR is often a function of data set size.&lt;/p&gt;
+&lt;p&gt;Data Warehouse and BI systems are unlikely to be memory saturated. It is their nature that they grow without bounds unless you actually complete the data lifecycle management by actually dropping data. Transactions are read-mostly, deletes are rare (and implemented as partition drops) and writes are ideally append-only. Queries are long-lived, full table scans, indexes may be of limited use. Hash joins may be more useful than loop joins. The schema is likely &amp;lsquo;normalized&amp;rsquo;, but the DW normal form is a loglike fact table and star or snowflake structures around it. Uptime may matter, but the requirements are often much more relaxed compared to what is requested from the OLTP side of the business. That is good, because DW data set size can be something else.&lt;/p&gt;
+&lt;h2 id=&#34;every-oltp-system-contains-a-data-warehouse-that-struggles-to-get-out&#34;&gt;
+    &lt;a href=&#34;#every-oltp-system-contains-a-data-warehouse-that-struggles-to-get-out&#34;&gt;
+	Every OLTP system contains a data warehouse that struggles to get out
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;It is perfectly normal (and okay for some time) for a new OLTP system to contain a DW on the inside that eventually needs to be extracted and put onto its own machinery. When you create a new OLTP system, you objective is to get it up and running. You need to earn money after all.&lt;/p&gt;
+&lt;p&gt;Still, there will be tables in your system that contain a data in the table name, the partition clause or the primary key. These are tables that grow without bounds given an otherwise constant and unchanging transactional volume. Eventually you will need to come around and complete the data lifecycle management process that you skimped on in order to get things running.&lt;/p&gt;
+&lt;p&gt;That is, you will need to define what kind of attributes you want to extract for reporting in your ETL or CDC process, define such a ETL or CDC process, define a DW/BI structure and the reports and ad-hoc query opportunities you want to support.&lt;/p&gt;
+&lt;p&gt;This will sustain you for a long time, but eventually even the DW/BI you have will outgrow your means and you need to close the loop completely in order to cap growth. Also, compliance rules will force you to actually delete data after some time.&lt;/p&gt;
+&lt;p&gt;TL;DR: You think about changing primary keys when you should think about data lifecycle management. That is not a good business or data modelling strategy.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

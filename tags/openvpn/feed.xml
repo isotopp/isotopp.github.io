@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>openvpn on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/openvpn.html</link>
+    <description>Recent content in openvpn on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 10 Aug 2009 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/openvpn/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Einen  openvpn Server aufsetzen</title>
+      <link>https://blog.koehntopp.info/2009/08/10/einen-openvpn-server-aufsetzen.html</link>
+      <pubDate>Mon, 10 Aug 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/08/10/einen-openvpn-server-aufsetzen.html</guid>
+      <description>&lt;p&gt;openvpn ist ein bequem aufzusetzender VPN-Server, der mit einer
+einfachen TCP-Verbindung angesprochen werden kann. Da kein
+gesonderter IP-Pakettyp verwendet wird, funktioniert openvpn
+sehr einfach auch mit dummen Routern oder in eingeschränkt
+konnektierten Netzwerken.&lt;/p&gt;
+&lt;p&gt;Insbesondere kann der openvpn-Server auch etwa auf Port 443
+laufen. Daher ist openvpn sehr bequem, wenn man hinter einem
+Proxy-Server eines Netzwerkes sitzt, der ausgehende
+https-Verbindungen nur auf https-Ports zuläßt, wie es etwa in
+vielen Firmen der Fall ist.&lt;/p&gt;
+&lt;p&gt;Mit einem openvpn-Server, der auf Port 443 lauscht, kommt man
+aus den meisten dieser Netze bequem heraus und kann alle seine
+Zugriffe dann über die VPN-Verbindung tunneln. Der Proxy sieht
+nur eine normale CONNECT-Anweisung auf einen https-Port, danach
+ist alles verschlüsselt. Der Verbindung ist also nicht
+anzusehen, daß es sich nicht um eine https-Verbindung handelt -
+um das zu erkennen müßte der Proxy schon umschlüsseln, dann wäre
+die Verbindung aber wegen des durch den Proxy gefälschten
+Zertifikates aus unsicher zu erkennen.&lt;/p&gt;
+&lt;p&gt;Das Kommanzeilenprogramm openvpn ist sowohl Server als auch
+Client. Auf dem Server wird es so gestartet:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;/usr/sbin/openvpn \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --daemon \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --writepid /var/run/openvpn/openvpn.pid \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --config /etc/openvpn/openvpn.conf \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --cd /etc/openvpn
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Konfiguration ist kurz und schmerzlos:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;h743107:~ # cat /etc/openvpn/openvpn.conf
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;daemon openvpn-server.koehntopp
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;dev tun
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;local {SERVERIP}
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;port 443
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;proto tcp
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;user nobody
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;group nobody
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cd /etc/openvpn
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;ca keys/ca.crt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cert keys/server.crt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;key keys/server.key
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;dh keys/dh1024.pem
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;server 192.168.168.0 255.255.255.0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;ifconfig-pool-persist ipp.txt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;comp-lzo
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;persist-key
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;persist-tun
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;status openvpn-status.log
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;verb 3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;keepalive 10 60
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;client config dir
+&lt;span class=&#34;go&#34;&gt;client-config-dir client-config-dir
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dies erzeugt einen Server, der auf Port 443 an der an Stelle von
+{SERVERIP} eingesetzten IP lauscht. Der Server läßt Verbindungen
+von Clients zu, die ein Zertifikat haben, das mit ca.crt
+signiert ist -
+&lt;a href=&#34;http://www.openvpn.net/index.php/open-source/documentation/howto.html#pki&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Zertifikate erzeugen&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Der Client bekommt eine IP aus dem im server-Statement genannten
+Pool zugeteilt, und die IP ist persistent. Wir verwenden
+komprimierte Verbindungen und versuchen den Tunnel auch über
+Server-Restarts (persist-tun) zu halten, ditto für den Key. Der
+Server schreibt ein openvpn-status.log auf dem Verbosity-Level
+3. Wir pingen unsere Verbindung alle 10 Sekunden und starten sie
+nach 60 Sekunden fehlenden Pings neu (viele https-Proxies
+trennen die Verbindungen sehr aggressiv, also halten wir sie so
+beschäftgt). Im client-config-dir könnten wir noch weitere
+Client-spezifische Konfigurationen unterbringen.&lt;/p&gt;
+&lt;p&gt;Auf demselben Rechner starte ich auch einen Squid, den ich auf
+127.0.0.1:3128 binde und dem ich Zugriffe aus dem
+192.168.168.0/24 erlaube. Dadurch kann ich all meinen privaten
+Webtraffic durch meinen Proxy schicken, statt meine URLs an den
+anderen Proxy auszuliefern, bei dem ich nicht weiß, was die
+Betreiber mit den Logs oder meinen Daten machen.&lt;/p&gt;
+&lt;p&gt;Auf dem Client (bei mir ein Mac) verwende ich Tunnelblick als
+openvpn-Starter und habe in $HOME/Library/openvpn eine
+openvpn.conf hinterlegt:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;client
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;dev tun
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;proto tcp
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;remote {SERVERIP} 443
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;resolv-retry infinite
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;nobind
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;user nobody
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;group nobody
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;persist-key
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;persist-tun
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;ca ca.crt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cert client.crt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;key client.key
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;comp-lzo
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;verb 3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;keepalive 1 5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;; firmenproxy
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;http-proxy {COMPANY_PROXY} 3128
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;http-proxy-retry
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hier ist dieselbe {SERVERIP} einzutragen wie bei der
+Server-Konfiguration. Wenn die Verbindung durch einen Web-Proxy
+getunnelt werden muß, muß man die beiden http-proxy Kommandos am
+Ende der Datei anpassen, zum Testen daheim kann man sie
+weglassen. Der Rest der Konfiguration entspricht der
+Server-Config, nur die Keepalives habe ich für mich noch
+aggressiver setzen müssen.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

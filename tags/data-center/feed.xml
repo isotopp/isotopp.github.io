@@ -1,0 +1,2492 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>data center on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/data-center.html</link>
+    <description>Recent content in data center on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 25 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/data-center/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NVME is not a hard disk</title>
+      <link>https://blog.koehntopp.info/2021/05/25/nvme-is-not-a-hard-disk.html</link>
+      <pubDate>Tue, 25 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/05/25/nvme-is-not-a-hard-disk.html</guid>
+      <description>&lt;p&gt;So &lt;a href=&#34;https://twitter.com/leclercfl/status/1396909628949155845&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;somebody tweeted&lt;/a&gt;
+
+ about the &lt;a href=&#34;https://techxplore.com/news/2021-05-seagate-mach2-fastest-hard.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Seagate Mach.2&lt;/a&gt;
+
+, a harddisk with two independent heads &amp;ldquo;combs&amp;rdquo;, and I &lt;a href=&#34;https://twitter.com/isotopp/status/1397077206111821824&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commented in german&lt;/a&gt;
+
+: &amp;ldquo;It&amp;rsquo;s two drives in one chassis, even shown as two drives. And it still is rotating rust, so slow with seeks. Linear IO will be fine.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;That quickly devolved in a discussion of &lt;a href=&#34;https://twitter.com/Earlchaos/status/1397116366113673219&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RAID-0 on a single disk drive&lt;/a&gt;
+
+: &amp;ldquo;RAID-0 on a single physical drive. Yeah, you can do that if you do not need your data.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;And that is true, &lt;a href=&#34;https://twitter.com/isotopp/status/1397124815660765184&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;I replied&lt;/a&gt;
+
+: &amp;ldquo;Most people need their data a lot less than they think they do.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s unroll that thread and the various followups in english for this blog.&lt;/p&gt;
+&lt;h1 id=&#34;n3--or-n1&#34;&gt;
+    &lt;a href=&#34;#n3--or-n1&#34;&gt;
+	n=3  or n=1
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;So, most people actually need their data a lot less than they think they do. That is, because most database-like applications do their redundancy themselves, at the application level, so that RAID or storage replication in distributed storage (the &amp;ldquo;n-factor&amp;rdquo;, for the number of replicas that distributed stores for each block) is not only useless, but actively undesirable.&lt;/p&gt;
+&lt;p&gt;Where I work, there is the data track, and there are customers of the data track.&lt;/p&gt;
+&lt;h2 id=&#34;non-databases-are-stateless&#34;&gt;
+    &lt;a href=&#34;#non-databases-are-stateless&#34;&gt;
+	Non-Databases are stateless
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Customers of the data track have stateless applications, because they have outsourced all their state management to the various products and services of the data track. They are deploying their applications, and they largely do not care about the content of hard disks, or even entire machines. Usually their instances are nuked on rollout, or after 30 days, whichever comes first, and replaced with fresh instances.&lt;/p&gt;
+&lt;p&gt;Customers of the data track care about placement:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Place my instances as distributed as possible, no two instances on the same host, if possible, not in the same rack or even the same stack&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(A stack is a network unit of 32-48 racks) This property is called &amp;ldquo;anti-affinity&amp;rdquo;, the spread-out placement of instances.&lt;/p&gt;
+&lt;h2 id=&#34;database-like-systems&#34;&gt;
+    &lt;a href=&#34;#database-like-systems&#34;&gt;
+	Database-like systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The data track has things such as Kafka, Elastic, Cassandra or MySQL, and a few snowflakes.&lt;/p&gt;
+&lt;p&gt;All of these services are doing their own redundancy: individual drives, or even instances, are not a thing they care a lot about. Loss of hosts or racks is factored in.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;They care a lot about anti-affine placement, because they care a lot about fault isolation through &amp;ldquo;not sharing common infrastructure&amp;rdquo; between instances.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Often these services do create instances for read capacity, and getting fault tolerance by having the instances not sharing infrastructure is a welcome secondary effect.&lt;/p&gt;
+&lt;h2 id=&#34;adding-distributed-storage-forces-n3&#34;&gt;
+    &lt;a href=&#34;#adding-distributed-storage-forces-n3&#34;&gt;
+	Adding distributed storage forces n=3
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Now, if you switch from local storage to distributed storage, you very often get redundant storage. For transactional workloads this is often a RAID-1 with three copies (&lt;code&gt;n=3&lt;/code&gt;). Most customers of them don&amp;rsquo;t actually need that: Because they create capacity for read scaleout, they only care about independence of failures, not avoiding them. So again, what they want is anti-affine placement, for example by propagating tags down the stack.&lt;/p&gt;
+&lt;p&gt;So imagine &lt;a href=&#34;https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html&#34;&gt;a lot of MySQL databases&lt;/a&gt;
+
+, for example on Openstack. The volumes of each replication chain are tagged with the replication chain name, like &lt;code&gt;chain=&amp;lt;x&amp;gt;&lt;/code&gt;. If we could tell the storage to place all volumes with identical &lt;code&gt;chain&lt;/code&gt; tag values on different physical drives, ideally on different storage nodes in different racks, storing data with &lt;code&gt;n=1&lt;/code&gt; would be just fine.&lt;/p&gt;
+&lt;p&gt;Cassandra, Elastic and Kafka could work with the same mechanism, because they, too, have native solutions to provide redunancy on JBODs at the application level.&lt;/p&gt;
+&lt;p&gt;But this kind of distributed storage does not exist, and that leads to triplicate storage when it is not needed.&lt;/p&gt;
+&lt;h1 id=&#34;how-about-local-storage&#34;&gt;
+    &lt;a href=&#34;#how-about-local-storage&#34;&gt;
+	How about local storage?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&amp;ldquo;But, Kris! Local Storage!&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Yes, local storage would be a solution. I know that, because when running on autoprovisioned bare metal, it does work, and we currently have that.&lt;/p&gt;
+&lt;p&gt;But most Openstack operators do want live migration, so even ephemeral storage is often ceph&amp;rsquo;ed. That&amp;rsquo;s a&amp;hellip; complication I could do without.&lt;/p&gt;
+&lt;p&gt;In an earlier life Quobyte did work fine for volumes and ephemeral storage, except that with guests that contained large memcached&amp;rsquo;s or MySQL live migrations still failed often.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s not because of Quobyte, but because of memory churn: The memory of the VM in busy instances changed faster than the live migration could move it to the target host. We then had to throttle the instances, breaking all SLA&amp;rsquo;s.&lt;/p&gt;
+&lt;p&gt;In my current life, I can tolerate instance loss anyway, especially if it is controlled and announced. So I do not really have to migrate instances, I can ask nicely for them to be shot in the head. With pre-announcement (&amp;ldquo;I need your host, dear Instance, please die.&amp;quot;), and the application provisions a new instance elsewhere and then removes the one in question. Or with control (&amp;ldquo;Don&amp;rsquo;t force-kill instances if the population is too thin.&amp;quot;).&lt;/p&gt;
+&lt;p&gt;Either case is likely to be faster than a live migration. It is faster for sure, if the data volume is on distributed storage so that I only have to provision the new instance and then simply can reconnect the data volume.&lt;/p&gt;
+&lt;h1 id=&#34;nvme-over-fabric-over-tcp&#34;&gt;
+    &lt;a href=&#34;#nvme-over-fabric-over-tcp&#34;&gt;
+	NVME over fabric over TCP
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Local storage has a smaller write latency than distributed storage, but NVME over fabric (&amp;ldquo;NVMEoF&amp;rdquo;) is quite impressive. And since CentOS 8.2, NVMEoF over TCP is part of the default kernel. That means you do have the NVMEoF TCP initiator simply available, without any custom install.&lt;/p&gt;
+&lt;p&gt;NVMEoF over TCP has a marginally worse latency than RoCE 2 (&amp;ldquo;NVMEoF over UDP&amp;rdquo;), but it does work with any network card - no more &amp;ldquo;always buy Mellanox&amp;rdquo; requirement.&lt;/p&gt;
+&lt;p&gt;It does allow you to make storage available even if it is in the wrong box. And distributed storage may be complicated, but it has a number of very attractive use-cases.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;volume centric workflows: &amp;ldquo;make me a new VM, but keep the volume&amp;rdquo;. Provisioning one Terabyte of data at 400 MB/s takes 45 minutes of copy time for a total MySQL provisioning time of around 60 min. Keeping the volume, changing the VM (new image, different size) makes this a matter of minutes.&lt;/li&gt;
+&lt;li&gt;With NVME namespaces or similar mechanisms one can cut a large flash drive into bite sized chunks, so providing storage and consuming it can be decoupled nicely.&lt;/li&gt;
+&lt;li&gt;Lifetime of storage and lifetime of compute are not identical. By moving the storage out into remote storage nodes their lifecycles are indeed separate, offering a number of nice financial advantages.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All of that at the price of the complexity of distributed storage.&lt;/p&gt;
+&lt;h1 id=&#34;nvme-servers&#34;&gt;
+    &lt;a href=&#34;#nvme-servers&#34;&gt;
+	NVME &amp;ldquo;servers&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This &lt;a href=&#34;https://twitter.com/eckes/status/1397134662896701443&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;raised the question&lt;/a&gt;
+
+ of what the &amp;ldquo;NVME server&amp;rdquo; looks like. &amp;ldquo;Is the respective NVME server an image file, or does it map 1:1 to a NVME hardware device?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;NVME over Fabric (over UDP or over TCP) is a network protocol specification and implementation. It uses iSCSI terms, so the client is the &amp;ldquo;initiator&amp;rdquo;, and the server is the &amp;ldquo;target&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;How backing storage is implemented in a NVME target is of course the target&amp;rsquo;s choice. It could be a file, but the standard maps nicely on a thing called &amp;ldquo;&lt;a href=&#34;https://nvmexpress.org/resources/nvm-express-technology-features/nvme-namespaces/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NVME namespaces&lt;/a&gt;
+
+&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;So flash storage does not overwrite data, ever. Instead it has internally a thing called flash translation layer (FTL), which is somewhat similar to a log structured file system or a database LSM.&lt;/p&gt;
+&lt;p&gt;Unlike a file system, it does translate linear block addresses (LBAs) into physical locations on the flash drive, so there are no directories and (initially also) no filenames.&lt;/p&gt;
+&lt;p&gt;There is of course a reclaim and compaction thread in the background, just like the compaction in log structured filesystems or databases. So you could think of the LSM as a filesystem with a single file.&lt;/p&gt;
+&lt;p&gt;Now, add NVME namespaces - they introduce &amp;ldquo;filenames&amp;rdquo;. The file names are numbers, the name space IDs (NSIDs). They produce a thing that looks like partitions, but unlike partitions they do not have to be fixed in size, and they do not have to be contiguous. Instead, like files, namespaces can be made up by any blocks anywhere on the storage, and they can grow. That works because with flash seeks are basically free - the rules of rotating rust no longer constrain us.&lt;/p&gt;
+&lt;h1 id=&#34;nvme-command-line&#34;&gt;
+    &lt;a href=&#34;#nvme-command-line&#34;&gt;
+	nvme command line
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Linux has the command line program &amp;ldquo;&lt;a href=&#34;https://manpages.ubuntu.com/manpages/xenial/man1/nvme.1.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;nvme&lt;/a&gt;
+
+&amp;rdquo; to deal with nvme flash drives. Drives appear named &lt;code&gt;/dev/nvmeXnY&lt;/code&gt;, where &lt;code&gt;X&lt;/code&gt; is the drive number and &lt;code&gt;Y&lt;/code&gt; is the namespace id (NSID), starting at 1. So far, you probably always have seen the number 1 here.&lt;/p&gt;
+&lt;p&gt;Start with &lt;code&gt;nvme list&lt;/code&gt; to see the devices you have. You can also ask for the features the drive has, &lt;code&gt;nvme id-ctrl /dev/nvme0n1 -H&lt;/code&gt; will tell you what it can do in a human-readable (&lt;code&gt;-H&lt;/code&gt;) way. Not all flash drives support namespaces, but enterprise models and newer models should.&lt;/p&gt;
+&lt;p&gt;Using &lt;code&gt;nvme format&lt;/code&gt; you can reformat the device (losing all data on it), and also specify the block size. &lt;code&gt;nvme list&lt;/code&gt; will also show you this block size. You do want 4KB blocks, not 512 byte blocks: It&amp;rsquo;s 2021 and the world is not a PDP-11 any more, so &lt;code&gt;nvme format /dev/nvme0n1 -b 4096&lt;/code&gt;, please. Some older drives now require a reset to be able to continue, &lt;code&gt;nvme reset /dev/nvme0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Namespaces can be detached, deleted, created and attached: &lt;code&gt;nvme detach-ns /dev/nvme0 -namespace-id=Y -controllers=0&lt;/code&gt;, then &lt;code&gt;nvme delete-ns /dev/nvme0 -namespace-id=1&lt;/code&gt;. When creating a namespace, &lt;code&gt;nvme create-ns /dev/nvme0 -nsze ... -ncap ... -flbas 0 -dps 0 -nmic 0&lt;/code&gt; or whatever options are desired, then &lt;code&gt;nvme attach-ns /dev/nvme0 -namespace-id=1 -controllers=0&lt;/code&gt;. Again, &lt;code&gt;nvme reset /dev/nvme0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In theory, NVME drives and NVME controllers are separate entities, and there is the concept of shared namespaces that span drives and controllers.&lt;/p&gt;
+&lt;p&gt;In reality, this does not work, because NVME devices are usually sold as an entity of controller and storage, so some of the more interesting applications the standard defines do not work on the typical devices you can buy.&lt;/p&gt;
+&lt;h1 id=&#34;erasing&#34;&gt;
+    &lt;a href=&#34;#erasing&#34;&gt;
+	Erasing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Because flash does not overwrite anything, ever, you can&amp;rsquo;t erase and sanitize the device the way you have done this in the past with hard drives. Instead there is drive encryption (&amp;ldquo;OPAL&amp;rdquo;), or the &lt;code&gt;nvme sanitize /dev/nvme0n1&lt;/code&gt; command&lt;/p&gt;
+&lt;p&gt;Or you shred the device, just make the shreds smaller than with hard disks: With hard disks, it is theoretically sufficient to break the drive, break the platters and make scratces. Drive shredders produce relatively large chunks of metal and glass, and are compliance.&lt;/p&gt;
+&lt;p&gt;Flash shredders exist, too, but in order to be compliant the actual chips in their cases need to be broken. So what they produce is usually much finer grained, a &amp;ldquo;sand&amp;rdquo; of plastics and silicon.&lt;/p&gt;
+&lt;h1 id=&#34;network&#34;&gt;
+    &lt;a href=&#34;#network&#34;&gt;
+	Network
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;You need a proper network, &lt;a href=&#34;https://twitter.com/isotopp/status/1397143957860143105&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Maik added&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;Distributed storage is storage at the other kind of the network cable. Every disk read and every disk write become a network access. So you do need a fairly recent network architecture, from 2010 or later: A leaf-and-spine architecture that is optionally oversubscription free so that the network will never break and never be the bottleneck.&lt;/p&gt;
+&lt;h2 id=&#34;leaf-and-spine&#34;&gt;
+    &lt;a href=&#34;#leaf-and-spine&#34;&gt;
+	Leaf-and-spine
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Brad Hedlund wrote about &lt;a href=&#34;https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;leaf-and-spine&lt;/a&gt;
+
+ in the context of Hadoop in 2012, but the first builds happened earlier, at Google, using specialized hardware. These days, it can be done with standard off the shelf hardware, from Arista or Juniper, for example.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/05/clos-40G.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Leaf-and-spine as shown by &lt;a href=&#34;https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Brad Hedlund&lt;/a&gt;
+
+. Today you&amp;rsquo;d use different hardware, but the design principle is still the same.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Here, the leaves are &amp;ldquo;Top of Rack&amp;rdquo; switches that are connected to computers, so we see 40x 10 GBit/s coming up to the red boxes labelled &amp;ldquo;Leaf&amp;rdquo;. We also provide green switches labelled &amp;ldquo;Spine&amp;rdquo;, and connect to them with up to 10x 40G for a complete oversubscription free network.&lt;/p&gt;
+&lt;p&gt;Using BGP, we can automatically build the routing tables, and we will have many routes going from one leaf switch to any other leaf switch - one for each spine switch in the image. Using Equal Cost Multipath (ECMP), we spread our traffic evenly across all the links. Any single connection will be limited to whatever the lowest bandwidth in the path is, but the aggregated bandwidth is actually never limited: we can always provide sufficient bandwidth for the aggregate capacity of all machines.&lt;/p&gt;
+&lt;p&gt;Of course, most people do not actually need that much network, so you do not start with a full build. Initially only provide a subset of that (three to four uplinks) and reserve switch ports and cable pathways for the missing links. Once you see the need you add them, for example when bandwidth utilization in the two digit percentages or you see Tail Drops/&lt;a href=&#34;https://en.wikipedia.org/wiki/Random_early_detection&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RED&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;racks-and-stacks&#34;&gt;
+    &lt;a href=&#34;#racks-and-stacks&#34;&gt;
+	Racks and Stacks
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One level of leaf-and-spine can build a number of racks that are bound together without oversubscription. We call this a stack, and depending on the switch hardware and the number of ports it provides, it&amp;rsquo;s 32-48 racks or so.&lt;/p&gt;
+&lt;p&gt;We can of course put another layer of leaf-and-spine on top to bundle stacks together, and we get a network layer that is never a bottleneck and that never disconnects, across an entire data center location.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Never disconnects?&amp;rdquo; Well, assuming three uplinks, and with a stack layer on top of the first leaf-and-spine layer, we get four hops from start to destination, and that 3^4 possible redundant pathes to every destination ToR via ECMP.&lt;/p&gt;
+&lt;p&gt;Chances are that you need to build a specialized monitoring to even notice a lost link. You can only have outages at the ToR.&lt;/p&gt;
+&lt;p&gt;With such a network a dedicated storage network is redundant (as in no longer needed), because frontend traffic and storage traffic can coexist on the same fabric.&lt;/p&gt;
+&lt;p&gt;A common test or demonstration is the Hadoop Terasort benchmark: Generate a terabyte or ten of random data, and sort it. That&amp;rsquo;s a no-op map phase that also does not reduce the amount of data, then sorting the data in the shuffle phase and then feeding the data (sorting does not make it smaller) across the network to the reducers.&lt;/p&gt;
+&lt;p&gt;Because the data is randomly generated, it will take about equal time to sort each Hadoop 128MB-&amp;ldquo;block&amp;rdquo;. All of them will be ready at approximately the same time, lift off and try to cross the network from their mapper node to the reducer node. If you network survives this, all is good - nothing can trouble it any more.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>940.000 User in Baden-Württemberg</title>
+      <link>https://blog.koehntopp.info/2021/01/12/600000-user-in-baden-wurttemberg.html</link>
+      <pubDate>Tue, 12 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/01/12/600000-user-in-baden-wurttemberg.html</guid>
+      <description>&lt;p&gt;Deutschland ist im Lockdown, die Schulen sind endlich geschlossen und es wird remote unterrichtet. Weil es Deutschland ist, passiert das in jedem Bundesland anders und uneinheitlich. In Baden-Württemberg verwendet man &lt;a href=&#34;https://moodle.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Moodle&lt;/a&gt;
+
+. Wer sich da drunter nichts vorstellen kann, kann es sich &lt;a href=&#34;https://school.moodledemo.net/mod/page/view.php?id=44&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hier&lt;/a&gt;
+
+ ansehen.&lt;/p&gt;
+&lt;p&gt;In Bawü wird eine getrennte Moodle-Instanz pro Schule installiert, aber halt viele Instanzen pro Server, weil Server recht groß sind. In Summe muß man bummelig &lt;a href=&#34;http://www.statistik.baden-wuerttemberg.de/Service/Veroeff/Statistik_AKTUELL/803420002.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;940.000 Schüler&lt;/a&gt;
+
+ abfrühstücken. Die Strukturen in Moodle sind kleinräumig (Klassen, Jahrgänge, Schulen) und nicht stark quer verbunden, sodaß sich das im Grunde relativ leicht skalieren lassen sollte. Dennoch kam es im Frühjahr zum Engpässen, weil das Moodle-Projekt auf andere Projektziele und -größen geplant war (&amp;ldquo;Pilotschulen&amp;rdquo;) als es gebraucht wurde (&amp;ldquo;Lockdown&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/neunerseb/status/1242093498859388928&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/moodle-1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&amp;ldquo;Samstags Nachts um 1: Moodle Server Einbau Selfie!&amp;rdquo; &amp;ndash; &lt;a href=&#34;https://twitter.com/neunerseb/status/1242093498859388928&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sebastian Neuner&lt;/a&gt;
+
+, 23-Mar-2020&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Das Selfie oben zeigt Sebastian Neuner beim Aufrüsten der Hardware im Rechenzentrum. Er &lt;a href=&#34;https://twitter.com/neunerseb/status/1242100350762409985&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;berichtet&lt;/a&gt;
+
+ von Maschinen mit 72-96 Cores, 512-1024GB RAM, und 10 GBit/s Uplinks (sowie 20 Gbit/s SAN-Links zum Storage). CPUs sind &lt;a href=&#34;https://www.amd.com/en/products/cpu/amd-epyc-7451&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AMD 7451&lt;/a&gt;
+
+ und &lt;a href=&#34;https://ark.intel.com/content/www/us/en/ark/products/120490/intel-xeon-gold-6150-processor-24-75m-cache-2-70-ghz.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Intel Gold-6150&lt;/a&gt;
+
+. Davon sind dann jeweils zwei in einer Maschine, und dadurch ergeben sich dann die 72 bzw 96 Cores.&lt;/p&gt;
+&lt;p&gt;Im Sommer hat man dann noch einmal nachgerüstet und am 7-Jan-2021 kam dann die &lt;a href=&#34;https://twitter.com/belwue/status/1347255528783814661&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;letzte Nachlieferung&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/neunerseb/status/1242093498859388928&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/moodle-2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&amp;ldquo;Heute morgen wurden 2 Paletten mit 7 weiteren Servern für Moodle geliefert.&amp;rdquo; &amp;ndash; &lt;a href=&#34;https://twitter.com/neunerseb/status/1242093498859388928&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BelWü&lt;/a&gt;
+
+, 07-Jan-2021&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dennis Urban merkt an: &amp;ldquo;In den sieben Maschinen sind AMD EPYC 7h12 CPUs drin. &lt;a href=&#34;https://twitter.com/dpunkturban/status/1348382147564941313&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Langsam wird der Monitor zu klein&lt;/a&gt;
+
+.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;In den Kommentaren dann ein Haufen Bemerkungen und Fragen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wieso sind das Dells und keine von Thomas Krenn?&lt;/li&gt;
+&lt;li&gt;Wieso physikalische Server und das nicht in einer Cloud klicken?&lt;/li&gt;
+&lt;li&gt;Wieso stehen die nicht an der Schule, sondern in irgendeinem Rechenzentrum?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Nun habe ich mit dem BelWü und Moodle nichts am Hut, aber zu diesen Dingen kann ich aus anderen Gründen sinnvoll etwas beisteuern, also habe ich die Fragen einmal beantwortet (Twittertypisch &lt;a href=&#34;https://twitter.com/isotopp/status/1348610831366414339&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mitten in den Thread gelinkt&lt;/a&gt;
+
+, weil es anders nicht sinnvoll funktioniert).&lt;/p&gt;
+&lt;h2 id=&#34;wieso-sind-das-dells&#34;&gt;
+    &lt;a href=&#34;#wieso-sind-das-dells&#34;&gt;
+	Wieso sind das Dells?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Wer viele Server hat, der will die automatisch installieren. Das ist viel einfacher, wenn man einen einigermaßen einheitlichen Serverpark hat.&lt;/p&gt;
+&lt;p&gt;Server haben einen Baseboard Management Controller (BMC). Das ist ein kleiner Rechner, der immer angeschaltet ist und der den großen Rechner inventarisieren, konfigurieren und ein- und ausschalten kann.&lt;/p&gt;
+&lt;p&gt;Theoretisch sind die BMCs inzwischen einigermaßen standardisiert: Die Desktop Management Task Force DMTF hat dafür den Standard &lt;a href=&#34;https://www.dmtf.org/standards/redfish&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Redfish&lt;/a&gt;
+
+ definiert. In der Praxis sind die verschiedenen BMCs alle unterschiedlich defekt und man muß wissen, welchen Hersteller in welcher Version man am Rohr hat, damit man um dessen Bugs gezielt drum herum arbeiten kann. Mein Arbeitgeber hat dazu &lt;a href=&#34;https://github.com/bmc-toolbox/bmcbutler&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BMC Butler&lt;/a&gt;
+
+ entwickelt und auf Github öffentlich gemacht, ebenso das Inventarisierungstool &lt;a href=&#34;https://github.com/bmc-toolbox/dora&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dora&lt;/a&gt;
+
+ und eine Reihe von weiteren Tools.&lt;/p&gt;
+&lt;p&gt;Kauft man sich jetzt Rechner von einem weiteren Hersteller dazu, dann muß man die eigene Automatisierung erst einmal validieren und anpassen. Das ist schnell mal ein halbes Jahr Arbeit.&lt;/p&gt;
+&lt;p&gt;Das ist auch okay, denn größere Aktionen in einem Rechenzentrum haben ebenfalls schnell mal ein halbes Jahr Vorlauf. Wie dem auch sei: 7 Rechner bekommt man eventuell relativ schnell, aber einen ganzen Raum in einem Rechenzentrum voll zu laden war eine Aktion mit Schiffscontainern aus Taiwan.&lt;/p&gt;
+&lt;p&gt;Meist hat man Rahmenverträge mit Händlern (&amp;ldquo;OEMs&amp;rdquo;, Original Equipment Manufacturer, zum Beispiel Dell oder HP) oder - bei größeren Mengen - Herstellern (&amp;ldquo;ODMs&amp;rdquo;, Original Device Manufacturer, zum Beispiel QCT oder Wywinn), und meistens genau zwei: Man will halt mehr als einen und so wenige wie möglich, weil alles kompliziert ist.&lt;/p&gt;
+&lt;h2 id=&#34;wieso-nicht-in-der-cloud&#34;&gt;
+    &lt;a href=&#34;#wieso-nicht-in-der-cloud&#34;&gt;
+	Wieso nicht in der Cloud?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Weil Cloud unglaublich teuer ist. In meinen Kostenrechnungen liegen die Kosten für Cloud-Deployments pro Monat in etwa gleichauf mit (oder höher als!) Kostenrechnungen für Bare Metal in eigenen Rechenzentren pro Jahr (Strom, Netz, anteilige Netzwerk-Hardware, Rechenzentrumsplatz und alles andere inbegriffen).&lt;/p&gt;
+&lt;p&gt;Das kann man alles noch optimieren, aber auf beiden Seiten der Gleichung und am Ende kommt in etwa dasselbe heraus: Cloud ist in etwa eine Größenordnung teurer als das alles selbst zu machen.&lt;/p&gt;
+&lt;p&gt;Anders herum bedeutet das, daß man das eigene Bare Metal hemmungslos überdimensionieren kann und immer noch unter AWS-Preisen herauskommt. Ist ja auch logisch: Wenn man einem Milliardär seine Weltraumfirma nicht mit finanzieren muß, &amp;hellip;&lt;/p&gt;
+&lt;p&gt;Was man dabei nicht mit rechnet: Die höhere Latenz (s.o: 6 Monate Vorlauf - man muß überdimensionieren) und die Personalkosten für die eigene Entwicklung (Servermanagement, API für Provisionierung und so weiter).&lt;/p&gt;
+&lt;p&gt;Das lohnt sich erst ab einer gewissen Mindestgröße. Für kleine Läden lohnt sich die Cloud trotz der hohen Instanzkosten, weil die Software schon fertig entwickelt ist. Kleine Läden haben auch keine Kapazitätsprobleme beim Provisionieren in der Cloud.&lt;/p&gt;
+&lt;p&gt;Wenn man natürlich wegen eines RZ-Ausfalls &amp;ldquo;ein Megawatt Kapazität&amp;rdquo; mal eben in der Cloud klicken will, dann geht das nicht &amp;ldquo;wegen Quota&amp;rdquo;. Die Quota gibt es nicht nur, um teure Fehler zu vermeiden, sondern weil auch &amp;ldquo;die Cloud&amp;rdquo; nicht &amp;ldquo;mal eben ein MW Kapazität&amp;rdquo; zur Hand hat, sondern Rechenzentrumsplatz bauen, Rechner kaufen und installieren muß im RZ der Wahl, damit das geht.&lt;/p&gt;
+&lt;p&gt;Dabei unterscheiden sich Clouds deutlich: Azure setzt auf Kapazität &amp;ldquo;vor Ort&amp;rdquo;: man hat also sehr, sehr viele Standorte und die sind dann mitunter sehr klein. Da mal eben 10.000 &amp;ldquo;Amazon m5.4xl&amp;rdquo; zu holen (etwa 1 MW) geht dann halt nicht und schon gar nicht in einer AZ. Amazon und Google sind anders strukturiert, und wenn man Glück hat kriegt man 10k Instanzen dieser Größe, aber sicher nicht auf Zuruf und in der AZ der Wahl (&amp;ldquo;Wir haben Eure 150 PB Hadoop jetzt in Finnland, aber das Processing für die 2500 Nodes muß nach London&amp;rdquo; &amp;ldquo;Und wer zahlt dann den Traffic?&amp;quot;).&lt;/p&gt;
+&lt;p&gt;Und halt nicht für sinnvolles Geld.&lt;/p&gt;
+&lt;h2 id=&#34;wieso-nicht-in-der-cloud-1&#34;&gt;
+    &lt;a href=&#34;#wieso-nicht-in-der-cloud-1&#34;&gt;
+	Wieso nicht in der Cloud?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Cloud macht total Sinn für einmalige Tasks. Die Bild-Assets von 1.2 Millionen Hotels in drei neuen Größen für einen neuen Mobildienst bereit zu stellen und dafür einen Bildskalierer durch Parallelisierung um einige Monate zu beschleunigen ist eine ideale Cloudanwendung: dynamisch Wegwerfkapazität kaufen (&amp;ldquo;Spot Instances&amp;rdquo;), den Task durchlaufen lassen und dann die Instanzen aufgeben.&lt;/p&gt;
+&lt;p&gt;Cloud macht total Sinn für experimentelle Tasks. Machine Learning auf GPU oder Google Tensor Processors auszuprobieren ist sehr viel sinnvoller, als experimentelle Hardware mit 36 Monaten Abschreibung zu kaufen, die dann alle 6-9 Monate (inzwischen: 18 Monate) ersetzt werden muß, weil sich das Thema weiter entwickelt hat und die Hardware veraltet ist (und dann festzustellen, daß man eh nur 7kW pro Rack kann, aber ein dicker Klotz mit GPUs drin schon mal gerne 14 oder 21kW pro Rack an Abwärme da läßt).&lt;/p&gt;
+&lt;p&gt;Cloud lohnt nicht, wenn man 600.000 Schüler für 10 Jahre an 220 Tagen im Jahr mit einer IT Infrastruktur versorgen muß. Das ist quasi das Anti-Cloud Szenario: Garantierte Basislast für Dekaden in vorhersehbarer Menge, bewährte konventionelle Technik und relativ stabiles Anwendungsumfeld. Selbst wenn man die Maschinen in 3 Jahren abschriebe kann man leicht 5 Jahre Betrieb aus den Dingern bekommen, bevor man sie ersetzt.&lt;/p&gt;
+&lt;p&gt;Ersetzen wird man sie, denn nach 5 Jahren wird der Betrieb vermutlich unrentabel. Neue Hardware wäre so viel leistungsfähiger, daß man dieselbe Leistung mit weniger Hardware, weniger Strom und weniger RZ-Platz erbringt und so viel Geld spart. Eine Maschine verbraucht in 5 Jahren circa ihren Anschaffungspreis in Strom.&lt;/p&gt;
+&lt;p&gt;Was auch teuer ist in einer Cloud-Anwendung ist Netzwerk, und dort speziell ausgehender Verkehr. AWS ist berühmt dafür, eingehenden und ausgehenden Datenverkehr sehr unterschiedlich zu bepreisen, und in den Medien findet man viele Berichte in der Art &lt;a href=&#34;https://www.theregister.com/2020/03/19/nasa_cloud_data_migration_mess/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NASA to launch 247 petabytes of data into AWS – but forgot about eye-watering cloudy egress costs before lift-off&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Videochat Anwendungen wie Zoom sind in AWS nicht ökonomisch zu betreiben. Corey Quinn &lt;a href=&#34;https://www.lastweekinaws.com/blog/why-zoom-chose-oracle-cloud-over-aws-and-maybe-you-should-too/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;berichtet von Zoom&lt;/a&gt;
+
+, und wieso man dort statt AWS die Oracle-Cloud gewählt hat. Oracle als Firma ist spät in das ganze Cloud-Geschäft eingestiegen und muß sich um Kunden bemühen, daher zielt man bewußt auf Kunden mit viel ausgehenden Verkehr und macht die Preise dort anders.&lt;/p&gt;
+&lt;h2 id=&#34;wieso-stehen-die-nicht-an-der-schule-sondern-im-rz&#34;&gt;
+    &lt;a href=&#34;#wieso-stehen-die-nicht-an-der-schule-sondern-im-rz&#34;&gt;
+	Wieso stehen die nicht an der Schule, sondern im RZ?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Eine Schule ist der denkbar schlechteste Ort, um Rechner zu betreiben. Fünf dicke Maschinen für eine Schule mit 1000 Schülern brauchen ein Rack, Strom und Netz und produzieren Abwärme, die vermutlich aktiv weg gekühlt werden muß. Kein Ort an einer
+Schule ist dafür geeignet, das zu betreiben. Kleine Strom- und Kühlsysteme sind ineffizient.&lt;/p&gt;
+&lt;p&gt;Obendrein: so teure Hardware mit personenbezogenen Daten auf den Speichern an einer Schule zu lagern ist auch rein von der physischen Sicherheit nicht machbar. In meiner Schulzeit, es ist schon einige Dekaden her, hat man den Medienraum der Schule, an der ich war, mehr als einmal leer gemacht. Das waren keine besonders begabten Leute, sondern Junkies auf der Suche nach Wertgegenständen zum schnellen Verticken.&lt;/p&gt;
+&lt;p&gt;In einem Rechenzentrum hat man nicht nur eine für Rechner geeignete Umgebung mit Strom, Netz und Kühlung, sondern kann auch Personal auslasten, das sich mit Dingen wirklich auskennt und mehr kann als Dinge ein- und auszuschalten. Netz ist genug da: im Rechenzentrum sowieso und die Kapazität einer einzelnen Glasfaser (normal legt man Bündel) ist für den interessierten Laien im Grunde unbegrenzt.&lt;/p&gt;
+&lt;p&gt;Wen es interessiert: &lt;a href=&#34;https://www.alibaba.com/product-detail/Huawei-dwdm-equipment-OSN-6800_60174956247.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OptiX OSN 6800&lt;/a&gt;
+
+, ein Stück Huawei DWDM Hardware zum Ausleuchten einer Langstrecken-Glasfaser mit bis zu 80 Kanälen (40 Frequenzen x 2 Polarisierungen) und 100 GBit/s pro Kanal - 8 TBit, pro Faser. Es ist eine Frage von Bedarf und Geld, aber nicht wirklich ein technisches Problem. Innerhalb des Rechenzentrums nimmt man billigeres Glas, billigere Laser mit niedrigerer Leistung und hat dafür wesentlich mehr Fasern. Glas liegt durchgehend, mindestens bis zur &amp;ldquo;DSL Anschlußbox&amp;rdquo; auf dem Gehsteig, und ab da ist in Deutschland dann alles schwierig.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/speedtest.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Mein Jitsi ruckelt nicht, Tweak.nl sei Dank!&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Jedenfalls ist es, Cloud oder nicht, &lt;a href=&#34;https://blog.koehntopp.info/2020/06/23/schulen-digitalisieren.html&#34;&gt;sinnvoller Netz in die Schule zu legen&lt;/a&gt;
+
+ und für Strom und Netz in allen Klassenräumen zu sorgen (das muß man in jedem Fall tun!), als Server in die Schule zu stellen. Eine Schule ist ungefähr der dümmste mögliche Platz für Server, die Raspi 4s mit den Minecraft-Servern des Informatik-Kurses ausgenommen.&lt;/p&gt;
+&lt;h2 id=&#34;wie-sieht-so-etwas-aus&#34;&gt;
+    &lt;a href=&#34;#wie-sieht-so-etwas-aus&#34;&gt;
+	Wie sieht so etwas aus?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Nun habe ich mit dem Netz und dem Moodle in Bawü nichts zu tun, aber ich habe in meiner Arbeit gelegentlich mit Computern oder Rechenzentrums-Ausstattungen zu tun, und dabei auch einige Fotos machen können.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;2. Januar 2019: Anlieferung neuer Hardware für einen neuen Rechenzentrumsraum, ein LKW alle 2 Stunden.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Wir haben ein Staging Area zum Auspacken und Organisieren der Hardware. Noch ist es leer.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Dann: Auspacken, Verpackungsmaterial shreddern, und die Geräte in den eigentlichen Rechnerraum fahren, wo sie geracked werden.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-4.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Jedes Gerät kommt mit Verpackung, Palette, Handbüchern und Stromkabeln für unterschiedliche Nationen. So viel Holz in der IT!&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-5.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Vorne die Hardware, hinten der Müll.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-6.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Rackrückseite. bis zu 16 Blades pro Chassis, 4 Chasis pro Rack. Bitte beim Verkabeln keine Fehler machen!&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-7.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Leere Racks im eigentlichen RZ-Raum, warten auf die Hardware.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-8.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&amp;ldquo;Laser&amp;rdquo; (SPF-Module), für das Netzwerk.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-9.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Es ist noch viel zu tun.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-10.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Gerätefront nach Einbau: Ein Dell Bladecenter Chasis mit 14/16 Blades bestückt. Jede Blade hat 2 CPUs, einige hundert GB Speicher, 2 SSDs und 10 GBit/s Netzwerk.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/delivery-1Q19-11.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Nach 3 Tagen sind die ersten Geräte grün (Provisionierbar - nach Burn In, Firmware Update und Base OS Install). Es wird noch 2 weitere Tage dauern, bis der Rest nachkommt.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;All dies ist in erster Linie eine Logistik-Aufgabe: Man muß den kommenden Bedarf abschätzen, planen und dabei auch das Upgrade veralteter Hardware mit Planen, dann Rechenzentrumsplatz und Strom bereitstellen, und unterdessen Modelle wählen, verhandeln, bestellen und dann parallel die Site vorbereiten. Wenn die Lieferung kommt, ist auspacken, validieren und racken angesagt. Alles in allen muß man 12 Monate oder mehr in die Zukunft sehen.&lt;/p&gt;
+&lt;p&gt;(Ich habe von 2016 bis Mitte 2019 RZ-Kapazität geplant. Die Bilder sind vom Januar 2019).&lt;/p&gt;
+&lt;h2 id=&#34;cloud-hätte-auch-nicht-geholfen&#34;&gt;
+    &lt;a href=&#34;#cloud-h%c3%a4tte-auch-nicht-geholfen&#34;&gt;
+	Cloud hätte auch nicht geholfen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Update:&lt;/em&gt; &lt;a href=&#34;https://www.belwue.de/trouble-tickets/ticket/208_2021-01-11_09-01-48.xml&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Belwue Trouble Ticket&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Nach verschiedenen Optimierungen am Montag bestehen keine nennenswerten Probleme mehr.
+Die Spitzenlast um 8 Uhr konnte so am Dienstag gut abgefangen werden.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Nach dem, was mir berichtet wurde, ist ein guter Datenbank-Admin wohl mehr wert als Cloud und Bare Metal Rechenzentrum zusammen. Durch eine gemeinsame Anstrengung wurden einige Moodle-Queries an die Datenbank entscheidend verbessert und Indices nachgerüstet. Außerdem wurde das Schreibverhalten der Datenbank auf SSD entscheidend besser konfiguriert, sodaß es durch die großen Mengen Speicher nicht mehr zu Schreibstürmen kommt.&lt;/p&gt;
+&lt;p&gt;Der Effekt ist an der Heatmap zu sehen:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/moodle-response.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Response Time Heatmap vom Bawü Moodle für den 12. Januar 2021. Die X-Achse zeigt die Uhrzeit. Die Y-Ache zeigt logarithmisch die Antwortzeit. Die meisten Antworten kommen in weniger als einer Zehntelsekunde, jetzt wo die Datenbank optimiert ist. (via &lt;a href=&#34;https://twitter.com/dpunkturban&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dennnis Urban&lt;/a&gt;
+
+&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Besonders viel Ärger hat wohl eine bestimmte Kalender-Query gemacht. Da Moodle Open Source Software ist, kann man &lt;a href=&#34;https://tracker.moodle.org/browse/MDL-66253&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;das Ticket sehen&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Jetzt sind 3300 Cores in der Plattform und eine Summen-Load von unter 1000, heute. Gestern noch um die 3000.&amp;rdquo; sagte man mir. Ein System mit 3000 Cores ist mit einer Load von 3000 genau am Anschlag (Runnable Threads == vorhandene Cores). Eine Load von 1000 auf 3000 Cores ist angenehm und sollte stabil durchhalten.&lt;/p&gt;
+&lt;p&gt;Mit mehr Leistung - in Cloud oder auf Bare Metal - hätte das System nur schneller und teurer gewartet. Der Fehler war nur unter Last zu finden und durch Datenbanktuning zu beheben, nicht durch mehr Spielzeug.&lt;/p&gt;
+&lt;p&gt;Und weil Leute gefragt hatten: Moodle läuft mit 300 Usern pro Core recht rund, und bekommt wohl in diesem Szenario ab dem 2.5-fachen davon Probleme.&lt;/p&gt;
+&lt;h2 id=&#34;edit-userzahlen&#34;&gt;
+    &lt;a href=&#34;#edit-userzahlen&#34;&gt;
+	Edit: Userzahlen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/dpunkturban&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dennis Urban&lt;/a&gt;
+
+ korrigiert in einer DM:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Eine Frage bzw. Anmerkung: in Bawü gibts derzeit 1,4 Mio SchülerInnen und so 140k LehrerInnen: Wir haben so 940k registrierte Benutzer.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Aus irgendwelchen Gründen listet der ursprünglich verlinkte Statista-Artikel die Berufsschüler nicht auf. &lt;a href=&#34;http://www.statistik.baden-wuerttemberg.de/Service/Veroeff/Statistik_AKTUELL/803420002.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Statistik Bawü&lt;/a&gt;
+
+ hat die ganzen Zahlen.&lt;/p&gt;
+&lt;h2 id=&#34;edit-merkwürdigkeiten&#34;&gt;
+    &lt;a href=&#34;#edit-merkw%c3%bcrdigkeiten&#34;&gt;
+	Edit: Merkwürdigkeiten
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Im Nachgang zu diesem Artikel kam es zu diversen Diskussionen auf Twitter. Ein Haufen Leute hat sich beim Moodle-Team von BaWü über die Performance von BBB beschwert. Dieser Dienst wird zwar in Moodle integriert, ist aber von einem anderen Team an einer anderen Institution in einer anderen Stadt betrieben.&lt;/p&gt;
+&lt;p&gt;Eventuell ist es sinnvoll, die IT-Organisation an Schulen nicht auf Kreis- oder Landesebene zu zerfasern, sondern Aufwände zu bündeln. Das macht den Betrieb nicht nur zuverlässiger, sondern auch billiger.&lt;/p&gt;
+&lt;p&gt;Doch es ist noch &amp;ldquo;komplizierter&amp;rdquo;:&lt;/p&gt;
+&lt;p&gt;Ein Benutzer hat sich über die Performance von BBB beschwert und zeigte einen Screenshot.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/01/moodle-nope-bbb.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Screenshot mit nicht funktionierendem BBB: Auf demo2.bigbluebutton.org allerdings.&lt;/em&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Der nächste Versuch der Klassen-VC scheitert - nach der Anmeldemaske passiert bei BBB nichts mehr. Viel Kinder-Enttäuschung, dass das versprochene &amp;ldquo;Arbeiten wie die Großen&amp;rdquo; nie klappt. Stattdessen jetzt: Arbeitsblatt bearbeiten. Vorhandene Motivation: -1000&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;demo2.bigbluebutton.org ist ein Testserver vom BBB Projekt, der in Kanada steht und als Demo-Objekt betrieben wird. Er ist nicht für den Produktiveinsatz gedacht, nicht von GDPR-Richtlinien abgedeckt und selbst wenn er funktionierte wäre er für eine angenehme Videokonferenz zu weit weg.&lt;/p&gt;
+&lt;p&gt;Moodle und Big Blue Button sind Softwarepakete, die sich Organisationen wie die Schulorganisation eines Landes selbst installieren können. Als Lehrerin oder Lehrer ist man gut damit beraten auch die korrekte URL zum Verbinden zu nehmen, statt sich im Internet irgendeine Instanz zu suchen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Rechenzentren und ihren Stromverbrauch regulieren</title>
+      <link>https://blog.koehntopp.info/2020/11/01/rechenzentren-und-ihren-stromverbrauch-regulieren.html</link>
+      <pubDate>Sun, 01 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/11/01/rechenzentren-und-ihren-stromverbrauch-regulieren.html</guid>
+      <description>&lt;p&gt;Es gibt ein Interview mit Stefan Ramesohl vom Umweltministerium (des Bundes) in Netzpolitik.org: &amp;ldquo;&lt;a href=&#34;https://netzpolitik.org/2020/interview-zur-umweltpolitischen-digitalagenda-warum-niemand-weiss-wie-viele-rechenzentren-es-in-europa-gibt/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Warum niemand weiß, wie viele Rechenzentren es in Europa gibt&lt;/a&gt;
+
+&amp;rdquo;. Im Wesentlichen hat das Umweltministerium angesagt, daß es auf europäischer Ebene Rechenzentren erfassen und katalogisieren will, um in einem zweiten Schritt den Energieverbrauch von Rechenzentren zu regulieren.&lt;/p&gt;
+&lt;p&gt;Das ist sehr spannend, denn derzeit gibt es keine Übersicht über Rechenzentren in Europa, und tatsächlich sind einige Rechenzentrumsbetreiber sehr paranoid, was den genauen Standort ihrer Hardware angeht und wieviel und welche Hardware darin ist oder was diese tut. Das ist zwar lächerlich - es ist sehr schwierig eine Energiesenke wie ein Rechenzentrum und ihre Abwärme zu verstecken - aber auch ein sehr sensitives Thema.&lt;/p&gt;
+&lt;h2 id=&#34;eine-leseliste&#34;&gt;
+    &lt;a href=&#34;#eine-leseliste&#34;&gt;
+	Eine Leseliste
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In dem Interview gibt es ein paar Dinge, die Anmerkungen verdienen, aber bevor es los geht noch die anderen Artikel in diesem Blog als Links:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2017/07/19/threads-vs-watts.html&#34;&gt;Threads vs. Watts&lt;/a&gt;
+
+: Ich habe einen Dell R630 mit zwei Xeon 6132 CPUs getestet, und deren Energieverbrauch unter Last gemessen. Die Resultate sind repräsentativ für die ganze Klasse von Rechnern, die eine Art Arbeitspferd im modernen Rechenzentrum sind. Der Hauptpunkt: 50% der maximalen Energieaufnahme werden bereits bei 20% Auslastung aufgenommen.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2018/02/21/a-journey-to-open-compute.html&#34;&gt;A Journey to Open Compute&lt;/a&gt;
+
+: Mit Open Compute hat Facebook die Energieaufnahme eines Rechners in Idle auf 50% eines herkömmlichen Rechners senken können, und unter Volllast auf 80%. Das wird ermöglicht, indem man Rechner, Rack und Raum nach einer gemeinsamen Spezifikation baut und optimiert. Der Open Compute Standard ist jetzt eine offene Spezifikation, aber wegen der Abhängigkeiten zwischen Raum, Rack und Rechner lohnt sich das alles nur, wenn man ein &lt;a href=&#34;https://en.wikipedia.org/wiki/Big_Tech#GAFAM_or_FAAMG&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GAFAM&lt;/a&gt;
+
+-type Hyperscaler ist.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2017/11/07/power-budgets-for-computing-resources-portable-and-stationary.html&#34;&gt;Power budgets for computing resources - portable and stationary&lt;/a&gt;
+
+ listet generell die Zusammenhänge zwischen Rechnen, Batterieverbrauch und Abwärme auf.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2019/10/05/data-centers-and-energy.html&#34;&gt;Data Centers and Energy&lt;/a&gt;
+
+: Wenn man Netflix schaut, wird Energie verbraucht. Wo und wieviel? Wir reden über Endgeräte (die nur wenige Watt brauchen), über Open Compute in Rechenzentren und über Energieverbrauch im Netzwerk, speziell auf der letzten Meile. Letzterer variiert enorm: 5G braucht sehr viel Energie, (V)DSL ist ebenfalls sehr aufwendig, und Glasfaser nicht - sie ist leicht eine Zehnerpotenz günstiger.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2019/12/28/streaming-and-energy.html&#34;&gt;Streaming and Energy&lt;/a&gt;
+
+ und &lt;a href=&#34;https://blog.koehntopp.info/2020/03/19/netflix-does-not-bring-down-the-internet.html&#34;&gt;Netflix does not bring down the Internet&lt;/a&gt;
+
+: Speziell Videostreaming funktioniert schon sehr optimiert: Videos werden in Edge Data Centers gespeichert und nicht neu codiert, sie werden in der niedrigsten sinnvollen Auflösung geliefert und die Decodierung erfolgt mit spezieller Hardware, damit die Batterie im Endgerät länger hält. All das braucht weniger Energie als angenommen.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/06/08/cloud-and-energy.html&#34;&gt;Cloud and Energy&lt;/a&gt;
+
+: Das Uptime Institut sagt: &amp;ldquo;Data center energy efficiency gains have flattened out&amp;rdquo; (und sieht einen durchschnittlichen PUE von 1.58). Uptime sagt im selben Text aber auch, daß neuere und größere Facilities mit Open Compute &lt;em&gt;signifikant&lt;/em&gt; bessere PUE haben. Der einfachste Weg zur Verbesserung von PUE für die meisten Firmen ist, ihre Workloads in die Cloud zu verlagern (und dynamisch zu skalieren). Das hat bei korrekter Durchführung neben Energieffizienz auch noch jede Menge andere Vorteile, die sich aus einem gelungenen Outsourcing ergeben.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;hyperscaler-rechenzentren-sind-viel-energieeffizienter&#34;&gt;
+    &lt;a href=&#34;#hyperscaler-rechenzentren-sind-viel-energieeffizienter&#34;&gt;
+	Hyperscaler-Rechenzentren sind viel energieeffizienter
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Auf Twitter ging ich auf &lt;a href=&#34;https://twitter.com/isotopp/status/1322857383929012224&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;das Interview ein&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;Netzpolitik.org:&lt;/em&gt; Diese großen Player können ja kein Interesse an staatlicher Regulierung haben, sondern werden versuchen, eine branchenweite Selbstverpflichtung herbeizuführen.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Eher nicht. Als &lt;a href=&#34;https://en.wikipedia.org/wiki/Big_Tech#GAFAM_or_FAAMG&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GAFAM&lt;/a&gt;
+
+ wäre man sinnvollerweise für mehr Regulierung, denn das käme effektiv einem Cloud-Zwang gleich.&lt;/p&gt;
+&lt;p&gt;Wie oben bereits dargestellt, hat GAFAM bereits Rechenzentren, die sehr viel effizienter mit der Energie umgehen als normale Rechenzentren es tun. Das ist so, weil diese Rechenzentren Raum, Rack und Rechner als ein System designed haben und weil die Betreiber als Hyperscaler es sich leisten können, solche Rechenzentren nach Maß zu designen, bauen zu lassen und zu optimieren.&lt;/p&gt;
+&lt;p&gt;Während also ein traditionelles Rechenzentrum Rechner für eine Million Watt betreibt und dafür um die 600.000W an Kühlung und anderer Sekundärenergie aufbringen muß (Power Utilization Efficiency, PUE 1.6), können die am Besten optimierten Google-Rechenzentren eine Million Watt an Rechnern mit 60.000W Sekundärenergie betreiben (PUE 1.06).&lt;/p&gt;
+&lt;p&gt;Ein effektiver PUE von &amp;lt;1.2 ist par für die Hyperscaler-Cloud.&lt;/p&gt;
+&lt;p&gt;Ein kleinerer Rechenzentrums-Nutzer füllt nicht ein ganzes RZ mit Rechnern, läßt also nicht nach Maß bauen, sondern mietet existierenden RZ-Space, der prinzipbedingt nicht gut geeignet ist für Open Compute (OCP). Existierende RZ-Space ist generisch, er muß jede Art von IT-Equiment aufnehmen können und ist daher oft Überkühlt, der Airflow ist nicht optimiert und hat auf diese Weise mindestens dreimal mehr Overhead als RZ-Space, den Hyperscaler nach Maß bauen (PUE &amp;lt;1.2 vs. PUE ~ 1.6). Noch kleinere Benutzer füllen nur einzelne Räume oder haben Raumabschnitte (&amp;ldquo;Cages&amp;rdquo;), teilen also die Kühlung mit anderen Nutzern.&lt;/p&gt;
+&lt;p&gt;Hyperscaler bauen nicht nur ein RZ, sondern tun das in Serie, und iterieren dabei das Design. Sie lassen auch Rechner und Rechnerkonzepte wie OCP entwickeln, und stimmen dabei das Design des RZ auf das Design von Rack und Rechner ab - daher kommt die energetische Überlegenheit von OCP.&lt;/p&gt;
+&lt;p&gt;Dazu kommt, wie oben auch dargestellt, daß ein ausgelasteter Rechner energieeffizienter ist als einer, der teilweise vor sich hin idled. Ein Dell R630 verbraucht bereits 50% seiner maximalen Energie bei 20% Auslastung.&lt;/p&gt;
+&lt;p&gt;Maschinen auszulasten und Workloads dynamisch zu skalieren ist etwas, für das &amp;ldquo;die Cloud&amp;rdquo;, also die API-gesteuerten Rechenzentren der Hyperscaler, gebaut worden sind. Hyperscale Clouds haben &amp;ldquo;sellable cores per provisioned cores&amp;rdquo; als eine zentrale Optimierungsmetrik, sie wollen ausgelastete Rechner, weil das die Einnahmen definiert.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/watt-thread.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Watts per Thread (Dell R630, Dual Xeon 6132)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Wie dem auch sei: Aus energetischer Sicht ist Auslastung wichtig, weil die Watts zur Aktivierung des n-ten Rechenkerns asymptotisch günstiger sind. Das ist so, weil die Idle-Energieaufnahme der Maschine und des ganzen Rechenzentrums drumherum sich so amortisiert.&lt;/p&gt;
+&lt;p&gt;Außerdem: Wenn man es sich leisten kann, Hyperthreading zu aktivieren (Wegen der diversen Intel-Caching-Bugs der letzten Jahre ist das oft ein Sicherheitsrisiko), dann sind die Hyperthreads energetisch betrachtet nahezu kostenfrei. Integer- und Stringprocessing-Workloads können Hypterthreads als nahezu vollwertige zweite CPU betrachten, Fließkomma-intensive Workloads nicht.&lt;/p&gt;
+&lt;p&gt;Webshops sind, wenn sie richtig gebaut worden sind, String- und Integer-Anwendungen und sehr wenig Fließkomma-intensiv, könnten also von Hyperthreading voll profitieren. Die Anzahl der nutzbaren Cores verdoppelt sich rechnerisch und ist bei Webshop fast vollständig realisierbar - ein Webshop mit einer fast reinen Integer/String Workload kann von den 56 rechnerischen Kernen einer Dual-6132 eine Load von deutlich über 40 stabil verarbeiten.&lt;/p&gt;
+&lt;h2 id=&#34;kosten-und-energie&#34;&gt;
+    &lt;a href=&#34;#kosten-und-energie&#34;&gt;
+	Kosten und Energie
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Über eine Nutzungsdauer von fünf Jahren gerechnet machen Energiekosten in etwa die Hälfte der Gesamtkosten eines Rechners aus - für einen Hyperscaler ist das ein so intensiver Kostenfaktor, daß sie aus wirtschaftlichen Gründen seit mehr als 15 Jahren intensiv die Energieaufnahme ihrer Rechenzentren in allen Punkten optimieren.&lt;/p&gt;
+&lt;p&gt;Das ist der primäre Grund für das Open Compute Projekt (OCP) und die Bauweise der Hyperscaler-Rechenzentren. Für Hyperscaler lohnt dies, weil das der Kernbereich ihres wirtschaftlichen Handelns ist.&lt;/p&gt;
+&lt;p&gt;Dazu kommt, wie in der Leseliste dargestellt, daß alle Hyperscaler (bis auf Amazon) bereits 100% graugrün sind, also zu großen Teilen bereits auf tatsächlich regenerativer Energie laufen und den Rest mit Zertifikaten kompensieren, und obendrein sehr nah in der Zukunft liegende Ziele haben, was komplett grünen Betrieb &lt;em&gt;und&lt;/em&gt; Überkompensation angeht. Speziell Google ist ein sehr großer Investor in Wind- und Solarkraftanlagen, Netflix überkompensiert bereits jetzt, ist also Carbon-Negative.&lt;/p&gt;
+&lt;p&gt;Für ein Firma, für die der Betrieb und die Skalierung von Rechenzentren und ihrer Hardware nicht der Kern ihres wirtschaftlichen Handelns ist, ist es ausgeschlossen hier mitzuhalten.&lt;/p&gt;
+&lt;p&gt;Oder wie Ramesohl es formuliert:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Es ist einfach so, dass eine gewisse Skalierung zu großen Vorteilen führt, die dann wiederum über eine Wettbewerbsfähigkeit im Markt die Marktposition stärkt und damit den Marktanteil erhöht. Das ist ein selbstverstärkender Effekt. Hinzu kommt, dass diese Akteure in der Lage waren, zu investieren und sich damit ein technologisches Know-how aufzubauen, was wiederum im Umkehrschluss ihre Marktposition stärkt.&lt;/p&gt;
+&lt;p&gt;Das ist richtig, dass gerade bei den großen Playern entsprechende selbstdefinierte Nachhaltigkeitsziele vorliegen. Das sind teilweise sehr ambitionierte Pläne, die versuchen, die Emissionen, die im Laufe der Unternehmensgeschichte bisher aufgelaufen sind, rückwirkend zu kompensieren.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;bandbreite-und-energie&#34;&gt;
+    &lt;a href=&#34;#bandbreite-und-energie&#34;&gt;
+	Bandbreite und Energie
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ramesohl sagt auch:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Da geht es um die Frage, ob jede Internetwerbung eine Autoplay-Funktion braucht, also abspielt, wenn ich nur über die Seite scrolle. Das erzeugt nämlich ein enormes Datenvolumen. Oder die Frage, ob alles standardmäßig in höchster Auflösung gestreamt werden muss, wenn es auf einem kleinen Bildschirm angeschaut wird.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Dahinter steht die Fehlmeinung, daß eine Netzwerkinfrastruktur mehr Energie benötigt, wenn Daten übertragen werden. Das ist nicht der Fall.&lt;/p&gt;
+&lt;p&gt;So wie eine Festplatte oder RAM nicht schwerer werden oder mehr Energie verbrauchen, wenn Daten darin gespeichert werden, so braucht ein kabelgebundenener Netzwerklink nicht (wesentlich) mehr Energie, wenn Daten übertragen werden.&lt;/p&gt;
+&lt;p&gt;RAM und Festplatten brauchen (mehr) Energie, wenn Daten &lt;em&gt;geändert&lt;/em&gt; werden, also Bits gekippt werden.&lt;/p&gt;
+&lt;p&gt;Und kabelgebundenene Netzwerkinfrastruktur überträgt immer Daten (Trägersignale), auf die die Nutzlast dann aufmoduliert wird. Das wiederum braucht im Vergleich zur Grundlast des Netzes (das Senden des Trägers) kaum Energie. Anders sieht es bei Funkverbindungen, also Datenübertragung via Mobilfunknetz aus, dort wird der Sender komplett abgeschaltet, wenn er nicht gebraucht wird, um das Spektrum frei zu halten.&lt;/p&gt;
+&lt;p&gt;Speziell bei Glasfaser ist es so, daß man die Bandbreite zudem mit nur wenig mehr Energieaufwand um Größenordnungen hochdrehen kann, wenn man will - durch den Austausch der Laser kann dasselbe Medium in der Kapazität verzehnfacht oder verhundertfacht werden ohne signifikat mehr Energie zu verbrauchen.&lt;/p&gt;
+&lt;h2 id=&#34;was-tun-wir-mit-all-dem-compute&#34;&gt;
+    &lt;a href=&#34;#was-tun-wir-mit-all-dem-compute&#34;&gt;
+	Was tun wir mit all dem Compute
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Am Ende ist es eventuell eine gute Idee, nicht nur genauer hin zu schauen, wo Rechenzentren stehen und wie sie designed sind, sondern was mit den Megawatts gemacht wird, die dort verwendet werden. Auf diese Weise bekommen wir eventuell Bitcoin weg gebombt. Das wäre schon einmal sehr wichtig, denn hier wird Energie in der Größenordnung ganzer Staaten in sinnlosen Berechnungen (&amp;ldquo;Proof of Work&amp;rdquo;) verheizt. Und nein, das kann man nicht ändern, PoW kann nicht sinnvolles berechnen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>IT modernisieren und konsolidieren</title>
+      <link>https://blog.koehntopp.info/2020/10/05/it-modernisieren-und-konsolidieren.html</link>
+      <pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/10/05/it-modernisieren-und-konsolidieren.html</guid>
+      <description>&lt;p&gt;Ich schrieb in einem &lt;a href=&#34;https://twitter.com/isotopp/status/1313084134168944640&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Twitter Thread&lt;/a&gt;
+
+ über &lt;a href=&#34;https://blog.koehntopp.info/2020/10/05/what-are-the-problems-with-posix.html&#34;&gt;Posix Dateisysteme vs. Object Stores&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;UNIX FS ist 1974.
+BSD FFS ist 1984.
+XFS ist 1994.
+ZFS (und Btrfs und Wafl) sind LFS, also 2004.
+Object Storages, LSM, &amp;ldquo;RocksDB&amp;rdquo; ist ca. 2014, um den Takt zu halten.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;und wurde gefragt: &amp;ldquo;Was kommt 2024&amp;rdquo;. Meine halb spöttische, halb ernst gemeinte Antwort war:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Irrelevant.&lt;/p&gt;
+&lt;p&gt;2024 läuft Dein Code serverless bei einem professionellen Betreiber und vom lokalen System und dem lokalen Dateisystem kriegst Du nix mehr zu sehen außer einer monatlichen Rechnung.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;rein-in-die-cloud&#34;&gt;
+    &lt;a href=&#34;#rein-in-die-cloud&#34;&gt;
+	Rein in die Cloud
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Selbst wenn es kein &amp;ldquo;serverless&amp;rdquo; ist, sondern eine VM oder ein Container: Wir haben dazu gelernt, und sind besser geworden. Deswegen sind aber auch unsere Standards und Anforderungen gestiegen und wir brauchen bessere Umgebungen.&lt;/p&gt;
+&lt;p&gt;Die Prozesse und die Technik lokal so aufzusetzen, daß man weiterhin compliant bleibt mit SOX, PCI und PII ist eine ganze Menge Arbeit, die nicht zur Kern-Mission der meisten Unternehmen gehört. Es ist auch ein Investment, das besser in geschäftsrelevante Bereiche ginge. Techniken und Infrastruktur bereit zu stellen, die in einem Amazon-like Environment &amp;ldquo;so da&amp;rdquo; ist wird immer schwieriger und teurer werden.&lt;/p&gt;
+&lt;h3 id=&#34;ein-paar-selbstverständlichkeiten&#34;&gt;
+    &lt;a href=&#34;#ein-paar-selbstverst%c3%a4ndlichkeiten&#34;&gt;
+	Ein paar Selbstverständlichkeiten
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Auf der Minimum-Liste für alle stehen inzwischen Dinge wie&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Single Sign On und Identity Management (SSO und IAM)&lt;/li&gt;
+&lt;li&gt;Rollenbasierte Access Controls (RBAC)&lt;/li&gt;
+&lt;li&gt;eine PKI&lt;/li&gt;
+&lt;li&gt;Encryption at Rest und Encryption in Flight&lt;/li&gt;
+&lt;li&gt;Administrator Roles mit Segregation of Duties&lt;/li&gt;
+&lt;li&gt;Mandatory Access Controls and Privilege Limits&lt;/li&gt;
+&lt;li&gt;Audit Trails&lt;/li&gt;
+&lt;li&gt;Complance und Audit von all dem&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Und das ist schon mehr Arbeit als man als Firma mit einem eigenen RZ-Betrieb selbst leisten und erfinden kann. Es ist auch etwas, das so nicht fertig kaufbar und als Produkt installierbar ist, weil es eben nicht nur Technik ist, sondern auch Prozeß und Kultur.&lt;/p&gt;
+&lt;p&gt;Es sind aber alles Dinge, die man als Technik in einem AWS Environment oder einer anderen großen Cloud per Default bekommt und zu der es dann auch Unterweisungen gibt, die einem Best Practices und funktionierende Prozesse nahe bringen.&lt;/p&gt;
+&lt;p&gt;Dazu kommen dann Dienste, die in einem eigenen Rechenzentrum mühevoll oder teuer zu schaffen sind, die man aber in einer großen Cloud testweise oder produktiv dazu nehmen kann, ohne eigenen Aufwand zu treiben.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Geocoder&lt;/li&gt;
+&lt;li&gt;Spracherkennung&lt;/li&gt;
+&lt;li&gt;Bilderkennung&lt;/li&gt;
+&lt;li&gt;Integration in eine skalierbare Big Data Umgebung&lt;/li&gt;
+&lt;li&gt;Integration von Eventprozessoren&lt;/li&gt;
+&lt;li&gt;Event Driven Execution (&amp;ldquo;Step Functions&amp;rdquo;), die es auch Nicht-Codern erlauben, Anwendungen durch Zusammenklebeben von -aaS Diensten zu schaffen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Aber das sind nur Beispiele aus hunderten von Diensten&amp;hellip;&lt;/p&gt;
+&lt;h3 id=&#34;nicht-die-mission-der-meisten-betriebe&#34;&gt;
+    &lt;a href=&#34;#nicht-die-mission-der-meisten-betriebe&#34;&gt;
+	Nicht die Mission der meisten Betriebe
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Das ist etwas, das einer traditionellen RZ-IT nicht zugänglich ist, und das auch unverhältnismäßig viel Kapital, Investment und Personal binden würde, würde man es selbst lokal entwickeln. Schon so etwas simples wie RDS funktioniert besser und automatischer als alle selbstgestrickten DevOps Managementscripte für Datenbanken, die man selbst haben kann.&lt;/p&gt;
+&lt;p&gt;Druck kommt nicht nur aus dem Management und aus der Compliance, sondern auch von unten: Die aktuelle Generation von Entwicklern hat nie mit einem lokalen RZ gearbeitet, sondern ist in AWS groß geworden. Sie setzt die Qualität der Implementierung und die Prozesse von Amazon als gegeben und als Maßstab voraus. Sie setzt die Leichtigkeit von Operations und Observability voraus, die für eine Cloud-Umgebung typisch sind.&lt;/p&gt;
+&lt;p&gt;Deswegen ist die Zukunft von 2024 mindestens hybrid. Aber effektiv wird kein Betrieb mit einem lokalen Rechenzentrum und reinen IaaS-Angeboten noch groß Stiche holen.&lt;/p&gt;
+&lt;p&gt;Das ist einer der Gründe, warum Europa als Technologieraum zunehmend abgehängt ist. Nicht nur viele Politiker und Entscheider verstehen nicht mehr, was in den letzten 10 Jahren passiert ist, sondern auch viele Sysadmins &amp;ldquo;on the ground&amp;rdquo; haben die Veränderung des Entwicklerbetriebes in den letzten 10 Jahren grundlegend verpaßt und können nicht erkennen, welche Gestaltungsdrücke gerade auf ihrer Umgebung lasten.&lt;/p&gt;
+&lt;p&gt;Das sehen wir nicht nur in der &amp;ldquo;deutsche Schulen in COVID&amp;rdquo; Videokonferenzdiskussion, sondern auch in der ganzen Klasse von BOFH-Bemerkungen, die aus dem Sysadmin Lager oft kommt. Ich habe dazu vor über fünf Jahren schon einmal was gemacht: &lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script#2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Slides: Go away or I will replace you with a very small Shell script - ein paar Gedanken zum Thema Devops&lt;/a&gt;
+
+ (&lt;a href=&#34;https://media.ccc.de/v/froscon2015-1500-go_away_or_i_will_replace_you_with_a_very_little_shell_script&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Video von der Froscon Version&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;Die Frage ist nicht, wie ein lokales Rechenzentrum Rechner betreibt und bereitstellt - das ist ein gelöstes Problem. Sondern welche Dienste sie darauf fertig im Angebot haben, ob diese Dienste mit aktuellen Standard und Anforderungen in Compliance sind, ob sie eine API haben, und sie mit lokalem Tooling integrierbar sind.&lt;/p&gt;
+&lt;h3 id=&#34;integration-und-bildung-von-untereinander-abhängigen-systemen&#34;&gt;
+    &lt;a href=&#34;#integration-und-bildung-von-untereinander-abh%c3%a4ngigen-systemen&#34;&gt;
+	Integration und Bildung von untereinander abhängigen Systemen
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Wir sind dabei, von individuellen, frei stehenden und trennbaren Teilen zu integrierten Systemen zu gehen. Das hat Vorteile, weil so Prozesse entstehen und eingeübt werden, die meßbar Qualität verbessern und - wichtiger noch - automatisieren.&lt;/p&gt;
+&lt;p&gt;Das ist nicht nur im Bereich Betrieb mit der Cloud so, sondern ist ein größerer Trend, der auch in der Software-Entwicklung sichtbar wird: Entwickler arbeiten nicht mehr mit vi im leeren Editor, sondern haben in der Regel Sprachen mit umfangreichen Bibliotheken und Integrationen im Betrieb. Das hat Folgen.&lt;/p&gt;
+&lt;p&gt;In der Entwicklung: Wenn es keinen JetBrains-Editor für die Sprache gibt, wenn sie von gitlab und github nicht erkannt und ausgewertet wird, wenn sie keinen Dependency-Manager und keine CI/CD Integration hat, dann ist eine moderne Programmiersprache - Entschuldigung - Plattform - Entschuldigung - Ökosystem nicht vollständig und nicht mehr konkurrenzfähig.&lt;/p&gt;
+&lt;p&gt;Wenn eine Sprache nicht von einschlägigen Security- und Audit-Werkzeugen unterstützt wird, wenn sie nicht &lt;a href=&#34;https://www.sonarqube.org/features/multi-languages/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;bei SonarQube&lt;/a&gt;
+
+ oder ähnlichen auf der Liste steht, wenn sie nicht von Valgrind, Fuzzern und anderen Werkzeugen unterstützt wird, dann hat eine moderne Programmierumgebung in einem Enterprise-Umfeld zunehmend Schwierigkeiten, die steigenden Compliance-Anforderungen im Bereich Software-Entwicklung und Qualitätssicherung zu erfüllen.&lt;/p&gt;
+&lt;p&gt;Im Betrieb: Ohne Identity, PKI, SSO, RBAC, Segregation of Duties, Encryption überall, Auditing und enforceable maximum permissions hast Du Compliance Probleme oder wirst sie bald haben. Und ohne eine API für alles, Tooling für diese API, Infrastructure als Code, Codified Practices wie CI/CD hast Du keine attraktive und effektive Entwicklungsumgebung für Deine eigenen Leute.&lt;/p&gt;
+&lt;p&gt;Das sind aber Gedanken und Entwicklungen, die in Deutschland an Politik und an Teilen der &amp;ldquo;Informatikschaffenden&amp;rdquo; vorbei gegangen sind, oder belächelt worden sind.&lt;/p&gt;
+&lt;h2 id=&#34;raus-aus-der-cloud&#34;&gt;
+    &lt;a href=&#34;#raus-aus-der-cloud&#34;&gt;
+	Raus aus der Cloud
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Offensichtlich sind Server Wurst. Die Frage ist mehr, was da drauf läuft, welche Dienste und Integrationen bestehen. Das ist mit einem IT-Team von 4-5 Leuten vor Ort nicht sinnvoll zu schaffen, sondern im günstigsten Fall ein blankes IaaS, nicht unbedingt von der guten und vertrauenswürdigen Sorte.&lt;/p&gt;
+&lt;p&gt;Schau Dir an, was zum Beispiel Scaleway oder OVH macht, oder 1und1 in Deutschland. Das sind fitte Teams, die eine Menge weg schaffen. Aber deren Clouds sind relativ dienstfreie IaaS-Clouds mit ein wenig Object Storage, und alle größeren Dinge mußt Du Dir selbst auf deren IaaS ansibilisieren.&lt;/p&gt;
+&lt;p&gt;Das ist aber der Stand von 2010, nicht 2020. In 2020 ist ein Cloudkunde hinter Diensten her, damit er die nicht selbst betreiben muß.&lt;/p&gt;
+&lt;p&gt;Es ist ja nicht nur unwürdig, HPE deren defekte iLOs und kaputte Festplatten-Firmware zu debuggen, sondern man will sich auch einfach ein MySQL oder Postgres klicken können. Oder gar einfach &amp;ldquo;einen KV Storage benutzen&amp;rdquo; und Dein Zeugs in ein Dynamo kippen und Dich gar nicht mehr um Instanzgrößen kümmern müssen, sondern nur noch für Storage und Zugriff nach Verbrauch bezahlen.&lt;/p&gt;
+&lt;p&gt;Und an dieser Stelle kommt wieder die Politik durch.&lt;/p&gt;
+&lt;h3 id=&#34;arbeitsteilung-beruht-auf-vertrauen-vertrauen-kommt-aus-transparenz-und-verläßlichkeit&#34;&gt;
+    &lt;a href=&#34;#arbeitsteilung-beruht-auf-vertrauen-vertrauen-kommt-aus-transparenz-und-verl%c3%a4%c3%9flichkeit&#34;&gt;
+	Arbeitsteilung beruht auf Vertrauen. Vertrauen kommt aus Transparenz und Verläßlichkeit
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Das funktioniert mit den Diensten nämlich ganz wunderbar in der &amp;ldquo;Arbeitsteiligen Gesellschaft™&amp;rdquo; - wir nennen so etwas Zivilisation. Nur, wenn wir zivilisiert, verantwortungsvoll und vertrauensvoll miteinander umgehen, dann kann man sich selbst die Arbeit mit den ganzen Diensten schenken und jemand anders beauftragen.&lt;/p&gt;
+&lt;p&gt;Dazu sind bestimmte gesellschaftlichen Bedingungen notwendig, die zu schaffen sind. Wir brauchen ein System von Checks und Balances, internationalen Verträgen und Business Practices, und dann ein System von Kontrollen und &lt;em&gt;Vertrauen in die Wirksamkeit dieser Kontrollen&lt;/em&gt;, damit wir zivilisiert cloudcomputen können.&lt;/p&gt;
+&lt;p&gt;Wenn Du aber einzelne Nation States hast, die technisch gesehen als Attacker da stehen (&amp;ldquo;Nation State Attacker&amp;rdquo;, &amp;ldquo;NSA&amp;rdquo;) und sich das auch so vorbehalten, dann ruiniert das die Geschäftsgrundlage für die arbeitsteilige Gesellschaft, mithin die Zivilisation selbst.&lt;/p&gt;
+&lt;p&gt;Wenn Du einzelne Anbieter hast, die über die Verarbeitung und Nutzung der Daten nicht transparent sind, oder man den von ihnen vorgezeigten Audits kein Vertrauen schenken kann, dann &amp;hellip; genau dasselbe.&lt;/p&gt;
+&lt;p&gt;Und wenn Du eine Politik hast, die ein Klima schafft, in der das Verständnis dieser Tatsachen geleugnet oder ignoriert wird, dann ruiniert das dieses Konzept schon.&lt;/p&gt;
+&lt;p&gt;Das ist genau das, was Gestalten wie Trump, BoJo aber auch von Storch zerstören, wenn sie Isolationismus, Staatswilkür und Ignoranz gegenüber internationaler Ordnung demonstrieren. Das ist aber auch das, was Gestalten wie Audi Scheuer und sein Meister, Imperator Seehofer vernichten, denn solche vorgelebte Unfähigkeit und Korruption saugen der Zivilisation das Rückenmark aus. Das ist dann das, was zu Dingen wie Wirecard führt, zum Dieselskandal und zu Situationen, bei denen ein Volkswagen-Compliancemanager bei der Dokumentation illegaler Geschäftspraktiken auf eine Weise zu Tode kommt, die in jede Netflix-Mafiaserie gepaßt hätte.&lt;/p&gt;
+&lt;p&gt;In so einem Umfeld ist eine Auslagerung der IT an Dritte für Unternehmen ein bedenkenswertes Risiko statt eine Erleichterung.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Cloud and Energy</title>
+      <link>https://blog.koehntopp.info/2020/06/08/cloud-and-energy.html</link>
+      <pubDate>Mon, 08 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/06/08/cloud-and-energy.html</guid>
+      <description>&lt;p&gt;In &lt;a href=&#34;https://blog.koehntopp.info/2019/10/05/data-centers-and-energy.html&#34;&gt;Data Centers and Energy&lt;/a&gt;
+
+ I wrote about Hyperscaler Data Centers and Open Compute, and how they bring down the PUE of data centers, making them more efficient, and in &lt;a href=&#34;https://blog.koehntopp.info/2019/12/28/streaming-and-energy.html&#34;&gt;Streaming and Energy&lt;/a&gt;
+
+ I followed up on this, explaining how Netflix energy usage fits into this. Now the Uptime Institute has released &lt;a href=&#34;https://journal.uptimeinstitute.com/data-center-pues-flat-since-2013/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a study&lt;/a&gt;
+
+ that claims &amp;ldquo;Data center energy efficiency gains have flattened out&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;It is summarized as:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The average power usage effectiveness (PUE) ratio for a data center in 2020 is 1.58, only marginally better than 7 years ago, according to the latest annual Uptime Institute survey (findings to be published shortly).&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But with a lot of caveats:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As ever, the data does not tell a complete story. This data is based on the average PUE per site, regardless of size or age. Newer data centers, usually built by hyperscale or colocation companies, tend to be much more efficient, and larger. A growing amount of work is therefore done in larger, more efficient data centers (Uptime Institute data in 2019 shows data centers above 20 MW to have lower PUEs). Data released by Google shows almost exactly the same curve shape — but at much lower values.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Which basically says the opposite: actually newer, larger hyperscaler cloud datacenters are way more energy efficient, and continued to do so after 2013. But a lot of IT is stagnating in old build, and is not being upgraded nor moved anywhere, so the numbers seem to stagnate when they are not.&lt;/p&gt;
+&lt;p&gt;It suggests the best way to improve the PUE of your data center is to move to get cloud and get rid of it, but Uptime being Uptime they cannot phrase it that way.&lt;/p&gt;
+&lt;p&gt;(via &lt;a href=&#34;https://twitter.com/SpeicherStief/status/1269906522122960896&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@speicherstief&lt;/a&gt;
+
+)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Streaming and Energy</title>
+      <link>https://blog.koehntopp.info/2019/12/28/streaming-and-energy.html</link>
+      <pubDate>Sat, 28 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/12/28/streaming-and-energy.html</guid>
+      <description>&lt;p&gt;A bunch of boomers in Germany is running a distraction campaign on the energy use of data centers and streaming. Example articles in german language can be found in
+&lt;a href=&#34;https://www.zeit.de/2020/01/digitalpolitik-digitalisierung-klimaschutz-co2-stromverbrauch&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Zeit&lt;/a&gt;
+
+
+and
+&lt;a href=&#34;https://www.bento.de/politik/klickscham-wie-viel-co2-streaming-und-googlen-verursacht-und-welche-loesungen-es-gibt-a-c6e5ff54-71e9-46da-80cf-6ee1547d8b3a&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Bento&lt;/a&gt;
+
+,
+but there is a larger series of articles acrooss multiple newspapers.&lt;/p&gt;
+&lt;p&gt;A better structured reasoning can be found in &lt;a href=&#34;https://www.srf.ch/news/panorama/energieverbrauch-im-internet-warum-streaming-viel-strom-braucht&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SRF&lt;/a&gt;
+
+ (German), and it highlights how arbitrary and wrong the energy numbers in the former articles are. But even this article ignores the facts that the energy consumption in a typical cloud data center is most likely carbon neutral, because the power used is likely to be completely green. How green exactly is depending on the cloud operator and the location of the data center - I have written a &lt;a href=&#34;https://blog.koehntopp.info/2019/10/05/data-centers-and-energy.html&#34;&gt;much more detailed overview&lt;/a&gt;
+
+ elsewhere in this blog.&lt;/p&gt;
+&lt;p&gt;For some reason, the majority of these articles focus on video streaming, ignoring outright waste of energy at a much larger scale, for example blockchain use. Furthermore, most of the calculations on the energy use of specifically video streaming are making flawed assumptions. They are designed to create vastly oversized energy footprints, and even more oversized carbon footprints.&lt;/p&gt;
+&lt;p&gt;Some things to remember:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A video is not being encoded for every view.&lt;/strong&gt; A raw video is encoded or transcoded once for each target format, of which there is a small integer number. So 4K raw source material is being transcoded into 1080p, 720p, 480p and maybe a few even smaller formats. Some streamers support specific classes of end user devices with a limited, non-extensible set of legacy codecs, such as gaming consoles or similar. They typically add one or two more formats to the set, but in the end the storage cost (and energy) dominates the transcoding cost.&lt;/p&gt;
+&lt;p&gt;The encoded file is stored and played on demand for each viewer. In effect this turns watching a video on a streaming service basically into a normal file download with a &amp;ldquo;fancy&amp;rdquo; download protocol.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/12/google-chunked.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;via &lt;a href=&#34;https://www.netmanias.com/en/post/blog/5923/google-http-adaptive-streaming-iptv-video-streaming-youtube/youtube-changing-the-way-of-delivering-videos-chunking-and-adaptive-streaming-are-in-progressive-download-is-out&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Netmanias: Youtube Chunking, 2013&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Define &amp;ldquo;fancy&amp;rdquo;: The file is being chopped into chunks of around a few seconds playback time, and a number of chunks ahead of the current playback position is being downloaded in advance and buffered on the end user device. How many of these chunks are preloaded depends on a lot of parameters, such as device type, internet connection speed and user behavior (&amp;ldquo;are they jumping around a lot?&amp;quot;). Using chunked downloads allows for switching video resolution depending on changes in line speed or display window size, and for jumping around in the video without downloading unnecessary parts of the video.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A video is not shipped across the Atlantic Ocean for each viewer.&lt;/strong&gt; Most likely (and especially for popular videos), an edge cache is holding a copy of the file locally and serving it to the customer. Google documents this in &lt;a href=&#34;https://peering.google.com/#/infrastructure&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;their peering and caching documentation&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/12/google-edge.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Google provides a map of their Google Global Cache nodes. There is at least one in every metropolitan area. These nodes also cache popular Youtube videos. The cache is quite effective, an older 2012 paper (&lt;a href=&#34;https://www.net.in.tum.de/fileadmin/bibtex/publications/papers/braun_noms2012_youtube_caching.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
+
+) discusses that.&lt;/p&gt;
+&lt;p&gt;Netflix does similar things with their own infrastructure.&lt;/p&gt;
+&lt;p&gt;This turns watching a video on a streaming service into downloading a file with a fancy download protocol from a pretty local server, with local being defined as &amp;ldquo;very close to your location in terms of network, not physical topology&amp;rdquo;. Where network topology matches physical topology, this may be &amp;ldquo;in your city&amp;rdquo;, in any case it is the minimum number of network hops, the copy &amp;ldquo;closest to you&amp;rdquo; that is being served.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A video is not being decoded in software on a regular CPU&lt;/strong&gt; The effect of a software vs. hardware video encoder is being shown in &lt;a href=&#34;https://www.youtube.com/watch?v=2YpOZV8elqA&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this 2014 Youtube Video&lt;/a&gt;
+
+, in which a Samsung S4 cellphone is being used to encode a live video stream from a specific brand of surveillance camera. Software encoding produces 8 fps, hardware encoding with the special hardware in the cellphone produces line rate at 25 fps.&lt;/p&gt;
+&lt;p&gt;Unfortunately we do not get to see the changed energy profile, but purpose built video encoding and decoding hardware as is present on any average graphics hardware in 2019, down to the cellphone level, does things not only faster, but also with a fraction of the energy need. Such hardware is used for streaming video encoding in data centers, and for playback on end user devices.&lt;/p&gt;
+&lt;p&gt;This is especially important on battery powered devices, where less energy usage translates into longer device runtime directly.&lt;/p&gt;
+&lt;p&gt;For encoding, the approaches differ. Netflix is running on AWS, and used to use &lt;a href=&#34;https://medium.com/netflix-techblog/high-quality-video-encoding-at-scale-d159db052746&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;software encoding on regular EC2 instances&lt;/a&gt;
+
+. A relatively recent Netflix talk about their &lt;a href=&#34;https://www.youtube.com/watch?v=JouA10QJiNc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;encoding pipeline&lt;/a&gt;
+
+ has all the details.&lt;/p&gt;
+&lt;p&gt;Google offers their own dedicated &lt;a href=&#34;https://cloud.google.com/solutions/media-entertainment/use-cases/video-encoding-transcoding/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;video encoding cloud service&lt;/a&gt;
+
+, but does not document what they are using. It is likely that a hybrid of software and hardware encoding is being used: Google is known to have &lt;a href=&#34;https://www.quora.com/What-does-YouTube-use-for-encoding-video/answer/Ciro-Santilli&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;fuzzed ffmpeg&lt;/a&gt;
+
+ a lot and to use it extensively. Also, ffmpeg can &lt;a href=&#34;https://www.tal.org/tutorials/ffmpeg_nvidia_encode&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;make use of GPU hardware for encoding&lt;/a&gt;
+
+, when such hardware is available, and GCP has such hardware.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Running a cloud service uses energy, but it is way less energy than anybody else would use for the same job. Also, if you choose your cloud provider wisely, you may use energy, but won&amp;rsquo;t produce CO2&lt;/strong&gt; I have explained that in &lt;a href=&#34;https://blog.koehntopp.info/2019/10/05/data-centers-and-energy.html&#34;&gt;much more detail&lt;/a&gt;
+
+ elsewhere.&lt;/p&gt;
+&lt;p&gt;The TL;DR is: Cloud providers run data centers on renewable energy, Google is one of the worlds largest investors into solar and wind farms. So even if energy is being used, no CO2 is being produced to run the data center.&lt;/p&gt;
+&lt;p&gt;Cloud providers use purpose built data centers that match their purpose built computers, &amp;ldquo;Open Compute Technology&amp;rdquo;. These machines use less than half the power of normal servers when idle, and around 33% less energy when fully loaded. They also run in data centers that do not require compression cooling, but can consume ambient air temperatures, greatly reducing the cooling energy spent.&lt;/p&gt;
+&lt;p&gt;Cloud technology can size applications on demand, allowing way better utilisation of servers. While a typical enterprise data center has around 5%-10% utilisation, cloud data centers are 3x to 7x better utilised.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; Netflix specifically is overcompensating. In
+&lt;a href=&#34;https://media.netflix.com/en/company-blog/a-renewable-energy-update-from-us&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;A renewable energy update from us&lt;/a&gt;
+
+
+they explain how much energy they use, primary and secondary, and how they
+compensate for this. This is assuming that their cloud provider, Amazon, was
+running on 100% coal, which they aren&amp;rsquo;t, and that means they are actually
+carbon negative.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; The BBC has an &lt;a href=&#34;https://www.bbc.co.uk/sounds/play/p0819sc4&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;article&lt;/a&gt;
+
+ on this, and they come to the same conclusions (via &lt;a href=&#34;https://twitter.com/elizab0t/status/1223570360555188224&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Twitter&lt;/a&gt;
+
+).&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Data Centers and Energy</title>
+      <link>https://blog.koehntopp.info/2019/10/05/data-centers-and-energy.html</link>
+      <pubDate>Sat, 05 Oct 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/10/05/data-centers-and-energy.html</guid>
+      <description>&lt;p&gt;Deutsche Welle is shocked:
+&lt;a href=&#34;https://www.dw.com/de/co2-aussto%C3%9F-von-online-video-streaming-als-klima-killer/a-49469109?maca=de-Twitter-sharing&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Generation Greta is watching Netflix&lt;/a&gt;
+
+
+(Article in German Language), Netflix runs on computers, and apparently
+computers are using power.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s have a look.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; Second part &lt;a href=&#34;https://blog.koehntopp.info/2019/12/28/streaming-and-energy.html&#34;&gt;Streaming and Energy&lt;/a&gt;
+
+ now available.&lt;/p&gt;
+&lt;h2 id=&#34;end-user-device&#34;&gt;
+    &lt;a href=&#34;#end-user-device&#34;&gt;
+	End-User Device.
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;It&amp;rsquo;s 2019. End user devices are using Wi-Fi, and are running on
+Batteries. They are Cellphones, Tablets or Laptops.&lt;/p&gt;
+&lt;p&gt;Devices that are not connected to grid are more usable if they
+are trying to save energy, and so all modern devices are full of
+special purpose hardware that allows them to fulfill their main
+functions more energy efficient. In particular for the use-case
+of watching video modern hardware, even cellphones, have special
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Application-specific_integrated_circuit&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ASICs&lt;/a&gt;
+
+
+that can do video and audio decompression and compression on the
+fly faster and with much less energy usage than a CPU could do.&lt;/p&gt;
+&lt;p&gt;Also, devices without a fan are limited to a sustained power
+usage of 5W or less, because that is typically the heat that a
+device can dissipate without a fan and without looking strange.&lt;/p&gt;
+&lt;p&gt;All of this is an enormous improvement: An old-style desktop
+computer has a TDP (Thermal Design Power) of 150W and actually
+uses a large two digit number of Watts to run, and an old-school
+17&amp;quot; monitor instead of a modern LCD uses as much energy. A
+modern tablet or cellphone does both, loading an email and
+displaying it, within a power budget of 1.5W to 5.0W, so easily
+20-40x more energy efficient.&lt;/p&gt;
+&lt;p&gt;The article mentions&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;Eine geringere Video-Auflösung spart immer Daten und damit
+Strom. Ein Smartphone etwa kann eine HD-Auflösung gar nicht
+darstellen.&amp;rdquo; Außerdem gelte: je größer der Bildschirm, etwa
+bei einem Smart-TV im Wohnzimmer, desto höher der
+Stromverbrauch. Fazit: HD-Filme auf dem Smartphone über das
+mobile Netz zu schauen, ist am stromintensivsten und damit am
+klimaschädlichsten.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;»&amp;ldquo;A smaller resolution saves data and power. A smartphone for
+example cannot show HD resolution&amp;rdquo;. Also, the larger the screen,
+the more power use. In total: Watching HD movies on a smartphone
+is the most energy intense and most climate endangering use.«&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s an amazing mix of truth and nonsense:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The smartphone will still use less than 5W, because it can&amp;rsquo;t
+fry itself.&lt;/li&gt;
+&lt;li&gt;And doing this at home via Wi-Fi will not use mobile
+infrastructure but whatever access point is in the house, so
+relatively low power (10W total for AP and phone?).&lt;/li&gt;
+&lt;li&gt;The smartphone can indeed show Full HD, because modern smartphone
+screens are in fact 1920x1280 or larger in resolution,&lt;/li&gt;
+&lt;li&gt;but you won&amp;rsquo;t be able to notice that, because the pixels at 450dpi or
+higher are too small for human eyes.&lt;/li&gt;
+&lt;li&gt;And all this is so obvious that Netflix knows this and won&amp;rsquo;t
+actually give you full HD for a smartphone endpoint. Unless of
+course you are streaming from the smartphone to a TV, in which
+case it does. You can prove this by downloading, and observing
+that a full episode of an 1h show comes down to &amp;lt;250 MB of
+total storage.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;data-center&#34;&gt;
+    &lt;a href=&#34;#data-center&#34;&gt;
+	Data Center
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Modern Cloud Data Centers are containing Megawatts and Megawatts
+of compute capacity
+(What&amp;rsquo;s a &lt;a href=&#34;https://www.google.com/search?q=1000000&amp;#43;Watt&amp;#43;in&amp;#43;Horse&amp;#43;Power&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Megawatt?&lt;/a&gt;
+
+),
+with a single facility now touching the
+&lt;a href=&#34;https://lifelinedatacenters.com/data-center/gigamom-the-era-of-the-100-mw-data-center/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;100 MW barrier&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Google specifically is using 100% renewable energy for their
+data centers,
+&lt;a href=&#34;https://sustainability.google/projects/announcement-100/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;since 2017&lt;/a&gt;
+
+,
+for a total of 2600 Megawatt. They are doing this by financing
+solar and wind facilities directly, and not through greenwashing
+certificates (&lt;a href=&#34;https://storage.googleapis.com/gweb-environment.appspot.com/pdf/renewable-energy.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;Azure claims to have reached CO2 neutrality in 2014, and also
+talks about Power Usage Effectiveness (We&amp;rsquo;ll be touching that
+subject in more depth below). In their
+&lt;a href=&#34;https://azure.microsoft.com/nl-nl/global-infrastructure/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dutch page&lt;/a&gt;
+
+
+they claim&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We hebben in 2014 CO2-neutraliteit bereikt en voldoen aan onze
+doelstelling om een gemiddelde PUE (Power Usage Effectiveness)
+van 1,125 voor elk nieuw datacenter te realiseren. Hiermee
+zitten we 30 procent boven het industriegemiddelde.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&amp;ldquo;We have reached CO2 neutrality in 2014 and reached our targets
+for power usage effectiveness of 1.125 for all new data centers.
+With this, we are 30% better than industry average.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Amazons energy page is &lt;a href=&#34;https://aws.amazon.com/about-aws/sustainability/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AWS &amp;amp;
+Sustainability&lt;/a&gt;
+
+
+and they claim more than 50% power from renewables, and commit
+to a 100% renewable goal for their global infrastructure.&lt;/p&gt;
+&lt;p&gt;Like all the other cloud providers, they also highlight the way
+lower PUE and much higher utilitzation of their servers compared
+to on-premises IT (65% vs. 15% average utilization, and 29%
+better power effectiveness, adding up to a 84% better overall
+power bilancing in their math).&lt;/p&gt;
+&lt;p&gt;They also list their ongoing solar and wind farm builds. For the
+amount of power usage they can&amp;rsquo;t yet cover from direct renewable
+sources, the page states &amp;lsquo;AWS purchases and retires
+environmental attributes, like Renewable Energy Credits and
+Guarantees of Origin, to cover the non-renewable energy we use
+in these regions&amp;rsquo;, making them overall CO2 neutral.&lt;/p&gt;
+&lt;p&gt;Finally, computer power usage is not linear: Power management on
+a data center CPU turns cores on and off as needed, and thus, a
+CPU uses already circa 50% power at 10% utilisation. From a cost
+and from an environmental perspective it is best to utilise any
+CPU to the fullest. Some older &lt;a href=&#34;https://blog.koehntopp.info/2017/07/19/threads-vs-watts.html&#34;&gt;measurements of mine&lt;/a&gt;
+
+ on this.&lt;/p&gt;
+&lt;h2 id=&#34;networking&#34;&gt;
+    &lt;a href=&#34;#networking&#34;&gt;
+	Networking
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The article from Deutsche Welle states correctly that the Last
+Mile is what counts. That is, because everything before the Last
+Mile is already fiber, and fiber lines allow extremely fast
+networking at relatively low energy.&lt;/p&gt;
+&lt;p&gt;Germany, specifically, is wasting a lot of energy on the last
+mile, because in order to make Germanys aging copper
+infrastructure capable of handling modern data rates, a stunning
+amount of signal processing is required.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/data-centers-and-energy/outdoor_dslam.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Siemens DSL DSLAM (not VDSL) as can be found in typical outdoor
+cabinets all over the city. VDSL requires even more compute to
+send Megabits/s over what is hardly better than a wet cow wire
+(Image via
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Digital_subscriber_line_access_multiplexer&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Wikipedia&lt;/a&gt;
+
+)&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.nokia.com/blog/vdsl2-and-gpon-study-finds-sweet-spots/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Nokia&lt;/a&gt;
+
+
+lists Fiber as 45% more cost efficient and way more energy
+efficient than VDSL2:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Copper infrastructure maintenance is typically the most costly
+of all network types. By comparison, GPON is significantly
+cheaper — upwards of 45% less to operate than VDSL2.&lt;/p&gt;
+&lt;p&gt;That’s why replacing aging copper plant with fiber has
+significant operational benefits. New fiber is more reliable
+than old copper while, at the same time, consumes much less
+energy. Also, with GPON operational costs are further reduced
+with the elimination of the digital subscriber line access
+multiplexer (DSLAM) from the access architecture.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.seeclearfield.com/assets/documents/data-sheets/clfd-odc-100-outdoor-cabinet.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Clearfield&lt;/a&gt;
+
+
+specifices the total installable power in their typical grey
+&amp;lsquo;outdoor VDSL cabinets&amp;rsquo; as up to 3000W, but most cabinets will
+not be fully powered to the max. German Telekom
+&lt;a href=&#34;https://en.wikipedia.org/wiki/File:Outdoor_DSLAM.JPG&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DSLAMs&lt;/a&gt;
+
+
+are being fed 48V/25A, around 1000W for the street level devices
+with four cards.&lt;/p&gt;
+&lt;p&gt;Moving this to fiber will dramatically save energy, and in fact,
+everywhere in the world outside of Germany this is happening
+right now.&lt;/p&gt;
+&lt;p&gt;Mobile data networks are indeed
+&lt;a href=&#34;https://www.lightreading.com/mobile/5g/power-consumption-5g-basestations-are-hungry-hungry-hippos/d/d-id/749979&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;great power sinks&lt;/a&gt;
+
+.
+If you can use cabled networking, do so.&lt;/p&gt;
+&lt;h2 id=&#34;modern-data-centers-and-power&#34;&gt;
+    &lt;a href=&#34;#modern-data-centers-and-power&#34;&gt;
+	Modern Data Centers and Power
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/rumperedis&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;John Laban&lt;/a&gt;
+
+ is an ambassador
+for the &lt;a href=&#34;https://www.opencompute.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Open Compute Project&lt;/a&gt;
+
+.
+Funded originally by Facebook, OCP is a project that tries to
+build more power efficient cloud data centers. In his
+&lt;a href=&#34;https://www.slideshare.net/JohnLaban/ocp-copenhagen-presentation-sept-2017&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;presentations&lt;/a&gt;
+
+,
+John explains how OCP achieves this by getting rid of old
+technology in the data center and making the room and the rack a
+system:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/data-centers-and-energy/traditional-data-center.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Traditional Data Centers: Dark Green - Payload. Everything else - Payload Support.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/data-centers-and-energy/ocp-data-center.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;OCP Data Centers: Dark Green - Payload. Still around: Generator, Airco is now adiabatic instead of CRAC. Everything else: gone.&lt;/p&gt;
+&lt;p&gt;OCP data centers redesign the air flow in the data center.&lt;/p&gt;
+&lt;p&gt;Traditionally data centers have a raised floor, which transports
+cold air to the racks, goes through the racks and is then cooled
+again. Air-in temperatures are often as low as 17-25C, and
+humidity is tightly controlled. OCP data centers allow
+non-condensing air of up to 35-45C to go into the servers, which
+does basically away with heat pumps and air condition and allows
+ambient temperature air to go into the DC.&lt;/p&gt;
+&lt;p&gt;Traditional servers have often a relatively low height (&amp;ldquo;1U&amp;rdquo;,
+one rack unit), which forces the designers to use relatively
+small fans, small heat sinks (== higher air flow speed necessary
+for cooling) and produces a lot of friction for the air in the
+devices. In a 350W server, the worst case I have personally
+observed is 50W for air movement.&lt;/p&gt;
+&lt;p&gt;OCP uses higher rack units (&amp;ldquo;OU&amp;rdquo;, Open Compute Units) and
+usually makes devices no flatter than 2 OU. Instead, horizontal
+partitions are used (3 devices in 2 OU) for a more square device
+front, minimising friction and allowing larger heat sinks. It
+also allows larger fans, with in turn allows moving the same
+volume of air with less RPM and a lot less power. Best cases I
+have personally observed were as low as 5-10W for a 350W server.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/data-centers-and-energy/ocp-server.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;OCP Server: 2 OU high, 1/3 Rack wide, less friction, larger
+coolers, no panels impeding airflow, larger fans = slower RPM =
+less energy for air movement. Can take up to 45C air-in
+(&amp;lsquo;ambient air intake&amp;rsquo;, no heat pump required for cooling).&lt;/p&gt;
+&lt;p&gt;OCP also improves power consumption by centralising power
+supplies in a rack (larger power supplies are usually more
+efficient), reducing the number of power conversions in the
+total power flow, and making uninterruptible power supplies more
+efficient.&lt;/p&gt;
+&lt;p&gt;Total OCP power savings vary by use-case and climate zone, but
+are usually 20-50%. South Korean Telekom tested OCP servers in a
+climate chamber with various settings
+(&lt;a href=&#34;https://www.youtube.com/watch?v=BBcFXAXXqRE#t=11m33s&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Testbed&lt;/a&gt;
+
+,
+&lt;a href=&#34;https://www.youtube.com/watch?v=BBcFXAXXqRE#t=14m30s&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Findings&lt;/a&gt;
+
+)
+and what really shows is how the OCP power consumption stays the
+same at all possible air-in temperatures while legacy equipment
+consumes a lot more power because it has to turn up the fans.&lt;/p&gt;
+&lt;h2 id=&#34;pue-power-usage-efficiency&#34;&gt;
+    &lt;a href=&#34;#pue-power-usage-efficiency&#34;&gt;
+	PUE, Power Usage Efficiency
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Power Usage Efficiency, PUE, is the ratio of total power
+consumption of a data center compared to power intake of the
+compute equipment. The overhead typically contains cooling, air
+movement, and power transformation losses.&lt;/p&gt;
+&lt;p&gt;The data center built by web.de in Amalienbadstraße, Durlach
+(Karlsruhe), had a PUE of 2.0 - for each Megawatt used for
+compute, another Megawatt was required for cooling and air
+movement. The reasons for that are manifold: The building
+itself, an old factory building built by Pfaff, had low ceilings
+forcing warm air back into the machines and forcing bad
+airflows. The hardware used had a lot of loss due to badly
+designed airflows. And the location of the data center, down in
+the valley of the river rhine instead of high up in the Black
+Forest, combined high ambient air temperatures with high air
+humidity, making evaporative or adiabatic cooling an
+inefficient option - compressive cooling with heat pumps
+was necessary.&lt;/p&gt;
+&lt;p&gt;More modern data traditional centers can achieve a design PUE as
+low as 1.2 and an effective operational PUE of 1.6. Rigidly
+optimized OCP data centers can go below 1.1 effective PUE (sic!)
+in good conditions. Google published their numbers in their
+&lt;a href=&#34;https://www.google.com/about/datacenters/efficiency/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PUE dashboard&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;All current cloud vendors deploy OCP equipment or (in the case
+of Microsoft) self-developed equipment that is
+comparable in efficiency. They also add additional special
+purpose hardware to their cloud offerings that allows offloading
+of common functionality from the sellable cores of their
+machines, in order to maximise sellable inventory, save power
+and, of course, increase utilisation.&lt;/p&gt;
+&lt;p&gt;All aspects of improved efficiency and utilisation included,
+cloud hardware often is 3x (or more) efficient than a traditional data center.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; A longer article by &lt;a href=&#34;https://twitter.com/jessfraz/status/1232847716964716544&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jessie Frazelle&lt;/a&gt;
+
+ on Data Center Energy use: &lt;a href=&#34;https://blog.jessfraz.com/post/power-to-the-people/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Power to the People&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; A study by Masanet, Koomey et al, &lt;a href=&#34;https://science.sciencemag.org/content/367/6481/984&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Recalibrating global data center energy-use estimates&lt;/a&gt;
+
+. The &lt;a href=&#34;https://twitter.com/jgkoomey/status/1233113568934907904&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;TL;DR is&lt;/a&gt;
+
+: »We find that computing output from data centers went up six fold from 2010 to 2018 but electricity use only went up 6%.« Masanet, Koomey et al have a second article, &lt;a href=&#34;https://www.nature.com/articles/nclimate1786&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Characteristics of low-carbon data centres&lt;/a&gt;
+
+&lt;a href=&#34;https://sci-hub.se/https://www.nature.com/articles/nclimate1786&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;.&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; I have been sent a &lt;a href=&#34;https://www.se.com/ww/en/work/campaign/data-center-design-overview/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;link to a writeup on data center planning considerations&lt;/a&gt;
+
+. While this was part of a SEO effort, the source (Schneider Electric) is competent - Scheider specializes in Data Center Design and Planning and Energy Systems - and the writeup is actually useful. The text gives a bit of insight into the process and the factors that go into site planning and choices. A lot depends on intended purpose, local climate, available space and power and ultimately also site size and building increments.&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Compared to technology from 10 years ago, in the data center we
+are now using a lot less energy and with cloud technology also
+have dramatically improved utilisation (ie use less hardware to
+achieve the same outcome). Also,
+all of this is green energy, mostly from actual green production
+and not grey-green with certificates. Cloud operators are some
+of the largest investors in Wind and Solar all over the world.&lt;/p&gt;
+&lt;p&gt;At home, savings are even larger, because we went from Desktop
+machines with abysmal power profiles to modern low power
+hardware which uses single digit wattages to produce results.&lt;/p&gt;
+&lt;p&gt;Networking, especially the last mile, especially mobile
+networking, especially 5G, is a power hog. The amount of signal
+processing that goes into 5G and VDSL is amazing. If you want
+low power networking, use fiber, maybe bridge the last 5 meters
+with Wi-Fi.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Spectre #2 Mitigation - Retpolines</title>
+      <link>https://blog.koehntopp.info/2018/02/26/spectre-2-mitigation-retpolines.html</link>
+      <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/02/26/spectre-2-mitigation-retpolines.html</guid>
+      <description>&lt;p&gt;Intel finally published a whitepaper about Spectre #2 Mitigation. The
+&lt;a href=&#34;https://software.intel.com/sites/default/files/managed/1d/46/Retpoline-A-Branch-Target-Injection-Mitigation.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
+
+
+is also featured on
+&lt;a href=&#34;https://news.ycombinator.com/item?id=16423401&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hacker News&lt;/a&gt;
+
+. It&amp;rsquo;s a technical
+whitepaper, but you can see the footprints of lawyers all over the
+language. For me, it basically says that, yes, Retpolines are indeed
+incompatible with Controlflow Enforcement Technology (CET) that Intel
+was planning for later CPUs
+(&lt;a href=&#34;https://software.intel.com/sites/default/files/managed/4d/2a/control-flow-enforcement-technology-preview.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
+
+,
+&lt;a href=&#34;https://www.theregister.co.uk/2016/06/10/intel_control_flow_enforcement/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;El Reg article&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;CET introduces a shadow stack for return addresses only, and will fail
+your code into an exception if the normal stack return address and the
+shadow stack address disagree. Trying to touch and manipulate the
+shadow stack will also fail into an exception. That is, CET makes
+touching a return address on the stack toxic by having in effect
+separate argument and return address stacks, and your code explodes
+every time you try to do something funny with return addresses. Which
+is what Retpolines depend on.&lt;/p&gt;
+&lt;p&gt;Intel also note that
+Retpolines also require Return Stack Stuffing in order to work
+properly, because otherwise RET will also speculate and the Retpoline
+will not work as intended. They also note that external events can
+interact with the Return Stack Buffer (RSB) and empty it and they
+don&amp;rsquo;t actually write but strongly imply that these external events are
+not a thing you have control over, as these are&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;There are also a number of events that happen asynchronously from normal
+program execution that can result in an empty RSB. Software may use “RSB
+stuffing” sequences whenever these asynchronous events occur:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Interrupts/NMIs/traps/aborts/exceptions which increase call depth.&lt;/li&gt;
+&lt;li&gt;System Management Interrupts (SMI) (see BIOS/Firmware Interactions).&lt;/li&gt;
+&lt;li&gt;Host VMEXIT/VMRESUME/VMENTER.&lt;/li&gt;
+&lt;li&gt;Microcode update load (WRMSR 0x79) on another logical processor of the same core.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The hardware you run on can either have a Spectre vulnerability and require
+Retpolines, or have CET and Hardware Spectre Mitigation, but not both. So
+you generate code for either one or the other, and they suggest
+instrumentation of the loader to patch all indirect jump callsites as
+required.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s not completely insane, as loaders already patch up jump instructions
+at load time.&lt;/p&gt;
+&lt;p&gt;They do note that virtual machines in clustered setups with life migration
+may be at a disadvantage here, as this is a load-time thing and hence you
+need to expose your worst CPU in a cluster as the virtual CPU to your VMs in
+order for this to work with migration. That&amp;rsquo;s already a requirement in
+heterogenous clusters, but still annoying.&lt;/p&gt;
+&lt;p&gt;All in all, this is basically disappointing to underwhelming.&lt;/p&gt;
+&lt;p&gt;The TL;DR is that Retpolines and CET are indeed incompatible, and ld.so is
+called to the rescue to patch up code at load time for one or the other. The
+ld.so thing is an interesting observation. It means that the code on disk
+and the code in memory differ in one more way.&lt;/p&gt;
+&lt;p&gt;As these things accumulate, the actual on-disk machine instructions mutate
+over time into a kind of virtual machine notation that on load is adjusted
+more and more to the needs of the actual machine it&amp;rsquo;s being executed on.
+Maybe a thing such as a JVM and a JIT is not the worst thing that has
+happened to us.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>A Journey to Open Compute</title>
+      <link>https://blog.koehntopp.info/2018/02/21/a-journey-to-open-compute.html</link>
+      <pubDate>Wed, 21 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/02/21/a-journey-to-open-compute.html</guid>
+      <description>&lt;p&gt;Yesterday, Booking.com hosted the Open Compute Meetup in
+Amsterdam. My talk is on Slideshare and a recording is on
+Youtube.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/Screen-Shot-2018-02-21-at-09.54.18.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.slideshare.net/isotopp/a-journey-to-ocp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Slideshare: A journey to OCP&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=c0Z32UsB5g0&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Youtube: A journey to OCP&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A cleaned up and more coherent transcript of the talk is here:
+&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.003.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Booking.com started out as a small online travel agency in
+Amsterdam, but is now financially about 15% of Google. We have
+about 200 offices in 70 countries, support 46 languages and
+reach about any touristically interesting spot on this planet.&lt;/p&gt;
+&lt;p&gt;We started out selling rooms on a comission basis, but since the
+Priceline Group of companies also includes Priceline for
+flights, Rentalcars for, well rental cars, and Open Table for
+restaurants, it makes sense to integrate that more and graduate
+from a Hotel Room marketplace to something more complete, a full
+trip or complete experience marketplace.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.004.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;At this point we have about 30k machines in 3 locations.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s commodity colo space, built to Uptime Institute Tier-3
+standards.&lt;/p&gt;
+&lt;p&gt;In that are mostly two-socket E5-type machines, and it&amp;rsquo;s at the
+two extreme ends of the spectrum, E5-2620&amp;rsquo;s and E5-2690&amp;rsquo;s. We
+would like to be able to run on the 2620 stuff completely, of
+course, but some parts of our application require the clock and
+the Oomph of the large CPUs. We are working on that.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.005-1.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The part of the workload that actually earns us money is mostly
+replacing strings taken from a database in HTML templates, we
+are a REP MOVSB company. That&amp;rsquo;s boring work, and that is good.&lt;/p&gt;
+&lt;p&gt;We try to keep stuff in memory where possible, especially where
+customer facing machines are affected. No disk reads, and no
+rotating storage in customer facing work.&lt;/p&gt;
+&lt;p&gt;There is more complicated stuff in the background. We are
+running the usual big data stuff with added deep learning on
+top, in image processing, fraud detection and in experimental
+user interfaces. We host a large scale data movement
+infrastructure with MySQL, Elasticsearch, Cassandra and Hadoop
+being involved.&lt;/p&gt;
+&lt;p&gt;We are trying very hard to be customer centric. Technology is
+seen as a necessity, but it&amp;rsquo;s forced upon us by scale. We&amp;rsquo;d
+rather focus on the hotel thing. :-)&lt;/p&gt;
+&lt;p&gt;A lot of stuff is recent, due to growth - Moore&amp;rsquo;s law also
+applies backwards. Speaking about growth:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.006.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;There are a few old numbers taken from quarterly public company
+performance reports, roomnights and hotels. But it could be
+about any metric at Booking, servers, requests, people working
+there, meals served in the canteen or sum of database requests -
+you would see the same curve.&lt;/p&gt;
+&lt;p&gt;On a log-Y scale it&amp;rsquo;s even nicer:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.007.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Some nice straight lines.If I were to draw the yearly increase
+in compute power as given by Moores law into this graph, you
+would see that this is also a mostly flat line, unfortunately
+one that is raising far slower that the other lines here.&lt;/p&gt;
+&lt;p&gt;For a scalability person like me it means a tough life.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.008.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Drawing the lines out naively sees us covering the earth in data
+centers by 2040 or so. That&amp;rsquo;s a problem, because where are we
+going to put the hotels?&lt;/p&gt;
+&lt;p&gt;Of course that&amp;rsquo;s not going to happen, but it underlines that we
+need to change our ways of handling stuff.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.009.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Currently, we are handling the hardware part &amp;ldquo;enterprise&amp;rsquo;y&amp;rdquo;. So
+we get space, build out the room, add racks, switches and
+chassis and then put hardware in.&lt;/p&gt;
+&lt;p&gt;That happens in waves, with different latency and mutual
+dependencies, and that can go wrong in many ways. On the other
+hand, it delays decisions and spending as long as possible. To
+us, being a very Dutch company with a very high volatility due
+to the growth, delaying such Capex as long as possible is
+attractive.&lt;/p&gt;
+&lt;p&gt;Once the Hardware is down, we are on top of things - we have a
+system of software components called ServerDB which basically
+enables full hardware lifecycle management, interfacing at the
+front with the Purchase Orders database, doing everything a user
+could want to do to a machine with API and Web Interfaces, and
+finalizing machine lifetime many times later with a
+decommissioning workflow.&lt;/p&gt;
+&lt;p&gt;ServerDB not only manages the hardware, it also has complete
+overview about all other assets, does the config management for
+switches, storage, collects power data and temperature
+information and links into monitoring, load balancer
+configuration and to puppet.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.010.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Using commercial colo space means many constraints. We are in
+small rooms, multiple 0.5MW sizes, and that creates a number of
+placement constraints and unwanted cabling requirements.&lt;/p&gt;
+&lt;p&gt;The power and cooling framework we have to live in is about
+7kW/rack, which is about half of what we want. Look at the
+image, that&amp;rsquo;s a blade center that has the potential to create
+6.4kW of power draw under full load, so you are looking at
+non-oversubscribed racks that are 10/40U full. That&amp;rsquo;s about knee
+high.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.011.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Here is a test run of a single blade from that bladecenter,
+where I am exercising all the cores as hard as possible,
+recording the power draw. We reach 50% power draw at 6/56 cores
+busy, and using the maximum power draw, times 16 blades, gives
+me a total load of 6.4kW from the whole enclosure.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.012.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Similarly, here is a rack of 32 machines (actually 40, but I got
+only 32 due to BMC instabilities), exercising at full power.
+These are hadoop units, and I can get them to consume 15kW in a
+7kW environment, hotspotting and oversubscribing hard.&lt;/p&gt;
+&lt;p&gt;Some constraints border on the ridiculous, but when we are
+receiving a monthly delivery in individual parts, we spam the
+unloading and docking areas of the data center with unpacking
+trash, making the other tenants quite angry. Also, the build
+times are getting unwieldy.&lt;/p&gt;
+&lt;p&gt;Finally, the BMC, which is our gateway into the machinery for
+ServerDB and it&amp;rsquo;s assorted tools, is a big problem.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.013.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;ServerDB contains an abstraction layer that tries to hide the
+various differences in functionality and API between the various
+kinds of machinery we have. We could do without that just fine,
+and Redfish is actually a partial fix to that.&lt;/p&gt;
+&lt;p&gt;Despite the fact that we do not use many features, still
+ServerDB utilizes Redfish, native vendor specific LOM
+functionality and ssh to get what it needs - Power control,
+Reset, and setting boot preferences, optionally firmware update
+and optionally partitioning and controller setup.&lt;/p&gt;
+&lt;p&gt;We collect metrics: power, temperature, cooling and faults, but
+that is purely read-only. Auditability is becoming more relevant&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;making config changes without a visible interruption of
+production is actually arguably a disadvantage, and all the
+recents security problems all the way down the stack are
+worrying us: BMC, ME and Microcode issues now.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Much of that is underdocumented, and there are way to many way
+too convenient ways to access this, from dedicated interfaces to
+shared interfaces to local gateways when you physically on the
+machine and have access to i2c buses or similar. The defaults
+are often insecure, the crypto is often outdated, and the client
+requirements are often insecure as well (&amp;ldquo;Install a Java version
+your security department will hate you for having on your
+machine.&amp;quot;).&lt;/p&gt;
+&lt;p&gt;So where do we got from here? What is required to graduate from
+this?&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.014.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Three issues need adressing: Going Rack Scale, Bringing volume
+up and Getting Rooms to match. Let&amp;rsquo;s look at each of these in
+turn.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.016.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;We started ordering hardware by the blade center chassis. That
+did good: It solves many of the trash issues, it streamlines the
+late provisioning phase where we are putting actual hardware
+into the rack. It&amp;rsquo;s limited by what can go into a chassis, and
+the chassis we are using are going to be discontinued.&lt;/p&gt;
+&lt;p&gt;We understand why that is necessary, but the direction that is
+going to is not what we want. We could do this more, and start
+to order by the rack. That has a few requirements that I will be
+adressing later, but if you are planning this, the choice is
+basically between Intel Rack Scale Design derivatives or Open
+Compute.&lt;/p&gt;
+&lt;p&gt;It gives you more design flexibility, and it may or may not
+retain the savings in power and cooling from shared
+power/cooling setup depending on what you do.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.017.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The Intel RSD solution is available in many vendor flavors, HP,
+Dell and Supermicro all have them. It gives you a Pod and a Rack
+controller not unlike a bladecenter chassis controller. On top
+of the functionality that ServerDB already offers, you get a
+chassis or rack-wide PCI bus, and composable hardware, where you
+can build physical machine configurations from CPU and storage
+modules in the rack.&lt;/p&gt;
+&lt;p&gt;Some companies like Dell even offer casings around the
+machinery, in the form of semi-transportable data centers.
+Unfortunately most of these solutions try to minimise space and
+maximise density, so they come with other constraints and design
+decisions that we are reluctant to take on - basically you have
+to live in units of 8x8x40 ft shipping containers, and that&amp;rsquo;s
+rather limiting.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s all nifty engineering, but all very vendor specific and
+bespoke, when we are really looking for bulk hardware, all as
+alike as possible, and with fewer features, not more. Having
+&lt;em&gt;no&lt;/em&gt; &lt;em&gt;differentiator&lt;/em&gt; is actually a feature we are looking for.
+Value add subtracts from the value from the value the machinery
+has for us. The actual value add happens higher up the stack, in
+software - in management for us that&amp;rsquo;s ServerDB and in
+production for us that is more or less Kubernetes or something
+that does what K8s does, but differently.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.018.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;And that&amp;rsquo;s exactly the sales promise from Open Compute. Clean,
+bare server designs without value add. Documented interfaces
+with source code available to read up on the details, so we can
+integrate our stuff without problems. Delivery by the rack, and
+on top of that, potential operational and capital savings, if
+you treat room and rack as a system.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.019.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Getting the volume up is the next important consideration, and
+if we are looking at our machine park, that&amp;rsquo;s going to be a
+problem.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.020.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;If you go into ServerDB and count machine profiles, it goes up
+to 11: blade 9 and two additional blade2 variants. Actually
+digging into this yields basically &amp;lsquo;large and small&amp;rsquo; CPU configs
+and memory configs, but lots of different local storage options.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.021.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The answer is, to quote Jello Biafra, obvious: Ban Everything!
+In our case, local storage. So we disaggregate:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.022.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;In a rack design where we give a 2 OU, 500 W, 100 GBit slot to
+the storage people and provide un-RAID-ed 2 TB local SSD as the
+only storage option, we have to build a network to match this.
+We are anticipating more east-west traffic from storage
+replication and east-west traffic from storage acess. All of
+that is happening front-side, production, on regular TCP/IP.&lt;/p&gt;
+&lt;p&gt;But that means I have only one network topology to scale and
+maintain, and I have no longer placement constraints for
+workloads: I can build uniform compute, and demand &amp;ldquo;no local
+persistence&amp;rdquo;. If you wan to keep your MySQL datadir, put it on
+iSCSI, RoCE or NVME via TCP and be done with it. It will be the
+size and have the properties you require, it will be at least on
+par with local SSD and it will still be there when your machine
+dies and you are rescheduling to another spare machine elsewhere
+in another rack.&lt;/p&gt;
+&lt;p&gt;With Kubernetes on top, you get application mobility,
+resiliency, and capacity size adjustment, which is fine, because
+even the smallest Silver 4110 is going to be too large for most
+units of deployment (in Java, consider 8 cores, 16 GB of RAM to
+be a limit, for example).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.023.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Being able to pull that off will give us 4 profiles or fewer,
+disk made to measure as requested, location independence for
+applications, and the ability to upgrade hardware without
+interfering with the workload. I can evacuate a rack, do my
+thing and put it back into service. Also, I can interchange the
+components of my machinery independently: storage, memory,
+compute and the networking parts are separate and can be on
+different renewal cycles. All of that bound together by on
+single TCP/IP network, not some bespoke PCI or FC/AL stuff.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.024.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Assuming I all have that, I will need rooms to match the rack in
+order to fully leverage the advantages of Open Compute.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.025.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Open Compute hardware is built to be able to run in a barn:
+concrete floor, air-in of up to 35 or 40 deg Centigrade,
+hot-aisle containment, all service from the front because data
+center operations engineers cannot survive in the hot aisle, and
+we can do away with most of the equipment that is part of a
+Tier-3 spec.&lt;/p&gt;
+&lt;p&gt;It is being said that 1 MW of Tier-3 spec costs about 10 million
+for the empty building shell, and that we can get OCP space
+built for 2.5 Million/MW according to Facebook. I will be happy
+if I can get space for half of the Tier-3 cost or less.&lt;/p&gt;
+&lt;p&gt;Non of these savings will materialize if you put OCP into a
+traditional Tier-3 building - the power path is not simplified,
+the air-in is overcooled and the airco is overdesigned in order
+to achive the overcooling which we do no longer require, so the
+actual PUE is actually way worse than what we could have from an
+OCP compliant data center.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.026.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;We do get Tier-3 space easily, though. That is because it is
+being built without a buyers name on the constract. Buyers and
+sellers meet later, and that is possible over the Tier-3 spec
+from Uptime.&lt;/p&gt;
+&lt;p&gt;The result is a two sided market, where demand and supply are
+anonymous, unknown at the time the supply is being built.&lt;/p&gt;
+&lt;p&gt;That is not possible at the moment with Open Compute, because
+the spec is lacking, not well known to builders and the demand
+is not worth building for it. If you need or want OCP compliant
+space, that&amp;rsquo;s a larger commitment, because the space is being
+built for you, and you will need to keep it for the building
+lifetime.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.027.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;So having an OCP compliant data center build spec for OCP
+hardware is important to make OCP attractive to smaller
+deployments. They do need the quick availability and higher
+flexibility of prebuilt space, because that&amp;rsquo;s lowering the
+height of the commitment and provides fewer operative
+distractions. There is risk for the space provider, so it&amp;rsquo;s
+certainly higher cost than a data center build to spec for one
+named entity, but that&amp;rsquo;s probably worth it. For a deployment our
+size, there is still the problem of many 0.5MW rooms or similar,
+capacity fragmentation, but for a more normal sized company
+that&amp;rsquo;s actually a non-issue. They can be happy in these spaces.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/ocp.028.jpeg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;So to sum it up again: How can OCP work on non-hyperscaler
+scales? Provide a two sided market for DC space over a shared
+spec, then put hardware in there that matches what the room
+provides. This creates operational and capital savings from
+leveraging the room and the rack as a system that is mutually
+dependent and built for each other.&lt;/p&gt;
+&lt;p&gt;Then, once you have stuff in there, have an ecosystem that uses
+the documented machine interfaces, all of them interchangeable
+and interoperable. Have an ecosystem of open source management
+modules like ServerDB for management and Kubernetes for
+production, built on top of that, in order to bring utilisation
+up and management cost down.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Swap and Memory Pressure: How Developers think to how Operations people think</title>
+      <link>https://blog.koehntopp.info/2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.html</link>
+      <pubDate>Mon, 22 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.html</guid>
+      <description>&lt;p&gt;There is a very useful and interesting article by Chris Down:
+&amp;ldquo;&lt;a href=&#34;https://chrisdown.name/2018/01/02/in-defence-of-swap.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;In defence of swap: common misconceptions&lt;/a&gt;
+
+&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Chris explains what Swap is, and how it provides a backing store of
+anonymous pages as opposed to the actual code files, which provide backing
+store for file based pages. I have no problem with the information and
+background knowledge he provides. This is correct and useful stuff, and I
+even learned a thing about what cgroups can do for me.&lt;/p&gt;
+&lt;p&gt;I do have a problem with some attitudes here. They are coming from a
+developers or desktop perspective, and they are not useful in a data center.
+At least not in mine. :-)&lt;/p&gt;
+&lt;p&gt;Chris writes:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Swap is primarily a mechanism for equality of reclamation, not for
+emergency “extra memory”. Swap is not what makes your application slow –
+entering overall memory contention is what makes your application slow.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;And that is correct.&lt;/p&gt;
+&lt;p&gt;The conclusions are wrong, though. In a data center production environment
+that does not suck, I do not want to be in this situation.&lt;/p&gt;
+&lt;p&gt;I see it this way:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If I am ever getting into this situation, I want a failure, I want it fast
+and I want it to be noticeable, so that I can act on it and change the
+situation so that it never occurs again.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;That is, I do not want to survive. I want this box to explode, others to
+take over and fix the root cause. So the entire section »Under temporary
+spikes in memory usage« is a DO NOT WANT scenario.&lt;/p&gt;
+&lt;p&gt;Chris also assumes a few weird things, from a production POV: He already
+states that&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you have a bunch of disk space and a recent (4.0+) kernel, more swap is
+almost always better than less. In older kernels kswapd, one of the kernel
+processes responsible for managing swap, was historically very overeager
+to swap out memory aggressively the more swap you had.
+and production sadly is in many places still on pre-4.0 kernels, so don&amp;rsquo;t
+have large swap.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;He also mentions&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As such, if you have the space, having a swap size of a few GB keeps your
+options open on modern kernels. […] What I’d recommend is setting up a few
+testing systems with 2-3GB of swap or more, and monitoring what happens
+over the course of a week or so under varying (memory) load conditions.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Well, I have production boxes with 48 GB, 96 GB or even 192GB of memory. &amp;ldquo;A
+few GB of swap&amp;rdquo; aren&amp;rsquo;t going to cut this. These are not desktops or laptops.
+Dumping or loading, or swapping 200GB of core take approximately 15 minutes
+on a local SSD, and twice that time on a rotating disk, though, so I am not
+going to work with very large swaps, because they can only be slower than
+this. I simply cannot afford critical memory pressure spikes on such a box,
+and as an Ops person, I configure my machines to not have them, and if they
+happen, to blow up as fast as possible.&lt;/p&gt;
+&lt;p&gt;What I also would want is better metrics for memory pressure, or just the
+amount of anon pages in the system.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Determination of memory pressure is somewhat difficult using traditional
+Linux memory counters, though. We have some things which seem somewhat
+related, but are merely tangential – memory usage, page scans, etc – and
+from these metrics alone it’s very hard to tell an efficient memory
+configuration from one that’s trending towards memory contention.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I agree on this. I wonder if there is a fast and lock free metric that I can
+read that tells me the amount of unbacked, anon pages per process and for
+the whole system? One that I can sample in rapid succession without locking
+up or freezing a system that has 200GB of memory in 4 KB pages (the metric
+can be approximate, but reading it must not lock up the box).&lt;/p&gt;
+&lt;p&gt;I think the main difference Chris and I seem to have on fault handling - I&amp;rsquo;d
+rather have this box die fast and with a clear reason than for it trying to
+eventually pull through and mess with my overall performance while it tries
+to do that.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Power budgets for computing resources - portable and stationary</title>
+      <link>https://blog.koehntopp.info/2017/11/07/power-budgets-for-computing-resources-portable-and-stationary.html</link>
+      <pubDate>Tue, 07 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/11/07/power-budgets-for-computing-resources-portable-and-stationary.html</guid>
+      <description>&lt;h3 id=&#34;fanless-devices&#34;&gt;
+    &lt;a href=&#34;#fanless-devices&#34;&gt;
+	Fanless devices
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;A cellphone or tablet is a fanless device. So is the 12&amp;quot;
+Macbook. That means you can do whatever is possible at any point
+in time within a
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Thermal_design_power&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;TDP&lt;/a&gt;
+
+ of
+approximately 5W.&lt;/p&gt;
+&lt;p&gt;Here is the power consumption of my cellphone over a 12h period.
+The scale on the left is mW, down is discharge, up is recharge
+(plugged in). It&amp;rsquo;s basically limited to 5W, and that only for
+short periods of time.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/11/power-budget.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+]&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Cellphone power over time. Green bar = plugged in. Yellow bar =
+Screen on.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;These devices also have batteries, and when they are running on
+batteries, they need to be sleeping most of the time and have
+their display off. Whenever they are not dark and/or sleeping,
+they drain the battery, fast.&lt;/p&gt;
+&lt;p&gt;These two facts are the reason why most people playing Ingress
+have done so in Fall and Winter, and why they all have cabled up
+enormous power banks to their equipment. That&amp;rsquo;s also why your
+cellphone used for navigation will reboot after an hour or two
+of driving, unless you remove the protective bumper and put the
+holder into the airflow of the dash vent. Also, white devices
+are better than dark devices on sunny days on the Autobahn.&lt;/p&gt;
+&lt;h3 id=&#34;laptops-with-active-ventilation&#34;&gt;
+    &lt;a href=&#34;#laptops-with-active-ventilation&#34;&gt;
+	Laptops with active ventilation
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Your laptop probably has a fan. Mine does. It is still mostly
+idle, but it is easily out of the TDP for fanless devices.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/11/Screen-Shot-2017-11-07-at-12.34.50.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;This machine is currently drawing 12.1W. The fans are hardly
+moving.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;If I want to test what this machine could use, I could start a
+game. Most games are busy waiting event loops, that is, they
+keep the machine as busy as possible, and they are also
+exercising all the 3D circuitry in the box quite well. My laptop
+will never exceed 40W or so, doing this.&lt;/p&gt;
+&lt;h3 id=&#34;gaming-machines&#34;&gt;
+    &lt;a href=&#34;#gaming-machines&#34;&gt;
+	Gaming machines
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The gaming box underneath the desk is another matter. The
+graphics card is supposed to eat
+&lt;a href=&#34;http://www.tomshardware.com/reviews/nvidia-geforce-gtx-1070-8gb-pascal-performance,4585-7.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;about 75W under load&lt;/a&gt;
+
+,
+the rest of the box probably as much. Thankfully, it has large
+10cm fans that turn slowly, so it&amp;rsquo;s not as noisy.&lt;/p&gt;
+&lt;h3 id=&#34;data-center-servers&#34;&gt;
+    &lt;a href=&#34;#data-center-servers&#34;&gt;
+	Data center servers
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Large servers in a data center usually have one or two Xeon type
+CPUs, and depending on the kind of servers, some also have a
+small two digit number of harddisks.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/11/hadoop.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A rack full of Hadoop servers&lt;/p&gt;
+&lt;p&gt;These machines clock in at between 200-350W per server, and the
+power consumption is very
+&lt;a href=&#34;https://blog.koehntopp.info/2017/07/19/threads-vs-watts.html&#34;&gt;much dependent on what the machine is doing&lt;/a&gt;
+
+.
+I can make these devices use up to 400W using
+&lt;a href=&#34;https://www.mersenne.org/download/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mprime95&lt;/a&gt;
+
+ in torture test
+mode.&lt;/p&gt;
+&lt;p&gt;You can build mining rigs for Bitcoin, or rigs for machine
+learning. These things can become incredible hotspots, because
+each graphics card you add will contribute a three digit number
+of watts to your build. Interesting and extreme setups with up
+to 40.000 Watt per rack exist. They are very rare, and since you
+need to feed them a lot of power, also expensive to keep
+running.&lt;/p&gt;
+&lt;p&gt;A rack with more than some 12kW to 14kW active in it will need
+water cooling. That complicates things, because you probably
+want the lowest disk in that rack to be higher than the highest
+drop of water, so placement constraints complicate the design.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TL;DR:&lt;/strong&gt; You process bytes. Things heat up. Depending on where
+you are, things will heat up so much that it is actually
+limiting what you can do. As technology improves, you can
+probably do more things with less heat, but it will still
+register.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Monitoring - the data you have and the data you want</title>
+      <link>https://blog.koehntopp.info/2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html</link>
+      <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html</guid>
+      <description>&lt;p&gt;So you are running systems in production and you want to collect data from
+your systems. You need to build a monitoring system. That won&amp;rsquo;t work and it
+won&amp;rsquo;t scale. So please stop for a moment, and think. What kind of monitoring
+do you want do build? I know at least three different types of monitoring
+system, and they have very different objectives, and consequently designs.&lt;/p&gt;
+&lt;h2 id=&#34;three-types-of-monitoring-systems&#34;&gt;
+    &lt;a href=&#34;#three-types-of-monitoring-systems&#34;&gt;
+	Three types of Monitoring Systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The first and most important system you want to have is checking for
+incidents. This &lt;strong&gt;Type 1&lt;/strong&gt; monitoring is basically a &lt;strong&gt;transactional
+monitoring system&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;You want to monitor a production system and you need to know if things are
+okay-ish. If not you want to get a notification about that. The notification
+should be actionable, be acted on, acknowledged and then you are done. It
+can be deleted, and it is important that it is deleted from &lt;em&gt;this&lt;/em&gt; system.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You want this system to be highly available. Highly available systems are
+a lot easier to build if they are small, don&amp;rsquo;t have many requirements and
+don&amp;rsquo;t come with scaling overhead.Ideally, this thing is so small and
+self-contained that it can fit on a USB stick. In an incident, you can
+plug it into any machine and turn that into a monitoring host, gaining the
+necessary visibility that enables you to rebuild the entire data center
+from a complete outage.&lt;/li&gt;
+&lt;li&gt;You want this system to be fast, the monitoring data to be fresh. Since
+this is the system that informs you that you are on fire right now, the
+time span between a thing actually happening and the point in time you
+know about this thing happening by the way of the monitoring system must
+be as small as possible.That is, you want the monitoring lag to be small,
+and to be visible so that people are aware of the fact that the view into
+a past state of the system.&lt;/li&gt;
+&lt;li&gt;You want the system size to be stable. That is, for a fixed size of
+installations and a fixed set of metrics, as time goes by, the system size
+on disk or in memory should not grow out of bounds.Systems that grow over
+time without an upper limit have a data collection and retention inside.
+They are Type 1 systems with a Type 2 system on the inside. If you just
+wait, they will die from bloat.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In database terms, you can think of the Type 1 monitoring as an OLTP or
+transactional system: As an incident is detected, an alert is created, a
+human is acting on the alert and eventually closing it, removing the cause.
+As the alert is over, the transaction is done and can be purged from this
+system.&lt;/p&gt;
+&lt;p&gt;Because it&amp;rsquo;s purged, the system size is finite and it does not grow out of
+bounds due to log-keeping. There may be an ETL process that extracts
+finished alerts, transforms them into another representation and loads them
+into another system for record-keeping. Examples for Type 1 monitoring
+systems are Nagios and other host checkers, most of which are broken from a
+modern point of view, and &lt;a href=&#34;https://prometheus.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Prometheus&lt;/a&gt;
+
+ as a much
+more modern and less broken implementation.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;Type 2&lt;/strong&gt; system is one that keeps records for a long time, it&amp;rsquo;s
+&lt;strong&gt;data warehousey&lt;/strong&gt;. These systems are not actually alerting, they are used to be
+able to validate service level objectives (&amp;ldquo;Have we kept the promises we
+made&amp;rdquo;), to identify recurring problems (&amp;ldquo;What&amp;rsquo;s the most common kind of
+problem we encounter across the entire fleet?&amp;quot;), and to do capacity planning
+(&amp;ldquo;Given past growth, when will we be running out of steam? What&amp;rsquo;s the amount
+of runway we have left?&amp;quot;).&lt;/p&gt;
+&lt;p&gt;A data warehousey system can typically be down for two or three days.
+Somebody will grumble, but a loss of availability is usually not immediately
+catastrophic. Also, these systems can become tremendously large, and are
+usually distributed. Examples of such systems are large long term storage
+Graphite or Influx storages, &lt;a href=&#34;http://druid.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Druid.io&lt;/a&gt;
+
+ and other massive
+TSDB storages.&lt;/p&gt;
+&lt;p&gt;And finally, the &lt;strong&gt;Type 3&lt;/strong&gt; is the thing that you actually use to understand
+what is on fire in which way precisely when you get an alert from a Type 1
+system. It&amp;rsquo;s a &lt;strong&gt;debug system&lt;/strong&gt; , not a time series collector in the first
+place. Often it&amp;rsquo;s not a system at all, but your ass in an ssh over there
+running strace, but
+&lt;a href=&#34;https://blog.koehntopp.info/2017/04/20/understanding-sysdig.html&#34;&gt;sysdig&lt;/a&gt;
+
+ is
+a much more sophisticated way of doing that in a modern environment. It is
+important to understand the differences between the alerting OLTP system,
+the trend collecting data warehouse system and the debug system:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The first two systems have incompatible, antagonistic requirements. What
+you build can be either small, highly available, stable in size, and cheap
+to setup - or it can be scaleable, humongous but then it&amp;rsquo;s likely not
+cheap to setup and certainly not small.&lt;/li&gt;
+&lt;li&gt;The first two systems should be collecting time stamped series of
+numerical metrics, and we still need to talk about these, while the third
+system, the debug system collects structured data that is not necessarily
+numerical.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That means your organisation and you will for sure have more than one
+monitoring system. Ideally, in a modern and containerised environment, you
+will have Prometheus for Type 1 monitoring. In fact, each team will have
+their own Prometheus for their own services, and you will have
+&lt;a href=&#34;https://prometheus.io/docs/operating/federation/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Prometheus Federation&lt;/a&gt;
+
+ to build a
+data flow that collects data from individual per-team sub-monitors to a
+centralised alerting dashboard. You will need a different system for long
+term data storage, it&amp;rsquo;s something else as a Type 2 system. You may want to
+pump data from the Type 1 to the Type 2 system for all things that you want
+to keep long term records of. But you need to be as comfortable with any of
+the Type 1 systems losing historical data at any time as you need to be
+comfortable with the Type 2 system to be offline for some amount of time.&lt;/p&gt;
+&lt;h2 id=&#34;data-intervals-and-percentiles&#34;&gt;
+    &lt;a href=&#34;#data-intervals-and-percentiles&#34;&gt;
+	Data, Intervals and Percentiles
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;It is important to understand what&amp;rsquo;s a good metric to collect. A good metric
+describes something actionable that says something about the system under
+monitoring. If you think that through, what you want to monitor is the user
+experience, so in the end what you will be collecting is in many cases a
+latency, the time it takes for a system to respond, or a capacity (&amp;lsquo;does
+have enough compute/storage to serve&amp;rsquo;).&lt;/p&gt;
+&lt;p&gt;Because a system that is too slow to respond may technically not be offline,
+but it is as useless as a system that is offline, or worse. So what you
+define is usually a list of maximum response times to certain queries and
+percentages of times in a certain period in which these limits have to be
+met. And a list of capacity limits that the system must meet.&lt;/p&gt;
+&lt;p&gt;In both cases what you get as a metric is a series of time stamped numeric
+measurements. And since you want to check &amp;lsquo;How many measurements in a time
+bucket have been meeting my limits?&amp;rsquo; (&amp;lsquo;How many requests in relation to the
+total number of requests in the last minute have taken longer than 250ms to
+process?&#39;) you need to deal with percentiles.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=lJ8ydIuPFeU&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Yeah, like this&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;So, Spikes. How loaded is your network? Well, every network link at any
+single point in time is either completely busy (because a bit is being
+transmitted) or completely idle (because no transmission happens). It&amp;rsquo;s
+digital, there is no 43% busy link, ever, in any place on this planet.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s useless.&lt;/p&gt;
+&lt;p&gt;So over the last second, how many bit-slots have been idle and how many
+bit-slots have been busy? Well, it&amp;rsquo;s a 10 Gbit/s link, and we have been
+sending one and a quarter Megabyte in the last second, so that was one
+Gigabit. That link was 10% busy in the last second. It was also 1% busy in
+the last ten seconds, because it has been idle the 9 seconds before the last
+one, and it was 100% busy in the last tenth of a second and idle in the nine
+Tenths of a second before that.&lt;/p&gt;
+&lt;p&gt;That was a Spike.&lt;/p&gt;
+&lt;p&gt;If we were collecting samples, or network interface byte counters, every
+second, we would see a 10% busy link. If we were collecting our counters
+only once per 10 seconds it would be 1% busy.&lt;/p&gt;
+&lt;p&gt;If we plotted that, the two situations would be looking like two completely
+different scenarios - one would be a clearly visible spike, the other would
+be an invisible bump. So bucket sizes and percentiles matter, quite a bit.&lt;/p&gt;
+&lt;p&gt;Unfortunately, most data sources don&amp;rsquo;t provide us with that. Imagine a
+router from which you want to collect link utilisation statistics by the way
+of reading network counters, and turning them into bytes/s readings.&lt;/p&gt;
+&lt;p&gt;Things like Graphite have
+&lt;a href=&#34;http://graphite.readthedocs.io/en/latest/functions.html#graphite.render.functions.nonNegativeDerivative&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a function for that&lt;/a&gt;
+
+,
+and there are rules on
+&lt;a href=&#34;http://www.jilles.net/perma/2013/08/22/how-to-do-graphite-derivatives-correctly/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;how to use that function correctly&lt;/a&gt;
+
+.
+Other things, like Diamond,
+&lt;a href=&#34;https://github.com/python-diamond/Diamond/issues/663&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;fuck your data up&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Collect counters, turn them into rates when you need them. Then, how often
+are you going to read your counters? If you do it too rarely, you get widely
+spaced metrics and you won&amp;rsquo;t be able to see spikes as spikes. They get
+spread out across the sampling interval, and consequently are flattened.
+If you do it too often, you spam the network and the device, ultimately with
+the metric collection becoming a measurable load in itself.&lt;/p&gt;
+&lt;p&gt;Well, a device could provide readings in a batch. So instead of reading a
+byte/s counter once a second, you could get the measurements for the last 60
+one-second intervals every minute - the preferable solution. Or the device
+could pre-aggregate (and that would be rates, not counters) - it could tell
+you how many of the one-second buckets of the last minute were in the 0-50%
+busy bucket, the 50-90% bucket, the 90-99% bucket, the 99-99.9% bucket and
+so on (complicated, and also not as good as getting counters in a batch).&lt;/p&gt;
+&lt;p&gt;So far I know of no devices that actually are capable of doing this
+properly, so many people turn up the sampling rate to insane when they are
+hunting spikes. Not a good situation.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An abundance of IOPS and Zero Jitter</title>
+      <link>https://blog.koehntopp.info/2017/07/26/an-abundance-of-iops-and-zero-jitter.html</link>
+      <pubDate>Wed, 26 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/07/26/an-abundance-of-iops-and-zero-jitter.html</guid>
+      <description>&lt;p&gt;Two weeks ago, I wrote about
+&lt;a href=&#34;https://blog.koehntopp.info/2017/07/07/the-data-center-in-the-age-of-abundance.html&#34;&gt;The Data Center in the Age of Abundance&lt;/a&gt;
+
+
+and claimed that IOPS are - among other things - a solved problem.&lt;/p&gt;
+&lt;p&gt;What does a solved problem look like?&lt;/p&gt;
+&lt;p&gt;Here is a benchmark running 100k random writes of 4K per second, with zero
+Jitter, at 350µs end-to-end write latency across six switches. Databases
+really like reliably timed writes like these. Maximum queue depth would be
+48, the system is not touching
+that.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/pure-storage1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;and here is iostat on the iSCSI client running the test&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/pure-storage2-1024x238.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;100k random writes, 4k write size, inside a 2 TB linux file of random data,
+on a 15 TB filesystem with XFS, on an LVM2 volume provided by iSCSI over a
+single 10 GBit/s interface, with six switch hops between the linux client
+and the array.&lt;/p&gt;
+&lt;p&gt;The array claims 150µs latency, on the linux we measure around 350µs. Out of
+that, there are less than 50µs from the switches and 150µs or more from the
+Linux storage stack (and that is increasingly becoming an issue).&lt;/p&gt;
+&lt;p&gt;Tested product was a &lt;a href=&#34;https://www.purestorage.com/products/flasharray-x.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Purestore Flasharray-X&lt;/a&gt;
+
+,
+client was Dell PowerEdge R630, 2x E5-2620v4, 128G, 10GBit/s networking.&lt;/p&gt;
+&lt;p&gt;Thanks, Peter Buschman!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Threads vs. Watts</title>
+      <link>https://blog.koehntopp.info/2017/07/19/threads-vs-watts.html</link>
+      <pubDate>Wed, 19 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/07/19/threads-vs-watts.html</guid>
+      <description>&lt;p&gt;So I have been testing, again. My hapless test subject this time is a Dell Box, an R630. It has a comfortable 384GB of memory, one of two 25 GBit/s ports active, and it comes with two &lt;a href=&#34;http://ark.intel.com/products/91770/Intel-Xeon-Processor-E5-2690-v4-35M-Cache-2_60-GHz&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;E5-2690v4&lt;/a&gt;
+
+ CPUs. That gives it 14 cores per die, 28 cores in total, or with hyperthreading, 56 threads.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat /proc/cpuinfo &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;s1&#34;&gt;&amp;#39;model name&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; uniq -c 
+&lt;span class=&#34;go&#34;&gt;56 model name : Intel(R) Xeon(R) CPU E5-2690 v4 @ 2.60GHz 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./mprime -v 
+&lt;span class=&#34;go&#34;&gt;Mersenne Prime Test Program: Linux64,Prime95,v28.10,build 1 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I have not been nice, because I have been abusing the box with &lt;a href=&#34;https://www.mersenne.org/download/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mprime95&lt;/a&gt;
+
+ in Torture Test Mode, trying to make it consume as much power as possible.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat prime.txt 
+&lt;span class=&#34;go&#34;&gt;V24OptionsConverted=1 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;WGUID_version=2 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;StressTester=1 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;UsePrimenet=0 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;MinTortureFFT=8 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;MaxTortureFFT=64 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;TortureMem=0 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;TortureTime=3 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;TortureThreads=56 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[PrimeNet] 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Debug=0 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Running this with variable values for TortureThreads allows me to learn the impact of CPU usage on power consumption. When Idle, the box consumes 170W, because we basically prevented it from sleeping. When busy, it’s some 406 to 420W.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/power-reading.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Running at almost full power.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;And the power consumption is not linear. Well, it is up to 28 Threads, and
+then more or less plateaus.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/watt.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Watt used, by number of threads busy.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;From 170W idle to 406W at 28 Threads busy, then basically static for the rest.&lt;/p&gt;
+&lt;p&gt;If you think about this, it makes a lot of sense. At 28 Threads busy, all the physical cores are being kept busy by &lt;code&gt;mprime95&lt;/code&gt;, which is very much architecture and topology aware.&lt;/p&gt;
+&lt;p&gt;It analyzes which Threads are located on which Cores and Dies, and then sets itself up with CPU affinity for maximum utilization. So at 28 Threads busy (50% full capacity) we are already pretty much at full power consumption.&lt;/p&gt;
+&lt;p&gt;Unfortunately, conversely this looks not as nice:&lt;/p&gt;
+&lt;p&gt;If you define the full power usage at 420W and want to spend only half of that, 210W, you will reach that point at around 4-6 Threads busy - about 10% of the potential compute already consume 50% of the power.&lt;/p&gt;
+&lt;p&gt;Another way to think about it is Watt per Thread:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/watt-thread.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Watts per Thread.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;A nice hockey stick. Inflection point is around 6 cores. Things are becoming interesting, from a bang/buck perspective, if the box is at load 6 or higher at all times. From a data center planning perspective, it becomes clear that there is no way to make thermally oversubscribing racks financially attractive.&lt;/p&gt;
+&lt;p&gt;It is better to build for full thermal utilisation without oversubscription, and then make sure the boxes are always as busy as possible. Computation past a base load of 6 is basically available for free from a power/cooling point of view.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Post like it is 2015</title>
+      <link>https://blog.koehntopp.info/2017/02/14/post-like-its-2015.html</link>
+      <pubDate>Tue, 14 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/02/14/post-like-its-2015.html</guid>
+      <description>&lt;p&gt;Following a great idea from their friends at GitLab, Soup.io loses all
+postings since 2015 because of malfunctioning backups.
+&lt;a href=&#34;http://updates.soup.io/post/595821153/Update-after-crash&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;They write&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We had a big database crash, and the backups we had were corrupted. The
+only working backup was from 2015.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Also, TIL soup.io still exists.&lt;/p&gt;
+&lt;p&gt;Meanwhile, Gitlab posted a &lt;a href=&#34;https://codeascraft.com/2012/05/22/blameless-postmortems/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;blameless postmortem&lt;/a&gt;
+
+. You
+can &lt;a href=&#34;https://about.gitlab.com/2017/02/10/postmortem-of-database-outage-of-january-31/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;read it online&lt;/a&gt;
+
+,
+and they write:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Improving Recovery Procedures&lt;/strong&gt; […] 9. Automated testing of recoveri
+PostgreSQL database backups
+(&lt;a href=&#34;https://gitlab.com/gitlab-com/infrastructure/issues/1102&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;#1102&lt;/a&gt;
+
+) […]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Does your database backup successfully restore? Are you sure? Are you
+testing this? Remember these words of wisdom:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Nobody wants backup. Everybody wants restore. &amp;ndash; Martin Seeger&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Nobody wants backup. Everybody wants restore.</title>
+      <link>https://blog.koehntopp.info/2017/02/01/nobody-wants-backup-everybody-wants-restore.html</link>
+      <pubDate>Wed, 01 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/02/01/nobody-wants-backup-everybody-wants-restore.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/mysql-backup-and-recovery-15-638.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Operations matter. I know the Hipster crowd does not like to
+hear that, cloud or not. But reality has a way of making itself
+heard, whether you like it or not.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.google.com/document/d/1GCK53YDcBWQveod9kfzW-VCxIABGiryG7_z_6jHdVik/pub&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gitlab.com just discovered that.&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;So some sysadmin deleted the wrong folder, which in itself
+should not be a problem.&lt;/p&gt;
+&lt;p&gt;But in the process of trying
+to restore things, the following discoveries have been made:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LVM snapshots are by default only taken once every 24 hours.
+YP happened to run one manually about 6 hours prior to the
+outage&lt;/li&gt;
+&lt;li&gt;Regular backups seem to also only be taken once per 24 hours,
+though YP has not yet been able to figure out where they are
+stored. According to JN these don’t appear to be working,
+producing files only a few bytes in size.&lt;/li&gt;
+&lt;li&gt;SH: It looks like pg_dump may be failing because PostgreSQL
+9.2 binaries are being run instead of 9.6 binaries. This
+happens because omnibus only uses Pg 9.6 if data/PG_VERSION
+is set to 9.6, but on workers this file does not exist. As a
+result it defaults to 9.2, failing silently. No SQL dumps were
+made as a result. Fog gem may have cleaned out older backups.&lt;/li&gt;
+&lt;li&gt;Disk snapshots in Azure are enabled for the NFS server, but
+not for the DB servers.&lt;/li&gt;
+&lt;li&gt;The synchronisation process removes webhooks once it has
+synchronised data to staging. Unless we can pull these from a
+regular backup from the past 24 hours they will be lostThe
+replication procedure is super fragile, prone to error, relies
+on a handful of random shell scripts, and is badly documented&lt;/li&gt;
+&lt;li&gt;Our backups to S3 apparently don’t work either: the bucket is
+empty&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you think your sysadmin is paranoid, let this be your lesson. They are
+not. Operations do matter, even (especially) in the cloud.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; Michael Renner asks some interesting questions:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Some thoughts for GitLab: What is WAL shipping? What is pgbouncer? Why
+does everyone hate Slony? Why is EC2 so slow?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/terrorobe/status/826706562563588098&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/Screen-Shot-2017-02-01-at-10.45.07.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Tweet: &lt;a href=&#34;https://twitter.com/terrorobe/status/826706562563588098&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@Terrorobe&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;People using Slony on a Postgres 9.6 deserve everything that
+happens to them. Slony is trigger based replication breakage
+from the deepest circles of hell, and Postgres has excellent,
+stable and fast internal replications for several years now.&lt;/p&gt;
+&lt;p&gt;Also, what he says about log shipping: There is no reason at all
+to lose any write ever on a Postgres, nor to have much downtime
+at all with proper replication. Operations do matter. Cloud
+ain&amp;rsquo;t gonna change that.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;EDIT:&lt;/strong&gt; Dedicating 1st of February as &amp;ldquo;Check your Backups Day&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://checkyourbackups.work/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/Screen-Shot-2017-02-01-at-12.53.14.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://checkyourbackups.work/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Check your Backups Day&lt;/a&gt;
+
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Freitag, der 13. im Rechenzentrum</title>
+      <link>https://blog.koehntopp.info/2016/05/13/freitag-der-13-im-rechenzentrum.html</link>
+      <pubDate>Fri, 13 May 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2016/05/13/freitag-der-13-im-rechenzentrum.html</guid>
+      <description>&lt;p&gt;(salvaged and edited Google+ Content)&lt;/p&gt;
+&lt;p&gt;Heute ist ein Gedanktag, denn an einem Freitag, dem 13. Mai vor 11 Jahren ging das so:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;»Im Rahmen der strengen Sicherheitsbestimmungen für das WEB.DE Rechenzentrum wurden am Freitag Abend aufgrund von Ausfällen in der Klimatisierung sämtliche Server der WEB.DE Dienste vorübergehend heruntergefahren. Diese vorsorgliche Maßnahme dient dem Interesse der Datensicherheit unserer Kunden.&lt;/p&gt;
+&lt;p&gt;Wir werden im Laufe des Samstag Morgens die Server wieder kontrolliert zum regulären Betrieb hochfahren. Wir entschuldigen uns bei Ihnen für die Unannehmlichkeiten.&lt;/p&gt;
+&lt;p&gt;Ihre WEB.DE AG«&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Ich habe damals als Security-Fuzzi bei web.de gearbeitet und an diesem Tag kam es im Verlaufe des Abends zu einem Totalausfall der Kühlung in allen Rechenzentrumszellen.&lt;/p&gt;
+&lt;p&gt;Um eine Beschädigung von persistenten Daten zu verhindern haben wir das gesamte RZ runtergefahren, als die Temperaturen der Zuluft den sicheren Rahmen verlassen haben. Später in der Nacht kam es mit Notkühlung zu einem geplanten Wiederanlauf des Systems und am Samstag war bereits von außen keine Störung mehr erkennbar, auch wenn intern noch eine ganze Menge Systeme degraded waren.&lt;/p&gt;
+&lt;p&gt;Danke Euch allen, Ihr wißt wer Ihr seid! Es war eine tolle Zeit und ein unglaubliches Team!&lt;/p&gt;
+&lt;h2 id=&#34;was-war-passiert&#34;&gt;
+    &lt;a href=&#34;#was-war-passiert&#34;&gt;
+	Was war passiert?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ein Rechenzentrum, das ist eine feuerfeste, luftdichte Kiste, in die man Strom und Netzwerkkabel rein legt. Die Rechner machen Abwärme. Also legt man auch Wasserleitungen rein und wieder raus, und baut drinnen Wärmetauscher ein, die die warme Luft ansaugen, kalt machen und wieder raus pusten.&lt;/p&gt;
+&lt;p&gt;Damit man effektiv ist, muß man Straßen für kalte und warme Luft bauen und dafür sorgen, daß die kalte Luft da hin kommt wo sie gebraucht wird.&lt;/p&gt;
+&lt;p&gt;Aus der RZ-Kiste kriegt man warmes Wasser raus. Und ab da wird es ein wenig anstrengend, mehr dazu weiter unten.&lt;/p&gt;
+&lt;p&gt;Es gab also drei große Kältemaschinen, die dann die Wärme in Richtung Kühlkörper nach draußen schaffen. Vor 11 Jahren hat abends die Substeuereinheit für den Betonkasten mit den Kühlkörpern draußen den Befehl bekommen &amp;ldquo;mach das Zulaufventil weiter auf&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Die Substeuereinheit hat dann gesagt &amp;ldquo;Nö.&amp;rdquo; und ganz zu gemacht.&lt;/p&gt;
+&lt;p&gt;Ab da hat das ganze System keine Energie mehr aus dem RZ raus holen können, das Wasser in den Kühlkreisläufen wurde wärmer und der Druck stieg.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/klimaanlage.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Als der Druck zu hoch wurde, bei (1), hat die Kältemaschine hingeschmissen und ihr Backup sprang an. Es gab keine Meldung. Maschine 2 hatte dasselbe Problem und bei (2) passierte dasselbe und Nummer 3 hat übernommen. Als die auch hingeschmissen hat (3), stieg die Zuluft-Temperatur an. Es wurde alarmiert.&lt;/p&gt;
+&lt;p&gt;Ich war mit einem Haufen anderer Leute noch in der Firma, denn wir saßen bei Bier in der Kantine, um den Tosi,  der die Firma verlassen wollte, zu verabschieden und feierlich zu ent-admin-rechten.&lt;/p&gt;
+&lt;p&gt;Ein Anruf von Armin (Zuluft über 35 Grad, kannste mal gucken?) später stand ich unten im RZ und mir schlug tropische Luft entgegen. Als Securityfuzzi habe ich die Eskalation durchgeführt und wir haben, als die Zuluft-Temperatur zur Gefährdung persistenter Daten geführt hätte, eine Komplettabschaltung durchgeführt (4).&lt;/p&gt;
+&lt;p&gt;Ziemlich schnell hatte ich zu viele Leute für den Notfall und habe die Hälfte der Mannschaft wieder heim geschickt, mit der Bitte um Mitternacht anzutreten und das aktuelle Team abzulösen.&lt;/p&gt;
+&lt;p&gt;Armin und das RZ-Team haben die Klimaanlage auf manuell geprügelt, während meine Gruppe sich um die Maschinen gekümmert hat und versucht hat, die Temperatur unter Kontrolle zu bekommen, indem wir weniger Abwärme produzieren. Einige Personen waren als Melder und Protokollanten eingeteilt, jemand hat sich darum gekümmert, die Kommunikation mit Eva, unserer Pressefrau, und mit dem Vorstand zu koordinieren.&lt;/p&gt;
+&lt;p&gt;Als die Klimaanlage jedoch wieder ansprang (5), war sie auf manuell. Das heißt auch, daß sie ungeregelt gelaufen ist und wir auf einmal mindestens 200kW Abwärme liefern mußten, damit das Kühlwasser nicht gefriert. Also haben wir relativ panisch Dienstplanänderung gespielt und Kisten wieder angeschaltet, damit das Klimateam die Rohre nicht kaputtfriert.&lt;/p&gt;
+&lt;p&gt;Den Rest der Nacht haben wir dann die Systeme wieder zusammengesetzt und Wiederanlauf von Null gespielt. Um Mitternacht kam die zweite Mannschaft und um Eins ist dann das initiale Eskalationsteam heim gefahren und ins Bett gefallen. Als der Vorstand auftauchte, haben wir ihm eine kurze Führung mit Statusreport durch unsere Notfallkoordination und das RZ geben können. Wir haben das Notfall-Geld genommen und bei der Pizzeria gegenüber eine ununterbrochene Pizza-Versorgung sichergestellt.&lt;/p&gt;
+&lt;p&gt;Am Samstag gegen 14 Uhr war volle Redundanz wieder hergestellt und der Rotlevel im Nagios auf dem üblichen Niveau.&lt;/p&gt;
+&lt;p&gt;Das war mal alles Scheiße gut eingespielt und durchgezogen.&lt;/p&gt;
+&lt;h2 id=&#34;wieso-war-das-schwierig&#34;&gt;
+    &lt;a href=&#34;#wieso-war-das-schwierig&#34;&gt;
+	Wieso war das schwierig?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das Rechenzentrum von web.de befand sich in den Räumen der ehemaligen Pfaff-Nähmaschinenfabrik in der Amalienbadstraße in Durlach.&lt;/p&gt;
+&lt;p&gt;Die Räume dort sind im Grunde nicht groß und nicht hoch genug für einen Rechenzentrumsbetrieb. Durch ausgeklügeltes Wärmemanagement ist es dennoch gelungen, mit der Technik von 2005 pro Rack 21kW zu installieren und sicher zu fahren (sechs volle IBM Bladecenter), ohne Wasser bis ins Rack zu führen.&lt;/p&gt;
+&lt;p&gt;Wir haben da eine ganze Menge Gruppen Klimatechniker (FH) durchgeführt, um die Installation zu demonstrieren.&lt;/p&gt;
+&lt;p&gt;Das System hat 21kW pro Rack in einem Raum mit 2.95 Meter Deckenhöhe (45cm Unterboden -&amp;gt; 2.50 Meter bis zur Decke) fahren können und den Airflow mit Kaltgang-Warmgang und Zwangsbelüftung der Racks gefahren.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/11-racks-7kw.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Die alte Situation vor Ort: Rechenzentrumszelle mit 7kW Racks. Niedrige Deckenhöhe, räumlich beengte Situation. Doppelboden noch solid, und geschlossene Glastüren am Rack.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Es war außerdem noch nicht betrieblich von der Klimafirma an web.de übergeben. Da es sich um eine Aufrüstung eines bestehenden Rechenzentrums (7kW bzw. 10kW auf 21kW) gehandelt hat, war jedoch produktiver Betrieb da drin.&lt;/p&gt;
+&lt;p&gt;Nach dem Vorfall haben wir nur noch mit den Anwälten von web.de reden dürfen, die dann den Anwälten von der Klimafirma gesagt haben, was sie den Technikern von der Klimafirma sagen sollen.&lt;/p&gt;
+&lt;p&gt;Der Fehler besteht übrigens darin, in einer alten denkmalgeschützten Nähmaschinenfabrik in Durlach RZ-Betrieb zu machen, anstatt sich massenhaft Platz in einem Gewerbegebiet anderswo zu besorgen.&lt;/p&gt;
+&lt;p&gt;Dort hätte man 4-5 Meter Raumhöhe haben können, wäre unter Umständen auf der Alb oder im Schwarzwald und nicht im heißen Rheintal und hätte auch so viel Platz, daß man statt mit 21kW pro Rack mit 7kW pro Rack hätte planen können. Das heißt, man wäre mit drei Mal weniger Density hin gekommen.&lt;/p&gt;
+&lt;p&gt;In dem Fall hätte man dann einfach normale Klima von der Stange genommen und alles wäre langweilig gewesen. Langweilig ist gut.&lt;/p&gt;
+&lt;h2 id=&#34;aufbau-und-umrüstung-des-klimasystems&#34;&gt;
+    &lt;a href=&#34;#aufbau-und-umr%c3%bcstung-des-klimasystems&#34;&gt;
+	Aufbau und Umrüstung des Klimasystems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Bauarbeiten zur Klimaaufrüstung und RZ-Erweiterung fanden im laufenden Betrieb statt.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/01-plan.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Bauplan für die Klimaanlage, mit Rohrführungen, Pumpen und anderen Details.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Was man an dem Bauplan sehen kann: Zu einem Rechenzentrum gehören nicht nur Rechner, sondern auch eine ganze Menge Infrastruktur.&lt;/p&gt;
+&lt;p&gt;Unter anderem Kühlung. Hier sehen wir den Plan für drei Kältemaschinen, die im inneren Kühlkreislauf Wasser aus Wärmetauschern in den Rechenzentrumszellen bekommen, es kühlen und in die Wärmetauscher zurück leiten.&lt;/p&gt;
+&lt;p&gt;Der äußere Kühlkreislauf enthält Wasser, das dabei erwärmt wird. Dieses Wasser wird nach außen zu einer Reihe von großen Kühlkörpern geleitet, die diese Wärme nach außen an die Umgebung abgeben.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/02-aggregate.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Drei Wärmepumpen, die dem inneren Kühlkreislauf Energie entziehen und in den äußeren Kreislauf bewegen.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/03-aggregat-einzeln.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Detailaufnahme einer Wärmepumpe. Die Technik ist dieselbe wie hinten an jedem Kühlschrank, nur größer. Das Aggregat wiegt 6 Tonnen und steht zur Schwingungsdämpfung auf einem &amp;ldquo;schwimmenden&amp;rdquo; Sockel.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;In der Realität sehen diese Dinger so aus und wiegen in etwa 6 Tonnen. Pro Stück. Und rappeln sehr laut, wie ein Kühlschrank, bei dem der Kompressor läuft, wenn der Kompressor dauernd laufen würde und 6 Tonnen wöge.&lt;/p&gt;
+&lt;p&gt;Darum stehen die Dinger auch auf entkoppelten Betonfundamenten.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/04-kuehlwasser.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Schweißarbeiten an den Kühlwasserrohren des inneren Kühlkreislaufes. Es ist ziemlich viel Wasser zu bewegen, entsprechend haben wir auch einen großen Rohrdurchmesser.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/05-pumpen.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Die Verteilerzentrale und die Pumpen für die Kühlung des Rechenzentrums (Ausschnitt) verteilt das Wasser des inneren Kühlkreislaufes in die Rechenzentrumszellen.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/06-rueckkuehler-cage.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Die Kühlkörper stehen in in einem großen Betonbunker. Links sieht man noch blau verpackt die Rohranschlüsse, mit denen Wasser zu den Kühlkörpern geleitet wird.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dort, bei den blauen Abdeckungen, war später das motorisierte Steuerventil mit der Substeuereinheit, die den Ärger gemacht hat.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/07-anlieferung-kuehler.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Die Kühler werden geliefert.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/08-kuehler.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Jeder Rückühler mit Kupferlamellen und Lüftern. Außerdem können wir Verdunstungskälte durch Versprühen von kalkfreiem Wasser erzeugen. Das ist notwendig, weil das Rechenzentrum im Rheintal steht, einem denkbar ungünstigen Ort für die Kühlung von Rechenzentren.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/09-kuehler-innen.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Das Schwarze da links und rechts ist im wesentlichen ein Kühlkörper mit Kühlrippen, genau wie die Kühlung auf der CPU Eures Desktop-Gamer-Rechners. Pro Kühler und Seite haben wir aber 6 qm. Und die CPU-Lüfter da oben über dem Kopf des Fotografen - naja, haltet Euren Arm da besser nicht rein.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2016/05/10-burn-in.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Die Kühlung wird getestet, bevor die Rechner ins RZ kommen. Dazu mietet man Heizlüfter an und simuliert Abwärme. Das ist ein ziemlicher Hightech-Prozeß, wie man sehen kann.&lt;/em&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The Heat Is On</title>
+      <link>https://blog.koehntopp.info/2006/08/07/the-heat-is-on.html</link>
+      <pubDate>Mon, 07 Aug 2006 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2006/08/07/the-heat-is-on.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cpu_kuehler.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Rückkühler, 2x3m (6 qm) Kupferkühlfläche pro Seite&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;[ Dieser Artikel hätte vor zwei Wochen fertiggestellt werden sollen, auf dem Höhepunkt der Hitzewelle, aber ich war zu schlapp zum Schreiben. &amp;ndash; kris ]&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;&amp;ldquo;1.21 Gigawatt? Tom Edison, wie erzeugt man so viel Strom?&amp;quot;&lt;/em&gt; &amp;ndash; &lt;strong&gt;Dr. Emmett Brown&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Ein Rechenzentrum ist im Wesentlichen eine große isolierte Kiste, deren Türen die meiste Zeit geschlossen gehalten werden.
+In das Rechenzentrum herein führen - da kommen die meisten Leute von selber drauf - Stromkabel und Netzwerkkabel.
+Ins Rechenzentrum herein führen außerdem - und das unterschätzen die meisten Leute - auch Wasserleitungen.
+Diese pumpen kaltes Wasser in die Wärmetauscher der Klimaanlage und lassen das warme Wasser wieder herausfließen.&lt;/p&gt;
+&lt;p&gt;Also, wie viel Energie brät so ein Rechenzentrum denn so weg?&lt;/p&gt;
+&lt;p&gt;Platz im Rechenzentrum wird in HE, Höheneinheiten von 19-Zoll-Schränken, abgerechnet.
+Ein Schrank hat Platz für 40-42 HE.
+Ein IBM Bladecenter Chassis faucht hinten aus seinen beiden Radiallüftern 3000-3500 Watt raus, wenn es voll bestückt ist.
+Es belegt 7 HE.
+Machte man den Schrank mit 5 oder 6 von diesen Dingern randvoll, würden in diesem Schrank zwischen 15000 und 21000 Watt rausgeblasen werden.
+In einem kleinen RZ mit 30 Schränken sind das um die 500 kW.&lt;/p&gt;
+&lt;p&gt;Wie viel Energie ist das?&lt;/p&gt;
+&lt;p&gt;Kilowatt sind nur neumodische Worte für PS.
+Ein Kilowatt sind 1.36 altbekannte Pferdestärken.
+15 kW sind also 20 PS, in etwa ein
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Renault_4&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Renault 4&lt;/a&gt;
+
+,
+und 21 kW sind 28 PS - mit dieser Leistung flog
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Bl%c3%a9riot_XI&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Louis Blériot&lt;/a&gt;
+
+
+im Jahre 1909 über den Ärmelkanal.
+500 kW sind 680 PS. Das ist die Leistung des Motors einer
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Messerschmitt_Bf_109&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ME 109&lt;/a&gt;
+
+,
+oder etwa halb so viel wie der Motor eines
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Leopard_2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leopard 2&lt;/a&gt;
+
+
+oder 2/3 der Leistung eines
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Bugatti_Veyron_16.4&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Bugatti Veyron&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Dafür bekommt man die Power von ca. 5000 Intel-Prozessoren bei 3 GHz, und etwa 5 Terabyte RAM, aber man hat noch keine Platten irgendwo in Betrieb genommen.&lt;/p&gt;
+&lt;p&gt;Das alles muss man nun circa mal drei bis vier nehmen, denn man muss ja die Platten, den Leistungsverlust durch dezentrale Netzteile und die zusätzliche Energie für Kühlung mitrechnen.&lt;/p&gt;
+&lt;p&gt;Natürlich stellt man sich nicht alles voll mit Blades - man muss ja auch noch Datenbanken, Fileserver, Ciscos und anderes Zeugs haben, also hat man am Ende nicht einen Raum mit 30 Schränken, sondern drei Räume mit 90 Schränken voll Hardware.
+Aber man arbeitet mit so knapp an die 2 Megawatt, oder zwei Schiffsdieseln mit 1250 PS pro Stück.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/schraubenkompressor.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Dies ist ein Schrauben- kompressor, wie er in jedem Kühlschrank seinen Dienst tut.&lt;/em&gt;
+&lt;em&gt;Dieser Kompressor hier wiegt 6 Tonnen und schafft 700 kW weg.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Das klingt nach einer ganzen Menge Power, ist aber tatsächlich relativ klein so im Vergleich.&lt;/p&gt;
+&lt;p&gt;Google zum Beispiel
+&lt;a href=&#34;http://weblog.philringnalda.com/2005/03/17/just-how-much-power-does-google-need&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;zieht jetzt an einen Staudamm in Oregon&lt;/a&gt;
+
+.
+Die Aluminiumhütte dort hat zugemacht und die
+&lt;a href=&#34;http://www.nwp.usace.army.mil/op/d/thedalles.asp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1.8 Gigawatt&lt;/a&gt;
+
+
+aus dem Damm am Columbia River kommen Google gerade recht.
+Zumal man das Wasser aus dem Damm dann auch gleich zur Kühlung nutzen kann und es in Oregon meist nicht so warm ist.
+Google muss das, denn sonst
+&lt;a href=&#34;http://buzz.blogger.com/2005/03/more-power.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;wird Blogger dunkel&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Auch andere Internet Firmen
+&lt;a href=&#34;http://seattletimes.nwsource.com/cgi-bin/PrintStory.pl?document_id=2003114987&amp;amp;zsection_id=2002119995&amp;amp;slug=microsoft09&amp;amp;date=20060709&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;verfolgen dieselbe Strategie&lt;/a&gt;
+
+.
+Das alles ist ein
+&lt;a href=&#34;http://www.theinquirer.net/default.aspx?article=33507&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ernstes Problem&lt;/a&gt;
+
+.
+Man kann sich jetzt auf seinen Status als
+&lt;a href=&#34;http://www.c0t0d0s0.org/archives/1533-Answer-to-the-heat-problem-The-HP-way.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;offizieller Sun Fanboy&lt;/a&gt;
+
+
+zurückziehen und sagen &amp;ldquo;Mit Sun Servern wäre das nicht passiert&amp;rdquo;, aber das geht am Kern des Problems vorbei.
+Denn dann hätte man mehr Server, aber genau denselben Leistungshunger.&lt;/p&gt;
+&lt;p&gt;Wie sieht das in Deutschland aus?
+Wir sind ja ein ordentliches Land und nicht so drittweltig wie die USA, wo schon mal 14 Tage lang der Strom in einer Großstadt wegbleiben kann.
+Aber auch
+&lt;a href=&#34;http://www.ka-news.de/kultur/news.php4?show=tja200387-125H&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;bei&lt;/a&gt;
+
+
+&lt;a href=&#34;http://www.welt.de/data/2006/07/20/965948.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;uns&lt;/a&gt;
+
+
+&lt;a href=&#34;http://www.welt.de/data/2006/07/20/965948.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;passiert&lt;/a&gt;
+
+
+&lt;a href=&#34;http://www.n24.de/boulevard/nus/index.php/a2006072612193397133&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dasselbe&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Für ein Rechenzentrum ist der
+&lt;a href=&#34;http://www.heise.de/newsticker/meldung/59551&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ausfall der Klimaanlage&lt;/a&gt;
+
+
+ein schneller Tod.
+Wenn die Rückkühler, die die Abwärme des Rechenzentrums in die Umgebung ableiten sollen, beschädigt oder blockiert sind, dann bleiben je nach Systemkonstruktion noch 20-30 Minuten, bis die Zulufttemperatur der Geräte die magische 35 °C Schwelle überschreitet.
+Der Betreiber hat dann die Wahl zwischen Abschalten und Hitzetod.&lt;/p&gt;
+&lt;p&gt;Im Rechenzentrum sieht das inzwischen nicht viel anders aus.
+Damit man auf kleinem Raum überhaupt so viel Abwärme generieren kann, muss man seine Luftströme im Rechenzentrum sorgfältig organisieren.
+Einen ganzen Raum zu kühlen und die Server dann da einfach reinzustellen funktioniert schon bei relativ kleinen Abwärmemengen nicht mehr.&lt;/p&gt;
+&lt;p&gt;Stattdessen bläst man kalte Luft in den Unterboden und drückt diese in der Mitte einer Rackreihe hoch.
+Die kalte Luft muss durch die Racks hindurch, um in den Abwärmegang zu gelangen, wo sie abgesaugt und wieder gekühlt wird -
+&lt;a href=&#34;http://www.conect-online.de/klima_02.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kaltgang - Warmgang&lt;/a&gt;
+
+
+ist der Suchbegriff für Google.
+Entscheidend ist jedenfalls die getrennte Führung von kalter und warmer Luft durch das gesamte Rechenzentrum.
+Das Paper
+&lt;a href=&#34;http://www-03.ibm.com/servers/eserver/xseries/storage/pdf/IBM_Rear_Door_Heat_Exchanger_FINAL.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Keeping Your Data Center Cool: There Is Another Way&lt;/a&gt;
+
+ (PDF)
+von IBM gibt einen netten Überblick über &amp;ldquo;Cold Aisle, Warm Isle&amp;rdquo;, über das Problem des Abluftkurzschlusses und das Problem des Wärmestaus unter der Decke.
+IBM bewirbt in dem Paper Rear Door Heat Exchangers, also Abluftkühler in Racktüren.
+Aber selbst wenn man deren Produkt nicht will, ist das Papier eine nette Sammlung von typischen Kühlungsproblemen, die man mit ein wenig Aerodynamik und geordneter Luftführung in den auch passiv Griff bekommen kann.&lt;/p&gt;
+&lt;p&gt;Wenn Ihr das nächste Mal also Google benutzt, oder Yahoo, oder web.de, dann denkt mal an Euren Klimatechniker und was der damit zu tun hat, daß das Internet noch funktioniert.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

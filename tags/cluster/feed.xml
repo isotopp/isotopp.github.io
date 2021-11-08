@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>cluster on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/cluster.html</link>
+    <description>Recent content in cluster on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 11 Jun 2012 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/cluster/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HDFS - billig im Cluster speichern</title>
+      <link>https://blog.koehntopp.info/2012/06/11/hdfs-billig-im-cluster-speichern.html</link>
+      <pubDate>Mon, 11 Jun 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/06/11/hdfs-billig-im-cluster-speichern.html</guid>
+      <description>&lt;p&gt;Wer Clustern will, der muß erst mal einen solchen haben.  Also, einen
+Cluster von möglichst vielen Rechnern.  Die Anforderungen sind dabei klar:
+Man möchte Hardware haben, die möglichst billig ist - für Serverplatten,
+Speicher mit Fehlerkorrektur (ECC), und dergleichen Luxus ist kein Geld da,
+denn man möchte das gesparte Geld lieber in mehr Rechner stecken.&lt;/p&gt;
+&lt;p&gt;Also Billighardware kaufen?  Nein!  Denn auch die laufenden Kosten möchte
+man niedrig halten - der Rechner sollte also klein sein, und möglichst
+geringe laufende Kosten haben, also möglichst wenig Strom aufnehmen und bei
+möglichst hohen Zuluft-Temperaturen noch funktionieren.  Die oben
+angedeutete Desktop-Kiste wird in dieser Form und mit diesem Formfaktor also
+niemandem Freude bereiten.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Klein&amp;rdquo; heißt in unserem Fall, daß wir mehr Schachteln in ein Standard-Rack
+hinein bekommen, wenig Strom aufnehmen heißt, daß wir wenig Strom bezahlen
+müssen und wenig Strom dazu verbrauchen, um den in Wärme umgewandelten Strom
+nach dem Verbrauch per Klimaanlage wieder nach draußen zu schaffen.  Und
+hohe Zuluft-Temperaturen heißt, daß wir dicht packen können und daß wir die
+Klimaanlage so klein als möglich dimensionieren können, also weniger Strom
+für Kühlung und mehr Strom für das Rechnen ausgeben können.&lt;/p&gt;
+&lt;p&gt;Wenn man das Ganze groß genug betreibt - also mit n-stelliger Anzahl von
+Kisten, dann lohnt es sich, Metriken in Operations/Euro und Operations/Watt
+sowie Operations/Grundfläche bzw.  Kubikmeter aufzustellen und dann auf dem
+Problem ein wenig linear zu optimieren, damit man möglichst viel Bumms pro
+Euro kauft.&lt;/p&gt;
+&lt;p&gt;Wenn man eher mittelständische Haushaltsgrößen ins Auge faßt, dann geht man
+zu seinem Standard-Hersteller für RZ-Hardware und schaut mal, was die an
+möglichst einfachen Pizzaschachteln im Angebot haben.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/dl160g6.png&#34; alt=&#34;HP DL 160 Gen 6&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Pizzablech &amp;ldquo;HP DL160 Generation 6&amp;rdquo; für 4 Sorten Käse.&lt;/p&gt;
+&lt;p&gt;Dieses Blech wiegt etwas über 12 Kilo, ist die üblichen 19&amp;quot; breit, eine
+Höheneinheit im Rack hoch und etwas unter 70cm tief.  Eine
+Beispielkonfiguration enthielte etwa eine 6-Core CPU, 24 GB RAM, 4 Platten
+mit jeweils einem Terabyte als JBOD und einen bzw. zwei
+Gigabit-Netzwerkports, und sie kommt mit ein wenig Gehampel für unter 2000
+EUR/Stück.  Eine doppelt so hohe Kiste könnte statt 4 Platten deren 12
+fassen, und ein damit aufgebauter Cluster hätte weniger CPU und mehr
+Plattenspeicher.&lt;/p&gt;
+&lt;p&gt;Das ist sehr unangestrengte Hardware - wenn man ein wenig mehr Hardcore
+shoppen geht, dann bekommt man leicht etwas mit größeren Platten für wenig
+Geld, wahrscheinlich aber auch mit einer schlechteren Ausfallrate.  Das
+ganze Gelöt kommt nun in einige Racks, die wir mit Top-of-Rack Switches
+sinnvoll in einem separaten Netz zusammenknoten.&lt;/p&gt;
+&lt;h2 id=&#34;hdfs---hadoop-filesystem&#34;&gt;
+    &lt;a href=&#34;#hdfs---hadoop-filesystem&#34;&gt;
+	HDFS - Hadoop Filesystem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Jetzt haben wir billige Platten von schlechter Qualität als JBOD ohne das
+geringste bischen Redundanz, die wir einzeln und lokal in irgendein
+Verzeichnis unsers Servers mounten.  HDFS, das Hadoop Filesystem, ist ein
+verteiltes Dateisystem - es verwendet das vorhandene lokale Dateisystem auf
+Einzelplatten schlechter Qualität, um daraus schnellen, parallel
+ansprechbaren und redundanten Speicher im Cluster zu bauen.&lt;/p&gt;
+&lt;p&gt;HDFS setzt dabei nur eine begrenzte Zahl von Operationen um - ein HDFS ist
+kein vollwertiges Dateisystem im Sinne des Posix-Standards, sondern man kann
+es sich mehr als eine Art verteilten und massiv parallelen FTP-Server
+vorstellen: Das Dateisystem hat die Operationen GET, PUT und DELETE, sowie
+neuerdings auch noch APPEND, um Daten an eine bestehende Datei anhängen zu
+können.  Ein SEEK, READ oder WRITE existieren jedoch nicht, Locking auch
+nicht.&lt;/p&gt;
+&lt;p&gt;Entsprechend gibt es HDFS FUSE-Plugins, aber eben nur im Rahmen der Grenzen
+der Operationen von HDFS.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/hadoop_disks.png&#34; alt=&#34;Ein Hadoop Datanode&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ein Hadoop-Datanode&lt;/p&gt;
+&lt;p&gt;HDFS startet zu diesem Zweck auf jedem Rechner mit nutzbaren Platten einen
+Prozeß namens Datanode, und an zentraler Stelle einen Verwaltungsprozeß
+namens NameNode.  Die Namenode kümmert sich um die Verwaltung von Dateinamen
+und um das Wiederfinden von Blöcken.  Sie zerteilt sehr große Dateien in
+vergleichsweise grobe Schnetzel von 128 MB Größe und speichert dann jeden
+dieser &amp;ldquo;Blöcke&amp;rdquo; genannten 128 MB-Schnetzel mehrfach auf unterschiedlichen
+Datanodes ab.  Dabei ist es wichtig, sich nicht von der Nomenklatur &amp;ldquo;Block&amp;rdquo;
+ablenken zu lassen: Ein Block ist ein Stück Datei, das bis zu 128 MB groß
+sein kann, aber bei kleineren Dateien eben auch kürzer.  Es handelt sich
+nicht um Blöcke fester Größe wie bei einem richtigen Dateissystem.&lt;/p&gt;
+&lt;p&gt;HDFS speichert die Daten auch nicht selbst ab: Es verwendet ein lokales
+Dateisystem, zum Beispiel Linux ext4 oder xfs, um Dateien lokal zu verwalten
+und liefert nur eine einheitliche Clustersicht auf die Dinge.  HDFS kümmert
+sich also nur um die verteilten Aspekte des Dateisystems, und überläßt jedem
+lokalen Knoten die Arbeit, das tatsächlich irgendwo auf eine Platte zu
+malen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[root@hadoop-115 finalized]# pwd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/srv/hadoop/data01/dfs/dn/current/BP-1321238634-10.196.68.149-1338912643577/current/finalized
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[root@hadoop-115 finalized]# ls -lh blk_1025864654234871634*
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw------- 1 hdfs hdfs 128M Jun  6 13:37 blk_1025864654234871634
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw------- 1 hdfs hdfs 1.1M Jun  6 13:37 blk_1025864654234871634_8941.meta
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Das Mountschema im Beispiel ist /srv/hadoop/data{n}.  Auf jeder lokalen
+Platte gibt es einen Ordner /dfs/dn (Distributed Filesystem, Datanode), in
+dem die Blöcke abgelegt werden.  Wir sehen hier irgendeinen namenlosen 128
+MB Block und die Metadaten zu diesem Block.  Man braucht die Daten der
+Namenode, um aus diesen Dateifetzen wieder sinnvoll benannte und eingereihte
+Dateien zusammenzusetzen.&lt;/p&gt;
+&lt;p&gt;Dabei geht das System durchaus pfiffig vor.&lt;/p&gt;
+&lt;p&gt;Zum einen will man ja, daß die Daten redundant gespeichert sind.  Daher
+werden per Default 3 Kopien von jedem Block angelegt, und natürlich liegt
+jede Kopie auf einer anderen Maschine.  Tatsächlich kann man in die Namenode
+einen Rackverteilungsplan einpflegen und dann sorgt die Namenode auch dafür,
+daß zwei der Kopien vergleichsweise dicht beeinander liegen und eine weiter
+entfernt, in einem anderen Rack.  So ist sichergestellt, daß immer
+mindestens eine Kopie der Daten erhalten bleibt - auch dann, wenn mal ein
+ganzes Rack umfällt, der Switch oben im Rack verendet oder ein Sack
+fehlgeschlagener Kernelupdates einen Teil der Rechenzentrums-Population
+auslöscht.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/hadoop-write.png&#34; alt=&#34;Schreibzugriff&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ein Schreibzugriff in ein HDFS hinein.&lt;/p&gt;
+&lt;p&gt;Zum anderen will man auch, daß der ganze Kram parallel abläuft.  Daher führt
+die Namenode die Schreibvorgänge weder durch noch koordiniert sie diese.
+Sie dient lediglich als Verzeichnisdienst: Sie sagt dem Client, wo ein Block
+hingeschrieben wird, und der Client sendet diesen Block an die entsprechende
+Datanode.  Diese schreibt ihn lokal und reicht in an die zweite Datanode
+weiter - dieser Traffic ist aber Rack-intern.  Die zweite Datanode schreibt
+sich den Block ebenfalls auf eine Platte und reicht ihn nun über die
+Rackgrenze und die damit involvierten Switches hinweg an eine Node in einem
+anderen Rack weiter, die den Block ebenfalls noch ein drittes Mal schreibt.
+Die Bestätigungen für diese Operationen laufen denselben Weg den sie
+gekommen sind wieder zurück (und gehen parallel dazu auch noch einmal an die
+Namenode) und so weiß der Client, wenn er eine Bestätigung gesehen hat, daß
+alles geklappt hat und der Block jetzt redundant und persistent gespeichert
+ist.&lt;/p&gt;
+&lt;p&gt;Da wir von jedem Block 3 Kopien anlegen, bedeutet das natürlich, daß wir für
+ein Terabyte Nutzdaten 3 Terabyte Plattenplatz (und ein wenig Metadaten)
+wegnaschen.&lt;/p&gt;
+&lt;p&gt;Hadoop versucht außerdem, die Blöcke einer Datei möglichst breit über den
+Cluster zu schmieren, also eine Datei über möglichst viele Datanodes zu
+verteilen.  Das hat einerseits Geschwindigkeitsvorteile, wenn man parallel
+schreibt, andererseits macht es die spätere Verarbeitung der Daten
+schneller.&lt;/p&gt;
+&lt;p&gt;So können wir eine Datei zum Beispiel lesen, indem wir bei der Namenode eine
+Blockliste für die gesuchte Datei anfordern und dann parallel von allen
+Nodes, die die Daten haben, aus dem Netzwerk laden.  Mehr Knoten bedeutet
+hier mehr CPUs und mehr Plattenspindeln, also mehr Speed.  Das ist besonders
+dann interessant, wenn Daten von einem Cluster zu einem anderen kopiert
+werden - so eine massiv parallele Datenverschiebung bringt jede
+Netzwerkinfrastruktur an die Sättigungsgrenze.  Und das, obwohl wir billige
+Einzelkomponenten eingekauft haben.&lt;/p&gt;
+&lt;p&gt;Der Punkt ist, daß HDFS diesen Komponenten nicht traut: Datanodes müssen
+sich alle paar Sekunden bei ihrer Namenode per TCP Heartbeat melden, und in
+regelmäßigen Abständen auch Blockreports machen - dadurch weiß die Namenode,
+welche Blocks zu welcher Platte in einer Datanode gehören, wieviel freier
+Platz vorhanden ist usw.&lt;/p&gt;
+&lt;p&gt;Fällt eine von den Datanodes um oder geht auch nur eine Platte in der
+Datanode offline, geht die Namenode los und weist die überlebenden Datanodes
+für einen Block an, die notwendige Anzahl von Blockkopien wieder
+herzustellen - der Cluster flackert kurz mit den Plattenlampen und alles ist
+wieder gut - sogar, falls irgend möglich, im Rahmen der Redundanzregeln des
+Rackverteilungsplans.&lt;/p&gt;
+&lt;p&gt;Irgendwann später schickt man einen Azubi mit einem Einkaufskorb voller
+Austauschplatten, Gehörschutz und dem Auftrag auszumisten in das RZ und
+danach stimmt die Clusterkapazität wieder.&lt;/p&gt;
+&lt;p&gt;Was passiert, wenn eine Platte in einer Datanode nicht umfällt, sondern
+schimmelig wird und die Daten darauf verändert?  HDFS speichert großzügig
+Prüfsummen an jedem Objekt und würde dies vergleichsweise schnell
+mitbekommen - entweder beim nächsten Zugriff oder wenn der Cluster sich
+langweilt und aus Verlegenheit sowieso mal seine Prüfsummen durchprüft.
+Blöcke mit kaputten Prüfsummen werden kurzerhand abgemurkst, dann stimmt
+aber die Anzahl der Kopien für diesen Block nicht mehr und die Namenode wird
+tätig wie oben, um diese Situation zu korrigieren.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Grundsätze verteilter Datenbanken</title>
+      <link>https://blog.koehntopp.info/2012/03/15/grunds-tze-verteilter-datenbanken.html</link>
+      <pubDate>Thu, 15 Mar 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/03/15/grunds-tze-verteilter-datenbanken.html</guid>
+      <description>&lt;p&gt;Wonka&amp;gt; Die &lt;a href=&#34;http://www.toppoint.de%27%3ehttp://www.toppoint.de&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toppoint&lt;/a&gt;
+
+  z.B.
+wird vermutlich nie was haben, was in nennenswerte Last-Regionen kommt, aber
+ich will - akademisches Interesse und so - schon wissen, wie man das da am
+besten täte.  Was mich auch für die Toppoint interessiert: irgendeine Sorte
+Redundant Array of Inexpensive Databases :)&lt;/p&gt;
+&lt;p&gt;Lalufu&amp;gt; MySQL mit Replication?  Alternativ mit DRBD?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Mit DRBD. Nicht mit Replikation.&lt;/p&gt;
+&lt;p&gt;Wonka&amp;gt; Lalufu: Hm, Master-Master-Replication geht ja nur mit Zweien.  Wenn
+man nun mehr als das haben will, kann man zwar Ringe bauen, aber nur einfach
+verkettete.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wonka: Argh!  Master-Master geht nicht mit Replikation.  Nie.&lt;/p&gt;
+&lt;p&gt;Wonka&amp;gt; huh?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; ```sql
+&amp;ndash; Thread 1 schreibt auf Master 1:
+insert into t (id, d) values (NULL, &amp;lsquo;eins&amp;rsquo;);&lt;/p&gt;
+&lt;p&gt;&amp;ndash; Zeitgleich schreibt thread 2 auf master 2:
+insert into t (id, d) values (NULL, &amp;lsquo;zwei&amp;rsquo;);&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  
+Isotopp&amp;gt; Was steht in der Datenbank master1, was steht in der Datenbank
+master 2?  Wenn man mal annimmt, dass MySQL auto_increment_increment und
+auto_increment_offset korrekt gesetzt sind?
+
+Wonka&amp;gt; Isotopp: ok, Problem.  Trotzdem gibts reichlich HOWTOs dazu.
+
+Isotopp&amp;gt; Wonka: Das ist noch kein Problem.  Du kriegst `(1, &#39;eins&#39;)` und `(2, &#39;zwei&#39;)`.
+So weit funktioniert das.
+
+kv_&amp;gt; Bei UPDATE sieht&#39;s anders aus.
+
+Isotopp&amp;gt; Jetzt macht aber Thread 1 auf Master 1 ein UPDATE. Und zwar `update t set d = &#39;een&#39; where id =1;`
+Und Thread 2 macht auf Master 2 ein UPDATE, Und zwar `update t set d = &#39;one&#39; where id  = 1;`
+Was steht auf Master 1 und was steht auf Master 2?
+
+Isotopp&amp;gt; Der Punkt ist, daß es keine global fuer die Domain des ganzen
+Ringes gültige Serialisierung von Ereignissen gibt, es also keine globale
+Festlegung der Reihenfolge von Ereignissen gibt.  Sondern jeder lokale
+Knoten hat seine eigene Reihenfolge von Ereignissen.  Im Klartext heißt das,
+daß auf Master 1 die Reihenfolge der Events een, one sein kann, auf Master 2
+aber one, een oder umgekehrt.
+
+Lalufu&amp;gt; Genaugenommen ist das Problem, daß Leute sowas gerne hätten, aber
+MySQL das nicht liefern kann.
+
+Isotopp&amp;gt; Lalufu: Nein, die Situation ist weitaus komplizierter.  Laß mich zu
+Ende erklären.
+
+Wonka&amp;gt; [http://www.howtoforge.com/mysql_master_master_replication](http://www.howtoforge.com/mysql_master_master_replication):
+&amp;gt; &amp;quot;This tutorial describes how to set up MySQL master-master replication.  We
+&amp;gt; need to replicate MySQL servers to achieve high-availability (HA).  In my
+&amp;gt; case I need two masters that are synchronized with each other so that if one
+&amp;gt; of them drops down, other could take over and no data is lost.  Similarly
+&amp;gt; when the first one goes up again, it will still be used as slave for the
+&amp;gt; live one.&amp;quot;
+
+Wonka&amp;gt; Also haben die&#39;s nicht verstanden...
+
+Isotopp&amp;gt; Richtig.  Genauer: Sie glauben, sie können gewinnen.  Aber das
+Universum kann man nicht bescheißen.
+
+Isotopp&amp;gt; Wonka: Du willst also eine solche Serialisierung erzwingen. In SQL
+erzwingt man eine bestimmte Reihenfolge von Ereignissen, indem man für die
+Domain, in der man arbeitet eine Sperre (englisch: lock) setzt.  Man braucht
+also ein Locking, das in der ganzen Domain gilt.
+
+Isotopp&amp;gt; Die Domain ist nun aber nicht mehr eine Kiste, dafür hat Dein SQL
+Server ja Locks,sondern der Ring.  Und MySQL Replikation hat spezifisch kein
+Locking Protokoll.  Es gibt solche Protokolle, 2PC, 3PC, Paxos, Raft und
+noch ein paar mehr.  2PC ist das schnellste, in dem Sinne, daß es minimale
+Umlaufanzahlen/Lockzeiten hat.  Paxos und Raft sind im Sinne der
+Ausfallsicherheit/Recoverability das Sicherste.
+
+Ohne ein solches Locking Protokoll kannst Du nirgendwo konkurrente Writes
+sicher durchführen, weil Du eben keine für die Domain gültige Serialisierung
+von Ereignissen erzwingen kannst.
+
+Jedes Setup mit mehr als einem Writer ohne ein distributed locking protocol
+ist also kaputt.
+
+Lesen wir also die Anleitung zu mmm, MySQL Multi Master.  Steht drin:
+schreiben nur in einem Knoten.  Also: ein Ring, kein Multi-Master - der Name
+ist Betrug.
+
+Gucken wir irgendwo sonst, total egal wo: ENTWEDER Synchronisation durch
+Locking ODER nur ein Master ODER kaputt.
+
+Das ist die Wahl. Die ganze Wahl. Es gibt keine weiteren Möglichkeiten.
+
+kv_&amp;gt; Wonka: Und wenn man die Leute fragt, warum die Master-Master oder
+circular replication aufsetzen, kommt immer die falsche Antwort:
+&amp;quot;Ausfallsicherheit&amp;quot; oder &amp;quot;Lastverteilung&amp;quot;.  Für Ausfallsicherheit nimmt man
+ein Shared Storage und baut sich eine failover-Lösung auf OS-Ebene drüber -
+also NetApp oder DRBD.  Und für Lastverteilung beim Lesen nimmt man one-way
+Replication.  Schreibverteilung kann MySQL nicht.  Da fängt man dann an, auf
+Anwendungsebene Sharding-Architekturen zu bauen.
+
+Isotopp&amp;gt; Exakt.
+
+Isotopp&amp;gt; Lalufu: So, jetzt zu MySQL und liefern.
+
+Isotopp&amp;gt; Lalufu: MySQL liefert ein Produkt mit mehreren Knoten und 2PC.  Es
+heißt MySQL Cluster.  Es verwendet nicht MYSQL Replikation um das zu tun.
+
+Isotopp&amp;gt; Und zu HA: MySQL 5.1, 5.5 und 5.6 haben verschiedene Inkremente von
+MySQL SemiSynchronous Replication (SSR).  Damit hat man EINEN Master, aber
+Slaves, die das Commit auf dem Master VERZÖGERN (den Master also langsamer
+machen), bis wenigstens ein Slave existiert, der denselben Stand hat wie der
+Master.
+
+Das kombiniert die Nachteile von 2PC (warten) mit den Nachteilen von
+Replikation, die da sind:
+
+In MySQL Replikation ist der Slave ja abhängig von der MySQL binlog
+position, die verwaltet jeder Knoten aber selber.  Und das heißt, man kann
+den Slave 3, der an Master 1 hängt, nicht einfach an Slave 2 hängen, von dem
+wir wissen, daß er Dank SSR auf demselben Stand wie Master 1 ist.  Das ist
+so, weil der Stand von Master 1 in binlog position (mname, mpos) ausgedrückt
+wird, derselbe Stand auf slave 2 aber (s2name, s2pos) ausgedrückt wird.
+
+Und es gibt keinen Übersetzungsmechanismus (man kann einen bauen, das tut
+dann unterschiedlich weh, je nachdem wie korrekt man das im Falle eines
+Desasters haben will.  Und wir reden über HA, man will es also korrekt
+haben).
+
+In MySQL 5.6 gibt es dann die Global Transaction ID (GTID) und einen
+Übersetzungsmechanismus (transparent, automatisch) von GTID in lokale
+Position.  Mit SSR und GTID zusammen kann man dann in 5.6 auch endlich
+Replikation als HA Mechanismus verwenden und könnte einen Ring mit genau
+einem aktiven Master als HA-System stabil verwenden.  Das heißt, man hat
+immer noch Waits wegen der Synchronisation in SSR, aber keine Probleme mit
+dem Failover mehr.
+
+Wonka&amp;gt; MySQL Cluster ist aber nicht FOSS, oder?
+
+Isotopp&amp;gt; Wonka: MYSQL Cluster war früher FOSS.  Was es jetzt ist, habe ich
+nicht nachgesehen, weil mich Cluster aus anderen Gründen nicht interessiert.
+
+Es ist strukturell nicht möglich, normale Anwendungen, die gegen vanilla
+MySQL performen, gegen Cluster laufen zu lassen und Performance zu erwarten. 
+Cluster-Software ist immer speziell gegen Cluster geschrieben.
+
+Aktueller Cluster ist inzwischen VIEL BESSER darin als der Cluster, den ich
+gekannt habe, aber es bleibt schwierig.
+
+Du suchst einfache Lösungen fuer distributed databases.  So etwas existiert
+nicht.  So etwas KANN nicht existieren ohne daß du an c drehst.
+
+Du willst also mit Q (aus Star Trek: The Next Generation) reden, oder Dir
+eine von Grace Hoppers Mikrosekunden um den Hals hängen.
+
+Lalufu&amp;gt; Wuerden Sie diesem Mann Ihre Replikation anvertrauen?  
+
+![](http://images5.fanpop.com/image/photos/25400000/Discord-dance-random-25482674-500-378.gif)
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
+

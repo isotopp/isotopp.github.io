@@ -1,0 +1,983 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>testing on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/testing.html</link>
+    <description>Recent content in testing on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 17 Jan 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/testing/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rolling back a rollout</title>
+      <link>https://blog.koehntopp.info/2020/01/17/rolling-back-a-rollout.html</link>
+      <pubDate>Fri, 17 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/01/17/rolling-back-a-rollout.html</guid>
+      <description>&lt;p&gt;Florian Haas &lt;a href=&#34;https://twitter.com/xahteiwi/status/1217903825824120834&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;asks on Twitter&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-back.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;How do you solve reliable rollback. The definition of a reliable rollback being: &amp;lsquo;get reset &amp;ndash;hard &lt;ref&gt;&amp;rsquo;, &amp;lsquo;git push -f&amp;rsquo; and then magic happening that returns your infra to the exact state it was at &lt;ref&gt;.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;The problem is relatively easy to solve with modern infrastructure-as-code for anything that is stateless. It becomes a bit more involved when you are dealing with things with state, such as database instances or Zookeepers or similar things.&lt;/p&gt;
+&lt;p&gt;My reply on Twitter begins &lt;a href=&#34;https://twitter.com/isotopp/status/1218162310956638209&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+. I am basing my writeup on that reply.&lt;/p&gt;
+&lt;h2 id=&#34;devops-what-does-that-even-mean&#34;&gt;
+    &lt;a href=&#34;#devops-what-does-that-even-mean&#34;&gt;
+	&amp;ldquo;Devops&amp;rdquo;, what does that even mean?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In 2015, I gave a talk titled &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2015/03/27/go-away-or-i-will-replace-you.html&#34;&gt;Go away, or I will replace you with a little shell script&lt;/a&gt;
+
+&amp;rdquo; as a keynote for the GUUG FFG 2015 in Stuttgart. The german language slides are &lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+, the english slides are &lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+ and a Youtube video of the Froscon version of the talk is &lt;a href=&#34;https://www.youtube.com/watch?v=e0CCv7pSK4s&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+. Unfortunately, the video is the german language version of that talk.&lt;/p&gt;
+&lt;p&gt;The talk focuses on how the sysadmin profession started to die out somewhere around 2001, when we invented horizontal scaleout and &lt;a href=&#34;https://twitter.com/yesthattom&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tom Limoncelli&lt;/a&gt;
+
+ published the first edition of &amp;ldquo;&lt;a href=&#34;https://the-sysadmin-book.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Practice of System Administration&lt;/a&gt;
+
+&amp;rdquo;. That book explained in one chapter the role of the sysadmin in the greater corporate organisation and how to cooperate with, not fight against users. The term and the practice of Devops evolved in this decade, until in 2008 &lt;a href=&#34;https://twitter.com/patrickdebois&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Patrick Debois&lt;/a&gt;
+
+ coined the actual term &amp;ldquo;Devops&amp;rdquo;, which we use today.&lt;/p&gt;
+&lt;p&gt;The term has been abused a lot, but what does it actually mean? In one slide I show this:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english#19&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-away.jpg&#34; alt=&#34;Go away or I will replace you with a little Shell Script (english) - Slide 19&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The modern development environment according to Devops, and the technical meaning of the term.&lt;/p&gt;
+&lt;p&gt;In todays language, I would phrase these items as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Infrastructure as code&lt;/li&gt;
+&lt;li&gt;Version Control&lt;/li&gt;
+&lt;li&gt;CI/CD&lt;/li&gt;
+&lt;li&gt;Separation of Rollout and Activation&lt;/li&gt;
+&lt;li&gt;Proper Observability with centralized, structured logs&lt;/li&gt;
+&lt;li&gt;Good instant communication&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Infrastructure As Code&lt;/em&gt; describes a way of declaring the execution environment for your code, in code. Code that can be checked in and versioned like the application code itself. Openstack Heat Scripts, AWS Cloud Formation, Kubernetes Deployment Specifications or your Terraform all qualify as this.&lt;/p&gt;
+&lt;p&gt;With this, you can recreate and redeploy your execution environment together with your application, as part of the build and deployment automation. It also means that you get rid of the endlessly fragile state manipulation engines that are Puppet, Ansible, Chef, Salt and CFEngine. You create, build and deploy images and you run immutable infrastructure.&lt;/p&gt;
+&lt;p&gt;Because all of that code and infrastructure declaration are files, you want &lt;em&gt;Version Control&lt;/em&gt;, which in 2020 means, you want all of this in git. This is so normal by now that anything that is not git-able is considered broken and weird.&lt;/p&gt;
+&lt;p&gt;What you check in, you want to be processed automatically. So you push it through a &lt;em&gt;CI/CD pipeline&lt;/em&gt;, which pushes things through whatever pre-production environments you have (many have Dev, Staging and Prod). This, in 2020, probably includes formatting to coding standards, linting, sonarcubing, and whatever tests you wrote.&lt;/p&gt;
+&lt;p&gt;Eventually, your code is rolled out. And a key invention - one that is not yet done by enough people - is &lt;em&gt;separation of Rollout and Activation&lt;/em&gt; by the means of an experiment framework. More on that below.&lt;/p&gt;
+&lt;p&gt;When application code runs, it is appending messages, measurements and context to a hash of hashes. This collection will be pushed into an event processor at the end of a request. Ours is called &amp;ldquo;Booking Events&amp;rdquo;. If you happen to work elsewhere, an Observabilty tool such as &lt;a href=&#34;https://honeycomb.io&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Honeycomb.io&lt;/a&gt;
+
+ is the closest to Booking Events I have been able to find outside of Booking.&lt;/p&gt;
+&lt;p&gt;Using this, you alert and push alerts out through a multitude of channels, including Pagerduty, and whatever you use instead of Slack. Humans are being alerted to a situation, and can act on it.&lt;/p&gt;
+&lt;h2 id=&#34;separation-of-rollout-and-activation-and-dual-use-experimentation&#34;&gt;
+    &lt;a href=&#34;#separation-of-rollout-and-activation-and-dual-use-experimentation&#34;&gt;
+	Separation of Rollout and Activation, and Dual Use Experimentation
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;As I mentioned above, the separation of rollout and activation is a key invention that makes rollouts possible. It also makes testing in production safe.&lt;/p&gt;
+&lt;p&gt;In the first iteration, an experiment framework allows you to push code into production that never runs. You can then, through feature flags, activate your code for yourself, or a chosen subset of customers based on whatever selectors your frame work offers. I often quote &amp;ldquo;5% of the population of guest country .jp with a user-agent string that suggests MacOS&amp;rdquo; as an example, but it is really a function of the experiment framework you build.&lt;/p&gt;
+&lt;p&gt;See a very old talk from 2012 of mine: &amp;ldquo;&lt;a href=&#34;https://www.slideshare.net/isotopp/8-rollouts-a-day&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;8 rollouts a day&lt;/a&gt;
+
+&amp;rdquo; (&lt;a href=&#34;https://www.youtube.com/watch?v=6qFNwNEeG1w&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;video&lt;/a&gt;
+
+) for an ancient take on all of this. This is not new technology, we have been doing this for ages, and just iterated on this.&lt;/p&gt;
+&lt;p&gt;Having an experiment framework means that the scaffolding for activation in code is formalized and tested, so errors in gating entry to new code are unlikely to happen.&lt;/p&gt;
+&lt;p&gt;It also means that a control framework exists where you can see experiments that are active, who is exposed to them, and that participation in an experiment is recorded in a user click history. You probably want to record experiment config changes in your monitoring wallgraphs so that a change in observed behavior is linked to possible causes for that in an obvious and in-your-face way.&lt;/p&gt;
+&lt;p&gt;This is also important for customer support: A CS agent needs to be able to see what the customers sees or has seen, if an experiment is a UI/UX experiment. UI/UX variants should be available to CS agents at will, so that they are able to match and retrace customer experience.&lt;/p&gt;
+&lt;p&gt;Having experimentation available obviously means that variant code is in execution concurrently. Or in terms of rollouts: Old and new code run at the same time.&lt;/p&gt;
+&lt;p&gt;For state management, it means that schema changes or similar data adjustments need to be done in advance. They also need to be done in a way that is compatible with the old and the new code. That is not hard to do, and can be done in a robust testable way. You want to package it, and run a bunch of checks on schema changes automatically, so you can detect best practice violation and prevent these from being checked into staging and prod.&lt;/p&gt;
+&lt;p&gt;And yes, you need that table change framework anyway, because SOX will eventually want that from you. You probably will end up with a web frontend and API for &lt;a href=&#34;https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pt-online-schema-change&lt;/a&gt;
+
+ accessible to end users in a way that also advises them automatically on best practice. This also scales better than your DBAs checking manually for the presence of a PK, NULLable columns, columns that are DOUBLE but suggest monetary values in their names, and similar things.&lt;/p&gt;
+&lt;p&gt;Ok, at this point you can push code into staging and prod in a way that the old and new variants of the code can coexist on whatever schema you have and can run concurrently, depending on what variant of which experiment the user is in. You can finally &lt;em&gt;activate&lt;/em&gt; code for a few users, and see what happens.&lt;/p&gt;
+&lt;p&gt;Your second iteration of the experiment framework will therefore measure the &lt;em&gt;impact&lt;/em&gt; of the experiment, and by that I do not only mean the business impact, but also the technical impact.&lt;/p&gt;
+&lt;p&gt;Business impact measurements would answer questions such as &amp;ldquo;What influence has Experiment 17 on conversion?&amp;rdquo; or &amp;ldquo;Does variant B of experiment 17 not only improve conversion, but also customer support call rate, and if so, it is still a positive experiment in the monetary sense&amp;rdquo;?&lt;/p&gt;
+&lt;p&gt;But as a gate to the entry of code pathes, the experiment framework can also encapsulate Probes that collect metrics over a Span, delivering technical measurements about the performance cost of an experiment. I can ask questions such as &amp;ldquo;Show me all messages in variant B of rollout 64fd32f that never appear when running variant A&amp;rdquo;, or &amp;ldquo;What messages appear since rollout 64fd32f that did not appear before&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;I can also carry metrics and classify them by experiment related selectors. &amp;ldquo;Show me SQL time spent in variant B compared to variant A of rollout 64fd32f in all sections guarded by experiment 13, normalized by number of executions&amp;rdquo;. In other words, what exactly is the latency contribution of experiment 13b, since 64fd32f?&lt;/p&gt;
+&lt;p&gt;And because I have access to the unshortened, unaggregated raw event data persisted elsewhere, at any point in time I can ask the framework to actually show me the SQL, once I have a selector that finds me the delta I was looking for, and highlight the things that are only present here and not elsewhere.&lt;/p&gt;
+&lt;p&gt;That is the Dual Use value of an experiment framework: You get the business value out of that, testing hypothesis on draft code in production before you spend engineering hours on things that aren&amp;rsquo;t going to make you richer. That is, in terms of bug stages, finding bugs in requirements.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-relative-bugfix-cost.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;From &lt;a href=&#34;https://www.slideshare.net/isotopp/8-rollouts-a-day&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;8 rollouts a day (2012), Slide 19&lt;/a&gt;
+
+: Relative cost of a bugfix in various stages of the code lifecycle. Fixing broken requirements is the cheapest.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;But you also get the technical cost of that, in terms of running the prototype code. That enables you to assess the added execution cost vs. the estimated engineering effort to speed it up. In other words, your engineers only ever work on code that is proven to make you richer, &lt;em&gt;and&lt;/em&gt; you also know how much running it will cost you in AWS units or engineering hours and you can prioritise things properly.&lt;/p&gt;
+&lt;p&gt;And finally, since A and B variants coexist, if B is known to be bad, you not only can roll that back, you don&amp;rsquo;t even have to. Simply turning off activation of B gives you instant silence in production - the known bad variant is still present, but never run for anybody. You can then triage and come up with a resolution of the situation on your own terms. Either you eliminate the B variant and roll back, or you fix B and roll forward. Either way, this is done completely out of the execution path and also without any time pressure constraints on the decision making.&lt;/p&gt;
+&lt;h2 id=&#34;the-sum-of-all-these-parts&#34;&gt;
+    &lt;a href=&#34;#the-sum-of-all-these-parts&#34;&gt;
+	The Sum of All These Parts
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The sum of these parts is much more than each individual capability gives you. Together they give you an environment that allows you to roll back and forward, at will. And you will be doing this in an informed way. You can reason about code in production, and act on the outcome of that discussion. And you are doing this outside of crisis mode and any time constraints.&lt;/p&gt;
+&lt;p&gt;Separation of Rollout and Activation is a Key Invention here. Put this into an Experimentation Framework, and create a dashboard/control/overview board around this that gives information about running and disabled experiments, experiment outcomes in terms of business and technical data, and that links to raw events and metrics generated from the raw events directly.&lt;/p&gt;
+&lt;p&gt;Marrying an experiment framework + dashboard with a Honeycomb-like observability system, and with pointers to tags, releases and rollouts in your code base allows naviagation between all of these things in an integrated way. It enables product and tech people alike in a unique way to reason about code, what that code does to the business, UX, income, and also resource consumption.&lt;/p&gt;
+&lt;p&gt;It can direct business decisions, because it allows safe rapid development and deployment of draft business expierments.&lt;/p&gt;
+&lt;p&gt;It can direct engineering decisions, because it tells you what is safe, and what isn&amp;rsquo;t, what is good enough and what isn&amp;rsquo;t.&lt;/p&gt;
+&lt;p&gt;It informs product management and backlog decisions, because it links technical cost, potential business income and resource usage cost so that business and tech reason about code at eye level - one single source of truth, and one single set of metrics spanning the lowest levels of tech to business metrics like conversion, cuca call rates, cancellations and other things.&lt;/p&gt;
+&lt;p&gt;After doing that a while, your code will be littered with Experiment Gateways that either protect and measure code that is full-on or perma-off. All of that code is technical debt and needs to be evaluated, and cleaned up. In this way, the experiment framework, even in the final stage of its usefulness acts as visual markup for technical debt assessment and as a guide for garbage code collection.&lt;/p&gt;
+&lt;h2 id=&#34;reliable-rollbacks-and-testing-in-production&#34;&gt;
+    &lt;a href=&#34;#reliable-rollbacks-and-testing-in-production&#34;&gt;
+	Reliable Rollbacks and Testing In Production
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You can even use this data to build predictors for expected business behavior, and alert on deviations. &amp;ldquo;According to observed growth and data from last year, last month and last week, we would expect x bookings per minute, but see m fewer, so something is likely wrong. That started 10 minutes ago at the yellow activation line of experiment 13&amp;rdquo; is a thing where I live, and turning off 13 before even looking for possible root causes is a complete no-brainer. In 95% of the cases or more it actually fixes the incident for now, so that any followup is done again outside of panic mode.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-production.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;That is: Testing In Production Is A Safe Thing To Do - if you build an environment that makes it survivable. The key ingredients are&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Education&lt;/li&gt;
+&lt;li&gt;Awareness&lt;/li&gt;
+&lt;li&gt;Empowerment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I reference that in both talks I linked above: Education means you not only need your general craft, the IT you learned at school, in university or in previous jobs. You also need to learn the local knowledge. We encapsulate that in the two questions&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If you break it, will you even notice?&lt;/li&gt;
+&lt;li&gt;If you break it, can you fix it?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The first question asks if you do know you dependencies and dependents for any subsystem that you change. If you don&amp;rsquo;t that&amp;rsquo;s okay, we will teach you. That&amp;rsquo;s why we are here.&lt;/p&gt;
+&lt;p&gt;But if you write a patch, gate it in an experiment and then ask &amp;ldquo;Is this good? Can I roll that out?&amp;rdquo;, you are asking the wrong person. There is one expert on the whole planet for that change you just wrote, and that is you. You need to be able to answer the question &amp;ldquo;If you break it, will you even notice&amp;rdquo; with a confident yes in order to be admitted to production. Nobody but you will know the proper answer to that question, ever. We can only help you to find the &amp;ldquo;Yes&amp;rdquo; by teaching you.&lt;/p&gt;
+&lt;p&gt;This is also a question of attitude, and it has to be coming from the top. Back in the day when &lt;a href=&#34;https://twitter.com/keeskoolen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kees&lt;/a&gt;
+
+ was CEO, he usually ate with everybody else in the canteen.&lt;/p&gt;
+&lt;p&gt;A typical conversation that happened similarly more than once is Kees asking somebody: &amp;ldquo;I haven&amp;rsquo;t seen you before. Are you new?&amp;rdquo; &amp;ldquo;Yes, of course. I started 3 weeks ago.&amp;rdquo; &amp;ldquo;And&amp;rdquo;, Kees would ask, in one way or the other, &amp;ldquo;did you break production already?&amp;rdquo; The newbie would of course answer &amp;ldquo;No, of course not!&amp;rdquo; and get the usual response &amp;ldquo;So what am I paying you for?&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The moral in this is that errors and downtimes are a part of doing business. Of course we would like to have infrastructure where these things do not happen, or minimise impact, but velocity and risk taking are a thing of value to a fast company. By having an error budget (the integral between the predicted income and the actual income) and checking that things are within the error budget, management has a control that allows them to check on the state of the engineering culture. If we are over the error budget, we probably need to look at our ways, and the state of our education and practice. If we are under error budget a lot, we are probably not moving fast enough and are too risk averse.&lt;/p&gt;
+&lt;p&gt;All the instrumentation around this - CI/CD, dev and staging, experiment framework and observability framework - exist to make better use of the error budget and get most out of our invest into corporate improvement and organisational learning.&lt;/p&gt;
+&lt;p&gt;The second question asks if you know how to fix the things that your change may break. It is not only a question about scope, but also a question about your network. That is, because in any reasonably large system you won&amp;rsquo;t be able to put it together alone.&lt;/p&gt;
+&lt;p&gt;You should expect to need help.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s people that help, not positions.&lt;/p&gt;
+&lt;p&gt;So you should not answer &amp;ldquo;I will need a DBA around just in case&amp;rdquo;, but you should know if Debs, Greg or Simon would be better to have around in your case.&lt;/p&gt;
+&lt;p&gt;With your education covered, and especially the necessary local knowledge amending your general education, you&amp;rsquo;d then have to be aware of your environment. That ties back to the upper part of this writeup. With probes and annotions from Spans covering Experiment gateways, you will have to access the data collected in your event logging system, your observability pipeline to understand the state and health of your system.&lt;/p&gt;
+&lt;p&gt;And it is that exact state, and the detailed data that will tell you the story.&lt;/p&gt;
+&lt;p&gt;Aggregations are important, they point you into a general direction. But it is the raw data that contains the evidence you need. It is the ability to slice and dice the raw data along arbitrary dimensions at will that will allow you to make the precise cut which isolates the buggy cases from the non-buggy behavior. It will allow you to look at the precise delta in exposed state of your distributed system of dependencies that causes the abnormal behavior.&lt;/p&gt;
+&lt;p&gt;Logs and metrics are good, essential for checks and alerts, to handle known cases and navigate known waters safely. Events, and the ability to search, sort, aggregate and correlate on events at will, are what enable you to see and debug a distributed and developing production system. Experiments, separation of rollout and activation, with integrated Probes in Spans, allow you to collect this data, and to act, by disabling code that introduces undesireable behavior.&lt;/p&gt;
+&lt;p&gt;The rollout is likely to be safe, because any new code you roll out is never executed in production. Unless you activate it. In the end you will find that it is not the rollout sparklines in your graphs that matter, it&amp;rsquo;s the config change sparklines that need watching. You can turn on things for yourself, for a subset of the population, or, if you have gradually built confidence, full on.&lt;/p&gt;
+&lt;p&gt;Full on (or full off and writing the change off as worthless, in 19 of 20 cases) is a precondition then for cleaning up: Removing either the Experiment tooling around one new codepath, removing the old codepath completely, or the other way around.&lt;/p&gt;
+&lt;p&gt;Leaving experimentation instrumentation in the code, but having things full on (or off) is a very easy and visible way to assess technical debt. So even after the experiment has come to a conclusion one way or the other, the experiment framework is useful as a way to demarcate in some way or the other technical debt in source files.&lt;/p&gt;
+&lt;p&gt;And finally, empowerment. Empowerment is giving developers the power to make decisions, and at the same time demanding from them that they make them. You can do that only in a safe environment, and in a blame-free culture where this comes from the top. Hence the importance of Kees eating in the Canteen and asking the questions as told above. Hence, too, the importance of the error budget, and exposing it to all people that roll out.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Zero Tests and Testing in Production</title>
+      <link>https://blog.koehntopp.info/2017/05/29/zero-tests-and-testing-in-production.html</link>
+      <pubDate>Mon, 29 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/05/29/zero-tests-and-testing-in-production.html</guid>
+      <description>&lt;p&gt;There is a pretty cool Twitter thread by Sarah Mei, starting at&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/05/Bildschirmfoto-2017-05-29-um-05.49.22.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/sarahmei/status/868928631157870592&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Thread&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;I spammed into this at &lt;a href=&#34;https://twitter.com/isotopp/status/869030484935835648&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;/14&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/samphippen/status/868918641189949442&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@samphippen&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Big secret: there exist vast tranches of business contexts in which having
+literally zero tests is fine.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/sarahmei/status/868928631157870592&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@sarahmei&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Been thinking about this. Conventional wisdom says you need a
+comprehensive set of regression tests to go green before you release code.
+/1&lt;/p&gt;
+&lt;p&gt;You want to know that your changes didn&amp;rsquo;t break something elsewhere in the
+app. But there are ways to tell other than a regression suite. 2/&lt;/p&gt;
+&lt;p&gt;Especially with the rise of more sophisticated monitoring and better
+understanding of error rates (vs uptime) on the operational side. 3/&lt;/p&gt;
+&lt;p&gt;With sufficiently advanced monitoring &amp;amp; enough scale, it&amp;rsquo;s a realistic
+strategy to write code, push it to prod, &amp;amp; watch the error rates. 4/&lt;/p&gt;
+&lt;p&gt;If something in another part of the app breaks, it&amp;rsquo;ll be apparent very
+quickly in your error rates. You can either fix or roll back. 5/&lt;/p&gt;
+&lt;p&gt;You&amp;rsquo;re basically letting your monitoring system play the role that a
+regression suite &amp;amp; continuous integration play on other teams. 6/&lt;/p&gt;
+&lt;p&gt;This strategy assumes a lot of things, starting with an operational
+sophistication that most dev teams don&amp;rsquo;t have. There&amp;rsquo;s more, as well. 7/&lt;/p&gt;
+&lt;p&gt;It assumes the ability to segment users, show each dev&amp;rsquo;s
+change-in-progress to a different segment, &amp;amp; allocate error rates per
+segment. 8/&lt;/p&gt;
+&lt;p&gt;It assumes sufficient scale that variations in a segment&amp;rsquo;s error rates
+will be statistically significant. 9/&lt;/p&gt;
+&lt;p&gt;And perhaps most unusually, it assumes a product organization that&amp;rsquo;s
+comfortable experimenting on live traffic. 10/&lt;/p&gt;
+&lt;p&gt;Then again, if they already do A/B testing for product changes on live
+traffic, this is just extending that idea to dev changes. 11/&lt;/p&gt;
+&lt;p&gt;But if you can make it work, getting live feedback on changes you _just_
+made is amazing. 12/&lt;/p&gt;
+&lt;p&gt;This is one of the reasons why it&amp;rsquo;s critical for operations &amp;amp; development
+folks in an organization to work reeeeally closely together. 13/&lt;/p&gt;
+&lt;p&gt;An adversarial relationship between dev &amp;amp; ops kills this. You can&amp;rsquo;t even
+start if responsibility for &amp;lsquo;quality&amp;rsquo; is siloed on one side. 14/&lt;/p&gt;
+&lt;p&gt;Certainly hybrid approaches are possible, where there&amp;rsquo;s a small, fast test
+suite hitting critical code, &amp;amp; the rest is monitored in prod. 15/&lt;/p&gt;
+&lt;p&gt;There are reasons beyond correctness &amp;amp; regressions for writing tests, as I
+wrote about a few weeks ago.
+&lt;a href=&#34;https://www.devmynd.com/blog/five-factor-testing/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.devmynd.com/blog/five-factor-testing/&lt;/a&gt;
+
+
+16/&lt;/p&gt;
+&lt;p&gt;I described the five reasons we write tests: correctness, regressions, as
+design support, as documentation, and as refactoring support. 17/&lt;/p&gt;
+&lt;p&gt;Even in a world where you delegate correction &amp;amp; regressions to production
+monitoring, there are still reasons to write tests. 18/&lt;/p&gt;
+&lt;p&gt;But you could start to imagine a world in which we get all 5 of those
+benefits via mechanisms &lt;em&gt;other&lt;/em&gt; than automated tests. ? 19/&lt;/p&gt;
+&lt;p&gt;The writing and running of tests is not a goal in and of itself - EVER. We
+do it to get some benefit for our team, or the business. 20/&lt;/p&gt;
+&lt;p&gt;If you can find a more efficient way to get those benefits that works for
+your team &amp;amp; larger org, you should &lt;em&gt;absolutely&lt;/em&gt; take it. 21/&lt;/p&gt;
+&lt;p&gt;Because your competitor probably is. 22/&lt;/p&gt;
+&lt;p&gt;One final note: delegating regressions to production monitoring is what
+&amp;ldquo;move fast and break things&amp;rdquo; means, if you take it seriously. 23/&lt;/p&gt;
+&lt;p&gt;For a long time I dismissed MFaBT as a silly brogrammer slogan. Move fast
+= no tests, break things = how would they even know? CHAOS! 24/&lt;/p&gt;
+&lt;p&gt;Paying attention to the ops community, though, radically shifted my frame
+of reference. Now I get it. It&amp;rsquo;s doesn&amp;rsquo;t have to be chaos. 25/&lt;/p&gt;
+&lt;p&gt;Yet &lt;a href=&#34;https://twitter.com/__apf__/status/867751153026482177&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;another example&lt;/a&gt;
+
+
+Maybe someday I&amp;rsquo;ll outgrow it&amp;hellip; 26/fin&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I spammed this at her /14, thanks
+&lt;a href=&#34;https://twitter.com/s0enke/status/868935676993130496&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@s0enke&lt;/a&gt;
+
+ and Harald
+Wagener.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Dev and Ops have conflicting goals, success metrics, even if their tools
+are the same. Dev is successful if there are new features, new /1&lt;/p&gt;
+&lt;p&gt;best cases. Ops is an infrastructure job. They are successful if there are
+few outages, and recovery is quickly, success is measured by /2&lt;/p&gt;
+&lt;p&gt;how worst cases are handled. Conflict between Dev and Ops heavy orgs comes
+from conflict in these metrics. Ways around that exist, /3&lt;/p&gt;
+&lt;p&gt;and they relate to making testing in production safe, and to the two
+questions before each rollout. /4&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&amp;ldquo;If you break it, will you even notice?&amp;rdquo; What are the metrics relevant
+here? What are your consumers, to whom are you a provider? /5&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The answers should resolve to people, not subsystems. Because it&amp;rsquo;s people
+you need to speak to to get answers. /6&lt;/p&gt;
+&lt;p&gt;and 2. &amp;ldquo;If you break it, can you fix it?&amp;rdquo; That is, of course not, not in
+all cases. So who needs to be available when you roll out? Again,/7&lt;/p&gt;
+&lt;p&gt;this resolves to people. It&amp;rsquo;s a mind hack: these are worst-case related
+questions, but you want the dev doing a rollout asking them. /8&lt;/p&gt;
+&lt;p&gt;Testing in production: Making failure survivable.
+&lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english&lt;/a&gt;
+
+
+…, slide 19: Separation of rollout and activation, a/b testing /9&lt;/p&gt;
+&lt;p&gt;Experiment framework = running old and new code side by side. Requires
+ways to deal with persistent data changes (old/new). /10&lt;/p&gt;
+&lt;p&gt;Also requires fast monitoring, SLO for monitoring lag, monitoring lag
+&lt;em&gt;shown&lt;/em&gt; on the screens, and no rollout if monitoring actually lags./11&lt;/p&gt;
+&lt;p&gt;Because if it breaks you wouldn&amp;rsquo;t notice. Also, people. So chat needs to
+be up and running, because if it breaks &lt;em&gt;you&lt;/em&gt; can&amp;rsquo;t fix it. /12&lt;/p&gt;
+&lt;p&gt;Testing in production = fast rollouts = small changes. Small changes =
+fast debug = safe rollouts = making testing in production safe./13&lt;/p&gt;
+&lt;p&gt;(slide 32) It&amp;rsquo;s kind of a lock-in. To test safely in production you need
+to test in production, a lot. /14&lt;/p&gt;
+&lt;p&gt;Management is scared. How to deal with that? Give them controls. Predict
+biz behavior, measure outage, track delta. /15&lt;/p&gt;
+&lt;p&gt;TheN create a budget for downtime, (slide 34). When outage &amp;gt; budget, too
+much risk. Need to check process. /16 When outage &amp;lt; budget, &amp;ldquo;are we
+moving fast enough?&amp;rdquo; Are we becoming complacent? Are we taking enough
+risk? /17&lt;/p&gt;
+&lt;p&gt;Also, blameless postmortem - if you break production, I did not teach you
+properly, they did not have your back. It&amp;rsquo;s not you, /18&lt;/p&gt;
+&lt;p&gt;it&amp;rsquo;s the process. We need to fix the process, not take it out on a person
+(slides 32, 34, 35). /19&lt;/p&gt;
+&lt;p&gt;Testing in production is a good thing, not just for new things, but
+always. Never shut anything down cleanly (slide 46). You need to be/20&lt;/p&gt;
+&lt;p&gt;able to trust your safeties. Exercise them. Moves understanding from
+head (knowledge) to heart (experience) to guts (intuition) /21&lt;/p&gt;
+&lt;p&gt;Design principles are affected, too. Simplicity is a value (slide 51). If
+you can&amp;rsquo;t be simple, be obvious. See
+&lt;a href=&#34;https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology&lt;/a&gt;
+
+,
+/22&lt;/p&gt;
+&lt;p&gt;and
+&lt;a href=&#34;https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology&lt;/a&gt;
+
+
+for simple, boring, obvious. Stickers available. :-) /23&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s an engineering/developer strain of qualifications that matches
+feature dev. Hence me calling them Infrastructure Devs, /24&lt;/p&gt;
+&lt;p&gt;Google calling them SREs instead of Operations people. Operations is not
+dead, it became an engineering discipline. /25&lt;/p&gt;
+&lt;p&gt;It matches feature dev, and will always somewhat clash with feature
+development. Devops helps, SRE helps, but conflict fundamental./26&lt;/p&gt;
+&lt;p&gt;end Addendum: 2012 version of this in
+&lt;a href=&#34;https://www.slideshare.net/isotopp/8-rollouts-a-day&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.slideshare.net/isotopp/8-rollouts-a-day&lt;/a&gt;
+
+
+and
+&lt;a href=&#34;https://www.youtube.com/watch?v=rzU1UtUpyTI&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://www.youtube.com/watch?v=rzU1UtUpyTI&lt;/a&gt;
+
+
+/27, really the end&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Both Testing in Production and Test Driven Development, have a similar goal -
+they want to make failure survivable. One by building structure around
+failure that allows fast and low-loss recovery, the other by trying to avoid
+failure.&lt;/p&gt;
+&lt;p&gt;Testing in Production is more agile, and way faster, if you can pull it off.
+That is, finding a way to make failure survivable and low-cost.&lt;/p&gt;
+&lt;p&gt;If you manage this, payoff is manifold - not you do you save the overhead of
+formal TDD, you also gain a culture in which recovery procedures are
+exercised, well known, understood to be working and in which the difference
+between an slight Oops and a critical situation is understood at the
+experience/intuition level. This creates much more fluid, resilient and
+un-excited operations.&lt;/p&gt;
+&lt;p&gt;There are things and pieces where Testing in Production cannot be made safe.
+In such an environment (or such parts of an environment) not failing in the
+first place is crucial. Nobody understands that better than Ops persons with
+an intuitive grasp of critical failures.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Load, Load Testing and Benchmarking</title>
+      <link>https://blog.koehntopp.info/2017/02/16/load-load-testing-and-benchmarking.html</link>
+      <pubDate>Thu, 16 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/02/16/load-load-testing-and-benchmarking.html</guid>
+      <description>&lt;p&gt;(This article also available in &lt;a href=&#34;https://blog.koehntopp.info/2012/08/28/load-load-testing-und-benchmarks.html&#34;&gt;german language&lt;/a&gt;
+
+.)&lt;/p&gt;
+&lt;p&gt;So you have a new system and want to know what the load limits are. For that
+you want to run a benchmark.&lt;/p&gt;
+&lt;h2 id=&#34;basic-benchmarking&#34;&gt;
+    &lt;a href=&#34;#basic-benchmarking&#34;&gt;
+	Basic Benchmarking
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The main plan looks like this:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/benchmark_plana.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The basic idea: Find a box, offer load, see what happens, learn.&lt;/p&gt;
+&lt;p&gt;You grab a box and find a method to generate load. Eventually the box will
+be fully loaded and you will notice this somehow.&lt;/p&gt;
+&lt;p&gt;The first mistake: running the load generator and the system to test on the
+same box. That won&amp;rsquo;t work.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s our goal to bring the box to its limits. Actually, we want to push it
+past that in order to see what it is that is limiting it. That will happen
+only when we are able to generate more load than the target system can
+actually process. If the load generator and the target system are sharing
+any resources that will never happen: The starved resource, for example CPU,
+will be slowing down not only the target application but also the load
+generator until we are reaching equilibrium at an unknown point below the
+actual limit.&lt;/p&gt;
+&lt;p&gt;That way we will never see what color the smoke is when the box catches
+fire, that is, what the actual system behaviour under overload is. So we
+need to separate the load generator and the target system.&lt;/p&gt;
+&lt;p&gt;The second mistake: The target system or the load generated are not close
+enough to production. In database land, typical mistakes are&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The tested system has less memory or a different disk subsystem than production.&lt;/li&gt;
+&lt;li&gt;The test data set is smaller than production.&lt;/li&gt;
+&lt;li&gt;The test query set or the test data set is biased relative to production.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In all of these cases we will be learning something, but it will not easily
+port to production. For example, in 2005 the german computer magazine c&amp;rsquo;t
+had a test media shop selling CD and DVD media, and was using this to
+benchmark implementations of the system with different databases.
+The actual benchmark was an equidistribution of queries, so there have been
+no best sellers and no long tail.&lt;/p&gt;
+&lt;p&gt;To win the benchmark it was mandatory to disable all caches, because there
+was no set of popular media which would have been gaining from caching. That
+outcome is the opposite of what is necessary in a real world scenario, where
+there is a clear long tail distribution of queries.&lt;/p&gt;
+&lt;p&gt;The closer you can bring the test load, the tested system and the test data
+to production the besser the results. Which is why at work we are trying
+very hard to make testing in production safe, and then we test whatever is
+possible in production.&lt;/p&gt;
+&lt;h2 id=&#34;saturation&#34;&gt;
+    &lt;a href=&#34;#saturation&#34;&gt;
+	Saturation
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;When you offer load to a system, the average load on the system will rise.
+But load usually is not constant, but will vary, depending on what users are
+doing and how expensive the individual requests are: Not all operations are
+equally expensive.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/benchmark1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A system close to saturation: Average load is slightly below the maximum, but
+individual peaks spike above the saturation line.&lt;/p&gt;
+&lt;p&gt;Consequently we are not pushing the system to a limit, but we are raising a
+rolling average in which the actual load is constantly fluctuating and
+oscillating around this average until the peaks exceed the point of
+saturation.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/benchmark3.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The average offered load is below the 100% saturation line, but the peaks
+are already exceeding the limit.&lt;/p&gt;
+&lt;p&gt;That is of course nonsense. The saturation limit is a hard limit, the system
+can&amp;rsquo;t produce more than that, because a necessary resource is exhausted and
+the system is constrained by that resource. So what actually happens is that
+the system will be building a backlog whenever the offered load goes above
+the 100% line. Requests will pile up in some queue and will only be
+processed when the load goes below that limit.&lt;/p&gt;
+&lt;p&gt;As we push the system harder, it will exceed the saturation point more and
+more and phases where it can gain on the building backlog will become rarer.
+But since the costs for an individual request vary, it is hard to overload
+the system in a controlled way - harder the higher that variance is.&lt;/p&gt;
+&lt;p&gt;That is one of many reasons why we focus on outliers and worst cases first
+when we care about optimization: In order to be able to meet any kind of
+service level objective we need to handle these extremely bad cases first
+and narrow the band of possible response times, even if that does not move
+the mean much. Only then we can try to improve the mean response time of the
+system.&lt;/p&gt;
+&lt;h2 id=&#34;wait-time-and-the-hockey-stick&#34;&gt;
+    &lt;a href=&#34;#wait-time-and-the-hockey-stick&#34;&gt;
+	Wait time and the hockey stick
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;What actually happens at saturation becomes clearer as we transform the
+above graph and take it out of the time domain. We will be graphing offered
+load (requests/s) vs. throughput (responses/s) and offered load (requests/s)
+vs. response time (latency).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/benchmark2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Requests/s vs. Response/s (Capacity) and Requests/s vs. Response time
+(Latency). As we raise offered load, the system approaches the 100% line
+(the vertical saturation line), and a backlog builds.&lt;/p&gt;
+&lt;p&gt;As we increase load, each request will generate a response: the curve in the
+capacity graph goes up at a 45deg angle. Even as the load rises, requests
+will take approximately the same time to process - we are calling this time
+the think time.&lt;/p&gt;
+&lt;p&gt;Once we approach saturation, a resource in our system will be starved and
+constrain capacity. Even if we are offering more load, this will not
+generate more responses. The capacity graph flattens out. Since more
+requests are coming in than we have capacity for, these excess requests will
+be queued. Wait time is being added on top of the think time.&lt;/p&gt;
+&lt;p&gt;And since we are continuing to add more requests than we can handle, the
+queue and the wait time will rise rapidly and without bounds. The latency
+curve has the shape of a hockey stick.&lt;/p&gt;
+&lt;h2 id=&#34;testing-in-production&#34;&gt;
+    &lt;a href=&#34;#testing-in-production&#34;&gt;
+	Testing in production
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;That is not a theory, but can be shown in real production systems.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/benchmark5.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A typical production setup. User requests are entering the system from the
+internet at the top, hitting a load balancer. The request are routed to a
+set of web servers behind the load balancer.&lt;/p&gt;
+&lt;p&gt;Assuming that you have a minimum size for load testing with production load:
+You need to have a sufficient number of users, large enough so that
+individual users do not contribute in a meaningful way. You will need a
+frontend load balancer in front of a number of webservers, and you need to
+be able to modify load distribution weights live in this setup.&lt;/p&gt;
+&lt;p&gt;The load tests starts with running an Apache Siege load generator at a very
+low setting from the outside against the setup - actually, the Siege is not
+running against the load balancer, but against one individual web server
+which is the one which we will be trying to overload. This is not done to
+generate load, but to measure latency: In normal configuration our system
+will not be overloaded, so the baseline latency we are seeing is think time.&lt;/p&gt;
+&lt;p&gt;During the benchmark we are playing with weights in the load balancer in
+order to direct more load to individual web servers. The load balancing
+weight of the web server getting the Siege requests is now being increased
+so that it will need to handle more actual user requests than the other
+servers. Eventually either timeouts will be showing up in the error log, or
+the request latency shown by Siege will be going up dramatically.&lt;/p&gt;
+&lt;p&gt;Either signal indicates saturation, and we need to stabilize offered load at
+or very slightly below this point in order to find the saturation point.&lt;/p&gt;
+&lt;p&gt;Here is a time domain plot of such an event:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/load-test-time.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A request graph of a MySQL database slave being load tested. Writes are
+coming in via replication, and are not subject to load testing, hence
+stable. Selects are being load tested and increase at the tests
+commence.&lt;/p&gt;
+&lt;p&gt;In the test graph above we are looking at query counters of a MySQL database
+slave during three load test events. Write queries (insert, update, delete)
+are coming in through replication from the upstream master and are not
+affected by the load test. Selects are being increased by load balancer
+manipulation.&lt;/p&gt;
+&lt;p&gt;During the third test there is a spike of update statements
+due to a cron script running and affecting the test, invalidating the
+results of that run.&lt;/p&gt;
+&lt;p&gt;Taking the results from the above run and plotting them in a latency graph
+results in the following graph. The hockey stick is clearly visible:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/load-test-comparison.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Latency graph: test1 is shown in blue, test2 in orange.&lt;/p&gt;
+&lt;p&gt;The graph shows offered load vs. latency of the configurations test1 and
+test2 from the run above. Configuration test2 is clearly superior. A variant
+of this graph uses larger symbols as the error rate of that measurement
+increases to add another dimension. That way the stability of the system
+under test in overload is being visualized as well.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Load, Load Testing und Benchmarks</title>
+      <link>https://blog.koehntopp.info/2012/08/28/load-load-testing-und-benchmarks.html</link>
+      <pubDate>Tue, 28 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/08/28/load-load-testing-und-benchmarks.html</guid>
+      <description>&lt;p&gt;(Diesen Artikel gibt es auch in &lt;a href=&#34;https://blog.koehntopp.info/2017/02/16/load-load-testing-and-benchmarking.html&#34;&gt;englischer Sprache&lt;/a&gt;
+
+.)&lt;/p&gt;
+&lt;p&gt;So. Du willst also wissen, was genau die Leistungsgrenzen Deines Systems
+sind.  Und dazu möchtest Du einen Lasttest fahren, um Ergebnisse zu
+ermitteln.&lt;/p&gt;
+&lt;p&gt;Die Grundidee Deines Plans sieht so aus:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark_plana.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Du nimmt Deine Kiste und findest eine Methode, um Last zu generieren.  Dann
+wirst Du schon merken, wie weit das geht und wann die Kiste ausgelastet ist.&lt;/p&gt;
+&lt;p&gt;Der erste Fehler: Den Lastgenerator auf der zu testenden Kiste laufen
+lassen.  Das geht nicht.  Unser Ziel ist es ja, die Kiste bis an ihre
+Lastgrenze zu bringen.  Genau genommen wollen wir sie sogar darüber hinaus
+drücken, und das geht nur genau dann, wenn wir mehr Last erzeugen können,
+als die zu testende Kiste abarbeiten kann.&lt;/p&gt;
+&lt;p&gt;Teilen sich der Lastgenerator und die zu testende Anwendung irgendwelche
+kritischen Ressourcen, gelingt das nicht: Die Ressource, etwa CPU, wird
+knapp und verlangsamt nicht nur die zu testende Anwendung, sondern auch den
+Lastgenerator, bis sich das System an einem unbekannten Punkt unterhalb der
+Überlast einschwingt.  Auf diese Weise werden wir niemals lernen, welche
+Farbe der Rauch hat, wenn es zu Explosion kommt, d.h.  wie genau das
+Systemverhalten an der Lastgrenze aussieht.&lt;/p&gt;
+&lt;p&gt;Wir trennen also die Lastquelle und das zu testende System.&lt;/p&gt;
+&lt;p&gt;Der zweite Fehler: Das getestete System oder die Last sind nicht nahe genug
+an der realen Last.  Typische Fehler sind: Eine zu testende Datenbank hat
+weniger RAM als das Produktivsystem, es wird mit einem kleineren
+Datenbestand getestet als das Produktivsystem hat, oder die Formulierung der
+Queries oder die relative Verteilung der Anfragen auf den Daten ist nicht
+identisch mit den Verhältnissen im Produktivsystem.&lt;/p&gt;
+&lt;p&gt;In allen diesen Fällen wird man von einem Lasttest etwas lernen, aber es
+wird nicht unbedingt sinnvoll auf das Produktivsystem übertragbar sein.&lt;/p&gt;
+&lt;p&gt;Ein klassisches Beispiel ist etwa der
+&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;http://www.heise.de/ct/artikel/Gute-Nachbarschaft-290110.html&#34; alt=&#34;Datenbank-Contest&#34;  /&gt;
+&lt;/p&gt;
+
+
+der c&amp;rsquo;t von Mitte/Ende 2005 gewesen (Die Auflösung ist
+&lt;a href=&#34;https://www.heise.de/artikel-archiv/ct/2006/13/190&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;leider kostenpflichtig&lt;/a&gt;
+
+.
+In diesem Benchmark wird die Datenbankstruktur eines CD-Verleih/Verkaufs
+simuliert, jedoch werden in der Lastgenerierung des Benchmarks alle Titel
+gleichverteilt nachgefragt.  Es gibt also keine Bestseller und keine
+Lastkurve mit der Form eines &amp;lsquo;long tail&amp;rsquo;, wie sie in einem echten
+Ladengeschäft aufträte.  Daher ist es für den Gewinn des Benchmarks wichtig,
+alle Caches zu deaktivieren, während das Vorhandensein dieser Caches für den
+Betrieb mit echter Last essentiell gewesen wäre.&lt;/p&gt;
+&lt;p&gt;Je näher man mit seiner Lastgenerierung, dem Testsystem und dem Testbestand
+an das Echtsystem herankommt, um so besser ist sichergestellt, daß man
+Ergebnisse erzielt, die in der realen Welt auch Bestand haben.&lt;/p&gt;
+&lt;p&gt;Am Besten wäre also, man testete auf dem Produktivsystem und mit echten
+Usern.  Damit man das aber sicher tun kann, muß man erst einmal wissen, was
+genau man hier tut.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark1.png&#34; alt=&#34;Load over Time&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Wenn wir in ein System Last einwerfen, dann geht die Last im Mittel nach
+oben, aber sie ist nicht konstant, sondern schwankt je nachdem, welche
+Aktivitäten im System wir gerade aufrufen oder wie der Mix an gerade im
+System beantworteten Anfragen biased ist: Nicht alle Operationen in unserem
+System sind gleich teuer.&lt;/p&gt;
+&lt;p&gt;Wir fahren das System also nicht &lt;em&gt;an&lt;/em&gt; die Lastgrenze, sondern wir schieben
+eine fluktuiierende und oszillierende Systemlast immer weiter nach oben, bis
+ihre Spitzen weiter und weiter über die &amp;lsquo;100%&#39;-Marke hinausreichen.  Das
+sieht so aus:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark3.png&#34; alt=&#34;Load and Overload&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Wann immer das System über die 100%-Marke gepusht wird, baut es ein Backlog
+auf: Es bekommt mehr Last hereingedrückt als es abarbeiten kann und Anfragen
+beginnen, sich auf der Eingangsseite zu stapeln.  Indem wir eine variable
+Load immer weiter erhöhen, befindet sich das System in immer längeren Phasen
+des Backlog-Aufbaus und in immer kürzeren Phasen, in denen es Backlog
+abarbeiten kann.  Da die Last aber je nach Art der Generierung zufällig
+schwankt, ist es sehr schwierig, die Überlastung des Systems kontrolliert
+durchzuführen, wenn die Kosten für einen einzelnen Request sehr variabel
+sind.&lt;/p&gt;
+&lt;p&gt;Das ist einer der Gründe, warum man sich bei der Optimierung von Systemen
+nicht so sehr um die Verbesserung der guten oder auch nur der
+durchschnittlichen Fälle kümmert.  Stattdessen wird man sich zunächst einmal
+um die Outlier und schlimmsten Fällen kümmern müssen.  Das ist auch, warum
+gute Systemarchitekten sich im Grunde nur für die Worst-Case-Performance
+eines Systems oder eines Changes interessieren (siehe
+&lt;a href=&#34;https://blog.koehntopp.info/2008/05/30/the-importance-of-fail.html&#34;&gt;The Importance of FAIL&lt;/a&gt;
+
+,
+oder jede 2.  Diskussion auf der Linux Kernel Mailingliste).&lt;/p&gt;
+&lt;p&gt;Es geht zunächst einmal also darum, die Variabilität in der Antwort des
+Systems zu verkleinern, bevor man daran gehen kann, sein Verhalten als
+Ganzes zu verbessern.&lt;/p&gt;
+&lt;p&gt;Was genau geschieht wird noch besser deutlich, wenn wir die Graphen von dort
+oben nicht als Last-über-Zeit zeichnen, sondern einmal als &amp;lsquo;Last, die wir
+ins System drücken&amp;rsquo; (offered load) gegen &amp;lsquo;Durchsatz&amp;rsquo; (reponses), und
+zugleich auch als &amp;lsquo;Last, die wir ins System drücken&amp;rsquo; (offered load) gegen
+&amp;lsquo;Antwortzeit&amp;rsquo; (latency).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Wenn wir ein System unter Last hoch fahren, dann wird für jeden Request, den
+wir in das System schicken, eine Antwort generiert.  Die Kurve zwischen
+offered load und response geht also als 45-Grad Gerade nach oben, bis wir
+den Sättigungspunkt erreichen.  Dort wird sie dann bei einem ideal
+konfigurierten System als horizontale Gerade weiter laufen: Wir drücken zwar
+mehr Load in das System hinein, bekommen aber nicht mehr Antworten heraus,
+weil das System nicht schneller kann.&lt;/p&gt;
+&lt;p&gt;Die Frage ist: Was passiert mit diesen zusätzlichen Anfragen.  Die Antwort
+gibt der zweite Graph.  Wir drücken Anfragen in das System hinein, und diese
+haben eine bestimmte Basis-Bearbeitungszeit - die think time.  Die think
+time geht unter Last nicht viel nach oben, wenn unser System gut konstruiert
+ist.  Sobald wir jedoch den Sättigungspunkt erreichen, stapeln sich die
+Anfragen in der Eingangswarteschlange unseres Systems, da das System nicht
+ausreichend Kapazität bereitstellen kann, um die Masse der Requests zu
+beantworten.  Auf die think time müssen wir noch Wartezeit - wait time -
+oben drauf rechnen.  Und da wir laufend und dauerhaft mehr Last in das
+System schicken als es abarbeiten kann, explodiert diese Warteschlange und
+damit auch die Menge an wait time, die ein Request auf sich nehmen muß.&lt;/p&gt;
+&lt;p&gt;Das ist keine Theorie, sondern real einsetzbar: Man kann kontrolliert
+realistische Lasttests an Produktivsystemen durchführen, wenn einige
+Voraussetzungen gegeben sind.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark5.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Vorraussetzung ist eine Mindestgröße des zu testenden Systems, sodaß eine
+stabile externe Last anliegt.  Will sagen, man muß zunächst einmal
+ausreichend User haben, damit man das System überhaupt unter Last setzen
+kann und bei denen die durch einen einzigen User generierte Last nicht
+nennenswert ins Gewicht fällt.  In solchen Fällen hat man dann auch ein
+Frontend mit mehr als einem Webserver und einem Load Balancer vorne dran.&lt;/p&gt;
+&lt;p&gt;Der Lasttest muß zu einer Zeit mittlerer Last stattfinden: In der ruhigsten
+Phase des Tages ist die verfügbare Gesamtlast oft nicht ausreichend, um
+Überlast zu erzeugen und in der heißesten Phase des Tages will man
+wahrscheinlich nicht testen.  Wo ich arbeite ist die Lastkurve so, daß
+vormittags eine gute Zeit zum Testen ist.  Außerhalb der Haupt- und
+Nebensaison ist es so, daß wir unter Umständen Kapazität ganz abschalten
+müssen, um ausreichend Gesamtlast zu haben, die wir konzentrieren können, um
+Überlast zu haben.&lt;/p&gt;
+&lt;p&gt;Der Lasttest beginnt nun damit, daß wir die Base Load der zu testenden
+Systeme aufnehmen und daß wir einen Apache Siege in das System legen, um
+Base Latency zu messen: Dies ist die think time eines nicht überlasteten
+Systems.&lt;/p&gt;
+&lt;p&gt;Jetzt kann man am Load Balancer spielen und die Gewichte des zu testenden
+Systems (eine einzelne Frontend-Maschine oder eine Clusterzelle) langsam
+hochdrehen, um mehr Last zu erzeugen.  Sobald entweder Fehler im Error Log
+auftauchen oder die Latenz des Siege steil nach oben geht, hat man Sättigung
+erreicht.  Jetzt muß man die Last leicht unter dem Sättigungspunkt
+stabilisieren und halten (wir drehen das Gewicht am LB gerade so weit
+runter, daß auch die Spitzen unserer Last aus dem Überlastbereich heraus
+gehalten werden) und kann dann in sehr, sehr kleinen Schritten das System
+gezielt überlasten.&lt;/p&gt;
+&lt;p&gt;Auf dem getesteten System kann das dann so aussehen:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark-load-test-time.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Man erkennt deutlich drei Testdurchläufe mit unterschiedlichen
+Konfigurationen, und eine fiese Lastspitze eines Cronscriptes, die da im 3.
+Lasttest plötzlich reinspiked und auf den Monitoren der Überwacher die
+Alarme kurz aufblitzen läßt - ein typischer Outlier, der
+behandlungsbedürftig ist.&lt;/p&gt;
+&lt;p&gt;Man sieht auch, daß der 2.  Lasttest längere Zeit sehr vorsichtig gefahren
+ist, jedenfalls aus der Sicht der Datenbank.  Das Ergebnis war am Ende, daß
+die Limitierung dieses Mal nicht in der Datenbank, sondern in der CPU der
+Frontend-Systeme liegt.&lt;/p&gt;
+&lt;p&gt;Die Messungen der Last kann man dann noch als offered-load vs.  latency
+aufzeichnen, und bekommt dann Graphen, die so aussehen können:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/benchmark-load-test-comparison.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Der Graph zeigt den Vergleich zweier unterschiedlicher Konfigurationen und
+man erkennt, daß die Ergebnisse in der realen Welt ziemlich genau so
+aussehen wie oben in der Theorie diskutiert.  Eine Variante dieses Graphen
+macht die einzelnen Symbole um so größer, je mehr Fehler an diesem Meßpunkt
+aufgetreten sind.  Auf diese Weise ist dann auch die Art und Weise des
+Systemversagens und der Punkt der letzten Stabilität gut erkennbar.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Nachtrag:&lt;/strong&gt; Alexander Aulbach fragte in der Diskussion zum Artikel oben:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Es wäre mal interessant zu schauen, welchem physikalischen Modell das am
+ehesten gehorcht.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Guckst Du hier:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Raj Jain, &lt;a href=&#34;http://www.amazon.de/The-Computer-Systems-Performance-Analysis/dp/0471503363&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Art of Computer Systems Performance Analysis: Techniques for Experimental Design, Measurement, Simulation, and   Modeling&lt;/a&gt;
+
+, Wiley and Sons, 1992&lt;/li&gt;
+&lt;li&gt;Neil J Gunter, &lt;a href=&#34;http://www.amazon.de/Analyzing-Computer-System-Performance-ebook/dp/B001FB6DP4&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Analyzing Computer System Performance with Perl::PDQ&lt;/a&gt;
+
+, (Springer, Kindle Edition)&lt;/li&gt;
+&lt;li&gt;Neil J Gunter, &lt;a href=&#34;https://www.amazon.de/Guerrilla-Capacity-Planning-Tactical-Applications/dp/3540261389&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Capacity Planning: A Tactical Approach to Planning for Highly Scalable Applications and Services&lt;/a&gt;
+
+ (Springer, 2006)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Viele der Modellierungsansätze werden aber durch Testing in Production und
+das beschriebene Lasttestverfahren obsolet.  Die Modellierung kann dennoch
+sinnvoll sein, um obskure Bottlenecks oder absolute Kapazitätsgrenzen besser
+sichtbar zu machen.  In meiner Praxis habe ich sie bisher jedoch nie
+gebraucht, außer um Offensichtliches aus der Messung im Modell zu
+bestätigen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Testing in Production</title>
+      <link>https://blog.koehntopp.info/2011/12/02/testing-in-production.html</link>
+      <pubDate>Fri, 02 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/12/02/testing-in-production.html</guid>
+      <description>&lt;p&gt;Mitte November ist auf The Testing Planet ein Artikel von Seth Eliot
+(Microsoft) erschienen mit dem Titel
+&lt;a href=&#34;http://www.thetestingplanet.com/2011/11/the-future-of-software-testing-part-one-testing-in-production/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Testing in Production&lt;/a&gt;
+
+.
+Eliot schreibt über Software Services, also Dienste, die auf einer Website
+laufen, sodaß die User keine Anwendungen installieren müssen (Wir erinnern
+uns: Microsoft ist noch immer ganz groß darin, Software auf physikalischen
+read-only Medien an Benutzer zu verschicken, auch wenn diese Software seit
+einer Dekade kaum mehr als ein Loader für Updates über das Internet ist und
+nach der Installation vom Medium erst einmal alle eben installierten Dateien
+durch das heruntergeladene Update durch neuere Versionen ersetzt werden).&lt;/p&gt;
+&lt;p&gt;In Software Services hat der Anbieter jedenfalls die Kontrolle darüber,
+welche Version der Software welchem Kunden präsentiert wird, und er hat in
+der Regel Zugriff und Meßmöglichkeiten im Data Center, auf dem die Software
+läuft, kann also auf der Serverseite diagnostizieren, was wann wie und warum
+schief geht.&lt;/p&gt;
+&lt;p&gt;Eliot behauptet nun, daß User seltsamer sind als Tester sich vorstellen
+können und man daher besser so früh als möglich mit echten Benutzern testet
+(Testing in Production = TIP).  Vorhergehende synthetische Tests (Up Front
+Testing = UFT) können gemacht werden, sollten aber nur so weit gemacht
+werden, daß man sicher in der Produktion testen kann.&lt;/p&gt;
+&lt;p&gt;Eliot weiter:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For some TiP methodologies we can reduce risk by reducing the exposure of
+the new code under test.  This technique is called “Exposure Control” and
+limits risk by limiting the user base potentially impacted by the new
+code.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Was er damit meint, wird weiter unten klar, wenn er erläutert, welche Klassen von TIP er unterscheidet.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Ramped Deployment&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Der zu testende Code wird ausgerollt, ist aber zunächst nicht aktiv.  Er
+wird für einen Subset der Benutzer aktiviert und überwacht.  Dabei
+können unterschiedliche Aspekte des Codes untersucht werden - wie er
+sich auf die Geschäftsprozesse auswirkt, ob er technisch funktioniert
+oder wie er skaliert etwa.  Benutzer können automatisch oder
+handselektiert sein, und wissen entweder, daß die mit experimentellem
+Code arbeiten oder nicht.&lt;/p&gt;
+&lt;p&gt;Entscheidend ist, daß das Deployment von neuem Code und seine
+Aktivierung voneinander getrennt werden.  Dies erlaubt es, Features
+graduell einzuführen und schnell zu deaktivieren, wenn sich Probleme
+entwickeln.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Controlled Test Flight&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ein a/b-Experiment, in der alte und der neue Code parallel für
+unterschiedliche Benutzer aktiviert wird und die Benutzer nicht wissen,
+in welcher Kategorie sie sich befinden.  Eine Unterkategorie von Ramped
+Deployment.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Experimentation for Design&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;eine weitere Verfeinerung von Controlled Test Flight ist, die neue und
+die alte User Experience parallel für unterschiedliche, repräsentative
+Benutzergruppen zu aktivieren, um den Einfluß der neuen UX auf das
+Geschäftsmodell zu prüfen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Dogfood/Beta&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;wissen die Benutzer um die Tatsache, daß sie neuen Code testen, handelt
+es sich nicht um Experimentation, sondern um eine Beta.  Sind die
+Benutzer Mitarbeiter oder Freunde der Firma, handelt es sich um
+Dogfooding.  Hier ist es oft zulässig, mit dem Wissen und Einverständnis
+der Benutzer zusätzliche Telemetrie zu installieren und auszuwerten.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Synthetic Test in Production&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;das Anwenden von automatisierten UFT-Systemen auf Produktionssysteme.
+Sie können verwenden werden, um das Produktionssystem oder sein
+Monitoring zu validieren.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Load/Capacity Test in Production&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Last und Kapazitätstest in der Produktion, bei Eliot unter Verwendung
+synthetischer Last gegen Produktionssysteme, meistens zusätzlich zur
+existierenden Last durch reale Benutzer, um die Kapazität des Systems zu
+bestimmen.
+&lt;br/&gt;&lt;br/&gt;
+Die mir bekannten Anwender solcher Verfahren spielen stattdessen eher
+mit den Gewichten an ihren Load Balancern, um die externe Last durch
+reale User auf weniger und weniger Backends zu konzentrieren.
+&lt;br/&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;p&gt;Synthetische Last wird dabei lediglich als Meßsonde verwendet, um die Latenz
+von Requests zu überwachen - kommt zur typischen Think Time des Benchmarks
+eine Wait Time hinzu, ist die den getesteten Frontends angebotene Load
+größer als ihre Kapazität und es baut sich eine Queue auf.  Lastsättigung
+ist erreicht und die Kapazität des Gesamtsystems kann durch einfache
+Dreisätze bestimmt werden.  Bricht man den Test hier ab, ist die UX für die
+realen User nicht destruktiv beeinflußt: Das System mag einigen Benutzern
+für kurze Zeit langsam erscheinen, ist aber zu allen Zeiten normal
+Funktionsfähig.
+&lt;br/&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;p&gt;Bricht man den Test nicht ab, sondern erhöht die Last vorsichtig weiter,
+kann man den Failure Mode des Systems verifizieren: Art und Lage der
+begrenzenden Ressource im Gesamtsystem wird offensichtlich, Qualität des
+Monitorings und Prozesse im Operating werden mitgeprüft.  Diese Phase des
+Tests erfordert schnelle Reaktion, um den Einfluß auf die UX der realen
+Benutzer zu minimieren.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Outside-in load /performance testing&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ein Lasttest mit synthetischer Load, die von einer externen Quelle in
+die Produktionsumgebung injeziert wird, also denselben Weg nach drinnen
+nimmt wie die realen Benutzer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;User Scenario Execution&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ausführung von Endbenutzer-Szenarien gegen ein Produktionssystem von den
+Endpunkten echter Benutzer.  Kann manuelles Testen beinhalten.  Diese
+Tests können regional unterschiedliche UX sichtbar machen (&amp;ldquo;Das System
+ist schnell genug in Europa, von Asien aus aber kaum benutzbar.&amp;quot;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Data Mining&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Die Logdaten echter Benutzer werden nach Problemen oder Testfällen
+durchsucht, die spezifische Szenarien darstellen.  Die Fälle, die
+auftreten, werden automatisch als Bugtickets eingetragen.  Das kann in
+Echtzeit passieren.  &lt;br/&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;p&gt;Echtzeitmonitoring kann auf viele verschiedene Weisen nützlich sein.
+Insbesondere in den o.a.  Lasttests ist ein Echtzeit-Errormonitor
+notwendig, um die Saturierung von der Überlast des Systems trennen zu
+können, und um Lage und Failure Mode der überlasteten Komponente im
+Produktionsweg schnell erkennen zu können.  Ohne ein solches
+Echtzeitmonitoring ist diese Art von Test nicht sicher durchführbar.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Destructive Testing&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Injektion von Fehlern in Produktionssysteme, um Servicekontinuität im
+Fehlerfall zu validieren (
+&lt;a href=&#34;http://www.codinghorror.com/blog/2011/04/working-with-the-chaos-monkey.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Chaos Monkey&lt;/a&gt;
+
+
+).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Production Validation&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Echtzeitmonitore, die die verschiedenen Phasen der Produktion auf
+Businessebene, Contentebene, Technischer Ebene, Netzwerkebene und so
+weiter überwachen und visualisieren.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Eliot bringt dann verschiedene Beispiel für TIP: Googles und Bings
+a/b-Experimente und 1% Launches werden genannt, sie sind Beispiele für
+Experimentation for Design.  Controlled Test Flights werden dort ebenfalls
+verwendet, dabei werden kritische Änderungen ausgerollt und parallel zu
+getestetem Code betrieben - oft werden dabei Daten zweimal geschrieben: Der
+alte Code führt das alte System weiter, der neue Code arbeitet im neuen
+System mit anderen Dateien oder Datenbanktabellen.&lt;/p&gt;
+&lt;p&gt;Chaosmonkey war der Vorläufer eines Systems für Destructive Testing, das
+jetzt die
+&lt;a href=&#34;http://techblog.netflix.com/2011/07/netflix-simian-army.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Simian Army&lt;/a&gt;
+
+
+darstellt: Neben Chaos Monkey, der Komponenten zufällig aus dem System
+entfernt gibt es nun Latency Monkey, der Dienste zufällig verzögert,
+Conformity Monkey, der Systeme aus dem Dienst kippt, die nicht auf dem
+erwarteten Stand sind und viele andere Dienstprüfer und Killer mehr.&lt;/p&gt;
+&lt;p&gt;Eliot weist darauf hin, daß Tests in der Produktion gefährlich sein können
+und sie deswegen so aufgebaut werden müssen, daß sie keine Produktionsdaten
+verändern können und nur mit funktionierendem und schnellem Monitoring
+durchgeführt werden können.&lt;/p&gt;
+&lt;p&gt;Korrekt ausgeführt eröffnen sie aber eine Menge Lernmöglichkeiten, die
+traditionellem Testen nicht zur Verfügung stehen.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

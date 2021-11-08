@@ -1,0 +1,1059 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>container on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/container.html</link>
+    <description>Recent content in container on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 22 Jan 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/container/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Swap and Memory Pressure: How Developers think to how Operations people think</title>
+      <link>https://blog.koehntopp.info/2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.html</link>
+      <pubDate>Mon, 22 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/01/22/swap-and-memory-pressure-how-developers-think-to-how-operations-people-think.html</guid>
+      <description>&lt;p&gt;There is a very useful and interesting article by Chris Down:
+&amp;ldquo;&lt;a href=&#34;https://chrisdown.name/2018/01/02/in-defence-of-swap.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;In defence of swap: common misconceptions&lt;/a&gt;
+
+&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Chris explains what Swap is, and how it provides a backing store of
+anonymous pages as opposed to the actual code files, which provide backing
+store for file based pages. I have no problem with the information and
+background knowledge he provides. This is correct and useful stuff, and I
+even learned a thing about what cgroups can do for me.&lt;/p&gt;
+&lt;p&gt;I do have a problem with some attitudes here. They are coming from a
+developers or desktop perspective, and they are not useful in a data center.
+At least not in mine. :-)&lt;/p&gt;
+&lt;p&gt;Chris writes:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Swap is primarily a mechanism for equality of reclamation, not for
+emergency “extra memory”. Swap is not what makes your application slow –
+entering overall memory contention is what makes your application slow.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;And that is correct.&lt;/p&gt;
+&lt;p&gt;The conclusions are wrong, though. In a data center production environment
+that does not suck, I do not want to be in this situation.&lt;/p&gt;
+&lt;p&gt;I see it this way:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If I am ever getting into this situation, I want a failure, I want it fast
+and I want it to be noticeable, so that I can act on it and change the
+situation so that it never occurs again.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;That is, I do not want to survive. I want this box to explode, others to
+take over and fix the root cause. So the entire section »Under temporary
+spikes in memory usage« is a DO NOT WANT scenario.&lt;/p&gt;
+&lt;p&gt;Chris also assumes a few weird things, from a production POV: He already
+states that&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you have a bunch of disk space and a recent (4.0+) kernel, more swap is
+almost always better than less. In older kernels kswapd, one of the kernel
+processes responsible for managing swap, was historically very overeager
+to swap out memory aggressively the more swap you had.
+and production sadly is in many places still on pre-4.0 kernels, so don&amp;rsquo;t
+have large swap.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;He also mentions&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As such, if you have the space, having a swap size of a few GB keeps your
+options open on modern kernels. […] What I’d recommend is setting up a few
+testing systems with 2-3GB of swap or more, and monitoring what happens
+over the course of a week or so under varying (memory) load conditions.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Well, I have production boxes with 48 GB, 96 GB or even 192GB of memory. &amp;ldquo;A
+few GB of swap&amp;rdquo; aren&amp;rsquo;t going to cut this. These are not desktops or laptops.
+Dumping or loading, or swapping 200GB of core take approximately 15 minutes
+on a local SSD, and twice that time on a rotating disk, though, so I am not
+going to work with very large swaps, because they can only be slower than
+this. I simply cannot afford critical memory pressure spikes on such a box,
+and as an Ops person, I configure my machines to not have them, and if they
+happen, to blow up as fast as possible.&lt;/p&gt;
+&lt;p&gt;What I also would want is better metrics for memory pressure, or just the
+amount of anon pages in the system.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Determination of memory pressure is somewhat difficult using traditional
+Linux memory counters, though. We have some things which seem somewhat
+related, but are merely tangential – memory usage, page scans, etc – and
+from these metrics alone it’s very hard to tell an efficient memory
+configuration from one that’s trending towards memory contention.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I agree on this. I wonder if there is a fast and lock free metric that I can
+read that tells me the amount of unbacked, anon pages per process and for
+the whole system? One that I can sample in rapid succession without locking
+up or freezing a system that has 200GB of memory in 4 KB pages (the metric
+can be approximate, but reading it must not lock up the box).&lt;/p&gt;
+&lt;p&gt;I think the main difference Chris and I seem to have on fault handling - I&amp;rsquo;d
+rather have this box die fast and with a clear reason than for it trying to
+eventually pull through and mess with my overall performance while it tries
+to do that.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Scaling, automatically and manually</title>
+      <link>https://blog.koehntopp.info/2017/08/09/scaling-automatically-and-manually.html</link>
+      <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/08/09/scaling-automatically-and-manually.html</guid>
+      <description>&lt;p&gt;There is an interesting article by Brendan Gregg out there, about
+&lt;a href=&#34;http://www.brendangregg.com/blog/2017-08-08/linux-load-averages.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the actual data that goes into the Load Average&lt;/a&gt;
+
+
+metrics of Linux. The article has a few funnily contrasting lines. Brendan
+Gregg states&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Load averages are an industry-critical metric – my company spends
+millions auto-scaling cloud instances based on them and other metrics
+[…]&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;but in the article we find Matthias Urlichs saying&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The point of &amp;ldquo;load average&amp;rdquo; is to arrive at a number relating how busy the
+system is from a human point of view.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;and the article closes with Gregg quoting a comment by Peter Zijlstra in the
+kernel source:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This file contains the magic bits required to compute the global loadavg
+figure. &lt;strong&gt;Its a silly number but people think its important.&lt;/strong&gt; We go
+through great pains to make it work on big machines and tickless kernels.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Let&amp;rsquo;s go back to the start. What&amp;rsquo;s the problem to solve here?&lt;/p&gt;
+&lt;p&gt;Brendan Gregg wants his company to scale his virtual machines to demand,
+because they are paying per use and so they have an incentive to use enough
+capacity to hold the service level objectives, but not more.&lt;/p&gt;
+&lt;p&gt;The default mechanism to achieve this is a reactive &lt;em&gt;autoscaler&lt;/em&gt; using
+&lt;em&gt;loadav&lt;/em&gt; from inside virtual machines as a &lt;em&gt;scale signal&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;We need to unpack that. So there is a mechanism that will scale his
+deployment by launching more instances of a thing if a condition is true. By
+default, the condition is loadav, but Gregg suggests other, less broken
+metrics in his article: Different CPU and Scheduler metrics, disk metrics,
+or other system metrics.&lt;/p&gt;
+&lt;p&gt;In a conversation with Tobias Klausmann, he suggested application level
+latencies as a signal. I agree in that these are the best indicator to
+signal the existence of a problem. In &lt;a href=&#34;https://blog.koehntopp.info/2017/02/16/load-load-testing-and-benchmarking.html&#34;&gt;Load, Load Testing and
+Benchmarking&lt;/a&gt;
+
+,
+there is the hockey stick:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/benchmark2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Requests/s vs. Response/s (Capacity) and Requests/s vs. Response time
+(Latency). As we raise offered load, the system approaches the 100% line
+(the vertical saturation line), and a backlog builds.&lt;/p&gt;
+&lt;p&gt;The lower graph shows a system under increasing load. Response times will be
+almost level while the system is not saturated. If the system reaches
+saturation, it is about to receive more requests than it can handle, and
+wait time adds to the think time, so response times go up. Sharply.&lt;/p&gt;
+&lt;p&gt;Unfortunately, this is a good indicator which is always late. Latency based
+autoscaling will react to a system that is saturated when it is saturated,
+never before. For a system 10% before saturation and a system 5% before
+saturation, the latencies will be almost the same, so that among the jitter
+and noise there will be no useful signal to initiate scale-up. Only when we
+have saturation the latencies go up to trigger a proper signal, but at that
+point the user experience is already going down the drain. And that is kind
+of the real problem here.&lt;/p&gt;
+&lt;p&gt;The default mechanism to achieve this is a &lt;em&gt;reactive&lt;/em&gt; autoscaler using
+loadav from inside virtual machines as a scale signal.&lt;/p&gt;
+&lt;p&gt;The scaling mechanism is reactive. It has to be, because any predictive
+autoscaling is not generic. It can&amp;rsquo;t be built into the platform. A
+predictive autoscaler knows something about the application, or maybe even
+the business. For example, you might know from benchmarking that your
+application requires an instance of the type &lt;em&gt;Z&lt;/em&gt; for every &lt;em&gt;m&lt;/em&gt; requests/s
+going into the system. So you could monitor the request rate and just before
+you reach that limit you are ordering the next instance.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/08/Screen-Shot-2017-08-09-at-10.10.06-640x204.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Image from &lt;a href=&#34;%27https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology&#34;&gt;The virtues of boring technology&lt;/a&gt;
+
+,
+Slide #12&lt;/p&gt;
+&lt;p&gt;Or you already know the pattern of your business over a year and over a day
+and actually will know what the request rate is likely going to be tomorrow
+at 9am on August 9, 2017. In that case you can schedule the appropriate
+amount of instances in time before the load hits your systems and still have
+time to warm up all caches.&lt;/p&gt;
+&lt;p&gt;In some environments, supply management is kind of critical: For example,
+when you sell hotel rooms, you need to know which trade shows are having
+what kind of impact on the availability of beds around the event site and
+make sure that you have sufficient supply before the demand materialises.
+It&amp;rsquo;s a thing you have to do anyway, for the business.&lt;/p&gt;
+&lt;p&gt;But if you are already building demand models for business reasons, you can
+also use this data to build demand models for hardware utilisation and use
+it to move from reactive autoscaling to predictive autoscaling.&lt;/p&gt;
+&lt;p&gt;So here are some alternatives to autoscaling with loadav:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Build predictive models using business data. It will make the business and
+your management of it better, and it will make life easier in the machine
+room, so it pays for itself over and over.&lt;/li&gt;
+&lt;li&gt;Use benchmarking in production to get an idea of the shape of the hockey
+stick in your environment. Latencies &amp;gt;&amp;gt; every other metric, Real world
+metrics &amp;gt;&amp;gt; any guess you can have.
+&lt;ul&gt;
+&lt;li&gt;Latency goes up when a thing is saturated. That&amp;rsquo;s the thing your
+performance is bound by. You can&amp;rsquo;t survive anything ever, unless you
+know precisely what that things is and until it is being monitored
+properly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Get a clue about the request pipeline and identify (latency) metrics that
+are early warning indicators, if you have any. Then use them for reactive
+autoscaling. Also, fix your predictive model if you ever scale reactively.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;TL;DR: Reactive autoscaling sucks. Get out of it. Model your shit.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An abundance of IOPS and Zero Jitter</title>
+      <link>https://blog.koehntopp.info/2017/07/26/an-abundance-of-iops-and-zero-jitter.html</link>
+      <pubDate>Wed, 26 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/07/26/an-abundance-of-iops-and-zero-jitter.html</guid>
+      <description>&lt;p&gt;Two weeks ago, I wrote about
+&lt;a href=&#34;https://blog.koehntopp.info/2017/07/07/the-data-center-in-the-age-of-abundance.html&#34;&gt;The Data Center in the Age of Abundance&lt;/a&gt;
+
+
+and claimed that IOPS are - among other things - a solved problem.&lt;/p&gt;
+&lt;p&gt;What does a solved problem look like?&lt;/p&gt;
+&lt;p&gt;Here is a benchmark running 100k random writes of 4K per second, with zero
+Jitter, at 350µs end-to-end write latency across six switches. Databases
+really like reliably timed writes like these. Maximum queue depth would be
+48, the system is not touching
+that.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/pure-storage1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;and here is iostat on the iSCSI client running the test&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/pure-storage2-1024x238.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;100k random writes, 4k write size, inside a 2 TB linux file of random data,
+on a 15 TB filesystem with XFS, on an LVM2 volume provided by iSCSI over a
+single 10 GBit/s interface, with six switch hops between the linux client
+and the array.&lt;/p&gt;
+&lt;p&gt;The array claims 150µs latency, on the linux we measure around 350µs. Out of
+that, there are less than 50µs from the switches and 150µs or more from the
+Linux storage stack (and that is increasingly becoming an issue).&lt;/p&gt;
+&lt;p&gt;Tested product was a &lt;a href=&#34;https://www.purestorage.com/products/flasharray-x.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Purestore Flasharray-X&lt;/a&gt;
+
+,
+client was Dell PowerEdge R630, 2x E5-2620v4, 128G, 10GBit/s networking.&lt;/p&gt;
+&lt;p&gt;Thanks, Peter Buschman!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The Data Center in the Age of Abundance</title>
+      <link>https://blog.koehntopp.info/2017/07/07/the-data-center-in-the-age-of-abundance.html</link>
+      <pubDate>Fri, 07 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/07/07/the-data-center-in-the-age-of-abundance.html</guid>
+      <description>&lt;p&gt;We are currently experiencing a fundamental transition in the
+data center. In recent discussions, it occured to me how little
+this is understood by people in the upper layers of the stack,
+and how the implications are not clear to them.&lt;/p&gt;
+&lt;p&gt;In the past, three fundamentally scarce resources limited the
+size of the systems we could build:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IOPS,&lt;/li&gt;
+&lt;li&gt;bandwidth and&lt;/li&gt;
+&lt;li&gt;latency.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All three of them are gone to a large extent, and the systems we
+are discussing now are fundamentally different from what we had
+in &amp;ldquo;The Past™&amp;rdquo;, with &amp;ldquo;The Past&amp;rdquo; being a thing five to ten years
+ago.&lt;/p&gt;
+&lt;p&gt;In The Past we had disk.&lt;/p&gt;
+&lt;p&gt;A disk of rotating rust is a data store than can, at best,
+perform 200 disk seeks (ssI/O Operations per second, IOPS), so
+databases tended to be special computers with very many small
+disks, data spread out across as many spindles as possible. The
+entire system was fake-accelerated with caches, with accepted
+writes into battery buffered memory of limited size, and woe if
+the working set of your data ever exceeded the cache size.&lt;/p&gt;
+&lt;p&gt;Five years ago we converted all customer facing databases to
+systems on SSD with about 20.000 to 50.000 IOPS, and with
+current NVME based storage we are about to see millions of IOPS.
+Fundamentally, IOPS are not a limited resource any more: With
+the techniques we learned from the rotating rust age, we can
+build machinery with an arbitrary amount of random write
+capability.&lt;/p&gt;
+&lt;p&gt;In the past, databases and frontends have been connected to the
+world using network adapters with a Gigabit per second
+capability. About five years ago, we converted the first systems
+to 10 GBit/s at scale, and today we routinely build systems with
+about 400 MBit/s to 1 GBit/s per Thread (so a 50 core system
+gets a dual-25 GBit/s network card).&lt;/p&gt;
+&lt;p&gt;Companies like Mellanox have switches with a large two digit
+number of 100 GBit/s Interfaces. We have leaf-and-spine
+architectures available that allow us to build data pathes
+between tens of thousands of computers inside a single data
+center with no chokepoints - we are actually getting the 1
+GBit/s per thread on the entire path between &lt;em&gt;any&lt;/em&gt; thread and
+&lt;em&gt;any&lt;/em&gt; disk in our data center, concurrently.&lt;/p&gt;
+&lt;p&gt;In the past, commit latency to a disk along these pathes used to
+be on the upside of 500 µs (1/2000 of a second) and more likely
+in the low milliseconds. But with current cards, offloading and
+other trickery we can get at or below 200 µs. Add scary stuff
+such as RDMA/RoCE to the mix, and we may be able to routinely
+crack the 100 µs barrier.&lt;/p&gt;
+&lt;p&gt;That makes writes to the data center sized fabric as fast or
+faster than writes to a slow local SSD.&lt;/p&gt;
+&lt;p&gt;Today we are at an inflection point, because what we have today
+is true abundance: Each of the three limiters, IOPS, bandwidth
+and latency, have been throughly vanquished. We can now build a
+system where the data center sized fabric at scale provides
+bandwidth and latency comparable to a system bus of a slow home
+computer (and is consecutively faster the smaller the domain
+gets).&lt;/p&gt;
+&lt;p&gt;We can build machines the size of a data center, up and past one
+million cores, that provide essentially enough coupling to be
+able to act as a single machine. The building blocks are Open
+Compute Racks at 12 kW a piece. The operating system of the
+machine is Kubernetes. The units of work are container images.
+The local API is the Linux Kernel API.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>&#34;Usage Patterns and the Economics of the Public Cloud&#34;</title>
+      <link>https://blog.koehntopp.info/2017/06/12/usage-patterns-and-the-economics-of-the-public-cloud.html</link>
+      <pubDate>Mon, 12 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/06/12/usage-patterns-and-the-economics-of-the-public-cloud.html</guid>
+      <description>&lt;p&gt;The paper (&lt;a href=&#34;http://vita.mcafee.cc/PDF/EconPublicCloud.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
+
+)
+is, to say it in the words of Sascha Konietzko, &lt;a href=&#34;https://www.youtube.com/watch?v=hVgBp5Yu7_w,&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;eine
+ausgesprochene Verbindung von Schlau und
+Dumm&lt;/a&gt;
+
+ (&amp;ldquo;a very
+special combination of smart and stupid&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;The site mcafee.cc is not related to the corporation of the same
+name, but the site of one of the authors, R. Preston McAfee.&lt;/p&gt;
+&lt;p&gt;The paper looks at the utilization data from a number of public
+clouds, and tries to apply some dynamic price finding logic to
+it. The authors are surprised by the level of stability in the
+cloud purchase and actual usage, and try to hypothesize why is
+is the case. They claim that a more dynamic price finding model
+might help to improve yield and utilization at the same time
+(but in the conclusion discover why in reality that has not
+happened).&lt;/p&gt;
+&lt;p&gt;Being AI people with not much Ops experience, they make a number
+of weird assumptions. For example, they are looking at CPU usage
+data in 5 min aggregation buckets and do math against 100% CPU
+utilization. Even if you assume at all or most workloads are
+actually CPU bound, 5 minute buckets of CPU usage are way to
+coarse to use for 100% as a utilization target. That is, because
+all the actual spikes are shorter and invisible. (Workloads are
+rarely CPU bound, and especially not in the cloud, which is most
+often network bound.) (They do look at 5 min bucket maxima =
+100th percentiles in some cases. But even that does not tell you
+for how long in a 5 min bucket you hit the roof. But hitting the
+roof even for a short time creates latency outliers, which in an
+actual cloud native microservice framework propagate and
+multiply, turning most of the requests into SLO violations.
+Jitter kills).&lt;/p&gt;
+&lt;p&gt;They are also for the most part ignore the cost of the cognitive
+load of dynamic pricing, or the cost of coding for variable
+deployment sizes in traditional workloads.&lt;/p&gt;
+&lt;p&gt;Finally, they are looking at a VM based IaaS deployment. VM
+based deployments are likely to see traditional bare metal
+workloads being forklifted into the cloud. Such deployments do
+not scale, because they weren&amp;rsquo;t built for dynamic scaling.
+Cloud Native stuff is more likely to be found in environments
+such as Amazon Lambda and Athena. This is a lot like looking at
+the childrens pool only and coming to the conclusion that most
+people can&amp;rsquo;t swim, i.e. there may be selection bias.&lt;/p&gt;
+&lt;p&gt;There are useful thoughts in the paper, too. For example, they
+find that they can model and predict many workloads and use this
+for scaling in advance. In fact, typical reactive autoscalers do
+not work properly, because by the time they trigger a scaling
+action, demand is already there and latencies lag in violation
+of the SLO. The systems created as a reaction to a reactive
+autoscaler triggering are slow, because caches are cold, and
+will have trouble keeping up, right in the middle of a spike
+action.&lt;/p&gt;
+&lt;p&gt;Predictive scalers work better and may be safer. Here you
+establish an absolute size limit (which usually exists due to
+architectural constraints and locks on shared state), and size
+down from it to meet predicted demand with a comfortable margin
+of error. Then you scale up and down following predicted demand,
+correcting the model in time to keep the margin. This should
+create capacity in advance, and give it time to warm up.&lt;/p&gt;
+&lt;p&gt;Also, reading the paper you could come to the conclusion that
+the market is stable and static, because it is stable and
+static: Because nobody rocks the demand pressure up and down,
+the prices are stable and nobody has a reason to implement
+savings by changing the size of the deployment needlessly.&lt;/p&gt;
+&lt;p&gt;Of course, once a sufficient number of people start doing this,
+demand pressure will vary sufficiently to affect short term
+pricing, so that everybody eventually needs to react to the
+changed environmental conditions. Noise breeding complexity,
+breeding even more noise and complexity, until everything drowns
+in chaos and the system needs downtime to clean the noise from
+the system.&lt;/p&gt;
+&lt;p&gt;TL;DR: Bunch of objectivist hipsters with belief in market
+forces and no Ops experience discover in the final paragraphs of
+their paper that stability and simplicity are tangible,
+priceable assets in themselves and maybe all the dynamic market
+shit is not really helpful in all cases, because stability
+savings outweigh wins from leveraging dynamic market forces.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>jq</title>
+      <link>https://blog.koehntopp.info/2017/04/26/jq.html</link>
+      <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/04/26/jq.html</guid>
+      <description>&lt;p&gt;When dealing with Kubernetes, you will inevitably have to deal with config
+and data that is in JSON format. &lt;a href=&#34;https://github.com/stedolan/jq&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;jq&lt;/a&gt;
+
+ is a
+cool tool to handle this, but while the man page is complete, it is also
+very dry. A
+&lt;a href=&#34;http://programminghistorian.org/lessons/json-and-jq&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;nice tutorial&lt;/a&gt;
+
+ can be found
+at The Programming Historian, which uses some real world use cases. My
+personal use case is
+&lt;a href=&#34;http://stackoverflow.com/questions/32960857/how-to-convert-arbirtrary-simple-json-to-csv-using-jq&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Converting JSON to CSV&lt;/a&gt;
+
+,
+and the
+&lt;a href=&#34;https://github.com/stedolan/jq/wiki/Cookbook#convert-a-csv-file-with-headers-to-json&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;inverse of that&lt;/a&gt;
+
+.
+There also is a mildly interesting
+&lt;a href=&#34;https://github.com/stedolan/jq/wiki/FAQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;FAQ&lt;/a&gt;
+
+. Learning jq takes about one
+quiet afternoon of time.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Understanding sysdig</title>
+      <link>https://blog.koehntopp.info/2017/04/20/understanding-sysdig.html</link>
+      <pubDate>Thu, 20 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/04/20/understanding-sysdig.html</guid>
+      <description>&lt;p&gt;The &lt;a href=&#34;https://github.com/draios/sysdig&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;open source&lt;/a&gt;
+
+
+&lt;a href=&#34;http://www.sysdig.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;sysdig&lt;/a&gt;
+
+ is a piece of software that does not quite,
+but almost, what strace or oprofile do: It instrument the kernel, and traces
+system calls as well as a few other kernel activities.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=UJ4wVrbP-Q8&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Youtube: Sysdig Open Source - Getting Started With Csysdig&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;It does not utilize the ptrace(2) kernel facility, though, but its own
+interface. This interface picks up data in the kernel and writes it into a
+ring buffer. A userspace component extracts this data, interprets, filters
+and formats it, and
+&lt;a href=&#34;https://github.com/draios/sysdig/wiki/Sysdig-Examples&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;then shows it&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;If the data source outpaces the userspace, the ring buffer overflows and
+events are lost, but the actual production workload is never slowed down.&lt;/p&gt;
+&lt;p&gt;So
+sysdig requires that you add the sysdig-probe.ko to your kernel. This is a
+component available in source, and can be built for your kernel just fine.
+On the other hand, sysdig just collects data in kernel, it does not process
+the data in that place - instead it moves most of the processing to
+userland. This is unlike dtrace, which requires an in-kernel special purpose
+language to do stuff, and requires a special coding style in order to
+prevent waits of the production workload. In sysdig, this processing happens
+off the production path, in userland, and hence is less time-critical.&lt;/p&gt;
+&lt;p&gt;A long discussion of the design decisions can be seen in a
+&lt;a href=&#34;https://sysdig.com/blog/sysdig-vs-dtrace-vs-strace-a-technical-discussion/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;sysdig blog article&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;The open source version of sysdig is a single host thing - data is collected
+on one host and processed there, but it is already container aware. The
+really interesting product is the
+&lt;a href=&#34;https://sysdig.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commercial variant of sysdig&lt;/a&gt;
+
+, though. Here, all your container hosts are
+being instrumented and data is collected (with application of filters, of
+course) on all hosts, centrally collected and stored, and then can be
+processed and drilled down
+&lt;a href=&#34;https://www.youtube.com/watch?v=kK6clPVC53w&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;using a web interface or a command line utility&lt;/a&gt;
+
+.
+The data store parts are
+&lt;a href=&#34;https://support.sysdig.com/hc/en-us/articles/206519903-On-Premises-Installation-Guide&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;standard persistence components&lt;/a&gt;
+
+
+that are known to scale nicely - cassandra, elastic search, and MySQL,
+connected together by Redis queues. You can run all this in your data center
+with their on-premises solution, or push to the sysdig run monitoring cloud
+solution (not really an option for most European customers, though, and also
+not for anybody wanting to stay PCI compliant).&lt;/p&gt;
+&lt;p&gt;The commercial solution not only is a kind of distributed strace, but like
+the single host product is container and orchestrator aware. So you can ask
+it for all disk writes to all log directories in all MySQL instances related
+to the wordpress deployment in Kubernetes, and it will find the relevant
+instances and their data for you and pick these events, no matter where
+Kubernetes has been scheduling these instances.&lt;/p&gt;
+&lt;p&gt;In fact, the product also knows about LDAP authentication and
+Openshift/Kubernetes RBAC authorization, so that developers can view the
+trace data from their groups deployments, but not from others. The
+commercial solution also transcends system call instrumentation and in fact
+understands internal event data from other, higher level products. When you
+are stracing or oprofiling a JVM or a perl instance, the only data you get
+is a lot of memcpy(), which is not really useful for debugging. You need
+execution engine instrumentation to understand what the language is doing,
+what symbols, objects and function call frame are on the stack and how
+memory is being used.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://sysdig.com/product/integrations/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Integrations for many things&lt;/a&gt;
+
+
+exist and are being loaded on demand. So the web GUI allows you to review
+the topology of a Kubernetes project deployment, how it is being mapped to
+hosts, zoom in into instances of containers, and then dig into the actual
+pieces of software running in these containers, and finally dive into
+individual network packets or calls these things have been making. It&amp;rsquo;s
+pretty awesome, and it takes the grind of finding instances, setting up
+monitoring, collecting and interpreting data completely away from the
+developer.&lt;/p&gt;
+&lt;p&gt;They simply have seamless and effort-free visibility to all their things,
+and only their things. Sysdig (even the open source variant) also brings a
+number of nice and innovative concepts to the table. Spans for example are a
+&lt;a href=&#34;https://github.com/draios/sysdig/wiki/Tracers&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hierarchical set of start/stop markers&lt;/a&gt;
+
+,
+which can be easily added to own code by simply writing structured data to
+/dev/null - that&amp;rsquo;s a cheap and universally available operation, which
+nonetheless is clearly visible to sysdigs instrumentation.&lt;/p&gt;
+&lt;p&gt;Sysdig understands spans, and can correlate them with themselves (they are
+hierarchical), with system objects (Spans can have IDs and tags) and with
+other events (spans are called spans, because they mark a span of time and
+space and they contain other system events).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/04/tracers_spectro.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A spectrogram plots logarithmically bucketized spans (or calls) every 2
+seconds. Slow calls to the right, fast to the left. You can mark an area
+with the cursor and see the actual calls in the Drilldown.&lt;/p&gt;
+&lt;p&gt;Drill down is then possible within a span to see what happened inside. So
+you can span a transaction, request or another event, watch for bad things
+happening and then after the fact go and dive into the event logs and call
+stacks of things, watching the stack catch fire and burn down event by
+event. Treating event streams as a time series is - within limits - also
+possible. Lua scripts called
+&lt;a href=&#34;https://github.com/draios/sysdig/wiki/Chisels-User-Guide&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;chisels&lt;/a&gt;
+
+
+can be used to trigger on events in the event stream, and maintain
+aggregates or format interesting events. Because this happens outside of the
+kernel and also outside of the production control flow, this is not
+performance critical for production, and because it is using Lua it is very
+flexible and easily extensible.&lt;/p&gt;
+&lt;p&gt;The commercial sysdig product collects and stores data in a cassandra
+instance. The web GUI then to some extent treats that data as a kind of
+primitive time series database.&lt;/p&gt;
+&lt;p&gt;This is also where the limits of the current product lie: Their
+understanding of the statistics and math of time series data is limited.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There are no expressions, only single data-source values.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;You cannot calculate derived values (MySQL disk reads/disk read requests to get a cache
+ratio for example) on retrieval, but like with Zabbix you have to do this on
+collection.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Also, Time Series Math as it exists with the Graphite/Grafana
+languages is not possible in sysdig, so it is impossible to plot correct
+read ratio vs. last weeks read ratio scaled to todays load in the same graph
+for comparison.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Aggregations are always single functions, to raw data
+generating a mean (50th percentile), a 99th, 99.9th and 100th (max)
+percentile time series at once is not an operation that can be expressed.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Averages are used when means would be more appropriate, and averages of
+averages are being built without conideration to math and meaning at all.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Alerting is hampered by the lack of time series math.&lt;/p&gt;
+&lt;p&gt;What would be necessary would be proper time series math for model building
+(&amp;ldquo;This is the expected, modelled system behavior&amp;rdquo;) and the acceptable
+deviation corridors around the predicted system behavior should be defined.
+Alerts should fire when the actual observed behavior deviates from the
+predicted system behavior - but the lack of math makes the modelling
+impossible and so the Alerting is primitive and must lead to many false
+positives.&lt;/p&gt;
+&lt;p&gt;So if you see monitoring as a tripartite thing (*1), Debugging,
+Transactional Monitoring and Data Warehousey Monitoring, sysdig is awesomely
+advanced in the debugging discipline, and kind of meh&amp;rsquo;ish okay in the
+transactional thing. It fails the data warehousey stuff completely due to a
+lack of functionality on that side.&lt;/p&gt;
+&lt;p&gt;The company is addressing these limitations in coming releases.&lt;/p&gt;
+&lt;p&gt;That said, within these limitations, &lt;strong&gt;sysdig is awesome&lt;/strong&gt;. It makes the
+debugging part of container deployments a breeze, and adds completely new
+possibilities and an incredible amount of visibility to working in
+Kubernetes.&lt;/p&gt;
+&lt;p&gt;The centralized logging and data storage makes a distributed,
+container-aware strace/oprofile available to developers, and integrates
+nicely with the access control methods available in the system.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Well worth the invest in added productivity&lt;/strong&gt; , even if it is not (can&amp;rsquo;t
+be) the end-all of monitoring for everyone and all use-cases (but they are
+working on it).&lt;/p&gt;
+&lt;p&gt;(*1) Debugging means you interactively define filters, drilldown and views
+on the system to observe application behavior. You may be able to define
+triggers that recognize events where you want to start more capture, collect
+data in depth and then reconstruct buggy behavior with very in depth, non
+necessarily purely numerical data collected.&lt;/p&gt;
+&lt;p&gt;Sysdig is the benchmark system for debugging here. Transactional monitoring
+is where you define Alert conditions, generate alert events to get a human
+to handle the incident, have the human handle the incident and close it.
+Once that has happened, the transaction is done, and the data about the
+incident can be forgotten. Prometheus is the benchmark transactional
+monitoring system.&lt;/p&gt;
+&lt;p&gt;Datawarehousey monitoring builds long term views of system utilization and
+behavior and tries to model system behavior. It is used for capacity
+planning, trend analysis, and sometimes delivers baselines for transactional
+anomaly detection. Many TSDB systems, stuff like Druid, and - outside of
+containers - Graphite do this kind of stuff.&lt;/p&gt;
+&lt;p&gt;This article has been written after getting the product demoed, and playing
+with it in our environment with some test licenses. Not sponsored by sysdig
+or anybody else.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Curlbash, and Desktop Containers</title>
+      <link>https://blog.koehntopp.info/2017/04/13/curlbash-and-desktop-containers.html</link>
+      <pubDate>Thu, 13 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/04/13/curlbash-and-desktop-containers.html</guid>
+      <description>&lt;p&gt;I was having two independent discussions recently, which started with some
+traditional Unix person condemning software installing with curlbash (&lt;code&gt;curl https://... | bash&lt;/code&gt;), or even &lt;code&gt;curl | sudo bash&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I do not really think this to be much more dangerous than the installation
+of random rpm or dpkg packages any more. Especially if those packages are
+unsigned or the signing key gets installed just before the package.&lt;/p&gt;
+&lt;p&gt;The threat model really became a different one in the last few years, and
+the security mechanism have had to change as well. And they have, UIDs
+becoming much less important. Desktop containers and Sandboxes have become
+much more important, and segregation happens now at a much finer granularity
+(the app level) instead of the user level.&lt;/p&gt;
+&lt;p&gt;The two discusssions have been around the installation of sysdig
+(see &lt;a href=&#34;https://sysdig.com/blog/friends-dont-let-friends-curl-bash/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;their article&lt;/a&gt;
+
+,
+which focuses on signed code and proxies injecting modifications), and
+Mastodon (which uses node.js, which features one installation path using
+&lt;code&gt;curl -sL https://deb.nodesource.com/setup\_7.x | sudo -E bash -&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;Provided that you actually get the file that&amp;rsquo;s on the remote server (i.e. no
+proxy exists that modifies stuff), I fail to see the problem. You are not
+very likely to go through the source and review it. Also, you are hopefully
+installing this into a single-purpose virtual machine or container, so there
+is nothing else inside the image anyway. It does not really matter, which
+UID this is running as, because there is nothing else inside this universe
+in the first place.&lt;/p&gt;
+&lt;p&gt;We have come, in a way, full circle and are back at MS-DOS, where there are
+no users or permissions visible to the application, because it is utterly
+alone in the world.&lt;/p&gt;
+&lt;p&gt;User IDs also do not matter much on personal devices, because these
+typically have only one user. Being kris (1000) on my Laptop or my Cellphone
+does not really contain or isolate anything, because there is only me and
+the only files important are all mine - the files not owned by me come from
+the operating system image and can be restored at any time. Yes, my files
+are much more important and harder to replace than the system files.&lt;/p&gt;
+&lt;h2 id=&#34;macos&#34;&gt;
+    &lt;a href=&#34;#macos&#34;&gt;
+	MacOS
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In MacOS, we have a system that kind of solved the problem of a lone user
+installing a lot of apps, all of which might to a certain extent be hostile
+to each other or are trying to pull off things with me and my data. The
+threat model is not &amp;ldquo;multiple users sharing a single device, and keeping
+their stuff separate&amp;rdquo;, but &amp;ldquo;many apps from different sources, and with
+different levels of trustworthiness, make sure they do not make off with the
+users data or another apps data unnoticed&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;This is very different from Unix-Think and Unix is actually by default not
+set up at all to handle this. MacOS attacks the problem by sandboxing Apps
+from the App Store. Apps run in&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;⌂ [:~/Library com.omnigroup.OmniGraffle7.MacAppStore]↥ $ pwd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/Users/kkoehntopp/Library/Containers/com.omnigroup.OmniGraffle7.MacAppStore
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;⌂ [:~/Library … com.omnigroup.OmniGraffle7.MacAppStore]↥ $ ls -1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Desktop
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Documents
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Downloads
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Library
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Movies
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Music
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Pictures
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is, you still have a single UID per potential user, but apps are
+confined to a subdirectory and a bunch of system standard locations for
+stuff. They can exit that through the file dialogs and other systems means
+and access arbitrary locations in the system, but the user interaction
+required here makes sure their activity is being screened and contextualized
+by a human.&lt;/p&gt;
+&lt;p&gt;For the user, this is transparent and invisible, and requires no conscious
+permissive actions. It is implied in the normal I/O dialog workflow. That&amp;rsquo;s
+genius, because it hides all the complexity that comes with other systems
+such as AppArmor, let alone SELinux.&lt;/p&gt;
+&lt;h2 id=&#34;android&#34;&gt;
+    &lt;a href=&#34;#android&#34;&gt;
+	Android
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Android uses Unix UIDs, but differently than intended. In Android, you
+always have a GUI, because a Command line without a GUI does make no sense
+on touch devices. Multiple Users are possible, but user separation is not
+via UID, it is via GUI.&lt;/p&gt;
+&lt;p&gt;Instead, Android assigns a UID to each app dynamically, and uses Linux
+permissions &lt;em&gt;and&lt;/em&gt; SELinux on top of that to keep apps out of each others
+data.&lt;/p&gt;
+&lt;p&gt;The &amp;ldquo;SD Card&amp;rdquo; area and permission is actually a limited file share facility
+between apps, but that was not planned. Instead it has been but a side
+effect of the fact that MS-DOS filesystems on SD-Cards do not enforce Unix
+UIDs of different apps.&lt;/p&gt;
+&lt;p&gt;On top of that, Google has been learning clumsily and slowly to leverage
+this to an advantage, with several false starts.&lt;/p&gt;
+&lt;h2 id=&#34;user-story&#34;&gt;
+    &lt;a href=&#34;#user-story&#34;&gt;
+	User Story
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Both systems allow users to install apps from all kinds of app makers
+through a unified channel with limited review, and manage to keep data
+per-app separated. So it is possible to run apps safely, even if the app is
+somewhat hostile to other apps or the users data. The ideas behind that have
+been picked up, and are being transformed slowly in the unix environment
+using the desktop-container paradigm.&lt;/p&gt;
+&lt;p&gt;Things like &lt;a href=&#34;http://flatpak.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Flatpak&lt;/a&gt;
+
+ are leveraging containers on the
+desktop to do exactly what the MacOS sandbox does.&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary:
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;If everything on your system is running as the same user, then &amp;ldquo;curl |sudo
+bash&amp;rdquo; and &amp;ldquo;curl | bash&amp;rdquo; are equivalent in terms of threat.&lt;/li&gt;
+&lt;li&gt;If the user is not actually reviewing the source and build, then each apt-get,
+rpm and any curlbash are actually equivalent, because the amount of review
+is the same, and far too little.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;What is instead necessary is a system that improves security in a way that
+separates apps, not users, and that makes it possible to recover from the
+accidental install and execution of a hostile or broken app.&lt;/p&gt;
+&lt;p&gt;And that&amp;rsquo;s what desktop containers like flatpak do, or intend to do. They
+are obviously neither perfect nor finished. But they are actually addressing
+a new and different threat model than the one Unix was built for, and that
+is no longer reflecting the current world.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Containers 101</title>
+      <link>https://blog.koehntopp.info/2017/02/17/containers-101.html</link>
+      <pubDate>Fri, 17 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/02/17/containers-101.html</guid>
+      <description>&lt;p&gt;It is helpful to remember that containers are just normal Unix
+processes with two special tricks.&lt;/p&gt;
+&lt;h2 id=&#34;normal-unix-processes&#34;&gt;
+    &lt;a href=&#34;#normal-unix-processes&#34;&gt;
+	Normal Unix Processes
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Unix starts processes by performing a &lt;code&gt;fork()&lt;/code&gt; system call to
+create a new child process.&lt;/p&gt;
+&lt;p&gt;The child process still contains the same program as the parent
+process, so the parent processes program still has control over
+the child. It usually performs a number of operations within the
+context of the new child, preparing the environment for the new
+program, from within.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/fork.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;PID 17 forks, and creates a new process with PID 18. This
+process executes a copy of the original program.&lt;/p&gt;
+&lt;p&gt;Then, after the environment is complete, the parent program
+within the child processes context replaces itself by calling
+&lt;code&gt;execve()&lt;/code&gt;. This system call unloads the current program in a
+process and reuses the process to load a new program into
+it.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/execve.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;After bash in PID 18 has setup the environment correctly, it
+replaces itself with the actual command to run, &lt;code&gt;/bin/ls&lt;/code&gt;. The
+code for that is being loaded from disk into memory.&lt;/p&gt;
+&lt;p&gt;When the program in a process has finished, it terminates itself
+with an &lt;code&gt;exit()&lt;/code&gt; system call. The parameter to &lt;code&gt;exit()&lt;/code&gt; is the
+status code.&lt;/p&gt;
+&lt;p&gt;The parent process waits for the end of the child program using
+a &lt;code&gt;wait()&lt;/code&gt; system call. When the child exits, the parents
+&lt;code&gt;wait()&lt;/code&gt; call returns, and delivers the status code of the child&amp;rsquo;s
+&lt;code&gt;exit()&lt;/code&gt; invokation to the parent.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/wait.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Child PID 18 terminates by calling &lt;code&gt;exit()&lt;/code&gt; with a status code.
+Parent PID waits for the termination of the child, returning the
+status code of the child through the &lt;code&gt;wait()&lt;/code&gt; system call.&lt;/p&gt;
+&lt;h2 id=&#34;special-trick-isolation&#34;&gt;
+    &lt;a href=&#34;#special-trick-isolation&#34;&gt;
+	Special Trick: Isolation
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Containers are Linux processes that are set up two special kinds
+of resource barriers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Linux Namespaces, which limit which kind of system objects a
+process can see. There are seven Linux Namespaces. Six of them
+are explained in a good
+&lt;a href=&#34;https://lwn.net/Articles/531114/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;series on Namespaces in LWN&lt;/a&gt;
+
+,
+and the &lt;a href=&#34;http://man7.org/linux/man-pages/man7/namespaces.7.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Linux Namespaces Manpage&lt;/a&gt;
+
+
+explains all seven of them, including the new
+&lt;a href=&#34;http://man7.org/linux/man-pages/man7/cgroup_namespaces.7.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;cgroup&lt;/a&gt;
+
+
+Namespace. Namespaces can provide a process with its own set of
+network resources, including a private ethernet interface with
+addresses, a local routing table instance and a local iptables
+rules instance. Namespaces can provide processes with its own
+view of the filesystem as well, limiting it to a certain
+subtree of the host filesystem and also limiting the effects
+of mount() system calls executed by the process.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://man7.org/linux/man-pages/man7/cgroups.7.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Control Groups (cgroups)&lt;/a&gt;
+
+,
+which limit how much of a given resource that is visible to a
+process this process can consume. Control Groups have been
+subject to a major redesign in the most recent kernels, see
+&lt;a href=&#34;https://blog.koehntopp.info/2017/02/07/fosdem-talk-cgroups-v2.html&#34;&gt;this talk&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Both resource barriers set up processes in a way that they
+cannot reach beyond the established borders:&lt;/p&gt;
+&lt;p&gt;Two processes in different namespaces that are correctly set up
+cannot see each other and can believe they are alone on a
+machine. At the same time they cannot deplete each other of host
+machine resources, because the control groups prevent that if
+correctly set up and sized, minimising crosstalk between the two
+processes.&lt;/p&gt;
+&lt;p&gt;The combination of Namespaces and Cgroups forming a resource
+barrier is called a &lt;strong&gt;Pod&lt;/strong&gt; in Kubernetes.&lt;/p&gt;
+&lt;p&gt;For all practical purposes, the Pod has the same
+resource-isolation effect that a VM has, but unlike a VM it does
+consume practically no resources. Inside a Pod, zero or more
+processes may be running.&lt;/p&gt;
+&lt;p&gt;Processes running inside a Pod are still normal Linux processes
+executing normal system calls (within the limits that namespaces
+and cgroups impose on them), so they will be just as fast as
+regular processes.&lt;/p&gt;
+&lt;p&gt;Also, Processes sharing a Pod can see each other and touch each
+other, just like regular processes running on a physical or
+virtual machine. This allows co-scheduling of processes inside a
+Pod - Kubernetes calls containers doing this &amp;ldquo;Composite
+Containers&amp;rdquo; and
+&lt;a href=&#34;http://blog.kubernetes.io/2015/06/the-distributed-system-toolkit-patterns.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;there are a number of deployment patterns and use-cases for these&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;special-trick-images&#34;&gt;
+    &lt;a href=&#34;#special-trick-images&#34;&gt;
+	Special Trick: Images
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you want to execute something in a filesystem namespace in a
+Pod, you need to build a stub operating system inside the
+subtree that is visible inside the Pod. By default, a filesystem
+namespace will limit the Pod and all processes inside the Pod to
+certain subdirectory, not unlike a &lt;code&gt;chroot()&lt;/code&gt; environment.&lt;/p&gt;
+&lt;p&gt;By default this subdirectory will be empty. In order to be able
+to run things with this as a root directory, the necessary
+minimum of files needs to be present. This can be done by
+copying the necessary files into the environment, or by
+installing a stub operating system from packages into the
+environment, but both processes may end up copying a few hundred
+or even thousands of files into the target environment.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Filesystem images&lt;/strong&gt; are files that contain the block structure
+of a device inside a file. Using loop mounts, the file can be
+interpreted by the Operating System as a device, creating a file
+tree. With this concept, an entire environment can be copies
+into place using a single file, and then mounting that.&lt;/p&gt;
+&lt;p&gt;Building these files can be pretty complicated, though, and
+these files can also become quite large - and if you have
+multiple of these environments, they will also duplicate quite a
+bit of content: Each container will require a copy of the C
+standard library and many other system files that are simply
+shared between almost all containers.&lt;/p&gt;
+&lt;p&gt;Container systems often address this problem by defining the
+contents of an image as an assembly of &lt;strong&gt;Layers&lt;/strong&gt;. A layer is
+simply a tar file that is being downloaded and unpacked on top
+of other, earlier downloads so that the total resulting image is
+the union of all layers stacked on top of each other.&lt;/p&gt;
+&lt;p&gt;Because it can become necessary for a higher layer to
+effectively delete files or directories contained in lower
+layers, there needs to be a mechanism that transports this
+information. Docker images use an awfully designed mechanism
+called &amp;ldquo;whiteout files&amp;rdquo; for that. Basically, if the tar contains
+a dotfile starting with the four letters &amp;ldquo;.wh.&amp;rdquo; (that&amp;rsquo;s for
+&amp;ldquo;whiteout&amp;rdquo;, Tippex), a file of the same name as the suffix of
+the whiteout file will be blocked out from a lower layer.&lt;/p&gt;
+&lt;p&gt;So if you unpack &lt;code&gt;/etc/.wh.passwd&lt;/code&gt;, this will block out
+&lt;code&gt;/etc/passwd&lt;/code&gt; from a lower layer.&lt;/p&gt;
+&lt;p&gt;Images can be written to. Writes will always go into the topmost
+layer.&lt;/p&gt;
+&lt;h2 id=&#34;putting-it-all-together-kubernetes&#34;&gt;
+    &lt;a href=&#34;#putting-it-all-together-kubernetes&#34;&gt;
+	Putting it all together: Kubernetes
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Original Docker is a tool that has been created with developer
+concerns in mind and zero regard for operations. Docker can run
+containers on a single host, and has no idea about networking at
+all - it uses the single IP address a host has, and exposes
+ports of processes on the inside using iptables rules that
+merrily map ports between the physical host and the view of the
+world inside containers.&lt;/p&gt;
+&lt;p&gt;Docker builds images rather quickly by un-tar-ing layers on top
+of each other, and because writes are always going to the
+topmost layer and that layer can be discarded, it is also easily
+possible to undo all writes after a run and get back the
+pristine image for a new run.&lt;/p&gt;
+&lt;p&gt;This makes it ideal for running tests.&lt;/p&gt;
+&lt;p&gt;Docker in production is another matter - usually production is
+larger than a single host, and usually production workloads are
+being addressed by proper networking equipment which does not so
+much deal with port numbers as with IP addresses instead.&lt;/p&gt;
+&lt;p&gt;So production docker usually needs an IP address per pod, some
+kind of routing and networking isolation layer for all of that,
+and it needs a thing that takes requests to run images and
+assigns a physical host to each image.&lt;/p&gt;
+&lt;p&gt;Images are handy - they package a piece of software with all
+dependencies, and allow us to start processes on any host in a
+multihost cluster without installing additional software.&lt;/p&gt;
+&lt;p&gt;So the following can becomes possible:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/cluster-1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A cluster with a number of kubernetes nodes, and three
+kubernetes master instances. One has been elected
+leader.&lt;/p&gt;
+&lt;p&gt;We have a cluster with a number of physical hosts, all of which
+are capable of retrieving images and launching containers.
+Multiple cluster masters exist, one of which has been elected
+leader and executes the actual scheduling function.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/cluster-2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A scheduling request arrives, basically asking us to start this
+image on a host.&lt;/p&gt;
+&lt;p&gt;The cluster accepts scheduling requests, asking the cluster to
+pick up a certain image which has the following requirements on
+CPU, memory, disk and network I/O, and find a spot to run it.
+The scheduler surveys the cluster, finds such a spot and then
+asks the cluster node to do just that: Set up a pod, download
+and assemble the image and then launch the process with the
+image inside that Pod.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/cluster-3.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The worker will now download the image layers, assemble the
+final image, create a Pod and launch a process from that image
+inside that pod.&lt;/p&gt;
+&lt;p&gt;The end result is a process that sees one single, private
+network interface and runs inside a set of Resource Barriers
+that form the Pod. The program code for the process as well as
+all libraries or other data is container inside the image.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/cluster-4.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Code from the image is running inside the resource barriers
+create by the Pod.&lt;/p&gt;
+&lt;p&gt;By installing software including all dependencies inside the
+image we are not polluting our base operating system image. Once
+the execution of that workload finishes, we can &amp;ldquo;uninstall&amp;rdquo;
+everything simply by deleting the image (and its constituent
+layers).&lt;/p&gt;
+&lt;p&gt;We can create a cluster that represents a large amount of
+compute power in the form of CPU cores, memory, disk space and
+network I/O and have one single scheduler to run arbitrary
+applications that have been packaged in images on it. The
+cluster scheduler takes care of workload placement, and as long
+as we have sufficient capacity we can hand out compute power as
+needed without caring where exactly in our datacenter that
+capacity is available - if our datacenter is built in a way that
+can support this kind of use and if our application is built in
+a way that it can handle such an environment.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>FOSDEM Talk: cgroups-v2</title>
+      <link>https://blog.koehntopp.info/2017/02/07/fosdem-talk-cgroups-v2.html</link>
+      <pubDate>Tue, 07 Feb 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/02/07/fosdem-talk-cgroups-v2.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/02/cgroups-v2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://fosdem.org/2017/schedule/event/cgroupv2/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The talk&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The cgroups-v2 API is incompatible with cgroups-v1. This is a good thing,
+because the initial use cases for cgroups have not been fleshed out
+properly, and the API is kind of overly complicated from the POV of the
+consumers. v2 is being built with use cases and experience in mind, and is
+much easier to use. Control groups allow Linux users to limit the kind and
+amount of resources being used, which is employed by systemd, container
+drivers and many other things.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

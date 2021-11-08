@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>oracle on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/oracle.html</link>
+    <description>Recent content in oracle on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 10 Sep 2010 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/oracle/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>&#39;a&#39; = &#39;b&#39; = &#39;c&#39;</title>
+      <link>https://blog.koehntopp.info/2010/09/10/a-b-c.html</link>
+      <pubDate>Fri, 10 Sep 2010 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2010/09/10/a-b-c.html</guid>
+      <description>&lt;p&gt;Kurzer SQL WTF von heute:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;b&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;a&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;b&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;c&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Warum ist das so?&lt;/p&gt;
+&lt;p&gt;Im MySQL Sourcecode ist in sql/sql_yacc.yy definiert:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;%&lt;/span&gt;left   EQ EQUAL_SYM GE GT_SYM LE LT NE IS LIKE REGEXP IN_SYM
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Damit ist der Operator EQ (das Vergleichheitszeichen) als links-assoziativ
+definiert. Vergleiche von Vergleichen sind also zugelassen,&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;1 = 2 = 3&lt;/code&gt; ist also ein zulässiges Konstrukt und es wird als &lt;code&gt;( 1 = 2 ) = 3&lt;/code&gt; evaluiert.&lt;/p&gt;
+&lt;p&gt;Statt links-assoziativ könnte es auch als rechts-assoziativ &lt;code&gt;1 = (2 = 3)&lt;/code&gt;
+oder als nicht-assoziativ (ein Mehrfachvergleich ist unzulässig)
+definiert sein.&lt;/p&gt;
+&lt;p&gt;Daher ist der boolsche Ausdruck &lt;code&gt;&#39;a&#39; = &#39;b&#39;&lt;/code&gt; offensichtlich falsch, also 0. Und
+damit wird &lt;code&gt;0 = &#39;c&#39;&lt;/code&gt; zu einem Vergleich eines Integers links mit einem
+Character rechts. In einem links-assoziativen Ausdruck bestimmt der linke
+Ausdruck den Typ, zu dem der rechte Teil des Ausdrucks hin konvertiert wird.
+Das &lt;code&gt;c&lt;/code&gt; wird also zu einem Integer umgewandelt, also zu &lt;code&gt;0&lt;/code&gt;. Damit ist
+&lt;code&gt;0 = 0&lt;/code&gt; und das ist wahr, also &lt;code&gt;1&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Ist es ungewöhnlich, daß MySQL so etwas tut?&lt;/p&gt;
+&lt;p&gt;Auch in Sybase und in Oracle ist das Symbol &lt;code&gt;EQ&lt;/code&gt; (der
+Vergleichheitszeichen-Operator) ein &lt;code&gt;%left&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Und Oracle sagt
+&lt;a href=&#34;http://download.oracle.com/docs/cd/B10501_01/appdev.920/a96624/02_funds.htm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;im Handbuch&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;PL/SQL is case sensitive within character literals. For example, PL/SQL
+considers the literals &amp;lsquo;Z&amp;rsquo; and &amp;lsquo;z&amp;rsquo; to be different. Also, the character
+literals &amp;lsquo;0&amp;rsquo;..&amp;lsquo;9&amp;rsquo; are not equivalent to integer literals but can be used
+in arithmetic expressions because they are implicitly convertible to
+integers.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>MySQL, Sun, Oracle - und die EU</title>
+      <link>https://blog.koehntopp.info/2009/11/12/mysql-sun-oracle-und-die-eu.html</link>
+      <pubDate>Thu, 12 Nov 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/11/12/mysql-sun-oracle-und-die-eu.html</guid>
+      <description>&lt;p&gt;Am 20. April 2009 hat Sun verkündet, daß sie von Oracle gekauft werden. Das hätte MySQL mit eingeschlossen. Am 10. November hat die EU dann mitgeteilt, daß sie diesem Kauf widerspricht und zwar ausschließlich wegen MySQL.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.groklaw.net/article.php?story=20091021164738392&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Groklaw hat Hintergründe dazu&lt;/a&gt;
+
+, die ein wenig komisch erscheinen. Ausgerechnet Monty und Florian Müller argumentieren gegen diesen Verkauf und verwenden in den Texten, die sie öffentlich gemacht haben noch dazu die GPL: Diese verhindere nämlich kommerzielle Spinoffs und Forks von MySQL.&lt;/p&gt;
+&lt;p&gt;Das ist auf vielen Ebenen seltsam bis unsinnig.&lt;/p&gt;
+&lt;p&gt;Zum rechtlichen Hintergrund:&lt;/p&gt;
+&lt;p&gt;MySQL ist ein Dual-License Produkt. Man kann sich entscheiden, ob man die GPL Version von MySQL verwenden will oder ob man stattdessen ein kommerziell lizensiertes MySQL möchte. Die GPL-Version ist gegen Readline gelinkt und kann OpenSSL verwenden, die kommerzielle Version verwendet Editline und eine andere SSL-Bibliothek unter einer anderen Lizenz.&lt;/p&gt;
+&lt;p&gt;Mein Arbeitgeber ist Kunde bei MySQL, und zwar verwenden wir die GPL-Version von MySQL. Das können wir unter anderem deswegen, weil wir MySQL nicht weitergeben - die GPL garantiert das Recht, die Software auszuführen, den Source zu studieren und die Software zu modifizieren uneingeschränkt. Kunde sind wir für den MySQL-Support, die Software bekommen wir also frei und gratis. Den Support könnten wir auch woanders kaufen, etwa bei Unternehmen der Open Database Alliance, speziell Percona käme zum Beispiel gut in Frage.&lt;/p&gt;
+&lt;p&gt;MySQL unter einer kommerziellen Lizenz braucht, wer MySQL als Bestandteil seines Produktes weitergeben möchte und dabei seinen eigenen Quelltext nicht offenlegen will.&lt;/p&gt;
+&lt;p&gt;Die GPL zieht dabei die Grenze an den Prozeßgrenzen - es ist also kein Problem, etwa eine Box zu verkaufen, auf der ein PHP mit mysqlnd mit einem mysqld redet. Der mysqld ist GPL, das PHP und das mysqlnd darin sind PHP-License und beides sind verschiedene Prozesse, die juristisch problemfrei miteinander reden dürfen. Das ganze Ding ist einwandfrei und kann so verkauft werden, ohne daß kommerzielle Lizenzen in irgendeiner Form fällig werden.&lt;/p&gt;
+&lt;p&gt;Die libmysqlclient.so ist GPL und kommerziell dual licensed. Wer sie in sein Programm linkt, muß sein Programm entweder unter die GPL stellen oder MySQL kommerziell lizensieren. Wenn man das nicht will, ist das im Grunde kein Problem: Das MySQL Protokoll ist schnell reimplementiert - mysqlnd hat das zum Beispiel getan.&lt;/p&gt;
+&lt;p&gt;Und schließlich kann es sein, daß man sein MySQL tatsächlich embedden will, also mysqld nicht als Server betreiben will, sondern als Bibliothek direkt in ein Programm hinein linken. In diesem Fall hilft einem - wenn man nicht selber GPL sein will - nur eine kommerzielle Lizenz. Oder daß man seine proprietäre Storage Engine in MySQL hineinlinken will - das geht ebenfalls nur mit einer kommerziellen Lizenz, denn andernfalls würde man ja die GPL-Geschmacksrichtung von mysqld  und proprietären Storage Engine Code zusammen mischen und das geht nicht.&lt;/p&gt;
+&lt;p&gt;Groklaw beleuchtet nun die Argumentation, die wir von Monty zu hören bekommen haben unter verschiedenen Aspekten. Dabei kommt Monty offenbar immer wieder auf die Möglichkeit von proprietären Forks von MySQL zu sprechen, die nicht möglich wären, wenn Oracle die Rechte an MySQL innehätte. Nun, so etwas ist auch jetzt schon nicht möglich, denn die Rechte an MySQL hat derzeit Sun, auch eine kommerzielle Firma.&lt;/p&gt;
+&lt;p&gt;Groklaw findet es seltsam, daß Monty so gegen die GPL wettert und auch auf den angeblich &amp;lsquo;viralen&amp;rsquo; Character der GPL abhebt (
+&lt;a href=&#34;https://blog.koehntopp.info/2005/01/05/ein-paar-ideologische-steine-ins-rollen-bringen.html&#34;&gt;Kooperativ vs. Kompetetiv&lt;/a&gt;
+
+, &lt;a href=&#34;https://blog.koehntopp.info/2005/02/07/von-der-gpl.html&#34;&gt;Was steht in der GPL?&lt;/a&gt;
+
+, &lt;a href=&#34;https://blog.koehntopp.info/2006/09/19/gpl-marktdurchdringung-ist-kein-wert-an-sich.html&#34;&gt;Warum GPL?&lt;/a&gt;
+
+). Das ist Microsoft-Rethorik, und tatsächlich ist Monty nun genau Ratgeber bei der MS Codeflex Foundation. Groklaw zitiert auch eine längeren Text von Carlo Piana, der erklärt, warum die Open Source Community für den Deal sein sollte und wieso die GPL bzw. das Dual Licensing kein Problem sind.&lt;/p&gt;
+&lt;p&gt;Der Punkt ist jedenfalls, daß die GPL bei MySQL nichts verhindert, außer für zwei sehr eingeschränkte Personenkreise: Leute, die MySQL embedden wollen oder Leute, die ihre proprietäre Technik in MySQL injezieren wollen. Beides ist eigentlich kaum ein Problem.&lt;/p&gt;
+&lt;p&gt;Der nächste Punkt ist, daß Monty vorgeschlagen hat, daß Sun MySQL verkaufen möge, damit der Merger voran gehen könnte. Die Idee ist recht plump und offensichtlich: Monty kauft MySQL von Sun zurück, mit dem Geld, daß Sun ihm gegeben hat.&lt;/p&gt;
+&lt;p&gt;Der dritte Punkt ist, daß das Problem nicht bestünde, wäre MySQL pur GPL lizensiert - die ganze Argumentation kann nur Halt finden, weil auch eine kommerzielle Lizenzvariante von MySQL existiert. Diese gehört aber grad Sun…&lt;/p&gt;
+&lt;p&gt;Weitere Artikel zum Thema:&lt;/p&gt;
+&lt;p&gt;Der &lt;a href=&#34;http://www.economist.com/node/14840272&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Economist&lt;/a&gt;
+
+ hat einen Bericht über den Handel, und zielt darauf ab, daß die amerikanische Monopolkomission dem Deal zugestimmt hat, die europäische ihn aber abgelehnt hat, und wie das zu einem Handelskrieg oder zumindest zu Verstimmung führen könnte.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.heise.de/newsticker/meldung/EU-Kommission-hat-Bedenken-gegen-Uebernahme-von-Sun-durch-Oracle-Update-854613.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Heise&lt;/a&gt;
+
+ berichtet ebenfalls.&lt;/p&gt;
+&lt;p&gt;Die Position von SAP in dieser Sache bleibt zumindest nach der Berichterstattung im Dunkeln.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

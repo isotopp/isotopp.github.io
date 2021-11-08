@@ -1,0 +1,1464 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>development on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/development.html</link>
+    <description>Recent content in development on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 12 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/development/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Understanding git</title>
+      <link>https://blog.koehntopp.info/2021/10/12/understanding-git.html</link>
+      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/10/12/understanding-git.html</guid>
+      <description>&lt;p&gt;It occurred to me that I do not know nearly enough how git works, internally.
+The contents of the .git directory seem to be accessible enough, so I am going on a Safari in the git repository of this blog.
+You can follow along if you check out &lt;a href=&#34;https://github.com/isotopp/isotopp.github.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the blog&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h1 id=&#34;refs&#34;&gt;
+    &lt;a href=&#34;#refs&#34;&gt;
+	Refs
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;All things git live in &lt;code&gt;.git&lt;/code&gt;.
+The thing we are working with seem to live in &lt;code&gt;.git/refs&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;find .git/refs -type f
+&lt;span class=&#34;go&#34;&gt;.git/refs/heads/main
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/github/main
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/origin/HEAD
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/origin/main
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/origin/master
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/stash
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let&amp;rsquo;s have a look at &lt;code&gt;.git/refs/heads/main&lt;/code&gt; and the &lt;code&gt;.git/refs/remotes&lt;/code&gt; here.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat .git/refs/heads/main
+&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat .git/refs/remotes/github/main
+&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat .git/refs/remotes/origin/main
+&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;commits&#34;&gt;
+    &lt;a href=&#34;#commits&#34;&gt;
+	Commits
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;So it appears that all these things reference the same &amp;ldquo;thing&amp;rdquo;, &lt;code&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a&lt;/code&gt;.
+This appears to be a 40 character (40 * 4 bit = 160 bit) SHA-1 hash value.
+git has low level commands to type this, and print it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+&lt;span class=&#34;go&#34;&gt;commit
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -p daad5e31926cdf8a3af0ecff517c4d5892b6f62a
+&lt;span class=&#34;go&#34;&gt;tree ba5a4ceb371d42d766832dae545ecf00b9194ea2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent 75077bc79697ea1e37da496b1210ca26f3c66c2c
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent b71d9463ad8c3b71bd279e88e74ce15e01de2aee
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;author Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;committer Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Merge remote-tracking branch &amp;#39;github/main&amp;#39; into main
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So this is a file of the type &lt;code&gt;commit&lt;/code&gt;, and it contains ASCII lines that describe the commit.
+Attributes of the commit are a tree, zero or more parent commits, an author, and a committer, as well as a log-message.
+The author and commit lines contain a name, a mail address, a Unix timestamp and a timezone.
+We can &lt;a href=&#34;https://rachelbythebay.com/w/2021/10/05/cmd/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;convert that timestamp carefully&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;date -d @1633513546
+&lt;span class=&#34;go&#34;&gt;Wed Oct  6 11:45:46 CEST 2021
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can also check out the things the commit points to:
+We will find that the parent entries also reference commits (the two commits that precede this one), and the tree entry references a tree object.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t 75077bc79697ea1e37da496b1210ca26f3c66c2c
+&lt;span class=&#34;go&#34;&gt;commit
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t b71d9463ad8c3b71bd279e88e74ce15e01de2aee
+&lt;span class=&#34;go&#34;&gt;commit
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t ba5a4ceb371d42d766832dae545ecf00b9194ea2
+&lt;span class=&#34;go&#34;&gt;tree
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Graphically, the highlighted part of the structure:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/10/git-tree-view.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The commit &lt;code&gt;daad5e31...&lt;/code&gt; has two parents: It is a merge commit of &lt;code&gt;b71d9463...&lt;/code&gt; and &lt;code&gt;75077bc7...&lt;/code&gt;&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&#34;tree&#34;&gt;
+    &lt;a href=&#34;#tree&#34;&gt;
+	Tree
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;So a commit references a tree.
+A tree is a list of files and other trees, which function as subdirectories.
+Together they form a snapshot of the entire blog at this point in time (at this commit).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -p  bf447432a99b33174809dbe10d1df43576a032b3
+&lt;span class=&#34;go&#34;&gt;100644 blob 199ea559714ed3569a88ab932476b11444244885    .gitignore
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;100644 blob 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d    CNAME
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;040000 tree f7fe2d64de25404f660561f7cfbce8d78bf05c09    _drafts
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;040000 tree fe33a062dcb4406a5ecf836ddeb1cfcd9ba85e8b    _includes
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The important takeaway seems to be that git does not store changes made to a file, it stores full files.
+That is less inefficient than it sounds, because unchanged files will have the same hash.
+Things with the same  hash will exist only once in storage, no matter in how many commits (or trees) they are being referenced.&lt;/p&gt;
+&lt;h1 id=&#34;blob&#34;&gt;
+    &lt;a href=&#34;#blob&#34;&gt;
+	Blob
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;And finally files: We can list their content, again, with the same tool.
+Using the &lt;code&gt;-t&lt;/code&gt; and &lt;code&gt;-s&lt;/code&gt; options we can also see their type and size.&lt;/p&gt;
+&lt;p&gt;Using &lt;code&gt;09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d&lt;/code&gt; for the &lt;code&gt;CNAME&lt;/code&gt; file from the tree above we get:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
+&lt;span class=&#34;go&#34;&gt;blob
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -s 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
+&lt;span class=&#34;go&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -p 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
+&lt;span class=&#34;go&#34;&gt;blog.koehntopp.info
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;diffs&#34;&gt;
+    &lt;a href=&#34;#diffs&#34;&gt;
+	Diffs
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Diffs do not exist in git.
+They are instead generated on the fly, by comparing two trees.
+Again, this is less inefficient that one might think:
+All unchanged files will have also unchanged hashes and therefore need no consideration for a diff.&lt;/p&gt;
+&lt;p&gt;For objects with different hashes (but identical names), git then generates a diff.&lt;/p&gt;
+&lt;h1 id=&#34;other-structures&#34;&gt;
+    &lt;a href=&#34;#other-structures&#34;&gt;
+	Other structures
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When you &lt;code&gt;checkout&lt;/code&gt;, you ask git to construct a certain tree using a hash, a tag name, branch or anything else.
+Every time, git records the checkout in the &lt;code&gt;reflog&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;daad5e3 (HEAD -&amp;gt; main, origin/main, github/main) HEAD@{0}: checkout: moving from 8a650853c5525013800c42f68c92b4d431b7b97c to main
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;8a65085 HEAD@{1}: checkout: moving from main to 8a650853c5525013800c42f68c92b4d431b7b97c
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;daad5e3 (HEAD -&amp;gt; main, origin/main, github/main) HEAD@{2}: merge github/main: Merge made by the &amp;#39;recursive&amp;#39; strategy.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;75077bc HEAD@{3}: commit: fix 2021-10-06-empty-commits-and-other-wrong-tools-for-the-job.md
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;72ab462 HEAD@{4}: commit: fix 2021-10-06-empty-commits-and-other-wrong-tools-for-the-job.md
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can use this list of commit hashes to reconstruct what you did, where known good locations are, and of course to return to them.
+This is essential to repair a git repository that somehow was changed unintentionally and that still contains important salvageable data.&lt;/p&gt;
+&lt;p&gt;We find the original data git uses in &lt;code&gt;.git/logs/HEAD&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;tail -4 .git/logs/HEAD
+&lt;span class=&#34;go&#34;&gt;72ab462c4d134b02da1e474d3edb9db201e7aecb 75077bc79697ea1e37da496b1210ca26f3c66c2c Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633508667 +0200      commit: fix 2021-10-06-empty-commits-and-other-wrong-tools-for-the-job.md
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;75077bc79697ea1e37da496b1210ca26f3c66c2c daad5e31926cdf8a3af0ecff517c4d5892b6f62a Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200      merge github/main: Merge made by the &amp;#39;recursive&amp;#39; strategy.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a 8a650853c5525013800c42f68c92b4d431b7b97c Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1634064444 +0200      checkout: moving from main to 8a650853c5525013800c42f68c92b4d431b7b97c
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;8a650853c5525013800c42f68c92b4d431b7b97c daad5e31926cdf8a3af0ecff517c4d5892b6f62a Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1634064654 +0200      checkout: moving from 8a650853c5525013800c42f68c92b4d431b7b97c to main
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;object-storage&#34;&gt;
+    &lt;a href=&#34;#object-storage&#34;&gt;
+	Object storage
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;git stores all things with a hashed name in .git/objects.
+The first byte (the first two letters) of the SHA-1 name make up a directory name, the rest goes into a file name.
+File content is stored compressed, using zlib.&lt;/p&gt;
+&lt;p&gt;We can check that using any programming language that supports zlib.
+Here in Python:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# $ git log | head -1&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# commit daad5e31926cdf8a3af0ecff517c4d5892b6f62a&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# &lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# $ python3&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;# Python 3.8.10 (default, Jun  2 2021, 10:49:15)&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;zlib&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;with&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;.git/objects/da/ad5e31926cdf8a3af0ecff517c4d5892b6f62a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;rb&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+   &lt;span class=&#34;n&#34;&gt;fi&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;zlib&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decompress&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;commit 333tree ba5a4ceb371d42d766832dae545ecf00b9194ea2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent 75077bc79697ea1e37da496b1210ca26f3c66c2c
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent b71d9463ad8c3b71bd279e88e74ce15e01de2aee
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;author Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;committer Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Merge remote-tracking branch &amp;#39;github/main&amp;#39; into main
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see the file has a header, &lt;code&gt;commit 333&lt;/code&gt;, terminated by a NULL byte.
+This assists in reconstruction a &lt;code&gt;.git&lt;/code&gt; directory from fragments, if any structures are lost.&lt;/p&gt;
+&lt;p&gt;It is followed by the actual file contents, which in this case is a commit, in ASCII.&lt;/p&gt;
+&lt;p&gt;Things in gits object storage can get orphaned or grow without size.
+Maintenance procedures exist that walk the various structures, identify orphaned objects and clean up things.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Empty commits and other wrong tools for the job</title>
+      <link>https://blog.koehntopp.info/2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html</link>
+      <pubDate>Wed, 06 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://twitter.com/akrey/status/1445656529877680129&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This&lt;/a&gt;
+
+ is how you can make an empty commit:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git commit --allow-empty -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;Kick it&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This has the disadvantage of also generating a commit message.
+&lt;a href=&#34;https://twitter.com/akrey/status/1445656529877680129&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Another way&lt;/a&gt;
+
+ to achieve this seems to be&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git commit --amend --no-edit &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; git push -f
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;but that will make people hate you in other ways.&lt;/p&gt;
+&lt;p&gt;So lets stop and ask:
+Why would you want to make an empty commit?&lt;/p&gt;
+&lt;p&gt;Most people want this because they attached a server-side action to a commit, a CI/CD activity.&lt;/p&gt;
+&lt;h1 id=&#34;this-is-wrong&#34;&gt;
+    &lt;a href=&#34;#this-is-wrong&#34;&gt;
+	This is wrong
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This is wrong in the same way &lt;a href=&#34;https://blog.koehntopp.info/2021/01/05/using-python-to-bash.html&#34;&gt;writing Shell Scripts&lt;/a&gt;
+
+ is wrong:
+It kind of works, but now you have another, worse problem and still no solution to the original problem.&lt;/p&gt;
+&lt;p&gt;You need to stop and question your life choices, and most importantly, wake up the engineer in you.&lt;/p&gt;
+&lt;h2 id=&#34;but-i-need-to-debug-my-cicd-pipeline&#34;&gt;
+    &lt;a href=&#34;#but-i-need-to-debug-my-cicd-pipeline&#34;&gt;
+	But I need to debug my CI/CD pipeline
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Kick it off using the tooling provided to you.
+Your environment has an API that is specifically built to enable you to do that.
+Use it.&lt;/p&gt;
+&lt;p&gt;In Gitlab:
+&lt;a href=&#34;https://docs.gitlab.com/ee/ci/triggers/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Triggering pipelines through the API &lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;In GitHub:
+&lt;a href=&#34;https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow#running-a-workflow-using-the-rest-api&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Running a workflow using the REST API&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;This not only works reliably, you can get proper error messages.
+On top of that, you just did &lt;em&gt;not&lt;/em&gt; pee into your commit history.&lt;/p&gt;
+&lt;h2 id=&#34;but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance&#34;&gt;
+    &lt;a href=&#34;#but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance&#34;&gt;
+	But I need to redeploy, because I need a Terraform run after I just lost an instance
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This is fractally broken, there is breakage in your breakage.&lt;/p&gt;
+&lt;p&gt;The proper solution is a reconciliation loop of the kind Kubernetes has: Measure the existing state and compare it to the desired state. Then execute the actions necessary to transform the measured state into the desired state, in a loop.&lt;/p&gt;
+&lt;p&gt;So if you are not on K8s, you need to move to K8s or re-invent K8s for your environment, badly.
+Yes, Terraform, Harness and friends have it all wrong.&lt;/p&gt;
+&lt;p&gt;Erecting infrastructure quickly and portably across backends surely is nice, but assumes a properly functioning declarative environment.
+That is an environment where you describe the desired state of the infrastructure and the platform takes care of maintaining that desired state for you.&lt;/p&gt;
+&lt;p&gt;Most platforms do not work that way.
+Some fake it, badly.
+For example, nobody uses AWS autoscalers to autoscale, but they surely are useful to protect your instance count.&lt;/p&gt;
+&lt;h2 id=&#34;the-problem-inside-this-problem&#34;&gt;
+    &lt;a href=&#34;#the-problem-inside-this-problem&#34;&gt;
+	The problem inside this problem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;And since we are talking about CI/CD pipelines:
+Don&amp;rsquo;t YAML them. Don&amp;rsquo;t JSON them. Don&amp;rsquo;t XML them.&lt;/p&gt;
+&lt;p&gt;All of these things surely are nice to describe static objects that have static properties.
+You can successfully use any of them to express the desired state of a thing in a declarative way.&lt;/p&gt;
+&lt;p&gt;If you see anything that looks like &amp;ldquo;foreach&amp;rdquo;, &amp;ldquo;when&amp;rdquo;, &amp;ldquo;unless&amp;rdquo; or similar, it&amp;rsquo;s procedural.
+These are control structures.
+They are part of programming languages.
+Which any of these three are decidedly not.&lt;/p&gt;
+&lt;p&gt;Programming in any of these three is wrong use of tooling, and you should not do it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;YAML, JSON and XML are for declarative things.&lt;/li&gt;
+&lt;li&gt;Python, Go and Rust are for procedural things.&lt;/li&gt;
+&lt;li&gt;Bash is for interactive use only.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Use the proper tooling for the job.
+Be an engineer.&lt;/p&gt;
+&lt;p&gt;Otherwise, you&amp;rsquo;ll just get your old bash rsync deployment scripts back, in a harder to debug packaging, and wrapped in conditionals and loops in YAML &amp;ldquo;syntax&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;That is not what progress looks like.
+At all.
+Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Gitlab in Docker</title>
+      <link>https://blog.koehntopp.info/2020/11/22/gitlab-in-docker.html</link>
+      <pubDate>Sun, 22 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/11/22/gitlab-in-docker.html</guid>
+      <description>&lt;p&gt;These installation notes are mostly a note to myself, documenting the installation process of a Gitlab Omnibus Container in Docker, plus Gitlab Runners.&lt;/p&gt;
+&lt;h2 id=&#34;os-setup&#34;&gt;
+    &lt;a href=&#34;#os-setup&#34;&gt;
+	OS Setup
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We are installing into &lt;code&gt;/export/gitlab&lt;/code&gt;, a 10G xfs slice from the local flash pool:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n gitlab -L 10G data
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkfs -t xfs /dev/data/gitlab
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir /export/gitlab
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mount /dev/data/gitlab /export/gitlab
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/dev/data/gitlab\t/export/gitlab\txfs\tbsdgroups,usrquota,grpquota,attr2,nofail,noatime 1 2&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; /etc/fstab
+&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir /export/gitlab/&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;gitlab,gitlab-runner&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir /export/gitlab/gitlab/&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;config,data,logs&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;docker&#34;&gt;
+    &lt;a href=&#34;#docker&#34;&gt;
+	Docker
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We are using &lt;code&gt;docker-compose&lt;/code&gt; to run this, with a &lt;code&gt;.env&lt;/code&gt; (dotenv) like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;cat .env
+&lt;span class=&#34;go&#34;&gt;GITLAB_HOME=/export/gitlab/gitlab
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;GITLAB_DOMAIN=gitlab.home.koehntopp.de
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;GITLAB_HTTP_PORT=81
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;GITLAB_HTTPS_PORT=444
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;GITLAB_SSH_PORT=2222
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And a &lt;code&gt;docker-compose.yaml&lt;/code&gt; like so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nn&#34;&gt;---&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;3&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;services&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;web&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;gitlab&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;gitlab&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;gitlab/gitlab-ce:latest&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;always&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;${GITLAB_DOMAIN}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;environment&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;GITLAB_OMNIBUS_CONFIG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;sd&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;sd&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;external_url &amp;#34;https://gitlab.home.koehntopp.de&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;ports&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s1&#34;&gt;&amp;#39;${GITLAB_HTTP_PORT}:80&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s1&#34;&gt;&amp;#39;${GITLAB_HTTPS_PORT}:443&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s1&#34;&gt;&amp;#39;${GITLAB_SSH_PORT}:22&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;volumes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s1&#34;&gt;&amp;#39;${GITLAB_HOME}/config:/etc/gitlab&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s1&#34;&gt;&amp;#39;${GITLAB_HOME}/logs:/var/log/gitlab&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s1&#34;&gt;&amp;#39;${GITLAB_HOME}/data:/var/opt/gitlab&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;c&#34;&gt;## vim: syntax=yaml ts=2 sw=2 sts=2 sr et ai&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When starting this with &lt;code&gt;docker-compose up&lt;/code&gt;, we can follow the full horribleness of the installation process in the console: The Gitlab Omnibus container collects a large number of processes internally, including a postgres, puma, nginx and a number of additional components, and configures itself internally using Chef. It is the Anti-Container.&lt;/p&gt;
+&lt;h2 id=&#34;gitlabrb&#34;&gt;
+    &lt;a href=&#34;#gitlabrb&#34;&gt;
+	gitlab.rb
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The initial run will produce a &lt;code&gt;gitlab.rb&lt;/code&gt; config file in &lt;code&gt;/export/gitlab/gitlab/config/gitlab.rb&lt;/code&gt;. The file is over 100KB in size, and will contain deactivated config.&lt;/p&gt;
+&lt;p&gt;A very minimal, runnable base config for me looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-ruby&#34; data-lang=&#34;ruby&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# grep -v &amp;#34;^#&amp;#34; gitlab.rb | uniq&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;external_url&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;http://gitlab.home.koehntopp.de&amp;#39;&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;gitlab_rails&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;smtp_enable&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;false&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;gitlab_rails&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;gitlab_email_enabled&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;false&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;gitlab_rails&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;gitlab_default_can_create_group&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;false&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;gitlab_rails&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;gitlab_username_changing_enabled&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;false&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;gitlab_rails&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;gitlab_shell_ssh_port&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2222&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;gitlab_kas&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;enable&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;kp&#34;&gt;false&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;tls-forwarding-from-host-to-container&#34;&gt;
+    &lt;a href=&#34;#tls-forwarding-from-host-to-container&#34;&gt;
+	TLS Forwarding from host to container
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The internal ports need to be exported to the home network, so we need an Apache TLS forwarding config.&lt;/p&gt;
+&lt;p&gt;We are using this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apache&#34; data-lang=&#34;apache&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:80&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; gitlab.home.koehntopp.de
+
+    &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/gitlab-error.log
+    &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/gitlab-access.log combined
+
+    &lt;span class=&#34;nb&#34;&gt;Alias&lt;/span&gt; /.well-known/acme-challenge &lt;span class=&#34;sx&#34;&gt;/var/lib/dehydrated/acme-challenges&lt;/span&gt;
+    &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/lib/dehydrated&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+        &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+    &lt;span class=&#34;nt&#34;&gt;&amp;lt;If&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;!-f &amp;#39;%{REQUEST_FILENAME}&amp;#39;&amp;#34;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;RedirectMatch&lt;/span&gt; permanent ^/(.*) &lt;span class=&#34;s2&#34;&gt;&amp;#34;https://gitlab.home.koehntopp.de/$1&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/If&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+
+&lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:443&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; gitlab.home.koehntopp.de
+
+    &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/gitlab-ssl-error.log
+    &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/gitlab-ssl-access.log combined
+
+    &lt;span class=&#34;nb&#34;&gt;SSLEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;SSLCertificateFile&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/lib/dehydrated/certs/home.koehntopp.de/cert.pem&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;SSLCertificateKeyFile&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/lib/dehydrated/certs/home.koehntopp.de/privkey.pem&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;SSLCertificateChainFile&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/lib/dehydrated/certs/home.koehntopp.de/chain.pem&lt;/span&gt;
+
+&lt;span class=&#34;c&#34;&gt;#   SSLProxyEngine on&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;ProxyPreserveHost&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;ProxyPass&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://127.0.0.1:81/&amp;#34;&lt;/span&gt; nocanon
+    &lt;span class=&#34;nb&#34;&gt;ProxyPassReverse&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://127.0.0.1:81/&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;AllowEncodedSlashes&lt;/span&gt; NoDecode
+
+    &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/gitlab.home.koehntopp.de&lt;/span&gt;
+&lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+
+&lt;span class=&#34;c&#34;&gt;# vim: syntax=apache ts=4 sw=4 sts=4 sr noet&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We are terminating the TLS at the Apache and forward plaintext to the nginx, which then forwards to the internal Ruby. This is silly, but I was not feeling like pulling that ball of string apart.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;ProxyPass ... nocanon&lt;/code&gt; and &lt;code&gt;AllowEncodedSlashes NoDecode&lt;/code&gt; are necessary to avoid internal Error on various URLs that require passing on of &lt;code&gt;//&lt;/code&gt; and &lt;code&gt;/-/&lt;/code&gt; URL fragments (several issues, for example &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab/-/issues/211500#note_381651793&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;h2 id=&#34;basic-setup&#34;&gt;
+    &lt;a href=&#34;#basic-setup&#34;&gt;
+	Basic Setup
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Admin Login is with &amp;ldquo;root&amp;rdquo;, and will guide you through a password change and some basic setup.&lt;/p&gt;
+&lt;p&gt;I created users for the family, and groups for my work and for the little one.&lt;/p&gt;
+&lt;p&gt;Once you have groups, pushing existing repositories into gitlab is quickly done with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;git push --set-upstream ssh://git@gitlab.home.koehntopp.de:2222/kris/&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;git rev-parse --show-toplevel &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; xargs basename&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;.git &lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;git rev-parse --abbrev-ref HEAD&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a repo for the user or group (here: &lt;code&gt;kris&lt;/code&gt;) that has a name identical to the current directory. The &lt;code&gt;xargs basename&lt;/code&gt; expression can be replaced with the desired literal name instead.&lt;/p&gt;
+&lt;p&gt;Afterwards, it may be useful to &lt;code&gt;git remote remove origin&lt;/code&gt;, &lt;code&gt;git remote add origin ...&lt;/code&gt;. A quick &lt;code&gt;git pull --rebase&lt;/code&gt; and &lt;code&gt;git branch --set-upstream-to=origin/master master&lt;/code&gt; will exercise and config the local push and pull operations, too.&lt;/p&gt;
+&lt;h2 id=&#34;a-hello-ci-project&#34;&gt;
+    &lt;a href=&#34;#a-hello-ci-project&#34;&gt;
+	A &amp;ldquo;hello-ci&amp;rdquo; project
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We are creating a basic Python project for gitlab-runner, for testing, &lt;code&gt;kk/probe&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cat probe.py&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;src&lt;/span&gt;
+
+&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;__main__&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;Hi, &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;my_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;!&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cat src/__init__.py&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;src.main&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;my_name&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# noqa&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# cat src/main.py
+def my_name():
+    return &amp;quot;Kris&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In a &lt;code&gt;src/tests/&lt;/code&gt; directory, we are running &lt;code&gt;pytest&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;src&lt;/span&gt;
+
+
+&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;test_my_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;assert&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;src&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;my_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Kris&amp;#34;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;At the toplevel, we put our &lt;code&gt;requirements.txt&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;flake8
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;pytest
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and a &lt;code&gt;tox.ini&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[flake8]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;exclude=.git,__pycache__,docs,*venv
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pytest]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;addopts = -ra -q
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can now build a &lt;code&gt;.gitlab-ci.yml&lt;/code&gt;, also at the toplevel:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nt&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;python:3.8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;before_script&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;python --version&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;pip install -r requirements.txt&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;stages&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;Test&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;flake8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;stage&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Test&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;script&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;flake8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;pytest&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;stage&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Test&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;script&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;pwd&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;ls -l&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;export PYTHONPATH=&amp;#34;$PYTHONPATH:.&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;python -c &amp;#34;import sys;print(sys.path)&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;- &lt;span class=&#34;l&#34;&gt;pytest src&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Yes, the testing cruft in the pytest setup can later go away&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Now, to make this work, we need to install gitlab-runner in a docker variant, and config it.&lt;/p&gt;
+&lt;h2 id=&#34;gitlab-runner&#34;&gt;
+    &lt;a href=&#34;#gitlab-runner&#34;&gt;
+	Gitlab Runner
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;At this point, the runner still needs to be &lt;code&gt;docker-compose&lt;/code&gt;&amp;lsquo;ed. I hacked it for testing like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir -p /export/gitlab/gitlab-runner
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; !$
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir config
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;cat doit
+&lt;span class=&#34;go&#34;&gt;docker run -d --name gitlab-runner \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --restart always \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  -v /export/gitlab/gitlab-runner/config:/etc/gitlab-runner \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  -v /var/run/docker.sock:/var/run/docker.sock \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  gitlab/gitlab-runner:latest
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a &lt;code&gt;config.toml&lt;/code&gt; in the config directory. We can&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;docker &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; -it gitlab-runner bash
+&lt;span class=&#34;go&#34;&gt;root@ffd124dab4aa:/# gitlab-runner register
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;gitlab-runner  register
+&lt;span class=&#34;go&#34;&gt;Runtime platform                                    arch=amd64 os=linux pid=47 revision=8fa89735 version=13.6.0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Running in system-mode.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Enter the GitLab instance URL (for example, https://gitlab.com/):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;https://gitlab.home.koehntopp.de/
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Enter the registration token:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;TheToken
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Enter a description for the runner:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[ffd124dab4aa]: A test runner
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Enter tags for the runner (comma-separated):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;test
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The token required for registration can be obtained as described &lt;a href=&#34;https://docs.gitlab.com/runner/register/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;I registered group runners for each of my two internal groups, and a shared runner for the (empty) rest.&lt;/p&gt;
+&lt;p&gt;All of this will rewrite the &lt;code&gt;config.toml&lt;/code&gt;. I then upped the concurrency to 6 (8 threads available in the hardware).&lt;/p&gt;
+&lt;p&gt;Later on, it will turn out that the docker images in my Ubuntu are not writeable as needed, a helper image needs to be added.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;helper_image&lt;/code&gt; line has been added manually below, according to &lt;a href=&#34;https://gitlab.com/gitlab-org/gitlab-runner/-/issues/26618&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this note&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-toml&#34; data-lang=&#34;toml&#34;&gt;&lt;span class=&#34;c&#34;&gt;# cat /export/gitlab/gitlab-runner/config/config.toml&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;concurrent&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;check_interval&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+
+&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;session_server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+  &lt;span class=&#34;nx&#34;&gt;session_timeout&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1800&lt;/span&gt;
+
+&lt;span class=&#34;p&#34;&gt;[[&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;runners&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]]&lt;/span&gt;
+  &lt;span class=&#34;nx&#34;&gt;name&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;JX_Snack (Docker)&amp;#34;&lt;/span&gt;
+  &lt;span class=&#34;nx&#34;&gt;url&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;https://gitlab.home.koehntopp.de&amp;#34;&lt;/span&gt;
+  &lt;span class=&#34;nx&#34;&gt;token&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;TheToken
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  executor = &amp;#34;&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;docker&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  [runners.custom_build_dir]
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  [runners.cache]
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    [runners.cache.s3]
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    [runners.cache.gcs]
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    [runners.cache.azure]
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  [runners.docker]
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    helper_image = &amp;#34;&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;gitlab&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;gitlab-runner-helper&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;x86_64-6fbc7474&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    tls_verify = false
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    image = &amp;#34;&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;python&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    privileged = false
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    disable_entrypoint_overwrite = false
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    oom_kill_disable = false
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    disable_cache = false
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    volumes = [&amp;#34;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;cache&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+    &lt;span class=&#34;nx&#34;&gt;shm_size&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For easier testing, it may be useful to allow CI runs on untagged commits. This can be set up as &lt;code&gt;root&lt;/code&gt; in &lt;code&gt;https://.../admin/runners&lt;/code&gt; for the desired test runner.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/gitlab-untagged.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Allowing the runner to pick up untagged jobs can be useful for testing. It needs to be disabled later.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;With some random committing we can now trigger and debug the pipeline we defined earlier above. Eventually it will actually do something.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/gitlab-runner.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Eventually, a testing success.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Having a gitlab and a CI/CD pipeline allows us to package the Python Discord Bot development process for the little one in a way that allows him to focus on the various stages of the development process sequentially. For now, testing and deployment can happen magically, we will visit that only later.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>How I set up my Python</title>
+      <link>https://blog.koehntopp.info/2020/06/29/how-i-set-up-my-python.html</link>
+      <pubDate>Mon, 29 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/06/29/how-i-set-up-my-python.html</guid>
+      <description>&lt;p&gt;Because Martin wanted some starting point, here is how I set up my Python. There are a lot of other things one can do, but this is supposed to be just a starting point.&lt;/p&gt;
+&lt;p&gt;For a new project, make a project directory, usually not with a local git repository.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kk:Python kris$ mkdir project
+kk:Python kris$ &lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; project
+kk:project kris$ git init
+Initialized empty Git repository in /Users/kris/Python/project/.git/
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We need a virtual environment to keep our modules apart from the system python.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kk:project kris$ python3 -m venv ~/.venv/project
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In my case, I have a bash &lt;code&gt;PROMPT_COMMAND&lt;/code&gt; installed that automatically activates the venv when I enter a directory. From the &lt;code&gt;.bashrc&lt;/code&gt;, some highly insecure code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;autoenv&lt;span class=&#34;o&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -f ./.venv &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
+    &lt;span class=&#34;nv&#34;&gt;nv&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;cat ./.venv&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -f &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$nv&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/bin/activate&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$VIRTUAL_ENV&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; !&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$nv&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$nv&lt;/span&gt;/bin/activate
+      &lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
+&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;nv&#34;&gt;PROMPT_COMMAND&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;autoenv
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And then:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;kk:project kris$ &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; /Users/kris/.venv/project &amp;gt; .venv
+&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;project&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:project kris$
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;As can be seen from the prompt, the venv already active. Usually, after install the pip is outdated.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;project&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:project kris$ pip install --upgrade pip
+...
+Successfully installed pip-20.1.1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We also need wheel for C-Language Extensions, and black, mypy and pre-commit.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;project&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:project kris$ pip install wheel
+...
+Successfully installed wheel-0.34.2
+&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;project&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:project kris$ pip install black mypy pre-commit
+...
+Installing collected packages: click, attrs, pathspec, regex, toml, appdirs, typed-ast, black, mypy-extensions, typing-extensions, mypy, cfgv, filelock, six, zipp, importlib-metadata, distlib, virtualenv, nodeenv, pyyaml, identify, pre-commit
+Successfully installed appdirs-1.4.4 attrs-19.3.0 black-19.10b0 cfgv-3.1.0 click-7.1.2 distlib-0.3.1 filelock-3.0.12 identify-1.4.20 importlib-metadata-1.7.0 mypy-0.782 mypy-extensions-0.4.3 nodeenv-1.4.0 pathspec-0.8.0 pre-commit-2.5.1 pyyaml-5.3.1 regex-2020.6.8 six-1.15.0 toml-0.10.1 typed-ast-1.4.1 typing-extensions-3.7.4.2 virtualenv-20.0.25 zipp-3.1.0
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The last three collect a large number of additional dev-dependencies.&lt;/p&gt;
+&lt;p&gt;We then need to set-up the pre-commit environment:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;l&#34;&gt;(project) kk:project kris$ cat .pre-commit-config.yaml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;repos&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;repo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;https://github.com/pre-commit/pre-commit-hooks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;rev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;v2.3.0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hooks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;check-yaml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;end-of-file-fixer&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;trailing-whitespace&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;repo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;https://github.com/psf/black&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;rev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hooks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;black&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;repo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;https://github.com/pre-commit/mirrors-mypy&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;rev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hooks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;mypy&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;additional_dependencies&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;(project) kk:project kris$ pre-commit install&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;l&#34;&gt;pre-commit installed at .git/hooks/pre-commit&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Pre-commit is running mypy and black, but in a separate environment, so it will be installed again, elsewhere, and we will also need to declare our mypy dependencies here again, unfortunately.&lt;/p&gt;
+&lt;p&gt;On the other hand, all our Python will be type-checked and blacken&amp;rsquo;ed automatically on commit.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;project&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;kk&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;project&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cat&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;probe&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;py&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;#! /usr/bin/env python&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
+
+&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And here we go:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;project&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:project kris$ git add probe.py
+&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;project&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:project kris$ git commit -m &lt;span class=&#34;s1&#34;&gt;&amp;#39;testing&amp;#39;&lt;/span&gt;
+Check Yaml...........................................&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;no files to check&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;Skipped
+Fix End of Files.........................................................Passed
+Trim Trailing Whitespace.................................................Passed
+black....................................................................Passed
+mypy.....................................................................Passed
+&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;master &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;root-commit&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; c7734e4&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; testing
+ &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; file changed, &lt;span class=&#34;m&#34;&gt;5&lt;/span&gt; insertions&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;+&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+ create mode &lt;span class=&#34;m&#34;&gt;100755&lt;/span&gt; probe.py
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now, I usually collect additional project dependencies in &lt;code&gt;requirements.txt&lt;/code&gt; and freeze them into &lt;code&gt;requirements-frozen.txt&lt;/code&gt; for deployment into a Python Container.&lt;/p&gt;
+&lt;p&gt;For example, in one project:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;bridge&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:bridge kris$ cat requirements.txt
+paho-mqtt
+influxdb
+&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;bridge&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:bridge kris$ cat requirements-frozen.txt
+paho-mqtt&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;1.5.0
+&lt;span class=&#34;nv&#34;&gt;influxdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;5.3.0
+&lt;span class=&#34;c1&#34;&gt;## The following requirements were added by pip freeze:&lt;/span&gt;
+&lt;span class=&#34;nv&#34;&gt;certifi&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;2020.4.5.1
+&lt;span class=&#34;nv&#34;&gt;chardet&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;3.0.4
+&lt;span class=&#34;nv&#34;&gt;idna&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;2.9
+&lt;span class=&#34;nv&#34;&gt;msgpack&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;0.6.1
+python-dateutil&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;2.8.1
+&lt;span class=&#34;nv&#34;&gt;pytz&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;2020.1
+&lt;span class=&#34;nv&#34;&gt;requests&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;2.23.0
+&lt;span class=&#34;nv&#34;&gt;six&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;1.15.0
+&lt;span class=&#34;nv&#34;&gt;urllib3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;1.25.9
+&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;bridge&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; kk:bridge kris$ cat Dockerfile
+FROM python:3.8-alpine
+
+LABEL &lt;span class=&#34;nv&#34;&gt;maintainer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;isotopp&amp;#34;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;      &lt;span class=&#34;nv&#34;&gt;description&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;MQTT to InfluxDB Bridge&amp;#34;&lt;/span&gt;
+
+COPY requirements-frozen.txt /tmp/requirements.txt
+RUN pip install -r /tmp/requirements.txt
+
+COPY . /app
+WORKDIR /app
+
+CMD &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;python3&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;-u&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;bridge.py&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is part of a larger deployment in a &lt;code&gt;docker-compose.yml&lt;/code&gt; then:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;nn&#34;&gt;---&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;3&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;services&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nn&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;bridge&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;build&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;./bridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;image&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;isotopp/mqttbridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;container_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mqttbridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mqttbridge&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;1000&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;depends_on&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;influxdb&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;- &lt;span class=&#34;s2&#34;&gt;&amp;#34;mosquitto&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;restart&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;always&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;nn&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+    <item>
+      <title>Where do the JOINs go?</title>
+      <link>https://blog.koehntopp.info/2020/06/10/where-do-the-joins-go.html</link>
+      <pubDate>Wed, 10 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/06/10/where-do-the-joins-go.html</guid>
+      <description>&lt;p&gt;I was asking on Twitter:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/isotopp/status/1270746627339358208&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/06/joins.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Are you a Developer and understand (Micro-) Services? I am a database person and a bit simple, and I have a genuine Question:&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;When moving to a services architecture, where do the JOINs go?&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;I gave the following context:&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/06/shop-schema.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A simple shop&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;So you sell stuff, that is, you have an &lt;code&gt;orders&lt;/code&gt; table &lt;code&gt;o&lt;/code&gt; with an &lt;code&gt;oid&lt;/code&gt;, which stores a customer id &lt;code&gt;cid&lt;/code&gt; from a &lt;code&gt;customers&lt;/code&gt; &lt;code&gt;c&lt;/code&gt; table, and an article id &lt;code&gt;aid&lt;/code&gt;, from an articles table &lt;code&gt;a&lt;/code&gt; and a count &lt;code&gt;cnt&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- customer 17 ordered 3 45&amp;#39;s
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;?&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cnt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;JOIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;ON&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;JOIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;ON&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;45&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When moving to services because you are a multibillion dollar enterprise, your customers, orders and articles can no longer fit into a single database, and there are other reasons to have an OrderService, CustomerService and ArticleService. You still want to ask something (OrderService?) about the number of 45&amp;rsquo;s that 17 ordered.&lt;/p&gt;
+&lt;p&gt;Who do you ask? What does this do to connect the dots? How do you do reporting (&amp;ldquo;Show me all top 10 articles by country, zipcode digit 1 by week over the last 52 weeks&amp;rdquo;)?&lt;/p&gt;
+&lt;p&gt;So you reimplement join algorithms by hand in application code? Are there supporting tools? Do you reimplement data warehousing aggregations, too? If so, what tooling for reporting does exist, and how does that compare to eg existing tooling for data warehousing?&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;I got… lots of answers, but now have even more questions.&lt;/p&gt;
+&lt;p&gt;I was pointed to read up on &amp;ldquo;&lt;a href=&#34;http://scs-architecture.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Self Contained Systems&lt;/a&gt;
+
+&amp;rdquo; and on &amp;ldquo;&lt;a href=&#34;https://dataintensive.net/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Designing Data-Intensive Applications&lt;/a&gt;
+
+&amp;rdquo;. I was pointed at &lt;a href=&#34;https://twitter.com/AdinChelloveck/status/1270747363133526019&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Presto&lt;/a&gt;
+
+ and that is awesome and completely insane at the same time.&lt;/p&gt;
+&lt;p&gt;A 10.000 meter summary was given by &lt;a href=&#34;https://twitter.com/nogoodnickleft/status/1270789660437098496&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Moritz Lenz&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Usually they go into application code. You have to design the services to minimize the joins. Also, microservices often keep read-only copies of other data to minimize joins.&lt;/p&gt;
+&lt;p&gt;For reporting, you could have a big analytics DB that does the joins.&lt;/p&gt;
+&lt;p&gt;In your example, the order service might copy some details from the product service to know what&amp;rsquo;s shipped, and the customer name + address. These copies are read-only, and stay with the order even if the shipping addresses changes in the main customer service.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This is actually what a proper order application in a traditional database would do as well:&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;order&lt;/code&gt; table most likely would be an &lt;code&gt;orderlog&lt;/code&gt; table, and we would record not only the aid (keep the link to the source article) and cid, but would make copies of the price at the time of sale, the time of sale timestamp, and the address at the time of sale or the actual shipping address. Entries in the orderlog would stay there until fulfillment and maybe payment, and then can go from the OLTP system. We would also immediately emit a copy of the data that goes to our data warehouse as part of some kind of ETL setup.&lt;/p&gt;
+&lt;p&gt;There are multiple good things about this, which is why we are doing it like this in relational systems as well:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The OrderService can handle the order from all the data in the one single order event, because it contains all the relevant information for the most common purpose, fulfillment.&lt;/li&gt;
+&lt;li&gt;This is most likely also all the information that we would put into the Event that feeds the data warehouse.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Doing things this way keeps the size of our OLTP system bounded (for the same number of customers, articles and active orders, over an infinite amount of time, the system does not grow). The data lifecycle in the OLTP system is complete and we do not accrete an infinite amount of data - Data Warehouses do grow infinitely unless you drop after x years, OLTP system must not grow infinitely and if they do, they do contain a small DWH that struggles to get out.&lt;/p&gt;
+&lt;p&gt;Anyway:&lt;/p&gt;
+&lt;p&gt;To map this onto a services design, we do ask the CustomerService and the ArticleService at the time of sale for the data necessary to make an order, and this is done by OrderService. These are two point lookups, and that is probably an okay thing to do manually at the application level. We also emit a pre-joined hierarchical structure equivalent to the orderlog entry (maybe some JSON?) onto an event bus (&lt;a href=&#34;https://twitter.com/rk3rn3r/status/1270813207922384896&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;maybe a Kafka?&lt;/a&gt;
+
+) where it is consumed by other services.&lt;/p&gt;
+&lt;p&gt;These event stream consumers work as materialization engines: They do have state, and modify it whenever they consume a relevant event. For example, we could have a continous query running in some engine that builds the aggregation I asked about from a stream:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Show me all top 10 articles by country, zipcode digit 1 by week over the last 52 weeks&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This reads almost directly like an Influx query. So this is a thing that you can answer from a stream.&lt;/p&gt;
+&lt;p&gt;If you have questions that arise at a later point in time, things become complicated without an image, though, because you are missing the start value. So the only option would be to start back in time at the big bang, and replay the event log for that new query, or to cut off at some other point in time and not have older data where possible.&lt;/p&gt;
+&lt;p&gt;For aggregations over intervals like in the example query above that is entirely possible: We work over individual weeks, going back a year and we either have data for older weeks or not. If not, we can still accurately determine weekly aggregates for newer weeks, because they are independent of each other.&lt;/p&gt;
+&lt;p&gt;For absolutes, totals and other sequentially dependent values you need some kind of calibration, if you can&amp;rsquo;t go back to the big bang - &amp;ldquo;how many 45&amp;rsquo;s did we ever sell&amp;rdquo; or &amp;ldquo;how much did 17 ever buy&amp;rdquo; can only be answered accurately if you have all the logs and the time to replay them from scratch. This quickly &lt;a href=&#34;https://twitter.com/AdinChelloveck/status/1270768529080496128&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gets out of hand&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;And &lt;a href=&#34;https://twitter.com/isotopp/status/1270765952116891648&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;there&lt;/a&gt;
+
+ is the problem that I still see (or not quite understand wrt to CQRS):&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;So if a service does not reign over a set of data, but it&amp;rsquo;s supposedly the authoritative data source for a thing where multiple copies can exist - how do you validate?&lt;/p&gt;
+&lt;p&gt;The authoritative source of the data is the event stream.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I will have to check out the linked talk. I think I get hung up because this is what databases do:&lt;/p&gt;
+&lt;p&gt;A database is a giant global persistent variable with a network interface. Datadir is full of schemas is full of tables is full of rows has multiple fields. We can stop all traffic to the database and make an image. That&amp;rsquo;s a backup.&lt;/p&gt;
+&lt;p&gt;We make changes to the database using grouped data modification language: transactions. Transactions are recorded in the binlog. We record and keep the binlog, and also the backups (and the binlog position we took the backups at).&lt;/p&gt;
+&lt;p&gt;We can roll back to an earlier image, and then replay the binlog to move forward again in time at will, but this is bounded in time (and disk space) by the amount of binlog we keep. So if we store backups and binlogs for 7 days, we can go back 7 days and roll forward again.&lt;/p&gt;
+&lt;p&gt;In a MySQL database with row based replication, the actual row events are even idempotent. We record &amp;ldquo;set x = 10&amp;rdquo;, not &amp;ldquo;x = x + 1&amp;rdquo;. We still can&amp;rsquo;t replay old binlogs over a newer image without constraints (this is a different discussion), but it does make things a lot more robust.&lt;/p&gt;
+&lt;p&gt;In fact, with RBR the actual row events with full row images are even reversible: we do not only get &amp;ldquo;set x = 10&amp;rdquo;, we do get &amp;ldquo;set x from 9 to 10&amp;rdquo;, and if the log were pure we could play it backwards and walk back in time step by step (this fails in reality in the general case, but again this is a different discussion).&lt;/p&gt;
+&lt;p&gt;So if you think of the database as a giant global variable that is modified in transactions, and as the binlog as a recording of these transactions in ideally reversible notation, then we can think of a services system as &amp;ldquo;that binlog on an event bus&amp;rdquo;, and as each of these services as a thing that builds materialized views (projections) of fragments of the total database and the total globalized state is gone, because it has become too big to maintain (We will see about that in a second).&lt;/p&gt;
+&lt;p&gt;But: You cannot realistically keep the log an indefinite amount of time. And even if you did, you cannot replay it from the Big Bang, because your recovery time would be unbounded. So there must be backups (images) associated with positions in the event stream, that allow individual services to reset and replay themselves. Or you demand that all questions are always sequentially independent and over fixed time windows so they can be starting up in the middle of an ongoing stream. Maybe that is even a reasonable restriction, it is in any case a useful classification for types of queries on a stream.&lt;/p&gt;
+&lt;p&gt;But there is also the problem of complicance/correctness/synchronisation: How do you show that for every event in your orderlog there is also an entry in the payment service that matches the order? Probably with some event reader that consumes both types of events, orders and payments. It would have to match one up with the other or alert if some order is being maintained as active for too long without finding a matching payment.&lt;/p&gt;
+&lt;p&gt;At some point in the evening I got into a chat with a colleague:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;L&amp;gt; You asked:
+&lt;a href=&#34;https://twitter.com/isotopp/status/1270746627339358208?s=21&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Where do the Joins go?&lt;/a&gt;
+
+
+To the JoinDataService, obviously.
+Aka &amp;ldquo;Data Lake&amp;rdquo;.
+aka The Data Monolith that secretly underpins all the service shit.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;He&amp;rsquo;s not wrong. The Hadoop in the end is the global state where all the events get joined together again and it produces a giant global image of the current and all past states. That is why the big data is big (and you can go back to the big bang, it just eats Megawatthours to do so.)&lt;/p&gt;
+&lt;p&gt;At some point I was like:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;K&amp;gt; I get the feeling that the answer is &amp;ldquo;we are looking at each event in a self-contained fashion. One event is one Transaction.&amp;rdquo;
+So an order event is self-contained and does not need to refer to other orders or other facts.
+It contains all data necessary to fulfull the order. It also means &amp;ldquo;Fuck you, reporting.&amp;rdquo;
+And that is where your data lake comes in.&lt;/p&gt;
+&lt;p&gt;L&amp;gt; I wasn’t kidding.&lt;/p&gt;
+&lt;p&gt;K&amp;gt; &amp;ldquo;Why is it called data lake?&amp;rdquo; &amp;ldquo;Because this is where we drown our problems in hardware and petabytes&amp;rdquo;
+Unfortunately, book keeping is stateful and cannot look at individual orders, it is all about aggregation.
+I also get the feeling that is where the blockchain bros come in.
+&amp;ldquo;by turning your event stream into a sequence of chained and signed blocks you get guarantees of losslessness&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;L&amp;gt; Blockchain == storage.&lt;/p&gt;
+&lt;p&gt;K&amp;gt; Ok, that&amp;rsquo;s a Merkle tree then, it needs a wasteful PoW to become a real blockchain. And we have plenty of successful Merkle Trees, git, zfs and so on, just zero successful Blockchains, so it is useful to make this distinction.
+…&lt;/p&gt;
+&lt;p&gt;L&amp;gt; There will always be two things: state and changes to state.
+Unless every change contains the entire previous state, or changes are distributed guaranteed, there is risk of diversion.&lt;/p&gt;
+&lt;p&gt;K&amp;gt; So this is also a question I have about Blockch&amp;hellip; Merkle trees. You can spot holes. How do you heal them?&lt;/p&gt;
+&lt;p&gt;L&amp;gt; Perhaps every change could contain hash of previous state, but that only helps detect diversion, not solve it.&lt;/p&gt;
+&lt;p&gt;K&amp;gt; Yes, that is the merkle tree thing. Well, it is tree-dimensional and time-dimensional. you have the data structure itself, checksummed, and you have the stream of changes, also checksummed.&lt;/p&gt;
+&lt;p&gt;L&amp;gt; Now. The obvious solution is detect then replay. But this poses two new problems. 1) what state do we trust enough to start from. 2) where do we replay changes from.&lt;/p&gt;
+&lt;p&gt;K&amp;gt; In blockchains this is a voting problem. In git and the Linux kernel, this is literally Linus day job.
+…
+L&amp;gt; Right. Snapshot and replay from there. Like I said.&lt;/p&gt;
+&lt;p&gt;K&amp;gt; Yes. I do believe it does not get more complicated than mysql binlogs and binlog positions, but with JSON as a REST service.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Architektur heißt umbauen</title>
+      <link>https://blog.koehntopp.info/2012/03/06/architektur-hei-t-umbauen.html</link>
+      <pubDate>Tue, 06 Mar 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/03/06/architektur-hei-t-umbauen.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/Architekturheisstumbauen.jpg&#34; alt=&#34;Theatre of Marcellus&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Theatre_of_Marcellus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Teatro di Marcello&lt;/a&gt;
+
+, Rom&lt;/p&gt;
+&lt;p&gt;Das auf dem Bild da ist das Theater des Marcellus, in Rom.  Das Foto habe
+ich Anfang 2006 aufgenommen, als ich dienstlich bei einem Kunden ganz in der
+Nähe war.&lt;/p&gt;
+&lt;p&gt;Das Marcellustheater ist nach Marcus Marcellus benannt, einem Neffen von
+Kaiser Augustus, und wurde so um 13 vor Christus fertig gestellt.  Es ist
+später verfallen, dann im Mittelalter als Festung genutzt worden, im 16.
+Jahrhundert dann in eine Palastresidenz umgewandelt worden.  Heute besteht
+der obere Teil aus einer Reihe von Appartments und unten werden im Sommer
+diverse Konzerte aufgeführt.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/Architekturheisstumbauen2.jpg&#34; alt=&#34;Umgebaute Umbauten&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Bei der Ausbildung von Software-Ingenieuren, und wahrscheinlich auch bei der
+Ausbildung von Architekten, machen wir jungen Leuten falsche Hoffnungen.
+Bei den Software-Ingenieuren bin ich mir sogar ziemlich sicher.&lt;/p&gt;
+&lt;p&gt;Wir erzählen diesen Leuten an der Uni, daß sie Technik zum Ausprobieren
+bekommen werden oder Wahlfreiheit haben werden in den Mitteln und Methoden,
+die sie einsetzen werden.  Und wir machen Ihnen Hoffnung, daß sie neuen Code
+schreiben werden.  Später, wenn diese Personen von der Uni abgehen, landen
+sie in einer Umgebung, die erstens eine Technik und die Best Practice zu
+ihrem Einsatz genau definiert und die zweitens einen Haufen existierenden
+Code hat, der läuft und Geld verdient, aber der zu verändern oder zu
+erweitern ist.&lt;/p&gt;
+&lt;p&gt;Das erzeugt bei diesen Menschen enorme Umstellungsprobleme, denn sie kommen
+mit vollkommen falschen Erwartungshaltungen in den Beruf, ja, in vielen
+Fällen fehlen ihnen sogar Methodiken, die für das Überleben im ersten Job
+essentiell sind.&lt;/p&gt;
+&lt;p&gt;Darum will ich es hier einmal ganz offen sagen:&lt;/p&gt;
+&lt;p&gt;Junger Informatiker, hoffnungsvolle Uni-Abgängerin!&lt;/p&gt;
+&lt;p&gt;Hier ist, was Dich in Deinem Beruf erwartet:&lt;/p&gt;
+&lt;p&gt;Du wirst mit altem Code zu tun haben, der offensichtliche Schwächen hat.  Du
+wirst mit Werkzeugen und Umgebungen arbeiten müssen, die Deiner Meinung nach
+nicht Stand der Technik sind.  Eine Deiner Hauptaufgaben wird sein, den
+alten Code zu refaktorieren.  Dabei wird die Zeit nicht reichen, diese
+Aufgabe zu Ende zu führen.  Du wirst die Versuchung verspüren, den alten
+Kram wegzuwerfen und auf der grünen Wiese neu anzufangen.&lt;/p&gt;
+&lt;p&gt;Die schlechte Nachricht:&lt;/p&gt;
+&lt;p&gt;Weder wirst Du jemals auf der grünen Wiese neu anfangen dürfen, noch würde
+es viel helfen, das zu tun.  Der komplizierte Code-Wirrwarr, mit dem Du es
+zu tun hast, ist häßlich und besteht aus einem Haufen ekeliger Sonderfälle.
+Wenn Du auf der grünen Wiese neu anfängst, wirst Du ein Design haben, das
+die Hauptfälle in einem schönen Modell abdeckt, und an den Sonderfällen
+umfassend versagt.&lt;/p&gt;
+&lt;p&gt;Du wirst sie schrittweise nachrüsten wollen, und Du endest mit einem
+Drahtverhau von vergleichbarer Komplexität zu dem, den Du jetzt hast.  Das
+ist normal.  Denn der Code, mit dem Du es zu tun hast, wurde wahrscheinlich
+nicht von sabbernden Idioten geschrieben, sondern von Leuten wie Dir, und er
+war am Anfang genau wie Dein Code: Klar und einfach.&lt;/p&gt;
+&lt;p&gt;Dann traf er auf eine Realität, die alles ist, aber weder klar noch einfach.
+Heute ist er ein halbwegs korrektes Modell der Realität.  Und weit mehr als
+die Hälfte des unübersichtlichen Designs mit dem Du es zu tun hast, ist
+wahrscheinlich nicht auf die Unfähigkeit Deiner Vorgänger zurück zu führen,
+sondern auf die Tatsache, daß die Realität nun einmal leider eine Ansammlung
+von häßlichen Ausnahmen ist, die alle mit modelliert sein wollen.&lt;/p&gt;
+&lt;p&gt;Die gute Nachricht:&lt;/p&gt;
+&lt;p&gt;Es ist gar nicht notwendig, schönen Code zu bauen.  Anders als Dein
+Universitätsprofessor verlangt Dein Arbeitgeber nicht, daß Dein Code
+minimal, elegant, beweisbar oder sonstwie ist.  Das einzige Kriterium ist,
+ob er den Job getan bekommt.  Genau genommen ist das Kriterium sogar, ob er
+den Job gut genug getan bekommt.  Sobald die Kosten in zusätzlicher
+Hardware, Kundensupport oder manueller Nachbearbeitung geringer sind, als
+die Arbeitszeit, die Dein Team benötigt, um die letzten Warzen abzuschaben,
+wirst Du aufhören können.  Sogar müssen, denn Du bist nicht mehr rentabel
+und Deine Arbeit dient keinem betrieblichen Ziel.&lt;/p&gt;
+&lt;p&gt;Die schlechte Nachricht, die daraus folgt:&lt;/p&gt;
+&lt;p&gt;Befriedigung in gutem Handwerk zu finden wird für Dich vermutlich schwierig,
+denn gutes Handwerk ist illegal.  Befriedigung in Closure zu finden, darin,
+Sachen wirklich ganz und gar zu Ende zu bringen, full circle zu kommen, wird
+auch schwierig.  Denn das ist vermutlich auch illegal, und es wird keine
+Zeit dafür sein, denn so eine Pickliste mit Aufgaben ist nach unten offen.
+Du wirst stattdessen vermutlich Gutes im Vorbeigehen tun müssen, also hier
+in diesem oder jenem Projekt einen Teil mit anfassen müssen, der eigentlich
+nicht strikt hätte angefaßt werden müssen, es aber verdient hat und außerdem
+waren ja noch Stunden übrig.&lt;/p&gt;
+&lt;p&gt;Die frustrierende Nachricht:&lt;/p&gt;
+&lt;p&gt;Bei vielem Code, den Du schreibst, wird Deinen Auftraggebern am Anfang noch
+nicht klar sein, ob das, was der Code machen wird, am Ende das
+Geschäftsmodell tatsächlich verbessern wird.  Du weißt aus dem Open Source
+Umfeld schon, daß die goldene Regel lautet:
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Release_early,_release_often&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Release Early, Release Often!&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Du solltest Dir vor Augen führen, daß das nicht nur für Dich und Dein
+Scrum-Team gilt, sondern auch für Deinen Product Owner: In den weitaus
+meisten Fällen hat er keine Ahnung, ob seine Idee
+&lt;a href=&#34;https://www.youtube.com/watch?v=xEs67tv401o#t=26&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gut für die Firma&lt;/a&gt;
+
+
+ist oder sich am Ende schädlich auswirken wird.  Wenn das der Fall ist, ist
+die einzig logische Aktivität, diesen Code wieder aus der Produktion zu
+nehmen und zu verschrotten - Du hast dann für den Papierkorb entwickelt.&lt;/p&gt;
+&lt;p&gt;Daher ist es wichtig, viele Ideen eines PO erst einmal sehr roh zu
+implementieren und dann in der Realität zu testen, ob sie überhaupt auf der
+Business-Ebene funktionieren.  Erst dann, wenn sicher gestellt ist, daß Code
+business-positive ist, lohnt es überhaupt, die Sache noch einmal zu
+reimplementieren oder refaktorieren auf eine Weise, die den Ansprüchen eines
+ausgebildeten Informatikers würdig ist.  Weit mehr als 90% der Ideen Deines
+PO sind blöder Scheiß und verdienen den Tod durch Patch Revert.  Es lohnt
+also nicht, große architekturelle Zuckerbäckereien auszuarbeiten, solange
+nicht bekannt ist, ob die Idee dahinter überhaupt in der Lage ist, den Lohn
+für Dich und Dein Team zu verdienen.&lt;/p&gt;
+&lt;p&gt;In dieser Phase - dem experimentellen Verifizieren der Requirements - ist
+die einzige Metrik, wie viele Ideen und Varianten in möglichst kurzer Zeit
+Dein Team released bekommt, egal wie schlecht, ineffizient oder kaputt Dein
+Code ist.  Erst später, wenn Dein PO nicht nur glaubt zu wissen, was er
+will, sondern belastbare Zahlen hat, die beweisen, daß das was er will auch
+von der Firma gewollt werden kann, erst dann kannst Du Deine
+Ingeniersausbildung auspacken und sauber arbeiten.&lt;/p&gt;
+&lt;p&gt;So, jetzt ist es heraus.&lt;/p&gt;
+&lt;p&gt;Eine der Aufgaben, die eine Firma lösen muß, wenn sie junge
+Informatikerinnen und Uni-Abgänger einstellt, ist sie zu deprogrammieren.
+Ihnen die Flausen aus dem Kopf zu pusten, die ihnen das Uni-Studium in den
+Kopf gesetzt hat.  Sie mit den Realitäten der Welt vertraut zu machen.  Und
+sie zu lehren, daß so wenig wie die wenigsten Städteplaner und
+Landschaftsarchitekten mit einem leeren Plan anfangen können, die wenigsten
+Softwarearchitekten und Entwickler mit einem leeren Editor starten.&lt;/p&gt;
+&lt;p&gt;Hier sind die wichtigsten Fähigkeiten für einen Softwareentwickler:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Man kann ihn mit einer Bugnummer über unbekannten Code abwerfen, und auf
+dem Weg nach unten erkennt er schon im Flug, was da kaputt ist.  Wenn er
+gelandet ist, klärt er den Bug und während der Exfiltration macht er die
+Gegend um seinen Weg nach draußen auch noch schön.&lt;/li&gt;
+&lt;li&gt;Er kann existierenden Code zu umbauen, daß der Code nach der Operation
+schöner, schneller und funktionaler ist als vorher und die neuen
+Anforderungen erfüllt.  Dabei ist während jeder einzigen Sekunde der
+Umbauphase (jeder Zwischencommit und jedes Zwischenrollout) in sich
+lauffähig und korrekt, und die Datenformate sind kompatibel, sodaß keine
+Betriebsunterbrechung für den Endnutzer sichtbar wird und man geschmeidig
+zwischen den Versionen vor und zurück rollen kann.&lt;/li&gt;
+&lt;li&gt;Er akzeptiert, daß Code ein Modell der Welt ist und daß sie Welt nicht
+schön, elegant oder minimal ist, sondern dreckig, irregulär und
+überkomplex.  Und er kommt damit klar.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Das Bild von dem Teatro di Marcello da oben illustriert das ganz gut.&lt;/p&gt;
+&lt;p&gt;Gebaut vor mehr 2000 Jahren zu einem ganz anderen Zweck, ist es aufgelassen,
+umgebaut, umgewidmet, modernisiert, renoviert und restauriert worden, und
+wurde die meiste Zeit seiner Lebensdauer von Leuten genutzt.  Nichts an
+diesem Gebäude ist so wie es sein soll, nichts an diesem Gebäude wird so
+genutzt wie es einmal geplant war.  Nichts an der Stadt in der es steht ist
+so.&lt;/p&gt;
+&lt;p&gt;Dennoch ist dieser Ort voller Menschen, die dort leben und sich dort wohl
+fühlen.&lt;/p&gt;
+&lt;p&gt;Informatik ist genau so.&lt;/p&gt;
+&lt;p&gt;(Weil towo danach gefragt hat)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Testing in Production</title>
+      <link>https://blog.koehntopp.info/2011/12/02/testing-in-production.html</link>
+      <pubDate>Fri, 02 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/12/02/testing-in-production.html</guid>
+      <description>&lt;p&gt;Mitte November ist auf The Testing Planet ein Artikel von Seth Eliot
+(Microsoft) erschienen mit dem Titel
+&lt;a href=&#34;http://www.thetestingplanet.com/2011/11/the-future-of-software-testing-part-one-testing-in-production/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Testing in Production&lt;/a&gt;
+
+.
+Eliot schreibt über Software Services, also Dienste, die auf einer Website
+laufen, sodaß die User keine Anwendungen installieren müssen (Wir erinnern
+uns: Microsoft ist noch immer ganz groß darin, Software auf physikalischen
+read-only Medien an Benutzer zu verschicken, auch wenn diese Software seit
+einer Dekade kaum mehr als ein Loader für Updates über das Internet ist und
+nach der Installation vom Medium erst einmal alle eben installierten Dateien
+durch das heruntergeladene Update durch neuere Versionen ersetzt werden).&lt;/p&gt;
+&lt;p&gt;In Software Services hat der Anbieter jedenfalls die Kontrolle darüber,
+welche Version der Software welchem Kunden präsentiert wird, und er hat in
+der Regel Zugriff und Meßmöglichkeiten im Data Center, auf dem die Software
+läuft, kann also auf der Serverseite diagnostizieren, was wann wie und warum
+schief geht.&lt;/p&gt;
+&lt;p&gt;Eliot behauptet nun, daß User seltsamer sind als Tester sich vorstellen
+können und man daher besser so früh als möglich mit echten Benutzern testet
+(Testing in Production = TIP).  Vorhergehende synthetische Tests (Up Front
+Testing = UFT) können gemacht werden, sollten aber nur so weit gemacht
+werden, daß man sicher in der Produktion testen kann.&lt;/p&gt;
+&lt;p&gt;Eliot weiter:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;For some TiP methodologies we can reduce risk by reducing the exposure of
+the new code under test.  This technique is called “Exposure Control” and
+limits risk by limiting the user base potentially impacted by the new
+code.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Was er damit meint, wird weiter unten klar, wenn er erläutert, welche Klassen von TIP er unterscheidet.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Ramped Deployment&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Der zu testende Code wird ausgerollt, ist aber zunächst nicht aktiv.  Er
+wird für einen Subset der Benutzer aktiviert und überwacht.  Dabei
+können unterschiedliche Aspekte des Codes untersucht werden - wie er
+sich auf die Geschäftsprozesse auswirkt, ob er technisch funktioniert
+oder wie er skaliert etwa.  Benutzer können automatisch oder
+handselektiert sein, und wissen entweder, daß die mit experimentellem
+Code arbeiten oder nicht.&lt;/p&gt;
+&lt;p&gt;Entscheidend ist, daß das Deployment von neuem Code und seine
+Aktivierung voneinander getrennt werden.  Dies erlaubt es, Features
+graduell einzuführen und schnell zu deaktivieren, wenn sich Probleme
+entwickeln.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Controlled Test Flight&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ein a/b-Experiment, in der alte und der neue Code parallel für
+unterschiedliche Benutzer aktiviert wird und die Benutzer nicht wissen,
+in welcher Kategorie sie sich befinden.  Eine Unterkategorie von Ramped
+Deployment.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Experimentation for Design&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;eine weitere Verfeinerung von Controlled Test Flight ist, die neue und
+die alte User Experience parallel für unterschiedliche, repräsentative
+Benutzergruppen zu aktivieren, um den Einfluß der neuen UX auf das
+Geschäftsmodell zu prüfen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Dogfood/Beta&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;wissen die Benutzer um die Tatsache, daß sie neuen Code testen, handelt
+es sich nicht um Experimentation, sondern um eine Beta.  Sind die
+Benutzer Mitarbeiter oder Freunde der Firma, handelt es sich um
+Dogfooding.  Hier ist es oft zulässig, mit dem Wissen und Einverständnis
+der Benutzer zusätzliche Telemetrie zu installieren und auszuwerten.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Synthetic Test in Production&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;das Anwenden von automatisierten UFT-Systemen auf Produktionssysteme.
+Sie können verwenden werden, um das Produktionssystem oder sein
+Monitoring zu validieren.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Load/Capacity Test in Production&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Last und Kapazitätstest in der Produktion, bei Eliot unter Verwendung
+synthetischer Last gegen Produktionssysteme, meistens zusätzlich zur
+existierenden Last durch reale Benutzer, um die Kapazität des Systems zu
+bestimmen.
+&lt;br/&gt;&lt;br/&gt;
+Die mir bekannten Anwender solcher Verfahren spielen stattdessen eher
+mit den Gewichten an ihren Load Balancern, um die externe Last durch
+reale User auf weniger und weniger Backends zu konzentrieren.
+&lt;br/&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;p&gt;Synthetische Last wird dabei lediglich als Meßsonde verwendet, um die Latenz
+von Requests zu überwachen - kommt zur typischen Think Time des Benchmarks
+eine Wait Time hinzu, ist die den getesteten Frontends angebotene Load
+größer als ihre Kapazität und es baut sich eine Queue auf.  Lastsättigung
+ist erreicht und die Kapazität des Gesamtsystems kann durch einfache
+Dreisätze bestimmt werden.  Bricht man den Test hier ab, ist die UX für die
+realen User nicht destruktiv beeinflußt: Das System mag einigen Benutzern
+für kurze Zeit langsam erscheinen, ist aber zu allen Zeiten normal
+Funktionsfähig.
+&lt;br/&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;p&gt;Bricht man den Test nicht ab, sondern erhöht die Last vorsichtig weiter,
+kann man den Failure Mode des Systems verifizieren: Art und Lage der
+begrenzenden Ressource im Gesamtsystem wird offensichtlich, Qualität des
+Monitorings und Prozesse im Operating werden mitgeprüft.  Diese Phase des
+Tests erfordert schnelle Reaktion, um den Einfluß auf die UX der realen
+Benutzer zu minimieren.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Outside-in load /performance testing&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ein Lasttest mit synthetischer Load, die von einer externen Quelle in
+die Produktionsumgebung injeziert wird, also denselben Weg nach drinnen
+nimmt wie die realen Benutzer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;User Scenario Execution&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ausführung von Endbenutzer-Szenarien gegen ein Produktionssystem von den
+Endpunkten echter Benutzer.  Kann manuelles Testen beinhalten.  Diese
+Tests können regional unterschiedliche UX sichtbar machen (&amp;ldquo;Das System
+ist schnell genug in Europa, von Asien aus aber kaum benutzbar.&amp;quot;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Data Mining&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Die Logdaten echter Benutzer werden nach Problemen oder Testfällen
+durchsucht, die spezifische Szenarien darstellen.  Die Fälle, die
+auftreten, werden automatisch als Bugtickets eingetragen.  Das kann in
+Echtzeit passieren.  &lt;br/&gt;&lt;br/&gt;&lt;/p&gt;
+&lt;p&gt;Echtzeitmonitoring kann auf viele verschiedene Weisen nützlich sein.
+Insbesondere in den o.a.  Lasttests ist ein Echtzeit-Errormonitor
+notwendig, um die Saturierung von der Überlast des Systems trennen zu
+können, und um Lage und Failure Mode der überlasteten Komponente im
+Produktionsweg schnell erkennen zu können.  Ohne ein solches
+Echtzeitmonitoring ist diese Art von Test nicht sicher durchführbar.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Destructive Testing&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Injektion von Fehlern in Produktionssysteme, um Servicekontinuität im
+Fehlerfall zu validieren (
+&lt;a href=&#34;http://www.codinghorror.com/blog/2011/04/working-with-the-chaos-monkey.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Chaos Monkey&lt;/a&gt;
+
+
+).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;em&gt;Production Validation&lt;/em&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Echtzeitmonitore, die die verschiedenen Phasen der Produktion auf
+Businessebene, Contentebene, Technischer Ebene, Netzwerkebene und so
+weiter überwachen und visualisieren.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Eliot bringt dann verschiedene Beispiel für TIP: Googles und Bings
+a/b-Experimente und 1% Launches werden genannt, sie sind Beispiele für
+Experimentation for Design.  Controlled Test Flights werden dort ebenfalls
+verwendet, dabei werden kritische Änderungen ausgerollt und parallel zu
+getestetem Code betrieben - oft werden dabei Daten zweimal geschrieben: Der
+alte Code führt das alte System weiter, der neue Code arbeitet im neuen
+System mit anderen Dateien oder Datenbanktabellen.&lt;/p&gt;
+&lt;p&gt;Chaosmonkey war der Vorläufer eines Systems für Destructive Testing, das
+jetzt die
+&lt;a href=&#34;http://techblog.netflix.com/2011/07/netflix-simian-army.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Simian Army&lt;/a&gt;
+
+
+darstellt: Neben Chaos Monkey, der Komponenten zufällig aus dem System
+entfernt gibt es nun Latency Monkey, der Dienste zufällig verzögert,
+Conformity Monkey, der Systeme aus dem Dienst kippt, die nicht auf dem
+erwarteten Stand sind und viele andere Dienstprüfer und Killer mehr.&lt;/p&gt;
+&lt;p&gt;Eliot weist darauf hin, daß Tests in der Produktion gefährlich sein können
+und sie deswegen so aufgebaut werden müssen, daß sie keine Produktionsdaten
+verändern können und nur mit funktionierendem und schnellem Monitoring
+durchgeführt werden können.&lt;/p&gt;
+&lt;p&gt;Korrekt ausgeführt eröffnen sie aber eine Menge Lernmöglichkeiten, die
+traditionellem Testen nicht zur Verfügung stehen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Ein paar Gedanken zu Zeitreihendaten</title>
+      <link>https://blog.koehntopp.info/2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html</link>
+      <pubDate>Wed, 28 Oct 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html</guid>
+      <description>&lt;p&gt;Ich sitze hier auf der
+&lt;a href=&#34;http://www.netways.de/osmc/y2009/programm/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Open Source Monitoring Conference&lt;/a&gt;
+
+
+und unterhalte mich mit ein paar Nagios bzw. Icinga Entwicklern. Dabei hörte
+ich einen Haufen Flüche über NDO - Nagios Data Out. Ich schaue mir gerade
+die Dokumentation zum
+&lt;a href=&#34;http://nagios.git.sourceforge.net/git/gitweb.cgi?p=nagios/ndoutils;a=blob;f=docs/NDOUtils%20Documentation.pdf;h=90c19c160e486d18b57b8fa3b085ff51731c5bbb;hb=HEAD&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NDO Schema&lt;/a&gt;
+
+
+an und stelle fest, daß die Ideen hier auf eine Weise viele Fehler teilen,
+die auch dem MySQL Enterprise Manager Schema zugrunde liegen (Noch, das
+MEM-Team bastelt das grad um).&lt;/p&gt;
+&lt;h2 id=&#34;ein-naives-zeitreihenmodell&#34;&gt;
+    &lt;a href=&#34;#ein-naives-zeitreihenmodell&#34;&gt;
+	Ein naives Zeitreihenmodell
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Beiden ist gemein, daß man Zeitreihendaten von mehreren Meßwerten sammeln
+möchte. Der naive Ansatz ist die Definition einer Tabelle mit einem
+Timestamp und dem Key als Primärschlüssel, etwa&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;messwerte&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;40&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;charset&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;latin1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;primary&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;schlüsselkompression&#34;&gt;
+    &lt;a href=&#34;#schl%c3%bcsselkompression&#34;&gt;
+	Schlüsselkompression
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Dabei wird es natürlich zu einer vielfachen Wiederholung der Werte von key
+kommen - speichert man etwa die Ausgabe von SHOW GLOBAL STATUS im
+Minutenabstand, dann hat man wieder und wieder die langen Namen von MySQL
+Statusvariablen in der Tabelle gespeichert. Das kann man wegnormalisieren,
+indem man definiert&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;keys&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;smallint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;40&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;charset&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;latin1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;primary&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;messwerte&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;smallint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;primary&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Auf diese Weise speichert man nicht wieder und wieder dieselben Strings in
+der Tabelle ab, sondern hat die relativ langen Strings auf die 2 Byte eines
+SMALLINT ohne Vorzeichen reduziert.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/key_compression.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;ER-Diagramm mit Key-Compression durch eine Lookup-Tabelle.&lt;/p&gt;
+&lt;h2 id=&#34;data-lifecycle-management---drop-statt-delete&#34;&gt;
+    &lt;a href=&#34;#data-lifecycle-management---drop-statt-delete&#34;&gt;
+	Data Lifecycle Management - DROP statt DELETE
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In so einer Meßwertetabelle wird man ja laufend Meßwerte einfügen - und zwar
+von vielen Meßstellen gleichzeitig. Zugleich sollen auch Meßwerte
+ausgewertet werden. Damit sich die konkurrenten Schreibzugriffe nicht ins
+Gehege kommen und damit parallel dazu auch ungestört gelesen werden kann,
+muß diese Tabelle unbedingt eine InnoDB Tabelle sein - mit MyISAM zieht man
+sich sonst binnen kürzester Zeit die Table Locks zu.&lt;/p&gt;
+&lt;p&gt;InnoDB speichert die Daten in einem B+-Baum ab: Ein balancierter Baum, bei
+dem die Blätter des Primärschlüssels die eigentlichen Daten sind. Die Daten
+werden also gemäß unserer Definition in der Reihenfolge (ts, key_id)
+gespeichert: Neue Daten werden immer an rechten Rand der Tabelle eingefügt,
+alte Daten stehen weiter links.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/loeschen_einfuegen.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Daten werden links gelöscht und rechts im Baum eingefügt. Dadurch muß der
+B-Baum ständig neu balanciert werden, damit er nicht zu einer linearen Liste
+degeneriert. Das ist eine sehr langsame Operation.&lt;/p&gt;
+&lt;p&gt;Dabei tritt ein Problem auf: Da neue Daten immer rechts angefügt werden und
+alte Daten immer links gelöscht werden, bekommen wir einen Baum, der maximal
+stark unbalanciert wird. Damit der B-Baum immer schön balanciert bleibt,
+müssen beim Löschen der Daten also massenhaft Rebalancing-Operationen
+durchgeführt werden - das involviert aber eine ganze Menge von Updates im
+oberen Teil des Baumes bis hin zur Wurzel, und wühlt damit also eine große
+Menge von Daten auf - noch dazu mit Random-I/O, also mit vielen Seeks.&lt;/p&gt;
+&lt;p&gt;Wenn man wie ich eine MySQL Enterprise Manager Instalallation hat, die pro
+Tag 7 GB neue Daten bekommt, dann muß man auch 7 GB Daten am Tag löschen,
+damit die Platten nicht überlaufen.&lt;/p&gt;
+&lt;p&gt;Die generische Lösung ist hier, entweder MySQL 5.1 Partitionen zu verwenden,
+oder dasselbe manuell zu simulieren. Dazu baut man sich eine
+Template-Tabelle, die man dann in bestimmten Intervallen cloned: Pro Stunde,
+Tag, Woche oder Monat wird eine neue Tabelle angefangen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;messwerte_template&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;smallint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;primary&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;messwerte_20091028&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;LIKE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;messwerte_template&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- usw.
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Das hat den Vorteil, daß man alte Werte nun nicht mit einem &amp;ldquo;DELETE FROM
+messwerte WHERE ts &amp;lt; &amp;lsquo;20090928 00:00:00&amp;rsquo;&amp;rdquo; loswerden muß, sondern elegant
+&amp;ldquo;DROP TABLE messwerte_20090928&amp;rdquo; sagen darf. Dafür muß man - so man nicht
+Partitionen verwendet - bei den Queries ein wenig mehr arbeiten, weil man
+sich die Gesamtergebnisse aus den Tages-Tabellen zusammenstückeln muß, und
+dabei tunlichst nicht UNION verwenden darf, damit es schnell ist (UNION ALL
+wäre okay, wäre es nicht
+&lt;a href=&#34;http://bugs.mysql.com/bug.php?id=50674&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in MySQL kaputt&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/zeitreihe_partitioniert.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Schema mit Key-Kompression und Tagestabellen. Löschung von Daten kann pro
+Tag durch ein DROP TABLE erfolgen.&lt;/p&gt;
+&lt;p&gt;UNION ist deswegen nicht so toll, weil dies nach Definition Duplikate
+eliminieren muß, und dazu fügt MySQL intern die einzelnen Teiltabellen zu
+einer temporären Tabelle zusammen, sortiert diese, killt die Doubletten und
+schmeißt die temporäre Tabelle weg, nachdem es uns das Resultat gesendet
+hat. Leider ist die nächste Anfrage danach gleich wieder mit UNION, und der
+Zirkus geht von vorne los. UNION ALL hätte dieses Problem nicht
+(&lt;a href=&#34;http://bugs.mysql.com/bug.php?id=50674&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;jedoch&lt;/a&gt;
+
+) - es darf uns nach
+Definition fröhlich Duplikate senden und braucht daher diesen
+Verarbeitungsschritt nicht.&lt;/p&gt;
+&lt;h2 id=&#34;locality-of-reference&#34;&gt;
+    &lt;a href=&#34;#locality-of-reference&#34;&gt;
+	Locality Of Reference
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das nächste Problem ergibt sich nun aus der Tatsache, daß alle Meßwerte aus
+einer Messung in derselben Tabelle gespeichert werden. Eine Tabelle besteht
+in InnoDB ja aus Blöcken von 16KB, die jeweils am Stück geladen und
+gespeichert werden. In unserer Tabelle stehen nun Tripel (ts, key_id,
+value), wobei so knapp an die 300 verschiedene key_id und value pro ts
+gespeichert werden, wenn wir z.B. einmal pro Minute den Output von SHOW
+GLOBAL STATUS aufzeichnen. Eine Zeile (datetime, smallint, integer) ist
+8+2+4 = 14 Byte plus Overhead (6+8 = 14) breit, d.h. wir bekommen etwa zwei
+Messungen in einen 16KB Block hinein.&lt;/p&gt;
+&lt;p&gt;Wenn wir nun aus diesen Meßwerten einen Graph zeichnen wollen, dann brauchen
+wir z.B. für einen InnoDB-Graph ca. 4 Meßwerte pro Messung. Wir laden also
+16 KB, nutzen 8*4 = 32 Byte davon, schmeißen den Rest weg, laden die
+nächsten 16 KB und so weiter. Es wird klar, daß wir die Daten zwar in großen
+breiten Zeilen erfassen, diese aber in der Regel nicht so brauchen.&lt;/p&gt;
+&lt;p&gt;Es ist also lohnend, sich Gedanken über die Bedeutung der Meßwerte zu machen
+und sie in etwa so zu gruppieren, daß wenigstens alle com-Counter in einer
+Tabelle, alle InnoDB-Meßwerte in einer anderen Tabelle stehen und so weiter.
+Dadurch würde beim Zeichnen des InnoDB-Graphen nicht auf eine Tabelle mit
+8KB langen Rows zugegriffen werden, sondern vielleicht auf eine Tabelle mit
+200 Byte langen Rows, und wir würden immerhin 32 Byte von 200 Byte nutzen,
+oder pro Block nicht zwei, sondern ca. 80 Meßwerte auf einen Schlag laden.
+Für einen 640 Pixel breiten Graphen würden wir also nicht mehr 320 16KB
+Blöcke laden müssen, sondern nur noch 8.&lt;/p&gt;
+&lt;p&gt;Wenn man begriffen hat, daß Locality of Reference und komplettes Data
+Lifecycle Management wesentlich sind, wenn man von Zeitreihen sinnvolle
+Performance will, und sein Datenmodell danach baut, dann kann man langsam
+einmal anfangen, sich über weitergehende Dinge Gedanken zu machen (etwa:
+Aggregation - wie viele Meßwerte brauche ich denn, um Pixel sinnvoll zu
+schwärzen). Aber das ist eine Diskussion für ein anderes Mal.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Ein paar Gedanken zu Foreign Key Constraints</title>
+      <link>https://blog.koehntopp.info/2009/10/20/ein-paar-gedanken-zu-foreign-key-constraints.html</link>
+      <pubDate>Tue, 20 Oct 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/10/20/ein-paar-gedanken-zu-foreign-key-constraints.html</guid>
+      <description>&lt;p&gt;Ich lese gerade &lt;a href=&#34;http://www.sqlite.org/draft/foreignkeys.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SQLite Foreign Key Support&lt;/a&gt;
+
+ und ich muß sagen, ich kann mir ein leichtes Grinsen nicht verkneifen.&lt;/p&gt;
+&lt;p&gt;Also, ich finds ja gut, daß SQLite die Option für Foreign Key Constraints implementiert und ich finds sogar noch besser, daß mit DEFERRABLE INITIALLY DEFERRED sogar die einzig sinnvolle Weise das zu tun bereitgestellt wird, aber ich frag mich schon, wozu das gut sein soll.&lt;/p&gt;
+&lt;h2 id=&#34;foreign-keys&#34;&gt;
+    &lt;a href=&#34;#foreign-keys&#34;&gt;
+	Foreign Keys
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Aber von vorne. Wenn eine Tabelle einen Primary Key hat, dann kann jede Zeile in der Tabelle über diesen Key eindeutig identifiziert werden. Das erlaubt es, in anderen Tabellen auf Zeilen der Ausgangstabelle Bezug zu nehmen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;INTEGER&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;UNSIGNED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PRIMARY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;adata&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;VARCHAR&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;INTEGER&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;UNSIGNED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PRIMARY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;INTEGER&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;UNSIGNED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bdata&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;VARCHAR&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hier ist &lt;code&gt;b.aid&lt;/code&gt; der Primärschlüssel von &lt;code&gt;a&lt;/code&gt;, der in &lt;code&gt;b&lt;/code&gt; genannt wird. Wir nennen &lt;code&gt;b.aid&lt;/code&gt; den &amp;ldquo;Fremdschlüssel von a in b&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Dazu ein paar Anmerkungen, weil es oft nachlässig gehandhabt wird: &lt;code&gt;aid&lt;/code&gt; ist kein Fremdschlüssel, sondern &lt;code&gt;aid&lt;/code&gt; ist nicht eindeutig. &lt;code&gt;a.aid&lt;/code&gt; ist ein Primärschlüssel, &lt;code&gt;b.aid&lt;/code&gt; ist &amp;ldquo;der Fremdschüssel von a in b&amp;rdquo; und ohne den &amp;ldquo;von a in b&amp;rdquo;-Teil ist es streng genommen auch wieder nicht eindeutig.&lt;/p&gt;
+&lt;p&gt;Dennoch sagen viele Leute &amp;ldquo;aid ist Fremdschlüssel&amp;rdquo; und überlassen es dem Kontext, klarzustellen daß &amp;ldquo;b.aid ist ein Fremdschlüssel von a in b&amp;rdquo; gemeint ist. Da muß man sich dran gewöhnen und das mental korrekt expandieren.&lt;/p&gt;
+&lt;p&gt;Und schließlich ist es tatsächlich so, daß schon das bloße Anlegen von &lt;code&gt;b.aid&lt;/code&gt; und Befüllen von &lt;code&gt;b.aid&lt;/code&gt; mit Werten von &lt;code&gt;a.aid&lt;/code&gt; ausreicht, um eine Fremdschlüsselbeziehung zu definieren. Es kann nun sein, daß jemand oder etwas illegale &lt;code&gt;a.aid&lt;/code&gt; in &lt;code&gt;b.aid&lt;/code&gt; hinterlegt, daß also &lt;code&gt;b.aid&lt;/code&gt; existieren, für die es keine passenden &lt;code&gt;a.aid&lt;/code&gt;-Einträge gibt, und das führt uns zur folgenden Verschärfung.&lt;/p&gt;
+&lt;h2 id=&#34;foreign-key-constraints&#34;&gt;
+    &lt;a href=&#34;#foreign-key-constraints&#34;&gt;
+	Foreign Key Constraints
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Solche illegalen Werte in &lt;code&gt;b.aid&lt;/code&gt; zu verhindern ist die Aufgabe einer FOREIGN KEY CONSTRAINT, aber diese ist vollkommen optional. Wollte man sie haben, definierte man sie so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;INTEGER&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;UNSIGNED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PRIMARY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;INTEGER&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;UNSIGNED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bdata&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;VARCHAR&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FOREIGN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;REFERENCES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- hier noch Optionen
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und wo der Kommentar Optionen vorsieht könnte man noch Dinge notieren wie DEFERRABLE INITIALLY DEFERRED.&lt;/p&gt;
+&lt;p&gt;Einige Datenbanken-Implementierungen verlangen auch noch Nebenbedingungen wie &amp;ldquo;auf a.aid und auf b.aid muß jeweils ein Index definiert sein&amp;rdquo;. Das ist sogar dann sinnvoll, wenn die Implementierung es nicht verlangt, aber im mathematisch-definitorischen Sinne nicht notwendig. Die Implementierungen verlangen so etwas, denn wann immer wir eine CONSTRAINT definieren, muß diese ja auch geprüft werden. Für die Prüfung wollen wir realistischerweise, daß diese effizient durchgeführt wird - das geht aber nur mit einem Index flink.&lt;/p&gt;
+&lt;h3 id=&#34;eine-kleine-abschweifung-schlüssel-vs-index&#34;&gt;
+    &lt;a href=&#34;#eine-kleine-abschweifung-schl%c3%bcssel-vs-index&#34;&gt;
+	Eine kleine Abschweifung: Schlüssel vs. Index
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Eine kleine Abschweifung: Das ist auch der Grund, warum die Begriffe Schlüssel (Key) und Index von Datenbankern synonym verwendet werden: Ein Schlüssel ist etwas, das eine einzelne Zeile (UNIQUE KEY) oder eine zusammengehörende Gruppe von Zeilen identifiziert, ein Index ist die Struktur, die diese Dinge schnell auffindbar macht.&lt;/p&gt;
+&lt;p&gt;Definiert man zum Beispiel eine UNIQUE KEY CONSTRAINT (es kann nur eine Zeile dieses Wertes in einer Tabelle geben), dann muß beim Einfügen von neuen Zeilen ja in der Tabelle nachgesehen werden, ob es diesen Wert vielleicht schon gibt. Ohne einen Index wäre das eine sehr langsame Operation - daher geht eine UNIQUE KEY CONSTRAINT immer mit einem Index auf die Zeile zusammen und daher verwenden die meisten Datenbanker die Begriffe KEY und INDEX austauschbar, auch wenn sie verschiedene Dinge bezeichnen: Ein Schlüssel ist eine Eigenschaft einer Spalte, ein Index ist eine Struktur der Implementierung.&lt;/p&gt;
+&lt;h2 id=&#34;wozu-fk-constraints&#34;&gt;
+    &lt;a href=&#34;#wozu-fk-constraints&#34;&gt;
+	Wozu FK-Constraints?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Wie auch immer: Die Aufgabe einer FOREIGN KEY CONSTRAINT ist es, sicherzustellen, daß in der Fremdschlüsselspalte b.aid zu jedem Zeitpunkt immer nur gültige Werte stehen.&lt;/p&gt;
+&lt;p&gt;In MySQL ist es nun leider so, daß InnoDB dies etwas dämlich implementiert: Dort wird nämlich - wie in SQLite per Default auch - nach jedem Statement geprüft, ob die Constraint gültig ist oder verletzt wird. Das macht es notwendig, die Reihenfolge von Operationen so zu gestalten, daß die Constraint immer gilt - selbstreferentielle Strukturen nerven besonders, weil man diese quasi nur Top-Down aufbauen kann, und wenn die Struktur zirkulär ist, kann man sie gar nicht errichten, es sei denn, man schaltet die Constraint-Prüfung aus.&lt;/p&gt;
+&lt;p&gt;Ich kann also in MySQL nicht so vorgehen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;n&#34;&gt;BEGIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;WORK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INSERT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INTO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;VALUES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;keks&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INSERT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INTO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;adata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;VALUES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;keks&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;COMMIT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dies scheitert nach dem ersten Insert, weil die &lt;code&gt;a.aid = 1&lt;/code&gt; noch nicht existiert, wenn ich die &lt;code&gt;b.aid = 1&lt;/code&gt; in die Tabelle einfüge. Technisch ist das eigentlich kein Problem, denn da dies alles in einer Transaktion geschieht tauchen beide Werte gleichzeitig erst zum COMMIT in der Datenbank auf, aber die Prüfung erfolgt leider per Statement und nicht per Transaktion. Ich muß also Entwickler als meinen Code passend strukturieren, egal ob das der Anwendungslogik gerecht wird oder nicht.&lt;/p&gt;
+&lt;p&gt;In SQLite darf man immerhin DEFERRABLE INITIALLY DEFERRED angeben, und das will man offenbar auch dringend. In diesem Fall wird die FK-Constraint nicht bei jedem Statement geprüft, sondern erst am Ende einer Transaktion beim COMMIT. Man kann sich also seine Strukturen nach Belieben zusammenbauen, und die Datenbank erzwingt dabei keine besondere Ordnung der Anweisungen im Code, sondern verlangt nur, daß in dem Moment, wenn man seine Änderungen für Dritte sichtbar publiziert, die FK-Constraints eingehalten werden.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Der Sinn von FK-Constraints ist es, gültige Datenstrukturen und insbesondere gültige Verknüpfungen zwischen Daten zu erzwingen, die auf verschiedene Tabellen desselben Schemas oder derselben Instanz verteilt sind. Die FK-Constraint macht diese Prüfung in der Datenbank, denn nur so ist sichergestellt, daß unterschiedliche Anwendungen, die unterschiedliche Bibliotheken und Programmiersprachen verwenden, denselben Bedingungen beim Schreiben hinsichtlich der Gültigkeit von Datenstrukturen unterliegen.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Bitte mal Anhalten und den vorhergehenden Satz ein zweites Mal lesen.&lt;/p&gt;
+&lt;p&gt;Im Netz findet man mitunter Diskussionen über Datenmodellierung und dort gibt es in der Regel eine Gruppe von Personen, die vehement die Auffassung vertritt, daß ein Datenmodell, das FK- und andere Constraints nicht im Modell definiert schlicht falsch (ersatzweise &amp;ldquo;Schrott&amp;rdquo;, &amp;ldquo;Müll&amp;rdquo;, &amp;ldquo;Gefrickel&amp;rdquo; und anderes) ist.&lt;/p&gt;
+&lt;h2 id=&#34;grenzen-und-probleme-von-fk-constraints&#34;&gt;
+    &lt;a href=&#34;#grenzen-und-probleme-von-fk-constraints&#34;&gt;
+	Grenzen und Probleme von FK-Constraints
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In der Aussage oben stecken ein paar Annahmen drin, und die sind nicht unbedingt immer gegeben. Wenn sie nicht gegeben sind, sind FK-Constraints mindestens sinnlos, manchmal sogar schädlich.&lt;/p&gt;
+&lt;p&gt;Eine Annahme, nämlich die, die mich angesichts der FK-Constraints von SQLite grinsen ließ, ist wie folgt: Es ist die Rede davon, daß unterschiedliche Anwendungen mit unterschiedlichen Bibliotheken oder Programmiersprachen auf die Datenbank zugreifen. SQLite ist aber eine Embedded Datenbank, die Daten in einer einzelnen Datenbankdatei ablegt und Locking auf der Ebene der gesamten Datenbank betreibt. Auf eine SQLite-Datenbank (etwa die Titelliste von iTunes oder das MacOS Adreßbuch) greift in der Regel nur eine Anwendung (iTunes, das Adreßbuch) schreibend zu. FK-Constraints in SQLite sind… ziemlicher Overkill.&lt;/p&gt;
+&lt;p&gt;Auch bei &amp;ldquo;uns&amp;rdquo; in der Produktion haben wir uns entschieden, MySQL FK-Constraints überwiegend nicht zu nutzen. Das hat eine Reihe von Gründen, die zum Teil auch nur gültig sind, weil wir in einer speziellen und sehr günstigen Ausgangslage sind.&lt;/p&gt;
+&lt;p&gt;In MySQL ist die Nutzung von FK-Constraints überhaupt nur sinnvoll möglich, wenn die InnoDB Storage Engine verwendet wird. In MyISAM wird die Syntax für Constraint Definitionen zwar geparsed, dann aber nicht beachtet. Wir nutzen InnoDB, aber wir definieren keine neuen Constraints mehr und wir nehmen die existierenden Definitionen schrittweise nach Möglichkeit zurück.&lt;/p&gt;
+&lt;p&gt;Das ist so, weil zum einen unser Schema inzwischen größer als eine Instanz ist: Wir haben zwar verschiedenen MySQL-Instanzen, aber diese sind in Wirklichkeit alle nicht alleinstehend, sondern wir haben Bezüge zwischen Daten, die in verschiedenen Instanzen liegen: Daten in Tabellen der &amp;ldquo;av&amp;rdquo;-Instanz beziehen sich auf Datensätze, deren Rows in Tabellen der &amp;ldquo;bp&amp;rdquo;-Instanz liegen. Dies ist mit einer FK-Constraint nicht zu modellieren, und wenn man es modellierte wäre es kaum effizient zu prüfen: Die Netzwerk-Latenzen würden sich akkumulieren und zu sehr bremsen um praktikabel zu sein.&lt;/p&gt;
+&lt;p&gt;Es ist auch absehbar, daß wir bald Tabellen haben werden, die größer als eine Instanz sind, daß wir also Sharding betreiben werden müssen. In diesem Fall verschärft sich die Situation noch weiter.&lt;/p&gt;
+&lt;p&gt;Es ist weiterhin so, daß wir so sehr auf Performance optimieren müssen, daß wir uns die Kosten von FK-Constraints nicht mehr leisten können und wollen. Wenn man eine FK-Constraint definiert, dann muß diese ja auch geprüft werden - MySQL prüft sie bei jedem Zugriff.&lt;/p&gt;
+&lt;p&gt;Das bedeutet aber bei jedem Schreibzugriff gibt es einen weiteren Lookup in der referenzierten Tabelle. Dazu muß die referenzierte Tabelle wiederum zum Teil geladen werden, was den Cache-Footprint bzw. den Working Set der Anwendung auf eine Weise vergrößert, die in bestimmten Situationen fatal sein kann. Die Anwendung kann plötzlich von speichergesättigt in einen disk-bound Zustand übergehen, weil sich der Working Set durch die Lookups so stark vergrößert, daß der aktive Teil der Anwendung nicht mehr im Speicher gehalten werden kann.&lt;/p&gt;
+&lt;p&gt;Obendrein kommt im speziellen Fall von InnoDB, daß Schreibzugriffe auf ein Ende einer FK-Constraint nicht nur den beschriebenen Record X-Locken, sondern auch das andere Ende der Beziehung S-Locken, und daß diese Locks außerdem bei kaskadierenden Beziehungen über hierarchische Strukturen noch weiter eskalieren können. Schemata mit vielen FK-Constrains und vielen Schreibzugriffen erzeugen also unter Umständen um Größenordnungen mehr S-Locks und das wiederum kann die Rate von Deadlocks und Lock Timeouts um ein Vielfaches nach oben treiben.&lt;/p&gt;
+&lt;p&gt;Bei &amp;ldquo;uns&amp;rdquo; ist es nun so, daß wir in der Produktion ein reines Open Source Umfeld haben. Wir wissen also nicht nur, welche Anwendungen bei uns auf Datenstrukturen in der Datenbank zugreifen, sondern wir kontrollieren auch, wie sie es tun. Wir können erzwingen, daß alle Operationen auf Daten in der Datenbank durch bestimmte Routinen in bestimmten Bibliotheken erfolgen und daß dort bestimmte Dinge erzwungen werden können.&lt;/p&gt;
+&lt;p&gt;Wir haben uns also ein System gebaut, daß FK-Constraints außerhalb der Schemadefinition nachbaut. Unsere FK-Constraints können daher Instanzengrenzen überbrücken. Wir können außerdem optional entscheiden, daß wir die Constraintprüfungen nicht live vornehmen wollen, sondern daß wir die Tests stattdessen in Intervallen im Batch auf den bestehenden Daten vornehmen (ähnlich einem fsck).&lt;/p&gt;
+&lt;p&gt;Da wir ziemlich intensiv Replikation einsetzen, brauchen wir das auch nicht auf einer produktiven Datenbank zu tun, sondern können das auf Kopien von Instanzen machen, die offline genommen worden sind. Und wir müssen das nicht oft tun, denn wenn wir verifiziert haben, daß der Code, der Änderungen an den Daten vornimmt, diese Änderungen korrekt durchführt, dann können Verletzungen der Constraints nur noch dann vorkommen, wenn Ausnahme-Betriebszustände erreicht wurden.&lt;/p&gt;
+&lt;h2 id=&#34;on-delete-cascade-ist-noch-mal-ein-extraproblem&#34;&gt;
+    &lt;a href=&#34;#on-delete-cascade-ist-noch-mal-ein-extraproblem&#34;&gt;
+	ON DELETE CASCADE ist noch mal ein Extraproblem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Schließlich ist es so, daß FK-Constraints auch mit triggerhaften Aktionen verknüpft sein können. ON DELETE CASCADE zum Beispiel ist so eine Aktion: Sie bewirkt, daß alle von einer &lt;code&gt;a.aid&lt;/code&gt; abhängigen Zeilen in &lt;code&gt;b&lt;/code&gt; gelöscht werden, wenn &lt;code&gt;a.aid&lt;/code&gt; gelöscht wird.&lt;/p&gt;
+&lt;p&gt;Solche Kaskaden sind aus mehreren Gründen schädlich und man sollte diese Art von Definition grundsätzlich nicht verwenden, selbst wenn man FK-Constraints ansonsten einsetzt oder einsetzen muß: Solche Definitionen fördern schlechten und schwer zu wartenden Code.&lt;/p&gt;
+&lt;p&gt;Statt die Datenstrukturen im Code aufzuräumen und etwa abhängige Records explizit zu löschen, wird man einfach ein &lt;code&gt;DELETE FROM a WHERE a.aid = ?&lt;/code&gt; programmieren und die FK-Constraints implizit die Arbeit tun lassen. Implizite Aktion macht aber die Funktion des Programmes opak: Dem nächsten Entwickler, der auf den Code schaut, wird nicht klar sein, daß dies eine teure Operation ist, die sehr große Folge-Aktionen und Folgekosten in anderen Tabellen nach sich zieht. Die Wirkung von Statements ist auch nicht mehr auf eine einzelne Tabelle beschränkt, sondern das harmlose kleine DELETE kann eine Spur der Verwüstung durch die gesamte Datenbank ziehen (insbesondere bei Vorhandensein von selbstreferentiellen Strukturen mit FK-Constraints).&lt;/p&gt;
+&lt;p&gt;Korrekt wäre die Definition einer FK-Constraint, die die Löschung der 1-Seite einer 1:n-Beziehung verhindert solange noch n-Records existieren, die sich auf den zu löschenden 1-Record beziehen. Der Entwickler ist dann gezwungen, den entsprechenden Löschcode in der Anwendung explizit hinzuschreiben, oder, wenn er schlauer ist, die passende Funktion aufzurufen, die die Löschung für ihn vornimmt. In jedem Fall ist aber durch den Blick auf den Code allein sofort klar, was dort passiert und wie groß der Einschlag ist, den man spürt, wenn dieser Code auf die Datenbank trifft.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

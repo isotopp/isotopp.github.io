@@ -1,0 +1,630 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>blockchain on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/blockchain.html</link>
+    <description>Recent content in blockchain on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 04 Mar 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/blockchain/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Hashes in Structures</title>
+      <link>https://blog.koehntopp.info/2018/03/04/hashes-in-structures.html</link>
+      <pubDate>Sun, 04 Mar 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/03/04/hashes-in-structures.html</guid>
+      <description>&lt;p&gt;In
+&lt;a href=&#34;https://blog.koehntopp.info/2018/02/26/hashes-and-their-uses.html&#34;&gt;Hashes and their uses&lt;/a&gt;
+
+
+we have been talking about hash functions in general, and
+cryptographic hashes in particular. We wanted four things from
+cryptographic hashes:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The hash should be fast to calculate on a large string of bytes.&lt;/li&gt;
+&lt;li&gt;The hash is slow to reverse (i.e. only by trying all messages
+and checking each result).&lt;/li&gt;
+&lt;li&gt;The hash is slow to find collisions for (i.e. it&amp;rsquo;s hard to
+find two input strings that have the same hash value).&lt;/li&gt;
+&lt;li&gt;The hash does chaotically cascade changes (i.e. a single bit
+flip in the original message does flip many bits in the hash
+value).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;With these things and general cryptography we can built three
+very versatile things that see many applications: Digital
+signatures, eternal logfiles (&amp;ldquo;blockchains&amp;rdquo;) and hash trees
+(&amp;ldquo;torrents&amp;rdquo;).&lt;/p&gt;
+&lt;h2 id=&#34;digital-signatures&#34;&gt;
+    &lt;a href=&#34;#digital-signatures&#34;&gt;
+	Digital Signatures
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;using-asymmetric-cryptography&#34;&gt;
+    &lt;a href=&#34;#using-asymmetric-cryptography&#34;&gt;
+	Using asymmetric cryptography
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Digital Signatures are using primitives from asymmetric
+cryptography and cryptographic checksums.&lt;/p&gt;
+&lt;p&gt;From asymmetric cryptography we know we can have two keys, P and
+Q, which actually work in symmetry:
+What has been encrypted with one key can be decrypted only
+with the other key.&lt;/p&gt;
+&lt;p&gt;So we&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;either encrypt a message M with a key P to get a ciphertext C, and decode C with Q to get M back.&lt;/li&gt;
+&lt;li&gt;Or we encrypt M with Q, and decrypt with P to get M back.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The asymmetry is introduced by keeping Q secret and makig P as
+public as possible.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;P is public. 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Q is private and only known to one person. 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;C = encrypt(P, M) 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;M = decrypt(Q, C) 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;or 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;C = encrypt(Q, M) 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;M = decrypt(P, C) 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Unfortunately, in asymmetric public key cryptography, the keys
+are usually rather long, and hence the encrypt() and decrypt()
+functions are usually quite slow. It is useful to keep M
+reasonably small.&lt;/p&gt;
+&lt;h3 id=&#34;signing&#34;&gt;
+    &lt;a href=&#34;#signing&#34;&gt;
+	Signing
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;For digital signatures, the signer calculates a hash H of a
+message M and then encrypts the hash H using the private key Q,
+creating CH.&lt;/p&gt;
+&lt;p&gt;The message and the encrypted hash are sent
+together.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;H = hash(M)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;CH = encrypt(Q, H)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;send(M, CH) 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When receiving the message, the
+receiver can read the message and can calculate their own
+checksum, &lt;code&gt;RH = hash(M)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Because the public key P of the sender is, well, public, we can
+also decrypt the encrypted checksum the sender calculated:
+&lt;code&gt;H = decrypt(p, CH)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If that H is equal to RH, we can know that one of two things is
+true:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Either the message has not been tampered with,&lt;/li&gt;
+&lt;li&gt;or the sender lost control of the private key.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Assuming the latter is not the case, the former must be true and
+that means that the message we received is as it originated at
+the sender and we do know who the sender is.&lt;/p&gt;
+&lt;h2 id=&#34;eternal-logfiles&#34;&gt;
+    &lt;a href=&#34;#eternal-logfiles&#34;&gt;
+	Eternal Logfiles
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;When calculating hashes over a sequence of messages, it is
+possible to seed each message with the previous messages hash:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/03/eternal-logfile.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Each log entry consists of the actual message, the current
+timestamp and the hash of the previous entry. The current hash
+is a hash over all of these three things.&lt;/p&gt;
+&lt;p&gt;Each entry in the log consists of the actual log entry, the date
+the entry is being made and the hash of the previous log entry.
+The current hash is being calculated over all of these things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the message,&lt;/li&gt;
+&lt;li&gt;the current timestamp and&lt;/li&gt;
+&lt;li&gt;the previous hash.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Because each entry contains the previous entries hash value, it
+is becoming hard to change older entries in the log: A change to
+an old log entry will create a ripple effect that changes each
+subsequent newer hash value in the log.&lt;/p&gt;
+&lt;p&gt;Additional security can be produced by introducing media breaks
+and publishing the current hash value (with the date) in many
+places. The date added to each log entry is not supplied by the
+log source which sends the message: While the logged message can
+have a structure and may also contain a timestamp as seen by the
+message sender, the date fields shown as separate fields in the
+graphics above are the local time of the logger.&lt;/p&gt;
+&lt;p&gt;The interdependency of the log messages create a public order of
+events. Message 2 and Hash 2 could not have been produced before
+Message 1 and Hash 1, as the value of Hash 2 is dependent not
+only on the contents of Message 2, but also on the value of Hash 1.&lt;/p&gt;
+&lt;p&gt;A very simple implementation of this can be found in Lutz
+Donnerhacke&amp;rsquo;s Eternal Logfile
+(&lt;a href=&#34;http://altlasten.lutz.donnerhacke.de/mitarb/lutz/logfile/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Site in German&lt;/a&gt;
+
+).
+Interestingly, forward secure sealing as implemented in
+journald/systemd does not work like this, but uses
+&lt;a href=&#34;https://lwn.net/Articles/512895/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;another mechanism&lt;/a&gt;
+
+.
+It also does not seal each log entry as it is being generated,
+but creates 15 minute windows of log entries which are then
+protected.&lt;/p&gt;
+&lt;p&gt;The main reason for this are seekability and purgeability: It
+should be possible to validate the integrity of the journald log
+file without calculating the sequence of hashes from system
+installation.&lt;/p&gt;
+&lt;h3 id=&#34;guarantees-given-in-eternal-logfiles&#34;&gt;
+    &lt;a href=&#34;#guarantees-given-in-eternal-logfiles&#34;&gt;
+	Guarantees given in Eternal Logfiles
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;It is important to note that no assumptions whatsoever are being
+made of the structure of the messages being chained in this
+chain of hash values. It is also important to note that no
+mechanism to authenticate or validate the content of the
+messages being logged is available automatically - the only
+proofs such a chained eternal logfile provides is:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Message n-1 is older than Message n (Order of messages can be
+implied from the order of log entries).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If the hash chain resolves (i.e. all checksums calculate just
+fine), none of the messages prior to the final message have been
+tampered with.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;By digitally signing the each message in the log, the identity
+of the creator for each logged message can be proven, and the
+authenticity of each message can be verified independently from
+the hash chain itself.&lt;/p&gt;
+&lt;h3 id=&#34;limitations-and-disadvantages-of-eternal-logfiles&#34;&gt;
+    &lt;a href=&#34;#limitations-and-disadvantages-of-eternal-logfiles&#34;&gt;
+	Limitations and Disadvantages of Eternal Logfiles
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Without additional mechanisms, eternal logfiles cannot be purged
+nor seeked. That is, because each log entries hash is dependent
+not only on the logfiles content, but also on the hash of the
+previous log entry, it is not possible to ever delete log
+entries without losing the ability to check the chains
+integrity.&lt;/p&gt;
+&lt;p&gt;All logs have to be kept forever.
+Mechanisms to work around that could be constructed, but are
+usually not implemented, often on purpose.&lt;/p&gt;
+&lt;p&gt;Related to that is the ability to check the integrity of the
+hash chain: This is only possible from the anchor point, which
+by construction and on purpose is only at the start of the
+chain.&lt;/p&gt;
+&lt;p&gt;A validation of the chain therefore becomes increasingly costly
+as the length the chain increases and no purge mechanism exists.
+A full chain validation could create a local index, which notes
+the position of each log entry and also the expected checksum.
+This would allow quick seeks and quick local entry validations.&lt;/p&gt;
+&lt;p&gt;Building this index is still dependent on at least one big scan
+and validation of the entire chain.&lt;/p&gt;
+&lt;h2 id=&#34;hash-trees&#34;&gt;
+    &lt;a href=&#34;#hash-trees&#34;&gt;
+	Hash Trees
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;It is also possible to structure hashes-of-hashes in a
+non-linear fashion, for example in a tree structure. The
+Merkle-Tree is named after the cryptographer
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Ralph_Merkle&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ralph Merkle&lt;/a&gt;
+
+,
+and is one specific implementation of a Hash Tree.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Hash_Tree.svg/800px-Hash_Tree.svg.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Data (the messages) are at the leaf nodes (L1 to L4) of the
+tree. Non-Leaf nodes contain hashes of the blocks beneath them.&lt;/p&gt;
+&lt;p&gt;([Image Source:Wikipedia:&lt;a href=&#34;https://en.wikipedia.org/wiki/File:Hash_Tree.svg&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hash Tree&lt;/a&gt;
+
+)&lt;/p&gt;
+&lt;p&gt;Hash Trees can establish order of events the same way linearly
+hashed logfiles do. They allow better pinpointing of the
+position of an error, at least down to the position of a single
+block, while at the same time still assuring the intrity of
+other data past the modified block. They also allow partial file
+integrity checks for each subtree of the main hash tree.&lt;/p&gt;
+&lt;h3 id=&#34;applications-of-hash-trees&#34;&gt;
+    &lt;a href=&#34;#applications-of-hash-trees&#34;&gt;
+	Applications of Hash Trees
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Hash Trees, Merkle Trees or
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Tiger_%28cryptography%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;variants of the system&lt;/a&gt;
+
+,
+are being used in practically all P2P systems, where their
+properties are useful to determine which blocks of a file a
+client already has and which ones are still missing. At the same
+time, the top level hash can be used as a file name in a
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Content-addressable_storage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;content addressing scheme&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Magnet_URI_scheme&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Magnet Links&lt;/a&gt;
+
+ are just
+top level hashes of a Hash Tree in a P2P system.&lt;/li&gt;
+&lt;li&gt;Hash Trees also see application for securing file integrity in file systems that
+target very large storages (ZFS, BTRFS), enabling partial file
+system checks and rapid validation of files and file trees.&lt;/li&gt;
+&lt;li&gt;They are also useful in pinpointing areas of files that
+changes, enabling fast differential backups. A variant of Hash
+Tree logic is consequently also applied in
+&lt;a href=&#34;https://www.percona.com/doc/percona-toolkit/LATEST/pt-table-sync.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pt-table-sync&lt;/a&gt;
+
+
+of the Percona Toolkit, finding differences between two
+instances of the same table on two different database servers
+and then creating a minimal set of change instructions to
+mutate a target table so that it matches the contents of a
+source table.&lt;/li&gt;
+&lt;li&gt;Some version control systems, for example git, are also
+using
+&lt;a href=&#34;https://de.slideshare.net/tommasovisconti/git-contentaddressable-filesystem-and-version-control-system&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;trees of hashes as a content addressable storage&lt;/a&gt;
+
+,
+but in a way that differs from a pure Merkle Tree.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.certificate-transparency.org/what-is-ct&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Certificate Transparency&lt;/a&gt;
+
+
+uses a Merkle Tree as a
+&lt;a href=&#34;https://www.certificate-transparency.org/log-proofs-work&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;container for the log of all certificates&lt;/a&gt;
+
+
+generated by all certificate authorities participating,
+establishing completeness and authenticity of the CT log as well
+as an order of events.&lt;/li&gt;
+&lt;li&gt;Merkle Trees are also used to structure
+and validate the integrity of the blockchain underneath Bitcoin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;limits-and-additional-considerations&#34;&gt;
+    &lt;a href=&#34;#limits-and-additional-considerations&#34;&gt;
+	Limits and additional considerations
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Like with the Eternal Logfile, no assumptions are made about the
+content of the messages that make up the payload of a Merkle
+Tree. Additional agreements between multiple parties about the
+content of messages are necessary to give data in a Hash Tree
+meaning. Without pruning/seeking mechanisms, all
+&lt;a href=&#34;https://martinfowler.com/eaaDev/EventSourcing.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;sequentially ordered transactional systems&lt;/a&gt;
+
+
+are accumulating log data/tree size without bounds. Creation of
+the systems current state is getting progressively more
+expensive in memory and computation required.&lt;/p&gt;
+&lt;h3 id=&#34;history&#34;&gt;
+    &lt;a href=&#34;#history&#34;&gt;
+	History
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Eternal Log files and Merkle Trees are old innovations. The
+patent for Merkle Trees was created by Ralph Merkle in 1979 (and
+&lt;a href=&#34;https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&amp;amp;NR=4309569&amp;amp;KC=&amp;amp;FT=E&amp;amp;locale=en_EP&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;granted in 1982&lt;/a&gt;
+
+)
+and is since expired. Eternal Log files are an idea created by
+David Chaum even before that. Continued from
+&lt;a href=&#34;https://blog.koehntopp.info/2018/02/26/hashes-and-their-uses.html&#34;&gt;Hashes and their uses&lt;/a&gt;
+
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Hashes and their uses</title>
+      <link>https://blog.koehntopp.info/2018/02/26/hashes-and-their-uses.html</link>
+      <pubDate>Mon, 26 Feb 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/02/26/hashes-and-their-uses.html</guid>
+      <description>&lt;p&gt;A hash function is a function that maps a large number of arbitrary data
+types onto a smaller number of contiguous integers.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/simple-hash.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;This simple hash function maps strings of arbitrary length to integers. Some
+strings are mapped to the same integer: a hash value collision.&lt;/p&gt;
+&lt;p&gt;The base set here is a number of strings of arbitrary length, which is a
+theoretically open ended set size. The target is a bounded number of integer
+values. It is thus inevitable that two strings exist which are mapped to the
+same target number, a hash value collision. Hash functions are useful in
+computer science, and you have been using them in everyday life, or at least
+seen them:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;as checksums&lt;/li&gt;
+&lt;li&gt;to quickly assign a position to an arbitrary object&lt;/li&gt;
+&lt;li&gt;or to create object identity from content.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;checksums&#34;&gt;
+    &lt;a href=&#34;#checksums&#34;&gt;
+	Checksums
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;digit-sums-as-simple-weak-checksums&#34;&gt;
+    &lt;a href=&#34;#digit-sums-as-simple-weak-checksums&#34;&gt;
+	Digit sums as simple, weak checksums
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;One of the most basic hash function is the
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Digit_sum&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;digit sum&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;Take the digits of a number and add them up. If the resulting total is
+larger than ten, take only the last (lowest value) digit. More generally,
+divide by a number (here: ten) and take the remainder - that&amp;rsquo;s called a
+modulo or mod division, here modulo ten.&lt;/p&gt;
+&lt;p&gt;For example, the digit sum of &lt;code&gt;357&lt;/code&gt; is &lt;code&gt;3 + 5 + 7 = 15&lt;/code&gt;, so the result is
+&lt;code&gt;5&lt;/code&gt;. Digit sums are useful as very simple checksums. They are easy to
+calculate, but very weak. They can detect simple individual changes, but
+because of additive commutativity, they won&amp;rsquo;t detect swapped digits: The
+digit sum of &lt;code&gt;357&lt;/code&gt; is identical to &lt;code&gt;537&lt;/code&gt;, because &lt;code&gt;3+5 = 5+3&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/digit-sum.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Additive commutativity makes it possible to swap digits in a number without
+changing the digit sum.&lt;/p&gt;
+&lt;p&gt;We find checksums like this also in the
+&lt;a href=&#34;https://en.wikipedia.org/wiki/IPv4_header_checksum&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;header of IP v4&lt;/a&gt;
+
+ packets on the
+Internet (with a bit of additional bit-flipping). Because headers of internet
+packets change on every hop, adjusting the checksums becomes a burden and IP
+v6 does away with header checksums.&lt;/p&gt;
+&lt;h3 id=&#34;better-checksums-isbn-10-as-an-example&#34;&gt;
+    &lt;a href=&#34;#better-checksums-isbn-10-as-an-example&#34;&gt;
+	Better checksums: ISBN-10 as an example
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;That commutativity weakness of digit sums can be fixed by assigning each
+numeric position a factor and then summing up the product of factor times
+position:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;357&lt;/code&gt; becomes &lt;code&gt;3*1 + 5*2 + 7*3 = 34&lt;/code&gt; (Checksum: 4).&lt;/li&gt;
+&lt;li&gt;On the other hand, &lt;code&gt;537&lt;/code&gt; is &lt;code&gt;5*1 + 3*2 + 7*3 = 32&lt;/code&gt; (Checksum: 2).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is actually what the 10-digit ISBN uses:
+&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/isbn-10-v1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;which expands to&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/isbn-10-v2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;and that is exactly what we used above in our 357 vs. 537 example.
+One difference in the ISBN-10 case: a different modulo factor. The
+ISBN-10 does not use the last digit (&amp;ldquo;modulo 10&amp;rdquo;, the remainder if
+you divide by 10), but the modulo 11 value (the remainder of what is
+left when you divide by 11). If that remainder is the number 10, the
+ISBN-10 is written with an &amp;ldquo;X&amp;rdquo; (the roman numeral for ten) as the
+last digit.&lt;/p&gt;
+&lt;h3 id=&#34;proper-crc-checksums&#34;&gt;
+    &lt;a href=&#34;#proper-crc-checksums&#34;&gt;
+	Proper CRC checksums
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;A longer and much better writeup on how CRC checksums work can be
+found in
+&lt;a href=&#34;http://www.sunshine2k.de/articles/coding/crc/understanding_crc.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Understanding and implementing CRC calculation&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;CRC sums can be found almost everywhere in data protocols and data
+storage in computers - they allow to reliably detect many common
+errors patterns in data in transmission and storage, and allow for a
+correction of many errors, while at the same time not using a lot of
+storage space.&lt;/p&gt;
+&lt;h2 id=&#34;hashes-for-storage&#34;&gt;
+    &lt;a href=&#34;#hashes-for-storage&#34;&gt;
+	Hashes for storage
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;building-dictionaries&#34;&gt;
+    &lt;a href=&#34;#building-dictionaries&#34;&gt;
+	Building dictionaries
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Another use of hashes is for storage and data access. Computers use
+array data types to store data values by index number: We can use
+variables such a[10] to create 10 storage spaces, all named &amp;ldquo;a&amp;rdquo;, but
+numbered 0 to 9, to keep 10 values. But what if we wanted to address
+the storage spaces not by number, but by name, that is use &lt;code&gt;a[&amp;quot;a text can be very long&amp;quot;]&lt;/code&gt; instead of &lt;code&gt;a[3]&lt;/code&gt;? We call such data types
+dictionaries, and they are typically used by transforming a string
+(the index value &lt;code&gt;&amp;quot;a text can be very long&amp;quot;&lt;/code&gt;) into an integer (&lt;code&gt;3&lt;/code&gt;)
+using a hash function, and then using the integer as an index into an
+array (yielding &lt;code&gt;a[3]&lt;/code&gt; again). There are a few problems:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/02/text-hash.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Two otherwise unrelated strings may have the same hash value.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;There may be collisions. For example, our hash function may map both
+&amp;ldquo;a text can be very long&amp;rdquo; and &amp;ldquo;this result is somewhat unfortunate&amp;rdquo;
+both to the number 3.&lt;/li&gt;
+&lt;li&gt;The array use should be balanced. That is, each hash value should be
+equally probable for the expected input. That also implies that the
+entire target space (the entire array) is being used.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;A naive hash function for strings would for example sum up the byte
+values of the letters of a string, modulo the array size, to place an
+entry in an array.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;  &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;a text can be very long&amp;#34;&lt;/span&gt; 
+  &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; 
+  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; 
+    &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;ord&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; 
+    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;%&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;
+
+&lt;span class=&#34;mi&#34;&gt;2101&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;breaking-dictionaries&#34;&gt;
+    &lt;a href=&#34;#breaking-dictionaries&#34;&gt;
+	Breaking dictionaries
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;There are many problems with this - it is pretty easy to come up with
+strings that collide. That is, to have strings that end up having the
+same hash value, even by accident. For example, if you use this hash
+algorithm and an array size of 10 to hash strings made up from digits,
+it&amp;rsquo;s easy to create strings that all hash to 0:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ord(&amp;ldquo;2&amp;rdquo;) is 50, mod 10 is 0.&lt;/li&gt;
+&lt;li&gt;and that means, any &amp;ldquo;2&amp;rdquo; added to the string is neutral (does not change the outcome of the hash result).&lt;/li&gt;
+&lt;li&gt;So &amp;ldquo;2&amp;rdquo;, &amp;ldquo;22&amp;rdquo; and any other sequence of 2&amp;rsquo;s hashes to position 0.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;  &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;22&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;222&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2222&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; 
+  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;s&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; 
+    &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; 
+      &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;ord&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; 
+    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;String &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; has the hash &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%d&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;has&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;the&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;22&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;has&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;the&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;222&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;has&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;the&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2222&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;has&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;the&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;hash&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And that is because the ord(&amp;ldquo;2&amp;rdquo;), the number 50, is an even multiple
+of the array size, 10. So we probably want a prime array size to
+minimise aliasing: Our array size is &lt;code&gt;10&lt;/code&gt;, which is &lt;code&gt;2*5&lt;/code&gt; as prime
+factors, so it aliases with any product of these factors: 2, 5 and 10.
+The way we built the hash function, the byte value of each digit shows
+up in the output of the hash function directly, so each string of
+letters that are spaced 0, 2, 5 or 10 positions apart or where the
+ord() values of the letters come out as 0, 2, 5 or 10, are going to
+create a larger than expected number of collisions. That is, we
+probably also want a more complicated hash function, which uses at
+least a counter or another variable value and the current byte value
+in some way as the input. There is more science to it, and
+&lt;a href=&#34;https://www.gnu.org/software/gperf/manual/gperf.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tools exist&lt;/a&gt;
+
+
+to make this better.&lt;/p&gt;
+&lt;h3 id=&#34;handling-collisions&#34;&gt;
+    &lt;a href=&#34;#handling-collisions&#34;&gt;
+	Handling collisions
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The hash value can&amp;rsquo;t be the actual index for the value we store, because
+there will be collisions.&lt;/p&gt;
+&lt;p&gt;So we can&amp;rsquo;t put the bare value into the array: instead our array
+values need to be able to store original key with the value, which is
+the actual payload. Often that is implemented as a list of key/value
+pairs.&lt;/p&gt;
+&lt;p&gt;So in our example, our array would not directly hold the value indexed
+by &lt;code&gt;a[&amp;quot;a text can be very long&amp;quot;]&lt;/code&gt;, but we would basically have an array
+of 10 lists, and each list will hold key/value pairs (ideally, the
+lists would each be exactly one entry long). We assumed that &lt;code&gt;&amp;quot;a text can be very long&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;this result is somewhat unfortunate&amp;quot;&lt;/code&gt; both hash
+to the integer &lt;code&gt;3&lt;/code&gt; in our initial example. So &lt;code&gt;a[3]&lt;/code&gt; would be a list with
+2 entries: &lt;code&gt;&amp;quot;a text can be very long&amp;quot;: value1&lt;/code&gt;, and &lt;code&gt;&amp;quot;this result is somewhat unfortunate&amp;quot;: value2&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;An alternative way of handling collisions is to demand that there are
+no collisions. If they happen anyway, we grow the array and rehash.
+That&amp;rsquo;s nice, but if an attacker can predict and provoke hash
+collisions from the outside, the attacker can force unbounded array
+growth and eventually will exhaust all available memory.
+&lt;a href=&#34;https://blog.booking.com/hardening-perls-hash-function.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Yves Orton&lt;/a&gt;
+
+
+explains how that is being prevented in Perl, and in many other
+languages that provide dictionary data types.&lt;/p&gt;
+&lt;h2 id=&#34;cryptographic-hashes&#34;&gt;
+    &lt;a href=&#34;#cryptographic-hashes&#34;&gt;
+	Cryptographic Hashes
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Hashes also can have uses in cryptography: Assuming we have a function that
+has the following properties:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The hash is fast to calculate on a large string of bytes.&lt;/li&gt;
+&lt;li&gt;The hash is not fast to reverse (i.e. it&amp;rsquo;s impossible to find the message
+that generated the hash result except by trying all possible messages and
+checking each result).&lt;/li&gt;
+&lt;li&gt;The hash does chaotically cascade changes (i.e. a small change in the
+message, for example flipping a single bit, changes the result radically in
+a way that appears to be not correlated to the change in the input).&lt;/li&gt;
+&lt;li&gt;The hash is structured so that it&amp;rsquo;s hard to create collisions (i.e. it&amp;rsquo;s
+hard to find two input strings that have the same hash value).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;With such a function we can do many things.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Given a string of bytes, a message M, we can use the hash of that message,
+h(M), as a fixed size fingerprint of the message. If we hash a received
+message and compared it to the received fingerprint, and both are &lt;em&gt;not&lt;/em&gt;
+identical, we know that &lt;em&gt;either&lt;/em&gt; the message or the fingerprint have been
+tampered with (message integrity). We need additional mechanisms to be able
+to infer that &lt;em&gt;neither&lt;/em&gt; message nor fingerprint have been tampered with.&lt;/li&gt;
+&lt;li&gt;Given stored the hash of a password, h(P), and a user input M, we can hash
+the user input, h(M) and compare it to h(P). If both are identical, chances
+are that the user entered the correct password (property 4). We do not
+store the password, only the hash of the password, so nobody can recover
+the password from the knowledge of that hash alone (property 2).
+Additional measures
+(&lt;a href=&#34;https://en.wikipedia.org/wiki/Salt_%28cryptography%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;salting&lt;/a&gt;
+
+) are
+necessary to prevent fast password guesses of a prepared attacker.&lt;/li&gt;
+&lt;li&gt;Given the hash of the content of a file, we can use this hash as a
+filename
+(&lt;a href=&#34;https://en.wikipedia.org/wiki/Content-addressable_storage&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;content addressable systems&lt;/a&gt;
+
+). This
+is being used in &lt;a href=&#34;https://en.wikipedia.org/wiki/Git#Data_structures&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;git&lt;/a&gt;
+
+
+(and also Mercurial, Monotone and many other distributed source code
+control systems),
+&lt;a href=&#34;https://en.wikipedia.org/wiki/BitTorrent#Creating_and_publishing_torrents&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Bittorrent&lt;/a&gt;
+
+
+(and many other distributed file sharing and swarm protocols),
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Magnet_URI_scheme#URN,_containing_hash_%28xt%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Bittorrent Magnet URNs&lt;/a&gt;
+
+
+(we will need to revisit that in a later article). We can also use this to
+quickly check if we have seen a certain item already before. For example,
+we receive a long text article (i.e. a USENET news article or an item from
+a RSS feed), calculate the content hash, and store the item itself and,
+separately, the hash. The content may expire to free up storage, but we
+keep the content checksum around for longer. If an item with that hash is
+offered to us again, we can drop it as &amp;ldquo;already seen&amp;rdquo; very quickly, even
+if we already expired the actual content - the content hash becomes a
+(small and quickly compared) placeholder for the actual content.&lt;/li&gt;
+&lt;li&gt;A cryptographic hash should be hard to reverse (property 2). That is,
+given a predetermined hash value, finding a message that hashes to this
+given value should only be possible by very brute-force testing all
+conceivable messages if they have this hash value. This is being used in
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Proof-of-work_system&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Proof of work
+systems&lt;/a&gt;
+
+ used in
+Cryptocurrencies and other places: A predefined message (a &amp;ldquo;bitcoin
+block&amp;rdquo;) is given to a system, and the system is asked to &amp;ldquo;close the block&amp;rdquo;
+by finding a value that, when added to the block, produces a hash value
+that starts with a predetermined number of 0-bits. This is ideally
+possible only by brute-force testing all values for a solution.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Continued in &lt;a href=&#34;https://blog.koehntopp.info/2018/03/04/hashes-in-structures.html&#34;&gt;Hashes in Structures&lt;/a&gt;
+
+&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

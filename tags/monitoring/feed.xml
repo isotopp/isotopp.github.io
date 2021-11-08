@@ -1,0 +1,1512 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>monitoring on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/monitoring.html</link>
+    <description>Recent content in monitoring on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 19 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/monitoring/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>On the Observability of Outliers</title>
+      <link>https://blog.koehntopp.info/2020/11/19/on-the-observability-of-outliers.html</link>
+      <pubDate>Thu, 19 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/11/19/on-the-observability-of-outliers.html</guid>
+      <description>&lt;p&gt;At work, I am in an ongoing discussion with a number of people on the Observability of Outliers. It started with the age-old question “How do I find slow queries in my application?” aka “What would I want from tooling to get that data and where should that tooling sit?”&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As a developer, I just want to automatically identify and isolate slow queries!&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Where I work, we do have &lt;a href=&#34;https://www.solarwinds.com/database-performance-monitor&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SolarWinds Database Performance Monitor&lt;/a&gt;
+
+ aka Vividcortex to find slow queries, so that helps. But that collects data at the database, which means you get to see slow queries, but maybe not application context.&lt;/p&gt;
+&lt;p&gt;There is also work done by a few developers which instead collects query strings, query execution times and query counts at the application. This has access to the call stack, so it can tell you which code generated the query that was slow.&lt;/p&gt;
+&lt;p&gt;It also channels this data into events (what we have instead of &lt;a href=&#34;https://www.honeycomb.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Honeycomb&lt;/a&gt;
+
+), and that is particularly useful, because now you can generate aggregates and keep the link from the aggregates to the constituting events.&lt;/p&gt;
+&lt;h2 id=&#34;how-do-you-find-outliers&#34;&gt;
+    &lt;a href=&#34;#how-do-you-find-outliers&#34;&gt;
+	How do you find outliers?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;“That’s easy”, people will usually say, and then start with the average plus/minus one standard deviation. “We’ll construct this “n stddev wide corridor around the average” and then look at all the things outside.”&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/obs-no.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;No.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;That is descriptive statistics for normal distributions and for them to work we need to actually have a normal distribution.&lt;/p&gt;
+&lt;p&gt;Averages and Standard Deviations work on normal distributions. So the first thing we need to do is to look at the data and ensure that we actually have a normal distribution.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/obs-anscombe.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Anscombe&amp;rsquo;s Quartet is a set of graphs having an identical number of points, and producing identical descriptive statistics, but being clearly extremely different distributions.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Because when you apply the Descriptive Statistics of Averages and Standard Deviations to things that are Not a Normal Distribution (see &lt;a href=&#34;https://en.wikipedia.org/wiki/Anscombe%27s_quartet&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Anscombe’s Quartet&lt;/a&gt;
+
+) they do not tell you much about the data: all the graphs in the infamous Quartet have the same descriptive stats (more than just average and stddev, even), but are clearly completely different.&lt;/p&gt;
+&lt;p&gt;So what we would want is a graph of the data. For a time series – which is what we usually get when dealing with metrics – a good way to plot the data is a heatmap. For the given problem, the heatmap more often than not looks like this:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/obs-heatmap.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We partition the time axis into buckets of - say - 10s each, and then bucket execution times linearly or logarithmically. For each query we run, we determine the bucket it goes into and increment by one. The resulting numbers are plotted as pixels - darker, redder means more queries in that bucket. A flat 2D plot of three dimensional data.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;What you see here is a bi- or multipartite distribution. It is a common case when benchmarking: We have a (often larger) number of normally executed queries, and a second set (often smaller) of queries that need our attention because they are executed slower.&lt;/p&gt;
+&lt;p&gt;The slow set is  also often run with unstable execution times – an important secondary observation.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/obs-mixture.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;This is not a normal distribution, but a thing composed of two other things (hence bipartite), each of which in itself hopefully can be adequately modelled as a normal distribution: A &lt;a href=&#34;https://en.wikipedia.org/wiki/Mixture_model#Gaussian_mixture_model&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gaussian mixture&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Luckily we do not actually have to deal with the math of these mixtures (I hope you did not follow the Wikipedia link :-) ) when we want to find slow queries.&lt;/p&gt;
+&lt;p&gt;We just want to be able to separate them, which could even be done manually, and then want the back pointer to the events that constitute the cluster of outliers we identified.&lt;/p&gt;
+&lt;h2 id=&#34;unstable-execution-times&#34;&gt;
+    &lt;a href=&#34;#unstable-execution-times&#34;&gt;
+	Unstable execution times
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I mentioned above:“They are also often run with unstable execution times – an important secondary observation.”&lt;/p&gt;
+&lt;p&gt;Slow queries are often slow because they cannot use indexes. When a tree index can be used, the number of comparisons needed to find the elements we are searching for is some kind of log of the table size.&lt;/p&gt;
+&lt;p&gt;The end result is usually 4 – there are 3-5 lookups&lt;strong&gt;¹&lt;/strong&gt; needed in about any tree index to do a point lookup of the first element of a result. That means that the execution time for any query using proper indexes is usually extremely stable.&lt;/p&gt;
+&lt;p&gt;When indexes cannot be used, the lookup times are scan times – linear functions of the result position or size. This varies a lot more, and so we get much more variable execution times for slow queries, and the jitter makes it only worse: your “this query takes 20s instead of 20ms to run” degrades to the even more annoying “well, sometimes it’s 5s, and sometimes 40s”.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;¹&lt;/strong&gt; In MySQL, we work with 16KB block size, and in indexes we usually have a fan out of a few hundreds to one thousand per block or tree level. The depth of the index tree is the number of comparisons, and it is log to the base of (fan out) of the table length in records. This then becomes ln(table length)/ln(fan out), because that is how you get arbitrary base logs from ln().&lt;/p&gt;
+&lt;p&gt;For a fan out of 100, we get a depth of 3 for 1 million, and 4.5 for 1 billion records.&lt;/p&gt;
+&lt;p&gt;For a fan out of 1000, it’s 2 for the million, and 3 for the billion.&lt;/p&gt;
+&lt;p&gt;Plus one for the actual record, so the magical database number is 4: It’s always 4 media accesses to get any record through a tree index - stable execution times for indexed queries, because math works.&lt;/p&gt;
+&lt;h2 id=&#34;where-monitoring-ends-and-observability-begins&#34;&gt;
+    &lt;a href=&#34;#where-monitoring-ends-and-observability-begins&#34;&gt;
+	Where Monitoring ends and Observability begins
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With measurements, aggregations, and the visualisation as a heatmap, I can identify my outliers – that is, I learn that I have them and where they are in time and maybe space (group of hosts).&lt;/p&gt;
+&lt;p&gt;But with a common monitoring agents such as Diamond or Telegraf, what is being recorded are numbers or even aggregates of numbers - the quantisation into time and value buckets happens in the client and all that is recorded in monitoring is “there have been 4 queries of 4-8ms run time at 17:10:20 on host randomdb-2029”. We don’t know what queries they were, where they came from or whatever other context may be helpful.&lt;/p&gt;
+&lt;p&gt;With events, we optionally get rich records for each query - query text, stack trace context, runtime, hostname, database pool name and many other pieces of information. They are being aggregated as they come in, or can be aggregated along other, exotic dimensions after the fact. And best of all, once we find an outlier, we can go back from the outlier and find all the events that are within the boundary conditions of the section of the heapmap that we have marked up as an outlier.&lt;/p&gt;
+&lt;p&gt;This also is the fundamental difference between monitoring (“We know we had an abnormal condition in this section of time and space”) and observability (“&amp;hellip; and these are the events that make up the abnormality, and from them we can see why and how things went wrong.”).&lt;/p&gt;
+&lt;p&gt;(Written after a longer call with a colleague on this subject).&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The lack of developer centric MySQL monitoring - a rant</title>
+      <link>https://blog.koehntopp.info/2020/03/18/the-lack-of-developer-centric-mysql-monitoring.html</link>
+      <pubDate>Wed, 18 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/03/18/the-lack-of-developer-centric-mysql-monitoring.html</guid>
+      <description>&lt;p&gt;So where I work we have a large number of MySQL instances. They are organized in a slightly smaller number of replication hierarchies, which tend to cross region boundaries.&lt;/p&gt;
+&lt;h2 id=&#34;structure-of-a-large-database-setup&#34;&gt;
+    &lt;a href=&#34;#structure-of-a-large-database-setup&#34;&gt;
+	Structure of a large database setup
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/03/mysql-replication-pools.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A rough sketch of the setup we have. Variants of this exist in various sizes - from 6 replicas in 3 regions to hundreds of replicas per region, with Group Replication at the top and per Region Intermedia Master.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Unfortunately, a number of these hierarchies are still shared databases. That means  multiple application users share access to data in different tables or even the same table concurrently - it&amp;rsquo;s not proper services all the way, yet. We try to isolate workloads by putting replicas into pools by application, but of course all writes go to the top of the replication tree, the master, where they will happily interfere with each other.&lt;/p&gt;
+&lt;p&gt;The per-region application cluster instances then connects to their pool instance per region for reads, and direct all writes to the global chain master, from where they trickle down by the means and wonder of replication.&lt;/p&gt;
+&lt;p&gt;None of this is static: All databases in a rolling reinstall with a two month period to keep them patched, and &lt;a href=&#34;https://github.com/openark/orchestrator&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MySQL Orchestrator&lt;/a&gt;
+
+ is being used to keep the replication hierarchy alive and connected in the face of master switchovers and failovers.&lt;/p&gt;
+&lt;p&gt;Pool membership is kept in Zookeeper, and MySQL client libraries have been wrapped and modified to pick a random local pool member for reads, and to find the master using this mechanism or anycast DNS.&lt;/p&gt;
+&lt;p&gt;For the application developer this means they do not care much about database server names, or individual database servers. Database servers are being maintained by the DBA team and their automation, so general health is good and for an application developer most server settings are not interesting and also not actionable.&lt;/p&gt;
+&lt;p&gt;They are interested into general server metrics that indicate overall workload health, and they are interested into aggregate query performance - the aggregate being over a region pool or the global aggregate of all their pools.&lt;/p&gt;
+&lt;h2 id=&#34;monitoring-a-large-database-setup&#34;&gt;
+    &lt;a href=&#34;#monitoring-a-large-database-setup&#34;&gt;
+	Monitoring a large database setup
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We collect metrics on all servers, and push them into a thing that is &lt;a href=&#34;https://archive.fosdem.org/2017/schedule/event/graphite_at_scale/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;no longer graphite&lt;/a&gt;
+
+. It is still using the Graphite APIs, but all components have been replaced with things written in C or Go. There is no Python code left.&lt;/p&gt;
+&lt;p&gt;The data we collect is circa any conceivable server metric, and using our version of Not-Actually-Graphite this means we can aggregate per region-pool, or per global pool. We see per-user query latency of a pool, individually per server, or aggregated per pool, the Median (P50) or the P99 or anything else interesting. We also, from the application clusters, collect some aggregate metrics like queries-per-route or query latency for a server as seen by the cluster.&lt;/p&gt;
+&lt;p&gt;This is sufficient to give us a general impression of query health: If we actually had bad queries, we would see the latencies suffer - first the P99, then the lower P&amp;rsquo;s.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/03/mysql-replication-bimodal.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;An example bimodal distribition as per &lt;a href=&#34;https://en.wikipedia.org/wiki/Multimodal_distribution#Mixture_of_two_normal_distributions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Wikipedia: Multimodal Distribution&lt;/a&gt;
+
+. A bimodal distribution of query latencies can happen if you have fast queries with a normal distribution of execution times at the lower end, and a smaller hump of slow queries with higher execution times added to this. Not looking at the full histogram, the slow queries will first affect the P99, and then successively the lower P&amp;rsquo;s until they affect the Median (P50).&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Our usual failure mode is not often actual bad queries, although it happens and it is useful to have tooling to gain insight. The much more common failure mode is &lt;a href=&#34;https://en.wikipedia.org/wiki/Object-relational_mapping&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ORM&lt;/a&gt;
+
+ breakdown and the resulting machine gunning.&lt;/p&gt;
+&lt;p&gt;In our specific case, the ORM has for each object a list of essential columns and a list of all columns. Code is being written to load objects from the database into the application in single, rather efficient queries. Something like&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-perl&#34; data-lang=&#34;perl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;@products&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$bp&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;search&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;some&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;query&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;condition&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;builder&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;foreach&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$product&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;@products&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;do_a_thing&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;$product&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will fire a single query for products and then build an array of products in which all the essential columns are loaded as attributes. If you happen to access a non-essential attribute, the &lt;code&gt;id&lt;/code&gt; of the object is used to lazy-load the missing attributes at once and completely fleshen the object.&lt;/p&gt;
+&lt;p&gt;This is a painful feature and leads to a series of individual object retrievals for non-essential data, and because of the way access to non-essential attributes is wrapped and hidden, it usually happens in a way that is transparent (read: magical) to the developer. Or in other words, the developer is not even aware of the fact that they are machine-gunning the server with many trivial, small SQL statements.&lt;/p&gt;
+&lt;p&gt;Similar things happen in other environments with &lt;code&gt;has_a&lt;/code&gt; and &lt;code&gt;has_many&lt;/code&gt; relationship of linked object hierarchies, where traversal of a link can trigger similar machine gun cascades transparently and without awareness for the developer.&lt;/p&gt;
+&lt;p&gt;Another common problem that we see quite often is write-spikes and locating their origin. We have self-cooked solutions that either parse the output of the &lt;code&gt;mysqlbinlog&lt;/code&gt; command, or &lt;a href=&#34;https://github.com/mysql-time-machine/replicator&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;login as a fake MySQL replica&lt;/a&gt;
+
+ and read and analyze the binlog.&lt;/p&gt;
+&lt;p&gt;But while they can do things with data that is present in the binlog, a lot of information is not present there - among them user and actual source of the commands. It would need an audit plugin in the server to collect and emit such data and correctly attribute it.&lt;/p&gt;
+&lt;h2 id=&#34;database-monitoring-solutions-and-their-shortcomings&#34;&gt;
+    &lt;a href=&#34;#database-monitoring-solutions-and-their-shortcomings&#34;&gt;
+	Database Monitoring Solutions and their shortcomings
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Looking at a number of database monitoring solutions, I see a lot of good stuff - metric collection, query collection per server, query analysis and insight, and alerting.&lt;/p&gt;
+&lt;p&gt;Scaling is usually a problem, at least for the target size I need to build for, but that is to be expected. There is not much of a market at the size I need, and any sane product management would target the much larger set of installations that are 100x smaller than the one I care about. So I do not expect these products to work for my needs, but I expect a scaling story (&amp;ldquo;You can split our all-in-one container into individual metrics gathering, persistance and analysis components and you can shard the metrics gathering and persistence components, and run a cluster of analyzers to scale and here is how to unpack our stuff.&amp;quot;).&lt;/p&gt;
+&lt;p&gt;Cloud-only is often a problem, because my data and my queries are in the majority in SOX, PCI, and PII/GDPR regulated scopes, which means that any test that works with non-synthetic data has is legally as complicated as actual production. That would even be true if my own databases weren&amp;rsquo;t on-prem, but in a cloud. &amp;ldquo;On-premises&amp;rdquo; solutions (solutions that I install within my own administrative domain, even if that domain resides in a public cloud) are much easier to test.&lt;/p&gt;
+&lt;p&gt;Developer-centrism and proper workload aggregation is a large deficit. None of the solutions I looked at understands a large scale setup as layed out above. All focus on a single server, and mix operational and developer aspects of conditions on that single server.&lt;/p&gt;
+&lt;p&gt;That means, while there may be ways to translate regions and pools into tags by the way of an API, and there may be ways to inform the monitor of fluctuating topologies by the means of the same API or auto-discovery, the actual analysis is usually done per-server and not per-taggroup.&lt;/p&gt;
+&lt;p&gt;As a developer, I am never intested into server properties that are not actionable for me because they require a DBA. Disk space alerts, presumably wrongly set server parameters and similar conditions are not my primary interest.&lt;/p&gt;
+&lt;p&gt;As a developer, I am never intested into a single server. I am interested into the performance of all queries that go through my rw-handle to the master, and into the aggregated performance of all queries that go through my ro-handle to any of the replicas in my current replica set.&lt;/p&gt;
+&lt;p&gt;The pool I may be using for my ro-handles may also be used by other applications, so as a developer the tooling should be able to handle multi-tenancy and only show my queries that have been issued using my application login and hide all query data that has been issued under other accounts. This is not just a usability issue, other peoples queries may contain information that I am not allowed to see under PII, PCI or SOX rules.&lt;/p&gt;
+&lt;p&gt;Current MySQL query analyzers and monitoring tools are - understandably - focusing on the SMB market with no or low DBA support and certainly no DB-SRE support. They focus on individual servers, and do not aggregate workloads along user logins or handle-pool distributions. They mix up alerts for operational DBAs and problems that interest developers, and consequently a lot of information presented is not actually actionable for developers. Nothing I have seen supports multi-tenancy and isolates query-data from different application logins from each other in shared pools.&lt;/p&gt;
+&lt;p&gt;Nobody has an audit plugin or does binlog analysis for write statistics properly (&amp;ldquo;show me busy tables and write spikes, and the sources of these in terms of application host name:application port that sent these writes, or user login that executed these writes&amp;rdquo;). A lot of tools still read and analyse the slow log and their examples in demos focus on this as if it is still 2014, instead of eating, parsing and working with P_S.&lt;/p&gt;
+&lt;p&gt;All in all I get the impression that the developer support tooling around MySQL is 2-4 years behind my expectations.&lt;/p&gt;
+&lt;p&gt;Read spikes and machine gunning are very hard to detect on the server side, and we probably should consider instrumenting the ORM to record the number of lazy-loading events and warn on excessive lazy loading.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Monitoring - the data you have and the data you want</title>
+      <link>https://blog.koehntopp.info/2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html</link>
+      <pubDate>Wed, 09 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/08/09/monitoring-the-data-you-have-and-the-data-you-want.html</guid>
+      <description>&lt;p&gt;So you are running systems in production and you want to collect data from
+your systems. You need to build a monitoring system. That won&amp;rsquo;t work and it
+won&amp;rsquo;t scale. So please stop for a moment, and think. What kind of monitoring
+do you want do build? I know at least three different types of monitoring
+system, and they have very different objectives, and consequently designs.&lt;/p&gt;
+&lt;h2 id=&#34;three-types-of-monitoring-systems&#34;&gt;
+    &lt;a href=&#34;#three-types-of-monitoring-systems&#34;&gt;
+	Three types of Monitoring Systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The first and most important system you want to have is checking for
+incidents. This &lt;strong&gt;Type 1&lt;/strong&gt; monitoring is basically a &lt;strong&gt;transactional
+monitoring system&lt;/strong&gt;:&lt;/p&gt;
+&lt;p&gt;You want to monitor a production system and you need to know if things are
+okay-ish. If not you want to get a notification about that. The notification
+should be actionable, be acted on, acknowledged and then you are done. It
+can be deleted, and it is important that it is deleted from &lt;em&gt;this&lt;/em&gt; system.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You want this system to be highly available. Highly available systems are
+a lot easier to build if they are small, don&amp;rsquo;t have many requirements and
+don&amp;rsquo;t come with scaling overhead.Ideally, this thing is so small and
+self-contained that it can fit on a USB stick. In an incident, you can
+plug it into any machine and turn that into a monitoring host, gaining the
+necessary visibility that enables you to rebuild the entire data center
+from a complete outage.&lt;/li&gt;
+&lt;li&gt;You want this system to be fast, the monitoring data to be fresh. Since
+this is the system that informs you that you are on fire right now, the
+time span between a thing actually happening and the point in time you
+know about this thing happening by the way of the monitoring system must
+be as small as possible.That is, you want the monitoring lag to be small,
+and to be visible so that people are aware of the fact that the view into
+a past state of the system.&lt;/li&gt;
+&lt;li&gt;You want the system size to be stable. That is, for a fixed size of
+installations and a fixed set of metrics, as time goes by, the system size
+on disk or in memory should not grow out of bounds.Systems that grow over
+time without an upper limit have a data collection and retention inside.
+They are Type 1 systems with a Type 2 system on the inside. If you just
+wait, they will die from bloat.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In database terms, you can think of the Type 1 monitoring as an OLTP or
+transactional system: As an incident is detected, an alert is created, a
+human is acting on the alert and eventually closing it, removing the cause.
+As the alert is over, the transaction is done and can be purged from this
+system.&lt;/p&gt;
+&lt;p&gt;Because it&amp;rsquo;s purged, the system size is finite and it does not grow out of
+bounds due to log-keeping. There may be an ETL process that extracts
+finished alerts, transforms them into another representation and loads them
+into another system for record-keeping. Examples for Type 1 monitoring
+systems are Nagios and other host checkers, most of which are broken from a
+modern point of view, and &lt;a href=&#34;https://prometheus.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Prometheus&lt;/a&gt;
+
+ as a much
+more modern and less broken implementation.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;Type 2&lt;/strong&gt; system is one that keeps records for a long time, it&amp;rsquo;s
+&lt;strong&gt;data warehousey&lt;/strong&gt;. These systems are not actually alerting, they are used to be
+able to validate service level objectives (&amp;ldquo;Have we kept the promises we
+made&amp;rdquo;), to identify recurring problems (&amp;ldquo;What&amp;rsquo;s the most common kind of
+problem we encounter across the entire fleet?&amp;quot;), and to do capacity planning
+(&amp;ldquo;Given past growth, when will we be running out of steam? What&amp;rsquo;s the amount
+of runway we have left?&amp;quot;).&lt;/p&gt;
+&lt;p&gt;A data warehousey system can typically be down for two or three days.
+Somebody will grumble, but a loss of availability is usually not immediately
+catastrophic. Also, these systems can become tremendously large, and are
+usually distributed. Examples of such systems are large long term storage
+Graphite or Influx storages, &lt;a href=&#34;http://druid.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Druid.io&lt;/a&gt;
+
+ and other massive
+TSDB storages.&lt;/p&gt;
+&lt;p&gt;And finally, the &lt;strong&gt;Type 3&lt;/strong&gt; is the thing that you actually use to understand
+what is on fire in which way precisely when you get an alert from a Type 1
+system. It&amp;rsquo;s a &lt;strong&gt;debug system&lt;/strong&gt; , not a time series collector in the first
+place. Often it&amp;rsquo;s not a system at all, but your ass in an ssh over there
+running strace, but
+&lt;a href=&#34;https://blog.koehntopp.info/2017/04/20/understanding-sysdig.html&#34;&gt;sysdig&lt;/a&gt;
+
+ is
+a much more sophisticated way of doing that in a modern environment. It is
+important to understand the differences between the alerting OLTP system,
+the trend collecting data warehouse system and the debug system:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The first two systems have incompatible, antagonistic requirements. What
+you build can be either small, highly available, stable in size, and cheap
+to setup - or it can be scaleable, humongous but then it&amp;rsquo;s likely not
+cheap to setup and certainly not small.&lt;/li&gt;
+&lt;li&gt;The first two systems should be collecting time stamped series of
+numerical metrics, and we still need to talk about these, while the third
+system, the debug system collects structured data that is not necessarily
+numerical.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That means your organisation and you will for sure have more than one
+monitoring system. Ideally, in a modern and containerised environment, you
+will have Prometheus for Type 1 monitoring. In fact, each team will have
+their own Prometheus for their own services, and you will have
+&lt;a href=&#34;https://prometheus.io/docs/operating/federation/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Prometheus Federation&lt;/a&gt;
+
+ to build a
+data flow that collects data from individual per-team sub-monitors to a
+centralised alerting dashboard. You will need a different system for long
+term data storage, it&amp;rsquo;s something else as a Type 2 system. You may want to
+pump data from the Type 1 to the Type 2 system for all things that you want
+to keep long term records of. But you need to be as comfortable with any of
+the Type 1 systems losing historical data at any time as you need to be
+comfortable with the Type 2 system to be offline for some amount of time.&lt;/p&gt;
+&lt;h2 id=&#34;data-intervals-and-percentiles&#34;&gt;
+    &lt;a href=&#34;#data-intervals-and-percentiles&#34;&gt;
+	Data, Intervals and Percentiles
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;It is important to understand what&amp;rsquo;s a good metric to collect. A good metric
+describes something actionable that says something about the system under
+monitoring. If you think that through, what you want to monitor is the user
+experience, so in the end what you will be collecting is in many cases a
+latency, the time it takes for a system to respond, or a capacity (&amp;lsquo;does
+have enough compute/storage to serve&amp;rsquo;).&lt;/p&gt;
+&lt;p&gt;Because a system that is too slow to respond may technically not be offline,
+but it is as useless as a system that is offline, or worse. So what you
+define is usually a list of maximum response times to certain queries and
+percentages of times in a certain period in which these limits have to be
+met. And a list of capacity limits that the system must meet.&lt;/p&gt;
+&lt;p&gt;In both cases what you get as a metric is a series of time stamped numeric
+measurements. And since you want to check &amp;lsquo;How many measurements in a time
+bucket have been meeting my limits?&amp;rsquo; (&amp;lsquo;How many requests in relation to the
+total number of requests in the last minute have taken longer than 250ms to
+process?&#39;) you need to deal with percentiles.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=lJ8ydIuPFeU&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Yeah, like this&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;So, Spikes. How loaded is your network? Well, every network link at any
+single point in time is either completely busy (because a bit is being
+transmitted) or completely idle (because no transmission happens). It&amp;rsquo;s
+digital, there is no 43% busy link, ever, in any place on this planet.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s useless.&lt;/p&gt;
+&lt;p&gt;So over the last second, how many bit-slots have been idle and how many
+bit-slots have been busy? Well, it&amp;rsquo;s a 10 Gbit/s link, and we have been
+sending one and a quarter Megabyte in the last second, so that was one
+Gigabit. That link was 10% busy in the last second. It was also 1% busy in
+the last ten seconds, because it has been idle the 9 seconds before the last
+one, and it was 100% busy in the last tenth of a second and idle in the nine
+Tenths of a second before that.&lt;/p&gt;
+&lt;p&gt;That was a Spike.&lt;/p&gt;
+&lt;p&gt;If we were collecting samples, or network interface byte counters, every
+second, we would see a 10% busy link. If we were collecting our counters
+only once per 10 seconds it would be 1% busy.&lt;/p&gt;
+&lt;p&gt;If we plotted that, the two situations would be looking like two completely
+different scenarios - one would be a clearly visible spike, the other would
+be an invisible bump. So bucket sizes and percentiles matter, quite a bit.&lt;/p&gt;
+&lt;p&gt;Unfortunately, most data sources don&amp;rsquo;t provide us with that. Imagine a
+router from which you want to collect link utilisation statistics by the way
+of reading network counters, and turning them into bytes/s readings.&lt;/p&gt;
+&lt;p&gt;Things like Graphite have
+&lt;a href=&#34;http://graphite.readthedocs.io/en/latest/functions.html#graphite.render.functions.nonNegativeDerivative&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a function for that&lt;/a&gt;
+
+,
+and there are rules on
+&lt;a href=&#34;http://www.jilles.net/perma/2013/08/22/how-to-do-graphite-derivatives-correctly/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;how to use that function correctly&lt;/a&gt;
+
+.
+Other things, like Diamond,
+&lt;a href=&#34;https://github.com/python-diamond/Diamond/issues/663&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;fuck your data up&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Collect counters, turn them into rates when you need them. Then, how often
+are you going to read your counters? If you do it too rarely, you get widely
+spaced metrics and you won&amp;rsquo;t be able to see spikes as spikes. They get
+spread out across the sampling interval, and consequently are flattened.
+If you do it too often, you spam the network and the device, ultimately with
+the metric collection becoming a measurable load in itself.&lt;/p&gt;
+&lt;p&gt;Well, a device could provide readings in a batch. So instead of reading a
+byte/s counter once a second, you could get the measurements for the last 60
+one-second intervals every minute - the preferable solution. Or the device
+could pre-aggregate (and that would be rates, not counters) - it could tell
+you how many of the one-second buckets of the last minute were in the 0-50%
+busy bucket, the 50-90% bucket, the 90-99% bucket, the 99-99.9% bucket and
+so on (complicated, and also not as good as getting counters in a batch).&lt;/p&gt;
+&lt;p&gt;So far I know of no devices that actually are capable of doing this
+properly, so many people turn up the sampling rate to insane when they are
+hunting spikes. Not a good situation.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Understanding sysdig</title>
+      <link>https://blog.koehntopp.info/2017/04/20/understanding-sysdig.html</link>
+      <pubDate>Thu, 20 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/04/20/understanding-sysdig.html</guid>
+      <description>&lt;p&gt;The &lt;a href=&#34;https://github.com/draios/sysdig&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;open source&lt;/a&gt;
+
+
+&lt;a href=&#34;http://www.sysdig.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;sysdig&lt;/a&gt;
+
+ is a piece of software that does not quite,
+but almost, what strace or oprofile do: It instrument the kernel, and traces
+system calls as well as a few other kernel activities.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=UJ4wVrbP-Q8&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Youtube: Sysdig Open Source - Getting Started With Csysdig&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;It does not utilize the ptrace(2) kernel facility, though, but its own
+interface. This interface picks up data in the kernel and writes it into a
+ring buffer. A userspace component extracts this data, interprets, filters
+and formats it, and
+&lt;a href=&#34;https://github.com/draios/sysdig/wiki/Sysdig-Examples&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;then shows it&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;If the data source outpaces the userspace, the ring buffer overflows and
+events are lost, but the actual production workload is never slowed down.&lt;/p&gt;
+&lt;p&gt;So
+sysdig requires that you add the sysdig-probe.ko to your kernel. This is a
+component available in source, and can be built for your kernel just fine.
+On the other hand, sysdig just collects data in kernel, it does not process
+the data in that place - instead it moves most of the processing to
+userland. This is unlike dtrace, which requires an in-kernel special purpose
+language to do stuff, and requires a special coding style in order to
+prevent waits of the production workload. In sysdig, this processing happens
+off the production path, in userland, and hence is less time-critical.&lt;/p&gt;
+&lt;p&gt;A long discussion of the design decisions can be seen in a
+&lt;a href=&#34;https://sysdig.com/blog/sysdig-vs-dtrace-vs-strace-a-technical-discussion/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;sysdig blog article&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;The open source version of sysdig is a single host thing - data is collected
+on one host and processed there, but it is already container aware. The
+really interesting product is the
+&lt;a href=&#34;https://sysdig.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commercial variant of sysdig&lt;/a&gt;
+
+, though. Here, all your container hosts are
+being instrumented and data is collected (with application of filters, of
+course) on all hosts, centrally collected and stored, and then can be
+processed and drilled down
+&lt;a href=&#34;https://www.youtube.com/watch?v=kK6clPVC53w&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;using a web interface or a command line utility&lt;/a&gt;
+
+.
+The data store parts are
+&lt;a href=&#34;https://support.sysdig.com/hc/en-us/articles/206519903-On-Premises-Installation-Guide&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;standard persistence components&lt;/a&gt;
+
+
+that are known to scale nicely - cassandra, elastic search, and MySQL,
+connected together by Redis queues. You can run all this in your data center
+with their on-premises solution, or push to the sysdig run monitoring cloud
+solution (not really an option for most European customers, though, and also
+not for anybody wanting to stay PCI compliant).&lt;/p&gt;
+&lt;p&gt;The commercial solution not only is a kind of distributed strace, but like
+the single host product is container and orchestrator aware. So you can ask
+it for all disk writes to all log directories in all MySQL instances related
+to the wordpress deployment in Kubernetes, and it will find the relevant
+instances and their data for you and pick these events, no matter where
+Kubernetes has been scheduling these instances.&lt;/p&gt;
+&lt;p&gt;In fact, the product also knows about LDAP authentication and
+Openshift/Kubernetes RBAC authorization, so that developers can view the
+trace data from their groups deployments, but not from others. The
+commercial solution also transcends system call instrumentation and in fact
+understands internal event data from other, higher level products. When you
+are stracing or oprofiling a JVM or a perl instance, the only data you get
+is a lot of memcpy(), which is not really useful for debugging. You need
+execution engine instrumentation to understand what the language is doing,
+what symbols, objects and function call frame are on the stack and how
+memory is being used.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://sysdig.com/product/integrations/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Integrations for many things&lt;/a&gt;
+
+
+exist and are being loaded on demand. So the web GUI allows you to review
+the topology of a Kubernetes project deployment, how it is being mapped to
+hosts, zoom in into instances of containers, and then dig into the actual
+pieces of software running in these containers, and finally dive into
+individual network packets or calls these things have been making. It&amp;rsquo;s
+pretty awesome, and it takes the grind of finding instances, setting up
+monitoring, collecting and interpreting data completely away from the
+developer.&lt;/p&gt;
+&lt;p&gt;They simply have seamless and effort-free visibility to all their things,
+and only their things. Sysdig (even the open source variant) also brings a
+number of nice and innovative concepts to the table. Spans for example are a
+&lt;a href=&#34;https://github.com/draios/sysdig/wiki/Tracers&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hierarchical set of start/stop markers&lt;/a&gt;
+
+,
+which can be easily added to own code by simply writing structured data to
+/dev/null - that&amp;rsquo;s a cheap and universally available operation, which
+nonetheless is clearly visible to sysdigs instrumentation.&lt;/p&gt;
+&lt;p&gt;Sysdig understands spans, and can correlate them with themselves (they are
+hierarchical), with system objects (Spans can have IDs and tags) and with
+other events (spans are called spans, because they mark a span of time and
+space and they contain other system events).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/04/tracers_spectro.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A spectrogram plots logarithmically bucketized spans (or calls) every 2
+seconds. Slow calls to the right, fast to the left. You can mark an area
+with the cursor and see the actual calls in the Drilldown.&lt;/p&gt;
+&lt;p&gt;Drill down is then possible within a span to see what happened inside. So
+you can span a transaction, request or another event, watch for bad things
+happening and then after the fact go and dive into the event logs and call
+stacks of things, watching the stack catch fire and burn down event by
+event. Treating event streams as a time series is - within limits - also
+possible. Lua scripts called
+&lt;a href=&#34;https://github.com/draios/sysdig/wiki/Chisels-User-Guide&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;chisels&lt;/a&gt;
+
+
+can be used to trigger on events in the event stream, and maintain
+aggregates or format interesting events. Because this happens outside of the
+kernel and also outside of the production control flow, this is not
+performance critical for production, and because it is using Lua it is very
+flexible and easily extensible.&lt;/p&gt;
+&lt;p&gt;The commercial sysdig product collects and stores data in a cassandra
+instance. The web GUI then to some extent treats that data as a kind of
+primitive time series database.&lt;/p&gt;
+&lt;p&gt;This is also where the limits of the current product lie: Their
+understanding of the statistics and math of time series data is limited.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There are no expressions, only single data-source values.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;You cannot calculate derived values (MySQL disk reads/disk read requests to get a cache
+ratio for example) on retrieval, but like with Zabbix you have to do this on
+collection.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Also, Time Series Math as it exists with the Graphite/Grafana
+languages is not possible in sysdig, so it is impossible to plot correct
+read ratio vs. last weeks read ratio scaled to todays load in the same graph
+for comparison.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Aggregations are always single functions, to raw data
+generating a mean (50th percentile), a 99th, 99.9th and 100th (max)
+percentile time series at once is not an operation that can be expressed.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Averages are used when means would be more appropriate, and averages of
+averages are being built without conideration to math and meaning at all.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Alerting is hampered by the lack of time series math.&lt;/p&gt;
+&lt;p&gt;What would be necessary would be proper time series math for model building
+(&amp;ldquo;This is the expected, modelled system behavior&amp;rdquo;) and the acceptable
+deviation corridors around the predicted system behavior should be defined.
+Alerts should fire when the actual observed behavior deviates from the
+predicted system behavior - but the lack of math makes the modelling
+impossible and so the Alerting is primitive and must lead to many false
+positives.&lt;/p&gt;
+&lt;p&gt;So if you see monitoring as a tripartite thing (*1), Debugging,
+Transactional Monitoring and Data Warehousey Monitoring, sysdig is awesomely
+advanced in the debugging discipline, and kind of meh&amp;rsquo;ish okay in the
+transactional thing. It fails the data warehousey stuff completely due to a
+lack of functionality on that side.&lt;/p&gt;
+&lt;p&gt;The company is addressing these limitations in coming releases.&lt;/p&gt;
+&lt;p&gt;That said, within these limitations, &lt;strong&gt;sysdig is awesome&lt;/strong&gt;. It makes the
+debugging part of container deployments a breeze, and adds completely new
+possibilities and an incredible amount of visibility to working in
+Kubernetes.&lt;/p&gt;
+&lt;p&gt;The centralized logging and data storage makes a distributed,
+container-aware strace/oprofile available to developers, and integrates
+nicely with the access control methods available in the system.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Well worth the invest in added productivity&lt;/strong&gt; , even if it is not (can&amp;rsquo;t
+be) the end-all of monitoring for everyone and all use-cases (but they are
+working on it).&lt;/p&gt;
+&lt;p&gt;(*1) Debugging means you interactively define filters, drilldown and views
+on the system to observe application behavior. You may be able to define
+triggers that recognize events where you want to start more capture, collect
+data in depth and then reconstruct buggy behavior with very in depth, non
+necessarily purely numerical data collected.&lt;/p&gt;
+&lt;p&gt;Sysdig is the benchmark system for debugging here. Transactional monitoring
+is where you define Alert conditions, generate alert events to get a human
+to handle the incident, have the human handle the incident and close it.
+Once that has happened, the transaction is done, and the data about the
+incident can be forgotten. Prometheus is the benchmark transactional
+monitoring system.&lt;/p&gt;
+&lt;p&gt;Datawarehousey monitoring builds long term views of system utilization and
+behavior and tries to model system behavior. It is used for capacity
+planning, trend analysis, and sometimes delivers baselines for transactional
+anomaly detection. Many TSDB systems, stuff like Druid, and - outside of
+containers - Graphite do this kind of stuff.&lt;/p&gt;
+&lt;p&gt;This article has been written after getting the product demoed, and playing
+with it in our environment with some test licenses. Not sponsored by sysdig
+or anybody else.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>House und Heisenberg revisited</title>
+      <link>https://blog.koehntopp.info/2012/09/25/house-und-heisenberg-revisited.html</link>
+      <pubDate>Tue, 25 Sep 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/09/25/house-und-heisenberg-revisited.html</guid>
+      <description>&lt;p&gt;Ich habe heute an dem Problem weiter geforscht und wir haben etabliert, dass
+die Ursache nicht der Quelltext des betreffenden Diamond-Collectors sein
+kann.&lt;/p&gt;
+&lt;p&gt;Auf allen betroffenen Kisten habe ich dann gesehen, daß die entsprechenden
+Queries gegen Performance-Schema ein&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;threads&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;zurück liefern.&lt;/p&gt;
+&lt;p&gt;Weitere Untersuchung stellt heraus: P_S ist aber an. Jedoch:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;setup_instruments&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;03&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;setup_timers&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;setup_consumers&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;02&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und das bleibt auch so, sogar über Server-Restarts hinweg.  Warum ist das
+so?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /mysql/&lt;span class=&#34;se&#34;&gt;\*&lt;/span&gt;/data/performance_schema/
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -l
+&lt;span class=&#34;go&#34;&gt;total 1840
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql  8624 Oct  6  2011 cond_instances.frm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql 98304 Oct  6  2011 cond_instances.ibd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql    61 Oct  6  2011 db.opt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql  9220 Oct  6  2011 events_waits_current.frm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql 98304 Oct  6  2011 events_waits_current.ibd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und ein SHOW CREATE TABLE bestätigt das.&lt;/p&gt;
+&lt;p&gt;Damit ist klar, wieso es überhaupt zu Transaktionen kommen kann:&lt;/p&gt;
+&lt;p&gt;Der Code im Diamond-Collector setzt nur Queries gegen performance_schema ab.
+Da dort normal keine Tabellen vorhanden sind, die Transaktionen
+unterstützen, kann es auch nie zu Transaktionen kommen.  In den defekten
+Kisten wurden die Tabellen in performance_schema fälschlicherweise als
+InnoDB erzeugt.  Das alleine hätte kein Problem erzeugt, weil jedes Kommando
+in MySQL eine Transaktion in sich selbst ist - AUTOCOMMIT = 1.&lt;/p&gt;
+&lt;p&gt;Aber:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Starting with 1.2.0, MySQLdb disables autocommit by default, as required
+by the DB-API standard (PEP-249)&amp;quot;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In diesem Fall generiert das Lesen von InnoDB-Tabellen den Start einer r/o
+Transaktion und erzeugt einen Stable View auf alle InnoDB Tabellen.  Dieser
+wird gehalten bis zum Ende der Transaktion, das niemals kommt, außer der
+Collector disconnected.&lt;/p&gt;
+&lt;p&gt;Die immer weiter wachsende Größe des Undo-Logs verlangsamt den Server bis
+zum Stillstand.  Ein KILL auf die Verbindung bringt nur vorübergehende
+Linderung.&lt;/p&gt;
+&lt;p&gt;Der Fix ist in der Tat&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;o&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;BNe&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;select 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  concat(&amp;#39;drop table &amp;#39;, table_name, &amp;#39;;&amp;#39;) 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;from 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  information_schema.tables 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;where 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  table_schema = &amp;#39;performance_schema&amp;#39;&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql_upgrade&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und alles wird gut - sogar ohne Neustart.&lt;/p&gt;
+&lt;p&gt;Die Ursache für das Seltsame Verhalten™ der betroffenen Büchsen bei einer
+automatisierten Installation verbleibt weiter unklar.  Der betreffende
+Collector läuft jetzt jedoch auch auf diesen Maschinen und liefert Daten.&lt;/p&gt;
+&lt;p&gt;Wie viele MySQLer bin ich der Auffassung, dass AUTOCOMMIT = 0 oder SELECT
+&amp;hellip;  FOR UPDATE eher schädlich sind.  Dies hier wird ein weiteres
+ausgezeichnetes Beispiel in meinem argumentativen Arsenal sein.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Der Herr House und der Herr Heisenberg haben Replication Delay</title>
+      <link>https://blog.koehntopp.info/2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.html</link>
+      <pubDate>Mon, 24 Sep 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.html</guid>
+      <description>&lt;p&gt;Heute erreicht mich eine Mail, in der ein DBA sich über steigende
+Replication Delay in einer bestimmten Replikationshierarchie beschwert.&lt;/p&gt;
+&lt;p&gt;Das ist schlecht, denn die betreffende Hierarchie ist wichtig. Also die
+&amp;lsquo;Wenn die nicht geht schlafen Leute unter Brücken&amp;rsquo;-Art von wichtig.&lt;/p&gt;
+&lt;p&gt;Die Theorie war, daß die Änderungsrate in dieser Hierarchie so hoch ist, daß
+die Schreiblast von MySQL Replikation, die ja Single Threaded ist, nicht
+mehr bewältigt werden kann.  Für diese Theorie sprach nach dem ersten
+Augenschein, daß alle betroffenen Kisten keine lokalen Platten hatten,
+sondern auf einem Filer lagen, und Filer sterben wegen der hohen
+Kommunikationslatenz im SAN bei uns in der Regel weit vor lokalen Platten,
+wenn es um Replikation geht: Filer sind mehr so beim parallelen Schreiben
+mit mehreren Threads gut.&lt;/p&gt;
+&lt;p&gt;Wenn dem so wäre, wäre das schon einen Seufzer wert, denn die betreffende
+Replikationshierarchie war gerade beim Reengineering auf dem OP und sollte
+eigentlich derzeit kaum ausbeutbare Technical Debt haben.  Wenn die trotzdem
+Replication Delay akkumuliert, dann haben wir ein ernstes Problem.&lt;/p&gt;
+&lt;p&gt;Nun bin ich jemand, der Lügen gewohnt ist.  Leute lügen.  Und Maschinen
+lügen auch.  Aber schauen wir erst mal ins
+&lt;a href=&#34;http://graphite.wikidot.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Monitoring&lt;/a&gt;
+
+ und schauen wie schlimm es ist.
+Ich greife mir einen Host aus der angeblich kränkelnden Hierarchie:&lt;/p&gt;
+&lt;p&gt;![Graph: Replication Delay Monitor]({{ site.baseurl }}/uploads/replication-delay1.png)&lt;/p&gt;
+&lt;p&gt;Der brandneue Replication Load Monitor ist ein tolles Spielzeug.&lt;/p&gt;
+&lt;p&gt;Wir sehen eine Weiterentwicklung einer &lt;a href=&#34;http://www.markleith.co.uk/2012/07/24/a-mysql-replication-load-average-with-performance-schema/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Idee&lt;/a&gt;
+
+
+von Mark Leith: Mit Hilfe des Performance Schema überwachen wir,
+womit der SQL Thread der MySQL Replikation denn so seine Zeit verbringt und
+wieviel Prozent einer jeden Zeitscheibe er idle ist.&lt;/p&gt;
+&lt;p&gt;Mein SQL Thread auf der von mir zufällig herausgesuchten Maschine bringt
+etwa 20% seiner Zeit mit InnoDB Log IO zu und weitere 10-20% mit InnoDB Data
+IO.  60% sind Idle.  Montag irgendwann nach 13 Uhr hat jemand dann in Panik
+&amp;lsquo;innodb_flush_log_at_trx_commit = 2&amp;rsquo; gesetzt und damit fällt die InnoDB Log
+IO-Wartezeit komplett weg (Data IO natürlich nicht).&lt;/p&gt;
+&lt;p&gt;Wie dem auch sei, &lt;em&gt;so&lt;/em&gt; sieht der Graph einer überlasteten Hierarchie
+nicht aus.  Wir haben möglicherweise ein Problem auf einigen Servern der
+Hierarchie, aber definitiv nicht auf diesem.  Damit ist aber auch klar, daß
+das Problem nicht vom Master her kommen kann.  Gute Nachrichten!&lt;/p&gt;
+&lt;p&gt;Weiteres Nachbohren ergibt eine Liste von betroffenen Servern.  Zwei von
+denen sind Qualitätssicherungssysteme, die haben keinen Speicher und
+interessieren mich nicht.  Eines ist eine potentielle Produktionskiste, die
+derzeit aber vor sich hin idled.  Die hat Speicher, und ist trotzdem
+langsam.&lt;/p&gt;
+&lt;p&gt;Seit wann?  Ich schnappe mir den Replication Delay Graph und zoome einmal
+raus.  Das Problem besteht seit dem 20-Sep nachmittags, sagt der Graph.&lt;/p&gt;
+&lt;p&gt;Also zoome ich mich durch alle Graphen dieser Kiste für den 20-Sep und
+schaue einmal was mir da noch entgegen kommt.&lt;/p&gt;
+&lt;p&gt;![Graph: Betroffener Rechner]({{ site.base_url }}/uploads/replication-delay2.png)&lt;/p&gt;
+&lt;p&gt;Krankheitsbild: Akute und lebensbedrohliche DML-Schwäche seit Mitte des
+20-Sep.&lt;/p&gt;
+&lt;p&gt;Es ist offensichtlich, daß der Eimer ein Problem hat: Irgendwann am 20-Sep
+Nachmittags ist der von  150/250/50 I/U/D auf infinitesimal kleine Werte
+runter, und zwar nicht ruckartig wie bei einer Konfigurationsänderung,
+sondern in einer Entladungskurve, als ob sich irgendetwas zu zieht.
+Irgendwann am 21-Sep ist es der kranken Box dann noch mal ruckartig besser
+gegangen und wieder zieht sie sich dann bis zum Stillstand zu.&lt;/p&gt;
+&lt;p&gt;Das ist doch schon mal ein guter Hinweis: Erstens suchen wir fast sicher
+nicht nach einem direkten Config Change und zweitens sehen wir an dem Spike
+dahinter, daß Recovery möglich ist.&lt;/p&gt;
+&lt;p&gt;Wir suchen nicht nach einem direkten Config Change, und das ist gut so, denn
+es hat in letzter Zeit auch keine solchen gegeben:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dba&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;master&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dba&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;v_global_variables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;v_global_variables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;day&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;now&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;month&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-------------+----------------------------+--------------+--------------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;            &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-------------+----------------------------+--------------+--------------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2012&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;04&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;thread_cache_size&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;100&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;500&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2012&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;05&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_max_dirty_pages_pct&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;           &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;75&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;           &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-------------+----------------------------+--------------+--------------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;82&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Weiteres Wühlen im Graphite bringt Erleuchtung, denn wir finden das Inverse
+des Activity Patterns hier:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay3.png&#34; alt=&#34;Graph: InnoDB Undo Log Length&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Die Causa: Der InnoDB Purge Thread hat seine Arbeit Mitte des 20-Sep
+eingestellt, zuckt noch einmal kurz und idled dann lustig weiter.  Sollte
+&lt;a href=&#34;https://blog.koehntopp.info/2011/04/28/mysql-undo-log.html&#34;&gt;Captain Undo Log&lt;/a&gt;
+
+
+wieder unterwegs sein und mit dem Baseballschläger ausgeloggt
+werden wollen?&lt;/p&gt;
+&lt;p&gt;Eine kurze Inspektion der Prozeßliste zeigt nur zwei andere
+Kandidatenprozesse, einer ist ein root-User und einer ist ein cacti-Login.
+Mein Geld wette ich auf den root-user, ein kurzes Rumfragen auf dem Jabber
+und danach ein KILL auf die Connection-ID von dem Gesellen wird mir zeigen,
+ob ich Recht habe oder nicht: Wer nicht im Live-Channel auf dem Jabber ist
+wird sich schon melden, wenn ihm die Verbindungen wegfliegen.&lt;/p&gt;
+&lt;p&gt;Der Effekt ist&amp;hellip;  Null.&lt;/p&gt;
+&lt;p&gt;Also gut.  Dann kriegt halt der Cacti auf&amp;rsquo;s Maul, weil ich grad schlechte
+Laune habe.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay4.png&#34; alt=&#34;Graph: QPS &amp;amp;amp; Undo Log Size&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Nach Zufuhr einer passenden Dosis Laxativ (DBA KILL forte N) spontane
+Erholung, aber nach kurzer Linderung ein Wiedereinsetzen der Symptomatik.&lt;/p&gt;
+&lt;p&gt;Herzallerliebst.  Wir haben das Gegenteil eines Stehaufmännchens - ein
+Fallumchen.  Immer wenn der Cacti User eine Kelle kriegt, fällt das Undo Log
+wunschgemäß in sich zusammen und die Performance geht rauf.  Danach zieht es
+sich in kürzester Zeit wieder zu und wir fallen auf das alte Niveau runter.&lt;/p&gt;
+&lt;p&gt;Der alte Trick mit der Processlist klappt auch hier wieder: Das Login kommt
+von&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;performance_schema | ```
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Moment.  performance_schema?  Cacti?
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Nein.  Das ist nicht cacti.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;```console lsof -i -n -P | grep 44467 mysqld 17242 mysql 178u
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;IPv6 &lt;span class=&#34;m&#34;&gt;3599986352&lt;/span&gt; TCP
+&lt;span class=&#34;go&#34;&gt;...:3306-&amp;gt;...:44467 (ESTABLISHED) diamond 18596 root 1u IPv4 3599986351 TCP
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...:44467-&amp;gt;10.147.206.122:3306 (ESTABLISHED) ```
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Ja.  Das ist diamond, der Datenkollektor für Graphite.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Und welches Modul von Diamond/Graphite ist am 20-Sep nachmittags global
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;ausgerollt worden?
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;```console cd /etc/graphite/collectors ls -l MySQL*conf
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-r-------- 1 root root 471 Sep 20 14:19 MySQLPerfCollector.conf 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Der Replication Load Monitor.  Ja, der da ganz oben im ersten Bild.&lt;/p&gt;
+&lt;p&gt;Der liest zwar nur, aber aus irgendeinem Grund macht er das auf einigen
+Promille aller Boxen, und nur in dieser Replikationshierarchie!, in einer
+REPEATABLE READ read-only Transaction.  Und die macht Diamond beim Login
+einmal auf und hält sie dann für immer und ewig, es sei denn, die
+Diamond-MySQL-Verbindung kippt, aus welchen Gründen auch immer, um.  Und da
+die Verbindung auch nie Idle ist, timed sie auch nie aus.&lt;/p&gt;
+&lt;p&gt;Kurze Zeit nachdem Puppet dem Diamond die &lt;code&gt;MySQLPerfCollector.conf&lt;/code&gt; auf
+&lt;code&gt;enabled = false&lt;/code&gt; gesetzt hat haben wir eine dauerhafte Recovery:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay5.png&#34; alt=&#34;Graph: Replication Delay&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Natürliche Recovery nach Beseitigung der Ursache, ganz ohne KILL.&lt;/p&gt;
+&lt;p&gt;Wir lernen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Monitoring kann Performance-Effekte haben.  Okay,
+&lt;a href=&#34;http://blog.wl0.org/2012/09/checking-procnuma_maps-can-be-dangerous-for-mysql-client-connections/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;keine neue Erkenntnis&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;So ein Undo-Log und langlaufende Transaktionen können einen ganz schön runter ziehen.  Okay,
+auch keine neue Erkenntnis.&lt;/li&gt;
+&lt;li&gt;Es lag nicht an der Replikationslast, und auch nicht am Filer, auch wenn das gerade Mode ist,
+in diese Richtung zu blamen.&lt;/li&gt;
+&lt;li&gt;Und Graphite ist meine Hündin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay6.jpg&#34; alt=&#34;House: Everybody lies&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Was House sagt.&lt;/p&gt;
+&lt;p&gt;Morgen schauen wir dem &lt;code&gt;MySQLPerfCollector.py&lt;/code&gt; mal tiefer in die Eingeweide.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Wie man einen Graph plottet</title>
+      <link>https://blog.koehntopp.info/2012/03/12/wie-man-einen-graph-plottet.html</link>
+      <pubDate>Mon, 12 Mar 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/03/12/wie-man-einen-graph-plottet.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/graph-schlecht.png&#34; alt=&#34;Graph: Schlechtes Beispiel&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ein total kaputtes Stück Graph.&lt;/p&gt;
+&lt;p&gt;Das da ist das, was ich bekomme, wenn ich mir eine Woche Daten in dem
+Datenbank-Monitoringprodukt meiner Wahl anschaue.  Aber das spielt keine
+Rolle.  Ich kann mir so ziemlich jeden Zeitreihengraphen anschauen, aus so
+ungefähr jedem Stück Software, das mir zur Installation zur Verfügung steht,
+und falls es nicht rrdtools ist, ist es genau so kaputt.&lt;/p&gt;
+&lt;p&gt;Das ist bemerkenswert, weil der Plot wahrscheinlich von einem Rudel Diplom-
+oder Master-Abgänger gebaut worden ist.  Man sollte annehmen, daß jetzt, wo
+ein Studium Geld kostet, diese Personen vielleicht auch zuhören, wenn ihnen
+elementare Dinge erklärt werden.&lt;/p&gt;
+&lt;h2 id=&#34;was-ist-genau-kaputt&#34;&gt;
+    &lt;a href=&#34;#was-ist-genau-kaputt&#34;&gt;
+	Was ist genau kaputt?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Man versuche einmal, die Werte zwischen dem 6.  und dem 7.  März abzulesen.
+Wie man sieht, haben wir dort keine Linie, sondern einen fetten gelben
+Zitteredding, der die Pixel auf dem &amp;ldquo;Graphen&amp;rdquo; zuquastet.&lt;/p&gt;
+&lt;p&gt;Der &amp;ldquo;Graph&amp;rdquo; ist hier 640 x 300 Pixel groß, weil ich das so eingestellt habe,
+damit ich mehrere Browserfenster zum Vergleichen nebeneinander legen kann.
+Die Software nimmt einen Meßwert pro Minute auf, also 1440 Messungen pro
+Tag.  Es sind also hier 10080 Meßwerte in Betracht zu ziehen, um die
+gewünschte Darstellung von einer Woche zu zeichnen, also nicht ganz 16
+Meßwerte pro x-Pixel.  Unser &amp;ldquo;Graph&amp;rdquo; zeichnet nun für jeden x-Wert alle 16
+Meßwerte ein.&lt;/p&gt;
+&lt;p&gt;Irgendein Spezialexperte hat jetzt die Meßpunkte außerdem noch miteinander
+verbunden, damit man bei Diskontinutäten keine Löcher im Graph hat.  So hat
+man noch mehr als 16 geplottete Pixel pro x-Pixel, und stellt so sicher, daß
+in einem Spike der gesamte Graph vollkommen nutzlos ist.  Weil Spikes nun
+gerade die interessanten Stellen wären. &lt;strong&gt;meinjanur&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Das Resultat ist vollkommen nutzlose Pixelmarmelade: Wie ist die Verteilung
+dieser 16 Werte zu jedem Zeitpunkt?  Wie sind Mittelwert, Median, Maximum,
+Minimum in dieser Pixelwolke gelegen?  Welche dieser Pixel sind Meßwerte und
+welche informationslose Verbindungslinien?&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Hier ein Tip:&lt;/em&gt; Man kann das noch pessimieren, indem man da irgendeinen
+Spline durch legt, damit es noch Überschwinger gibt.  Dann kann man dem Ding
+überhaupt keine Informationen mehr entnehmen.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/graph-gut.png&#34; alt=&#34;Eine bessere Darstellung&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ein Graph, mit dem man etwas anfangen kann.&lt;/p&gt;
+&lt;p&gt;Dies ist ein anderer Graph - diesmal einer, der den Namen auch verdient.
+Wie man sehen kann, wird wieder ein Zeitraum von einer Woche gemalt, sodaß
+pro x-Wert nicht ganz 16 Meßwerte zu berücksichtigen sind.  Hier - es
+handelt sich um rrdtool - hat jemand mitgedacht, und so sehen wir in Blau
+den Mittelwert der 16 Werte und in Rot das Maximum dieser Werte
+eingezeichnet.&lt;/p&gt;
+&lt;p&gt;Es ist klar erkennbar, daß der Mittelwert relativ stabil ist (bis er am Ende
+abfällt), und wie hoch die Spikes sind, die von diesem Mittelwert ausgehen.
+Auf dieser Grundlage kann man verläßliche Aussagen über das Lastverhalten
+der Kiste machen.&lt;/p&gt;
+&lt;p&gt;Damit ist bewiesen, daß Tobias Oetiker in seinen Mathevorlesungen zugehört
+hat, anstatt sich in den Nächten vorher das Hirn weg zu saufen.  Wenigstens
+einer!&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/graph-noch-besser.png&#34; alt=&#34;Eine innovative Histogramm-Darstellung&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Dichte-Diagramm und Qualitätsrating im Mittelwert.&lt;/p&gt;
+&lt;p&gt;Dies ist ein Graph, wie er von Smokeping gemalt wird.  Hier werden sogar 15
+Tage betrachtet.  Für jedes Pixel stehen also circa 30 Meßwerte bereit, wenn
+man einmal pro Minute mißt - bei einer Messung alle 5 Minuten immerhin noch
+6 Meßwerte (mal 20, weil Smokeping in einer Messung je nach Konfiguration
+mehrere Werte erfaßt - hier 20).&lt;/p&gt;
+&lt;p&gt;Im Graph erkennen wir genau den farblich hervorgehobenen Median (Es wird ein
+Median statt eines geometrischen Mittels eingezeichnet, weil das stabiler
+gegen Outlier ist).  Der Farbcode für den Median gibt zugleich eine
+Verlustrate an.  Kommt es überhaupt zu Verlusten, liegt also eine Störung
+vor, ist der entsprechende Bereich des Graphen farblich markiert und die
+Farbe des Median gibt die Verlustrate (hier: 10/20, Lila) an.&lt;/p&gt;
+&lt;p&gt;Über und unter dem Median ist durch entsprechende Grauwerte eine
+Dichteverteilung der gemessenen Werte eingezeichnet.  Wir können also nicht
+nur erkennen, wie weit die Maxima und Minima vom Median abweichen, sondern
+durch die Schattierung erkennen wir das kumulative Histogramm der Meßwerte,
+bekommen also einen Dichtegraphen und können so sehen, wie anormal so ein
+Outlier/Maximum denn nun wirklich ist.&lt;/p&gt;
+&lt;p&gt;Das ist zwar &lt;em&gt;auch wieder&lt;/em&gt; ein breiter Quast wie im ersten Graphen.
+Anders als im ersten Graphen ist er jedoch intern strukturiert und enthält
+eine große Menge an zusätzlichen Informationen in derselben Menge Pixel - es
+handelt sich um ein Histogramm, mit der die Dichteverteilung der Werte
+visualisiert wird.&lt;/p&gt;
+&lt;p&gt;So macht man es richtig.&lt;/p&gt;
+&lt;p&gt;Und jetzt schaut Euch Eure Graphen an, schämt Euch, schmeißt Euren Code weg
+und macht es richtig.  Damit ich mich nicht mehr aufregen muß.&lt;/p&gt;
+&lt;p&gt;Danke sehr.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Nachtrag:&lt;/em&gt; rrdtool schützt nicht vor Dummheit.  Also, es versucht sein
+Bestes, aber wenn das Problem vor der Tastatur darauf besteht, kommt
+trotzdem Rotz raus.&lt;/p&gt;
+&lt;p&gt;Best of Munin:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/graph-uptime.png&#34; alt=&#34;Uptime als Graph&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Uptime steigt um einen Tag (ein y-Pixel) pro 24 Stunden.  Das ist schon als
+Linie kaum zu sehen - als Bargraph aber komplett im Eimer.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/graph-rrdtool-kaputt.png&#34; alt=&#34;rrdtool Mißbrauch&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Wir nehmen einen dicken Edding und Daten mit Spikes.  Und lassen jede Form
+von Median/Maximum/Minimum-Plot beiseite, denn sonst wäre das Ergebnis
+womöglich sinnvoll.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Wieso zehn Prozent?</title>
+      <link>https://blog.koehntopp.info/2010/05/16/wieso-zehn-prozent.html</link>
+      <pubDate>Sun, 16 May 2010 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2010/05/16/wieso-zehn-prozent.html</guid>
+      <description>&lt;p&gt;In &lt;a href=&#34;http://erichsieht.wordpress.com/2010/05/15/sicherheitsmetrik/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sicherheitsmetrik&lt;/a&gt;
+
+
+heißt es als Antwort auf meinen Artikel
+&lt;a href=&#34;https://blog.koehntopp.info/2010/05/14/denic-erkl-rt-sich.html&#34;&gt;DENIC erklärt sich&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Wir IT-Akademiker forschen gerne an Fragen herum, die einen vagen
+Relitätsbezug haben, die man aber in der Praxis pragmatisch handhabt. Nach
+ein paar Jahren haben wir die Lösungen der Pragmatiker formal dokumentiert
+und wissenschaftlich nachgewiesen, was die Kollegen immer schon wussten,
+nämlich dass das so tatsächlich funktioniert…. Die zehn Prozent sind
+formal betrachtet völlig willkürlich gewählt, tatsächlich aber wohl ein
+Erfahrungswert, der sich aus informellen Beobachtungen typischer Vorgänge
+ergibt. So etwas würde ein Wissenschaftler nie zulassen.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Die zehn Prozent sind natürlich nicht willkürlich gewählt, sondern
+sorgfältig ermessen.&lt;/p&gt;
+&lt;p&gt;Dem Ganzen liegt eine andere Anekdote zugrunde, die die Denkweise eines
+Sysadmins verdeutlicht - am Ende geht es darum, Risiken für Menschen
+intuitiv handhabbar zu präsentieren (anstatt sie mit einem Regelwerk zu
+überschütten).&lt;/p&gt;
+&lt;h3 id=&#34;persönliche-betroffenheit-führt-zu-persönlicher-verantwortung&#34;&gt;
+    &lt;a href=&#34;#pers%c3%b6nliche-betroffenheit-f%c3%bchrt-zu-pers%c3%b6nlicher-verantwortung&#34;&gt;
+	Persönliche Betroffenheit führt zu persönlicher Verantwortung
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;web.de war eine geldreiche Arbeitsumgebung. Mit 150 Mio Euro auf der Bank
+und ohne Schulden agiert eine Firma in Projekten nicht kostengetrieben,
+sondern erlösgetrieben.&lt;/p&gt;
+&lt;p&gt;Es ist eine Umgebung, in der man Großes bewirken kann, aber es ist auch eine
+Umgebung, in der manche Projekteigentümer und Projektleiter nachlässig
+werden. Das ist so, denn in so einer Umgebungs sind Kosten alleine eben kein
+ausreichender Motivator, um bestehende Probleme anzugehen statt neue
+Projekte zu beginnen - die Firma lebt von Velocity, also der Geschwindigkeit
+der Innovation anstatt von Effizienz, denn Gewinn wird mit dem Wachstum des
+Marktes gemacht statt der Konkurrenz Anteile abzunehmen (&lt;a href=&#34;http://en.wikipedia.org/wiki/Cynefin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cynefin
+Marktreife&lt;/a&gt;
+
+ in den Quadranten Complex
+und Complicated).&lt;/p&gt;
+&lt;p&gt;So kommt es, daß in solchen Umgebungen manchmal Systeme im Einsatz sind, die
+die für den Betrieb notwendige Stabilität nicht von sich aus mitbringen,
+sondern bei der die Stabilität durch permanente Arbeit des Operatings
+erzeugt wird.&lt;/p&gt;
+&lt;p&gt;Will sagen, man hat Software mit Memory Leaks oder Race Conditions oder
+anderen schwer zu findenden Fehlern, die mit einer gewissen
+Eintrittswahrscheinlichkeit versehen sind. Der Betrieb erkennt die mit
+Sicherheit &lt;em&gt;irgendwann&lt;/em&gt; eintretende Fehlersituation vorher und behebt das
+Problem durch, äh, vorbeugende Wartung. Also durch das Herausnehmen einer
+Komponente aus dem Loadbalancer und einen Neustart des betreffenden Systems
+mit anschließender Reintegration oder vergleichbare Maßnahmen.&lt;/p&gt;
+&lt;p&gt;Die zur Fehlersuche und Behebung notwendigen Stunden Entwicklerzeit will
+niemand gutwillig bereitstellen, da es andere laufende Projekte verzögern
+würde, also Velocity kosten würde. Und eine tatsächliche Aufwandsschätzung
+ist bei Heisenbugs sowieso immer schwierig, da der Aufwand in der Regel in
+Instrumentation und Warten besteht, solange der Fehler nicht mit
+vernünftigem Aufwand im Labor provoizierbar ist. Man kann also nicht sagen
+&amp;lsquo;Es wird circa 4 Stunden dauern, diesen Bug zu fixen&amp;rsquo;, weil man ihn
+überhaupt erst mal beobachten muß.&lt;/p&gt;
+&lt;p&gt;Wenn nun Kosten im Operating kein Instrument sind mit denen man seine
+Projektleitung zur Bereitstellung von Ressourcen motivieren kann, dann ist
+die erprobte Strategie der Managementmotivation im Operating eine, die ich
+gerne mit &amp;ldquo;Teile die Schmerzen&amp;rdquo; beschrieben möchte.&lt;/p&gt;
+&lt;p&gt;Zum Beispiel setzt man den Projekteigentümer auf dieselbe Alerting-Methode
+wie den Sysadmin, der am Ende Sonntag nachts um 4 Uhr wegen eines Alarms die
+vorbeugende Wartung durchführen muß. Die Begründung ist, daß der
+Projekteigentümer bei einem System dieser Wichtigkeitsstufe ja über Ausfälle
+informiert sein muß. Er muß schließlich bereit stehen, um als Entscheider
+die notwendigen Anweisungen zu geben wenn etwas schiefgeht - so etwas
+wichtiges kann man ja auf keinem Fall einem einfachen Operator überlassen.&lt;/p&gt;
+&lt;p&gt;Wenn wir nun also einen jungen Projektverantwortlichen haben, bei dem das
+Handy Sonntag nachts um vier die Frau und das 6 Monate alte Kind weckt, dann
+ist diese Person nach einigen Wochen unmittelbaren Alerting-Erlebens sehr
+viel zugänglicher, wenn auf auf einem Montagsmeeting der Vorschlag gemacht
+wird, endlich einmal eine Hand voll Entwicklerstunden in die Verbesserung
+der Stabilität dieses vergleichsweise wackeligen Systems zu stecken. Das
+Interesse ergibt sich hier dann nicht aus den Projektkosten, sondern aus
+persönlicher Betroffenheit.&lt;/p&gt;
+&lt;h3 id=&#34;wieviel-risiko-ist-vertretbar&#34;&gt;
+    &lt;a href=&#34;#wieviel-risiko-ist-vertretbar&#34;&gt;
+	Wieviel Risiko ist vertretbar?
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Das ist derselbe Mechanismus, der auch unter den Admins selbst am Werk ist.
+Sie machen Bereitschaft und sie bekommen Alarmmeldungen, Tag und Nacht.
+Admins haben ein natürliches Interesse an den Schranken von Alarmen, denn es
+sind diese Einstellungen der Sensitivität des Überwachungssystemen, nach
+denen sich die Qualität ihres Nachtschlafs und das Klima in ihren Familien
+bemißt. Admins wollen nicht von unnötigen Alarmen gestört werden, sie wollen
+also keine false positives.&lt;/p&gt;
+&lt;p&gt;Noch schlimmer sind aber false negatives, also Alarme die hätten gesendet
+werden sollen, aber nicht gesendet wurden. Denn diese kosten nicht nur den
+Bonus, sondern auch auf Wochen hinaus das Familien- und Arbeitsklima. In
+einem funktionierenden Admin-Team - jedem funktionierenden Admin-Team -  mit
+einem gut eingestellten Monitoring kann man also darauf vertrauen, daß
+gerade eben so viele Alarme zu viel gesendet werden, daß die Meldungen des
+Alarmierungssystems noch vertrauenswürdig sind.&lt;/p&gt;
+&lt;p&gt;Die Schwellwerte im System ergeben sich empirisch unter dieser Strategie:
+Überwachungssysteme werden erschaffen und messen Daten, generieren darauf
+basierend Alarme - in der Regel viel zu viele Alarme.&lt;/p&gt;
+&lt;p&gt;Ein gutes Admin-Team wird die meisten dieser Alarme ignorieren. Es wird
+außerdem regelmäßig die ignorierten und beiseite geschobenen Alarme
+auswerten, um daraufhin das Monitoring anzupassen, damit die Schwellwerte
+realistischer werden. Die neuen Schwellwerte werden immer noch zu sensibel
+sein, aber näher an realistischen Werten. Das Verfahren wird in der Regel
+nicht formalisiert durchgeführt
+(&lt;a href=&#34;http://en.wikipedia.org/wiki/Capability_Maturity_Model#Levels_of_the_Capability_Maturity_Model&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Capability Maturity&lt;/a&gt;
+
+
+Rating 1 für den Prozeß: &amp;lsquo;individual heroics&amp;rsquo;), ist aber im Verhalten
+wahrscheinlich einem inversen TCP Slow Start ähnlich (Man kann das natürlich
+modellieren, aber mir sind keine formalen Papiere zum Thema
+&amp;lsquo;Tuningalgorithmen für Monitoringsysteme&amp;rsquo; bekannt).&lt;/p&gt;
+&lt;h3 id=&#34;risiken-menschengerecht-erlebbar-machen---shared-spaces-statt-regelsysteme&#34;&gt;
+    &lt;a href=&#34;#risiken-menschengerecht-erlebbar-machen---shared-spaces-statt-regelsysteme&#34;&gt;
+	Risiken menschengerecht erlebbar machen - Shared Spaces statt Regelsysteme
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Das Verhalten, das dem ganzen Zugrunde liegt, ist natürlich
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Risikokompensation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Risikokompensation&lt;/a&gt;
+
+ und die ist in Grenzen
+&lt;a href=&#34;http://www.sciencedirect.com/science?_ob=ArticleURL&amp;amp;_udi=B6VN8-4TK2PPX-1&amp;amp;_user=10&amp;amp;_coverDate=01%2F31%2F2009&amp;amp;_rdoc=1&amp;amp;_fmt=high&amp;amp;_orig=search&amp;amp;_sort=d&amp;amp;_docanchor=&amp;amp;view=c&amp;amp;_acct=C000050221&amp;amp;_version=1&amp;amp;_urlVersion=0&amp;amp;_userid=10&amp;amp;md5=0328819c455478dbdeed463b371a7f5e&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;modellierbar&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Menschen versuchen, ihr Verhalten so zu optimieren, daß sie ein System
+möglichst voll &amp;lsquo;ausfahren&amp;rsquo;, seine Ressourcen also ausnutzen. Das heißt im
+Verkehr zum Beispiel, daß sie ein Auto schneller fahren oder enger
+überholen, wenn das Auto sich sicherer anfühlt oder eine bessere Lenkung
+oder Bremsen bekommt. Der lenkende Mensch wird dabei versuchen, das gefühlte
+Risiko stabil zu halten, indem er höhere Wagnisse eingeht.&lt;/p&gt;
+&lt;p&gt;Man kann das umgekehrt nutzen, um mehr Sicherheit zu erzeugen, indem man
+Menschen Risiken spüren läßt und Systeme baut, die sich linear und stetig
+verhalten, also um Risiken für Menschen gut vorhersagbar und erlebbar
+machen. Im Verkehr nennt man dieses Konzept
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Shared_Space#Risikobewertung&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Shared Space&lt;/a&gt;
+
+
+und man kann es auch in der IT anwenden.&lt;/p&gt;
+&lt;p&gt;Shared Space funktioniert eben nicht, indem man einfach die Verkehrszeichen
+in einem Ort alle abmontiert und alle Bürgersteige planiert. Es gibt eine
+Reihe von Vorraussetzungen, die alle zusammen erfüllt sein müssen, damit man
+ein System hat, indem Menschen Risiken wahrnehmen und erkennen können und in
+denen sie aktiv agieren, um diese zu vermeiden.&lt;/p&gt;
+&lt;h4 id=&#34;visibility-und-predictability&#34;&gt;
+    &lt;a href=&#34;#visibility-und-predictability&#34;&gt;
+	Visibility (und Predictability)
+    &lt;/a&gt;
+&lt;/h4&gt;
+&lt;p&gt;Eine ist zum Beispiel, daß man es mit einem System zutun hat, das linear
+(oder logarithmisch) und stetig ist, bei dem also dem großen Knall eine
+Reihe von kleineren, mit zunehmendem Risiko schlimmer werdenden Warnsignalen
+auftreten - Menschen machen diese Annahme implizit, auch dann, wenn sie es
+mit Systemen zu tun haben, die weder linear noch stetig sind. Baut man ein
+System, bei dem Totalversagen nicht vorher von harmlosen Warnsignalen
+angekündigt wird, oder bei dem das Versagensrisiko in einer Weise ansteigt
+die von Menschen nicht intuitiv modellierbar ist, dann hat man ein System
+das massenweise Leute umbringt. Die Gefahrensituation muß also für den
+Menschen im Vorfeld erkennbar und vorhersehrbar sein - aktive und passive
+&lt;strong&gt;Visibility&lt;/strong&gt;, sehen und gesehen werden, muß gegeben sein.&lt;/p&gt;
+&lt;p&gt;In einem Shared Space-Verkehrsgebiet bedeutet das zum Beispiel, daß man
+einige Kreuzungen umbauen muß, damit sie einsehbar werden oder andere
+Gebiete so umbauen muß, daß die entzerrt werden, voneinander abhängige
+Gefahrenquellen also entkoppelt werden und so auftreten, daß sie als
+aufeinanderfolgende separate Ereignisse abgehandelt werden, statt die
+Verkehrsteilnehmer mit zu vielen um Aufmerksamkeit konkurrierenden
+Situationen gleichzeitig zu überfordern.&lt;/p&gt;
+&lt;p&gt;In einer Produktionsumgebung in der IT bedeutet dies, daß man Systeme bauen
+muß, die &amp;lsquo;sanft&amp;rsquo; versagen und rechtzeitig vorher erkennbare Warnsignale
+generieren. Und daß man ein Monitoring haben muß, das ist der Lage ist,
+solche Warnungen zu visualisieren. Am Besten auch eines, das allgemein
+wahrgenommen wird - also Monitore mit Displays an wichtigen Stellen im
+Betrieb.&lt;/p&gt;
+&lt;h4 id=&#34;education&#34;&gt;
+    &lt;a href=&#34;#education&#34;&gt;
+	Education
+    &lt;/a&gt;
+&lt;/h4&gt;
+&lt;p&gt;Eine andere Vorraussetzung ist, daß die Menschen in der Lage sein müssen,
+die Gefahrensituationen erkennen und bewerten zu können. Shared Spaces
+funktionieren also nur in einem Umfeld, in dem es eine passende
+&lt;strong&gt;Ausbildung&lt;/strong&gt; gibt.&lt;/p&gt;
+&lt;p&gt;Im Verkehr bedeutet das, daß Verkehrserziehung, Fahrausbildung und Awareness
+auf dem richtigen Niveau sein müssen, damit den Verkehrsteilnehmern das
+erwartete Verhalten, Handlungsmöglichkeiten und typisches Verhaltensfehler
+bekannt sind, so daß sie mit vergleichbaren Erwartungen und gut trainierten
+Sicherheitsreflexen in den Verkehr gehen.&lt;/p&gt;
+&lt;p&gt;In einer Produktionsumgebung bedeutet das, daß den verantwortlichen
+Mitarbeitern die Systeme, die sie fahren sollen, bekannt sind, sodaß sie ein
+Modell des Systems im Kopf haben, das den betrieblichen Realitäten
+entspricht, daß ihnen Diagnose- und Eingriffsmöglichkeiten bekannt sind und
+daß sie Zugriff auf Eskalationsmöglichkeiten in der Systementwicklung haben,
+wenn ein Fehler die Möglichkeiten des Operatings übersteigt.&lt;/p&gt;
+&lt;h4 id=&#34;empowerment&#34;&gt;
+    &lt;a href=&#34;#empowerment&#34;&gt;
+	Empowerment
+    &lt;/a&gt;
+&lt;/h4&gt;
+&lt;p&gt;Und die dritte Vorraussetzung ist, daß die Menschen in einem System die
+Möglichkeit haben, Verantwortung zu übernehmen und ad-hoc vor Ort Regeln
+aufzustellen oder Situationen verbindlich zu klären - das ist
+&lt;strong&gt;Ermächtigung&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Im Verkehr bedeutet das, daß man Zeichen entfernt, die Entscheidungen des
+Autofahrers überstimmen. Ampeln und Vorfahrtszeichen kommen weg, denn sie
+bestimmen über den Kopf des Fahrzeugführers hinweg &amp;lsquo;Du mußt halten&amp;rsquo; oder &amp;lsquo;Du
+kannst fahren&amp;rsquo;. Stattdessen ist der Fahrzeugführer jetzt verantwortlich,
+sein Fahrzeug berührungsfrei durch den Verkehr zu bewegen und er muß jede
+Halte- und Fahrentscheidung selbst und in letzter Verantwortung treffen. Das
+kann er, denn er hat die notwendige Visibility - er wird gesehen und kann
+sehen. Und er hat die notwendige Ausbildung.&lt;/p&gt;
+&lt;p&gt;In einer Produktionsumgebung in der IT sieht es genau so aus - statt dem
+Admins und Entwicklern einen Kubikmeter ITIL V3 Handbuch an den Kopf zu
+werfen und zu sagen: &amp;ldquo;Implementiert das!&amp;rdquo; gibt man ihnen die Verantwortung
+für den Betrieb und sagt: &amp;ldquo;Haltet das am Laufen! Was braucht Ihr dazu?&amp;rdquo;.
+Mitarbeiter mit der passenden Ausbildung und der passenden Visibility sind
+dazu in der Lage, das zu regeln, wenn man sie entsprechend ermächtigt.&lt;/p&gt;
+&lt;p&gt;Die natürliche Risikoanpassung wird dann dazu führen, daß sie selbst die für
+den Betrieb notwendigen Regeln und Absprachen ad-hoc treffen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Ein Nagios-Plugin für MySQL</title>
+      <link>https://blog.koehntopp.info/2007/01/20/ein-nagios-plugin-fuer-mysql.html</link>
+      <pubDate>Sat, 20 Jan 2007 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2007/01/20/ein-nagios-plugin-fuer-mysql.html</guid>
+      <description>&lt;p&gt;Auf Sourceforge findet man
+&lt;a href=&#34;http://nagiosplug.sourceforge.net/developer-guidelines.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Plug-in development guidelines&lt;/a&gt;
+
+
+für den Nagios Netzwerkmonitor.
+Demnach ist es trivial, Nagios-Plugins zu entwickeln:
+Der Check ist ein externes Programm, das den Returncode 0, 1 oder 2 zurückgibt und eine einzeilige Nachricht auf stdout druckt.&lt;/p&gt;
+&lt;p&gt;Tun wir das doch mal für MySQL:
+Wir wollen die Anzahl der Threads_connected überwachen und den Replikationsstatus:
+SQL-Thread und IO-Thread müssen laufen und der Slave-Lag darf nicht zu groß sein.&lt;/p&gt;
+&lt;p&gt;Wir schreiben das Plugin in C, damit wir zugleich mal lernen, die MYSQL Client-API in C zu verwenden - Shellscripte, die sich das Abbrechen gibt es ja schon genug.&lt;/p&gt;
+&lt;p&gt;Der gesamte Quelltext aus diesem Beispiel kann hier heruntergeladen werden:
+&lt;a href=&#34;https://blog.koehntopp.info/uploads/check_mysql.c&#34;&gt;check_mysql.c&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Unser Programm soll eine Reihe von Optionen verarbeiten.
+Wir lesen die Optionen mit GNU
+&lt;a href=&#34;http://www.cs.duke.edu/courses/spring04/cps108/resources/getoptman.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;getopt_long&lt;/a&gt;
+
+.
+Die Funktion braucht eine Optionsliste in einem struct options Array, in dem wir die Optionen deklarieren.&lt;/p&gt;
+&lt;p&gt;Wir wollen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;ndash;mode={slave-lag,slave-io-running,slave-sql-running,connections},&lt;/li&gt;
+&lt;li&gt;&amp;ndash;threshold-warn=x,&lt;/li&gt;
+&lt;li&gt;&amp;ndash;threshold-err=x&lt;/li&gt;
+&lt;li&gt;und die üblichen MySQL Connection-Options (&amp;ndash;user, &amp;ndash;password, &amp;ndash;host und &amp;ndash;port).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In Code sieht das so aus:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;option&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;long_options&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;host&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;h&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;u&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;password&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;p&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;port&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;P&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;mode&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;m&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;threshold-warn&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;threshold-err&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;T&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;debug&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;d&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;help&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;?&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+
+&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;enum&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;unspecified&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;slave_lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;slave_io_running&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;slave_sql_running&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;connections&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mode_t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;     &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;     &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;root&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;password&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;     &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3306&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;mode_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;unspecified&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;threshold_warn&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;threshold_err&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;60&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;    &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Optionen werden dann wie folgt eingelesen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;parse_args&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[])&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;optind&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;getopt_long&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;h:u:p:P:m:t:T:d?&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;long_options&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;optind&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;optarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strdup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;optarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Out of memory in strdup!&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;switch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;?&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// Hilfstext
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;h&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;u&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;p&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;password&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;P&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;atoi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;m&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;strcmp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;slave-lag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;slave_lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strcmp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;slave-io-running&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;slave_io_running&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strcmp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;slave-sql-running&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;slave_sql_running&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strcmp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;connections&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;connections&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+          &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;unspecified&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+        &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;t&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;threshold_warn&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;atoi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;T&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;threshold_err&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;atoi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;sc&#34;&gt;&amp;#39;d&amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;atoi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;myarg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+      &lt;span class=&#34;k&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Unknown option: %c&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Formalitäten sind damit erledigt:
+Wir haben ein Programm, das die gewünschten Kommandozeilenoptionen einlesen kann und an die Arbeit gehen könnte.&lt;/p&gt;
+&lt;p&gt;Die Arbeit besteht bei uns darin, an ein MySQL zu verbinden, eine Query auszuführen, das einzeilige Resultat zu lesen und eine bestimmte Spalte aus dem Resultat auszuschneiden, um diese als String zurückzugeben.&lt;/p&gt;
+&lt;p&gt;Die Funktion &lt;code&gt;run_query()&lt;/code&gt; tut dies für uns:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;run_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;MYSQL&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;MYSQL_ROW&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;MYSQL_RES&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Field %d of query %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql_real_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strlen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Query %s failed: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;mysql_error&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;n&#34;&gt;res&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mysql_store_result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Query %s failed: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;mysql_error&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mysql_fetch_row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;num_fields&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mysql_num_fields&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;        &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mysql_fetch_lengths&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;col&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;num_fields&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Result column %d returns value &lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;%s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt; (length %d)&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]);&lt;/span&gt;
+      &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;?&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;strndup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Query cmd does not return %d fields (it returns %d fields).&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;col&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;num_fields&lt;/span&gt;
+      &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;n&#34;&gt;mysql_free_result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;res&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Funktion bekommt eine bestehende MySQL-Verbindung m als Parameter übergeben, zudem eine SQL-Query cmd und eine Spaltennummer, die aus dem einzeiligen Resultset der Query ausgesägt werden soll.
+Intern brauchen wir eine &lt;code&gt;MYSQL_ROW row&lt;/code&gt; und einen Resultset &lt;code&gt;MYSQL_RES res&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Die Query wird mit &lt;code&gt;mysql_real_query()&lt;/code&gt; an den Server gesendet.
+Wenn dabei kein Fehler gemeldet wird, können wir den gesamten Resultset mit &lt;code&gt;mysql_store_result()&lt;/code&gt; zum Client nach &lt;code&gt;res&lt;/code&gt; kopieren.
+Der Server ist damit fertig.&lt;/p&gt;
+&lt;p&gt;Auf dem Client lesen wir nun mit &lt;code&gt;mysql_fetch_row(res)&lt;/code&gt; eine Zeile aus dem Resultset.
+Diese Zeile hat &lt;code&gt;mysql_num_fields(res)&lt;/code&gt; viele Spalten, deren Längen man mit &lt;code&gt;mysql_fetch_length()&lt;/code&gt; bestimmen kann.
+Wenn unser gewünschtes Zielfeld im Datensatz enthalten ist (&lt;code&gt;col &amp;lt; num_fields&lt;/code&gt;), dann duplizieren wir das und sind fertig
+(Nun ja, gemogelt: Wir hätten noch &lt;code&gt;mysql_free_result()&lt;/code&gt; aufrufen müssen, aber wir machen sowieso gleich &lt;code&gt;exit()&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;Ansonsten beklagen wir uns gar bitterlich und sind dann fertig.&lt;/p&gt;
+&lt;p&gt;Im Hauptprogramm müssen wir nun eine Connection öffnen und dann je nach Mode die passenden Sachen checken.
+Erstmal eine Connection bauen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[])&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+
+  &lt;span class=&#34;n&#34;&gt;parse_args&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;unspecified&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: No or wrong mode specified. Specify --mode={slave-lag,slave-io-running,slave-sql-running,connections}&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Connect to %s:%d with %s:%s for test %d with threshold_warn %d and threshold_err %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;password&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;threshold_warn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;threshold_err&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+  &lt;span class=&#34;n&#34;&gt;mysql_init&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql_real_connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;password&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;mysql&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;port&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Cannot connect to database: Error: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;mysql_error&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Connected...&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Jetzt können wir je nach mode unterschiedliche Dinge tun. Zum Beispiel den Slave Lag checken:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;slave_lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;run_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;show slave status&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Slave lag NULL&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;atoi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;threshold_err&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Slave lag %d sec exceeds threshold_err %d sec&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;threshold_err&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;threshold_warn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;WARN: Slave lag %d sec exceeds threshold_warn %d sec&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;threshold_warn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;OK: Slave lag %d is inside tolerance.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Oder Slave-IO und Slave-SQL testen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;slave_io_running&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;run_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;show slave status&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Slave io not running&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;strcmp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Yes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Slave io not running: result is %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;OK: Slave io is running.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;slave_sql_running&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;run_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;show slave status&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;11&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Slave sql not running&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;strcmp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Yes&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;CRIT: Slave sql not running: result is %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+      &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;OK: Slave sql is running.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Oder eben die Anzahl der Threads_connected prüfen und ggf. anmeckern:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  if (mode == connections) {
+    char *p;
+    int   conn = 0;
+
+    p = run_query(&amp;amp;mysql, &amp;quot;show global status like &#39;Threads_connected&#39;&amp;quot;, 1);
+    if (p == NULL) {
+      printf(&amp;quot;CRIT: No connection information available.\n&amp;quot;);
+      exit(2);
+    }
+
+    conn = atoi(p);
+    free(p);
+
+    if (conn &amp;gt; threshold_err) {
+      printf(&amp;quot;CRIT: Threads_connected %d exceeds threshold_err %d\n&amp;quot;, conn, threshold_err);
+      exit(2);
+    }
+    if (conn &amp;gt; threshold_warn) {
+      printf(&amp;quot;WARN: Threads_connected %d exceeds threshold_warn %d\n&amp;quot;, conn, threshold_warn);
+      exit(1);
+    }
+
+    printf(&amp;quot;OK: Threads_connected %d\n&amp;quot;, conn);
+    exit(0);
+  }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Compiled wird so:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;LIBS=-lmysqlclient
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;CFLAGS=-g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;all:    check_mysql
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;check_mysql:    check_mysql.c
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        cc $(CFLAGS) -o check_mysql check_mysql.c $(LIBS)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Und im Nagios kann man dann in &lt;code&gt;/etc/nagios/checkcommands.cfg&lt;/code&gt; definieren:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;define command {
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    command_name check_mysql_status
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    command_line /usr/lib/nagios/plugins/custom/check_mysql --mode=$ARG1$  -h $HOSTALIAS$ -u monitor -p g33k  $ARG2$
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ein Service kann dann definiert werden als&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;define service {
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    name                template-mysql-slave-lag
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    use                 template-standardhost
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    register            0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    service_description MySQL slave-lag
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    check_command       check_mysql_status!slave-lag!--threshold-warn=600 --threshold-err=900
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
+

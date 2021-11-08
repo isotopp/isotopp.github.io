@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>distributed computing on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/distributed-computing.html</link>
+    <description>Recent content in distributed computing on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 03 Sep 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/distributed-computing/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Konsenssysteme</title>
+      <link>https://blog.koehntopp.info/2019/09/03/konsenssysteme.html</link>
+      <pubDate>Tue, 03 Sep 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/09/03/konsenssysteme.html</guid>
+      <description>&lt;p&gt;Ein Thread über Konsenssysteme aus
+&lt;a href=&#34;https://twitter.com/isotopp/status/1168969885512286210&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Twitter&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;mehr-als-ein-key-value-store&#34;&gt;
+    &lt;a href=&#34;#mehr-als-ein-key-value-store&#34;&gt;
+	Mehr als ein Key-Value Store
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Heise schreibt:
+&lt;a href=&#34;https://www.heise.de/developer/meldung/Verteilter-Key-Value-Store-etcd-erreicht-Version-3-4-4512313.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Verteilter Key-Value-Store: etcd erreicht Version 3.4&lt;/a&gt;
+
+.
+etcd ist &lt;em&gt;auch&lt;/em&gt; ein Key-Value-Store, aber das ist nur ein
+Nebendetail. Die Beschreibung der neuen Funktionen im Artikel
+macht auch schon keinen Sinn für einen KV-Store.&lt;/p&gt;
+&lt;p&gt;etcd ist ein &lt;em&gt;Konsenssystem&lt;/em&gt;. Es realisiert
+Clustermitgliedschaft, verteilte Locks, und darauf aufbauende
+Dienste wie Service Discovery und Loadbalancing.&lt;/p&gt;
+&lt;p&gt;Es gibt drei von Kyle Kingsbury getestete Implementierungen von
+Konsenssystemen, die funktionieren: Zookeeper, etcd und consul.
+Es handelt sich um verteile Datenspeicher, die im CAP-Dreieck
+Consistency über Availability präferieren.&lt;/p&gt;
+&lt;p&gt;Das heißt, daß sie lieber keine Antwort geben statt eine falsche
+Antwort zu geben.&lt;/p&gt;
+&lt;p&gt;Sie sind also oft offline.&lt;/p&gt;
+&lt;p&gt;Immer wenn sich die Topologie des Ensembles (der 3/5/7 Nodes,
+die den inneren Cluster bilden) ändert, geht der ganze Cluster
+für Reads und Writes offline, bis er mit Voting,
+History-Abgleich und so weiter durch ist. Danach ist er wieder
+verfügbar. Availability ist also eher nicht gegeben.&lt;/p&gt;
+&lt;p&gt;Aber Consistency ist: Es ist egal, mit welcher Node des
+Ensembles man redet, jeder Read liefert dasselbe Ergebnis, jeder
+bestätigte Write ist überall sichtbar und jedes Lock ist global
+da.&lt;/p&gt;
+&lt;p&gt;Das heißt aber auch, daß jeder State Change (Write, Locks)
+global verhandelt wird. Das ist nicht schnell. Minimale Latenz
+ist 2 RTT.&lt;/p&gt;
+&lt;p&gt;Dumm, wenn man die Idee hatte, einen Stretched Cluster zu bauen,
+also einen der über eine Latency Domain Grenze hinaus geht -
+eine Node in einem anderen RZ, oder in einer anderen Cloud. Das
+ist nicht schnell, und hat deswegen auch wenig Kapazität für
+Writes: Man will keine globalen, zentralen Konsenssysteme für
+ein ganzes RZ oder eine Abteilung haben, sondern eher eine
+Instanz pro Service oder was immer man sonst als kleine zu
+koordinierende Einheit hat&lt;/p&gt;
+&lt;p&gt;Das SRE Buch von Google hat mindestens zwei Kapitel über
+Probleme beim Betrieb von Chubby (Zookeeper) oder vergleichbaren
+Systemen. In einem reden sie darüber, daß sie Mindest-Downtimes
+für ihren zentralen Chubby fahren: Der Dienst ist mindestens n
+Minuten pro Monat unangekündigt offline, damit Dependencies auf
+den Dienst sichtbar werden und Dienste Strategien entwickeln und
+testen, um mit Chubby Downtimes umgehen zu können.&lt;/p&gt;
+&lt;p&gt;Ich kann aus eigener professioneller Erfahrung nur bestätigen,
+wie unglaublich wichtig so was ist. Fragt nicht.&lt;/p&gt;
+&lt;p&gt;Da wo ich arbeite haben wir jetzt jedenfalls eine Position
+Master Of Disaster (nicht mein Job, zum Glück), und der macht
+Drills mit Service Owners, zuerst Zookeeper. Zookeeper ist das
+älteste der drei Konsenssyteme Systeme, und auf eine Weise
+leider auch das Beste.&lt;/p&gt;
+&lt;p&gt;Zookeeper arbeitet mit statischen Verbindungen in das Ensemble.&lt;/p&gt;
+&lt;p&gt;Eine Session hat man, wenn man mindestens eine Verbindung in das
+Ensemble hat. Das impliziert, daß man mehr als eine haben kann,
+etwa eine zu jedem Ensemblemitglied und daß es egal ist, was man
+auf welcher Verbindung macht - es ist alles gleichwertig und
+konsistent.&lt;/p&gt;
+&lt;p&gt;Zookeeper erzeugt in der Tat eine LDAP/DOM-Tree artige Struktur,
+bei der jeder Knoten in einer Verzeichnishierarchie gleichzeitig
+File und Directory ist. Im File kann man Daten speichern, aber
+das ist beinahe unwichtig.&lt;/p&gt;
+&lt;p&gt;Der Punkt ist mehr, daß man Knoten (Znodes) als persistent oder
+ephemeral kennzeichen kann, und daß ephemeral nodes automatisch
+verschwinden, wenn die  Session des Owners endet.&lt;/p&gt;
+&lt;p&gt;Verlierst Du also Deine letzte Verbindung zum Ensemble,
+verschwinden Deine ephemeral nodes.&lt;/p&gt;
+&lt;p&gt;Wenn das Ensemble also zum Beispiel in einer persistenten Znode
+die Mitgliederliste aller Hosts in einem Cluster als ephemeral
+Znodes speichert, dann registriert sich jeder Clusterhost in
+diesem Verzeichnis selbst, und verschwindet automatisch aus der
+Liste, wenn seine Session verschwindet weil der Host offline
+geht oder wenn die Netzwerkverbindung zum Ensemble unterbrochen
+ist, oder das Ensemble selbst split ist.&lt;/p&gt;
+&lt;p&gt;Im ephemeral Znode selbst kann die Endpunktadresse des Hosts stehen:
+Adieu DNS!&lt;/p&gt;
+&lt;p&gt;Zookeeper hat atomare Operationen, sodaß man Znodes automatisch
+verschieben oder sonstwie übernehmen kann. Daraus kann man
+globale Locks, exactly-once Work Queues und andere Dinge bauen,
+die in einem Cluster notwendig sind.&lt;/p&gt;
+&lt;p&gt;In der Znode steht dann der Lock Range, Work Item URL… Es ist
+also irgendwie AUCH ein Data Store, aber das ist wie gesagt der
+unwichtige Teil.&lt;/p&gt;
+&lt;p&gt;Konsenssysteme sind der Baustein, der den Bau sicherer und
+funktionierender verteilter Systeme vom Forschungsgegenstand
+(Science) zum Ingeniersgegenstand (Engineering) bewegt hat.&lt;/p&gt;
+&lt;p&gt;Sie sind die Grundlage aller der nifty distributed anythings,
+mit denen Devs heute bauen. Das funktioniert, weil wir die
+Primitives und Building Blocks, die man für verteilte Systeme
+braucht (Membership, Discovery, Atomic Operations, und damit
+Locks, Queues und so weiter) schön abgepackt und dann getestet
+haben.&lt;/p&gt;
+&lt;p&gt;Die Arbeit von Kyle Kingsbury auf dem Gebiet &amp;ldquo;Heisenbugs
+reproduzierbar machen&amp;rdquo; und &amp;ldquo;Grenzfälle in verteilten Systemen
+durch wiederholbare Operationen demonstrieren&amp;rdquo; kann man dabei
+gar nicht hoch genug bewerten. Diese Person alleine hat mehr
+Fehler in mehr verteilten Systemen gefunden als ganze
+Generationen von Informatikern zuvor. Kyle hat Dinge, die vorher
+entweder Theorie oder nicht reproduzierbar waren testbar
+gemacht, und ist deswegen zentral dafür verantwortlich, einen
+ganzen Forschungsbereich der Informatik aus der reinen
+Wissenschaft in die anwendbare Ingenierswissenschaft zu bewegen.
+Die ganze &amp;ldquo;Call Me Maybe&amp;rdquo; Reihe und
+&lt;a href=&#34;https://aphyr.com/tags/jepsen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jepsen&lt;/a&gt;
+
+ sind wegweisend.&lt;/p&gt;
+&lt;p&gt;Und jedes funktionierende moderne verteilte System hat im Kern
+entweder eines der drei Konsenssysteme am Laufen (Zk, etcd,
+consul) oder es ist nicht funktionierend, modern oder verteilt.&lt;/p&gt;
+&lt;p&gt;Ja, Openstack, tut mir leid.&lt;/p&gt;
+&lt;p&gt;Anway, als Dev, der mit einem Zk, etcd oder consul redet, muß
+man sich ein paar Gedanken machen.&lt;/p&gt;
+&lt;p&gt;Erstens: Was mach ich, wenn das Ding mal offline ist. Denn es
+ist so designed, daß es offline sein muß, wann immer &amp;ldquo;was ist&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;In verteilten Systemen haben wir in der Regel eine Data Plane
+(da wo die Arbeit gemacht wird, auf dem Mitglieds-Hosts) und
+eine Control Plane. Und als Fehlermode Node Loss (hoffentlich
+hast Du genug Nodes), Cluster Loss (hoffentlich hast Du noch
+einen, in der anderen AZ) und Loss of Control (Controlplane
+down, Nodes arbeiten weiter, aber Start/Stop/Config Change
+unmöglich). Der 3. Fehlermodus, Loss of Control, ist nicht
+selten und hat als Sonderfall auch Wipe, also die Daten in der
+Controlplane müssen aus der überlebenden Dataplane neu aufgebaut
+werden.&lt;/p&gt;
+&lt;p&gt;Beispiel: Ein SDN Produkt hat ein 3-Node etcd Ensemble als
+Controlplane und Config Storage. Nach einem Update sind die
+Daten aller virtual network assets im etcd unbrauchbar. Können
+wir den Inhalt des etcd (automatisch?) aus den SDN Worker Nodes
+neu aufbauen? Ohne Downtime?&lt;/p&gt;
+&lt;p&gt;Und weniger hart, aber noch häufiger: Das etcd-Ensemble hat sich
+zur Leader Election nach einer Netzwerkunterbrechung
+zurückgezogen und redet mit niemandem bevor es intern
+ausgekaspert hat, was die Wahrheit ist.&lt;/p&gt;
+&lt;p&gt;Kann das SDN noch routen?&lt;/p&gt;
+&lt;p&gt;(Openstack hat hier als Sonderfall zwei Wahrheiten, weil es
+einmal den Tatbestand in der Neutron Datenbank hat, den der Rest
+von Openstack glaubt, und dann den Tatbestand im etcd des
+kommerziellen SDN Produktes, den das SDN glaubt.&lt;/p&gt;
+&lt;p&gt;Und wenn Du glaubst, daß die beiden deckungsgleich sind, dann
+hab ich ein schönes Ufergrundstück in Florida für Dich - oder
+anders gesagt: Der Mann mit zwei Uhren weiß nie wie spät es ist.&lt;/p&gt;
+&lt;p&gt;Zweitens: Was ist meine Schreibrate und meine Schreib-Latenz?&lt;/p&gt;
+&lt;p&gt;Weil Konsenssysteme jeden Write über das ganze Ensemble
+abkaspern müssen, haben sie so ihre Skalierungsprobleme, und die
+o.a. 2RTT Minimal-Latenz - eher und gerne auch mehr.
+Insbesondere hat die Schreiblatenz aber keine garantierbare
+Obergrenze. Wenn das Ensemble Papstwahl macht, aus welchem Grund
+auch immer, hängen alle Writes (und auch die Reads).&lt;/p&gt;
+&lt;p&gt;Wenn ich also einen SLO brauche, der irgendeine Obergrenze auf
+dem Write hat - und ich meine irgendeine! - dann ist ein
+Konsenssystem nicht der Datenspeicher der Wahl. Und wenn ich
+&amp;ldquo;Tausende von Updates die Sekunde&amp;rdquo; spezifiziere, dann sehe ich
+ein anderes System als ein Konsenssystem als Speicher, oder
+einen guten Kunden für 25 Gbit/s Networking und Optane als
+Speicher, der trotzdem nicht glücklich wird. Also, nachdem die
+Vendor Salesdrohne Dir 25GBit und Optane angedreht hat.&lt;/p&gt;
+&lt;p&gt;Ich meine, ich bin der letzte, der zu coolem Spielzeug &amp;ldquo;Nein!&amp;rdquo;
+sagen will, aber das ist nicht, wie wir Systeme designen. Ich
+macht ja auch kein OLTP auf Blockchains (aber IBM verkaufts!).
+Und damit ist hoffentlich auch klar, warum Konsenssysteme als
+&amp;ldquo;Key Value Stores&amp;rdquo; eine echte Scheißidee sind.&lt;/p&gt;
+&lt;p&gt;Wir benutzen sie trotzdem, aber aus ganz anderen Gründen. Als
+Grundbaustein funktionierender verteilter Systeme
+(&amp;ldquo;Wahrheitsfindung unter erschwerten Bedingungen&amp;rdquo;). Dazu muß man
+mitunter Daten speichern und verändern.&lt;/p&gt;
+&lt;p&gt;Aber das in den Fokus zu stellen verfehlt den Zweck, zu dem wir
+den ganzen Aufwand treiben. Ich meine &amp;ldquo;Key Value Store&amp;rdquo;, wenn es
+als Datenbank so offensichtlich Scheiße ist - warum?&lt;/p&gt;
+&lt;p&gt;Wegen der Garantien, die drumrum gewickelt sind.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Grundsätze verteilter Datenbanken</title>
+      <link>https://blog.koehntopp.info/2012/03/15/grunds-tze-verteilter-datenbanken.html</link>
+      <pubDate>Thu, 15 Mar 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/03/15/grunds-tze-verteilter-datenbanken.html</guid>
+      <description>&lt;p&gt;Wonka&amp;gt; Die &lt;a href=&#34;http://www.toppoint.de%27%3ehttp://www.toppoint.de&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toppoint&lt;/a&gt;
+
+  z.B.
+wird vermutlich nie was haben, was in nennenswerte Last-Regionen kommt, aber
+ich will - akademisches Interesse und so - schon wissen, wie man das da am
+besten täte.  Was mich auch für die Toppoint interessiert: irgendeine Sorte
+Redundant Array of Inexpensive Databases :)&lt;/p&gt;
+&lt;p&gt;Lalufu&amp;gt; MySQL mit Replication?  Alternativ mit DRBD?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Mit DRBD. Nicht mit Replikation.&lt;/p&gt;
+&lt;p&gt;Wonka&amp;gt; Lalufu: Hm, Master-Master-Replication geht ja nur mit Zweien.  Wenn
+man nun mehr als das haben will, kann man zwar Ringe bauen, aber nur einfach
+verkettete.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wonka: Argh!  Master-Master geht nicht mit Replikation.  Nie.&lt;/p&gt;
+&lt;p&gt;Wonka&amp;gt; huh?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; ```sql
+&amp;ndash; Thread 1 schreibt auf Master 1:
+insert into t (id, d) values (NULL, &amp;lsquo;eins&amp;rsquo;);&lt;/p&gt;
+&lt;p&gt;&amp;ndash; Zeitgleich schreibt thread 2 auf master 2:
+insert into t (id, d) values (NULL, &amp;lsquo;zwei&amp;rsquo;);&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;  
+Isotopp&amp;gt; Was steht in der Datenbank master1, was steht in der Datenbank
+master 2?  Wenn man mal annimmt, dass MySQL auto_increment_increment und
+auto_increment_offset korrekt gesetzt sind?
+
+Wonka&amp;gt; Isotopp: ok, Problem.  Trotzdem gibts reichlich HOWTOs dazu.
+
+Isotopp&amp;gt; Wonka: Das ist noch kein Problem.  Du kriegst `(1, &#39;eins&#39;)` und `(2, &#39;zwei&#39;)`.
+So weit funktioniert das.
+
+kv_&amp;gt; Bei UPDATE sieht&#39;s anders aus.
+
+Isotopp&amp;gt; Jetzt macht aber Thread 1 auf Master 1 ein UPDATE. Und zwar `update t set d = &#39;een&#39; where id =1;`
+Und Thread 2 macht auf Master 2 ein UPDATE, Und zwar `update t set d = &#39;one&#39; where id  = 1;`
+Was steht auf Master 1 und was steht auf Master 2?
+
+Isotopp&amp;gt; Der Punkt ist, daß es keine global fuer die Domain des ganzen
+Ringes gültige Serialisierung von Ereignissen gibt, es also keine globale
+Festlegung der Reihenfolge von Ereignissen gibt.  Sondern jeder lokale
+Knoten hat seine eigene Reihenfolge von Ereignissen.  Im Klartext heißt das,
+daß auf Master 1 die Reihenfolge der Events een, one sein kann, auf Master 2
+aber one, een oder umgekehrt.
+
+Lalufu&amp;gt; Genaugenommen ist das Problem, daß Leute sowas gerne hätten, aber
+MySQL das nicht liefern kann.
+
+Isotopp&amp;gt; Lalufu: Nein, die Situation ist weitaus komplizierter.  Laß mich zu
+Ende erklären.
+
+Wonka&amp;gt; [http://www.howtoforge.com/mysql_master_master_replication](http://www.howtoforge.com/mysql_master_master_replication):
+&amp;gt; &amp;quot;This tutorial describes how to set up MySQL master-master replication.  We
+&amp;gt; need to replicate MySQL servers to achieve high-availability (HA).  In my
+&amp;gt; case I need two masters that are synchronized with each other so that if one
+&amp;gt; of them drops down, other could take over and no data is lost.  Similarly
+&amp;gt; when the first one goes up again, it will still be used as slave for the
+&amp;gt; live one.&amp;quot;
+
+Wonka&amp;gt; Also haben die&#39;s nicht verstanden...
+
+Isotopp&amp;gt; Richtig.  Genauer: Sie glauben, sie können gewinnen.  Aber das
+Universum kann man nicht bescheißen.
+
+Isotopp&amp;gt; Wonka: Du willst also eine solche Serialisierung erzwingen. In SQL
+erzwingt man eine bestimmte Reihenfolge von Ereignissen, indem man für die
+Domain, in der man arbeitet eine Sperre (englisch: lock) setzt.  Man braucht
+also ein Locking, das in der ganzen Domain gilt.
+
+Isotopp&amp;gt; Die Domain ist nun aber nicht mehr eine Kiste, dafür hat Dein SQL
+Server ja Locks,sondern der Ring.  Und MySQL Replikation hat spezifisch kein
+Locking Protokoll.  Es gibt solche Protokolle, 2PC, 3PC, Paxos, Raft und
+noch ein paar mehr.  2PC ist das schnellste, in dem Sinne, daß es minimale
+Umlaufanzahlen/Lockzeiten hat.  Paxos und Raft sind im Sinne der
+Ausfallsicherheit/Recoverability das Sicherste.
+
+Ohne ein solches Locking Protokoll kannst Du nirgendwo konkurrente Writes
+sicher durchführen, weil Du eben keine für die Domain gültige Serialisierung
+von Ereignissen erzwingen kannst.
+
+Jedes Setup mit mehr als einem Writer ohne ein distributed locking protocol
+ist also kaputt.
+
+Lesen wir also die Anleitung zu mmm, MySQL Multi Master.  Steht drin:
+schreiben nur in einem Knoten.  Also: ein Ring, kein Multi-Master - der Name
+ist Betrug.
+
+Gucken wir irgendwo sonst, total egal wo: ENTWEDER Synchronisation durch
+Locking ODER nur ein Master ODER kaputt.
+
+Das ist die Wahl. Die ganze Wahl. Es gibt keine weiteren Möglichkeiten.
+
+kv_&amp;gt; Wonka: Und wenn man die Leute fragt, warum die Master-Master oder
+circular replication aufsetzen, kommt immer die falsche Antwort:
+&amp;quot;Ausfallsicherheit&amp;quot; oder &amp;quot;Lastverteilung&amp;quot;.  Für Ausfallsicherheit nimmt man
+ein Shared Storage und baut sich eine failover-Lösung auf OS-Ebene drüber -
+also NetApp oder DRBD.  Und für Lastverteilung beim Lesen nimmt man one-way
+Replication.  Schreibverteilung kann MySQL nicht.  Da fängt man dann an, auf
+Anwendungsebene Sharding-Architekturen zu bauen.
+
+Isotopp&amp;gt; Exakt.
+
+Isotopp&amp;gt; Lalufu: So, jetzt zu MySQL und liefern.
+
+Isotopp&amp;gt; Lalufu: MySQL liefert ein Produkt mit mehreren Knoten und 2PC.  Es
+heißt MySQL Cluster.  Es verwendet nicht MYSQL Replikation um das zu tun.
+
+Isotopp&amp;gt; Und zu HA: MySQL 5.1, 5.5 und 5.6 haben verschiedene Inkremente von
+MySQL SemiSynchronous Replication (SSR).  Damit hat man EINEN Master, aber
+Slaves, die das Commit auf dem Master VERZÖGERN (den Master also langsamer
+machen), bis wenigstens ein Slave existiert, der denselben Stand hat wie der
+Master.
+
+Das kombiniert die Nachteile von 2PC (warten) mit den Nachteilen von
+Replikation, die da sind:
+
+In MySQL Replikation ist der Slave ja abhängig von der MySQL binlog
+position, die verwaltet jeder Knoten aber selber.  Und das heißt, man kann
+den Slave 3, der an Master 1 hängt, nicht einfach an Slave 2 hängen, von dem
+wir wissen, daß er Dank SSR auf demselben Stand wie Master 1 ist.  Das ist
+so, weil der Stand von Master 1 in binlog position (mname, mpos) ausgedrückt
+wird, derselbe Stand auf slave 2 aber (s2name, s2pos) ausgedrückt wird.
+
+Und es gibt keinen Übersetzungsmechanismus (man kann einen bauen, das tut
+dann unterschiedlich weh, je nachdem wie korrekt man das im Falle eines
+Desasters haben will.  Und wir reden über HA, man will es also korrekt
+haben).
+
+In MySQL 5.6 gibt es dann die Global Transaction ID (GTID) und einen
+Übersetzungsmechanismus (transparent, automatisch) von GTID in lokale
+Position.  Mit SSR und GTID zusammen kann man dann in 5.6 auch endlich
+Replikation als HA Mechanismus verwenden und könnte einen Ring mit genau
+einem aktiven Master als HA-System stabil verwenden.  Das heißt, man hat
+immer noch Waits wegen der Synchronisation in SSR, aber keine Probleme mit
+dem Failover mehr.
+
+Wonka&amp;gt; MySQL Cluster ist aber nicht FOSS, oder?
+
+Isotopp&amp;gt; Wonka: MYSQL Cluster war früher FOSS.  Was es jetzt ist, habe ich
+nicht nachgesehen, weil mich Cluster aus anderen Gründen nicht interessiert.
+
+Es ist strukturell nicht möglich, normale Anwendungen, die gegen vanilla
+MySQL performen, gegen Cluster laufen zu lassen und Performance zu erwarten. 
+Cluster-Software ist immer speziell gegen Cluster geschrieben.
+
+Aktueller Cluster ist inzwischen VIEL BESSER darin als der Cluster, den ich
+gekannt habe, aber es bleibt schwierig.
+
+Du suchst einfache Lösungen fuer distributed databases.  So etwas existiert
+nicht.  So etwas KANN nicht existieren ohne daß du an c drehst.
+
+Du willst also mit Q (aus Star Trek: The Next Generation) reden, oder Dir
+eine von Grace Hoppers Mikrosekunden um den Hals hängen.
+
+Lalufu&amp;gt; Wuerden Sie diesem Mann Ihre Replikation anvertrauen?  
+
+![](http://images5.fanpop.com/image/photos/25400000/Discord-dance-random-25482674-500-378.gif)
+&lt;/code&gt;&lt;/pre&gt;</description>
+    </item>
+    
+    <item>
+      <title>Skalierung in die Breite</title>
+      <link>https://blog.koehntopp.info/2008/11/20/skalierung-in-die-breite.html</link>
+      <pubDate>Thu, 20 Nov 2008 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2008/11/20/skalierung-in-die-breite.html</guid>
+      <description>&lt;p&gt;Dies ist quasi der 2. Teil zum
+&lt;a href=&#34;https://blog.koehntopp.info/2008/11/17/das-mysql-sun-dilemma.html&#34;&gt;MySQL-Sun-Dilemma&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.theregister.co.uk/2008/11/20/many_cored_processors_and_software/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;In diesem Kommentar&lt;/a&gt;
+
+
+bei El Reg sehen wir dasselbe Problem in einigen Jahren auf Intel zu kommen.
+Der Kommentator sieht wie ich, daß vorhandene Software in der Regel nur einen Core busy hält, oder einen Core pro Verbindung belegen kann, wenn wir über Serversoftware reden.&lt;/p&gt;
+&lt;p&gt;Ein dicker Multicore-Rechner macht vorhandene Software also nicht schneller.
+Er sorgt nur dafür, daß die Maschine bei mehr Last (mehr Verbindungen) nicht langsamer wird, so denn der Rest der Infrastruktur, also etwa Platten, Netz und Speicherbus, mithalten können.&lt;/p&gt;
+&lt;p&gt;Für den Kommentator besteht die Lösung des Dilemmas (viele Cores, aber Software ist nicht parallel genug) in mehr und besseren Hypervisors, mit denen man bisher getrennt laufende Maschinen auf einem Multicore-Rechner durch Virtualisierung zusammenziehen kann.&lt;/p&gt;
+&lt;p&gt;Doch das ist nur eine Interims-Lösung mit der man immerhin ein wenig Nutzen aus solchen Maschinen ziehen kann, während sich grundsätzlich an dem Problem nichts ändert:
+Wir haben Software, die für schnellere CPUs optimiert ist, aber wir brauchen Software, die für breitere CPUs optimiert ist.&lt;/p&gt;
+&lt;p&gt;Doch in der aktuellen Programmierinfrastruktur fehlt es uns an allem. Programmierer sind zurzeit nicht gewohnt, Arbeit auf viele Kontrollflüsse aufzuteilen, und wenn sie es tun, tun sie es oftmals auf die falsche Weise.
+Wir haben kaum Werkzeuge, die solche Aufteilung erleichtern, und es fehlt an Methoden des Debuggings für solche Systeme.
+Probleme in solchen Systemen entstehen oft durch Wartezeiten und sich zuziehende Locks, aber wir haben nur unzureichende Methoden, solche Probleme zu messen, zu visualisieren und zu analysieren.
+Und zu guter Letzt ist die aktuelle Generation von Entwicklern nicht gut ausgebildet, um in solchen Umfeldern effektiv tätig zu werden.&lt;/p&gt;
+&lt;p&gt;Wenn man sich eine typische Webanwendung heute ansieht, dann stellt man fest, daß sie kaum in der Lage ist mehr als eine CPU zur Zeit beschäftigt zu halten.
+In einem System mit zwei Ebenen hat man Web-Frontends, die Anfragen entgegennehmen und Code im Webserver oder als Coprozess zum Webserver ausführen.
+Der Browser des Anwenders ist in dieser Zeit meistens Idle, der Kontrollfluss ist also über das Netz zum Server übergegangen und der Browser wartet.&lt;/p&gt;
+&lt;p&gt;Die Webanwendung wird zur Generierung der Webseite nun meistens einen externen Cache wie einen memcached oder einen externen Datenbankserver befragen.
+Auch hier erfolgt die Anfrage in der Regel synchron und 1:1, sodaß die Webanwendung wartet während die CPU des memcached oder des Datenbankservers tätig wird.
+Wieder ist nur eine CPU zur Zeit mit der Bearbeitung der Anfrage beschäftigt, während der Browser und die Webanwendung warten.&lt;/p&gt;
+&lt;p&gt;Natürlich hilft Multitasking hier ein wenig:
+Während der Browser wartet kann der Desktop des Anwenders andere Anwendungen abarbeiten und während das Webfrontend auf die Antwort der Datenbank wartet können andere Requests abgearbeitet werden.
+Letztendlich ist es aber nicht möglich, die Abarbeitung einer einzelnen Anfrage dadurch zu beschleunigen, daß man Systeme mit mehr Cores einsetzt.&lt;/p&gt;
+&lt;p&gt;Das Problem besteht, wie sich schon andeutet, in der zu engen Kopplung und zu engen Synchronisation der Programmschritte, die notwendig sind, um eine Aufgabe abzuarbeiten.
+Wir schreiben unsere Programme als lineare Abfolge von Einzelschritten, aber wir müssen lernen, unsere Algorithmen wie in der
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Netzplantechnik&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Netzplantechnik&lt;/a&gt;
+
+
+zu notieren:
+Als Einheiten sinnvoller Größe, die als Block notiert werden und bei dem zu jedem Block die Vor- und Nachbedingungen, also die notwendigen Synchronisationen mit anderen Schritten notiert werden.&lt;/p&gt;
+&lt;p&gt;Diese Blöcke könnten dann von einem Scheduler unter Berücksichtigung der vorhandenen Hardware und unter Berücksichtigung der externen Parallelität durch konkurrente Anfragen breiter oder schmaler scheduled werden:
+Auf einem System mit 2 Cores ist es nicht sehr sinnvoll, mehr als z.B. 4 Blöcke parallel abzuarbeiten, auf einem System mit 256 Cores kann man aber unter Umständen eine Parallelität von z.B. 512 schedulen
+(Meiner Erfahrung nach ist es sinnvoll, die Anzahl der vorhandenen Cores um ca. den Faktor 2 zu überbuchen, damit auch bei I/O-Wait noch genug CPU-Verbrauch auftritt).&lt;/p&gt;
+&lt;p&gt;Auf einem System, auf dem man alleine ist, kann der Scheduler eine einzelne Anfrage auf die volle Breite der Hardware breit ziehen (also 4 oder 512 aus den Beispielen oben).
+Auf einem System, auf dem jedoch n konkurrente Requests unterschiedlicher Anwender eingehen sollte man jedem Anwender 1/n-tel der vorhandenen Kapazität zuteilen und die einzelnen Requests nicht auf das ganze System breit ziehen.&lt;/p&gt;
+&lt;p&gt;Und schließlich ergibt sich aus den Abhängigkeiten des Netzplanes und Ausführungszeiten im System eine maximale Breite, die sich daraus ergibt, wie sich die Abhängigkeiten der Blöcke untereinander verzahnen, und die einschränkt wie viele Cores denn das System für diesen Code beschäftigt halten kann.
+Es ist Aufgabe des Entwicklers, die Problemlösung so zu formulieren, daß die Abhängigkeiten hier eine maximale Parallelisierung erlauben.&lt;/p&gt;
+&lt;p&gt;An keiner Stelle hier setze ich eine bestimmte Ausfürungsstruktur voraus - ein solches System läßt sich mit Threads innerhalb eines Prozesses aufsetzen oder mit Prozessen, die über einen IPC-Mechanismus miteinander kommunizieren.
+Der Unterschied ist im Grunde, daß die Kommunikation von Threads innerhalb eines Prozesses wahrscheinlich weniger Latenz hat als die Kommunikation von Prozessen über IPC oder gar von Prozessen über ein Netzwerk.
+Auf der anderen Seite ist ein Multithread-System auf eine einzige Schachtel eingeschränkt, während ein System von Prozessen mit Netzwerk-Kommunikation nicht mit auf einer Schachtel mit 256 Threads laufen könnte, sondern auch auf 32 Schachteln mit je 8 Threads und einem schnellen Netz dazwischen.&lt;/p&gt;
+&lt;p&gt;Technisch möglich sein sollte beides.
+Es ist also wünschenswert, daß wir unseren Code so notieren können, daß man dort die konkrete Implementierung von Ausführung und Kommunikation der einzelnen Kontrollflüsse nicht auf einen bestimmten Mechanismus festlegt:
+Ich will einmal Code schreiben, und der sollte dann auf einer 5440 als ein Prozess mit LWPs scheduled werden können oder auf einem Netz von 16 16-Core Maschinen mit irgendeinem Low Latency Interconnect.
+Idealerweise ohne daß ich den Source noch mal irgendwo durch filtrieren muß um das alles zur Ausführung zu bringen.&lt;/p&gt;
+&lt;p&gt;Ein solches Toolkit sollte Werkzeuge zur Visualisierung mitbringen:
+Ich will meinen Code und meine Threads als eine Serie von Blasen in einem Netzplan sehen können, und die Abhängigkeiten zwischen den einzelnen Abschnitten erkennen können.&lt;/p&gt;
+&lt;p&gt;Und ich will das alles sinnvoll messen und simulieren können:
+Bei einen angenommenen externen n von 200 und der vorhandenen Codestruktur mit einer internen Parallelität von 4 im kritischen Abschnitt, werden sich meine Locks zuziehen oder kann ich das realistischerweise annehmen, daß der Mist auch unter dieser Last sinnvoll skaliert?
+Wenn nein, wo und warum wird es explodieren?&lt;/p&gt;
+&lt;p&gt;Das alles gibt es derzeit so nicht.
+Oder wenn es das gibt, ist es  nicht gut integriert und nicht sehr bekannt.
+Und bevor dieses Problem nicht gelöst ist &lt;em&gt;und&lt;/em&gt; wir der aktuellen Generation von Programmierern beigebracht haben, damit routinemäßig zu arbeiten werden wir das Multicore-Problem nicht gelöst haben.&lt;/p&gt;
+&lt;p&gt;Darum, liebe mitlesende Sun-Gemeinde, könnt Ihr Euch auch gerne super engineerte proprietäre Lösungen auf den Leib schneidern:
+Bevor das nicht Allgemeingut ist, also als Open Source Lösung auf dem Level &amp;ldquo;PHP&amp;rdquo; überall verfügbar ist und 15-jährige Schulkinder so was in ihrem Webhostingpaketen verwenden, so lange werdet Ihr nicht genug Software in der Welt finden, um Eure Mehrkernkisten unter Dampf zu setzen.
+Denn wir brauchen Breite nicht nur im Code, um mit diesen Maschinen fertig zu werden, sondern wir brauchen Breite auch in der Entwicklung.
+Und der Laden, der diese Breite in der Entwicklung 0wned, dem gehört die Ideenwelt der nächsten Generation Entwickler.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

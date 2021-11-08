@@ -1,0 +1,984 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>architektur on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/architektur.html</link>
+    <description>Recent content in architektur on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 15 Aug 2012 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/architektur/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Materialized View</title>
+      <link>https://blog.koehntopp.info/2012/08/15/materialized-view.html</link>
+      <pubDate>Wed, 15 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/08/15/materialized-view.html</guid>
+      <description>&lt;p&gt;Daten in einer SQL-Datenbank werden in einer Tabelle abgelegt, also einer
+Struktur mit Spalten, die Namen und in vielen Fällen auch einen Datentyp
+haben.  Eine Tabelle besteht dann aus 0 oder mehr Zeilen, die in dieses
+Spaltenschema passen.&lt;/p&gt;
+&lt;p&gt;Für das Schreiben von Daten möchte man diese dann
+&lt;a href=&#34;http://mysqldump.azundris.com/archives/20-Nermalisation.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Normalform&lt;/a&gt;
+
+
+bringen, um
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Anomalie_%28Informatik%29#Anomalien_im_Einbenutzerbetrieb&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Anomalien&lt;/a&gt;
+
+
+bei Änderungen von Daten zu verhindern und um die Datenmenge kompakt zu
+halten.  Kompakte Daten haben den Vorteil, daß sie von der Datenbank ganz
+oder in wesentlichen Teilen im Speicher gehalten werden können, sodaß
+lediglich tatsächliche Schreibzugriffe irgendwann die Platte treffen.&lt;/p&gt;
+&lt;p&gt;In den meisten Fällen wird man Daten nicht übernormalisieren wollen, weil
+sonst die Rekonstruktion von für die Anwendung nutzbaren Daten zur Laufzeit
+ziemlich kompliziert wird.  Für Datenbanken, die hinreichend volatile Daten
+enthalten, wird man meistens eine Darstellung in der Nähe der 3.  Normalform
+finden.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/normalized_view.png&#34; alt=&#34;Normalisierte Darstellung von Daten&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Normalisierte Darstellung von Daten: 1:n-Relation (Ein Hotel kann 0 oder
+mehr Reviews haben).&lt;/p&gt;
+&lt;p&gt;Webanwendungen zeichnen sich häufig dadurch aus, daß sie weitaus mehr
+Lesezugriffe als Schreibzugriffe haben - Benutzer einer Webanwendung sehen
+große Datenmengen durch, nehmen aber im Vergleich wenig Änderungen vor: Sie
+&amp;lsquo;browsen&amp;rsquo;.  Daher ist es oft lohnend, Daten für Webanwendungen in eine Form
+zu bringen, die für Lesezugriffe optimiert ist.  Das ist eine
+Denormalisierung: Die Daten, die für die Darstellung einer einzelnen
+Webseite benötigt werden, werden ausgejoined und in die von dieser Seite
+benötigte Form gebracht.&lt;/p&gt;
+&lt;p&gt;Dies kann zur Laufzeit geschehen und man kann die entsprechende Query in der
+Datenbank selbst abspeichern, in der Form eines Views:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;VIEW&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;v&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In diesem Fall wird jedoch die Join-Operation auf frischen Daten jedesmal
+durchgeführt, wenn ein Lesezugriff auf den View erfolgt.&lt;/p&gt;
+&lt;p&gt;Alternativ speichert man nicht die Query selber, sondern cached auch ihr
+Resultat in einer Tabelle:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mv&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t1id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und wenn man schlau ist definiert man auch noch ein paar passende Indices da
+mit drauf.  Hier hat man den Resultset der Query materialisiert, und kann
+nun Anfragen darauf fahren, ohne daß man die Operation zur Generierung des
+Resultats jedes Mal wieder neu ausführen muß.  Das kann - muß aber nicht!  -
+sehr viel schneller sein.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/materialized_view.png&#34; alt=&#34;Materialized View&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Materialized View: Ausgejointe 1:n Beziehung zwischen Hotels und Reviews.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;err&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;JSON-Repräsentation&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;des&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;Join-Ergebnisses&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;nt&#34;&gt;&amp;#34;hotel&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;citizen M&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;nt&#34;&gt;&amp;#34;location&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;err&#34;&gt;reviews:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;err&#34;&gt;review:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;nt&#34;&gt;&amp;#34;score&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nt&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;,&lt;/span&gt;
+    &lt;span class=&#34;err&#34;&gt;review:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;nt&#34;&gt;&amp;#34;score&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;9.8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nt&#34;&gt;&amp;#34;text&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;err&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+  &lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;err&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Der materialisierte Resultset hat den Nachteil, daß er einen Schnappschuß
+der möglicherweise sehr volatilen Daten zu einem bestimmten Zeitpunkt
+darstellt und daß die Daten in dem materialisierten View unter Umständen
+nicht aktuell sind.  Viele SQL-Datenbanksysteme
+&lt;a href=&#34;http://dcx.sybase.com/1200/en/dbusage/workingwdb-s-3165842.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;stellen&lt;/a&gt;
+
+
+&lt;a href=&#34;http://wiki.postgresql.org/wiki/Materialized_Views&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;elaborate&lt;/a&gt;
+
+
+&lt;a href=&#34;http://docs.oracle.com/cd/B19306_01/server.102/b14200/statements_6002.htm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Systeme&lt;/a&gt;
+
+
+bereit, um Materialized Views zu definieren und Aktualisierungsregeln dafür
+zu definieren.  Definierbar sind meistens der Zeitpunkt der Aktualisierung -
+manuell, per Kommando; automatisch nach Fahrplan, auf der Grundlage einer
+Zeitsteuerung; oder automatisch bei jeder Änderung, ON COMMIT.  Definierbar
+ist oft auch der Änderungsalgorithmus, also eine komplette Neuerstellung des
+Materialized View von Null, oder ein Einarbeiten der Änderungungen in die
+bestehenden Daten (&amp;lsquo;Delta-Processing&amp;rsquo;) wo das möglich ist.&lt;/p&gt;
+&lt;p&gt;Man ist aber bei der Definition von solchen Systemen gar nicht auf
+Datenbankmechanismen angewiesen, und tatsächlich ist dies in vielen Fällen
+auch nicht opportun.  Dann nämlich, wenn die zu materialisierenden
+Datenmengen sehr groß sind, oder wenn der Umwandlungsprozeß aus der
+normalisieren Darstellung in die denormalisiere Darstellung besser in einer
+richtigen Programmiersprache statt in SQL dargestellt wird, läßt man den
+Prozeß besser extern laufen.&lt;/p&gt;
+&lt;p&gt;Dazu wird man Änderungen an den normalisierten Daten aufzeichnen wollen,
+damit man dem externen Umwandlungsprozeß die Primärschlüssel der geänderten
+Zeilen zur Verfügung stellen kann und man einen Delta-Processing Prozeß
+betreiben kann.  Dies kann man mit Triggern in der Datenbank machen, aber
+das hat zumindest in MySQL den Nachteil, daß es synchron zur Datenänderung
+ausgeführt wird und so die Schreibzugriffe selber beeinflußt.  Alternativ
+kann man diese Änderungen auch einfach in der Anwendung selber ausführen,
+wenn man Kontrolle über den Quelltext aller Schreiber auf die normalisierten
+Daten hat.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/queue.png&#34; alt=&#34;Denormalisierungsmaschine&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Denormalisierungsmaschine&lt;/p&gt;
+&lt;p&gt;Ein solches Setup sieht in einem mir bekannten Beispiel so aus, daß eine
+Quelldatenbank existiert, die in den Hauptspeicher einer Maschine paßt - die
+Gesamtdatenmenge besteht aus ca.  200GB Daten.  Die Datensätze sind relativ
+klein, rein numerisch: IDs von Entities in anderen Datenbanken und
+Preisdaten.  Die Daten haben eine recht hohe Change-Rate: Externe Bearbeiter
+und entfernte Systeme ändern die Daten laufend und so schnell, daß es
+durchaus sinnvoll ist, daß die Darstellung normalisiert und schreiboptimiert
+erfolgt.&lt;/p&gt;
+&lt;p&gt;Zur Erzeugung eines read-optimierten Views wurde das System so geändert, daß
+die schreibenden Prozesse auch die geänderten IDs in einer Work Queue
+hinterlegen.  Von dort greifen ca.  100 Worker parallel die Arbeitsaufträge
+ab, transformieren die Daten in eine read-optimierte Darstellung und legen
+das Resultat ihrer Bemühungen in einer anderen, getrennten Datenbankinstanz
+ab.&lt;/p&gt;
+&lt;p&gt;Die Schreibraten, die dabei entstehen, können beachtlich sein: Der
+Datenbestand wird durch das Ausmultiplizieren der Joins und das Entfalten
+der verschiedenen Datendimensionen in der Regel sehr viel größer - in dem
+genannten Beispiel besteht die Denormalisierte Darstellung in der Tat aus
+vier Maschinen, auf denen die Daten geshardet abgelegt werden und jede
+dieser vier Maschinen hat ihre Daten auf zwei SSD in einer RAID-0
+Konfiguration.&lt;/p&gt;
+&lt;p&gt;Die Schreibraten sind insbesondere im Fall einer kompletten Neugenerierung
+des denormalisierten Bestandes so groß, daß MySQL 5.5 nicht mithalten kann.&lt;/p&gt;
+&lt;p&gt;MySQL 5.6 hat verschiedene Lockingprobleme im InnoDB Kern gelöst und kann
+Redo-Logs größer als 4 GB handhaben.  Dadurch kann auf dem oben erwähnten
+SSD-Setup eine dauerhafte pro Instanz Schreibrate von 150 MB/sec netto (also
+auf Datenbankseite) erreicht werden, sodaß das ganze System recht entspannt
+auf eine aggregierte dauerhafte Schreibrate von 600 MB/sec kommt.&lt;/p&gt;
+&lt;p&gt;Natürlich ist eine solche Schreibrate zu hoch als daß MySQL Replikation noch
+mithalten könnte.  Man kann dann anfangen, das Schema auf einer Maschine in
+unabhängige Subschemata zu unterteilen und mit MySQL 5.6 Parallel
+Replication herum zu experimentieren.  Aber wenn man den Code sowieso
+anfassen muß, dann kann man auch stattdessen in den Queue Workern einfach
+parallel auf mehrere Instanzen direkt schreiben und Replikation komplett
+umgehen.&lt;/p&gt;
+&lt;p&gt;Die denormalisierte Darstellung ist in unserem Fall geeignet, eine bestimmte
+Klasse von Abfragen um Größenordnungen zu beschleunigen und - noch wichtiger -
+bestimmte pathologische Arten von Abfragen genau so schnell auszuführen
+wie normale Abfragen.  Outlier in der Systemleistung werden also eliminiert,
+eine bestimmte Sorte von Slow Query tritt nie mehr auf.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Anekdote:&lt;/em&gt; Leider ist MySQL 5.6 noch nicht GA und eine der von uns getesteten
+Versionen hat einen Crash Bug gehabt, den wir zuverlässig triggern konnten.
+Um das zu debuggen brauchten wir einen Core Dump.  Einen 200 GB Core-Dump
+auf SSD zu schreiben dauert ca.  15 Minuten.  Die Redo Log Recovery von
+25-aus-32 GB Redo Log dauert dann weitere 45 Minuten, nach denen die
+Datenbank dann wieder produktiv ist.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Anekdote:&lt;/em&gt; Während der Entwicklung haben wir die Generierung sehr oft
+komplett durchlaufen lassen müssen.  Dabei haben wir die volle Schreibrate
+der SSD tatsächlich über Wochen voll ausgenutzt und uns ist tatsächlich in
+zwei Kisten die SSD durchgebrannt.  Wir haben schon gewitzelt, daß HP Server
+bauen muß, wo hinten auf so einer Rutsche neue Platten nachrutschen, wenn
+die aktive SSD als ausgebrannt erkannt wird.  Dann kann man per
+Rechenzentrum einen Heizer haben wie auf einer Dampflok, nur daß der Platten
+schaufelt statt Kohlen.&lt;/p&gt;
+&lt;p&gt;Im Wirkbetrieb normalisiert sich das dann recht schnell auf sinnvolle
+erwartete Lebensdauern.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/ssd_estimated_lifetime.png&#34; alt=&#34;Graph: SSD Lifetime&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Erwartete Lebensdauern für die SSD in einem Beispielrechner.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;TL;DR:&lt;/strong&gt; Durch Denormalisierung lassen sich Daten read-optimiert speichern,
+was bei Webanwendungen oft sinnvoll ist.  Die führende Darstellung sollte
+jedoch normalisiert sein, wenn man an seinen Daten hängt.  Denormalisierung
+kann Datenmengen explodieren lassen und bei großen Datenmengen und hohem
+Churn massiven Hardwareeinsatz erfordern.  In diesem Fall führt man die
+Materialisierung besser außerhalb der Datenbank durch.&lt;/p&gt;
+&lt;p&gt;Die architekturellen Kosten dieses Ansatzes sind Update-Verzögerung und eine
+hohe Schreibrate, die bestimmte Technologien wie MySQL Replikation
+unattraktiv machen kann.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Automatisierung und Skalierung - Teil 2</title>
+      <link>https://blog.koehntopp.info/2011/02/18/automatisierung-und-skalierung-teil-2.html</link>
+      <pubDate>Fri, 18 Feb 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/02/18/automatisierung-und-skalierung-teil-2.html</guid>
+      <description>&lt;p&gt;Dies ist der 2. Teil zum Thema Automatisierung von Systemverwaltungsaufgaben.
+&lt;a href=&#34;https://blog.koehntopp.info/2011/02/17/automatisierung-und-skalierung.html&#34;&gt;Den ersten Teil gibt es hier&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;In jenem Text habe ich mit dem Beispiel eines Installationsservers gearbeitet und ich schrieb darüber:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Was also wie ein wenig Gescripte aussieht, ist in Wirklichkeit die
+Definition und Realisierung eines Prozesses - genau genommen die
+Formalisierung eines Prozesses &amp;ldquo;Server aufsetzen&amp;rdquo; in der Firma. Das Ziel
+des Prozesses ist die Produktion einer neuen Maschine, die einer gewissen
+Spezifikation möglichst gut entsprechen soll. Dabei sind die Prozeßziele
+die möglichst genaue Einhaltung der Spezifikation, und die möglichst
+schnelle Abwicklung des Auftrages. Dabei ist das Wissen eines Experten in
+Programmcode auskristallisiert worden - den Hilfs-Scripten und Anpassungen
+des Installationsservers.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Ich muß die wichtigen Punkte hier noch einmal herausstellen: Wenn wir in
+einem Umfeld solche Aufgaben automatisieren, dann wollen wir damit
+verschiedene Dinge erreichen.&lt;/p&gt;
+&lt;p&gt;Zum einen soll die gewünschte Operation, etwa die Installation einer Kiste,
+reproduzierbar gemacht werden. Das kann nur dann gelingen, wenn die
+Automatisierung dieses Prozesses vollständig ist, &lt;em&gt;die Anzahl der manuellen
+Arbeitsschritte zur Nachbearbeitung also Null ist&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Denn wenn während einer solchen Änderung an einer Maschine auch nur ein
+Arbeitsschritt von Hand durch einen Sysadmin ausgeführt wird, dann besteht
+die Gefahr, daß diese Änderung nicht korrekt oder uneinheitlich gemacht
+wird, und das gefährdet die nachfolgenden automatischen
+Bearbeitungssschritte.&lt;/p&gt;
+&lt;p&gt;Außerdem geht die Parallelisierbarkeit der Operation verloren, wenn noch
+manuelle Arbeitsschritte notwendig sind: Egal wie viele Kisten wir
+zeitgleich durch den Prozeß ziehen können, am Ende müssen die manuellen
+Schritte nacheinander Kiste für Kiste durch einen menschlichen Admin
+abgearbeitet werden, sind also wieder serialisiert. Das heißt, es gibt einen
+Punkt, der vermutlich gar nicht so weit draußen liegt, an dem der ganze
+Prozeß wieder bottlenecked.&lt;/p&gt;
+&lt;p&gt;Und schließlich ist es so, daß wir durch die Automatisierung einer Operation -
+hier der Installationsprozeß  - das notwendige Expertenwissen zur
+Durchführung in ein Script verpacken. Das Wissen um das &amp;ldquo;Wie&amp;rdquo; wird
+externalisiert, damit reproduzierbar und einem Diskurs (durch Patches)
+zugänglich gemacht.&lt;/p&gt;
+&lt;p&gt;Baut man da noch eine schöne Bedienoberfläche drüber, hat man die Operation
+sogar produktisiert: Sie kann nun durch Personal ausgelöst werden, das von
+den Details nichts mehr weiß und wissen muß und daher niedriger qualifiziert
+sein kann als das Personal, das den Prozeß entwickelt hat.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/automatisierter_prozess.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Der automatisierte Prozeß und seine Ziele/Effekte.&lt;/p&gt;
+&lt;p&gt;Zieht man das konsequent durch, bekommt man innerhalb des Systembetriebes
+eine Trennung zwischen Personen, die Systeme bedienen (&amp;ldquo;Operator&amp;rdquo;) und
+Personen, die Prozesse automatisieren, indem sie die Interfaces für
+Operatoren und die Funktionalität dahinter bauen.&lt;/p&gt;
+&lt;p&gt;Letztere Gruppe entwickelt Programme, genau wie die Entwickler in der
+Entwicklungsabteilung - es sind Entwickler
+(&lt;a href=&#34;http://teddziuba.com/2010/10/taco-bell-programming.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;auch wenn es Leute gibt, die das bestreiten&lt;/a&gt;
+
+
+und die meinen, das Gescripte da sei keine richtige Programmierung).&lt;/p&gt;
+&lt;p&gt;Solche Entwickler bauen Code zur automatisierten Systemverwaltung, also
+Infrastruktur, im Gegensatz zu den regulären Entwicklern, die an neuen
+Features bauen. Daher nenne ich die einen Infrastrukturentwickler und die
+anderen Featureentwickler.&lt;/p&gt;
+&lt;p&gt;Andere Leute nennen das
+&lt;a href=&#34;http://www.jedi.be/blog/2010/02/12/what-is-this-devops-thing-anyway/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DevOps&lt;/a&gt;
+
+,
+und integrieren die Infrastrukturentwickler tiefer in die
+Featureentwicklung, die dann die Belange von Operations gleich bei der
+Entwicklung der Software von Anfang an mit berücksichtigen soll. Ich halte
+das nicht unbedingt für glücklich, weil die geforderten Qualifikationen
+andere sind, und weil die Denkweise des Infrastrukturentwicklers eine andere
+ist als die eines Featureentwicklers.&lt;/p&gt;
+&lt;p&gt;Featureentwickler, insbesondere im Bereich der agilen Methoden, sind ein
+wenig wie Teletubbies - sie sind timeboxed, und wenn bestimmte Dinge beim
+Ablaufen der Timebox nicht fertig werden, dann werden diese Features eben
+gekippt und auf ein späteres Release verschoben. Das macht aber nix, denn
+man kann die Features, die fertig geworden sind, schon mal releasen und die
+Leute, die das gebaut haben, trotzdem loben: Ui, das habt ihr aber fein
+gemacht und so schön bunt! Oder anders gesagt: Auch schon für Teil-Lösungen
+gibt es oft einen inkrementellen Payoff.&lt;/p&gt;
+&lt;p&gt;Im Bereich der Infrastrukturentwicklung gibt es das eher nicht, eben genau
+wegen der Anforderung &amp;ldquo;genau Null manuelle Eingriffe&amp;rdquo;. Für viele Aufgaben
+funktioniert timeboxing hier nicht, sondern man muß die Aufgabe ganz,
+komplett und vollständig erledigen, erst dann kann man das erste Mal
+wirklich Gewinne durch die Erledigung der Aufgabe einstreichen - dann aber
+auch gleich in voller Höhe. Die Führung eines Teams von
+Infrastrukturentwicklern muß daher eher militärisch erfolgen: Klar
+definierte und abgegrenzte Ziele, dann rein, die Mission erledigen und
+wieder raus, keine halben Sachen.&lt;/p&gt;
+&lt;p&gt;Daher ist in der Infrastrukturentwicklung
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Scrum&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Scrum&lt;/a&gt;
+
+ eine Methode, die eventuell nicht
+passend ist - schon gar nicht, wenn auf der Prioritätenliste Featureentwicklung mit
+Infrastrukturentwicklung um Prioritäten kämpft. Denn Scrum limitiert die
+Arbeit pro Iteration durch das  &lt;a href=&#34;http://de.wikipedia.org/wiki/Scrum#Selected_Backlog&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Selected Backlog&lt;/a&gt;
+
+,
+und da Featureentwicklung dem Betrieb direkt Einnahmen bringt, während
+Infrastrukturentwicklung in vielen eher als Geldsenke gesehen wird, führt
+das schnell dazu, daß jede Menge
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Technical_debt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Technical Debt&lt;/a&gt;
+
+ aufgebaut wird,
+d.h. wichtige Infrastrukturarbeit liegen bleibt.&lt;/p&gt;
+&lt;p&gt;Man kann versuchen, da mit
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Priority_inversion&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Priority Inversion&lt;/a&gt;
+
+
+drum herum zu arbeiten, d.h. daß Infrastrukturprojekte die Priorität der
+Featureprojekte erben, für die sie Vorbedingung zur Realisierung sind, aber
+meiner persönlichen Erfahrung nach wird das nicht strikt genug gehandhabt.
+Außerdem verhindert es proaktive Infrastrukturarbeiten, und rein reaktive
+Systemadministration ist ein sehr steiler Weg ins Chaos.&lt;/p&gt;
+&lt;p&gt;Aber auch wenn Infrastrukturentwicklung von der Featureentwicklung getrennt
+ist, etwa weil eine Trennung von Operations und Development existiert, ist
+Scrum oft nicht die geeignete Methode, da Timeboxing bei einer
+Aufgabenstellung nicht so gut funktioniert, die erst dann Gewinne bringt,
+wenn die Aufgabe 100% erledigt ist. Besser verwendet man eine
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Kanban_in_der_IT#Unterschiede_zwischen_Kanban_und_Scrum&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kanban&lt;/a&gt;
+
+-Variante
+und paßt diese dann auf die lokalen Erfordernisse der Organisation und die
+Mentalität des Teams an.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/greenhopper.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Jira Greenhopper Extension mit der Darstellung eines Migrationsprojektes.&lt;/p&gt;
+&lt;p&gt;Setzt man das um, stellt man binnen 6 bis 12 Monaten fest, daß sich die Art
+der Aufgaben und der geforderten Qualifikationen innerhalb des ehemaligen
+Sysadmin-Teams sehr verschieben. Zwar sind immer noch Kenntnisse von
+bestimmten Subsystemen und ihrer Arbeitsweise notwendig, aber die neu
+geschaffenen Infrastrukturentwickler brauchen tatsächlich Kenntnisse einer
+(interpretierten) Programmiersprache (PHP, Perl, Python, Ruby) im Gegensatz
+zu einer Scriptsprache (Shell) - genau genommen wird man sich im Team auf
+eine gemeinsame Plattformsprache einigen müssen, ein gemeinsames Repository
+haben, und auch sonst eine ganze Menge Dinge vereinheitlichen müssen.&lt;/p&gt;
+&lt;p&gt;Die Arbeitsweise des Teams ändert sich ebenfalls - wenn die Umstellung
+gelingt, wird sich nach Ablauf des ersten Jahres kein Sysadmin mehr auf
+einer Kiste einloggen müssen, weil ssh von func, puppet, LDAP und einer
+Datenbank zum Konfigurationsmanagement abgelöst worden ist.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Automatisierung und Skalierung</title>
+      <link>https://blog.koehntopp.info/2011/02/17/automatisierung-und-skalierung.html</link>
+      <pubDate>Thu, 17 Feb 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/02/17/automatisierung-und-skalierung.html</guid>
+      <description>&lt;p&gt;Ich hatte im Vorfeld der OSDC 2011 eine interessante Unterhaltung mit Julian
+Hein zum Thema Automatisierung. Er wollte, daß ich einmal erkläre, warum man
+das eigentlich tut - und was man da eigentlich tut.&lt;/p&gt;
+&lt;p&gt;Die Antwort ist ein wenig länger, und weil ich dieses Jahr nicht zur OSDC
+fahren kann und dort auch nicht reden kann, will ich einmal versuchen,
+meinen Text zumindest in groben Zügen hier aufzuschreiben.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Die Zusammenfassung ist jedenfalls, daß Automatisierung kein technisches
+Problem ist.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Aber von vorne:&lt;/p&gt;
+&lt;p&gt;Ich komme von MySQL, aus einem Consultingumfeld, und ich habe dort mit
+Kunden in jeder möglichen Betriebsgröße zu tun gehabt - von einzelnen MySQL
+Servern hin bis zu Leuten, die wirklich große Setups am Laufen gehabt haben.&lt;/p&gt;
+&lt;p&gt;Darum habe ich mich vor Jahren im Vorfeld der MySQL Enterprise Manager (MEM,
+&amp;ldquo;Merlin&amp;rdquo;) Entwicklung auch mit dem Merlin-Team unterhalten und versucht zu
+erklären, was ich mir unter einem &amp;ldquo;Enterprise Manager&amp;rdquo; denn so vorstelle und
+wieso. Die Entwicklung ist dann aus einer ganzen Reihe von inzwischen
+hinfällig gewordenen betriebsinternen Gründen ganz anders gelaufen, aber das
+ist eine andere Geschichte, die ein anderes Mal erzählt werden soll.&lt;/p&gt;
+&lt;p&gt;Inzwischen bin ich in einer Firma, die noch vor drei oder vier Jahren eine
+gerade eben zweistellige Gesamtanzahl von Servern am Laufen hatte, und deren
+Maschinenpark sich jetzt im vierstelligen Bereich bewegt - mit einer großen
+dreistelligen Anzahl von MySQL-Instanzen. Ohne Automatisierung könnten wir
+das mit der vorhandenen Anzahl von Personen gar nicht stemmen.&lt;/p&gt;
+&lt;p&gt;Aber Automatisierung ist mehr, als einfach nur einen Haufen Scripte zu
+schreiben, die dann Aufgaben übernehmen, obwohl es wohl in den meisten
+Firmen so anfängt.&lt;/p&gt;
+&lt;p&gt;Zum Beispiel:&lt;/p&gt;
+&lt;p&gt;Jemand muß einen Server zum wiederholten Male installieren, oder schlimmer
+noch, einer anderen Person erklären, wie man &amp;ldquo;bei uns&amp;rdquo; Server installiert,
+also was unter allen möglichen Wahlmöglichkeiten die Entscheidungen und
+Designideen sind, die &amp;ldquo;bei uns&amp;rdquo; getroffen wurden und wieso.&lt;/p&gt;
+&lt;p&gt;In Läden, die ein wenig schlauer arbeiten, geht das meistens mit der
+Installation eines Installservers einher, und so kann man Kisten dann aus
+dem Netz booten, und sie malen sich dann ein Betriebssystem und einen Haufen
+Zusatzsoftware und Konfiguration auf die Platte. Dabei werden dann noch mehr
+Entscheidungen und Überlegungen getroffen, die durch den automatisierten
+Installationsprozeß umgesetzt werden.&lt;/p&gt;
+&lt;p&gt;Was also wie ein wenig Gescripte aussieht, ist in Wirklichkeit die
+Definition und Realisierung eines Prozesses - genau genommen die
+Formalisierung eines Prozesses &amp;ldquo;Server aufsetzen&amp;rdquo; in der Firma. Das Ziel des
+Prozesses ist die Produktion einer neuen Maschine, die einer gewissen
+Spezifikation möglichst gut entsprechen soll. Dabei sind die Prozeßziele die
+möglichst genaue Einhaltung der Spezifikation, und die möglichst schnelle
+Abwicklung des Auftrages. Dabei ist das Wissen eines Experten in
+Programmcode auskristallisiert worden - den Hilfs-Scripten und Anpassungen
+des Installationsservers.&lt;/p&gt;
+&lt;p&gt;Die weitere Diskussion über den Prozeß findet in Form von Patches zu diesem
+Code ihren Niederschlag - zwar redet man über den Prozeß und wie man ihn
+verändern, anpassen oder erweitern will, aber keine dieser Absprachen hat
+eine Auswirkung auf die Durchführungen des Prozesses, bevor der
+entsprechende Patch nicht geschrieben und im
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Distributed_Concurrent_Versions_System&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DCVS&lt;/a&gt;
+
+ eingecheckt worden ist.&lt;/p&gt;
+&lt;p&gt;Aber Code ist nur ein Teil eines Prozesses - meistens die technische Seite
+der ganzen Geschichte. Prozesse haben in Wirklichkeit immer mindestens drei
+Aspekte - neben der Technik- noch die Organisations- und die Personalseite
+der Angelegenheit. Außerdem kommt zu jedem Definitionsteil (den Regeln) auch
+noch ein Kontrollteil (die Einhaltung der Regeln messen) dazu.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/verkehr.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Straßenverkehr&lt;/p&gt;
+&lt;p&gt;Ein bekannter und von jedem verstandener Prozeß ist zum Beispiel der
+öffentliche Straßenverkehr. Dieser hat eine organisatorische Seite -
+Verkehrsregeln, Definition von Verkehrszeichen und so weiter, eine
+personelle Seite - Ausbildung der Verkehrsteilnehmer in der Schule, der
+Fahrschule und so weiter, und eine technische Seite - Fahrzeugsysteme,
+stationäre Verkehrssysteme wie Ampeln, und so weiter. Für jeden Bereich gibt
+es Kontrollteile - die Verkehrspolizei überwacht die Einhaltung des
+organisatorischen Teils, die Fahrprüfung ist eine Kontrolle der Ausbildung,
+und der TÜV ist eine Kontrolle der Technik.&lt;/p&gt;
+&lt;p&gt;Ebenso finden wir diese Teile in kleiner bei unserem
+Server-Installationsprozeß wieder. Wir finden einen organisatorischen Teil,
+also eine Diskussion darüber, was wir mit dem Installserver für ein Problem
+lösen wollen und welche nicht (Abgrenzung und Scope: &amp;ldquo;Nach der Installation
+des Basissystem wird dieses durch Puppet personalisiert, der Installserver
+soll nur eine allgemeine Basisinstallation durchführen&amp;rdquo;). Wir finden einen
+Personalteil, meistens in Form von Wikipages mit Dokumentation realisiert,
+und dazu Fortbildungsveranstaltungen für neue Mitarbeiter (&amp;ldquo;Unser
+Installserver und wie man ihn benutzt und anpaßt&amp;rdquo;). Und wir finden den
+technischen Teil, also den Server selber.&lt;/p&gt;
+&lt;p&gt;Die Kontrollinstanzen sind bei vielen Prozessen weniger stark ausgeprägt als
+bei einem großen und unter Umständen gefährlichen System wie dem
+Straßenverkehr, existieren aber je nach Wichtigkeit des Prozesses durchaus -
+zum Beispiel wird von einem neuen Sysadmin nach dem Kurs verlangt, eine
+triviale Änderung am Installserver durchzuführen und dann eine Kiste mit dem
+Teil selbstständig, aber unter Aufsicht zu installieren. Und natürlich guckt
+man, ob der Installserver noch geht und ob die gelieferten Ergebnisse noch
+den Anforderungen entsprechen.&lt;/p&gt;
+&lt;p&gt;Merlin, also der MySQL Enterprise &lt;strong&gt;Manager&lt;/strong&gt; ist nun ein gutes Beispiel für
+das Versagen bei der Umsetzung eines solchen Konzeptes. Also, MEM ist ein
+gutes und nützliches Monitoring-Werkzeug und wir könnten eine Installation
+unserer Größe ohne die Hilfe von Merlin nicht fahren. Aber im Lichte der
+voranstehenden Diskussion kann man erkennen, wie Merlin zu kurz greift.&lt;/p&gt;
+&lt;p&gt;Das beginnt schon damit, daß Merlin überhaupt genau gar nichts &lt;em&gt;managed&lt;/em&gt;. Es
+ist ein reines Monitoringwerkzeug, das zwar Graphen liefert, Queries findet
+oder Alarme generiert, aber es &lt;em&gt;automatisiert&lt;/em&gt; nichts, genau genommen
+verändert es nichts an einem laufenden System. Es ist ein &lt;strong&gt;Monitor&lt;/strong&gt;, aber
+kein &lt;strong&gt;Manager&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;Wollte man die Prozesse in einem großen MySQL Deployment automatisieren,
+dann müßte man sich erst einmal einen Katalog von Tätigkeiten machen, die in
+Operations und in Development bei einer Datenbank so anfallen:&lt;/p&gt;
+&lt;p&gt;Der Operations DBA plant ein Deployment, installiert Datenbanken, prüft und
+verändert Konfigurationen (Configuration Management), muß deswegen Server
+starten und stoppen, plant und führt Upgrades durch (Change Management),
+überwacht den Betrieb (Monitoring), managed lokale Betriebsstörungen
+(Incidents), findet gemeinsame Ursachen (Problem Management) und
+kommuniziert mit dem Upstream (Support des Herstellers), und prüft ob die
+Systemleistung in Zukunft noch ausreicht (Capacity Management). Er
+kontrolliert Datensicherung und Restore (Backup, Desaster Recovery).&lt;/p&gt;
+&lt;p&gt;Der Development DBA ist Teil des Entwicklungsprozesses (sitzt im Scrum
+Planning und so weiter mit dabei), hilft und berät beim Schemadesign und der
+Datenmodellierung, beim Query Review, findet im Betrieb schlechte Queries,
+hilft und berät bei der Optimierung, und plant zusammen mit dem Operations
+DBA Schemaänderungen und Konfigurationsänderungen.&lt;/p&gt;
+&lt;p&gt;Dann würde man sich überlegen und durch Umfrage beim Kunden feststellen, wie
+diese Profile in verschiedenen Systemgrößen den ausgestaltet sein werden -
+denn wer 10^0 oder 10^1 Server insgesamt am Laufen hat, der wird kaum
+zwischen Operations und Development DBA unterscheiden und nicht alle diese
+Teilprozesse werden als eigenständige Gebiete identifizierbar sein. Kommt
+man dann auf Installationen von 10^2, 10^3 oder 10^4 Servern, sieht das
+alles plötzlich ganz anders aus und trifft auf ganz andere Bedürfnisse in
+der Ausgestaltung.&lt;/p&gt;
+&lt;p&gt;Denn obwohl formell die gleichen Leistungen für den Betrieb erbracht werden
+müssen, ist durch die schiere Größe der Installation mit einem Mal ein ganz
+anderer Problemkomplex im Gesamtbild wichtig.&lt;/p&gt;
+&lt;p&gt;Zum Beispiel: Um 500 Server in 2 Dutzend Replikationshierarchien an 2
+Standorten von MYSQL 5.1 nach 5.5 zu aktualisieren, ist ein Haufen Tests und
+dann Upgrades notwendig. Aber selbst wenn man es schafft, 5 Server pro Tag
+abzuarbeiten (jeder je nach Größe mit 100G bis 10.000G an Daten), dann
+braucht man 100 Arbeitstage, also etwas weniger als ein halbes Jahr, um das
+Upgrade auszurollen, falls es nicht zu Komplikationen kommt.&lt;/p&gt;
+&lt;p&gt;Wünschenswert wäre es aber, das Thema binnen eines Monats (also 20
+Arbeitstagen) vom Tisch zu haben - dazu muß man aber Techniken entwickeln,
+mit denen man 50 Server oder mehr pro Tag geregelt bekommt. Das ist in
+einigen Bereichen der Installation schon von der Plattenleistung und der
+Netzwerkkapazität her problematisch, also redet hier der Operations DBA
+plötzlich mit Sysadmin, Storage und Network Engineering, die
+Vorraussetzungen schaffen müssen, um solche Dinge im regulären Betrieb
+abwickeln zu können - denn das nächste Release kommt binnen eines Jahres mit
+Sicherheit und Upgrades dürfen keine Ausnahmesituation sein, sondern müssen
+als Bestandteil des normalen Systembetriebes durchgeführt werden können.&lt;/p&gt;
+&lt;p&gt;Und schon werden die Bereiche Organisation und Personal bei nur 10^3 Servern
+im Laden dicke fette Punkte auf dem Managementradar.&lt;/p&gt;
+&lt;p&gt;Zurück zu Merlin: Der MEM taucht in diesem Problembild gar nicht auf - kaum
+als Hilfe bei der Planung eines solchen Unterfangens und gar nicht als
+Hilfsmittel bei der Umsetzung.&lt;/p&gt;
+&lt;p&gt;Hätte man Merlin richtig aufgezogen, dann hätte MySQL als Hersteller der
+Datenbank sich mit Kunden und Community zusammengesetzt, und eben einen
+solchen Katalog von betrieblichen Tätigkeiten des Operations- und des
+Development DBA aufgestellt und die Bilder einmal ausgemalt und für die
+verschiedenen Betriebsgrößen skaliert.&lt;/p&gt;
+&lt;p&gt;Danach hätte man zusammen mit Kunden und Community das MySQL Systemhandbuch
+erstellt, also einmal mustergültig die Best Practice beim Betrieb von MySQL
+dokumentiert und ausgeführt, wie man diese Best Practices für 1, 10, 100,
+1000 Server umsetzt - was ist wichtig, was ist unwichtig, wenn man klein
+oder wenn man groß ist.&lt;/p&gt;
+&lt;p&gt;Schließlich hätte man mit seiner Consulting und mit seiner Training- und
+Certification-Abteilung, also MySQL Services als Ganzes, dieses Konzept
+umgesetzt und in Consulting, Training und Certficiation einfließen lassen,
+und dann eine Architektur und Werkzeuge in dieser Architektur erstellt, die
+diese Prozesse technisch unterstützen.&lt;/p&gt;
+&lt;p&gt;All das ist komplett nicht passiert (aus Gründen, die jetzt nicht mehr
+zutreffen, und weil Merlin Ziele hatte, die nicht den oben genannten
+Anforderungen entsprechen und die jetzt so auch nicht mehr gelten, aber das
+ist alles wie gesagt eine andere Geschichte an einem anderen Lagerfeuer).&lt;/p&gt;
+&lt;p&gt;Hätte man das umgesetzt, könnte ich jetzt vermutlich in Merlin die Liste der
+von Oracle releasten MySQL-Versionen auf deren Server sehen, mit grünen
+Haken hinter den Pakete, deren digitale Signatur validiert. Ich würde dann
+Versionen Servergruppen zuweisen und den Prozeß &amp;ldquo;Rollout&amp;rdquo; anstoßen. Merlin
+würde das RPM dann in meine lokalen yum Repositories runterladen und das
+Puppet-Rezept dieser Gruppen so anpassen, daß die entsprechenden Server
+aktualisiert oder neu aufgesetzt werden - aber so gestaggered, daß der
+Betrieb davon nicht beeinflußt wird und natürlich auf eine Weise
+koordiniert, die Server vor dem Upgrade aus dem Loadbalancer nimmt, und die
+die Funktionalität und den Erfolg des Upgrades testet und die Caches
+vorglüht, bevor die Kiste in den LB zurück geht.&lt;/p&gt;
+&lt;p&gt;Man sieht auch in dieser Erklärung schon ein paar weitere wichtige Aspekte
+der ganzen Sache: Es ist wichtig, den Scope abzugrenzen und nicht die
+Aufgaben anderer Werkzeuge zu übernehmen, sondern diese korrekt zu
+integrieren. Weder gilt es das Paketformat und das Paketsystem des
+Trägersystems durch was eigenes (einen Bitrock-Installer?) zu ersetzen, noch
+die Funktionalität anderer Automatisierungs-Techniken zu duplizieren.
+Stattdessen sollte Best Practice Empfehlungen aussprechen und
+Kompatibilitäten definieren (&amp;ldquo;Wir unterstützen Puppet und Chef für Systems
+Automation, liefern receipts dafür und integrieren deren Schnittstellen in
+unseren Tools&amp;rdquo;). Und sie sollte sich bewußt sein, daß Kisten nicht alleine
+Laufen, sondern Teil eines Systems sind (mit dem LB reden!) und Zustand
+haben (Caches müssen warm sein!). Und Paranoia ist ein Admintugend
+(Testen!).&lt;/p&gt;
+&lt;p&gt;Wenn man Automatisierung also nicht auf dem Anwenderlevel, sondern auf dem
+Level eines Herstellers betrachtet, dann ist Automatisierung noch viel
+weniger ein technisches Problem als auf dem Anwenderlevel - es ist vielmehr
+in erster Linie tatsächlich ein organisatisches (Abgrenzung? Integration?
+Kommunikation mit anderen Projekten?) und ein personelles Problem (Akzeptanz
+der Best Practice? Werbung dafür? Schulung? Prüfung?).&lt;/p&gt;
+&lt;p&gt;Und alles das muß man neben der Technik eben auch mit thematisieren, wenn
+man Wachstum in einer Firma skalieren und kanalisieren will - man muß nicht
+nur die Technik, sondern auch die Organisation und seine Leute mit
+skalieren.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Das MySQL-Sun-Dilemma</title>
+      <link>https://blog.koehntopp.info/2008/11/17/das-mysql-sun-dilemma.html</link>
+      <pubDate>Mon, 17 Nov 2008 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2008/11/17/das-mysql-sun-dilemma.html</guid>
+      <description>&lt;p&gt;Sun hat
+&lt;a href=&#34;http://catalog.sun.com/is-bin/INTERSHOP.enfinity/WFS/Sun_Catalogue-Sun_Catalogue_DE-Site/de_DE/-/EUR/ViewCatalog-Browse?CatalogCategoryID=ZXVIBe.d7kYAAAEZYYsJ0gWj&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;eine Box&lt;/a&gt;
+
+,
+die hat 4 CPU-Chips drin, jeder Chip hat 8 Cores und jeder Core hat 8 Threads, die in etwa das sind, was man anderswo als Core abrechnet, minus 7/8 FPU.
+Das macht effektiv eine Kiste in mit 256 Cores.&lt;/p&gt;
+&lt;p&gt;Jeder &lt;strike&gt;Core&lt;/strike&gt; Thread selbst ist im Vergleich zu Intel-Hardware jedoch recht langsam, er bringt etwa ein Drittel bis ein Fünftel der Leistung eines Intel-Cores, außer in Benchmarks, wo die Dinger viel schicker poliert werden.
+Dennoch ist das wegen der großen Anzahl der Threads eine ganze Menge Bums in einer kleinen Box ohne viel Stromverbrauch.&lt;/p&gt;
+&lt;p&gt;Sun hat nun auch eine recht populäre Open Source Datenbank von der Sun es gerne hätte, wenn die auf so einem Eisen gut aussähe.
+Leider tut diese Software aufgrund ihrer internen Struktur derzeit nicht so gut auf mehr als ca. 12 &lt;strike&gt;Cores&lt;/strike&gt; Threads.
+In
+&lt;a href=&#34;http://blogs.sun.com/mrbenchmark/entry/scaling_mysql_on_a_256&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;diesem Benchmark&lt;/a&gt;
+
+
+von Sun wird die verzweifelte derzeitige Situation recht schön deutlich:
+Man startet bis zu 32 Instanzen von MySQL auf derselben Kiste, nutzt also 8 &lt;strike&gt;Cores&lt;/strike&gt; Threads pro mysqld - die einzelnen mysqld haben aber nichts gemeinsam und könnten genauso gut auch auf anderen Kisten laufen.&lt;/p&gt;
+&lt;p&gt;Man kann sich leicht ausrechnen, daß das derzeit für Sun keine sehr befriedigende Situation ist.
+Sicherlich ist man intern gerade intensiv dabei, das zu ändern.
+Bis dahin jedoch ist eine 256-Core-Box für ein normales MySQL-Setup eher nicht so schick.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>The Importance Of FAIL</title>
+      <link>https://blog.koehntopp.info/2008/05/30/the-importance-of-fail.html</link>
+      <pubDate>Fri, 30 May 2008 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2008/05/30/the-importance-of-fail.html</guid>
+      <description>&lt;p&gt;Wenn man mit Featureentwicklern spricht, dann reden sie immer gerne über tolle
+neue Dinge die sie gerade eingebaut haben.&lt;/p&gt;
+&lt;p&gt;Ich bin bei Featureentwicklern und Projektmanagern echt unbeliebt.&lt;/p&gt;
+&lt;p&gt;Ich rede gerne über Kosten, und über FAIL.  Das habe ich mit vielen anderen
+Sysadmins, Bibliotheksentwicklern und Kernelcodern gemeinsam.  Wenn man dort
+einmal mithört - zum Beispiel auf der Linux Kernel Mailingliste oder unter
+Stammtischgesprächen von Sysadmins - dann fällt einem bald etwas auf: Dort
+redet man in der Regel nicht von tollen neuen Features oder was jetzt
+optimiert worden ist, sondern dort redet man in der Regel von Fehlern, die
+aufgetreten sind oder von schlechtesten Fällen, und wie man sie triggert.
+Newsgroups wie
+&lt;a href=&#34;http://groups.google.de/group/de.alt.sysadmin.recovery/topics&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;de.alt.sysadmin.recovery&lt;/a&gt;
+
+
+sind voll von zynischen Geschichten über Komponentenversagen.  Die
+wichtigsten Abschnitte in Ross Andersons
+&lt;a href=&#34;https://www.cl.cam.ac.uk/~rja14/book.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Security Engineering&lt;/a&gt;
+
+
+sind die Abschnitte, in denen er das Versagen von Sicherheitssystemen
+beschreibt.&lt;/p&gt;
+&lt;p&gt;Alle diese Leute - Kernelentwickler, Bibliotheksentwickler und Sysadmins -
+sind Leute, die normalerweise ständig mit Infrastrukturkomponenten zu tun
+haben.  Und Infrastrukturkomponenten werden nie an ihrem besten Fall
+gemessen, sondern immer nur an ihrem schlechtesten Fall und an der Art und
+Weise, wie sie versagen.&lt;/p&gt;
+&lt;p&gt;Niemand lobt die Stadtwerke, weil sie das Stromnetz 15% effizienter gemacht
+haben, aber jeder erinnert sich an den letzten Stromausfall, den letzten
+Kernelbug, in den er rein getreten ist oder das Szenario, bei dem er eine
+Bibliothek zum Explodieren gebracht hat (
+&lt;a href=&#34;http://blog.fefe.de/?q=glibc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;blog.fefe.de&lt;/a&gt;
+
+
+)&lt;/p&gt;
+&lt;p&gt;Featureentwickler tun gut daran, sich diese Denkweise einmal zu eigen zu
+machen.  Ein Freund und Arbeitskollege von mir formuliert es so: &amp;ldquo;Wenn ich
+Go spiele und gewinne, dann habe ich nur bestätigt, was ich schon weiß, aber
+nichts gelernt.  Nur wenn ich verliere (und hinterher verstehe, wieso ich
+verloren habe), dann kann ich etwas lernen.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Wenn man sich von vorneherein auf Worst-Case-Verhalten konzentriert und
+versucht, diese Fälle zu optimieren, dann kann man FAIL vermeiden und lernen
+ohne die Schmerzen aus erster Hand zu erfahren.&lt;/p&gt;
+&lt;p&gt;Das Problem existiert aber auch auf einer größeren, politischen Ebene.  Wir
+führen Infrastruktur ein - Toll Collect, die Gesundheitskarte, Wahlcomputer
+oder die Vorratsdatenspeicherung - und führen die gesellschaftliche
+Diskussion hier meistens auf der Ebene von Featureentwicklern.  Mißbrauch,
+interner Mißbrauch, Versagen von Teilkomponenten, Versagen von
+Sicherheitsmechanismen, Rückbau, Schadensbegrenzung, Versicherbare
+Restrisiken sind bei der gesellschaftlichen Betrachung dieser
+Infrastrukturen keine Themen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Leben mit Fehlern - der Schlüssel zum Scaleout</title>
+      <link>https://blog.koehntopp.info/2006/07/30/leben-mit-fehlern-der-schluessel-zum-scaleout.html</link>
+      <pubDate>Sun, 30 Jul 2006 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2006/07/30/leben-mit-fehlern-der-schluessel-zum-scaleout.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/scale.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Scaling Patterns&lt;/p&gt;
+&lt;p&gt;In 2004 habe ich auf dem Linuxtag einen kleinen Vortrag zum Thema
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/linuxtag/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Skalierbarkeit&lt;/a&gt;
+
+ gehalten. Schon
+damals war
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/linuxtag/img4.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;die Message&lt;/a&gt;
+
+ an
+verschiedenen Stellen im Vortrag &amp;ldquo;Jedes Readproblem ist ein Caching-Problem,
+jedes Schreibproblem ist ein Verteilungs- und Batchproblem&amp;rdquo;:&lt;/p&gt;
+&lt;p&gt;Zum Skalieren muß man seine Anwendung in Teilanwendungen unterteilen und die
+Daten replizieren. Die Replikation muß asynchron erfolgen, ohne Two Phase
+Commit (2PC), sonst gewinnt man wenig bis nichts. Schreibzugriffe müssen
+verzögert und gebatched werden, damit sie effizienter abgewickelt werden
+können. Um weitere Flaschenhälse zu vermeiden, muß man die Datenhaltung in
+die Teilanwendungen dezentralisieren und eine zentrale Datenbank vermeiden.&lt;/p&gt;
+&lt;p&gt;Das läuft natürlich allem zuwieder, was man von seinem Datenbankprofessor an
+der Uni gelernt hat: Es ist unsicher, man arbeitet mit falschen oder
+veralteten Daten und man weiß nicht immer, ob alles auch so geklappt hat,
+wie man sich das vorstellt.&lt;/p&gt;
+&lt;p&gt;Es hat aber einen wichtigen Vorteil: Es funktioniert. Und es skaliert.&lt;/p&gt;
+&lt;h3 id=&#34;services&#34;&gt;
+    &lt;a href=&#34;#services&#34;&gt;
+	Services
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Bei
+&lt;a href=&#34;http://www.acmqueue.com/modules.php?name=Content&amp;amp;pa=showpage&amp;amp;pid=403&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Amazon&lt;/a&gt;
+
+ klingt das so:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;One way that we&amp;rsquo;ve made this much easier for ourselves here at Amazon is
+that internally we are a services-oriented architecture, and I don&amp;rsquo;t mean
+that in terms of the buzzword of the last five years. We&amp;rsquo;ve been this long
+before that word became public. What I mean by that is that within Amazon,
+all small pieces of business functionality are run as a separate service.&lt;/p&gt;
+&lt;p&gt;For example, this availability of a particular item is a service that is a
+piece of software running somewhere that encapsulates data, that manages
+that data. And when, for example, we hit the gateway page of Amazon, it
+will go out to somewhere between 100 and 150 different services to
+construct this page for you.&lt;/p&gt;
+&lt;p&gt;That means that we&amp;rsquo;ve localized the notion of
+availability and consistency towards each service because each service is
+responsible for its data encapsulation. And then, depending on what kind
+of service it is and what kind of consistency guarantees they require, you
+use different technologies. But it must be absolutely clear I think to
+everyone that we&amp;rsquo;re not using two phase commit to update distributed
+resources all over the world.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Nicht anders viel anders web.de: Das, was der Anwender sieht, wenn er sich
+an web.de connected, sieht mehr oder weniger aus wie eine große Anwendung.
+Intern besteht seit einigen Jahren es aus ca. 150 verschiedenen Diensten,
+die untereinander durch eine Middleware-Layer miteinander kommunizieren. Das
+führt zum Teil zu ziemlich skurrilen (nach traditionellen OSS-Maßstäben)
+Konstruktionen.&lt;/p&gt;
+&lt;p&gt;Der Eingangsmailer von web.de war zum Beispiel einmal irgendwann ein Exim3.
+Er ist es schon lange nicht mehr, denn irgendjemand hat ihn mit Mico, einem
+Corba-Layer, verheiratet. Der Mailer besteht also effektiv nicht mehr aus
+einer Maschine. Stattdessen hängt über das Netz nach hinten raus ein Sack
+voll Middleware mit drin.&lt;/p&gt;
+&lt;p&gt;Wenn jetzt eine Mail eingeht, dann muß der Mailer eine ganze Menge Dinge
+erfragen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Er muß einen Userservice fragen, ob der Kunde existiert
+und ob es ein zahlender Kunde ist.&lt;/li&gt;
+&lt;li&gt;Er muß den Quotaservice/Benutzerprofilservice fragen, ob der Kunde noch
+Mail empfangen kann, und welche Präferenzen für den Mailempfang gesetzt
+sind.&lt;/li&gt;
+&lt;li&gt;Er muß den Virenfilterservice fragen, ob die Nachricht
+gefahrlos empfangen kann.&lt;/li&gt;
+&lt;li&gt;Er muß den IP Blacklisten-Service fragen, ob Mail von dieser IP angenommen
+werden kann.&lt;/li&gt;
+&lt;li&gt;Er muß den Spamfilter-Service fragen, ob die Mail verdächtig ist.&lt;/li&gt;
+&lt;li&gt;Er muß die Storage-Layer fragen, welche Storage Locations für die Mail in Frage kommen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;diamantenmuster&#34;&gt;
+    &lt;a href=&#34;#diamantenmuster&#34;&gt;
+	Diamantenmuster
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Alle diese Dinge sind &lt;strong&gt;nicht&lt;/strong&gt; Bestandteil des Mailers. Der Mailer baut
+stattdessen Netzwerkverbindungen zu Middleware-Diensten auf, die diese Dinge
+unabhängig vom Mailer verwalten, und die dem Mailer und anderen
+Frontend-Diensten diese Informationen liefern können. Die Middleware-Dienste
+existieren außerdem nicht nur in einer Instanz, sondern der Mailer spricht
+tatsächlich einen Loadbalancer an, der die Anfrage dann an eine bestimmte
+Instanz dieses Dienstes weiter leitet.&lt;/p&gt;
+&lt;p&gt;Es entsteht also eine Art Diamanten-Architektur: Mail geht auf ein
+Loadbalancer-Päärchen und wird von diesem auf gut drei Dutzend Instanzen des
+Mailers verteilt. Alle diese Mailer gehen mit ihren Middleware-Anfragen auf
+ein Loadbalancer-Päärchen, und werden von diesen auf einen Haufen
+Middleware-Instanzen verteilt. Die Middlewares gehen auf einen
+Connectionpool und werden von diesem auf einige Datenbank-Kopien verteilt.&lt;/p&gt;
+&lt;p&gt;Dieses Muster (Auffächern, Konzentrieren, Auffächern, Konzentrieren, &amp;hellip;)
+erlaubt es, auf jeder Ebene der Architektur Ausfälle hinzunehmen ohne daß
+dies die Funktionalität des Gesamtsystems beeinträchtigt. Es erlaubt auch,
+Lastprobleme auf Operatingebene abzufangen ohne damit höhere IT-Funktionen
+oder gar die Entwicklung zu behelligen: Bei Überlast auf einer Ebene kann
+das Operating dort einfach ein paar Server nachwerfen (lassen) und gut ist.
+&amp;ldquo;Wir sind Papst? Diana ist gegen die Tunnelwand gebollert? Kein Problem.
+Mach mal ein paar Blades für das Newsportal klar.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;komplexität&#34;&gt;
+    &lt;a href=&#34;#komplexit%c3%a4t&#34;&gt;
+	Komplexität
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Wenn man seine Anwendung auf diese Weise verteilt baut, dann muß man mit ein
+paar unangenehmen Fakten leben:&lt;/p&gt;
+&lt;p&gt;Zum Beispiel mit ungenauen oder veralteten Daten.&lt;/p&gt;
+&lt;p&gt;Wenn ich asynchron repliziere und kein 2PC verwende, dann kann es zum
+Beispiel sein, daß der Quotaservice mir zu kleine oder zu große Zahlen
+zurück liefert, weil dieser Benutzer gerade irgendwo anders eine Mail
+empfängt oder Mails gelöscht hat, diese Änderung aber ohne Locking und 2PC
+im Quotaservice noch nicht vermerkt und die Zahlen im Quotaservice nicht als
+&amp;ldquo;Im Update befindlich&amp;rdquo; gesperrt worden sind.&lt;/p&gt;
+&lt;p&gt;Das ist eine gute Sache: Wir können jedes asynchrone System durch Einfügen
+von Waits zu einem synchronen System umbauen. Wir machen ein System durch
+2PC also genauer, aber viel langsamer.&lt;/p&gt;
+&lt;p&gt;Müssen wir das tun? Das hängt von den Anforderungen ab. Ist es wirklich
+notwendig, daß ein User immer unter seiner Quota bleibt? Die Antwort ist
+nein. Für den Dienst web.de als Ganzes ist es lediglich notwendig, daß alle
+User im Mittel unter ihrer Quota bleiben, damit das Storage Management bei
+seinen Planungen auch genug Platz bereit stellen kann. Es reicht also
+vollkommen aus, wenn der Quotadienst &amp;ldquo;ungefähr&amp;rdquo; die richtige Antwort gibt.&lt;/p&gt;
+&lt;p&gt;Diese Anforderung ist aber viel weicher als die harte Anforderung, denn sie
+erlaubt es uns, von einem 2PC synchronen Update auf asnychrone Replikation
+für diese Daten umzusteigen. Wir sparen Waits, und somit Locks, und somit
+gewinnen wir Skalierbarkeit.&lt;/p&gt;
+&lt;p&gt;Ein anderes unangenehmes Faktum, mit dem wir leben müssen, ist
+Asynchronizität auch bei den Calls. Der Mailer soll eine Mail annehmen. Dazu
+muß er eine Reihe von Diensten, sechs bis zehn Stück, über das Netz
+befragen. Würde er das in Sequenz tun, könnte jede Anfrage die Informationen
+der vorhergehenden Stufe mit nutzen. Aber wir würden Round Trip Times,
+Timeouts und andere Wartezeiten aufeinander türmen und bekämen Zustellzeiten
+für eine einzelne Mail, die unakzeptabel hoch wären. Aus der Sicht des
+Mailers sieht das so aus: Anfragen, Warten, Antwort lesen. Anfragen, Warten,
+Antwort lesen, &amp;hellip;&lt;/p&gt;
+&lt;p&gt;Hauen wir stattdessen die Anfragen an parallel asynchron raus, kann die
+ganze Middleware parallel losrödeln und ihre Antworten so schnell als
+möglich an den Mailer zurück schießen. Der Anfrageprozeß sieht aus der Sicht
+des Mailers jetzt so aus: Anfragen, Anfragen, &amp;hellip;, Warten, Antwort lesen,
+Antwort lesen, &amp;hellip; Das ist schneller, und zwar um so schneller, je mehr
+Dienste befragt werden müssen.&lt;/p&gt;
+&lt;p&gt;Es bringt auch ein paar Probleme mit sich: Zwischen einigen Anfragen
+bestehen Abhängigkeiten. Zum Beispiel würde der Storageservice eine andere
+Location für die Mail zurückliefern, je nachdem ob der Empfänger ein
+zahlender User ist oder nicht und ob die Mail als Spam erkannt wurde oder
+nicht. Man kann solche Abhängigkeiten synchronisieren - die Anfrage an die
+Storage Layer müßte warten bis die Fragen nach dem Userstatus und der
+Spamizität der Mail geklärt sind.&lt;/p&gt;
+&lt;p&gt;Aber - wir erinnern uns - Waits sind ja böse, also könnte man auch eine
+andere Lösung in Betracht ziehen: Statt &lt;em&gt;die&lt;/em&gt; Antwort zurück zu liefern
+bauen wir die Storage Layer so um, daß sie &lt;em&gt;alle&lt;/em&gt; Antworten zurückliefert
+und wählen dann im Mailer die Antwort aus, die in Frage kommt, sobald die
+anderen Fragen geklärt sind. Dann schreiben wir die Mail an diese Stelle und
+comitten unsere Entscheidung an den Storageservice zurück - Coolness:
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Speculative_execution&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spekulative Execution&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Wir haben jetzt nicht nur 100% Buzzword-Compliance erreicht (&amp;ldquo;Our webmail
+application is implemented as a distributed service oriented architecture
+that leverages replicated data, asynchronous remote procedure calls and
+speculative execution techniques to achieve resilency and scalability at
+every level of its architecture.&amp;rdquo; &amp;ldquo;Bingo!&amp;quot;), sondern wir haben tatsächlich
+ein System, mit dem wir in Lastregionen vorstoßen können, die man auf eine
+andere Weise nicht erreichen könnte.&lt;/p&gt;
+&lt;p&gt;Was ist der Preis? Komplexität. Exim ist auch ohne Mico im Bauch ein fetter
+Mailer, und da Corba rein zu löten verdoppelt die Codebasis schätzungsweise
+mal eben so in der Größe. Wenn man jetzt noch asynchrone Calls verwenden
+will, anstatt das Corba Standardinterface, dann läuft man außerdem in
+ziemlich wenig getesteten Code und in eine Reihe von sehr aufregenden Bugs
+hinein.&lt;/p&gt;
+&lt;p&gt;Wenn man außerdem mit ungenauen oder veralteten Daten arbeiten muß, dann muß
+außerdem eine Reihe von Fehlerbedingungen behandeln, die man sonst nicht
+hätte und die unter Umständen schwer zu erkennen sind. Man stelle sich ein
+System vor, daß aus ca. 150 Diensten besteht und in dem kein 2PC verwendet
+wird. Ein Benutzer will jetzt von Freemail-Kunde auf zahlender Kunde
+upgraden. Das ist eine Transaktion, aber da sie ohne 2PC nicht als solche
+abgewickelt werden kann, kann es also sein, daß ein Kunde in einem Subsystem
+schon ein Zahlkunde ist, in einem anderen aber noch nicht. Fragt man in so
+einem Moment die verschiedenen Subsysteme an, bekommt man inkonsistenten und
+widersprüchliche Antworten.&lt;/p&gt;
+&lt;p&gt;Jedes Subsystem, jedes Stück Code, muß diesen Zustand erkennen und geeignet
+behandeln (Etwa: Warten, und dann ganz von vorne alle Fragen noch mal
+stellen). Die dabei entstehenden Widersprüche können unter Umständen nicht
+automatisch aufgelöst werden, und so muß jeder Dienst ein Abstellgleis
+haben, in dem er fehlgeschlagene Aktionen abstellt, und sie entweder nach
+einiger Zeit noch mal probiert oder - nach einer angemessenen Anzahl von
+Fehlversuchen - einem Menschen zum manuellen Debugging vorlegt.&lt;/p&gt;
+&lt;p&gt;Will man diese Komplexität? Nein, nicht wenn man nicht muß. Das Problem ist:
+Ab einer bestimmten Größe muß man, denn dies ist die einzige bewiesene
+Wachstumsstrategie, die wir kennen, bei der wir bisher nicht an eine obere
+Grenze gestoßen sind.&lt;/p&gt;
+&lt;h3 id=&#34;lockern-von-anforderungen---leben-mit-fehlern&#34;&gt;
+    &lt;a href=&#34;#lockern-von-anforderungen---leben-mit-fehlern&#34;&gt;
+	Lockern von Anforderungen - Leben mit Fehlern
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Der Schlüssel zum Wachstum liegt im Lockern der Anforderungen an eine
+bestimmte Funktionalität der Anwendung: Indem wir bei den Anforderungen
+asynchron arbeiten und veraltete oder ungebaue Daten zulassen, können wir
+bei der Implementierung plötzlich sehr viel mehr Abkürzungen nehmen. Wir
+haben eine Reihe von Grenzfällen ausgeschlossen, und den Vertrag mit den
+Dienstnehmern von &amp;ldquo;garantiert&amp;rdquo; auf &amp;ldquo;so gut als möglich&amp;rdquo; gelockert. Dadurch
+haben wir die harten Grenzfälle in unserer Architektur aus dem Dienst heraus
+im Stack nach oben verschoben, und die Implementierung des Dienstes kann
+sich auf die Optimierung der häufigen Fälle konzentieren, statt auf die
+Abwicklung der schwierigen Fälle.&lt;/p&gt;
+&lt;p&gt;Aber wie wird das Development mit dieser Komplexität fertig? Nun, unsere
+Entwickler bekommen Hilfe von einer anderen Seite. Weil wir kleine, autonome
+Dienste mit eigener Datenhaltung bauen, bekommen wir kleine, unabhängig
+voneinander entwickelbare Dienste mit einer überschaubaren Codebasis, einer
+klar definierten API und gegenüber ihren Dienstnehmern und Dienstbringern
+klar definierten Service Level Agreements und Invarianten.&lt;/p&gt;
+&lt;p&gt;Das erlaubt es dem Entwicklungsteam, ihren Dienst unabhängig von den anderen
+Diensten zu entwickeln. Der Vertrag, den sie dabei eingehen, ist klar
+definiert und von der tatsächlichen Implementierung vollkommen unabhängig.
+Auch der Releasezyklus des Dienstes ist, solange der Vertrag nicht
+inkompatibel geändert wird, von den Zyklen anderer Dienste nicht abhängig
+(und mit versionierten Interfaces können wir das noch weiter entkoppeln).
+Bei Amazon liest sich das so:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A service is not just a software component in that sense, a distributed
+software component. It is also the model we use for software development
+in terms of team structure.&lt;/p&gt;
+&lt;p&gt;So how the process goes is that you have a particular business problem or
+a technology problem that you want to solve. You build a small team. You
+give them this problem. And at Amazon, they&amp;rsquo;re allowed to solve that
+problem in any way they see fit, as long as it is through this hardened
+API. They can pick the tools they want. They can do any design methodology
+they want as long as they deliver the actual functionality that they&amp;rsquo;ve
+been tasked with&amp;hellip;.&lt;/p&gt;
+&lt;p&gt;I think Pat Halens(sp?) uses the metaphor of using a town as an example.
+So in a big town, you have zoning requirements. You have some general laws
+about the roads and things like that, but the way that you build your
+house and the way that you operate your house is all up to you.&lt;/p&gt;
+&lt;p&gt;So this is a bit the way that Amazon functions, also. We have some
+requirements: that services has to be monitorable, that they have to be
+tractable in all sorts of different ways. But in essence, operation is all
+up to the service owners themselves. This allows for a large-let&amp;rsquo;s say
+controlled chaos-which actually works very well because everybody&amp;rsquo;s
+responsible for their own services.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Service Oriented Architectures sind nur eine Ausprägung von &amp;ldquo;gelockerten
+Anforderungen&amp;rdquo;. Indem wir die Anforderungen an die Dienstabstraktion
+lockern, lassen wir den Dienstimplementatoren mehr Optionen bei der
+Architektur, und damit mehr Raum zu Wachsen. Das ist, wenn man es akzeptiert
+und lebt, eine gute Sache.&lt;/p&gt;
+&lt;p&gt;Es läuft den Ideen der traditionellen Entwicklung und Informatiklehre aber
+stark zuwieder. Bei
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Joel_Spolsky&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Joel Spolsky&lt;/a&gt;
+
+ zum Beispiel
+kommen solcherart gelockerte Anforderungen unter dem Namen
+&lt;a href=&#34;http://www.joelonsoftware.com/articles/LeakyAbstractions.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leaky Abstractions&lt;/a&gt;
+
+
+daher. Joel kommt in seinem Essay aber zu dem Schluß &amp;ldquo;Leaky Abstractions are
+dragging us down&amp;rdquo; - er sieht das Durchscheinen der Implementierung bei einem
+Service als Bug. Für den Architekten einer Service Oriented Architecture
+sind sie aber eher der Schlüssel zum Erfolg.&lt;/p&gt;
+&lt;h3 id=&#34;andere-anwendungen-desselben-patterns&#34;&gt;
+    &lt;a href=&#34;#andere-anwendungen-desselben-patterns&#34;&gt;
+	Andere Anwendungen desselben Patterns
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Dabei muß man aber nicht auf der Ebene der Architektur verbleiben. Wir
+können dasselbe Pattern (&amp;ldquo;Lockern der Anforderungen, ohne die API zu
+verändern&amp;rdquo;) auch auf viel niedrigerer Ebene anwenden. MySQL tut dies intern
+mit großem Erfolg: Dieselbe SQL-Query kann bis zu einem gewissen Grad
+entweder auf einer traditionellen
+&lt;a href=&#34;http://en.wikipedia.org/wiki/ACID&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ACID&lt;/a&gt;
+
+ implementierenden Engine wie
+InnoDB abgewickelt werden, oder man kann die Betriebsparameter von InnoDB so
+relaxen, daß es nicht mehr ACID erfüllt, oder man kann eine andere Storage
+Engine wie MyISAM oder Memory verwenden, die dieselbe Query unter Umständen
+viel schneller abwickeln können, jedoch viel laxer mit dem Speicher umgehen.&lt;/p&gt;
+&lt;p&gt;Traditionelles ACID ist sicher - wenn das &amp;ldquo;COMMIT&amp;rdquo; zurück kommt, garantiert
+die Datenbank, daß die Daten auf einem persistenten Speicher stehen,
+konsistent und vollständig sind. Wenn man das benötigt, kann man es von
+MySQL bekommen. In vielen Fällen - tatsächlich in den weitaus meisten Fällen -
+benötigt man es nicht, und die damit einher gehenden Waits (Commit wartet
+auf die Platte, und bei einer Plattenzugriffszeit von 8ms bekommt man so
+nicht mehr als 100-200 Commits pro Sekunde pro Platte von seinem System)
+ziehen die Performance runter.&lt;/p&gt;
+&lt;p&gt;MySQL erlaubt es, durch Konfigurationsänderungen für die ganze Datenbank
+oder durch Ändern der Storage Engine für einzelne Tabellentypen diese
+Anforderungen zu lockern, und so die Waits auf die Platte einzusparen, wo
+dies erlaubt ist. Dadurch kann eine bis zu zehn mal höhere Rate an
+Statements pro Sekunde erreicht werden - ohne daß sich die Art des Aufrufes
+durch die Anwendung ändert. Die API, die die Anwendung gegenüber der
+Datenbank verwendet, bleibt also invariant, die Änderung kann durch einen
+DBA auf Operatingebene vorgenommen werden ohne daß die Entwicklung die
+Anwendung anpassen muß.&lt;/p&gt;
+&lt;h3 id=&#34;links&#34;&gt;
+    &lt;a href=&#34;#links&#34;&gt;
+	Links
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Mehr zum Thema:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://en.wikipedia.org/wiki/Service-oriented_architecture&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SOA&lt;/a&gt;
+
+ in Wikipedia&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.acmqueue.com/modules.php?name=Content&amp;amp;pa=showpage&amp;amp;pid=403&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ACM Queuecast&lt;/a&gt;
+
+
+mit Werner Vogels, CTO Amazon&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://radar.oreilly.com/archives/2006/04/web_20_and_databases_part_1_se.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Database War Stories&lt;/a&gt;
+
+,
+O&amp;rsquo;Reilly Radar, Series of 8 articles&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

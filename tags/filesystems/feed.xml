@@ -1,0 +1,1757 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>filesystems on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/filesystems.html</link>
+    <description>Recent content in filesystems on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 05 Oct 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/filesystems/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What are the problems with POSIX?</title>
+      <link>https://blog.koehntopp.info/2020/10/05/what-are-the-problems-with-posix.html</link>
+      <pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/10/05/what-are-the-problems-with-posix.html</guid>
+      <description>&lt;p&gt;Every once in a while there is the IT news article that kind of triggers me. This time it was &lt;a href=&#34;https://www.golem.de/news/object-storage-object-storage-protokoll-koennte-posix-abloesen-2010-151294.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&amp;ldquo;Object-Storage-Protokoll könnte Posix ablösen&amp;rdquo;&lt;/a&gt;
+
+ in german computer news site &lt;a href=&#34;https://golem.de&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Golem&lt;/a&gt;
+
+. The article speaks about mmap(), NVMEoF and object storage and how it could revolutionize or complete object storages, but does not link to an original article, names no persons and no paper. Also, what do these things - mmap, NVMEoF, object storage and Posix, even have in common? It is not explained anywhere in the article.&lt;/p&gt;
+&lt;p&gt;In another article &lt;a href=&#34;https://blog.koehntopp.info/2018/11/29/but-is-it-atomic.html&#34;&gt;But is it atomic?&lt;/a&gt;
+
+ we dive into the internals of the old UNIX V7 kernel, and how design decisions and technical realities from the late 1970ies became immortialized as technical requirements for filesystems in the Posix standard.&lt;/p&gt;
+&lt;p&gt;So Unix is historically grown, and a lot of things have changed since that time. The original file system (for Linux users: &amp;ldquo;mkfs -t minix&amp;rdquo; is the closest thing to that which you might have) is not even used any more anywhere in a modern system. But it is basically what Posix means when we speak about &amp;ldquo;Posix File System Semantics&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The basic design is good - I mean, it has held up almost 50 years by now, and that is a fantastic achievement. It even has value in modern systems. But it has been designed for local systems, and it is not scalable to distributed systems very well.&lt;/p&gt;
+&lt;p&gt;So everybody is either cheating or slow. There is &lt;a href=&#34;https://en.wikipedia.org/wiki/GFS2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GFS2&lt;/a&gt;
+
+ as an example for slow. There is NFS as an example for hidden cheating (I am looking at you, &lt;code&gt;actimeo&lt;/code&gt;, and at you, &lt;code&gt;lockd&lt;/code&gt;). And there is &amp;ldquo;Object Storage&amp;rdquo;, whatever that specifically means, as an example for doing things completely differently.&lt;/p&gt;
+&lt;h2 id=&#34;mutability-as-the-root-of-all-evil&#34;&gt;
+    &lt;a href=&#34;#mutability-as-the-root-of-all-evil&#34;&gt;
+	Mutability as The Root of All Evil
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The biggest baggage Posix has, in terms of distributed systems, is mutable files. You can open a file, fseek() to an offset of 1MB and overwrite a 3MB segment in a 10MB file. I am choosing these sizes and offsets to make it abundantly clear that writes can be large, larger than a network packet, a disk block or other allocation units, and that they can take measureable, non-zero time.&lt;/p&gt;
+&lt;h3 id=&#34;one-writer-per-inode-per-time&#34;&gt;
+    &lt;a href=&#34;#one-writer-per-inode-per-time&#34;&gt;
+	One writer per Inode, per time
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Posix demands that writes are atomic (see link above), and it implemented that originally by locking the (only copy) of the file with a central lock at the in-memory inode of the file. This has multiple effects:&lt;/p&gt;
+&lt;p&gt;There can be only one write active at a time for a file.&lt;/p&gt;
+&lt;p&gt;This already is a problem for local filesystems, when you have a database that wants to write out many concurrent changes to different non-overlapping records in a database file.&lt;/p&gt;
+&lt;p&gt;Databases work around the problem either by defining tablespaces from many small sized &amp;ldquo;.DBF&amp;rdquo; files (Oracle) - 1GB to 4 GB seem to be popular. Or they work around it by  foregoing the use of filesystems entirely - using raw disks, at a terrible toil cost for sysadmins and DBAs. Only XFS in O_DIRECT mode will handle this better, by not blocking concurrent writes as long as they are non-overlapping.&lt;/p&gt;
+&lt;p&gt;Reads never happen concurrently with writes, too. They are either completely before or after the write instead. If they happen after the write, they will never return stale data, but always the most recently written fresh data.&lt;/p&gt;
+&lt;p&gt;In distributed systems, this is very expensive: Imagine a storage cluster with dozens or hundreds of storage nodes and hundreds or thousands of clients. Parts of the file we are about to write to may have been cached anywhere in any cluster node or client to avoid excessive network transfers. These cached copies are now all invalid, because they contain data that has been overwritten with potentially different values.&lt;/p&gt;
+&lt;p&gt;Because reads must not return stale data under Posix, we need to invalidate all of these copies, and - worse - we need to this under a lock to ensure atomicity and fresh reads. So each write (write, not commit/fsync, which can happen much less often) has to inform all relevant nodes with a copy of the data that there is a new write for an extent (offset, length) incoming and wait for the acknowledgement. And then let the write proceed, to wait again to collect the complete acknowledgement of all data nodes that they have the data, and all caches that the have destroyed or updated their cached copy. That&amp;rsquo;s a lot of waiting.&lt;/p&gt;
+&lt;p&gt;This is unimaginably slow, and even worse, should the cluster topology change during  any operation - a node taking part in our operation leaving the cluster or similar.&lt;/p&gt;
+&lt;p&gt;If you happen to have two concurrent overlapping writes (write A to node 1 at offset 0, length 3MB, and write B to node 12 at offset 1MB, length 3MB), Posix also demands ordering between these writes - A either happens in total before or after B. You will never end up with an ABABABAB block pattern in the overlap, and again, this can only be guaranteed by locking.&lt;/p&gt;
+&lt;p&gt;Nothing &amp;ldquo;made&amp;rdquo; Posix specify this, this is just the natural behavior in a single core 1970ies computer when you lock interrupts (&lt;code&gt;spl()&lt;/code&gt;) or &lt;code&gt;plock()&lt;/code&gt; on an in-memory inode, which then was later officially documented and bless into a standard when the Posix specificationw as written. Our modern computers do not have these properties any more, so we need to make them wait to simulate this.&lt;/p&gt;
+&lt;p&gt;In any case: The combination of Mutability and Strong Read Consistency/Atomic Write Behavior creates a cluster wide locking problem.&lt;/p&gt;
+&lt;h3 id=&#34;fixed-metadata-and-synchronous-metadata-updates&#34;&gt;
+    &lt;a href=&#34;#fixed-metadata-and-synchronous-metadata-updates&#34;&gt;
+	Fixed metadata, and synchronous metadata updates
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Things get even worse when we look at metadata. The set of metadata in a Unix Inode is fixed, and documented in Posix, too. We have the typical Unix access rights (ugo times rwx) and the three second-resolution times (a/m/ctime), and a file length - that is basically it.&lt;/p&gt;
+&lt;p&gt;There is an attempt to extend this, using Posix File ACLs (ACL) and Posix Extended Attributes (xattr), but for example mapping NTFS access permissions to Posix ACLs is complicated - just look at what Samba has to do to get this approximately right. The fact that the Unix notion of a user identity is scoped to a local machine does not help at all - your userid 0 is different from my user id 0 in meaning, and if I am UID 0 on my box I probably should not be UID 0 on yours.&lt;/p&gt;
+&lt;p&gt;Posix demands synchronus updates to metadata updates. When you extend a file, this should be visible immediately in the file length, and when you access a file, the atime should update, too. Even on local filesystems this is no longer doable - everybody mounts their Linux disks with a variant of &lt;code&gt;noatime&lt;/code&gt; or the other.&lt;/p&gt;
+&lt;p&gt;But while data writes distribute themselves across the cluster, metadata updates do not. They all have to hit the relatively small number of metadata nodes, and this load often crushed metadata servers.&lt;/p&gt;
+&lt;h3 id=&#34;the-key-idea-immutability&#34;&gt;
+    &lt;a href=&#34;#the-key-idea-immutability&#34;&gt;
+	The key idea: Immutability
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Note that all the things we spoke about are lower file system problems - they happen at the level of individual files already, not even going into upper file system, directory hierarchies and path names. That&amp;rsquo;s not even necessary, because as long as the lower file system is not in shape looking up is kind of pointless.&lt;/p&gt;
+&lt;p&gt;Object Stores have one single core idea: Files are immutable, maybe appendable (S3 is not, Google GFS and Hadoop HDFS are). The payoff is that we can cache this stuff, because the cache never becomes invalid. Maybe the end of the file is not up to date, but it will be eventually consistent.&lt;/p&gt;
+&lt;p&gt;The file has a Key-Value store with metadata, which can even grow to considerable size, and which is also eventually consistent. With the upper file system we do the same: The entire namespace is one single KV store, in which the key is a binary string that cosplays a path name, and the value is the actual file data (and metadata).&lt;/p&gt;
+&lt;p&gt;This has far reaching consequences: We can talk about &amp;ldquo;Log Structured Merge Trees&amp;rdquo;, why they became popular in database land, and how that plays nicely with Object Storages. Or we can talk about how &amp;ldquo;Event Sourcing&amp;rdquo; favors &amp;ldquo;append only data structures&amp;rdquo;, and how that plays nicely with Object Storages.&lt;/p&gt;
+&lt;h2 id=&#34;there-is-a-timeline-and-there-is-progress&#34;&gt;
+    &lt;a href=&#34;#there-is-a-timeline-and-there-is-progress&#34;&gt;
+	There is a timeline, and there is progress
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The original Unix File System is, for the sake of illustration, basically the state of the art as seen in 1974.&lt;/p&gt;
+&lt;p&gt;There are a lot of elementary improvements to this initial idea that we find reflected in BSD FFS, from 1984.&lt;/p&gt;
+&lt;p&gt;The culmination point of these ideas, and structures, can be found in Silicon Graphics XFS, from 1994.&lt;/p&gt;
+&lt;p&gt;A completely different way of thinking can be found in &lt;a href=&#34;https://en.wikipedia.org/wiki/Log-structured_file_system&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Log Structured File Systems&lt;/a&gt;
+
+, first seen in Ousterhout&amp;rsquo;s  Sprite, in the early 1990. But performancewise the original implementation that was a failure: the first successful and performant implementation can be found  - made by Oursterhout&amp;rsquo;s students - in Solaris ZFS, and at the same time in NetApps WAFL, which promptly engaged in a legal battle over patents. In parallel, many ZFS ideas are being reimplemented about half a decade later in Btrfs. All of that would put us roughly into 2004, in terms of commercial availability.&lt;/p&gt;
+&lt;p&gt;Now, widespread adoption of Object Storages in persistence products, using Log Structured Merge (LSM) Trees, has taken place. We find them in Elastic Search, in Cassandra, in RocksDB and its many applications, and many more. In a timeline, this would put us into 2014-land.&lt;/p&gt;
+&lt;p&gt;LFS-like non-overwriting structures are also at the foundation of all of our storage, deep down in the block-simulation layer of flash storage devices, again around 2014.&lt;/p&gt;
+&lt;h2 id=&#34;other-developments&#34;&gt;
+    &lt;a href=&#34;#other-developments&#34;&gt;
+	Other developments
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Flash Storage originally appeared as a simulated hard disk, SSD. So we have a PCI bus, on which there is a SATA controller, which connects to the simulated hard disks&#39; flash controller, which talks to the flash.&lt;/p&gt;
+&lt;h3 id=&#34;ssd-nvme-roce-and-nvmeof&#34;&gt;
+    &lt;a href=&#34;#ssd-nvme-roce-and-nvmeof&#34;&gt;
+	SSD, NVME, RoCE, and NVMEoF
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;NVME is what we get when we ask the question &amp;ldquo;What purpose does the SATA controller have in this setup, anyway?&amp;rdquo; - except slowing everything down, forcing us to use antiquated SCSI commands and serializing access to the highly parallel flash.&lt;/p&gt;
+&lt;p&gt;NVME therefore is a PCI bus, which talks to flash controllers, which talk to the flash, and a revised command set for this. The great innovation is to put away the single disk queue and allow many of these. Which allows us to utilize around 800k IOPS per device, even if a single operation can take as long as 1/20.000th of a second - just go 40-way wide, if you can.&lt;/p&gt;
+&lt;p&gt;Now, what if we had a way to speak to a NVME device on a different computers PCI bus as if it were local? That&amp;rsquo;s what remote DMA (RDMA) would enable us to do. RoCE (&amp;ldquo;rocky&amp;rdquo;, &amp;ldquo;RDMA over Converged Ethernet&amp;rdquo;) initially was painful - RoCE V1 was unrouteable raw Ethernet with its own Ethertype. RoCE V2 fixed that, and put the entire stuff into UDP instead, so it was routeable, at least within a single data center.&lt;/p&gt;
+&lt;p&gt;Turns out, the value in RDMA is more in the Remote than in the DMA, so when RoCE became &amp;ldquo;NVME over Fabric over TCP&amp;rdquo; (NVMEoF/TCP), it was valuable and useful to have, even if you had an ultracheap Broadcom that did not properly DMA the way RoCE needs it. The resulting access to a remote NVME still was as fast as to a local SSD, or even faster.&lt;/p&gt;
+&lt;h3 id=&#34;mmap&#34;&gt;
+    &lt;a href=&#34;#mmap&#34;&gt;
+	mmap()
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;And finally, &lt;code&gt;mmap()&lt;/code&gt; is a Unix system call that allows you to map a file into the address space of a process: when you access a memory page, this memory page is appropriately filled with the content of the file, automatically. Think &amp;ldquo;swap from any file into memory, not just from a swap file&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;For mutable files, and the kings of mutability, relational databases, mmap() is of little use and has many complexities. Databases need extending files, controlled write-out to persistent storage, not overwriting data because MVCC. Also, different data formats on disk and in memory are actually important to people who transact, and hence mmap() does help very little for most databases. We can talk about &amp;ldquo;Optane&amp;rdquo;, &amp;ldquo;PMEM&amp;rdquo;, and &amp;ldquo;transactional memory&amp;rdquo;, but that&amp;rsquo;s a different lecture for another day.&lt;/p&gt;
+&lt;p&gt;Making an &lt;em&gt;immutable&lt;/em&gt; file available &lt;em&gt;read-only&lt;/em&gt; in memory has none of these complexities, and is actually very useful and efficient. This is what mmap() is really, really good at - you get clean, discardable memory pages, none of the file extension problems, none of the &amp;ldquo;which pages are written to disk at what point in time&amp;rdquo; sychronisation problems.&lt;/p&gt;
+&lt;p&gt;The idea is so good that Bryan Cantrill actually had it first, and foreshadowed &amp;ldquo;Serverless&amp;rdquo; in &lt;a href=&#34;https://github.com/joyent/manta&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Manta&lt;/a&gt;
+
+. Basically, Joyent starts a &amp;ldquo;Container&amp;rdquo;, actually a BSD &amp;ldquo;jail&amp;rdquo; or Solaris &amp;ldquo;zone&amp;rdquo;, because containers weren&amp;rsquo;t fully invented, yet. It then maps a kind of not-quite-S3 object into it and your code can  access this, and emit output results into a new object in the same or a different bucket.&lt;/p&gt;
+&lt;p&gt;The mmap() in this is a nice sugar on top of it, as it makes reads automatic,  en-passant and makes I/O minimal. The important fact is that Input and Output are distinguished and the input file is still immutable. Because it is, the munmap() is unimportant - exit() is also a munmap() and since the object is immutable it is unimportant if it stays mapped.&lt;/p&gt;
+&lt;h2 id=&#34;putting-it-all-together&#34;&gt;
+    &lt;a href=&#34;#putting-it-all-together&#34;&gt;
+	Putting it all together
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;So you have a page fault and have to get a page from local storage.&lt;/p&gt;
+&lt;p&gt;So why not get it from Ethernet, via RDMA, remotely, from any disk anywhere in your data center? Can we have this as a kernel extension and - more important - standardized in the NVME spec?&lt;/p&gt;
+&lt;p&gt;Ah, now we&amp;rsquo;re talking. &amp;ldquo;We have standardized remote page fault reads over NVMEoF&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s the article - at least, that is what I think it is, because it does not say so, and it references nothing.&lt;/p&gt;
+&lt;p&gt;But even so, it needs 50 years of Unix as a context to be understandable.&lt;/p&gt;
+&lt;p&gt;I still don&amp;rsquo;t know what the original article was, but there is stuff such as &lt;a href=&#34;https://www.usenix.org/conference/nsdi20/presentation/yang&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;FileMR: Rethinking RDMA Networking for Scalable Persistent Memory&lt;/a&gt;
+
+ that is being worked on.&lt;/p&gt;
+&lt;p&gt;Based on &lt;a href=&#34;https://twitter.com/isotopp/status/1313084116569645057&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a twitter tread&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>When a file changes, do a thing</title>
+      <link>https://blog.koehntopp.info/2019/11/19/when-a-file-changes-do-a-thing.html</link>
+      <pubDate>Tue, 19 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/11/19/when-a-file-changes-do-a-thing.html</guid>
+      <description>&lt;p&gt;When developing there is often an edit-compile-test cycle, or an
+edit-distribute-changes cycle or a similar repetetive task. You
+could poll changes, for example with cron every minute or
+similarly, but that is wasteful and slow.&lt;/p&gt;
+&lt;p&gt;All modern operating systems have mechanisms for processes to
+subscribe to file or directory changes. In MacOS, we do have the
+&lt;a href=&#34;https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/FSEvents_ProgGuide/TechnologyOverview/TechnologyOverview.html#//apple_ref/doc/uid/TP40005289-CH3-SW1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;File System Events&lt;/a&gt;
+
+
+API since 10.5, in Linux we got three different implementations
+(as described in &lt;a href=&#34;https://lwn.net/Articles/604686/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LWN&lt;/a&gt;
+
+): The
+original dnotify, its replacement inotify and the even more
+recent fanotify (which got its own &lt;a href=&#34;https://lwn.net/Articles/605128/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LWN
+article&lt;/a&gt;
+
+). BSD has kqueue.&lt;/p&gt;
+&lt;p&gt;The idea is that you subscribe to a directory and get notified
+for change/create/delete/rename events inside that directory
+and/or all events recursively beneath that starting point (a
+&amp;lsquo;root&amp;rsquo;). You would be interested into the type of change and the
+name of the file path that changes, and you would probably want
+to be able to retrieve lists of these changes in batch.&lt;/p&gt;
+&lt;p&gt;To make that useful, you would need a shell interface to this,
+and there are quite a few by now.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The most convenient seems to be
+&lt;a href=&#34;https://github.com/clibs/entr&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;entr&lt;/a&gt;
+
+, because it works most
+closely with shell programs.&lt;/li&gt;
+&lt;li&gt;There is also &lt;a href=&#34;https://facebook.github.io/watchman/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;watchman&lt;/a&gt;
+
+,
+but this requires submitting jobs and processing results in
+Javascript to fully use its potential.&lt;/li&gt;
+&lt;li&gt;One of the first programs to use filesystem subscriptions is
+&lt;a href=&#34;https://github.com/emcrisostomo/fswatch/wiki/How-to-Use-fswatch&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;fswatch&lt;/a&gt;
+
+,
+but while highly portable, it is cumbersome to use. Instead of
+running commands, it just reports filenames to feed into a
+pipe to handle.&lt;/li&gt;
+&lt;li&gt;Ruby seems to have a library called
+&lt;a href=&#34;https://github.com/guard/guard&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Guard&lt;/a&gt;
+
+ that also comes with
+an interface to shell, but can also being used as a ruby gem.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://hackage.haskell.org/package/spy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;spy&lt;/a&gt;
+
+ is a weird piece
+of Haskell that produces a small binary that can run commands
+on file system changes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Python seems to come with a bunch of modules and interfaces in
+various states of disrepair,
+&lt;a href=&#34;https://github.com/rvoicilas/inotify-tools&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;inotify-tools&lt;/a&gt;
+
+, the
+very tiny wrapper &lt;a href=&#34;https://pypi.org/project/inotify_simple/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;inotify_simple&lt;/a&gt;
+
+
+(the simple here refers to the fact that it is a very thing
+wrapper around the C library, not simple to use), the more
+convenient &lt;a href=&#34;https://pypi.org/project/inotify/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;inotify&lt;/a&gt;
+
+ and the
+high level wrapper
+&lt;a href=&#34;https://pythonhosted.org/watchdog/quickstart.html#a-simple-example&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;watchdog&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;a-test-scenario&#34;&gt;
+    &lt;a href=&#34;#a-test-scenario&#34;&gt;
+	A test scenario
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;As a test scenario I have a &lt;code&gt;ship-to-kvm&lt;/code&gt; command that I want to
+run on every file change. It looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;rsync -e ssh -t -v --delete --delete-excluded --exclude=&amp;#39;.git&amp;#39; -r \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ~/git_tree/myproject \
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  devuser@devbox.example.com:myproject
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;when I save my local file from my local editor so that the tree
+myproject is made available on my devbox.&lt;/p&gt;
+&lt;h2 id=&#34;entr&#34;&gt;
+    &lt;a href=&#34;#entr&#34;&gt;
+	entr
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With &lt;a href=&#34;https://github.com/clibs/entr&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;entr&lt;/a&gt;
+
+, that is rather
+simple. The package &lt;code&gt;entr&lt;/code&gt; is available in Homebrew on MacOS
+(&lt;code&gt;brew install entr&lt;/code&gt;) or as a package in Linux (&lt;code&gt;yum install -y entr&lt;/code&gt;, &lt;code&gt;apt install entr&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;You ask entr to watch a list of files or a directory, and when
+things change to run a command. You can hit space to force
+execution even when nothing changed, or &lt;code&gt;q&lt;/code&gt; to end the command.&lt;/p&gt;
+&lt;p&gt;Various ways to handle changes are provided:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;ls *.js &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; entr -r node myproject.js
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;-r&lt;/code&gt; option here will SIGTERM the node instance, wait for it
+to complete and then restart it.&lt;/p&gt;
+&lt;p&gt;To get notification of new and deleted files, you need to watch
+directories, which are inferred from a file list. This is done
+with the &lt;code&gt;-d&lt;/code&gt; option and in fact the command terminates so you
+need to wrap it in a loop:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; :&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;&amp;gt;   &lt;/span&gt;ls &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; entr -d ship-to-kvm
+&lt;span class=&#34;gp&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There are a few other options, but these two should cover the
+most common use cases.&lt;/p&gt;
+&lt;h2 id=&#34;watchman&#34;&gt;
+    &lt;a href=&#34;#watchman&#34;&gt;
+	watchman
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://facebook.github.io/watchman/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;watchman&lt;/a&gt;
+
+ is the facebook
+take on things. It consists of a daemon that is automatically
+started when you are using the frontend command, and a frontend
+command that actually does not expose all the functionality
+unless you feed it JSON job files. All command results are also
+JSON.&lt;/p&gt;
+&lt;p&gt;watchman has the concept of roots, filesystem subtrees that are
+being watched, and then triggers that are attached to roots or
+subtrees of roots, and are being run on change. A simple
+predicate language and a selection of regex libraries can be
+used to formulate conditions for triggers.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;watchman watch ~/git_tree/myproject &lt;span class=&#34;c1&#34;&gt;# this will start the daemon&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;watchman -j ship-to-kvm.json        &lt;span class=&#34;c1&#34;&gt;# this defines the job&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and the actual job definition is then something like&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-javascript&#34; data-lang=&#34;javascript&#34;&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
+  &lt;span class=&#34;s2&#34;&gt;&amp;#34;trigger&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;~/git_tree/myproject&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;s2&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;ship-to-kvm&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+    &lt;span class=&#34;s2&#34;&gt;&amp;#34;expression&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;pcre&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;^[a-zA-Z0-9]&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;],&lt;/span&gt;
+    &lt;span class=&#34;s2&#34;&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;ship-to-kvm&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This may look nicer to developers, but I seem to prefer the entr
+way of doing things.&lt;/p&gt;
+&lt;h2 id=&#34;python-watchdog&#34;&gt;
+    &lt;a href=&#34;#python-watchdog&#34;&gt;
+	Python watchdog
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Python library
+&lt;a href=&#34;https://pythonhosted.org/watchdog/quickstart.html#a-simple-example&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;watchdog&lt;/a&gt;
+
+
+provides a convenient programmatic interface to inotify and friends
+by defining an Observer class and scheduling operations to the
+observer when there are events outstanding.&lt;/p&gt;
+&lt;p&gt;The example from the manual looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;time&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;logging&lt;/span&gt;
+
+&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;watchdog.observers&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Observer&lt;/span&gt;
+&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;watchdog.events&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LoggingEventHandler&lt;/span&gt;
+
+&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;logging&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;basicConfig&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;level&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;logging&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;INFO&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;format&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(asctime)s&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; - &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(message)s&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;datefmt&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;%Y-%m-&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%d&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; %H:%M:%S&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;path&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;.&amp;#39;&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;event_handler&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LoggingEventHandler&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;observer&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Observer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;observer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;schedule&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;event_handler&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;path&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;recursive&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;observer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;time&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;KeyboardInterrupt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;observer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stop&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;observer&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and when run does things like this for a &lt;code&gt;touch keks; sleep 1; rm keks&lt;/code&gt; in a secondary shell:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:40 - Modified directory: ./.git
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:44 - Created file: ./keks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:44 - Modified directory: .
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:44 - Modified directory: ./.git
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:53 - Deleted file: ./keks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:53 - Modified directory: .
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2019-11-19 14:36:53 - Modified directory: ./.git
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The actual observer selection allows a rich palette of event
+classes and filters, so dispatching and filtering events is easy.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>An abundance of IOPS and Zero Jitter</title>
+      <link>https://blog.koehntopp.info/2017/07/26/an-abundance-of-iops-and-zero-jitter.html</link>
+      <pubDate>Wed, 26 Jul 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/07/26/an-abundance-of-iops-and-zero-jitter.html</guid>
+      <description>&lt;p&gt;Two weeks ago, I wrote about
+&lt;a href=&#34;https://blog.koehntopp.info/2017/07/07/the-data-center-in-the-age-of-abundance.html&#34;&gt;The Data Center in the Age of Abundance&lt;/a&gt;
+
+
+and claimed that IOPS are - among other things - a solved problem.&lt;/p&gt;
+&lt;p&gt;What does a solved problem look like?&lt;/p&gt;
+&lt;p&gt;Here is a benchmark running 100k random writes of 4K per second, with zero
+Jitter, at 350µs end-to-end write latency across six switches. Databases
+really like reliably timed writes like these. Maximum queue depth would be
+48, the system is not touching
+that.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/pure-storage1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;and here is iostat on the iSCSI client running the test&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/07/pure-storage2-1024x238.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;100k random writes, 4k write size, inside a 2 TB linux file of random data,
+on a 15 TB filesystem with XFS, on an LVM2 volume provided by iSCSI over a
+single 10 GBit/s interface, with six switch hops between the linux client
+and the array.&lt;/p&gt;
+&lt;p&gt;The array claims 150µs latency, on the linux we measure around 350µs. Out of
+that, there are less than 50µs from the switches and 150µs or more from the
+Linux storage stack (and that is increasingly becoming an issue).&lt;/p&gt;
+&lt;p&gt;Tested product was a &lt;a href=&#34;https://www.purestorage.com/products/flasharray-x.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Purestore Flasharray-X&lt;/a&gt;
+
+,
+client was Dell PowerEdge R630, 2x E5-2620v4, 128G, 10GBit/s networking.&lt;/p&gt;
+&lt;p&gt;Thanks, Peter Buschman!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Neue Ideen in Dateisystemen (oder: BTRFS in Fedora 11)</title>
+      <link>https://blog.koehntopp.info/2009/02/06/neue-ideen-in-dateisystemen-oder-btrfs-in-fedora-11.html</link>
+      <pubDate>Fri, 06 Feb 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/02/06/neue-ideen-in-dateisystemen-oder-btrfs-in-fedora-11.html</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;There are two kinds of fool. One says, “This is old, and therefore good..” And one says “This is new, and therefore better..”	—John Brunner, in The Shockwave Rider&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Neue Ideen in Dateisystemen sind so eine Sache. Es handelt sich bei einem Dateisystem ja um Infrastrukturcode par excellence, und so reden die meisten Leute gerne von ihrem letzten Datenverlust, wenn man sie nach Dateisystemen befragt. Das ist nicht neu, ich habe in &lt;a href=&#34;https://blog.koehntopp.info/2008/05/30/the-importance-of-fail.html&#34;&gt;The Importance Of FAIL&lt;/a&gt;
+
+ das Thema ja schon mal angeschnitten.&lt;/p&gt;
+&lt;p&gt;Neue Ideen in Dateisystemen sind auch langsam. 1984 bis 1992 gab es das
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Sprite_operating_system&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sprite Projekt&lt;/a&gt;
+
+ in Berkeley, bei dem es um die Entwicklung eines rechnerübergreifenden Betriebssystems ging. Teil von Sprite war auch etwas, das sich &lt;a href=&#34;http://en.wikipedia.org/wiki/Log-structured_file_system&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LFS (Log Structured Filesystem)&lt;/a&gt;
+
+ nannte.&lt;/p&gt;
+&lt;p&gt;LFS basiert auf der Idee, daß nur noch Writes auf eine Platte übrig bleiben, wenn man nur genug RAM zum Cachen aller Reads hat. Also quasi die Situation, in der Google jetzt grad ist. Wenn das aber so ist, so geht die Überlegung weiter, dann muß man Daten auf der Platte nicht zum Lesen optimiert ablegen, sondern das Schreiben optimieren.&lt;/p&gt;
+&lt;h2 id=&#34;ein-exkurs-in-fragmentierung&#34;&gt;
+    &lt;a href=&#34;#ein-exkurs-in-fragmentierung&#34;&gt;
+	Ein Exkurs in Fragmentierung
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Gegeben sei MS-DOS, also ein System mit nur einem Thread, der Read-Requests generieren kann und quasi ohne Read-Cache, der solche Reads wegoptimieren kann. Dann ist das Dateisystem dann für viele Anwendungen zum Lesen optimiert, wenn alle Dateien defragmentiert abspeichert sind, d.h die Blocknummern der physikalischen Blöcke jeder Datei unmittelbar aufeinanderfolgend sind.&lt;/p&gt;
+&lt;p&gt;Gegeben sei ein System mit unendlich viel Speicher, das schon unendlich lange läuft. Dann wiederum sind alle Daten im RAM gecached, und die physikalische Anordnung der Daten auf der Platte ist aus der Sicht der Lesezugriffe total schnurz.&lt;/p&gt;
+&lt;p&gt;Die meisten realen Systeme liegen irgendwo dazwischen - je mehr RAM und je besser die Caches vorgeglüht, desto mehr ist es egal, wie die Daten auf der Platte angeordnet sind.&lt;/p&gt;
+&lt;p&gt;Die meisten realen Systeme haben heutzutage auch mehr als einen Thread, der Requests erzeugen kann und schon von daher ist das statisch lineare Layout von Dateien auf der Platte nicht mehr unmittelbar ein Garant für dynamisch lineare Lesezugriffe.&lt;/p&gt;
+&lt;h2 id=&#34;lfs-dreht-den-spieß-um&#34;&gt;
+    &lt;a href=&#34;#lfs-dreht-den-spie%c3%9f-um&#34;&gt;
+	LFS dreht den Spieß um
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;LFS nimmt nun ein solches System mit unendlich viel Speicher und unendlich langer Laufzeit an, d.h, kümmert sich nicht um die Linearisierung von Reads, sondern lediglich noch um die Linearisierung von Writes: Das Dateisystem &lt;em&gt;hat&lt;/em&gt; kein Log, es &lt;em&gt;ist&lt;/em&gt; ein Log - ein großer Ringpuffer von Daten, bei dem die Platte von vorne nach hinten beschrieben wird und wenn man am Ende der Platte angekommen ist, fängt man von vorne an.&lt;/p&gt;
+&lt;p&gt;Snapshots bekommt man bei einem solchen System gratis (Aber
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Log-structured_File_System_%28BSD%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BSD hat es nicht implementiert&lt;/a&gt;
+
+): Am Anfang der Platte hat man keinen Superblock, sondern einen Zeiger auf die letzten paar Superblöcke, die geschrieben wurden. Jede Operation kann als Transaktion geschrieben werden: Blöcke werden dabei nicht überschrieben, sondern geänderte Versionen des neuen Blockes werden linear rausgeschrieben.&lt;/p&gt;
+&lt;p&gt;Beispiel: Eine Datei besteht aus einem Verzeichniseintrag, einer Inode und in der Inode aus Zeigern auf Datenblöcke. Überschreibt man nun das letzte KB der Datei und verlängert sie nun auch noch um ein KB, dann werden zunächst der &amp;ldquo;überschriebene&amp;rdquo; Datenblock und der neue Datenblock am Ende des Schreibpuffers neu geschrieben, dann wird die geänderte Inode der Datei dahinter neu geschrieben und dann der Block, der auf die aktuelle Version dieser Inode zeigt neu geschrieben und am Ende ein neuer Superblock.&lt;/p&gt;
+&lt;p&gt;Beim Lesen folgt man dem neusten Superblock, findet man die neuste Version der Inode, und damit die geänderte und verlängerte Datei. Folgt man der älteren Kopie des Superblocks, findet man eine ältere Version der Inode derselben Datei und die dazu gehörenden älteren Versionen der Datenblöcke, also eine alte Version derselben Datei. Alle Blöcke, die zwischen beiden Versionen der Datei unverändert bleiben, sind beiden Versionen gemeinsam und nur einmal auf der Platte vorhanden.&lt;/p&gt;
+&lt;h2 id=&#34;lfs-performance-stinkt&#34;&gt;
+    &lt;a href=&#34;#lfs-performance-stinkt&#34;&gt;
+	LFS Performance stinkt
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Nun ist es so, daß außerhalb des Googleplex RAM endlich und die Laufzeiten von Computern begrenzt sind. Daher ist es auch so, daß es zu Situationen kommen kann, in denen der File System Buffer Cache das aus Lesesicht absolut pessimale Layout von LFS nicht abschirmen kann. In solchen Fällen - die besonders von Datenbanken gerne provoziert werden - ist die Performance von LFS nur mit geologischen Fachbegriffen zu erfassen.&lt;/p&gt;
+&lt;p&gt;Schon LFS auf Sprite, und sein späterer Port auf BSD Unix haben daher einen Repacker gehabt. Das ist ein Prozeß der Idlezeiten der Platte nutzt und die Daten auf dem Medium ein wenig read-freundlicher anordnet. Man kann sich das wie eine dauernd laufende Defragmentierung im Hintergrund vorstellen. Auch ReiserFS 4, das auf ähnlichen Ideen basiert hat einen solchen Repacker.&lt;/p&gt;
+&lt;h2 id=&#34;in-with-the-out-old-with-the-new&#34;&gt;
+    &lt;a href=&#34;#in-with-the-out-old-with-the-new&#34;&gt;
+	In with the out, old with the new
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Idee, Daten niemals zu überschreiben ist sicherlich gut. Sie läßt sich jedoch auch mit Dateisystemen implementieren, die Daten gleich beim ersten Schreiben sinnvoll auf der Platte layouten ohne dabei eine Ringpuffer-Struktur zu erzeugen.&lt;/p&gt;
+&lt;p&gt;Dateisysteme wie
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Write_Anywhere_File_Layout&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;WAFL&lt;/a&gt;
+
+ auf einer NetAPP sind ein erster Schritt in diese Richtung, Suns
+&lt;a href=&#34;http://en.wikipedia.org/wiki/ZFS&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ZFS&lt;/a&gt;
+
+ geht ihn noch konsequenter. Beide Dateisysteme stammen aus Projekten, in denen Leute arbeiten, die vorher mit verschiedenen Versionen von LFS gearbeitet haben. Insofern ist es auch nicht weiter verwunderlich, daß solche Ideen in diesen Dateisystemen auftauchen - &lt;a href=&#34;http://www.sun.com/lawsuit/zfs/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;außer man ist Patentanwalt&lt;/a&gt;
+
+ und wundert sich aus beruflichen Gründen.&lt;/p&gt;
+&lt;p&gt;Solche Dateisysteme, die nie überschreiben (und daher laufend snapshotten), aber die Platte nicht als Ringpuffer betrachten sondern schon noch layouten, nennt man Copy-On-Write Dateisysteme (COW-FS).&lt;/p&gt;
+&lt;h2 id=&#34;weitere-gute-ideen-importieren&#34;&gt;
+    &lt;a href=&#34;#weitere-gute-ideen-importieren&#34;&gt;
+	Weitere gute Ideen importieren
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;ZFS ist in diesem Zusammenhang besonders interessant, weil es noch weitere gute Ideen von anderswo importiert. &lt;a href=&#34;http://en.wikipedia.org/wiki/Episode_filesystem&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Episode&lt;/a&gt;
+
+ zum Beispiel ist das Dateisystem der halb vergessenen DCE-Initiative, und vielen Leuten in der Geschmacksrichtung &lt;a href=&#34;http://en.wikipedia.org/wiki/AdvFS&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AdvFS&lt;/a&gt;
+
+ von DEC bekannt.&lt;/p&gt;
+&lt;p&gt;AdvFS integriert das Storagemangement, das sonst von einem Logical Volume Manager erledigt wird und das Platzmanagement des Dateisystems ineinander. Eine File Domain kann man sich dabei wie eine Volume Group vorstellen - eine Art Kiste, in der die Blöcke enthalten sind, die beschrieben werden können.&lt;/p&gt;
+&lt;p&gt;In der File Domain sind File Sets vorhanden, Dinge, die man anderswo Dateisysteme nennt. File Sets ist dabei nicht zwingend eine feste Größe zugewiesen - man kann sie sich wie Luftballons vorstellen, die in der Kiste sind und die nach bedarf aufgeblasen und verkleinert werden können. Mit einem Quota-System kann man einem File Set einen Mindestplatzbedarf und einen Maximalbedarf zuordnen und so den Platz in der File Domain verwalten. Der &lt;a href=&#34;http://advfs.sf.net/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AdvFS-Source&lt;/a&gt;
+
+ ist seit 2008 GPLed, aber er interessiert kaum noch jemanden.&lt;/p&gt;
+&lt;p&gt;ZFS hat wie AdvFS diese Integration von Volume Management in das Dateisystem übernommen - etwas, das auf den Linux-Kernel-Mailinglisten von einigen Personen als &lt;a href=&#34;http://www.google.de/search?q=blatant&amp;#43;layering&amp;#43;violation&amp;amp;ie=utf-8&amp;amp;oe=utf-8&amp;amp;aq=t&amp;amp;rls=org.mozilla:en-US:official&amp;amp;client=firefox-a&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;blatant layering violation&lt;/a&gt;
+
+ angesehen wurde - die Redewendung hat es zu einigem Google-Karma gebracht. Tatsächlich handelt es sich um eine andere Sicht auf den Stack, aber eine, die durchaus von anderen geteilt wird, die wie man an AdvFS sehen kann und die durchaus interne Struktur hat.&lt;/p&gt;
+&lt;p&gt;Eine andere gute Idee, die ZFS aus der Datenbankwelt übernommen hat, sind Prüfsummen überall. Auf diese Weise - und nur auf diese Weise - ist es möglich, die Integrität des Dateisystems Ende-zu-Ende sicherzustellen und vor allen Dingen auch integre Teile des Systems zur Verfügung zu stellen, während man beschädigte Teile isoliert und abtrennt. Der ZFS-Code kann es nicht, aber grundsätzlich ist es möglich aus jedem defekten ZFS ein integres Sub-ZFS raus zu extrahieren und zu publizieren, während der Rest anderweitig recovered wird - die Datenstrukturen geben das her.&lt;/p&gt;
+&lt;h2 id=&#34;open-source-management&#34;&gt;
+    &lt;a href=&#34;#open-source-management&#34;&gt;
+	Open Source Management
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Nun hat Sun ein sehr sauberes und durchaus &lt;a href=&#34;http://en.wikipedia.org/wiki/CDDL&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;politisches-strategisches Intellectual Property Management&lt;/a&gt;
+
+. Das bewirkt, daß der Source von ZFS unter der &lt;a href=&#34;http://en.wikipedia.org/wiki/CDDL&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CDDL&lt;/a&gt;
+
+ (&amp;ldquo;cuddle&amp;rdquo;, eine modifizierte MPL 1.1) verfügbar ist - er ist Teil von Opensolaris, FreeBSD, MacOS X und einigen anderen Systemen. Die CDDL verletzt aber die additional restrictions clause der GPL und ist mit der GPL nicht kompatibel - es wäre zwar technisch möglich einen Linux-Kernel zu bauen, der ZFS enthielte, aber es ist keinem Distributionshersteller juristisch möglich so etwas zu verteilen. ZFS läuft daher unter Linux nur als Userland-Prozeß als Teil von &lt;a href=&#34;http://en.wikipedia.org/wiki/Filesystem_in_Userspace&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;FUSE&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;cow-fs-in-linux---btrfs&#34;&gt;
+    &lt;a href=&#34;#cow-fs-in-linux---btrfs&#34;&gt;
+	COW-FS in Linux - BTRFS
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Linux-Crowd ficht das nicht an. Im Linux-Kernelspace entwickelt man seit einiger Zeit an einem Nachfolger für die extX-Reihe von Dateisystemen, und einer der Kandidaten für eine solche Nachfolge ist &lt;a href=&#34;http://btrfs.wiki.kernel.org/index.php/Main_Page&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BTRFS&lt;/a&gt;
+
+ (&amp;lsquo;ButterFS&amp;rsquo;, nicht etwa &amp;lsquo;BetterFS&amp;rsquo;). Die Featureliste von BTRFS liest sich wie eine Shoppingliste in den Stammbäumen der oben genannten Ahnherrschaften: Extent-Based wie ext4 und XFS statt Bitmaps wie ext3 und ZFS, Tail-Packing wie bei Reiser3 und Reiser4, Verzeichnisse als Bäume wie inzwischen allgemein üblich, dynamisch erzeugte Inodes, wie sich fast zwingend aus COW-FS-Erfordernissen ergibt, writeable-snapshots, subvolumes (File Sets aus AdvFS), Object Level Mirroring und Striping, Checksums on Everything, Compression (und sicher auch Encryption), Integrated Multiple Device Support (besagte blatant layering violation), Online Filesystem Check (o.a. Teilvalidierung) und Online System Defragmentation (ein Repacker und die Möglichkeit des Online Filesystem Checks machen das leicht).&lt;/p&gt;
+&lt;p&gt;Die BTRFS-Leute ziehen dabei ein paar echt eklige, aber vollkommen legale Stunts ab. In &lt;a href=&#34;http://btrfs.wiki.kernel.org/index.php/Conversion_from_Ext3&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Conversion from ext3&lt;/a&gt;
+
+ wird gezeigt, wie die Metadatenstrukturen von BTRFS in ein existierendes ext3 reingemalt werden können ohne das ext3 zu beschädigen und wie kurzzeitig beide Systeme parallel existieren und die Datenblöcke teilen können. Das erlaubt eine Konvertierung von extX-Dateisystemen in BTRFS ohne Neuformatierung - ein echtes Killerfeature für Leute mit einem Arsch voll Linux-Daten.&lt;/p&gt;
+&lt;p&gt;Einen schönen Überblick über die BTRFS-Strukturen findet man im &lt;a href=&#34;http://btrfs.wiki.kernel.org/index.php/Btrfs_design&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Design Dokument&lt;/a&gt;
+
+. Zum Thema &lt;a href=&#34;http://btrfs.wiki.kernel.org/index.php/Multiple_Device_Support&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Multiple Device Support&lt;/a&gt;
+
+ gibt es ebenfalls Seiten. Und eine Einführung in den Code gibt es auch - &lt;a href=&#34;http://btrfs.wiki.kernel.org/index.php/Code_documentation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hier&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;BTRFS ist unter der GPL lizensiert, kompatibel mit dem Linux-Kernel und Bestandteil aktueller Standardkernel. Die gestern freigegebene &lt;a href=&#34;http://btrfs.wiki.kernel.org/index.php/Code_documentation#Sample_Item_Insertion&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fedora 11 Alpha&lt;/a&gt;
+
+ enthält BTRFS als experimentelles Dateisystem - gut genug zum Spielen und Testen, aber noch nicht gut genug für Wirkdaten.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Was bringt ext4?</title>
+      <link>https://blog.koehntopp.info/2009/01/23/was-bringt-ext4.html</link>
+      <pubDate>Fri, 23 Jan 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/01/23/was-bringt-ext4.html</guid>
+      <description>&lt;p&gt;Der Linux-Kernel 2.6.28 enthält das ext4-Dateisystem standardmäßig und sowohl Fedora als auch Ubuntu werden es unterstützen. Was bringt ext4 an Änderungen?&lt;/p&gt;
+&lt;p&gt;Ein Dateisystem ist für die meisten Benutzer eine quasi unsichtbare Sache. Es sind halt Dateien da und wenn man auf diese zugreift hat man halt Daten. So sind Dateisystem-Features für die meisten Leute also eine sehr unspektakuläre Sache. Die folgende Übersicht ist also etwas geekzentrisch.&lt;/p&gt;
+&lt;h2 id=&#34;extents&#34;&gt;
+    &lt;a href=&#34;#extents&#34;&gt;
+	Extents
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;ext2 und ext3 sind sehr traditionelle Dateisysteme, die intern im Grunde auf Technik von 1984 basieren. ext2 ist eine minimal verbessere Nachprogrammierung des BSD ffs (bei Sun und MacOS X: ufs), ext3 fügt dem lediglich das Journal zur schnelleren Wiederherstellung nach Systemcrashes zu. Beide Dateisysteme speichern die Metadaten von Dateien in einer Inode ab und merken sich die Lage der Datenblöcke in einer Datei in einem (in sogenannten Indirect-Blocks gefalteten) Array von Blocknummern. In einem Artikel von 1994 habe ich das mal &lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;länger ausgeführt&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Da mit einigem Glück die meisten Dateien nicht fragmentiert gespeichert sind, besteht dieses Array also bei vielen Dateien aus einer langen Folge von unmittelbar aufeinander folgenden Blocknummern. Das ist unglaublich ineffizient.&lt;/p&gt;
+&lt;p&gt;XFS, also Technik von 1994, ist eines der ersten Dateisysteme gewesen, das stattdessen mit Extents arbeitet, also Blockfolgen durch Run Length Encoding komprimiert: Statt einer Folge von Blocknummern wird die Startnummer der Folge und ihre Länge als ein Paar gespeichert. 15 Jahre später führt man dieses Detail auch in ext4 endlich ein.&lt;/p&gt;
+&lt;h2 id=&#34;große-dateisysteme&#34;&gt;
+    &lt;a href=&#34;#gro%c3%9fe-dateisysteme&#34;&gt;
+	Große Dateisysteme
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Eine andere Technik von XFS kopiert man dabei nicht: Kompression von Blocknummern. ext4 unterstützt große Dateisysteme durch den Einsatz von 64 Bit großen Blocknummern. Da die Kernel-Infrastruktur noch nicht entsprechend mitgewachsen ist, sind derzeit 48 Bit große Blocknummern nutzbar, was für immerhin schon Exabyte-große Dateisysteme ausreicht. Anders als XFS, das ebenfalls ein 64 Bit-Dateisystem ist, speichert ext4 jedoch immer ganze 8 Byte große Blocknummern, während XFS auch relative Blockadressen zum Beginn jeweils einer Zone verwenden kann und so an vielen Stellen mit 4 Byte langen Zahlen auskommt, auch wenn es 64 Bit adressieren kann.&lt;/p&gt;
+&lt;p&gt;Weil ext2 und ext3 im Grunde saubere Rewrites von FFS waren, haben sie auch die 16 Bit große Linkcount-Zahl von diesem geerbt und konnten so bis zu 32767 Links pro Datei verwalten. Da Unterverzeichnisse durch den &amp;ldquo;..&amp;quot;-Eintrag den Linkcount des Elternverzeichnisses erhöhen, war man so auf 32765 Unterverzeichnisse pro Directory beschränkt. ext4 geht hier anders vor und das Limit existiert nicht mehr.&lt;/p&gt;
+&lt;h2 id=&#34;neues-blockbelegungsschema&#34;&gt;
+    &lt;a href=&#34;#neues-blockbelegungsschema&#34;&gt;
+	Neues Blockbelegungsschema
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Jedes Dateisystem hat Funktionen mit denen es entscheidet auf welchen physischen Blöcken der Platte eine Datei zu liegen kommt. Ziel diese Allokators ist es dabei, die Fragmentierung von Dateien zu verhindern und die Dateien so anzuordnen, daß schnell lesen darauf zugegriffen werden kann.&lt;/p&gt;
+&lt;p&gt;Der Allkokator von ext2 und ext3 ist dabei notorisch schlecht. Zum einen beherrschen diese Dateisyteme keine verzögerte Blockzuweisung: Jeder Block einer Datei muß physikalisch angeordnet werden sobald der Kernel Platz für den Block im File System Buffer Cache belegt. Wenn also eine große Datei linear geschrieben wird bedeutet das, daß das Dateisystem schon versucht den ersten Block der Datei zu positionieren ohne abzuwarten ob und wie viele weitere Blöcke noch folgen werden.&lt;/p&gt;
+&lt;p&gt;XFS hatte schon 1994 eine bessere Strategie: Blöcke werden im File System Buffer Cache auch ohne physikalische Positionsinformation gecached. Dadurch kann etwa ein linearer Write einer ganzen Datei erst einmal im Cache abgelegt werden und erst am Ende, wenn die Datei geschlossen und geflushed wird, muß eine Layoutentscheidung getroffen werden. Diese kennt dann aber schon die Gesamtgröße der Datei und das Dateisystem kann versuchen die Datei am Stück zu schreiben. ext4 kann nun endlich auch solche delayed allocation und reiht sich so neben XFS, ZFS, btrfs und Reiser4 ein.&lt;/p&gt;
+&lt;p&gt;ext2 und ext3 belegten dabei den Platz auf der Platte einzelblockweise (in 4KB großen Blöcken) und haben dabei maximal 8 Blocks in Folge im Voraus belegt. Wenn man also ein Verzeichnis hat, in dem zwei Dateien gleichzeitig offen sind und verlängert werden (etwa: /var/log), dann entstehen so Zonen von jeweils 32 KB großen Dateistummeln, die sich gegenseitig im Weg stehen. Die Dateien sind maximal fragmentiert. ext4 fixt das dann auch in der ext?-Serie von Dateisystemen endlich.&lt;/p&gt;
+&lt;p&gt;ext4 bekommt außerdem ein Feature, das sich &amp;ldquo;persistent preallocation&amp;rdquo; nennt und das es Anwendungen erlaubt, dem Dateisystem schon vorab Hinweise darauf zu geben wie groß Dateien am Ende sein werden wenn die Anwendung mit ihnen fertig sein wird. Die Anwendungen dafür sind vielfältig: Mit ein wenig Management ließe sich so zum Beispiel das Guaranteed Rate I/O von XFS nachprogrammieren und ext4 kennt mit diesem Feature und ein wenig weiterer Magie auch Online-Defragmentierung.&lt;/p&gt;
+&lt;h2 id=&#34;schnelleres-fsck-und-prüfsummen&#34;&gt;
+    &lt;a href=&#34;#schnelleres-fsck-und-pr%c3%bcfsummen&#34;&gt;
+	Schnelleres fsck und Prüfsummen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;So wie ZFS und InnoDB es vorgemacht haben führt auch ext4 nun endlich Prüfsummen ein: Das Journal und Teile der Inode-Infrastruktur bekommen nun Prüfsummen, mit denen die Integrität der Daten nach einem Crash schneller gecheckt werden kann, sodaß der fsck optimiert werden kann und schneller abläuft wenn er dennoch einmal notwendig werden sollte. Dadurch kann auch der Journal-Commit selbst optimiert werden.&lt;/p&gt;
+&lt;p&gt;Von einer durchgehenden Prüfsummen-Infrastruktur wie in ZFS und einer Online-Prüfung von Checksummen ist man in ext4 jedoch noch weit entfernt.&lt;/p&gt;
+&lt;h2 id=&#34;inode-basteleien&#34;&gt;
+    &lt;a href=&#34;#inode-basteleien&#34;&gt;
+	Inode-Basteleien
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Größe einer Inode ist in ext4 gewachsen: 256 Byte Minimumgröße statt bisher 128 Bytes. ext4 macht mit dem zusätzlichen Platz sinnvolle Sachen: Dateien bekommen Timestamps, die in Nanosekunden statt wie bisher in Sekunden rechnen, time_t stirbt und der verbleibende Platz kann verwendet werden um Extentlisten oder erweiterte Dateiattribute inline zu speichern.&lt;/p&gt;
+&lt;p&gt;Außerdem kann ext4 Inodes reservieren und dynamisch verwalten. Dadurch werden auch Metadata-Operationen sehr viel schneller und layouten sich besser physikalisch auf der Platte.&lt;/p&gt;
+&lt;h2 id=&#34;barrier-writes&#34;&gt;
+    &lt;a href=&#34;#barrier-writes&#34;&gt;
+	Barrier Writes
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Schließlich erzeugt auch ext4 nun ohne Journal=Data immer konsistente Datenstrukturen auf der Platte, indem Barrier Writes verwendet werden.&lt;/p&gt;
+&lt;h2 id=&#34;live-upgrade&#34;&gt;
+    &lt;a href=&#34;#live-upgrade&#34;&gt;
+	Live Upgrade
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;ext4 kann ext3-Dateisysteme lesen. Es ist also möglich, ein ext3-Dateisystem als ext4 zu mounten. Die meisten Features, die ein ext4 einem ext3 voraus hat, sind dabei jedoch nicht nutzbar. Auch ein&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;tune2fs -O extents,uninit_bg,dir_index /dev/DEV
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;fsck -pf /dev/DEV
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;schaltet diese Features nur für neue Dateien um, baut aber die vorhandenen Dateien und Verzeichnisse nicht auf das neue Format um. Die volle Effizienzsteigerung erlangt man also nur durch ein Umkopieren der Daten auf ein neue angelegtes, leeres ext4-Dateisystem.&lt;/p&gt;
+&lt;h2 id=&#34;was-fehlt-noch&#34;&gt;
+    &lt;a href=&#34;#was-fehlt-noch&#34;&gt;
+	Was fehlt noch?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Grub unterstützt ext4 bisher noch nicht (d.h. die Grubs, die das können, haben es noch in keine Distro geschafft).&lt;/p&gt;
+&lt;p&gt;(siehe auch:
+&lt;a href=&#34;http://kernelnewbies.org/Ext4&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kernelnewbies: ext4&lt;/a&gt;
+
+)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Filesysteme für theclaw (30 Jahre Unix Source)</title>
+      <link>https://blog.koehntopp.info/2006/12/26/filesysteme-fuer-theclaw-30-jahre-unix-source.html</link>
+      <pubDate>Tue, 26 Dec 2006 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2006/12/26/filesysteme-fuer-theclaw-30-jahre-unix-source.html</guid>
+      <description>&lt;p&gt;&amp;mdash; Log opened Di Dez 26 15:52:09 2006&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Hey :] &lt;a href=&#34;https://blog.koehntopp.info/2006/05/08/fragmentierung-fuer-jannik.html&#34;&gt;Spitze erklaerung zu ext2.&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Danke&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Bist du Kerneldeveloper?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Nein. Mysql Consultant.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Hmm. Hab da was nicht verstanden bei der Erklärung. Und zwar: Was sind Datenblockzeiger?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Die Blockadressen von Datenblöcken einer Datei.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich paste mal was&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;(0-11):9711-9722, (IND):9723, (12-267):9724-9979, (DIND):9980, (IND):9981, (268-523):9982-10237, (IND):10238, (524-779):10239-10494, (IND):10495, (780-1035):10496-10751, (IND):10752, (1036-1291):10753-11008, (IND):11009, (1292-1547):11010-11265, (IND):11266, (1548-1795):11267-11514
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isotopp&amp;gt; Habs im
+&lt;a href=&#34;%28https://blog.koehntopp.info/2006/05/08/fragmentierung-fuer-jannik.html%29&#34;&gt;Originalartikel&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;code&gt;__le32 i_block[EXT2_N_BLOCKS];&lt;/code&gt; Das ist das, was unter BLOCKS bei debugfs steht?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt;
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L211&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L211&lt;/a&gt;
+
+: Das ist was auf der Platte steht.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Okay mal durchdenken.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Die Definition steht in
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L165&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L165&lt;/a&gt;
+
+. Es kommen also &lt;code&gt;EXT2_NDIR_BLOCKS&lt;/code&gt; direkt, also in der Inode selbst. Das sind (0-11):9711-9722.&lt;/p&gt;
+&lt;p&gt;Dann kommt ein &lt;code&gt;EXT2_IND_BLOCK&lt;/code&gt;, (IND):9723. Der steht auch in der Inode, aber der zeigt nicht auf Daten, sondern auf einen Indirect Block. Der enthält die Blocknummern der Datenblöcke, (12-267):9724-9979.&lt;/p&gt;
+&lt;p&gt;Dann kommt &lt;code&gt;EXT2_DIND_BLOCK&lt;/code&gt;. Der wiederum enthält keine Blocknummern von Datenblöcken, sondern die Blocknummern von Indirect Blocks, die wiederum Blocknummern von Datenblöcken enthalten. Daher
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;em&gt;anseh&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; In der inode steht nur (DIND):9980. In DIND steht dann (IND):9981 und (IND):10238 und so weiter. Und in (IND):9981 stehen dann 9982-10237, in (IND):10238 dann 10239-10494.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; DIR steht für &amp;ldquo;direct&amp;rdquo;?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; ja&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Muss das jetzt mal kurz mit debugfs ausprobieren.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Sieh mal
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L665&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L665&lt;/a&gt;
+
+. Das &lt;code&gt;ext2_bmap&lt;/code&gt; geht über &lt;code&gt;generic_block_bmap&lt;/code&gt; nach
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L547&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L547&lt;/a&gt;
+
+. Und das wiederum benutzt
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L196&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L196&lt;/a&gt;
+
+. Und da siehst du den lookup.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; okay langsam kommts&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wenn &lt;code&gt;i_block&lt;/code&gt;&amp;lt;0 -&amp;gt; error. Wenn &lt;code&gt;i_block&lt;/code&gt;&amp;lt;&lt;code&gt;direct_blocks&lt;/code&gt;, dann direkt. Sonst IND, sonst DIND, sonst TIND. Sonst bumm.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Wart mal, nicht so schnell. Ich kann das nicht alles gleichzeitig aufnehmen. Also, die ersten zwölf Blöcke sind -direkt- in der Inode?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja. Blocknummern. Nicht Blöcke.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;code&gt;i_block&lt;/code&gt; ist schon ein element aus &lt;code&gt;i_block[]&lt;/code&gt; oder? ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wo bist du gerade? Also in welcher zeile?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;code&gt;static int ext2_block_to_path&lt;/code&gt;. Bei der Definition da.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Kannst du eine lxr url geben bitte? Sonst wird das schwer hier. Ah, hier:
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L196&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L196&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ja&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; &lt;code&gt;i_block&lt;/code&gt; ist der 2. Parameter der Funktion, der Aufruf steht in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L547&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L547&lt;/a&gt;
+
+. Da ist es &lt;code&gt;iblock&lt;/code&gt;,
+das wird durchgereicht vom 2. Parameter von &lt;code&gt;ext2_get_block&lt;/code&gt; &lt;code&gt;iblock&lt;/code&gt;. Das wiederum ist
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L665&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L665&lt;/a&gt;
+
+, der das über den Umweg von
+&lt;a href=&#34;http://lxr.linux.no/source/fs/buffer.c#L2759&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/buffer.c#L2759&lt;/a&gt;
+
+ aufruft.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Nicht gerade trivial.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Für den Kernel schon. Das geht da überall so, inzwischen. Man gewöhnt sich dran, das Lesen zu können. Die
+Alternative ist Code Duplication, und das nervt noch mehr. Anyway, &lt;code&gt;sector_t&lt;/code&gt; ist ein unsigned 64 bit
+(long long, 8 byte) in i386. Eine Blocknummer.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; In
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L556&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L556&lt;/a&gt;
+
+, das ist die wichtige Stelle, hast du die &lt;code&gt;inode&lt;/code&gt; und den &lt;code&gt;iblock&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Die &lt;code&gt;inode&lt;/code&gt; hat das 12-Elemente direct block array usw im Speicher und &lt;code&gt;iblock&lt;/code&gt; ist der Offset. Die Frage,
+die in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L556&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L556&lt;/a&gt;
+
+ geklärt werden muss
+ist: wie tief müssen wir runter steigen - für die Blöcke 0-11 gar nicht, für die Blöcke 12- einen Level und so weiter.
+Das klärt &lt;code&gt;ext2_block_to_path&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Den Abstieg sehen wir dann in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L562&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L562&lt;/a&gt;
+
+.
+Und der Abstieg klappt entweder, weil das File schon einen Block hat an der Stelle &lt;code&gt;iblock&lt;/code&gt;
+(&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L564&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L564&lt;/a&gt;
+
+),
+oder es klappt nicht und wir müssen Blöcke beschaffen
+(nach &lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L575&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L575&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Sekunde. Bin kein Kernelmensch ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Aber das ist doch nur gewöhnliches C.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Na ja, trotzdem komplex (für mich). Erstmal eine Frage. Man hat ein FS, und will die Inode nummer 23, wie wird die gefunden?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Über die Verzeichnisse. Wir wissen, / hat die inode 2. Das ist definiert in
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L60&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L60&lt;/a&gt;
+
+,
+also lesen wir das File mit der inode 2 durch, und parsen es als
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L510&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L510&lt;/a&gt;
+
+ Strukturen.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Sind die indodes nicht nacheinander abgepeichert in den BGs?
+Also die erste BG enthält die ersten X Inodes, die zweite BG die zweiten X usw&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Aeh, ah. Ich verstehe. Userland kann nichts mit Inodes machen, nur mit Filenamen. Es gibt kein &lt;code&gt;openi()&lt;/code&gt;.
+Also müssen alle Funktionen im Userland immer Namen angeben, und du kommst dann vom Namen zur Inode über das kernel-interne &lt;code&gt;namei()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ja, klar. Aber der Kernel will ja Inode X irgendwie kriegen können.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, intern. Das weiß er, weil im Superblock ja steht, wie viele Inodes pro bg vorhanden sind, und er dann aus
+der Inodenummer / inodes_per_bg sofort die bg nummer ausrechnen kann, und dann sofort weiß, wo die inode
+stehen muss auf der Platte. Eine Inodenummer ist also implizit auch die Blockadresse der Inode auf der Platte.&lt;/p&gt;
+&lt;p&gt;Hier ist der Superblock:
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L341&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L341&lt;/a&gt;
+
+,
+und &lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L352&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L352&lt;/a&gt;
+
+ ist
+die &lt;code&gt;s_inodes_per_group&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Und die Inode wird dann in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L998&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L998&lt;/a&gt;
+
+ gelesen.&lt;/p&gt;
+&lt;p&gt;Meine Rechnung von eben ist hier
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L1012&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L1012&lt;/a&gt;
+
+.  &lt;code&gt;(ino - 1) / EXT2_INODES_PER_GROUP(sb);&lt;/code&gt;
+und &lt;code&gt;((ino - 1) % EXT2_INODES_PER_GROUP(sb)) * EXT2_INODE_SIZE(sb);&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Nix für ungut aber für mich ist der Code grad ned so hilfreich.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Was ist das Problem?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Bin grad bisschen überfordert.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Du hast eine Inode Nr 23. Du weisst, pro bg hast Du sagen wir 8192 Inodes. Und (23-1) / ext2_indes_per_group(sb) = 0.
+Also ist inode 23 in bg 0.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;em&gt;wartmal&lt;/em&gt; 8192?!&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; 8192 bei 1 kb blockgroesse, 32768 bei 4kb&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Wie gross ist eine Inode nochmal?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; 128 bytes.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;linux/ext2_fs.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ext2_inode&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;%d&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;sizeof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:~&amp;gt; make probe
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;make: &amp;#34;probe&amp;#34; ist bereits aktualisiert.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:~&amp;gt; ./probe
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;128
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;theclaw&amp;gt; Also pro BG ist allein 1 MB bzw 4 MB an Inodes reserviert?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja. Eine bg ist 8 MB oder 128 MB gross. Schau, hast du ein ext2 da?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ja&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Dann mach mal ein &lt;code&gt;debugfs /dev/...&lt;/code&gt; da drauf. Ist read only, macht also nix kaputt. Dann mach mal &lt;code&gt;show_super_stats&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;Inodes per group:         2008
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Inode count:              26104
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;für ein &lt;code&gt;/dev/sda5     ext2     99M  6.7M   87M   8% /boot&lt;/code&gt;
+und &lt;code&gt;26104*128/1024 = 3263&lt;/code&gt;, also 3263 KB oder 3.2M für alle Inodes.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Aber meine Frage ist eine Andere.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; 21:40 Isotopp&amp;gt; und das wichtigste in &lt;code&gt;struct: __le32 i_block[EXT2_N_BLOCKS];&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;code&gt;i_block[12]&lt;/code&gt; ist ein indirekter Block? &lt;em&gt;aaargh&lt;/em&gt; Die Adresse eines indirekten Blockes?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja.
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L165&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L165&lt;/a&gt;
+
+. Dort ist
+&lt;code&gt;#define EXT2_IND_BLOCK EXT2_NDIR_BLOCKS&lt;/code&gt; und weiter ist
+&lt;code&gt;#define EXT2_NDIR_BLOCKS 12&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Also 15 &lt;code&gt;EXT2_N_BLOCKS&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Also ist &lt;code&gt;i_block[0]&lt;/code&gt; bis &lt;code&gt;i_block[11]&lt;/code&gt; direct, &lt;code&gt;i_block[12]&lt;/code&gt; indirect, und &lt;code&gt;i_block[13]&lt;/code&gt; DIND und &lt;code&gt;i_block[14]&lt;/code&gt; TIND. Alles in allem also 15.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Sind das die Faktoren die die max. Dateigröße in ext2 bestimmen?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Das sind die Faktoren, die die maximale Blocknummer bestimmen. Dateigröße ist Blockgröße mal maximale Blocknummer.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Also ja ;) Indirekt halt.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; 9711-9722: Sind das die &amp;ldquo;Adressen&amp;rdquo;?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Blocknummern, ja, Adressen auf der Platte. In
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2_fs.h#L234&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/ext2_fs.h#L234&lt;/a&gt;
+
+ siehst du als Typ uebrigens &lt;code&gt;__le32&lt;/code&gt;. Das ist definiert in
+&lt;a href=&#34;http://lxr.linux.no/source/include/linux/types.h#L172&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/include/linux/types.h#L172&lt;/a&gt;
+
+ und endet als &lt;code&gt;__u32&lt;/code&gt;, also unsigned 32 bit. Also 2^32 Blöcke. Bei 4 KB Blöcken sind das 17592186044416 Bytes, oder 16 TB, bei 1 KB Blöcken nur 4 TB.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Diese Blöcke haben aber nix mit den Blöcken bei ext2 zu tun? Oder doch?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; &lt;code&gt;show_super_stats&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; &lt;code&gt;Block size:               1024&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; In meinem Fall also auch maximale Dateigröße 4 TB. 4 Gigablocks.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Okay, dann noch eine Frage:&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; TOTAL: 1804 und Blockcount: 3608, huh? Warum *2?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Hmm, da rechnet jemand mit 512 Byte Hardwaresektoren, warum auch immer.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:~ # ls -lsi /boot/vmlinuz-2.6.13-15-default
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 28 1513 -rw-r--r--  1 root root 1541719 Sep 13  2005 /boot/vmlinuz-2.6.13-15-default
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isotopp&amp;gt; Inode 28, 1513 Blöcke auf der Platte, Dateilaenge 15411719 Bytes. Rechnerisch ist  &lt;code&gt;1541719/1024 = 1505.5849&lt;/code&gt;. 7 Blöcke Verwaltungsoverhead. Und zwar&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;(0-11):11515-11526, 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;(IND):11527, (12-267):11528-11783, 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;(DIND):11784, (IND):11785, (268-523):11786-12041, 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              (IND):12042, (524-779):12043-12298, 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              (IND):12299, (780-1035):12300-12555, 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              (IND):12556, (1036-1291):12557-12812, 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              (IND):12813, (1292-1505):12814-13027
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;TOTAL: 1513
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isotopp&amp;gt; (IND):11527, (DIND):11784, (IND):11785, (IND):12299, (IND):12556, (IND):12813 &amp;lt;- das sind 6.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; 1541719/1024 = 1505.5849 sind 1506. Plus 6 sind 1512.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Er meint total sei 1513. Wieso?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich versteh das sowieso nicht, warum da 1513 angezeigt wird. 1292-1505 ist das letzte und dann total 1513. Evtl noch die Metainfos dazu?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Nein, aber die DIND und IND Blocks. Für die Blöcke 12-267 wird ja ein IND gebraucht, für die Blöcke 268-1505 wird ein DIND und vier IND gebraucht. 6 blocks Extra. Siehe noch einmal
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&lt;/a&gt;
+
+. Das rechts sind die Daten. In der Inode stehen die ersten paar Datenblocknummern direkt, in der zeichnung 10, in ext2 sind es 12. Dann steht in der Inode die Nummer vom IND, und im IND die Blocknummern der Datenblöcke, hier 12-267. Das ist also 1 block overhead, wenn das file mehr als 12 blocks lang wird. Dann ein DIND, wenn der 268&amp;rsquo;te block gebraucht wird und für jeweils 256 Blocks ein IND dazu.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Du erklaerst so schnell.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # dd if=/dev/zero of=kris bs=1k count=12
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # ls -ls kris
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;12 -rw-r--r--  1 root root 12288 Dec 26 16:58 kris
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;12 Blöcke, 12288 Bytes Länge. Und nun:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # dd if=/dev/zero of=kris bs=1k count=13
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # ls -ls kris
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;14 -rw-r--r--  1 root root 13312 Dec 26 16:58 kris
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ein 1k länger, 14 Blocks statt 12.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Wie findet man die Größen der BGs eines dateisystems heraus?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Lies &lt;code&gt;show_super_stats&lt;/code&gt; von &lt;code&gt;debugfs&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # export DEBUGFS_PAGER=cat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # debugfs /dev/sda5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;debugfs 1.38 (30-Jun-2005)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;debugfs:  show_super_stats
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Inode count:              26104
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Block count:              104388
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Block size:               1024
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Blocks per group:         8192
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Inodes per group:         2008
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Inode blocks per group:   251
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isotopp&amp;gt; Wird einiges klarer?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ein bisschen. Also wenn ich z.B. block nummer X habe, dann ist (nummer X)/(blocks per group) die BG nummer gell?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, aber das interessiert nicht. Du redest ja von Blöcken.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Der n-te Block der Datei x kann irgendwo liegen. Wo, das sagt dir die Inode.  Normal hast du ja ein File, und eine Position in einem File.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich kann doch einfach von der Adresse auf der Platte X * bytes_per_block lesen?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Na ja, als root schon. Sonst nicht. debugfs macht das ja, die Disk als raw device auf und dann direkt auf die Blöcke klettern. Niemand sonst tut so etwas ausser debugfs und fsck. Alle anderen machen FILES auf und lesen dann am OFFSET in dem File. Punkt ist, dass du normal mit Files arbeitest und nicht mit Blöcken. Der Kernel arbeitet mit Blöcken. Und er muss irgendwie vom File + Offset auf den Block kommen.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ja Klar&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Unser ext2 hier hat 1 KB Blocksize. Wir lesen das File &lt;code&gt;/boot/vmlinuz-2.6.13-15-default&lt;/code&gt; (inode 36). Und zwar am Offset 1000000 (1 mio). Der wievielte Block im File ist das?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;em&gt;denk&lt;/em&gt;. Erstmal hat man ja nur den Dateinamen.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, das kümmert uns gerade noch nicht. Offset 1 mio &amp;ndash; welcher block? 1000000/1024 = 976.5625. Also Bytes 0-1023 sind Block 0, Bytes 1024-2047 sind Block 1 und so weiter.  In unserem fall also block 976. 976*1024=999424, 1000000-999424=576. Byte 1 000 000 steht also in Block 976, an Position 576 in diesem Block.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Okay. Stop mal. Hab da gleich ne Frage dazu:&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; 21:40 Isotopp&amp;gt; und das Wichtigste in &lt;code&gt;struct: __le32 i_block[EXT2_N_BLOCKS];&lt;/code&gt;
+theclaw&amp;gt; dieser kontext: &lt;code&gt;i_block[976]&lt;/code&gt; brauchen wir da also. Ack? Und dazu noch das offset dazu?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, aber den kriegen wir nicht so.
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ja, das wollte ich grad sagen. :-P Blocks 0-11 kriegen wir so. Muss man sich halt den Weg durchhangeln.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; blocks 12-267 kriegen wir über den IND (single indirect block). Und blocks 268- kriegen wir über den DIND und den passenden IND.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; 976-12=964, 964-256=708. 708/256=2.7656. Also müssen wir über den 2. IND des DIND gehen.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich weiss nicht ganz was du da rechnest.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Naja, 1 KB blockgroesse, 4 byte pro blocknummer, also 256 blockadressen pro Block. 976ter Block ist gefragt.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ay&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; 12 direct blocks, also 964 blocks dahinter.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Also mit einem &amp;ldquo;indirekten block&amp;rdquo; kann man 256 andere Blöcke adressieren, wie pointer in C&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich hab noch ganz grundlegende Fragen. Was wir wirklich wollen, ist doch das mapping logische Ext2block-Adresse der Datei → physische Blockadresse. Richtig?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; In diesem speziellen Fall: ja. Die allgemeine Formulierung lautet so: Wir haben ein Quadrupel (major number, minor number, inode number, offset in bytes), das ist ein Device, eine Partition (maj, min), und in dem Device ein File (inode), und in dem File eine Byteposition. Und wir wollen ein Tripel (maj, min, blockno), also in der partition (maj, min) den zu dieser Datei gehörenden physikalischen Block.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; jo&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Weil (maj, min) bei dieser Abbildung konstant sind (wir arbeiten immer innerhalb derselben partition), vergessen wir maj und min und reden von einer Funktion die (ino, offset) auf (phy block) abbildet. Das nennt man ein Mapping. Und zwar ein Mapping für Datenblöcke. Daher heisst die funktion &lt;code&gt;bmap&lt;/code&gt;. Jedes Dateisystem hat so eine Funktion, daher reden wir hier über die bmap funktion von ext2, die heisst also sinnigerweise &lt;code&gt;ext2_bmap&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Schonmal sauhilfreich. ext2_bmap: Jetzt kann ich mir was darunter vorstellen. Danke. &lt;em&gt;codesuch&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Es ist eine diskrete Funktion.&lt;/p&gt;
+&lt;p&gt;y = mx+k. Das sind kontinuierliche Funktionen von R-&amp;gt;R.&lt;/p&gt;
+&lt;p&gt;Wir arbeiten hier mit diskreten, endlichen Funktionen. Die werden in der Regel als Lookuptable realisiert.&lt;/p&gt;
+&lt;p&gt;Es gibt also eine Wertetabelle, die jedem (ino, offset) ein (phy block) zuordnet.&lt;/p&gt;
+&lt;p&gt;Die Wertetabelle &lt;em&gt;ist&lt;/em&gt; die Inode. Eine Inode ist also ein Array von Blocknummern.&lt;/p&gt;
+&lt;p&gt;Wenn es ein naives Array waere, dann waere die Inode variabel groß und für große Dateien sehr, sehr gross. Das ist wenig effizient.&lt;/p&gt;
+&lt;p&gt;Daher hat man die Inode komprimiert, für kleine dateien (bis 12 blocks) speichert man die Wertetabelle tatsächlich &lt;em&gt;in&lt;/em&gt; der Inode (i_blocks[0-11]),
+aber stell Dir dieses Verfahren mal für 1000 Blocks vor. Das wäre doof.&lt;/p&gt;
+&lt;p&gt;Also speichert man die Wertetabelle für die Blöcke 12-267 nicht in der Inode, sondern in einem für diesen Zweck bestellten block, indem indirect block und in der Inode nur den einen Eintrag für diesen Block.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich habs soweit gecheckt.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Das kann man beweisen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # dd if=/dev/zero of=kris bs=1k count=12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;12 blocks a 1 KB (ich hab ja ein ext2 mit 1 KB blocks).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # ls -ls kris
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;12** -rw-r--r--  1 root root 12288 Dec 26 17:30 kris
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;12288 bytes lang 12 blocks belegt. Nun mal 13 KB.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # dd if=/dev/zero of=kris bs=1k count=13
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # ls -ls kris
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;14 -rw-r--r--  1 root root 13312 Dec 26 17:30 kris
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;13312 bytes, aber 14 blocks! Da ist er, der IND.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;em&gt;selbstausprobier&lt;/em&gt; Ist das die Anzahl der Blöcke für das Inode inklusive den Daten?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Das ist die Anzahl der Blöcke OHNE die inode selber (Die belegt 128 byte in der Inodetable), also Daten + IND + DIND + TIND. Kann man auch beweisen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # dd if=/dev/zero of=kris bs=1k count=0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # ls -ls kris
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;0 -rw-r--r--  1 root root 0 Dec 26 17:33 kris
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Isotopp&amp;gt; File mit 0 Byte belegt 0 Blocks, Inode wird also nicht gezählt.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; okay. Das war hilfreich die Erklaerung, danke.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Also wir haben in der Inode das Lookup Array für eine diskrete Funktion, eine Wertetabelle,
+und die Speicherung des Array ist ulkig. Und wir haben deswegen overhead, weil wir die
+mit 1, 2 und 3 markierten Blöcke in
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&lt;/a&gt;
+
+
+irgendwann belegen müssen. Und deswegen siehst du die Sprünge - kein File hat jemals 13 Blocks.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Moment, aber das ist ja sau umständlich eine ganze Datei zu lesen dann? :)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ah! Jetzt dämmert es langsam. Ist ja nicht so, dass ext2 GUT wäre.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; So, jetzt gehen wir noch mal in den Code&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Das ist
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L665&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ext2_bmap&lt;/a&gt;
+
+, sehr kurz. Du erinnerst dich: JEDES Dateisystem hat ein bmap.
+Darum ist &lt;code&gt;ext2_bmap&lt;/code&gt; sehr kurz, es ruft &lt;code&gt;generic_block_bmap&lt;/code&gt; auf. Das wiederum ruft dann allerdings
+&lt;code&gt;ext2_get_block&lt;/code&gt; auf, das die Arbeit für &lt;code&gt;generic_block_bmap&lt;/code&gt; macht. &lt;code&gt;generic_block_bmap&lt;/code&gt; kriegt also
+einen Callback nach &lt;code&gt;ext2_get_block&lt;/code&gt; mitgegeben. Wir landen also in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L547&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ext2_get_block&lt;/a&gt;
+
+. So weit so klar?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ja warte. Ich schau mir den Code gerade an.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Tut nicht not. Noch nicht. Erst mal ist nur wichtig, wie wir zu &lt;code&gt;ext2_get_block&lt;/code&gt;
+kommen und wieso da ein Umweg über das &lt;code&gt;generic_block_bmap&lt;/code&gt; gemacht wird.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Nicht klar. Warte. Wo bei &lt;code&gt;ext2_get_block()&lt;/code&gt; ist das Offset?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; in &lt;code&gt;iblock&lt;/code&gt; (2. parameter), ist schon umgerechnet in eine blocknummer.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ah klar, der n. block eines inodes.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wir sind also in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L547&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L547&lt;/a&gt;
+
+ und sollen &lt;code&gt;iblock&lt;/code&gt;
+aus &lt;code&gt;inode&lt;/code&gt; (1. parameter) fischen. Also block 976 aus file 36. Wir müssen ja nun je nach
+Blockoffset unterschiedlich kompliziert die Lookuptable runterklettern. Bei blocks 0-11 wäre
+alles ganz einfach, bei 12-267 kommt der IND dazu und bei den folgenden Blöcken der DIND.
+Soweit das Verfahren grundsätzlich klar?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Ich schau mir das .gif nochmal an.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Es wird leichter, wenn du
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L196&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L196&lt;/a&gt;
+
+ liest.
+&lt;code&gt;i_block&lt;/code&gt; ist also 976. Dann schau mal in die Zeile 196. Zeile 201: &lt;code&gt;direct_blocks&lt;/code&gt; ist 12. &lt;code&gt;indirect_blocks&lt;/code&gt; ist ptrs, also 256.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; &lt;code&gt;ext2_block_to_path&lt;/code&gt;. Das &lt;code&gt;path&lt;/code&gt; hat nix mit dem Dateisystempfad zu tun, sondern mit dem Pfad, wie man zum Block kommt. Ahh.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Es geht um den Path in
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&lt;/a&gt;
+
+, ja.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Warte, ich hab eine Frage zu dem GIF. Da z.b. &amp;ldquo;1&amp;rdquo;, also der erste indirekte Block. Der koennte auf 256 weitere zeigen?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja. In unserem Beispiel ist das so, 4 byte pro blocknummer und 1 kb pro block. Bei anderen
+Größen (8 byte pro blocknr, und 4 kb pro block) ist das anders. 4096/8 = 512 pro IND z.B.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; hm. Sorry, ich dachte ne Blocknummer ist 32bit?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, in unserem Beispiel ist das so. Aber es waere ja möglich, das alles mit anderen Sizes zu compilen.
+Und dann soll es auch noch funktionieren. Also coden wir das alles nicht hart rein, sondern speichern die
+Rahmendaten im Superblock des Filesystems und schreiben den Code ordentlich. Soweit so klar?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; jo&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Drum auch der Code in
+&lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L196&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L196&lt;/a&gt;
+
+, Zeilen 199 bis 203.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Den ich mir grad anschaue. ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Der fragt den Superblock sb nach den Anzahl der Adressen pro Block, und bestimmt dann die &lt;code&gt;direct_blocks&lt;/code&gt;,
+die Anzahl der Blockadressen pro indirect Block in &lt;code&gt;indirect_block&lt;/code&gt; und die Anzahl der Blockadressen pro Double Indirect Block.&lt;/p&gt;
+&lt;p&gt;Der macht das ein wenig komisch. Erst mal &lt;code&gt;direct_blocks&lt;/code&gt;. Das ist leicht, da nimmt er nur den #define.
+&lt;code&gt;indirect_blocks&lt;/code&gt; ist auch leicht, das ist ptrs, also &lt;code&gt;EXT2_ADDR_PER_BLOCK(...sb)&lt;/code&gt;, also mal im Superblock nachschlagen.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;[#define EXT2_ADDR_PER_BLOCK(s)          (EXT2_BLOCK_SIZE(s) / sizeof (__u32))](http://lxr.linux.no/source/include/linux/ext2_fs.h#L100)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Block size bei uns 1024 und &lt;code&gt;sizeof __u32&lt;/code&gt; ist immer 4. Also ist mein beispiel mit 8 derzeit hypothetisch.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ein double block kann ebenfalls ptrs viele Blockadressen enthalten, also 256 Stück. Jede von denen ist ein indirect block, der 256 Datenblöcke enthält.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; also 256^2 und ein TIND für 256^3.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Nun will er das aus irgendeinem Grund nicht so rechnen, sondern mit bit shifts, also macht er 1 &amp;laquo; (ptrs_bits * 2).&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Also warte, kann man 256+256^2+256^3 Blöcke adressieren, d.h. kann ne Datei so groß sein?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, das ist auch noch ein Limit. Aber da wir nur 2^32 viele Blocknummern haben, ist bei 4 Gigablocks Schluss, also bei 4 TB (1 kb Blöcke) oder 16 TB (4 kb Blöcke).&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Okay, irgendwie so ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Du müßtest schon die Blocknummern länger machen als ein &lt;code&gt;__u32&lt;/code&gt;, damit mehr geht, dann passen aber weniger direct_blocks in eine Inode, oder die Inode wird größer.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Aber wir wollen mal weiter im Code. Schau in zeile 207. Was machen die da?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; &lt;code&gt; if (i_block &amp;lt; 0) {&lt;/code&gt;
+Isotopp&amp;gt; geht das überhaupt?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Warte&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Nah, nur durch nen Programmierfehler evtl.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Welchen typ hat &lt;code&gt;i_block&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; unsigned? :) Ja, okay. Das geht überhaupt nicht.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Steht oben in der Funktion - da ist es ein LONG!&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ah, doch ein signed :)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Aber eine Blocknummer, das haben wir vorher gesehen, ist ein &lt;code&gt;__u32&lt;/code&gt;!&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Macht das sinn?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Nein, das ist FAHALSCH!&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Sag das doch!&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Du hast gerade deinen ersten Kernelfehler gefunden.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Geil! ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Der Fehler sieht Blocknummern als signed, daher ist also nun schon bei 2 Gigablocks zu, also 2 TB und 8 TB Filesize (für 1 und 4 kb Blocksize). Aber weiter im Text, Zeile 209.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Weiter zu 212. &lt;code&gt;((i_block -= direct_blocks) &amp;lt; indirect_blocks)&lt;/code&gt; ist dir auch klar? Wir zermatschen &lt;code&gt;i_blocks&lt;/code&gt; hier als Seiteneffekt.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ja bin ein C-ler. Daran scheitert die Erklaerung nicht ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Also sind wir in 216. Nun ist &lt;code&gt;i_block&lt;/code&gt; also 964 und wir ziehen 256 (&lt;code&gt;indirect_blocks&lt;/code&gt;) ab. Das sind 708. Und &lt;code&gt;double_blocks&lt;/code&gt; ist 256^2. Also true. Also speichern wir in 217: lese &lt;code&gt;EXT2_DIND_BLOCK&lt;/code&gt;, dann in 218: lese &lt;code&gt;i_block/256&lt;/code&gt; (&lt;code&gt;i_block &amp;gt;&amp;gt; ptrs_bits&lt;/code&gt;), und in 219: lese &lt;code&gt;i_block % 256&lt;/code&gt; (&lt;code&gt;i_block &amp;amp; ( ptrs - 1)&lt;/code&gt;). Dann sind wir fertig.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wir sind wieder in &lt;a href=&#34;http://lxr.linux.no/source/fs/ext2/inode.c#L547,&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://lxr.linux.no/source/fs/ext2/inode.c#L547,&lt;/a&gt;
+
+ line 557 nun, soweit klar?&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Kleinen Moment, das Bitshifting finde ich verwirrend.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; ja&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; ich weiss jetzt, was &lt;code&gt;ext2_block_to_path&lt;/code&gt; macht.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Also warte mal. Lass mich mal zusammenfassen.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Naja, nicht mal so einfach zu beschreiben.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Doch schon. Dir fehlen nur die Worte.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; :] jo&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Wir haben nun offset[0], offset[1] und offset[2]. In offset[0] steht welches Feld aus der Inode wir nehmen (das DIND feld),  Wir haben dann einen Block mit 256 Feldern, und nehmen das Feld offset[1] da draus, lesen den Block und nehmen das Feld offset[2] da draus.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Naja, das sind ja Details. Mich interessiert aber eher das Design als die Implementation ;), Das geht mir schon zu sehr in die Tiefe ehrlich gesagt.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Allgemeiner: wir haben ein Array, das nicht linear ist, sondern quadratisch steigend durch Indirektion komprimiert wird, und bei unseren Randparametern ist die schrittweite 8 bit (256 entries) pro Block, also 256, 256^2, 256^3, &amp;hellip; und das ist genau die Zeichnung
+&lt;a href=&#34;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://kris.koehntopp.de/artikel/dateisysteme/filestructure.gif&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Okay. Jetzt sind meine Fragen geklärt oder? Dieses ganze Detailwissen erschlägt mich ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Der Rest sind tatsaechlich Kerneldetails. Das hier war die Logik. Der Punkt ist, dass du in &lt;code&gt;block_to_path&lt;/code&gt; durch die Faltlogik geklettert bist. Also die, die das mit DIR, IND, DIND und TIND analysiert und entscheidet.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Naja, Faltlogik?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ja, erst 12 direkt, dann 256 einmal gefaltet, dann 256*256 zweimal gefaltet, dann 256*256*256 dreimal gefaltet statt eines einzigen linearen Arrays das zum groessten Teil leer waere.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Hm, ich versteh zwar das System, aber nicht was das mit Falten zu tun hat ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Naja, statt eines Array mit 2 Gigaentries (Kernelbug!) hast du ein Array mit 15 Eintraegen, bei dem die ersten 12 Eintraege für sich selber stehen, der Eintrag 13 für 256 Eintraege, der Eintrag 14 für 256 Eintraege, die für 256 Eintraege stehen, steht, und der Eintrag 15 für 256 Eintraege die für 256 Eintraege, die für 256 Eintraege stehen steht. Also einmal falten, zweimal falten, dreimal falten.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Aber &amp;ldquo;falten&amp;rdquo;?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; So in etwa:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   ___
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;___\ /___
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;theclaw&amp;gt; Was stellt das dar?&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Ein Eintrag, der für viele steht. Ein Blatt Papier mit zwei Knicks, ein Eintrag (der zwischen \ /) steht für Drei (___)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Und zum Schluß
+&lt;a href=&#34;http://www.tamacom.com/tour.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://www.tamacom.com/tour.html&lt;/a&gt;
+
+,
+&lt;a href=&#34;http://www.tamacom.com/tour/kernel/unix/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://www.tamacom.com/tour/kernel/unix/&lt;/a&gt;
+
+,
+&lt;a href=&#34;http://www.tamacom.com/tour/kernel/unix/S/97.html#L18&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;http://www.tamacom.com/tour/kernel/unix/S/97.html#L18&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Das, mein Freund, ist der Urvater aller bmaps, bmap in V7 Unix.&lt;/p&gt;
+&lt;p&gt;Rein gehen eine &lt;code&gt;struct inode&lt;/code&gt;, die inode,  eine &lt;code&gt;daddr_t bn&lt;/code&gt;, eine blocknummer und ein &lt;code&gt;rwflag&lt;/code&gt;, das ist aber Wurst. Raus geht eine &lt;code&gt;daddr_t&lt;/code&gt; blocknummer.&lt;/p&gt;
+&lt;p&gt;Also (ino, block_in_file) -&amp;gt; (phys blocknr). NADDR ist die Anzahl der Eintraege in der Inode. Also sind 0-&amp;gt; NADDR-4 die direct blocks, NADDR-3 der IND,  NADDR-2 der DIND  und NADDR-1 der TIND.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Aber den Code will ich mir jetzt nicht genauer ansehen, sorry ;)&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Das ist derselbe Code, nur noch verquaster. Der ist ja auch 30 Jahre alt.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Den Link bookmarke ich mal, das könnte noch interessant werden.&lt;/p&gt;
+&lt;p&gt;Isotopp&amp;gt; Und weil es so schön ist, sind da auch die FreeBSD, NetBSD, OpenBSD und Hurd Versionen von demselben Zeug. Und da kannst du dann sehen wie fundamental das ist, was Du da gerade anfasst. Und wie sich C-Style im Kernel in den letzten 30 Jahren so entwickelt hat. Weil das V7 Zeugs da sind etwa 30 Jahre von hier, das 4.3BSD sind ca. 20 Jahre von hier und das Linux-Zeugs ist von jetzt.&lt;/p&gt;
+&lt;p&gt;theclaw&amp;gt; Wenn ich das so seh fällt mir grad auf wie sinnvoll man seine Zeit nützen könnte ;)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Fragmentierung (für Jannik)</title>
+      <link>https://blog.koehntopp.info/2006/05/08/fragmentierung-fuer-jannik.html</link>
+      <pubDate>Mon, 08 May 2006 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2006/05/08/fragmentierung-fuer-jannik.html</guid>
+      <description>&lt;p&gt;ircnet, #lug-kiel, am 7. und 8. Mai.&lt;/p&gt;
+&lt;p&gt;Jannik wundert sich über fsck&amp;rsquo;s Meldung&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;/: 130834/6553600 Dateien (1.1% nicht zusammenhängend), 1007700/13107200 Blöcke
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Ist das schlimm?
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+hmm.. /:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;130834/6553600 Dateien (1.1% nicht zusammenhängend), 1007700/13107200 Blöcke
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Sieht so aus als wäre mein Dateisystem fragmentiert gewesen o.O?
+Ich dachte, so etwas kennt Linux nicht.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;tholle:&lt;/strong&gt;
+Linux oder das Dateisystem? ;-)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Seufz. &amp;ldquo;1.1% nicht zusammenhängend&amp;rdquo; Natürlich können Dateien in
+nicht fortlaufenden Blocknummern gespeichert sein. Warum meinst
+du, daß das ein Problem sei? Oder anders herum, warum glaubst
+Du, daß es gut ist, wenn eine Datei in fortlaufenden
+Blocknummern gespeichert ist?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+???&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Erklär mal was Du denkst, was die Ausgabe bedeutet, die Du da
+bekommen hast?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Isotopp: Öhm. Ei, jetzt kommt hier ne Lehrstunde :D
+Ja, vielleicht daß die Daten nicht zusammenhängen (in Blöcken
+&amp;ldquo;nebeneinander&amp;rdquo; liegen) Also eine Datei zum Beispiel.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Ja, genau. Eine Datei ist zusammenhängend, wenn sie in
+fortlaufenden Blocknummern gespeichert ist. Wenn in den
+Blocknummern einer Datei lücken sind, ist sie fragmentiert.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ich dachte sowas nennt man dann fragmentiert sein, so wie man
+das bei Windows kennt. Ach so, gut.
+Also kann das Dateisystem defragmentiert werden irgendwie?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Wenn das z.B. ein ext2 oder ext3 ist, dann besteht das
+Dateisystem aus Blockgruppen, In BSD ufs nennt man das cylinder
+groups, das ist im Kern dasselbe. In einer bg befinden sich eine
+Superblockkopie, die Inode-Bitmaps, die Block-Bitmap, die Inodes
+der bg und dann die Datenblöcke. Jede bg ist also ein kleines
+Mini-Dateisystem für sich.&lt;/p&gt;
+&lt;p&gt;In ext2/ext3 kann eine Bitmap nur einen Block groß sein.&lt;/p&gt;
+&lt;p&gt;Früher war ein Block 1 kb groß. das sind also 8192 Bit in einem
+Block. Also konnte eine bg 8192 Blöcke groß sein.&lt;/p&gt;
+&lt;p&gt;Heute hat ext2/ext3 4 kb blöcke. also sind 32768 Bit in einem
+Bitmap block, und 32768 Blöcke in einer bg.&lt;/p&gt;
+&lt;p&gt;Früher waren also 8192 1 kb blocks = 8 MB eine bg. Heute sind
+32768 4 kb blocks = 128 MB eine bg.&lt;/p&gt;
+&lt;p&gt;Was passiert, wenn du eine Datei mit 200 MB speichern willst?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Isotopp: dann wird eine bg belegt und eine 2. nur zum Teil.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Ja, genau. Ist die Datei dann fragmentiert?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Nicht wirklich.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Naja, sind die Blocknummern der Datei zusammenhängend oder nicht?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ähm…&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Sie können nicht, denn irgendwo fängt ja die neue bg an.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Genau.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Also liegt irgendwo Mitten in der Datei der Superblock und die
+Bitmaps und die Inodes der neuen bg. Die Datei ist also
+fragmentiert. In ext2/ext3 ist es nicht möglich eine Datei zu
+speichern ohne sie zu fragmentieren, wenn sie größer als eine bg
+ist.&lt;/p&gt;
+&lt;p&gt;Wenn eine 200 MB Datei eine bg komplett voll macht, dann sind ja
+nur die Datenblöcke voll, die Inodes in der bg sind noch leer.
+(bis auf eine, die von der 200 MB Datei) Jetzt wird eine zweite
+Inode in der bg belegt, in der die Datenblöcke voll sind. Wo
+werden die Datenblöcke der Datei abgelegt?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ähm, woanders?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Ja, weit weg von der Inode. Das ist aber doof, denn um die Datei zu lesen,
+muß man die Inode lesen und dann die Daten finden und lesen.
+Das dauert.&lt;/p&gt;
+&lt;p&gt;Die 200 MB Datei ist doch aber sowieso fragmentiert. wenn wir sie
+schneller (früher) fragmentiert hätten, dann wäre noch Platz
+frei in der 1. bg frei und die 2. Datei könnte ihre Daten näher
+an der Inode speichern. Aber wieso glauben wir, daß
+Fragmentierung was schlechtes ist? Wieso denken wir, daß
+zusammenhängende Blocknummern an einer Datei gut sind?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Das glaube ich mittlerweile gar nicht mal mehr.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Jannik: Du hast eine Festplatte. Wie lange dauert es denn bei
+Deiner Platte, den Kopf von einer Inode zu den Datenblöcken in
+einer anderen bg zu bewegen? Ungefähr?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Kein Plan. Nicht lang. Vermutlich keine Millisekunde.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Kennt jemand die Zeit von seiner Festplatte hier?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Isotopp hat eine Platte mit einer Seek Time von 8ms in seinem Laptop.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Jannik: Festplatten haben Seek times zwischen 5 und 10ms.
+Das heißt, die können 100-200 Seeks pro Sekunde machen&lt;/p&gt;
+&lt;p&gt;Damit haben wir einen Grund, warum ein Interesse besteht, Daten
+auf einer Platte möglichst dicht beeinander zu speichern (Seeks
+sind teuer), aber wenn wir sie &lt;em&gt;zu&lt;/em&gt; dicht beieinander speichern,
+dann kommen neue und alte Daten einander in die Quere.
+Daher wirst du auf jedem Dateisystem mit grossen Dateien immer
+fragmentierte Dateien finden.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Isotopp: Gut. aber Dateien werden trotzdem wie bei Windows
+fragmentiert? Sodaß man Defragmentieren muss? Wie ist das, wenn
+der Datenträger voll ist? Dann ist das System vermutlich
+gezwungen zu fragmentieren?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Ja, natürlich. Wenn die Platte fast voll ist, muss das
+Dateisystem nehmen was da ist. ufs sagt das an.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;changing optimization from time to space&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;oder so ähnlich steht dann im syslog.
+In ext2/ext3 sieht man das nicht, aber kein Dateisystem sollte mehr als 80% gefuellt werden, sonst wird es mit der
+Allokation schwierig.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Gut.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wir wissen nun: Dateien sollten dicht beeinander stehen, damit Seeks vermieden werden. aber wenn wir das tun, etwa eine bg voll machen,
+dann bauen wir uns die bg fuer alle nachfolgenden Dateien zu, und bekommen die Seeks dann da.&lt;/p&gt;
+&lt;p&gt;ufs vermeidetet das etwa, indem es &amp;ldquo;long Seeks&amp;rdquo; erzwingt. Es fragmentiert Dateien &lt;em&gt;absichtlich&lt;/em&gt; etwa alle 1mb oder so, indem es in eine andere bg wechselt.&lt;/p&gt;
+&lt;p&gt;Wenn du also eine Datei in ufs speicherst, wird das erste MB Daten in dieselbe bg geschrieben, in der die Inode der Datei steht, und dann wird ein long Seek erzwungen und in einer anderen bg weiter geschrieben. Dadurch bleiben Datenblöcke in der bg frei, sodaß die nächste Datei, die angelegt wird
+Datenblöcke frei vorfindet in derselben bg wie ihre Inode.&lt;/p&gt;
+&lt;p&gt;In diesem fall ist es messbar vorteilhaft, die Datei zu fragmentieren als die unfragmentiert zu lassen. Cool was?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Noch am lesen. Weiß nicht ob ich das genau verstanden habe. Nochmal lesen ;)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Vielleicht so: eine bg ist ein kleines Dateisystemchen mit Inodes und Datenblöcken. Wir wollen gerne, dass die Datenblöcke einer Datei dicht an der Inode stehen, sonst Seek und Seek ist langsam bei Platten.&lt;/p&gt;
+&lt;p&gt;Wenn wir eine grosse Datei abspeichern, belegen wir eine Inode in einer bg und dann alle Datenblöcke in dieser bg, weil es ja eine grosse Datei ist.&lt;/p&gt;
+&lt;p&gt;Wenn wir eine zweite Datei in derselben bg speichern wollen, finden
+wir noch eine freie Inode (war ja erst eine belegt) und dann aber
+keine Datenblöcke mehr,  denn die lange erste Datei hat die ja alle belegt.&lt;/p&gt;
+&lt;p&gt;ßWir müssen also die Datenblöcke von Datei 2 weit entfernt von der Inode von Datei 2 abspeichern,
+da die Datenblöcke in der Datei wo die Inode steht belegt sind.
+Das ist doof.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Klar das hab ich noch verstanden. &lt;em&gt;Müssen&lt;/em&gt; wir?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wenn du die Inodes in dieser Blockgroup nicht ganz aufgeben willst - ja.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ach so, ja klar.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Über die Regeln, wie man Inodes auswählt, reden wir noch.&lt;/p&gt;
+&lt;p&gt;Der Punkt ist, dass wir Inode 2 beschreiben wollen in derselben bg wie Inode 1, aber keine Datenblöcke in dieser bg mehr frei sind.
+Also können wir nur die Inode nehmen, müssen die Datenblöcke fuer Inode 2 aber weit weg in einer anderen bg abspeichern.&lt;/p&gt;
+&lt;p&gt;ufs versucht das zu vermeiden,
+genauer versucht ufs zu vermeiden, dass eine einzige grosse Datei alle Datenblöcke in einer bg belegt.&lt;/p&gt;
+&lt;p&gt;ufs geht also so vor:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wenn Datei 1 geschrieben wird,
+wird eine Inode in der bg belegt und die daten zu dieser Inode 1 erst mal in dieselbe bg wie die Inode geschrieben&lt;/li&gt;
+&lt;li&gt;nach einem MB oder so (konfigurierbar) macht ufs dann aber einen long Seek, erzwingt einen Wechsel der bg.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Das erste MB der langen Datei steht also in der ersten bg, der Rest dann in einer anderen, nach einem weiteren MB dann in einer noch anderen und so weiter.
+ufs verteilt die grosse Datei also über die Datenblöcke in allen Blockgroups, in 1 MB grossen fragmenten.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Dadurch wird sie fragmentiert, aber ist das nicht schlecht für sie? Wird das nicht langsamer?
+Effektiver wäre es vielleicht, wenn man das über mehrere Festplatten machen würde, mit LVM und so vielleicht?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Ein wenig. &lt;em&gt;Aber:&lt;/em&gt;
+in der ersten bg sind nun noch Datenblöcke frei, und das erste MB von Datei 2 kann nun ebenfalls dicht bei der Inode von Datei 2 stehen.
+Und ja, Raid 0, Raid 10 oder andere Dinge können hier helfen. Mehr Spindeln = mehr Möglichkeiten pro Sekunde, einen Seek zu machen.
+Aber wenn du die Anzahl der spindeln als konstant (1, oder meinetwegen 6) ansetzt,
+brauchst du trotzdem eine Optimierungsstrategie.
+Man kann ja nicht jedes Problem mit beliebig viel Geld bewerfen.
+Aber Dein Denkansatz ist vollkommen korrekt - mehr spindeln = mehr Seeks = weniger probleme.
+Der Punkt ist - mit long Seeks stehen die Dateianfänge aller Dateien dicht bei den Inodes dieser Dateien.
+Stell dir etwa mal ein &lt;code&gt;file *&lt;/code&gt; auf ein Verzeichnis vor.
+Oder &lt;code&gt;konqueror file:/home/jannik&lt;/code&gt; - da müssen ja Previews gerendert werden, Dateitypen bestimmt und so weiter.
+Da ist es schon ausgesprochen nützlich, wenn man die Dateianfaenge (die ersten MB oder so) dicht an den Inodes hat.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Steht das Wichtigste über eine Datei nicht im Anfang? Dateityp, Berechtigungen etc.?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wenn ein Dateiformat schlau überlegt ist, dann steht es am Anfang.
+Aber metadaten wie Berechtigungen, Zeitstempel und alles andere stehen in der Inode.
+Schau mal in &lt;code&gt;/usr/src/linux/include/linux/ext2_fs.h&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Wenn man mehrere Festplatten hätte, dann wäre es doch ziemlich cool die Dateien darüber zu streuen…&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Und suche da nach &lt;code&gt;struct ext2_Inode&lt;/code&gt;.
+Das ist eine Inode auf der Platte und was da drin steht.
+Der &lt;code&gt;struct ext2_Inode&lt;/code&gt; ist 128 Byte gross, wenn man nachzählt.
+In einen 1024 Byte Block passen also 8 davon.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Den Pfad gibts bei mir nicht.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Dann hast du keine Kernelsources oder Kernelincludes installiert.
+Guckst Du bei &lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2%5c_fs.h#L211&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;lxr&lt;/a&gt;
+
+
+Das ist ein struct, eine Datenstruktur in C.
+Das ist eine ext2/ext3 Inode auf der Platte.
+Die daten da drin kannst du auslesen. Hast du eine ext2 oder ext3 Partition irgendwo wo du root bist?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja. Ähm, lvm is ja egal oder?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Es geht nur um das Dateisystem, nicht um die Art der Partition.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Gut. Ja, dann hab ich.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Hast du ein &lt;code&gt;/boot&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+&lt;code&gt;/boot&lt;/code&gt; ist ext2.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wie heisst die Partition bei Dir? Bei mir ist &lt;code&gt;/boot&lt;/code&gt; auf &lt;code&gt;/dev/sda5&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mount &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;grep boot
+&lt;span class=&#34;go&#34;&gt;dev/hdb4 on /boot type ext2 (rw)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:~ # debugfs /dev/sda5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;debugfs 1.38 (30-Jun-2005)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;debugfs:  ls
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   2  (12) .        2  (12) ..      11  (20) lost+found    40  (16) message
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;6025  (24) grub    29  (12) boot    31  (16) vmlinuz       13  (76) initrd
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;debugfs arbeitet ja auf Dateisystemen, deswegen siehst du nur Sachen in /dev/hdb4 und nicht Zeugs da drüber
+Du kannst nun mal &lt;code&gt;stat&lt;/code&gt; auf einen Kernel machen.
+In meinem Fall&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;debugfs:  stat vmlinux-2.6.13-15-default.gz
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Inode: 27   Type: regular    Mode:  0644   Flags: 0x0   Generation: 1675033442
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;User:     0   Group:     0   Size: 1838899
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;File ACL: 0    Directory ACL: 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Links: 1   Blockcount: 3608
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Fragment:  Address: 0    Number: 0    Size: 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;ctime: 0x43f86651 -- Sun Feb 19 13:36:33 2006
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;atime: 0x4419638b -- Thu Mar 16 14:09:31 2006
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mtime: 0x4327102c -- Tue Sep 13 19:45:16 2005
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;BLOCKS:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;0-11):9711-9722, (IND):9723, (12-267):9724-9979, (DIND):9980, (IND):9981, (268-
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;523):9982-10237, (IND):10238, (524-779):10239-10494, (IND):10495, (780-1035):104
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;96-10751, (IND):10752, (1036-1291):10753-11008, (IND):11009, (1292-1547):11010-1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;1265, (IND):11266, (1548-1795):11267-11514
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;TOTAL: 1804
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Vergleiche das mit &lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2%5c_fs.h#L211&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LXR&lt;/a&gt;
+
+
+vmlinux-&amp;hellip; ist Inodenummer 27, ein Regular File.&lt;/p&gt;
+&lt;p&gt;In der Inode stehen&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;der Mode (hier: 0644),&lt;/li&gt;
+&lt;li&gt;die Flags (keine),&lt;/li&gt;
+&lt;li&gt;die ACL Nummern (keine)&lt;/li&gt;
+&lt;li&gt;der Owner (root, 0) und&lt;/li&gt;
+&lt;li&gt;die Group (0, root)&lt;/li&gt;
+&lt;li&gt;die Datei hat einen Namen (Linkcount 1), und&lt;/li&gt;
+&lt;li&gt;3608 blocks&lt;/li&gt;
+&lt;li&gt;die hat eine ctime, atime, mtime&lt;/li&gt;
+&lt;li&gt;und dann kommen die Blocknummern der Datenblöcke und der Datenblockzeiger (INDirect blocks)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Und im struct siehst du genau das: Platzhalter für den Mode (16 bit),
+eine uid, die Größe der Datei in Byte, die atime, ctime, mtime und dtime (nur gesetzt, wenn die Datei deleted wird)
+die Gruppennummer, der Linkcounter
+die Anzahl der Blöcke
+und das Flags Feld.
+und das Wichtigste: &lt;code&gt;struct: __le32 i_block[EXT2_N_BLOCKS];&lt;/code&gt;
+die Blockadressen der Datenblöcke.&lt;/p&gt;
+&lt;p&gt;In der Inode steht also alles über die Datei - ihre Eigenschaften und die Zeiger auf die eigentlichen daten, nur eine Sache fehlt.&lt;/p&gt;
+&lt;p&gt;Weißt du, welche Sache das ist?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Die Daten.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Richtig, die stehen in den Datenblöcken.
+Ich meinte aber was anderes, eigentlich.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Oder &lt;em&gt;was&lt;/em&gt; es für eine Datei es ist.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Das steht in den oberen 4 Bit von &lt;code&gt;i_mode&lt;/code&gt;.
+Der Filemode ist ja &lt;code&gt;sstrwxrwxrwx&lt;/code&gt; - das sind nur 12 Bit.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Steht da ob mp3 oder .wav? Das meinte ich.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Das ist ja eine Extension, also Teil des Dateinamens.
+Aber jetzt bist du auf einer Spur. Wo steht der Dateiname?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+In der Datei. Also in den Datenblöcken.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Nein, da stehen nur die Daten.
+Jannik, mach mal &lt;code&gt;cd $HOME; touch lall; ln lall laber&lt;/code&gt;
+und dann &lt;code&gt;ls -li lall laber&lt;/code&gt;
+und paste den output.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -li lall laber
+&lt;span class=&#34;go&#34;&gt;870099 -rw-r--r-- 2 root root 0 2006-05-08 21:43 laber
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;870099 -rw-r--r-- 2 root root 0 2006-05-08 21:43 lall
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wie lang ist die Datei?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Genau das hat uellue mir letztens erklärt
+mit den Hardlinks.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+wie lang ist die Datei?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+870099?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Nein, das ist die Inodenummer.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ah, so. Ähm…&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+0&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+ja&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+In der Datei steht der Name nicht,
+denn die Datei ist ja 0 byte lang.
+Sie &lt;em&gt;hat&lt;/em&gt; gar keine Datenblöcke.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Suchte grad nach ner Zahl &lt;em&gt;g&lt;/em&gt; Ach so, ja genau, &lt;code&gt;touch&lt;/code&gt; erstellt nur eine Inode?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+ja&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Und jetzt hat man 2 Inodes.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+In der Inode kann der Name auch nicht stehen. Denn beide Dateien haben ja dieselbe Inodenummer, aber verschiedene Namen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Die auf das Gleiche verweisen würden?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+So ist es. Hast du 2 Inodes? Nein. Die Zahlen sind gleich am Anfang.&lt;/p&gt;
+&lt;p&gt;Wir lernen: der Name einer Datei steht &lt;em&gt;nicht&lt;/em&gt; in den Daten (0 bytes, keine Datenblöcke),
+und auch nicht in der Inode (2 Namen, eine Inode, wie wir beweisen können).
+Was bleibt?&lt;/p&gt;
+&lt;p&gt;Der Name einer Datei steht in einem Verzeichnis. Verzeichnisse sind auch Dateien und in denen speichert Linux paare von (Name, Inodenummer) ab.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2%5c_fs.h#L501&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LXR&lt;/a&gt;
+
+ zeigt wie.&lt;/p&gt;
+&lt;p&gt;Ein &lt;code&gt;ext2_dir_entry&lt;/code&gt; ist eine Inodenummer (32 bit) und dann ein Record von &lt;code&gt;rec_len&lt;/code&gt; Bytes Länge, in dem &lt;code&gt;name_len&lt;/code&gt; viele Bytes verwendet werden.
+und dann natürlich der name, &lt;code&gt;name_len&lt;/code&gt; bytes lang in ASCII.
+Mit &lt;code&gt;touch lall; ln lall laber&lt;/code&gt;
+machst du also einen eintrag (870099, lall) und einen Eintrag (870099, laber) in &lt;code&gt;.&lt;/code&gt;
+(dem aktuellen Verzeichnis)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Hey, welche Inode hat /boot? &lt;code&gt;ls -dlsi /boot&lt;/code&gt; sagt es dir?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -dlsi /boot
+&lt;span class=&#34;go&#34;&gt;2 2 drwxr-xr-x 4 root root 2048 2006-05-02 00:37 /boot
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Und welche Inode hat &lt;code&gt;/&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -dlsi /
+&lt;span class=&#34;go&#34;&gt;2 4 drwxr-xr-x 22 root root 4096 2006-04-26 23:31 /
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Die erste Zahl ist die Inodenummer, die 2. Zahl ist die Länge in Blöcken.
+Beide Dateien &lt;code&gt;/&lt;/code&gt; und &lt;code&gt;/boot&lt;/code&gt; haben als die Inode 2. Wie kann das sein?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ähm. Beide sind in &lt;code&gt;/&lt;/code&gt; eingehängt?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Naja, &lt;code&gt;/&lt;/code&gt; ist nirgendwo eingehaengt, &lt;code&gt;/&lt;/code&gt; ist &lt;code&gt;/&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja, ok. Deshalb? Was hätte dann die erste Inode?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Du bist auf der richtigen Spur. Die root-Inode in ext2 hat immer die Nummer 2.
+Und da &lt;code&gt;/&lt;/code&gt; und &lt;code&gt;/boot&lt;/code&gt; jeweils verschiedene Dateisysteme sind,
+haben beide root-Inodes,
+also haben beide die Inode 2.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ach ja&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wie kann Linux die beiden auseinander halten?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Durch die Verzeichnisstruktur?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Nun eines ist auf &lt;code&gt;/dev/hdb4&lt;/code&gt;, das andere auf &lt;code&gt;/dev/hdbsonstwas&lt;/code&gt;.
+Und wenn du &lt;code&gt;ls -l /dev/hdb*&lt;/code&gt; machst
+siehst du, daß jedes Device da intern andere Gerätenummern hat.
+Die Inodenummer in Unix ist also nicht eindeutig, aber auf jedem System ist die Kombination &lt;code&gt;(major number, minor number, Inode number)&lt;/code&gt;
+zu jedem Zeitpunkt eindeutig.
+(maj, min) bezeichnen die Partition, und in einer Partition ist (ino) eindeutig
+Schau mal hier -&amp;gt; &lt;a href=&#34;http://lxr.linux.no/source/include/linux/ext2%5c_fs.h#L56&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LXR&lt;/a&gt;
+
+.
+Das mit der Inode 2 denke ich mir ja nicht aus,
+das muss ja irgendwo im source stehen
+und da steht es.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+cool&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define EXT2_BAD_INO             1      &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* Bad blocks Inode */&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Was soll das dann heißen?
+Das wird einfach ausgelassen?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Inode 1 ist eine Datei, die in der Regel keinen Namen hat und die nur aus kaputten Blöcken besteht.&lt;/p&gt;
+&lt;p&gt;Wenn du eine alte Platte hast, noch ohne Bad Blocks Management,
+dann kannst du ein Dateisystem mit &lt;code&gt;mke2fs -c /dev/...&lt;/code&gt; anlegen.
+Das dauert sehr lange,
+denn dabei wird jeder Block gelesen.
+Zwangsläufig sind auf jeder HDD immer einige Blöcke im Eimer, -c findet
+die und fügt sie dann in die Datei Inode 1 ein.
+Dadurch sind sie belegt und können nicht Bestandteil einer anderen Datei werden.&lt;/p&gt;
+&lt;p&gt;Bei Disketten mit ext2 hat man das sehr, sehr oft gebraucht
+(Ich nehme an, Du hast noch mit Disketten gearbeitet, irgendwann mal).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Mach ich immer noch , aber noch nicht mit Linux. Habe es noch nicht gebraucht.
+Doch, ich habe mal meinen grub auf einer Diskette gehabt, in einem externen diskettenlaufwerk :D
+mit usb, hat er geschluckt. Fand ich cool.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Die erste Datei, die auf einem ext2 angelegt wird, noch beim Erstellen, ist &lt;code&gt;lost+found&lt;/code&gt;.
+Die hat dann immer Inode 11, denn &lt;code&gt;EXT2_GOOD_OLD_FIRST_INO&lt;/code&gt; ist 11.
+Wenn du also mal ein &lt;code&gt;ls -li / /boot&lt;/code&gt; machst, wirst du sehen, dass&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;lost+found 11 ist&lt;/li&gt;
+&lt;li&gt;alle Inodenummern ausser &lt;code&gt;.&lt;/code&gt; und &lt;code&gt;..&lt;/code&gt; größer als 11 sind.
+(vorausgesetzt, alle betrachteten Dateisysteme sind ext2/ext3, denn bei reiser ist alles anders.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;       2 drwxr-xr-x   4 root root  2048 2006-05-02 00:37 boot
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hat wieder kleinere Inode ;P&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wieso ist das so?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja, weil das wieder ein eigenes Dateisystem ist ;)&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Genau!
+Wir wissen nun:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Verzeichnisse sind Dateien.&lt;/li&gt;
+&lt;li&gt;Verzeichnisse sind Listen von Namen und Inodenummern&lt;/li&gt;
+&lt;li&gt;die /-Inode jedes ext2-Dateisystems ist 2&lt;/li&gt;
+&lt;li&gt;es kann mehr als eine Inode 2 pro system geben, und an der (maj, min) des Devices auf dem sie liegt können wir sie unterscheiden.&lt;/li&gt;
+&lt;li&gt;in der Inode stehen alle Informationen über eine Datei, insbesondere der Mode, die Times, und die Datenblockzeiger&lt;/li&gt;
+&lt;li&gt;in der Inode steht NICHT der name der Datei, der steht im Verzeichnis&lt;/li&gt;
+&lt;li&gt;in den Datenblöcken stehen nur die Daten&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Auch wenn ich da jetzt noch nicht sehe, wie er das unterscheidet von &lt;code&gt;/&lt;/code&gt; &amp;hellip;
+Wie kann ich &amp;ldquo;(maj, min) des Devices auf dem sie liegt&amp;rdquo; herrausfinden?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+jannik: mit &lt;code&gt;mount&lt;/code&gt;
+oder genauer, mit &lt;code&gt;cat /proc/mounts&lt;/code&gt;, denn da holt &lt;code&gt;mount&lt;/code&gt; das her, und diese Liste ordnet Devices und Namens-Stummel einander zu.
+Linux weiß dann: wegen &lt;code&gt;/dev/sda5 /boot ext2 rw 0 0&lt;/code&gt;
+muß ich ab &lt;code&gt;/boot&lt;/code&gt; neu zu zählen anfangen, und zwar&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/proc # ls -l /dev/sda5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;brw-r-----  1 root disk 8, 5 May  6 22:44 /dev/sda5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;auf (8, 5) statt auf (8, 1), bzw in meinem Fall statt auf (8, 5) auf (253, 1)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/proc # ls -lL /dev/system/root
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;brw-r-----  1 root disk 253, 1 May  6 22:44 /dev/system/root
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wir wollten über Dateisysteme und Layoutstrategien reden.&lt;/p&gt;
+&lt;p&gt;Wir wollten ja, dass die Platte möglichst wenig Seeken muss.
+Und wir hatten gelernt: es ist gut, Fragmentierung zu vermeiden und &amp;ldquo;dicht&amp;rdquo; zu packen, aber nicht zu dicht,
+sonst nehmen wir Platz fuer die folgenden Dateien weg.&lt;/p&gt;
+&lt;p&gt;Daher machen wir nach &lt;em&gt;großen&lt;/em&gt; Fragmenten von ca. 1 MB oder so eine absichtliche Fragmentierung um Platz fuer neue Dateien zu lassen.
+Platten können Seeks machen, ab und zu. Kleine fragmente sind es, die uns langsam machen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wenn ich nun ein Verzeichnis anlege in ext2, und darin Dateien anlege, dann wird ext2 die Dateien alle in dieselbe bg tun wie das Verzeichnis.
+Ich kann das an den Inode-nummern sehen.
+Die Inode-nummern aller Dateien (nicht-Verzeichnisse) in &lt;code&gt;/&lt;/code&gt; sollten in etwa gleich groß sein.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Aber wenn ext2 ein Verzeichnis anlegt, dann tut es das neue Verzeichnis in einer &lt;em&gt;andere&lt;/em&gt; bg als das Elternverzeichnis.
+Die Inode-nummern aller Verzeichnisse in / sollten sich von der Inode-nummer von / sehr unterscheiden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot # ls -li
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     2 drwxr-xr-x   5 root root    2048 Mar 26 11:00 .
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    28 -rw-r--r--   1 root root 1541719 Sep 13  2005 vmlinuz-2.6.13-15-default
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    40 -rw-r--r--   1 root root  133120 Nov  2  2005 message
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  6025 drwxr-xr-x   2 root root    1024 Feb 11 21:20 grub
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 10041 drwxr-xr-x   2 root root    1024 Dec 13 09:48 mysql
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und in grub dann:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot/grub # ls -li
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;total 285
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 6025 drwxr-xr-x  2 root root   1024 Feb 11 21:20 .
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 6040 -rw-r--r--  1 root root     10 May  2 14:01 default
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 6039 -rw-------  1 root root     15 Nov  2  2005 Device.map
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 6026 -rw-r--r--  1 root root   7540 Dec 17 06:52 e2fs_stage1_5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Da liegt dann alles beieinander, und in einer anderen bg als /.
+ext2/ext3 sortiert also Dateien &lt;em&gt;in&lt;/em&gt; einem Verzeichnis &lt;em&gt;dicht&lt;/em&gt; beieinander,
+und Verzeichnisse &lt;em&gt;weit&lt;/em&gt; auseinander.
+Dadurch wird die ganze Platte gleichmäßig genutzt,
+aber auch das ist eine Art absichtlicher Fragmentierung&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ja.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Es werden künstlich kontrolliert Seeks eingefuegt,
+um die Struktur des Systems zu erhalten
+und unkontrolliert entstehende kleine Fragmente zu vermeiden.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Gut.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Die abstrakte Logik: irgendwann müssen wir sowieso fragmentieren.
+Das ist auch nicht schlimm, solange die Stücke einigermassen groß sind.
+Also fragmentiert ext2/ext3 und auch BSD ufs absichtlich und macht
+große Stücke, die nicht schaden.
+Dadurch entsteht eine locker gepackte Struktur, die die ganze Platte ausnutzt,
+statt sich auf einer Ecke der Platte zu ballen und sich selbst im Weg zu stehen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Hmm&amp;hellip; Ich lerne daraus, dass ich meine Platten nie überfülle (Dateisysteme).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Genau.
+Und jetzt: wir erinnern uns was schlimm ist - Seeks.
+Nimm an, du hast ein gut organisiertes ext2 oder auch vfat system, frisch defragmentiert.
+Du loggst dich da ein und lädst dein kde,
+und uellue loggt sich ebenfalls da ein und startet sein gnome,
+und ich logge mich da ein und starte mein mysql.
+Alle gleichzeitig.
+Was wird passieren?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Die Festplatte wird springen müssen (Der Kopf)
+wenn sie alles gleichzeitig machen soll&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Was nutzt uns unsere Defragmentierung nun?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Nix. In dem Fall ändert das nix.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Unfragmentierte Dateien sind Dateien, die auf der Platte mit
+aufeinanderfolgenden Blocknummern stehen
+aber das nutzt nix, wenn die Lesezugriffe nicht linear erfolgen.&lt;/p&gt;
+&lt;p&gt;Fragmentierung oder Defragmentierung beschäftigen sich mit einem
+&lt;em&gt;statischen&lt;/em&gt; Layout von Daten auf einer Platte,
+aber entscheidend in einem System ist die &lt;em&gt;dynamische&lt;/em&gt; Sequenz von
+Lesezugriffen über die Zeit.&lt;/p&gt;
+&lt;p&gt;In einem Singleuser/Singleprocess-System wie MS-DOS
+gibt es nur einen user und nur ein programm zur zeit.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Willst du darauf hinaus, dass Defragmentierung auf ext2 z.b. nicht nötig ist?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Das liest dann seine Daten durch,
+wodurch die &lt;em&gt;dynamische&lt;/em&gt; Lesefolge immer der &lt;em&gt;statischen&lt;/em&gt; Anordnung
+von Daten auf der Platte entspricht,
+da die Zugriffe niemals unterbrochen werden können.&lt;/p&gt;
+&lt;p&gt;In MS-DOS bringt es also was, zu defragmentieren.&lt;/p&gt;
+&lt;p&gt;MS-DOS hat auch keinen file-system cache, d.h. jeder &lt;code&gt;read()&lt;/code&gt;
+endet unweigerlich &lt;em&gt;immer&lt;/em&gt; auf der Platte.&lt;/p&gt;
+&lt;p&gt;In Linux ist die Situation weitaus komplizierter:
+wir haben mehrere User, jeder hat mehrere Programme, die lesen können
+und wir haben einen haufen RAM, den wir als Cache verwenden,
+sodaß viele Reads gar nicht mehr auf die Platte gehen.&lt;/p&gt;
+&lt;p&gt;Für Seeks (die sind ja das, was langsam ist) ist aber die &lt;em&gt;dynamische&lt;/em&gt;
+Folge von Seeks, die die Platte wirklich sieht, relevant.&lt;/p&gt;
+&lt;p&gt;Und die entspricht bei Linux nun genau nicht mehr dem statischen
+Bild auf der Platte.&lt;/p&gt;
+&lt;p&gt;Wenn die Daten auf der Platte defragmentiert sind, und wenn die
+Lesezugriffe eines Programmes nicht durch andere Reader unterbrochen
+werden und wenn der cache leer ist, &lt;em&gt;dann&lt;/em&gt; ist Defragmentierung relevant, auch bei Linux.&lt;/p&gt;
+&lt;p&gt;Also&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;beim Booten&lt;/li&gt;
+&lt;li&gt;beim Login nach dem Booten&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Das kann sehr viel schneller sein auf einem ordentlich defraggten System,
+denn da ist der Cache leer und Programme greifen nacheinander zu.&lt;/p&gt;
+&lt;p&gt;Danach - naja, ich habe&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;linux:/boot/grub # free -m
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              total       used       free     shared    buffers     cached
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Mem:          1011        909        101          0         82        280
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; -/+ buffers/cache:        547        464
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Swap:         2055          3       2051
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;ein Gig RAM, und davon sind 547 MB durch Programme belegt und 82+280 MB in Filesystem Caches.
+Die meisten meiner Reads gehen der Platte am Arsch vorbei, denn sie kommen aus dem Cache.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;free -m
+&lt;span class=&#34;go&#34;&gt;              total       used       free     shared    buffers     cached
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Mem:          1517       1484         33          0         40       1052
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; -/+ buffers/cache:        391       1126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Swap:         1011        313        698
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;LOL.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Du hast 1.1 Gig im Cache.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+1 GB cached?? Wow.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Wie auch immer: Fragmentierung von Linux-Dateisystemen spielt eine eher untergeordnete Rolle.
+ext2 und ext3 fragmentieren &lt;em&gt;absichtlich&lt;/em&gt; und auf eine kontrollierte Weise, damit
+große, schlau angeordnete Fragmente entstehen,
+und auch ohne Fragmente können Seeks auf der Platte durch konkurrente Zugriffe entstehen.&lt;/p&gt;
+&lt;p&gt;Wichtiger als zu Defragmentieren ist es, einen grossen Filesystem Cache zu haben.
+Soweit klar?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+ja&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+1.1% fragmentation bei einem fsck sind also eine gute Sache.&lt;/p&gt;
+&lt;p&gt;0.0% wären doof.
+Das heisst ja, dass wir einen nicht aufgelockerten Klumpatsch von
+Dateien haben (oder nur sehr viele, sehr kleine Dateien).&lt;/p&gt;
+&lt;p&gt;20% fragmentierung sind auch doof.
+Das kann zum beispiel passieren, wenn wir sehr viele, sehr kleine
+Dateien haben und dauernd Dateien löschen und anlegen.
+Etwa in einem Squid Cache oder in einem USENET News mit tradspool.&lt;/p&gt;
+&lt;p&gt;Entscheidend ist aber - und die information gibt uns fsck leider nicht - daß
+die stücke alle so mittelgross sind,
+etwa 1/100 bis 1/10 einer Blockgroup gross.&lt;/p&gt;
+&lt;p&gt;Kleiner ist von Übel, weil kleine Stücke viele Seeks bedeuten,
+und größer ist von Übel, weil große Stücke die bgs zustopfen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ich schätze, ich will heute nicht mehr wissen, was reiserfs so toll macht?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+Heute nacht nicht, das schaffen wir nicht in 20 Minuten.
+Aber wenn du willst kannst du dir als Hausaufgabe mal
+ein ext2 directory aufmalen,
+mit &lt;code&gt;(Inode, nam_len, rec_len, Dateiname)&lt;/code&gt;
+und dann überlegen, wie du die Datei mit dem namen &lt;code&gt;toller name eigentlich&lt;/code&gt;
+in einem  Verzeichnis mit 1 Million Einträgen findest, löscht und
+dann die Datei mit dem namen &lt;code&gt;blurb&lt;/code&gt; da drin anlegst.
+Und wieso das so lange dauert mit einer Million Einträgen.
+Dann können wir bald mal über reiser reden und wieso das da nicht so lange dauert.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Ok. :D Erst mal die Hausaufgabe verstehen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Isotopp: das dauert so lange weil man erst alles abklappern muss, bis man auf den Namen trifft.
+Muss ja alles überprüfen,
+ist jede Menge Arbeit . Gute Nacht, Isotopp, und Danke :D&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+jannik: genau. Das ist effek0tiv eine &amp;ldquo;lineare Liste&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Wir schreiben Montag, den 8. Mai 2006, sie hörten den &amp;ldquo;Dienstag&amp;rdquo; zum Thema &amp;ldquo;Dateisysteme und Fragmentierung&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+und so eine Liste skaliert sich halt mit der Anzahl der Einträge im Verzeichnis.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+immerhin ist die nicht fragmentiert *g*&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+oh, die kann fragmentieren.
+Wenn ich &lt;code&gt;langer name eigentlich&lt;/code&gt; lösche und dann &lt;code&gt;kurz&lt;/code&gt; erzeuge, bleibt ein Stück frei.
+Das ist entweder verloren oder muss gelegentlich wieder belegt werden.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Jannik:&lt;/strong&gt;
+Wer sorgt für die Ordnung dafür? Wie räumt man denn schön auf auf seinem Dateisystem?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Isotopp:&lt;/strong&gt;
+und das alles werden wir ein andermal besprechen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Webanwendungen und der FHS</title>
+      <link>https://blog.koehntopp.info/2005/06/13/webanwendungen-und-der-fhs.html</link>
+      <pubDate>Mon, 13 Jun 2005 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2005/06/13/webanwendungen-und-der-fhs.html</guid>
+      <description>&lt;p&gt;Auf der S9Y Mailingliste fragte ein zukünftiger Paketmaintainer nach, ob er Serendipity für seine Distribution packen solle und wir ihn dabei unterstützten wollen. Abgesehen von allgemeinen Überlegungen die dagegen sprechen, gibt es noch andere Gründe, die das nicht wünschenswert machen.&lt;/p&gt;
+&lt;p&gt;In den Bereich der allgemeinen Überlegungen fallen zum Beispiel die Releasezyklen von Distributionen: Sie sind in der Regel sehr viel länger als die von Webanwendungen wie Serendipity. Insbesondere sehr langwellige Distributionen wie Debian verteilen mit ihren Paketen Versionen der Software, die die Entwickler von S9Y nicht mehr unterstützen können und wollen.&lt;/p&gt;
+&lt;p&gt;Auch ist fraglich, welchen Gewinn ein solches Package bringen soll. Eine Anwendung wie S9Y installiert sich mit Download-Auspacken-Anklicken sowieso schon selber und ist dabei dann an keinerlei externes Packaging oder fremde Zyklen gebunden. Eine Installation mit Betriebssystem-Packages bringt da nur Nachteile und fehlende Flexibilität. Zum Beispiel ist es so nicht leicht möglich, mehr als eine Version von S9Y an mehr als einer Location im System zu installieren, denn das Packagemanagement der üblichen Distributionen unterstützt weder konkurrente Installation unterschiedlicher Paketversionen noch sind verschiebliche Pakete mit durch den Anwender bestimmter Package-Root allgemein üblich.&lt;/p&gt;
+&lt;p&gt;Aber das ist nur die Spitze des Eisberges. Checkt man sich einmal
+&lt;a href=&#34;https://alioth.debian.org/projects/webapps-common/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;webapps-common&lt;/a&gt;
+
+ aus und liest, was da drin steht - oder vielmehr nicht drin steht, sieht man, daß ein solches Packaging nur Nachteile haben kann:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;h2 id=&#34;21-web-applications-and-the-fhs&#34;&gt;
+    &lt;a href=&#34;#21-web-applications-and-the-fhs&#34;&gt;
+	2.1 Web applications and the FHS
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Web applications should follow the same guidelines as any other software. most specifically, they should not make any assumption about how the administrator has arranged the file hierarchy outside of the FHS by placing files in non-standard places such as /var/www or /usr/local. Specifically, the following table should serve as guidelines for the location of files:&lt;/p&gt;
+&lt;p&gt;| type of file                           | location                        |
++&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;-+&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;+
+| static web pages                       | /usr/share/PACKAGE/www          |
+| dynamically interpreted web pages      | /usr/share/PACKAGE/www          |
+| persistent application data            | /var/lib/PACKAGE                |
+| dynamcially executed web pages         | /usr/lib/cgi-bin/PACKAGE        |
+| application-specific libraries         | /usr/share/PACKAGE/include      |
+| site configuration                     | /etc/PACKAGE                    |
+| locally modifiable/overridable content | /etc/PACKAGE/templates          |
+| php libraries                          | /usr/share/php/PACKAGE          |
+| rrd, mrtg and other database files     | see database application policy |&lt;/p&gt;
+&lt;p&gt;Fußnoten weggelassen.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Das ist so kraß konsequent an der Realität vorbei, daß es mir persönlich schon wieder Respekt abnötigt.&lt;/p&gt;
+&lt;p&gt;Webanwendungen sind überall für Webhostingumgebungen entwickelt, denn dies ist bei weitem die verbreiteste Form des Deployments für Webanwendungen. Webhostingumgebungen werden aber in der Regel per Filetransfer in ein Verzeichnis unterhalb der DocumentRoot der Kundendomain beschickt. Sicherheitsmechanismen in Webhostingumgebungen berücksichtigen das: Mit chroot() oder Virtual Base Directory versuchen sie, den Kunden auf seinen Verzeichnisteilbaum zu beschränken. mit einer UID und GID pro Kunde oder pro Kundendomain versuchen sie, Betriebssystem-Zugriffsrechte als Hilfsmittel zur Kundentrennung zu benutzen.&lt;/p&gt;
+&lt;p&gt;Eine Webapp-Policy, die das komplett ignoriert und Webanwendungen atomisiert, um ihre Trümmer dann einmal durch das Dateisystem zu zerstäuben hat so überhaupt nichts mit der Realität zu tun, daß man im ersten Augenblick nur sprachlos daneben stehen kann.&lt;/p&gt;
+&lt;p&gt;Okay, hier ist also einmal ein Katalog von Anforderungen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Policy muß chroot/virtual base directory jails unterstützen&lt;/li&gt;
+&lt;li&gt;Policy muß UID pro Domain/GID pro Kunde oder ähnliche Setups unterstützen, die auf Apache suexec oder PHP safe_mode basieren&lt;/li&gt;
+&lt;li&gt;Policy muß erlauben, daß die Anwendung mehr als einmal pro physikalischem Rechner installiert wird&lt;/li&gt;
+&lt;li&gt;Policy muß erlauben, daß die Anwendung in mehr als einer Version pro physikalischem Rechner installier wird.&lt;/li&gt;
+&lt;li&gt;Policy muß dem Kunden erlauben, seine Installation per ftp/scp/rsync zu sichern und zu modifizieren. Versionsmanagement muß erkennen, ob die modifizierte Anwendung danach noch automatisiert updatebar ist und ggf. einen Mergeprozeß unterstützen.&lt;/li&gt;
+&lt;li&gt;Policy muß die Installation mehrerer unterschiedlicher Webanwendungen pro Vhost in unterschiedliche Directories unterhalb der DocRoot eines VHosts unterstützen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Die Policy muß also ein Framework liefern, mit dem man Vhosts schnell erzeugen kann, mit dem man in einem Vhosts Features wie modlogan, perl, python, php, chroot Jail und andere Eigenschaften enablen und disablen kann, und mit dem man pro VHost eine oder mehrere Anwendungen in unterschiedlichen Verzeichnissen installieren und möglicherweise sogar sicher aktualisieren kann. Dabei muß die Anwendung durch Kopie aus einem Shared Repository installiert werden können, durch Hardlink auf das Repository um Platz zu sparen oder sie muß, wenn die Anwendung das unterstützt, shared installs (PEAR, S9Y, &amp;hellip;) möglich machen.&lt;/p&gt;
+&lt;p&gt;All das ist natürlich mit dem FHS komplett inkompatibel. Aber kompatibel mit den Anforderungen des Webgeschäfts, das nun einmal mit dem FHS erst einmal genau gar nix zu tun hat.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Dateisysteme und Datenbanken</title>
+      <link>https://blog.koehntopp.info/2004/06/06/dateisysteme-und-datenbanken.html</link>
+      <pubDate>Sun, 06 Jun 2004 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2004/06/06/dateisysteme-und-datenbanken.html</guid>
+      <description>&lt;p&gt;Der Artikel &lt;a href=&#34;http://matthias.leisi.net/archives/45_Filesysteme_sind_Datenbanken.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Filesysteme sind Datenbanken&lt;/a&gt;
+
+ von Matthias Leisi regt mich an, hier mal ein paar Sachen aufzuschreiben, die ich schon länger vor mir her kullere.&lt;/p&gt;
+&lt;p&gt;Die meisten Unix-Dateisysteme trennen eine &amp;ldquo;Gruppiere Blocks in Dateien&amp;rdquo;-Ebene (Blockverwaltung) und die &amp;ldquo;Gruppiere Dateien in Hierarchien&amp;rdquo;-Ebene (Namensraumverwaltung) voneinander. Die Blockverwaltung ist relativ gut verstanden und der I/O-Layer von Datenbanken überlegen. Die durch WinFS ausgelöste Diskussion findet stattdessen im Bereich Namensraumverwaltung statt.&lt;/p&gt;
+&lt;h2 id=&#34;blockverwaltung-und-die-überlegenheit-der-filesystem-api&#34;&gt;
+    &lt;a href=&#34;#blockverwaltung-und-die-%c3%bcberlegenheit-der-filesystem-api&#34;&gt;
+	Blockverwaltung und die Überlegenheit der Filesystem API
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Ebene der Blockverwaltung bei Dateisystemen ist sehr hoch optimiert und muß akzeptable Performance unter extrem variablen Benutzungspatterns abliefern können. Ein einzelnes Dateisystem kann im selben Moment sehr viele kleine Dateien enthalten, wie sie zum Beispiel in einem Cyrus-Mailspool oder einem INN tradspool vorkommen, und einige wenige sehr große Dateien, wie sie zum Beispiel von einer Datenbank angelegt werden. Es muß damit zurecht kommen, daß eine Anwendung sehr viele sehr kleine Dateien in Folge öffnen will - der IMAP-Server, der durch den Mailspool tobt, und daß zeitgleich sehr viele andere Anwendungen auf einer großen Datei hin- und her seeken und zeitgleich Stücke der dieser großen Datei beschreiben und lesen wollen - die Threads der Datenbank, die auf das Datenbankfile zeitgleich einschlagen.&lt;/p&gt;
+&lt;p&gt;Die API, mit der dies abgewickelt wird, ist extrem simpel - das open/read/write/seek/close/lock-Interface ist steinalt und sehr gut getestet. Es ist - inklusive von neueren Optimierungen wie readv/writev und mmap - auch sehr effizient und erlaubt es Anwendungen, Daten von der Platte zu lesen oder auf die Platte zu schreiben, ohne daß das Betriebssystem dafür Bytes umkopieren müßte. Es ist sogar so effizient, daß einige Datenbanken die Option bieten, auf BLOB-Daten mit Hilfe dieser API zuzugreifen, indem die Datenbank die Tabelle, bzw. die Objekte in der Tabelle als NFS-Dateibaum exportiert.&lt;/p&gt;
+&lt;p&gt;Auf dieser Ebene des Dateisystems geht es also nicht darum, irgendwelche Queries zu beantworten oder Daten wiederzufinden, sondern nur darum, Daten mit sehr heterogener Granularität und sehr variablen Anforderungen an den Zugriff möglichst effizient in den Speicher zu schaffen bzw. auf die Platte zu befördern.&lt;/p&gt;
+&lt;p&gt;Dateisysteme machen - zumindest in Unix - keine Annahmen über die Struktur von Daten. Dateien als solche sind strukturlose Blobs, und den Anwendungen steht es dann frei, eine Struktur in die Daten hinein zu interpretieren. Das System aber hält seine Finger da heraus, und manipuliert Dateien entweder als Klotz, oder Stücke davon als Byteranges.&lt;/p&gt;
+&lt;p&gt;Das ist eine bewußte Entscheidung der Entwickler von Unix gewesen, nachdem sie Erfahrungen mit anderen Systemen hatten und wußten, wieviel mehr Komplexität auf Systemebene notwendig ist, damit Dateien mit Satzstrukturen behandelt werden können. Andere Systeme zu dieser Zeit haben Dateien mit Satzstrukturen implementiert (ISAM-Files und ähnliches), und sind damit eher weniger gut gefahren: Datenbanken als Userland-Anwendungen sind leichter zu implementieren und zu optimieren als Datenbanken als Teil des Kernels, und Datenbanken als Teil des Kernels bieten keine Performance-Vorteile.&lt;/p&gt;
+&lt;p&gt;Wir nehmen die Folgende Liste der Vorteile auf der Ebene der Blockverwaltung mit:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Keine Annahmen über die Struktur erlaubt Freiheit in der Definition der Datenstrukturen und Freiheit in der Strukturierung der Zugriffe.&lt;/li&gt;
+&lt;li&gt;Zero Copy I/O&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;namensraumverwaltung&#34;&gt;
+    &lt;a href=&#34;#namensraumverwaltung&#34;&gt;
+	Namensraumverwaltung
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Man kann sich die Blockverwaltungsschicht wie ein einziges großes Verzeichnis ohne Unterverzeichnisse vorstellen, in dem alle Dateien eines Dateisystems enthalten sind, und zwar mit ihrer Inode-Nummer als Name. Die Aufgabe der Namensraumverwaltung ist nun, die Pfadnamen, die im Userland gebräuchlich sind, in Inodenummern zu übersetzen. Auf der Ebene der Blockverwaltung arbeitet Unix dann immer nur mit den Inodenummern und den daran hängenden Verwaltungsstrukturen, den Inodes. Es gibt keine Funktion openi() (&amp;ldquo;Open File by Inode number&amp;rdquo;) in der Kernel-API.&lt;/p&gt;
+&lt;p&gt;Über dieser Schicht liegt die Namensraumverwaltung. Die ist in unixoiden Systemen traditionell hierarchisch strukturiert und der Zugriff auf Daten erfolgt immer über Pfadnamen relativ zum aktuellen Verzeichnis eines Prozesses oder zur aktuellen Wurzel des Dateisystems eines Prozesses. Dies ist ein sehr simpler Mechanismus der Strukturbildung auf dem flachen See der Inodenummern, der viele Jahre ausgereicht hat, um Dateien zu sortieren und wiederzufinden.&lt;/p&gt;
+&lt;p&gt;Zur Zeit geschieht dies immer intern im Kernel. Die Funktion, die dies macht, bekommt entweder das aktuelle Wurzelverzeichnis des aufrufenden Prozesses (wenn der Dateiname mit / anfängt) oder das aktuelle Arbeitsverzeichnis (in allen anderen Fällen) als Startwert und übersetzt den Pfadnamen dann Schritt für Schritt rekursiv in eine Folge-Inodenummer und einen Pfadrest.&lt;/p&gt;
+&lt;p&gt;Wir nehmen an Gedanken aus dieser Sektion mit: Die Ansteuerung von Dateien erfolgt in Unix traditionell über den Pfad und nicht über eine ID wie die Inode-Nummer. Das Auflösen des Pfadnamens in eine Inode-Nummer erfordert weitere, über die Rechte an der Datei hinausgehende Zugriffsrechte, die vom verwendeten Pfadnamen abhängen. Für ein modernes Rechtesystem ist das weder notwendig noch wünschenswert, und es sollte möglich sein, Dateien über eine ID - die Inode-Nummer oder eine Datei-UUID anzusprechen. Windows- und Apple-Dateisysteme erlauben dies sogar schon zum Teil.&lt;/p&gt;
+&lt;h2 id=&#34;andere-strukturbildner&#34;&gt;
+    &lt;a href=&#34;#andere-strukturbildner&#34;&gt;
+	Andere Strukturbildner
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Einige Artikel diskutieren nun andere Strukturbildner für ein Dateisystem. El Reg hat zum Beispiel ein &lt;a href=&#34;http://www.theregister.co.uk/2002/03/29/windows_on_a_database_sliced/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Interview&lt;/a&gt;
+
+ mit den Entwicklern von BeOS über die Probleme, die sie bei der Entwicklung der BeOS &amp;ldquo;Dateisystem&amp;rdquo;-Datenbank gehabt haben. Dem Interview kann man entnehmen, daß eine Datenbank im Userland zwar keine Performance-Vorteile hat, aber die Synchronisation zwischen Datenbank und Dateisystem leichter zu realisieren ist, wenn entsprechende Synchronisationsprimitive existieren und das Interface zu diesen Funktionen ist leicher zu realisieren, wenn die Datenbank Teil des Kernels ist.&lt;/p&gt;
+&lt;p&gt;Die Beispiele, die für BeOS gegeben werden, gehen von einer traditionellen Datenbank mit Feldern und Werten aus. Der Artikel mit dem langatmigen Titel &lt;a href=&#34;http://www.namesys.com/whitepaper.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Namespaces As Tools for Integration the Operating System Rather As Ends in Themselves&lt;/a&gt;
+
+ schildert die Sicht von Hans Reiser auf dieses Problem. In dem Artikel versucht Hans Reiser zu erläutern, warum er eine feste Tabellenstruktur oder RDF-Syntax für eine Abfragesprache in Dateisystemen eher für sinnlos halt. Seine Beweisführung streift schon fast das Argument &amp;ldquo;Google für Dateisysteme&amp;rdquo;. Wenn er dann jedoch beginnt, eine Abfragesprache mit einer &amp;ldquo;dateinamenähnlichen&amp;rdquo; Syntax herzuleiten, erkennt man wieder Strukturen mit einer &amp;ldquo;Name=Wert&amp;rdquo;-Syntax.&lt;/p&gt;
+&lt;p&gt;Reiser geht davon aus, daß es Dateisystem-Plugins gibt, die er Klassifikatoren nennt. Diese Plugins generieren Schlüsselwerte, unter denen die Datei zu finden ist. In einem traditionellen Unix-Dateisystem stellt der Benutzer die Schlüssel bereit, indem er eine Datei unter einem Namen in einem Verzeichnis ablegt (und durch Links kann eine Datei unter mehr als einem Schlüssel abgelegt sein). In Reisers Modell werden weitere Schlüssel automatisch generiert - abhängig vom Typ der Datei. Das kann etwa ein Volltextindex sein - eine Datei ist dann unter allen in der Datei vorkommenden Worten zu finden, oder es können Schlüssel-Schlüsselwert Paare sein wie &amp;ldquo;mime-type: audio/mp3&amp;rdquo;, &amp;ldquo;subject: strike&amp;rdquo; oder &amp;ldquo;from: santa&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;In seiner Syntax ist &amp;ldquo;/etc/passwd&amp;rdquo; die Datei passwd in der &amp;ldquo;etc&amp;rdquo;-Gruppierung, während &amp;ldquo;[dragon gandalf bilbo]&amp;rdquo; die Datei ist, die den drei genannten Schlüsselwerten zugleich genügt. Später verallgemeinert er dann den &amp;ldquo;/&amp;quot;-Operator zu einer &amp;ldquo;Syntax Barrier&amp;rdquo; und kommt so zu Queries mit &amp;ldquo;Funktionen&amp;rdquo; wie &amp;ldquo;case-insensitve/[computer privacy laws]&amp;rdquo;, zu Security Barriers wie &amp;ldquo;[my secrets]/[love letter susan]&amp;rdquo; und zu einer Attributsyntax wie &amp;ldquo;[subject/[illegal strike] to/elves from/santa document-type/RFC822 ultimatum]&amp;rdquo;. Er weist darauf hin, daß man zu einer quasi-relationalen Query gelangt, wenn man das vorhergehende Beispiel zu &amp;ldquo;[subject/strike to/elves from/santa document-type/RFC822]&amp;rdquo; vereinfacht.&lt;/p&gt;
+&lt;h2 id=&#34;objektklassen-und-attributsyntax&#34;&gt;
+    &lt;a href=&#34;#objektklassen-und-attributsyntax&#34;&gt;
+	Objektklassen und Attributsyntax
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Und an dieser Stelle landet man dann bei weiterem Nachdenken bei LDAP. Während LDAP eine stark denormalisierte Datenbankstruktur ist (LDAP ist nicht einmal in erster Normalform), besteht der Wert von LDAP paradoxerweise darin, ein sehr rigides Datenmodell zu haben. LDAP definiert einige Datentypen und die für diese Datentypen zugelassenen Attribute sowie ein Vererbungssystem für Typen. Alle LDAP-Anwendungen verwenden diese Datentypen oder erben von ihnen, sodaß unterschiedliche LDAP-Storages untereinander kompatibel sind.&lt;/p&gt;
+&lt;p&gt;Der Wert von LDAP besteht also nicht im Storage oder der Abfragesprache (beide sind kaputt bzw. unvollständig), sondern im Schema und im Wire-Protokoll, die beide extrem interoperabel sind und die interoperabel erweiterbar sind. Der Wert von LDAP liegt also in der Normierung.&lt;/p&gt;
+&lt;p&gt;Diese Überlegung ist auch auf eine Dateisystem-Abfragesprache anwendbar: Betrachtet man die Beispiele von Reiser genauer, findet man im Grunde zwei Szenarien, die Reiser unterscheidet.&lt;/p&gt;
+&lt;p&gt;Das eine Szenario sind Anfragen nach Daten einer bestimmten Objektklasse (&amp;ldquo;mime-type: audio/mp3&amp;rdquo;, &amp;ldquo;mime-type: message/rfc822&amp;rdquo;), bei denen der Fragesteller dann Annahmen über das Vorhandensein bestimmter Attribute machen kann und bei denen die weitere Anfrage dann das Vorhandensein und die Bedeutung bestimmter Attributnamen voraussetzen kann. Das Characteristische an der Anfrage &amp;ldquo;[subject/[illegal strike] to/elves from/santa document-type/RFC822 ultimatum]&amp;rdquo; ist ja die Typabsicherung &amp;ldquo;document-type/&amp;hellip;&amp;rdquo;. Nur deswegen kann sich der Fragesteller sicher sein, daß Attribute wie &amp;ldquo;subject&amp;rdquo;, &amp;ldquo;from&amp;rdquo; und &amp;ldquo;to&amp;rdquo; existieren und daß ihre Werte die gesuchten Bedeutungen haben.&lt;/p&gt;
+&lt;p&gt;Die zweite Sorte Frage ist die Googlesuche nach dem Vorkommen von bestimmten Schlüsselworten &lt;em&gt;irgendwo&lt;/em&gt; in der Datei, ohne Rücksicht auf die Strukturen, in die sich die Datei einpassen läßt. Das ist quasi die klassische Volltextsuche, mit einem Klassifikator-Plugin, daß für alle möglichen (auch multimedialen) Datentypen so viele sinnvolle Worte wie möglich extrahiert.&lt;/p&gt;
+&lt;p&gt;Man beachte, daß der erste Fall nicht wirklich ein hierarchisches, denormalisiertes Datenbankschema benötigt wie etwa LDAP es bereitstellt. Es ist dagegen vollkommen ausreichend, ein objektrelationales System zu haben, in dem eine Entity von einer anderen Entity erben kann und für dieses System ein Schema bereitzustellen, das Attribute für alle gängigen und interessanten Mime-Types bereitstellt.&lt;/p&gt;
+&lt;p&gt;Neben der Arbeit der Implementierung eines solches Dateisystems ist also weitere Arbeit notwendig, nämlich die Normierung von Datenstrukturen, also die Erarbeitung einer Taxonomie von Attributen und Objektklassen für die in einem modernen System vorkommenden Mime-Typen.&lt;/p&gt;
+&lt;p&gt;Auch an der Abfragesprache ist noch Arbeit zu leisten - die von Reiser vorgeschlagene Syntax ist einfach, aber unvollständig und definiert keine vollständige Navigation. Die Abfragesprache von LDAP ist ebenfalls unvollständig und hat eine ganze Reihe von Einschränkungen, nicht nur vom relationalen Standpunkt aus, sondern schon auf einer sehr viel niedrigeren Ebene - hier möchte man sich eher bei den Gedankenmodellen von XPath und XQuery bedienen, die eine reichere Syntax und mehr Möglichkeiten liefern. Auf diese Weise wäre auch die Adressierung von Elementen &lt;em&gt;in&lt;/em&gt; Dateien möglich.&lt;/p&gt;
+&lt;h2 id=&#34;fazit&#34;&gt;
+    &lt;a href=&#34;#fazit&#34;&gt;
+	Fazit
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Wir nehmen abschließend mit:&lt;/p&gt;
+&lt;p&gt;Ein Dateisystem ist keine Datenbank im herkömmlichen Sinne, sondern ein Speicher, der auch mit unstrukturierten oder partiell strukturierten Daten klarkommen muß. Ein wenig mehr Struktur und ein wenig bessere Rechnerchemöglichkeiten täten heutigen Dateisystemen jedoch sehr gut. Dabei ist jedoch der Strukturlosigkeit Rechnung zu tragen und es sind neben strukturierten Anfragen im SQL-Stil auch strukturlose Anfragen im Stile einer Volltextsuche über alle Attribute zu ermöglichen.&lt;/p&gt;
+&lt;p&gt;Diese Anfragen dienen weiterhin nur zur Bestimmung der Inodenummer/ID/UUID einer Datei, also zur Lokalisierung der Datei. Der weitere Zugriff kann dann ganz normal über die Blockverwaltung erfolgen, und muß nicht langsamer als heutzutage sein.&lt;/p&gt;
+&lt;p&gt;Der Wert einer solchen Datenbank als Dateisystem ergibt sich wie bei LDAP aus der Normierung der Schemata. Es sind also rechtzeitig sinnvolle Schemata für gängige Systemdatentypen bereitzustellen und es ist ein offener, herstellerunabhängiger Prozeß für die Normierung und Entwicklung einer Hierarchie von Objektklassen und Attributtypen bereitzustellen.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

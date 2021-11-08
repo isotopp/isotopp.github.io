@@ -1,0 +1,1118 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>damals on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/damals.html</link>
+    <description>Recent content in damals on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 14 Nov 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/damals/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Everything was a file, but we got better</title>
+      <link>https://blog.koehntopp.info/2019/11/14/everything-was-a-file-but-we-got-better.html</link>
+      <pubDate>Thu, 14 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/11/14/everything-was-a-file-but-we-got-better.html</guid>
+      <description>&lt;p&gt;I fell into the Twitters again. &lt;a href=&#34;https://twitter.com/carrickdb/status/1194842452361789441&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@CarrickDB&lt;/a&gt;
+
+ joked about Unix,
+Files and Directories:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/carrickdb/status/1194842452361789441&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/everything-is-a-file.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;And that is a case of &amp;ldquo;Haha, only serious&amp;rdquo;. Because directories
+used to be files, and that was a bad time. Check out the V7 Unix
+&lt;a href=&#34;https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L49&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mkdir&lt;/a&gt;
+
+
+command. At this point in history we do not have a &lt;code&gt;mkdir(2)&lt;/code&gt;
+syscall, yet, so we need to construct the entire directory in
+multiple steps.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L49&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;mknod(2)&lt;/code&gt; an inode that has the &lt;code&gt;S_IFDIR&lt;/code&gt; flag set&lt;/a&gt;
+
+,
+even if that macro does not even exist yet.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L57&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;manually link the entry for the current directory &lt;code&gt;.&lt;/code&gt; into that&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/mkdir.c#L64&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;manually link the entry for the parent directory &lt;code&gt;..&lt;/code&gt; into that&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This fragile and broken: &lt;code&gt;mkdir&lt;/code&gt; could be interrupted while
+doing that or another program could try to race &lt;code&gt;mkdir&lt;/code&gt; while it
+is doing that. In both cases we get directories that are invalid
+and dangerous to traverse, because they break crucial
+assumptions users make about directories.&lt;/p&gt;
+&lt;p&gt;This is also before &lt;code&gt;readdir(2)&lt;/code&gt; and friends, so programs like
+&lt;code&gt;ls&lt;/code&gt; &lt;a href=&#34;https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/ls.c#L304&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;open directories like files&lt;/a&gt;
+
+
+and then make assumptions about the format of dentries on disk.
+Specifically, they assume a 16 bit inode number and then a
+filename of 14 characters or less and a directory that is an array
+of these entries. Unfortunately, time has not been kind to the
+assumption of 65535 files or less per partition, and also we
+require filenames that are longer than 14 bytes these days.&lt;/p&gt;
+&lt;p&gt;Finally have a look at the hot mess that the
+&lt;a href=&#34;https://github.com/v7unix/v7unix/blob/master/v7/usr/src/cmd/rmdir.c#L29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;rmdir&lt;/a&gt;
+
+
+command is. What could probably go wrong?&lt;/p&gt;
+&lt;p&gt;Well, &lt;a href=&#34;https://twitter.com/opheleon/status/1194941703632932865&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jan Kraetzschmar&lt;/a&gt;
+
+
+reminds us that this kind of non-atomic rmdir can also produce
+structures in the filesystem that are disconnected from the main
+tree starting at &lt;code&gt;/&lt;/code&gt;. In that case you end up with orphaned, unreachable
+inodes that still have a non-zero link count. &lt;code&gt;fsck&lt;/code&gt; should be
+able to find them and free them, but of course that would be a
+disruptive operation. Making &lt;code&gt;mkdir&lt;/code&gt; and &lt;code&gt;rmdir&lt;/code&gt; system call avoids
+all of these problems.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s why all of this was fixed in 1984 or so, when BSD
+FFS came around and we got long filenames, wider inodes,
+&lt;code&gt;mkdir&lt;/code&gt;, &lt;code&gt;rmdir&lt;/code&gt; and &lt;code&gt;readdir&lt;/code&gt; as syscalls and many other
+improvements.&lt;/p&gt;
+&lt;h2 id=&#34;what-if-really-everything-was-a-file&#34;&gt;
+    &lt;a href=&#34;#what-if-really-everything-was-a-file&#34;&gt;
+	What if really everything was a file?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Another decade later, around 1995 or so, we got Plan 9, not from
+outer space, but from Bell Labs.&lt;/p&gt;
+&lt;p&gt;It not only brought us Unicode everywhere, but also an
+exploration of &amp;lsquo;What if really everything was a file?&amp;rsquo;,
+including other machines on the network and processes on our
+machine. From that we get todays
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Plan_9_from_Bell_Labs#/proc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;procfs&lt;/a&gt;
+
+
+in Linux (and in many other modern Unices).&lt;/p&gt;
+&lt;p&gt;Except that you can&amp;rsquo;t &lt;code&gt;rm -rf /proc/1&lt;/code&gt; to shut down the box.&lt;/p&gt;
+&lt;h2 id=&#34;things-that-still-are-not-a-file-and-should-be-dead&#34;&gt;
+    &lt;a href=&#34;#things-that-still-are-not-a-file-and-should-be-dead&#34;&gt;
+	Things that still are not a file, and should be dead
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am not going to mention System V IPC here at all. Not shm, not
+sem, and not msq. They are abominations that should never have
+escaped the lab cages they have been conceived in.&lt;/p&gt;
+&lt;p&gt;There is &lt;code&gt;mmap&lt;/code&gt;, and mmap is good. Or can be, as long as you do
+not conflate in memory and on disk representations of data, and
+understand the value of MVCC. But that is another story and
+should be told another day.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>25 years &#34;Individual Network e.V.&#34;</title>
+      <link>https://blog.koehntopp.info/2017/06/20/25-years-individual-network-e-v.html</link>
+      <pubDate>Tue, 20 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/06/20/25-years-individual-network-e-v.html</guid>
+      <description>&lt;p&gt;Heiko Schlichting reminds us that
+&lt;a href=&#34;https://plus.google.com/101393200017787888697/posts/RD5VLcaQDaA&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;25 years ago, on the 20./21. of June 1992, the Individual Network e.V. was created&lt;/a&gt;
+
+
+(Text in German). Individual Network e.V. was a NGO of NGOs, a construct
+where local citizen network NGOs could be members. Individual Network would
+then make contracts with the German Science Network DFN and other providers
+and buy traffic rights in bulk, in order to allow its members to use this
+traffic for non-commercial, private use.&lt;/p&gt;
+&lt;p&gt;In order to allow local NGOs to connect to the German Science Network DFN
+locally using the local university lines, Individual Network had to have
+some connection to DFN in order to be a member and customer. In the end it
+was decided that Individual Network would finance two X.25 lines into DFN at
+50% each, with the local NGO taking the endpoint financing the other half.&lt;/p&gt;
+&lt;p&gt;That is how the NGO I represented, Toppoint Mailbox e.V., ended up with a
+9600 bps X.25 line on 1.10.1992. This ended the era of long-distance dialup
+at Toppoint Kiel (well, not quite) and introduced a permanent link to the
+Internet. That was well before the first web servers, so SMTP, NNTP and FTP
+were the order to the day.&lt;/p&gt;
+&lt;p&gt;People connected to Toppoint using dial-up modems, ISDN dial-ups or
+semi-permanent (pre-conncted) ISDN dialups. Speeds were up to 128 kbps,
+using channel bundling. I had a
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Provider-independent_address_space&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PI&lt;/a&gt;
+
+
+&lt;a href=&#34;https://networkengineering.stackexchange.com/questions/3697/the-slash-after-an-ip-address-cidr-notation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;/24&lt;/a&gt;
+
+
+those days, for home use, costing me 50 DM, one time.&lt;/p&gt;
+&lt;p&gt;Also, people reminded me of &lt;code&gt;...!mcshh!tpki!kriski!kris&lt;/code&gt;. Yes, we did not
+use DNS back then, but had to name all hosts in the path of a mail. And
+hostnames are globally unique (yep, that scales even less than IP V4).&lt;/p&gt;
+&lt;p&gt;See also: &lt;a href=&#34;https://www.youtube.com/watch?v=-VkLbiDAouM&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Neuland&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>How does the 8008 processor work?</title>
+      <link>https://blog.koehntopp.info/2017/03/15/how-does-the-8008-processor-work.html</link>
+      <pubDate>Wed, 15 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/03/15/how-does-the-8008-processor-work.html</guid>
+      <description>&lt;p&gt;The historic 8008 processor is 45 years old: It was released on the 13th of
+March 1972. Ken Shirriff has a blog post that explains features of the CPU,
+from a die photo.&lt;/p&gt;
+&lt;p&gt;Compared to modern CPUs, the 8008 is weird in multiple ways: The storage for
+the stack is on chip instead of in memory, and it is not accessed in linear
+order for weird transistor saving reasons. Things have changed since then a
+lot, but back then, a central processing unit was usually not a single die,
+but a bunch of discrete electronics on a board.&lt;/p&gt;
+&lt;p&gt;Having enough transistors on a single die to make up a CPU inside a chip was
+a novel concept.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.righto.com/2016/12/die-photos-and-analysis-of_24.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Die photos and analysis of the revolutionary 8008 microprocessor, 45 years old&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.righto.com/2017/02/reverse-engineering-surprisingly.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Reverse-engineering the surprisingly advanced ALU of the 8008 microprocessor&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://www.righto.com/2017/03/analyzing-vintage-8008-processor-from.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Analyzing the vintage 8008 processor from die photos: its unusual counters&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Opa erzählt vom Krieg</title>
+      <link>https://blog.koehntopp.info/2012/02/23/opa-erz-hlt-vom-krieg.html</link>
+      <pubDate>Thu, 23 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/02/23/opa-erz-hlt-vom-krieg.html</guid>
+      <description>&lt;p&gt;Damals, vor dem Internet und dem DSL, so um 1989 rum, da hatten wir Modems.
+Mail wurde mit UUCP (Unix-to-Unix CoPy) übertragen.  Das heißt, man schrieb
+eine Mail, und diese wanderte als Kopierauftrag in das UUCP Spooldirectory
+des Systems.  Dort wartete sie, bis der Rechner eine Modem-Wählverbindung
+aufgebaut hat (passierte so 1-3 mal am Tag) und wurde dann zum nächsten
+System entlang der Kette kopiert.  Dort lag sie dann weiter, wartete auf die
+nächste Wählverbindung und so weiter, bis sie irgendwann auf dem Zielrechner
+angekommen war und dort lokal zugestellt wurde.&lt;/p&gt;
+&lt;p&gt;Das war sehr schnell: Oft war Mail schon am Absendetag auf dem Zielsystem
+und wurde gelesen.&lt;/p&gt;
+&lt;h2 id=&#34;bangaddressen&#34;&gt;
+    &lt;a href=&#34;#bangaddressen&#34;&gt;
+	Bangaddressen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Mailadressen sahen so aus: &lt;code&gt;kriski!tpki!mcshh!thw (Thomas Wieske)&lt;/code&gt;.  Das ist
+ein sogenannter Bangpath, wegen der ganzen Ausrufezeichen (Bang Sign).  Der
+Bangpath gab die Schritte zum Zielsystem an, die mußte man wissen, und die
+Adresse verkürzte sich mit jedem Schritt von links her.  O.a.  Adresse
+bezeichnet also eine Zustellung an den Rechner &lt;code&gt;kriski&lt;/code&gt;, der die Mail dann
+(minus den kriski-Part) an &lt;code&gt;tpki&lt;/code&gt; weiter kopierte, der sie an &lt;code&gt;mcshh&lt;/code&gt; weiter
+kopiert hat, wo es einen lokalen User &lt;code&gt;thw&lt;/code&gt; gab.&lt;/p&gt;
+&lt;p&gt;Man kann auch im Kreis routen: &lt;code&gt;kriski!tpki!mcshh!unido!tpki!kriski!kris&lt;/code&gt; -
+eine Mail an mich selber mit Umweg über &lt;code&gt;mcshh&lt;/code&gt; in Hamburg und &lt;code&gt;unido&lt;/code&gt; in
+Dortmund.  Weil so was sinnlos ist und Geld kostet wurde so etwas nicht
+gerne gesehen.  Außerdem nervt es natürlich, wenn man jeden Hopser der Mail
+selber in die Adresse rein froggern muß.&lt;/p&gt;
+&lt;p&gt;Also braucht man eine Notation für einen Verbindungsgraphen im Netz - &amp;ldquo;maps&amp;rdquo;
+und ein Programm, daß aus diesem Graphen einen minimalen Spannbaum
+berechnet, bei dem die Wurzel der eigene Systemknoten ist - &amp;ldquo;pathalias&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Holger Koepke fand nun einen Mapschnipsel des Systems tpki von 1990, mit
+einer Liste der Modems dran.  In einem Mapschnipsel stehen auch die Links,
+also die Verbindungen zu den Nachbarknoten, mit Gewichten dran.  Hier ein
+&lt;a href=&#34;http://groups.google.com/group/sub.config/browse_thread/thread/33abbbe7714b4b3b/9c31c38086d5c0c1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mapschnipsel&lt;/a&gt;
+
+
+von 1991:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;tpki    unido(DAILY+HIGH), smurf(DAILY+HIGH), abqhh(DAILY+HIGH),
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        &amp;lt;ipkima&amp;gt;(DAILY+HIGH)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Das Schreiben von Mapschnipseln ist eine Wissenschaft, die verloren
+gegangen ist: Je nachdem, welche Gewichte man seinen Links zugewiesen hat,
+hat man den Traffic von Dritten auf sich gezogen, die Mail Transit durch die
+eigene Kiste machen.&lt;/p&gt;
+&lt;p&gt;Setzte ich zum Beispiel hier das Gewicht von &lt;code&gt;unido&lt;/code&gt; und &lt;code&gt;smurf&lt;/code&gt; auf
+&lt;code&gt;DEMAND&lt;/code&gt; (Verbindung ist instantan, nach Bedarf), würden viele andere Leute
+ihre Mail mit der Sequenz &lt;code&gt;...!unido!tpki!smurf!...&lt;/code&gt;  durch mich hindurch
+routen, weil das quasi ein Nullzeit-Transit ist, auch wenn es 3 Hops sind.
+Das kostet aber leider Geld, und daher will man das meist nicht.  &lt;code&gt;ipkima&lt;/code&gt; zum
+Beispiel hat sich dort oben mit den spitzen Klammern als Blatt ausgewiesen
+und Transit abgelehnt.&lt;/p&gt;
+&lt;p&gt;Manchen Leuten war das mit den Gewichten und den Konsequenzen nicht ganz
+klar - wenn jemand also seine frisch gebackene, arschteure X.25 Datex-P
+Verbindung hatte, und dann in der Map seinen Schnipsel stolz auf &lt;code&gt;DEMAND&lt;/code&gt;
+gesetzt hat, hat er also erst mal allen Mailtransit in Deutschland und dann
+noch ein bischen auf sich gezogen.  Das konnten gigantische Trafficmengen -
+einige hundert KB pro Tag!  - sein und einen in kürzester Zeit ruinieren.&lt;/p&gt;
+&lt;h2 id=&#34;trailblazer&#34;&gt;
+    &lt;a href=&#34;#trailblazer&#34;&gt;
+	Trailblazer
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das Modem da in dem von Holger angesprochenen  Artikel (&amp;ldquo;Der hatte ein
+Traiblazer, das hatte PEP!&amp;quot;) war ein ganz besonderes Teil, denn die Telebit
+Trailblazer waren eine Gruppe von Modems mit einer ganz wunderbaren
+Betriebsart.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Reguläre&amp;rdquo; Modems erzeugen ein Signal, indem sie Phase und Frequenz eines
+Signals ändern und so einen von 2, 4, 16 oder noch mehr Punkten in einem
+Phasen-Frequenzdiagramm ansteuern.  Nach einer Weile wechselt das Signal und
+die nächste Bitkombination wird übertrag.&lt;/p&gt;
+&lt;p&gt;Bei 2400 Signalwechseln pro Sekunde (Baud) und 16 Punkten = 4 Bit pro Signal
+kann man 9600 Bit/s übertragen.  Das ist V.32 zum Beispiel.&lt;/p&gt;
+&lt;p&gt;Ist die Leitung gestört, sieht das visuell so aus, als seien diese Punkte,
+die durch das Signal beschrieben werden, unscharf.  Werden sie so unscharf,
+daß sie ineinanderlaufen, ist das Signal nicht mehr erkennbar und die
+Übertragung gestört.  Das Modem muß dann auf eine langsamere Geschwindigkeit
+runterschalten (&amp;ldquo;Renegotiation&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;Das bedeutet, daß das Modem einen Datenträgerton (&amp;ldquo;Carrier&amp;rdquo;) hat, der ein
+relativ breites Frequenzband (ideal den gesamten zur Verfügung stehenden
+Bereich) belegt.  Gibt es in diesem Bereich Dämpfungen oder - schlimmer noch -
+eine Bandsperre oder Störung, etwa durch eine Schwebung, dann bricht die
+Verbindung ab.  Auch dann, wenn eigentlich eine ganze Menge Restspektrum zur
+Verfügung stünde.&lt;/p&gt;
+&lt;p&gt;Die Trailblazer, in Deutschland mit Telebimm-Zulassung als MDG-19k2
+verkauft, waren nun Modems, die statt eines einzelnen schnellen und
+superbreiten Carriers sehr viele (512) Carrier gesendet haben, von denen
+jeder 0, 2, 4 oder 6 Bit überträgt und die sehr langsam wechseln (6 mal pro
+Sekunde).&lt;/p&gt;
+&lt;p&gt;6 Baud sind so langsam, daß man sie hören kann - ein Telebit-Modem erzeugt
+ein sehr characteristisches Carrierwummern (&amp;ldquo;Wop Wop Wop Wop Wop Wop&amp;rdquo;).  Und
+da die einzelnen Carrier sehr schmalbandig sind, kann man sie einzeln runter
+regeln oder abschalten, wenn es Probleme gibt.&lt;/p&gt;
+&lt;p&gt;Schwebungen oder andere Bandsperren machen einem Telebit also nix aus: Man
+kann ohne Probleme mit einem Telebit einen gcc Source von Kiel nach Berlin
+Ost (Node &amp;ldquo;pericont&amp;rdquo;) und anders herum schaufeln, auf einer Leitung, auf der
+Schwebungen durch schlechte Richtfunkstrecken selbst Sprache schwer
+verständlich machen.&lt;/p&gt;
+&lt;p&gt;Bestes Modem der Welt - voll geländegängig und schnell sogar auf
+Datenfeldwegen!  &lt;strong&gt;vermiss&lt;/strong&gt;&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>15 Jahre zuvor...</title>
+      <link>https://blog.koehntopp.info/2011/12/05/15-jahre-zuvor.html</link>
+      <pubDate>Mon, 05 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/12/05/15-jahre-zuvor.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/kris_19961231.jpg&#34; alt=&#34;Kris, 31-Dec-1996&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ol start=&#34;31&#34;&gt;
+&lt;li&gt;Dezember 1996&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Silvesterfeier mit dem &amp;ldquo;Hohen Rath der 13. Weisen vom Feed&amp;rdquo; und der &amp;ldquo;Allianz
+wieder den Hohen Rath der 13 Weisen vom Feed&amp;rdquo; in der Wassilystraße in Kiel.
+Ich verfasse gerade den RfD rmgroup de.talk.bizarre.&lt;/p&gt;
+&lt;p&gt;Linker Bildschirm: Linux-System, Mitte: NeXTstation (Graustufen-Display, 25
+MHz 68040, 20 MB RAM, 1 GB HDD), Rechts: Storage, Tape und CD-ROM für
+NeXTstation.&lt;/p&gt;
+&lt;p&gt;Auf dem Schild am Regal über mir steht: &amp;ldquo;Das Kopieren von Programmen ist aus
+urheberrechtlichen Gründen nicht gestattet.&amp;rdquo; Es stammt aus einem Kaufhaus,
+aus meiner C64-Zeit.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Ein verpaßtes Jubiläum</title>
+      <link>https://blog.koehntopp.info/2011/09/13/ein-verpa-tes-jubil-um.html</link>
+      <pubDate>Tue, 13 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/09/13/ein-verpa-tes-jubil-um.html</guid>
+      <description>&lt;p&gt;Ich las gerade
+&lt;a href=&#34;http://www.heise.de/newsticker/meldung/Facebook-vs-Datenschuetzer-Streit-um-Like-Button-geht-weiter-1338660.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;über den Streit um den Like-Button&lt;/a&gt;
+
+
+bei Heise und dachte zurück an die erste Sommerakademie &amp;ldquo;Datenschutz in
+Europa&amp;rdquo; im Kieler Landeshaus. Bei Datenschutzzentrum.de findet man in der
+Tat &lt;a href=&#34;https://www.datenschutzzentrum.de/ldsh/chronik/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;eine Chronik&lt;/a&gt;
+
+ und
+offenbar war diese Veranstaltung am 29. August 1994, also vor ziemlich genau
+17 Jahren.&lt;/p&gt;
+&lt;p&gt;Damals stand ich mit Terra in der Eingangshalle des Kieler Landeshauses. Wir
+hatten ein Modem dort stehen und ein Terminalprogramm am Laufen. Auf dem
+Terminal waren wir auf einer Maschine in den USA eingeloggt, die
+personenbezogene Daten von Deutschen verarbeitete: diese Kiste hatte also
+ein wirklich langes Tastaturkabel. Die Platten des US-Rechners waren über
+NFS aus einer weiteren, anderen Jurisdiktion gemountet - die Kiste hatte
+also auch ein wirklich langes Plattenkabel.&lt;/p&gt;
+&lt;p&gt;Wir haben damals bei den Abgeordneten und Datenschützern, die uns über die
+Schultern schauten, eine ganze Menge &amp;ldquo;404&amp;rdquo;-Gesichter erzeugt - &amp;ldquo;Was machen
+die da? Wieso ist das ein Problem? Und wenn es ein Problem ist, was zum
+Teufel können wir da machen?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Das ist im Grunde genau die Situation, die wir jetzt beim Facebook
+Like-Button, bei jedem eingebundenen Youtube-Video und natürlich auch bei
+jeder Dropbox haben.&lt;/p&gt;
+&lt;p&gt;17 Jahre Processing Time sind allerdings auch für eine Juristen-CPU eine
+ganze Menge Latenz. Zeit für ein Upgrade? Oder müssen wir unsere
+Rechtsprechung auch beim Datenschutz in die Cloud verlegen? Beim Copyright
+&lt;a href=&#34;http://falkvinge.net/2011/09/05/cable-reveals-extent-of-lapdoggery-from-swedish-govt-on-copyright-monopoly/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ist das ja quasi schon passiert&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>FCopy (Commodore 64)</title>
+      <link>https://blog.koehntopp.info/2011/07/17/fcopy-commodore-64.html</link>
+      <pubDate>Sun, 17 Jul 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/07/17/fcopy-commodore-64.html</guid>
+      <description>&lt;p&gt;Hach.&lt;/p&gt;
+&lt;p&gt;Ich nehme an, ihr habt sowieso
+&lt;a href=&#34;http://www.pagetable.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pagetable&lt;/a&gt;
+
+
+im Feedreader. Wenn nein, dann sei Euch
+&lt;a href=&#34;http://www.pagetable.com/?p=647&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The story of FCopy for the C-64&lt;/a&gt;
+
+
+von Thomas Tempelmann ans Herz gelegt. Das waren noch Zeiten&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Und weil wir gerade bei der Nostalgie sind:
+&lt;a href=&#34;http://www.wired.com/epicenter/2011/07/speed-matters/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Die Geschichte von Ethernet&lt;/a&gt;
+
+ bei Wired.&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;Update:&lt;/b&gt; &lt;a href=&#34;http://www.pagetable.com/?p=656&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Nachfolge-Artikel&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Vertrauenswürdigkeit öffentlicher Hardware</title>
+      <link>https://blog.koehntopp.info/2011/02/16/vertrauensw-rdigkeit-ffentlicher-hardware.html</link>
+      <pubDate>Wed, 16 Feb 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/02/16/vertrauensw-rdigkeit-ffentlicher-hardware.html</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://www.theregister.co.uk/2011/02/15/hardware_keyloggers_manchester_libraries/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hardware keyloggers found in Manchester library PCs&lt;/a&gt;
+
+ schreibt The Register:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Hardware keyloggers have been discovered in public libraries in Greater
+Manchester.Two USB devices, attached to keyboard sockets on the back of
+computers in Wilmslow and Handforth libraries, would have enabled baddies
+to record every keystroke made on compromised PCs. It&amp;rsquo;s unclear who placed
+the snooping devices on the machines but the likely purpose was to capture
+banking login credentials on the devices prior to their retrieval and use
+in banking fraud.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Vor vielen Jahren stand in der Hauptpost in Kiel wie in vielen anderen
+Postfilialen ein öffentliches BTX Terminal. Solche Geräte wurden zu dieser
+Zeit dadurch realisiert, daß man ein Standard CEPT-Terminal mit einem
+&lt;a href=&#34;http://de.wikipedia.org/wiki/Datei:Modem_DBT-03.jpg&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DBT-03&lt;/a&gt;
+
+ in ein Gehäuse
+geschwartet hat und mit einer robusten Tastatur versehen hat.&lt;/p&gt;
+&lt;p&gt;Öffentliche BTX-Terminals waren damals ein tolle Sache, weil man auf ihnen
+private Nachrichten kostenlos versenden konnte, statt die damals üblichen 40
+Pfennige pro Mail bezahlen zu müssen, und weil man auf ihnen sogenannte BTX
+Regionalseiten abrufen konnte, ohne die damals üblichen 2 Pfennige pro Seite
+bezahlen zu müssen (Und ihr fragt Euch noch, was Euch erwartet, wenn die
+Netzwerkneutralität kippt?).&lt;/p&gt;
+&lt;p&gt;Wenn man sich also in das BTX System mit der Teilnehmerkennung und dem
+Paßwort eines öffentlichen Terminals einloggen könnte, dann war das schon
+sehr attraktiv, damals.&lt;/p&gt;
+&lt;p&gt;Der Schwachpunkt an der Angelegenheit war damals das DBT-03.&lt;/p&gt;
+&lt;p&gt;Für die Post war das DBT-03 sehr attraktiv, weil es als spezielles BTX-Modem
+die Teilnehmerkennung und das Paßwort in der Hardware eingebaut hatte und
+man so an einem öffentlichen Terminal beim Verbindungsaufbau keinen Login
+durchführen mußte. Für den Hacker war das DBT-03 attraktiv, weil das DBT-03
+ist ein Ultrabillig-Modem gewesen ist, das für alles zu dumm war.&lt;/p&gt;
+&lt;p&gt;Normale Modems heben beim Verbindungsaufbau ab und lauschen nach einem
+Freizeichen. Nicht so das DBT-03. Das gebt ab und wählt los.&lt;/p&gt;
+&lt;p&gt;Wenn man sich also nach der Schule um Punkt 15:00 am Terminal einfindet und
+dann &amp;ldquo;Verbindungsaufbau&amp;rdquo; am Terminal drückt, dann legt das DBT-03 auf,
+wartet und hebt wieder ab, um dann loszuwählen. Es wählt dabei von einem
+Telefonanschluß los, dessen Rufndummer wie damals üblich mit seiner
+BTX-Teilnehmerkennung identisch war. Ruft nun also ganz zufällig jemand
+genau um 15:00 auf dieser Rufnummer an, dann hebt das DBT-03 ab, hört nicht
+auf ein Freizeichen, und wählt los - dadurch wird die angenommene Verbindung
+aber nicht mehr getrennt.&lt;/p&gt;
+&lt;p&gt;Dann pfeift das DBT-03 seinen Carrier und bekommt die Gegenseite ans Rohr,
+von der es glaubt, daß es die BTX Leitzentrale in Ulm sei. Die Gegenseite
+sendet also eine BTX Startseite mit einem Usernamen-Feld, und das DBT-03
+sendet brav seine Hardware-Teilnehmerkennung. Die Gegenseite pfeift ein
+Paßwortfeld, und das DBT-03 sendet brav sein Paßwort. Die Gegenseite legt
+auf.&lt;/p&gt;
+&lt;p&gt;Wenige Stunden später sind circa zwei Dutzend öffentliche BTX-Terminals
+Hauptpost Kiel simultan in Ulm eingeloggt.&lt;/p&gt;
+&lt;p&gt;Natürlich fällt so etwas auf, und man reagiert darauf, indem man das Paßwort
+des Zugangs ändert, d.h. die Modemhardware austauscht. Das behebt natürlich
+nicht die Quelle des Angriffes - am nächsten Nachmittag steht also wieder
+ein pickeliger Schülertypie im Parka am Gerät und drückt die &amp;ldquo;Trennen&amp;rdquo;- und
+dann die &amp;ldquo;Verbindung aufbauen&amp;rdquo;-Taste und wenige Stunden später&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Nunja. Irgendwann mußte man am ÖBTX halt mit einer Telefonkarte bezahlen
+statt den Dienst kostenlos nutzen zu können. Wie schade. Aber da gab es dann
+auch schon USENET und Interessen verschoben sich.&lt;/p&gt;
+&lt;p&gt;Warum ich die Geschichte erwähne? Auch damals standen gerne Leute am ÖBTX
+und machten in der Hauptpost ihr BTX-basierendes Onlinebanking. Ich fand das
+immer sehr leichtsinnig. Wer weiß schon, wer da am anderen Ende zuhört!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Wieso wir Helden sein wollen</title>
+      <link>https://blog.koehntopp.info/2010/07/21/wieso-wir-helden-sein-wollen.html</link>
+      <pubDate>Wed, 21 Jul 2010 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2010/07/21/wieso-wir-helden-sein-wollen.html</guid>
+      <description>&lt;p&gt;Vor drei Jahren schrieb ich etwas zu
+&lt;a href=&#34;https://blog.koehntopp.info/2007/09/07/echte-helden.html&#34;&gt;Echten Helden&lt;/a&gt;
+
+
+und daß das Wunder unserer Zeit darin liegt, daß es leichter denn je ist,
+ein Held zu werden, indem man einfach etwas tut und dadurch die Welt
+fundamental verändert.&lt;/p&gt;
+&lt;p&gt;Warum wollen Leute Echte Helden sein? Dazu gibt es ein wunderbares Video von
+&lt;a href=&#34;http://www.youtube.com/watch?v=u6XAPnuFjJc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RSAnimate&lt;/a&gt;
+
+, das erklärt, wieso
+Geld als Motivator nicht funktioniert außer für die primitivsten und
+langweiligsten Tätigkeiten und was Leute wirklich motiviert: Self Direction,
+Mastery und Purpose. Also die Freiheit, das eigene Umfeld selbst bestimmen
+und kontrollieren zu können, und der Wunsch, etwas sinnvolles und wichtiges
+zu tun und darin und den dazu notwendigen Fertigkeiten besser zu werden.
+Dahinter stehend also genau der Wunsch, die Welt in einen besseren Ort zu
+verwandeln.&lt;/p&gt;
+&lt;p&gt;Anders gesagt: Glück und Heldentum gehen zusammen, wir sind geschaffen,
+Echte Helden zu sein - es ist in uns eingebaut und es ist das, was wir alle
+tun wollen, sobald die direkten Existenzsorgen vom Tisch sind.&lt;/p&gt;
+&lt;p&gt;(Youtube  &lt;a href=&#34;http://www.youtube.com/watch?v=u6XAPnuFjJc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;DirektHeldentum&lt;/a&gt;
+
+ via
+&lt;a href=&#34;http://immateriblog.de/journalismus/was-motiviert-uns/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Immateriblog&lt;/a&gt;
+
+)&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Alte Prospekte</title>
+      <link>https://blog.koehntopp.info/2009/11/18/alte-prospekte.html</link>
+      <pubDate>Wed, 18 Nov 2009 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2009/11/18/alte-prospekte.html</guid>
+      <description>&lt;p&gt;Beim Aufräumen habe ich noch ein paar alte Prospekte gefunden und mal eben
+eingescannt.&lt;/p&gt;
+&lt;h3 id=&#34;cbm-4001-series-stand-januar-1982&#34;&gt;
+    &lt;a href=&#34;#cbm-4001-series-stand-januar-1982&#34;&gt;
+	CBM 4001 Series, Stand Januar 1982.
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm4001-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm4001-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;cbm-8001-series-stand-januar-1982&#34;&gt;
+    &lt;a href=&#34;#cbm-8001-series-stand-januar-1982&#34;&gt;
+	CBM 8001 Series, Stand Januar 1982.
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm8001-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm8001-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;cbm-8050-diskettenlaufwerk-das-große-mit-der-hohen-kapazität&#34;&gt;
+    &lt;a href=&#34;#cbm-8050-diskettenlaufwerk-das-gro%c3%9fe-mit-der-hohen-kapazit%c3%a4t&#34;&gt;
+	CBM 8050 Diskettenlaufwerk (das Große mit der hohen Kapazität).
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm8050-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm8050-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;commodore-mmf-9000-ja-so-was-gab-es-mal&#34;&gt;
+    &lt;a href=&#34;#commodore-mmf-9000-ja-so-was-gab-es-mal&#34;&gt;
+	Commodore MMF 9000 (Ja, so was gab es mal):
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mmf9000-1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mmf9000-2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mmf9000-3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mmf9000-4.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;color-genie&#34;&gt;
+    &lt;a href=&#34;#color-genie&#34;&gt;
+	Color Genie:
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/color-genie-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/color-genie-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;sirius-1-kleiner-katalog&#34;&gt;
+    &lt;a href=&#34;#sirius-1-kleiner-katalog&#34;&gt;
+	Sirius 1 (kleiner Katalog):
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sirius1-bw-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sirius1-bw-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;sirius-1&#34;&gt;
+    &lt;a href=&#34;#sirius-1&#34;&gt;
+	Sirius 1
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;großer Katalog, mit dem ganzen Business Chic der 80er - um diese Zeit liefen
+Dallas und Denver Clan:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sirius1-color-1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sirius1-color-2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sirius1-color-3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sirius1-color-4.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;mz-80-a&#34;&gt;
+    &lt;a href=&#34;#mz-80-a&#34;&gt;
+	MZ 80 A:
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mz80-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mz80-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;pc-1500-lcd-drucker-batteriebetrieben&#34;&gt;
+    &lt;a href=&#34;#pc-1500-lcd-drucker-batteriebetrieben&#34;&gt;
+	PC 1500 (LCD, Drucker, batteriebetrieben):
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sharp-pc1500-vorn.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sharp-pc1500-hinten.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h3 id=&#34;apple-2-und-3&#34;&gt;
+    &lt;a href=&#34;#apple-2-und-3&#34;&gt;
+	Apple 2 und 3:
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/apple-1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/apple-2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/apple-3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/apple-4.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/apple-5.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/apple-6.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>10 Jahre PHPLIB</title>
+      <link>https://blog.koehntopp.info/2008/05/29/10-jahre-phplib.html</link>
+      <pubDate>Thu, 29 May 2008 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2008/05/29/10-jahre-phplib.html</guid>
+      <description>&lt;p&gt;Vor etwas mehr als 10 Jahren, am 19. Mai 1998, schrieb ich
+&lt;a href=&#34;http://marc.info/?l=php-general&amp;amp;m=90222497032618&amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;auf php-general&lt;/a&gt;
+
+ von einer PHP Standardbibliothek.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;PHP should ship with, and install by default, a standard library. This
+library should offer certain standard functionality that is often required
+in larger web projects.The language itself does not need to support any of
+the functionality that should be in the library (see below). In fact,
+quite a lot of PHP special functions are probable candidates for library
+functions that could (and perhaps should) be removed from the language
+core, if you are into language purity (I am not). What PHP needs in my
+personal opinion is a more stable, better debugged and better equipped
+modularization mechanism (and better namespace management).&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Wenig später, Ende Juni, kam dann die Ankündigung
+&lt;a href=&#34;http://marc.info/?l=php-general&amp;amp;m=90222503034131&amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;von Sessionvariablen und Authentisierung&lt;/a&gt;
+
+
+in einem runterladbaren Paket. Im Juli gab es dann die erste Version mit
+&lt;a href=&#34;http://marc.info/?l=php-general&amp;amp;m=90222513232492&amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PHP 3 Objekten&lt;/a&gt;
+
+. Um diese Zeit ging dann auch
+&lt;a href=&#34;http://marc.info/?l=php-general&amp;amp;m=90222513233868&amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;die Supportsite&lt;/a&gt;
+
+ online.
+Das Projekt idlet jetzt unter anderer Führung auf
+&lt;a href=&#34;http://phplib.sourceforge.net&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SourceForge&lt;/a&gt;
+
+ rum - es hat sich inzwischen überlebt.&lt;/p&gt;
+&lt;p&gt;Die Mails
+&lt;a href=&#34;http://marc.info/?l=phplib&amp;amp;m=94064176914442&amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Keeping state at the server&lt;/a&gt;
+
+ und
+&lt;a href=&#34;http://marc.info/?l=phplib&amp;amp;m=94064176914442&amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;What was your name, again?&lt;/a&gt;
+
+ erklären die Ideen
+und Konzepte dahinter.&lt;/p&gt;
+&lt;p&gt;PHPLIB hat das Konzept der Session in PHP eingeführt und war die
+Default-Bibliothek dafür in PHP 3. Sascha Schumann hat den Code dann in PHP4
+in den PHP-Kern selber überführt. PHPLIB hat außerdem das Konzept des
+Datenbankwrappers in PHP eingeführt und eine der ersten
+Template-Bibliotheken enthalten.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Echte Helden</title>
+      <link>https://blog.koehntopp.info/2007/09/07/echte-helden.html</link>
+      <pubDate>Fri, 07 Sep 2007 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2007/09/07/echte-helden.html</guid>
+      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/yodaorigami.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Man hat mich gebeten, auf den &lt;a href=&#34;http://www.kieler-linuxtage.de/programm.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kieler Linuxtagen&lt;/a&gt;
+
+ am 7/8. September etwas salbungsvolles zum Thema 15 Jahre Linux zu erzählen.
+Und das etwas mit Kiel zu tun hat.&lt;/p&gt;
+&lt;p&gt;Damit bin ich offiziell ein alter Sack.&lt;/p&gt;
+&lt;p&gt;Sobald man gebeten wird, über Rückblicke zu referieren und von der guten alten Zeit zu schwelgen ist man offiziell ein alter Sack.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mcgyver.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;So die Sorte Typ, die von den Helden vergangener Zeiten erzählt.
+Für die Richard Dean Anderson noch McGyver war, der mit dem Taschenmesser in der Hand noch selber Leben rettete, und nicht Sesselpuper bei Stargate.
+Damals hatten Telefone noch Drehscheiben, und das Leben war generell noch viel härter und damals es brauchte noch echte Helden&amp;hellip;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/74ls00.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Einer der Helden aus grauer Vorzeit hier in Kiel war ja Cornelius.
+Das war ein ganz Harter.
+Der hat zum Frühstück 74LS00 gefressen, ohne Milch!
+Und damals gab es noch gar kein SMD.
+Jemand, der Fehler mit dem Oszilloskop debugged.
+So ein Typ, der gar kein Modem braucht, sondern den Carrier auch selber Pfeifen kann.
+Das Telefonnetz war damals, für die Jüngeren unter Euch, übrigens noch Analog.&lt;/p&gt;
+&lt;p&gt;Cornelius hat den Unix-Kram hier in Kiel mit aufgebracht.
+Ich war damals ja noch so ein Amiga-Kiddie und dachte, ich bin cool, weil ich Freunde hatte, die sich selber mit einem Frequenzzähler auf dem Adreßbus eine echte Megahertz-Anzeige gebaut hatten statt so ein Fake-Teil, das immer dieselbe Zahl anzeigte.
+Damals war so was noch einstellig, also so eine Megahertz-Anzeige, da ging so was mit dem Taschengeld.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/source.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Cornelius ist so die Sorte Typ, für die die Dateiendung &amp;ldquo;.c&amp;rdquo; für Configuration stand und &amp;ldquo;cc&amp;rdquo; für &amp;ldquo;Configuration Converter&amp;rdquo;.
+Ich glaube, Cornelius hat sich damals ein wenig darüber geärgert, daß sein Nachname mit &amp;ldquo;K&amp;rdquo; anfing und nicht mit &amp;ldquo;C&amp;rdquo;, denn so hatte er nicht die Initialen &amp;ldquo;cc&amp;rdquo; wie sein Compiler.&lt;/p&gt;
+&lt;p&gt;Cornelius hat damals jedenfalls die ersten Unix-Kisten eingeschleppt.
+Natürlich gab es so etwas damals nicht fertig, sonst hätte ihn das wohl auch nicht interessiert.
+In seinem Fall waren das stattdessen Commodore 900 mit Coherent 0.7.1 Special Binary Prerelease, Prototypen von Rechnern, die Commodore nie gebaut hat, weil sie selbst für Commo zu Scheiße waren.
+Das war mein erstes Unix.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/cbm900.gif&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Das Coherent war übrigens von Mark Willams Company.
+Die haben sonst so Flipperautomaten gebaut.
+Flipperautomaten sind, für die Jüngeren unter Euch, so analoge Videospiele mit echten Kugeln drin.&lt;/p&gt;
+&lt;p&gt;Cornelius lebt inzwischen übrigens in Texas.
+Wenn ich so drüber nachdenke paßt das schon, so irgendwie.&lt;/p&gt;
+&lt;p&gt;Ich hab dann später mit SCO Xenix weiter gemacht und so eine Mailbox geerbt.
+SCO, für die Jüngeren unter euch, waren damals noch die Guten. Damals gab es weniger Juristen und von Patentanwälten hatte noch nie jemand was gehört.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/crazy_dots.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Geerbt habe ich sie von einem anderen echten Helden, von Jens.
+Jens war auch ein ganzer Kerl.
+Der hat die Grafikkarte in seinem Mega ST noch selbst gebaut, und auch den Treiber dafür selber geschrieben.
+Und die Mailbox-Software für seine Mailbox auch.&lt;/p&gt;
+&lt;p&gt;Jens braut inzwischen übrigens sein eigenes Bier.
+Das paßt auch so, irgendwie.&lt;/p&gt;
+&lt;p&gt;Xenix hatte so das Problem, daß da kein richtiges TCP/IP bei war.
+Das war kein Problem, solange man mit Modems und UUCP gearbeitet hat - wir hatten damals noch kein Online und auch kein X, sondern nur eine Kommandozeile.
+Will man X, braucht man Netz, so für localhost.
+Also mußte ein System V her, ein Interaktive Unix, von Kodak.&lt;/p&gt;
+&lt;p&gt;Jedenfalls, wenn man in so einem Interactive das TCP/IP in Betrieb nimmt, etwa weil man X machen will, und das localhost braucht, dann stellt man fest, daß so ein System V Kernel Memory Leaks hat und daß dann binnen einer Viertelstunde schon mal 500K Speicher voll laufen.
+Ein Kilobyte, für die Jüngeren unter Euch, ist übrigens ein Millionstel Gigabyte.&lt;/p&gt;
+&lt;p&gt;So stand ich also damals, ich weiß es noch wie heute, vor dem Problem, ein
+Unix her zu kriegen mit funktionierendem oder reparierbarem TCP/IP.
+Das war am 30. Dezember 1992, also vor etwa 15 Jahren, und das ist der Grund warum ich heute hier vorne stehe.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/schneekatastrophe.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ich bin damals also mit dem Fahrrad zur Uni geradelt.
+Bergauf, durch den Schnee.
+Schnee, für die Jüngeren unter Euch, ist gefrorenes Wasser.
+Damals hatten wir noch keine Klimakatastrophe.
+Ich hab mir dann einen Kernel und ein paar Sourcen auf ein Tape gezogen.
+Das Tape war ein sogenanntes Quarterinch Tape.
+Das bezieht sich nun nicht auf die Größe der Kassette, sondern die Breite des Bandes.
+Die Kassette war größer, so 10x7cm ungefähr, also wie ein Taschenbuch.
+Ein Buch, für die Jüngeren unter Euch, ist so was wie eine DVD, nur mit Text statt Bildern und ohne Strom.
+Das Tape jedenfalls, das hatte eine Rückwand aus massivem Stahl, 4mm dick.
+Cornelius stand tierisch auf solche Tapes.&lt;/p&gt;
+&lt;p&gt;Mit dem Linux auf dem Tape bin ich dann nach Hause geradelt, wieder durch den Schnee, natürlich, denn damals blieb so was noch liegen und natürlich auch wieder bergauf, denn damals ging es noch nicht bergab.
+Und hab mir den Kram compiliert und installiert.
+Danach hab ich dann erst mal die Permissions und Owner von dem Zeug richtig gesetzt, denn wir hatten damals noch keine Distributionen.&lt;/p&gt;
+&lt;p&gt;Und so kam es, daß ich am 31. Dezember 1992 mit einem SLS und einem Kernel 0.96.6 in das neue Jahr startete.
+Das war schon ziemlich cool.
+SLS war übrigens von Donald Becker.
+Der schreibt inzwischen übrigens Netzwerktreiber.
+Das paßt auch, irgendwie.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/twm.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Endlich X.
+640x480 in 256 Farben.
+Das war schon was.
+Man konnte seinen Monitor auch übertakten, dann ging mehr.
+Ein Monitor, für die Jüngeren unter Euch, das ist so eine Art analoges LCD, damals hatten wir noch kein DRM.
+Da ging so was noch mit dem Übertakten.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/e10000.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Naja, so fing das damals jedenfalls alles an.
+Und dann ging es Schlag auf Schlag.
+Man kann sich bei so einem Vortrag schnell in die Technik versteigen, und wie geil Linux inzwischen so ist - es rennt auf einem Palm Pilot und einer Cray, auf einem iPod und auf einer Enterprise-Class Solaris Kiste oder einer SGI mit 1024 Prozessoren.&lt;/p&gt;
+&lt;p&gt;Aber wenn man sich Sagen aus Grauer Vorzeit so ansieht, dann geht es da weniger um die Monster, sondern im Grunde geht es um die Helden, und ihre Taten.
+So auch im Zusammenhang mit Linux und im Zusammenhang mit dem Universum als solches.&lt;/p&gt;
+&lt;p&gt;Also ist dies heute ein Vortrag über Helden und Heldentum.&lt;/p&gt;
+&lt;p&gt;Ein Held ist jemand, der einen Kampf aufnimmt, um die Welt zu verändern, einen Kampf der anfangs aussichtlos, ja sogar sinnlos erscheint.
+Manche Helden opfern sich, oder opfern persönliche Vorteile, um die Welt, oder das Universum als solches, für uns alle in einen besseren Ort zu verwandeln.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/ostsee.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Der erste Held, um den es hier gegen soll, ist natürlich Linus Torvalds.
+Er ist ein Jedermann aus einer Gegend gar nicht weit von hier, ein Schwede in Finnland, ein Informatikstuent.
+Wer hier war schon mal in Schweden oder in Finnland?
+Wer hat Informatik studiert?
+Genau.
+Ihr hättet Linus sein können.&lt;/p&gt;
+&lt;p&gt;Linus hat sich also hingestellt, und sein Zeug ins Netz gekippt und  gesagt:
+Hier ist mein Zeug und ich habe es in Netz gekippt, jetzt könnt ihr spielen.
+Wer hier hat schon mal Zeugs von sich ins Netz gekippt, damit andere spielen können?
+Genau.
+Ihr hättet Linus sein können.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/linus.gif&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Leute haben also Linus Zeugs genommen und damit gespielt, und es dabei besser hin gefummelt und - das ist der Trick - Linus ihr verbessertes Zeug zurück gegeben.
+Linus hat das also zusammengesetzt und wieder zurück ins Netz gekippt.&lt;/p&gt;
+&lt;p&gt;Eigentlich hat er also gar nicht viel gemacht.&lt;/p&gt;
+&lt;p&gt;Der entscheidende Punkt hier ist: Er hat es getan.
+Linus hat mit seinem Tun die Welt verändert.
+Also nicht bloß ein bischen, sondern so richtig fundamental.
+Leute schreiben da Bücher drüber.
+Bill Gates paßt seine Geschäftsstrategie an.
+Linus hat Macht.
+Er ist hingegangen und hat gesagt: Das ist jetzt so, und dann war es so.
+Ein Informatikstudent aus Finnland, hier gleich um die Ecke.&lt;/p&gt;
+&lt;p&gt;Okay, Linus war nicht alleine.
+CREDITS in meinem Kernel listet alleine so an die 500 Leute, und das sind nur die, die es bis in diese Datei geschafft haben und das ist nur der Kernel.&lt;/p&gt;
+&lt;p&gt;Und das mit dem Zurück geben und neu veröffentlichen ist auch nicht seine Idee.
+Diese Idee hatte ein anderer Held, Richard Stallman.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/richard_stallman.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Stallman, ein weiterer Informatikstudent, wenn auch von weiter weg, ist also hingegangen und hatte dasselbe gemacht wie Linus, nur viel früher:
+Er hat Zeugs geschrieben, in seinem Fall ein Haufen ziemlich coole Editing Macros, &amp;ldquo;emacs&amp;rdquo;, für einen Editor, und die ins Netz gekippt und gesagt: Hier ist mein Zeug und ich habe es ins Netz gekippt, jetzt könnt ihr spielen.&lt;/p&gt;
+&lt;p&gt;Leute haben also Richards Zeug genommen und damit gespielt, und es dabei besser hin gefummelt und ein kommerzielles Produkt draus gemacht und - das ist der Fehler - Richard ihr verbessertes Zeug nicht zurück gegeben sondern gesagt: Ellabätsch, angeschissen, Du hast Zeug ins Netz gekippt und ich mach eine Firma draus.&lt;/p&gt;
+&lt;p&gt;Da war Richard natürlich sauer und hat sich überlegt, wie er die Welt verändern kann, oder gar das Universum als solches, um es für uns alle in einen besseren Ort zu verwandeln. Richard hat sich also hingesetzt und mal aufgeschrieben wie es sein soll, damit das mit dem &amp;ldquo;ins Netz kippen und spielen&amp;rdquo; besser funktioniert.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/20040415-gnu-head-sm.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Damit das ganze juristisch wasserdicht wird ist das Ganze ein ziemlich langer Text geworden, aber im wesentlichen steht da drin: Du kannst Zeugs, das ich ins Netz gekippt habe, nehmen und dran rumbasteln und damit spielen.
+Aber wenn Du Dein verändertes Spielzeug nicht zum selber spielen verwendest, sondern Dritte damit spielen läßt, dann mußt Du denen (und damit effektiv uns allen) die Veränderungen geben, damit wir genau wie Du spielen können.&lt;/p&gt;
+&lt;p&gt;Also, mit anderen Worten, wenn wir Zeugs ins Netz kippen, damit Du spielen kannst, dann mußt Du, wenn Du das verbastelst Dein verbasteltes Zeug ebenfalls ins Netz kippen, damit wir genau wie Du weiter spielen können.&lt;/p&gt;
+&lt;p&gt;Simpel genug.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/sourceforge.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;So simpel, daß ein Haufen Leute die Idee kopiert haben.
+Weil Richard hat das nicht nur auf seine Editing Macros angewendet,  sondern er hat die Metaidee, also den Regelsatz, als solchen formuliert, da raus abstrahiert und auch ins Netz gekippt.
+Und ein Haufen Leute haben nicht nur seine Editing Macros genommen und damit gespielt, sondern haben ihr Spielzeug nach seinen Regeln ins Netz gekippt damit andere auch damit spielen können.&lt;/p&gt;
+&lt;p&gt;Okay, Stallman war also nicht alleine.
+Auf Sourceforge stehen tausende von Softwarepakete, aber letztendlich ist seine Idee, die GPL, als Lizenz bei der überwiegenden Mehrzahl aller Projekte gewählt.
+Es gibt einen Haufen Lizenzen, die zur Auswahl stehen, aber es ist die Lizenz von Stallman, die letztendlich die bestimmende Macht bei allen diesen Paketen ist.
+Es ist etwas an der GPL, das sie uns anderen Nichthelden attraktiver, fairer oder sonstwie besser erscheinen läßt.&lt;/p&gt;
+&lt;p&gt;Das kommt, weil die GPL eine Formulierung einer anderen, viel, viel älteren Idee ist.
+Diese Idee hatte ein anderer Held, Immanuel Kant.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/immanuel_kant.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Kant war ein Student der Philosophie, weil damals gab es noch keine Informatik, hat die GPL viel kürzer aufgeschrieben als Stallman, weil damals gab es auch weniger Juristen.
+Er sagte, etwas geschraubt, weil er Philosoph war:
+&amp;ldquo;Handle stets so, daß die Maxime Deines Handelns als Grundlage allgemeinen Handelns genommen werden kann.&amp;rdquo;
+und nannte das den kategorischen Imperativ.&lt;/p&gt;
+&lt;p&gt;Kant meint, das sei eine coole Idee, weil es die Welt und das Universum als solches automatisch in einen besseren Ort verwandelt.&lt;/p&gt;
+&lt;p&gt;Manche Leute heute formulieren Kant etwas weniger geschraubt als &amp;ldquo;Was Du nicht willst, das man Dir tu, das füg auch keinem anderen zu.&amp;rdquo;
+Das geht leicht von der Zunge und macht klar, wieso Kant der Meinung war, daß es die Welt und das Universum als solches in einen besseren Ort verwandelt, erklärt aber irgendwie gar nicht was das mit der GPL zu tun hat.&lt;/p&gt;
+&lt;p&gt;Wenn man da drüber nachdenkt, dann stellt man aber fest, daß man das noch anders formulieren kann: &amp;ldquo;Baue die Spielregeln einer Gemeinschaft stets so, also ob Du Dich an jeder Position in dieser Gemeinschaft, und sei es die niedrigste und schlechteste, befinden mögest.&amp;rdquo;
+In anderen Worten:
+Man stelle sich einmal vor, man sei, hmm, die kranke dunkelhäutige Frau eines fundamental-religiösen Hartz IV-Empfängers mit Migrationshintergrund mit einem behinderten Kind in einem Plattenbau in Sachsen - Deutschland funktioniert als Gemeinschaft, sagt Immanuel, wenn man sich selbst in dieser Situation vorstellen kann und das nicht schlimm wäre.&lt;/p&gt;
+&lt;p&gt;Okay, hat nix mit der GPL zu tun, aber illustriert das Gedankenmodell.&lt;/p&gt;
+&lt;p&gt;Anderes Beispiel:
+Man stelle sich einmal vor, man stellt einen Haufen cooler Editing Macros ins Netz und alle wollen die benutzen und dann macht einer ein paar Veränderungen dran, packt das ganze in eine Schachtel und fängt an das zu verkaufen und sagt mir, nein, an die Veränderungen kommst Du nicht dran, das ist jetzt alles proprietär.&lt;/p&gt;
+&lt;p&gt;Offensichtlich sind die Spielregeln kaputt.
+Immanuel hat also eine Metaregel aufgeschrieben, mit der man testen kann, ob ein Regelsatz heil oder kaputt ist:
+Nimm die Regeln, bau das Spielfeld auf und setz Dich selber an die letzte von allen Positionen.
+Magst Du dann noch spielen?
+Wenn nein, ist das Spiel im Eimer.&lt;/p&gt;
+&lt;p&gt;Richard hat nun diese Überlegung von Immanuel genommen und im Grunde nur Regeln aufgeschrieben, die nicht kaputt sind.
+Und Linus hat das dann mal durchgespielt.
+Okay.
+Und wir alle anderen auch.
+Das da sind ja auch nur Leute wie Du und ich.&lt;/p&gt;
+&lt;p&gt;Das ist mächtig gefährlich.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/erde.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Weil es die Welt verändern kann, oder das Universum als solches, und in
+einen besseren Ort verwandeln.
+Und wenn die das können, dann können wir, also Du, Du und Du, das auch.
+Einfach so.&lt;/p&gt;
+&lt;p&gt;Also rechnen wir das doch mal durch, so wie ein Philosoph, Mathematiker oder Informatiker das tun würde.&lt;/p&gt;
+&lt;p&gt;Erst mal sind wir.
+Das ist unbestritten.
+Jedenfalls bin ich, das ist leicht zu testen - ich denke, also bin ich.
+Ob Ihr seid, ist nicht so leicht zu testen, aber im Grunde irrelevant.
+Weil: wenn ich nicht widerlegen kann, daß Ihr seid, Ihr mich aber beeinflussen könnt und ich ich Euch, dann muß ich Euch erst mal als real annehmen - es macht ja keinen Unterschied für mein Handeln.&lt;/p&gt;
+&lt;p&gt;Das ist cool, weil ich jetzt schon mal Folgerungen ziehen kann.&lt;/p&gt;
+&lt;p&gt;Die erste ist:
+Wenn ich bin, will ich weiter sein.
+Das nennt man Egoismus und ist gesund.&lt;/p&gt;
+&lt;p&gt;Die zweite ist:
+Ich bin nicht alleine, sondern es gibt mehr wie mich, und die wollen auch weiter sein.&lt;/p&gt;
+&lt;p&gt;Und das ändert die Regeln fundamental.&lt;/p&gt;
+&lt;p&gt;Eine ganze Menge Leute, Helden der Mathematik in diesem Fall, haben auf dem Problem &amp;ldquo;Die Anderen&amp;rdquo; rum gerechnet und festgestellt, daß das wegen der Existenz der Anderen die Welt und das Universum als solches kein Nullsummenspiel ist.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/haeftling.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ein Nullsummenspiel ist ein Spiel, bei dem ich verliere, wenn ein anderer
+gewinnt.
+Man kennt das - mal verliert man, mal gewinnen die anderen.&lt;/p&gt;
+&lt;p&gt;Der Punkt ist, das ist Unsinn.
+Die Welt ist, sagen uns die Mathematiker, nicht ein Spiel, sondern eine Folge von Spielen und sie hat, wie wir Informatiker sagen würden, Zustand.
+Zustände kriegt man, sobald man sich erinnern kann, also den Ausgang vorheriger Spiele zur Grundlage seines fortgesetzten Handelns macht.
+Oder wie der große Held Henry Spencer so treffend gesagt hat, &amp;ldquo;Those who do not remember Unix are forced to reinvent it, poorly.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Darum ist für die Politiker Fernsehen so wichtig, weil das verhindern soll, daß wir Zustände kriegen.&lt;/p&gt;
+&lt;p&gt;Die Frage war, ob wir Helden sind.&lt;/p&gt;
+&lt;p&gt;Und die Antwort ist: wir sind, und wir sind nicht alleine, und weil das so ist, und weil wir uns erinnern können, können wir durch zusammenarbeiten Situationen schaffen, in denen jeder gewinnt, der mit uns zusammenarbeitet - uns selbst  eingeschlossen.
+Indem wir etwas verschenken machen wir langfristig Gewinn.&lt;/p&gt;
+&lt;p&gt;Die Helden der Philosophie und der Mathematik sagen uns, und das haben sie
+oft nachgerechnet, daß das eine Eigenschaft der Welt und des Universum als
+solches ist. Die Welt um uns herum ist so aufgebaut, daß es gut und
+persönlich gewinnbringend für uns ist, kurzfristig etwas zu opfern, um die
+Welt und das Universum als solches in einen besseren Ort für uns alle zu
+verwandeln.&lt;/p&gt;
+&lt;p&gt;Oder, um es deutlicher zu formulieren: Bill Gates ist ein blöder Idiot. Und
+nur Du kannst es ihm beweisen.&lt;/p&gt;
+&lt;p&gt;Sei ein Held.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/kris_beer.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Yellow Cable</title>
+      <link>https://blog.koehntopp.info/2006/03/27/yellow-cable.html</link>
+      <pubDate>Mon, 27 Mar 2006 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2006/03/27/yellow-cable.html</guid>
+      <description>&lt;pre&gt;&lt;code&gt;20:43 huzzel&amp;gt; ich brauch aber dieses dumme wlan
+20:43 huzzel&amp;gt; ^^
+20:43 huzzel&amp;gt; sonst dreht mein vater durch
+20:43 huzzel&amp;gt; weil ich ein lankabel durch die ganze wohnung gespannt habe
+
+20:44 @CaptainCrunch&amp;gt; lankabel sind so...eighties ;)
+
+20:52 @Isotopp&amp;gt; lankabel der eighties.
+20:52 @Isotopp&amp;gt; ich zeig euch mal was.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/yellow_cable.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Why PHPLIB did vanish</title>
+      <link>https://blog.koehntopp.info/2004/07/15/why-phplib-did-vanish.html</link>
+      <pubDate>Thu, 15 Jul 2004 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2004/07/15/why-phplib-did-vanish.html</guid>
+      <description>&lt;p&gt;In &lt;a href=&#34;http://phplens.com/phpeverywhere/?q=node/view/69&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&amp;ldquo;ADO-donkey&amp;rdquo; will prevail&lt;/a&gt;
+
+, johnlim writes:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;PHPLib was the most popular database library for PHP3. Today it seems to be a bit old and is no longer popular. I have never talked to the PHPLib developers, but I can speculate on the reasons:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PHPLib has PHP3 functionality that is obsolete because it is provided natively by PHP today, such as sessions support.&lt;/li&gt;
+&lt;li&gt;PHPLib tried to do too much. It handled both paging, templating and database access. Other more specialised database libraries have superseded it.&lt;/li&gt;
+&lt;li&gt;The PHPLib developers are involved in other activities such as PEAR, or have lost interest perhaps?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;As one of the principal designers of PHPLIB, I am entitled to clear things up.&lt;/p&gt;
+&lt;p&gt;PHPLIB was fallout. When I was doing web application design for
+&lt;a href=&#34;http://www.netuse.de&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NetUSE&lt;/a&gt;
+
+/SHonline in the final days of PHP/FI and during the PHP3 RCs, I pretty quick came across the Session problem. I was at all times carrying around a large number of persistent variables in GET and POST requests, and was revalidating them over and over due to their source being the untrustworthy Internet.&lt;/p&gt;
+&lt;p&gt;I asked on the PHP support mailing list, and got my hands on a piece of code by Rasmus, which serialized an array of at most three dimensions into a string. Together with Boris Erdmann, with whom I was working at that time, I wrote a more generic serializer, which could handle about any number and any type of variable including objects. This, plus an authentication and authorization scheme plus a very simple and lightweight database wrapper class became the
+&lt;a href=&#34;https://marc.info/?l=php-general&amp;amp;amp;m=90222503034131&amp;amp;amp;w=2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;core of PHPLIB&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;We released the code to our little library under the LGPL thanks to the generosity of the company we worked for, and in order to get other people to contribute to it, be it with documentation, testing or even code. And contributions we got, from inside of
+&lt;a href=&#34;http://www.netuse.de&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NetUSE&lt;/a&gt;
+
+/SHonline by Ulf Wendel, and from the outside.&lt;/p&gt;
+&lt;p&gt;Then two things happened: Sascha Schumann met the PHP team and started recoding the PHPLIB session handling into what became PHP 4, and SHonline was reintegrated into NetUSE and I moved on to other departments inside the company. Because I was no longer doing web development, and Sascha&amp;rsquo;s native PHP 4 session handling did just fine for my purposes, thank you, I no longer had any use for PHPLIBs code, perhaps besides the database wrapper.&lt;/p&gt;
+&lt;p&gt;The PHPLIB database wrapper was never intended to be a database abstraction anyway - being raised on NeXTstep and its Enterprise Objects toolkit, I subscribe to many aspects of Jeremy&amp;rsquo;s essay
+&lt;a href=&#34;http://jeremy.zawodny.com/blog/archives/002194.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Database Abstraction Layers must die!&lt;/a&gt;
+
+. The database wrapper has its purpose mainly in that it encapsulates the database access information (user, password, host, database), and enforces proper error handling. It may also manage a connection pool, if the deployment environment has provisions for that. But there is little use for a unified database access API in PHP (or anywhere else).&lt;/p&gt;
+&lt;p&gt;SQL dialects and the inner workings of SQL databases are suitably different so that different access strategies are needed for different databases. There is little use for &amp;ldquo;take a unified SQL statement and push it to whatever database happens to be below the application&amp;rdquo;, which is what most PHP database abstraction layers promise to do.&lt;/p&gt;
+&lt;p&gt;What is needed is a persistence layer abstraction instead. Objects model the entities and relations of the storage model and provide the application with the data access API the application needs. Inside, the objects generate whatever suitably optimized statements are required to talk to the concrete persistence layer below the application and execute them.&lt;/p&gt;
+&lt;p&gt;This is what EO did on NeXTstep and this is what makes sense, if you happen to be able to keep around database connections and ER model objects between requests, because otherwise the overhead in code and object instantiation is just to high - Ulf tried, I tried, we failed.&lt;/p&gt;
+&lt;p&gt;Keeping instances of objects between requests requires an application server, things like PHP Bananas and the Vulcan Logic thingy or similar. PHP has no such deployment model that is production quality and so I did not pursue that avenue for development any further.&lt;/p&gt;
+&lt;p&gt;To sum it up:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Yes, PHPLIB is obsolete. Use the native PHP session support for session management, use Smarty for templating and use AdoDB for database access. These are much more tailored to current PHP development styles than PHPLIB and they are under active development. Avoid PEAR, unless the class of choice can live without PEAR.php, which is fat and ugly.&lt;/li&gt;
+&lt;li&gt;No, PHPLIB did never try to be a database abstraction library, it tried to be a web application development suite and it was fairly successful at that during its time.&lt;/li&gt;
+&lt;li&gt;Yes, the PHPLIB developers have been moving on to things outside of the world of PHP.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Alte Säcke online</title>
+      <link>https://blog.koehntopp.info/2004/07/05/alte-saecke-online.html</link>
+      <pubDate>Mon, 05 Jul 2004 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2004/07/05/alte-saecke-online.html</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://groups.google.com/g/sub.sources.unix/c/a6bP7qb_ML4/m/QMCgRGKa4zUJ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ältestes auffindbares USENET Posting von mir&lt;/a&gt;
+
+. Das war vor 15 Jahren.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

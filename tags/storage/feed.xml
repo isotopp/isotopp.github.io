@@ -1,0 +1,1275 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>storage on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/storage.html</link>
+    <description>Recent content in storage on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 25 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/storage/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NVME is not a hard disk</title>
+      <link>https://blog.koehntopp.info/2021/05/25/nvme-is-not-a-hard-disk.html</link>
+      <pubDate>Tue, 25 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/05/25/nvme-is-not-a-hard-disk.html</guid>
+      <description>&lt;p&gt;So &lt;a href=&#34;https://twitter.com/leclercfl/status/1396909628949155845&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;somebody tweeted&lt;/a&gt;
+
+ about the &lt;a href=&#34;https://techxplore.com/news/2021-05-seagate-mach2-fastest-hard.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Seagate Mach.2&lt;/a&gt;
+
+, a harddisk with two independent heads &amp;ldquo;combs&amp;rdquo;, and I &lt;a href=&#34;https://twitter.com/isotopp/status/1397077206111821824&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commented in german&lt;/a&gt;
+
+: &amp;ldquo;It&amp;rsquo;s two drives in one chassis, even shown as two drives. And it still is rotating rust, so slow with seeks. Linear IO will be fine.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;That quickly devolved in a discussion of &lt;a href=&#34;https://twitter.com/Earlchaos/status/1397116366113673219&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RAID-0 on a single disk drive&lt;/a&gt;
+
+: &amp;ldquo;RAID-0 on a single physical drive. Yeah, you can do that if you do not need your data.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;And that is true, &lt;a href=&#34;https://twitter.com/isotopp/status/1397124815660765184&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;I replied&lt;/a&gt;
+
+: &amp;ldquo;Most people need their data a lot less than they think they do.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s unroll that thread and the various followups in english for this blog.&lt;/p&gt;
+&lt;h1 id=&#34;n3--or-n1&#34;&gt;
+    &lt;a href=&#34;#n3--or-n1&#34;&gt;
+	n=3  or n=1
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;So, most people actually need their data a lot less than they think they do. That is, because most database-like applications do their redundancy themselves, at the application level, so that RAID or storage replication in distributed storage (the &amp;ldquo;n-factor&amp;rdquo;, for the number of replicas that distributed stores for each block) is not only useless, but actively undesirable.&lt;/p&gt;
+&lt;p&gt;Where I work, there is the data track, and there are customers of the data track.&lt;/p&gt;
+&lt;h2 id=&#34;non-databases-are-stateless&#34;&gt;
+    &lt;a href=&#34;#non-databases-are-stateless&#34;&gt;
+	Non-Databases are stateless
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Customers of the data track have stateless applications, because they have outsourced all their state management to the various products and services of the data track. They are deploying their applications, and they largely do not care about the content of hard disks, or even entire machines. Usually their instances are nuked on rollout, or after 30 days, whichever comes first, and replaced with fresh instances.&lt;/p&gt;
+&lt;p&gt;Customers of the data track care about placement:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Place my instances as distributed as possible, no two instances on the same host, if possible, not in the same rack or even the same stack&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;(A stack is a network unit of 32-48 racks) This property is called &amp;ldquo;anti-affinity&amp;rdquo;, the spread-out placement of instances.&lt;/p&gt;
+&lt;h2 id=&#34;database-like-systems&#34;&gt;
+    &lt;a href=&#34;#database-like-systems&#34;&gt;
+	Database-like systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The data track has things such as Kafka, Elastic, Cassandra or MySQL, and a few snowflakes.&lt;/p&gt;
+&lt;p&gt;All of these services are doing their own redundancy: individual drives, or even instances, are not a thing they care a lot about. Loss of hosts or racks is factored in.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;They care a lot about anti-affine placement, because they care a lot about fault isolation through &amp;ldquo;not sharing common infrastructure&amp;rdquo; between instances.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Often these services do create instances for read capacity, and getting fault tolerance by having the instances not sharing infrastructure is a welcome secondary effect.&lt;/p&gt;
+&lt;h2 id=&#34;adding-distributed-storage-forces-n3&#34;&gt;
+    &lt;a href=&#34;#adding-distributed-storage-forces-n3&#34;&gt;
+	Adding distributed storage forces n=3
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Now, if you switch from local storage to distributed storage, you very often get redundant storage. For transactional workloads this is often a RAID-1 with three copies (&lt;code&gt;n=3&lt;/code&gt;). Most customers of them don&amp;rsquo;t actually need that: Because they create capacity for read scaleout, they only care about independence of failures, not avoiding them. So again, what they want is anti-affine placement, for example by propagating tags down the stack.&lt;/p&gt;
+&lt;p&gt;So imagine &lt;a href=&#34;https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html&#34;&gt;a lot of MySQL databases&lt;/a&gt;
+
+, for example on Openstack. The volumes of each replication chain are tagged with the replication chain name, like &lt;code&gt;chain=&amp;lt;x&amp;gt;&lt;/code&gt;. If we could tell the storage to place all volumes with identical &lt;code&gt;chain&lt;/code&gt; tag values on different physical drives, ideally on different storage nodes in different racks, storing data with &lt;code&gt;n=1&lt;/code&gt; would be just fine.&lt;/p&gt;
+&lt;p&gt;Cassandra, Elastic and Kafka could work with the same mechanism, because they, too, have native solutions to provide redunancy on JBODs at the application level.&lt;/p&gt;
+&lt;p&gt;But this kind of distributed storage does not exist, and that leads to triplicate storage when it is not needed.&lt;/p&gt;
+&lt;h1 id=&#34;how-about-local-storage&#34;&gt;
+    &lt;a href=&#34;#how-about-local-storage&#34;&gt;
+	How about local storage?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&amp;ldquo;But, Kris! Local Storage!&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Yes, local storage would be a solution. I know that, because when running on autoprovisioned bare metal, it does work, and we currently have that.&lt;/p&gt;
+&lt;p&gt;But most Openstack operators do want live migration, so even ephemeral storage is often ceph&amp;rsquo;ed. That&amp;rsquo;s a&amp;hellip; complication I could do without.&lt;/p&gt;
+&lt;p&gt;In an earlier life Quobyte did work fine for volumes and ephemeral storage, except that with guests that contained large memcached&amp;rsquo;s or MySQL live migrations still failed often.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s not because of Quobyte, but because of memory churn: The memory of the VM in busy instances changed faster than the live migration could move it to the target host. We then had to throttle the instances, breaking all SLA&amp;rsquo;s.&lt;/p&gt;
+&lt;p&gt;In my current life, I can tolerate instance loss anyway, especially if it is controlled and announced. So I do not really have to migrate instances, I can ask nicely for them to be shot in the head. With pre-announcement (&amp;ldquo;I need your host, dear Instance, please die.&amp;quot;), and the application provisions a new instance elsewhere and then removes the one in question. Or with control (&amp;ldquo;Don&amp;rsquo;t force-kill instances if the population is too thin.&amp;quot;).&lt;/p&gt;
+&lt;p&gt;Either case is likely to be faster than a live migration. It is faster for sure, if the data volume is on distributed storage so that I only have to provision the new instance and then simply can reconnect the data volume.&lt;/p&gt;
+&lt;h1 id=&#34;nvme-over-fabric-over-tcp&#34;&gt;
+    &lt;a href=&#34;#nvme-over-fabric-over-tcp&#34;&gt;
+	NVME over fabric over TCP
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Local storage has a smaller write latency than distributed storage, but NVME over fabric (&amp;ldquo;NVMEoF&amp;rdquo;) is quite impressive. And since CentOS 8.2, NVMEoF over TCP is part of the default kernel. That means you do have the NVMEoF TCP initiator simply available, without any custom install.&lt;/p&gt;
+&lt;p&gt;NVMEoF over TCP has a marginally worse latency than RoCE 2 (&amp;ldquo;NVMEoF over UDP&amp;rdquo;), but it does work with any network card - no more &amp;ldquo;always buy Mellanox&amp;rdquo; requirement.&lt;/p&gt;
+&lt;p&gt;It does allow you to make storage available even if it is in the wrong box. And distributed storage may be complicated, but it has a number of very attractive use-cases.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;volume centric workflows: &amp;ldquo;make me a new VM, but keep the volume&amp;rdquo;. Provisioning one Terabyte of data at 400 MB/s takes 45 minutes of copy time for a total MySQL provisioning time of around 60 min. Keeping the volume, changing the VM (new image, different size) makes this a matter of minutes.&lt;/li&gt;
+&lt;li&gt;With NVME namespaces or similar mechanisms one can cut a large flash drive into bite sized chunks, so providing storage and consuming it can be decoupled nicely.&lt;/li&gt;
+&lt;li&gt;Lifetime of storage and lifetime of compute are not identical. By moving the storage out into remote storage nodes their lifecycles are indeed separate, offering a number of nice financial advantages.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All of that at the price of the complexity of distributed storage.&lt;/p&gt;
+&lt;h1 id=&#34;nvme-servers&#34;&gt;
+    &lt;a href=&#34;#nvme-servers&#34;&gt;
+	NVME &amp;ldquo;servers&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This &lt;a href=&#34;https://twitter.com/eckes/status/1397134662896701443&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;raised the question&lt;/a&gt;
+
+ of what the &amp;ldquo;NVME server&amp;rdquo; looks like. &amp;ldquo;Is the respective NVME server an image file, or does it map 1:1 to a NVME hardware device?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;NVME over Fabric (over UDP or over TCP) is a network protocol specification and implementation. It uses iSCSI terms, so the client is the &amp;ldquo;initiator&amp;rdquo;, and the server is the &amp;ldquo;target&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;How backing storage is implemented in a NVME target is of course the target&amp;rsquo;s choice. It could be a file, but the standard maps nicely on a thing called &amp;ldquo;&lt;a href=&#34;https://nvmexpress.org/resources/nvm-express-technology-features/nvme-namespaces/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NVME namespaces&lt;/a&gt;
+
+&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;So flash storage does not overwrite data, ever. Instead it has internally a thing called flash translation layer (FTL), which is somewhat similar to a log structured file system or a database LSM.&lt;/p&gt;
+&lt;p&gt;Unlike a file system, it does translate linear block addresses (LBAs) into physical locations on the flash drive, so there are no directories and (initially also) no filenames.&lt;/p&gt;
+&lt;p&gt;There is of course a reclaim and compaction thread in the background, just like the compaction in log structured filesystems or databases. So you could think of the LSM as a filesystem with a single file.&lt;/p&gt;
+&lt;p&gt;Now, add NVME namespaces - they introduce &amp;ldquo;filenames&amp;rdquo;. The file names are numbers, the name space IDs (NSIDs). They produce a thing that looks like partitions, but unlike partitions they do not have to be fixed in size, and they do not have to be contiguous. Instead, like files, namespaces can be made up by any blocks anywhere on the storage, and they can grow. That works because with flash seeks are basically free - the rules of rotating rust no longer constrain us.&lt;/p&gt;
+&lt;h1 id=&#34;nvme-command-line&#34;&gt;
+    &lt;a href=&#34;#nvme-command-line&#34;&gt;
+	nvme command line
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Linux has the command line program &amp;ldquo;&lt;a href=&#34;https://manpages.ubuntu.com/manpages/xenial/man1/nvme.1.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;nvme&lt;/a&gt;
+
+&amp;rdquo; to deal with nvme flash drives. Drives appear named &lt;code&gt;/dev/nvmeXnY&lt;/code&gt;, where &lt;code&gt;X&lt;/code&gt; is the drive number and &lt;code&gt;Y&lt;/code&gt; is the namespace id (NSID), starting at 1. So far, you probably always have seen the number 1 here.&lt;/p&gt;
+&lt;p&gt;Start with &lt;code&gt;nvme list&lt;/code&gt; to see the devices you have. You can also ask for the features the drive has, &lt;code&gt;nvme id-ctrl /dev/nvme0n1 -H&lt;/code&gt; will tell you what it can do in a human-readable (&lt;code&gt;-H&lt;/code&gt;) way. Not all flash drives support namespaces, but enterprise models and newer models should.&lt;/p&gt;
+&lt;p&gt;Using &lt;code&gt;nvme format&lt;/code&gt; you can reformat the device (losing all data on it), and also specify the block size. &lt;code&gt;nvme list&lt;/code&gt; will also show you this block size. You do want 4KB blocks, not 512 byte blocks: It&amp;rsquo;s 2021 and the world is not a PDP-11 any more, so &lt;code&gt;nvme format /dev/nvme0n1 -b 4096&lt;/code&gt;, please. Some older drives now require a reset to be able to continue, &lt;code&gt;nvme reset /dev/nvme0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Namespaces can be detached, deleted, created and attached: &lt;code&gt;nvme detach-ns /dev/nvme0 -namespace-id=Y -controllers=0&lt;/code&gt;, then &lt;code&gt;nvme delete-ns /dev/nvme0 -namespace-id=1&lt;/code&gt;. When creating a namespace, &lt;code&gt;nvme create-ns /dev/nvme0 -nsze ... -ncap ... -flbas 0 -dps 0 -nmic 0&lt;/code&gt; or whatever options are desired, then &lt;code&gt;nvme attach-ns /dev/nvme0 -namespace-id=1 -controllers=0&lt;/code&gt;. Again, &lt;code&gt;nvme reset /dev/nvme0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In theory, NVME drives and NVME controllers are separate entities, and there is the concept of shared namespaces that span drives and controllers.&lt;/p&gt;
+&lt;p&gt;In reality, this does not work, because NVME devices are usually sold as an entity of controller and storage, so some of the more interesting applications the standard defines do not work on the typical devices you can buy.&lt;/p&gt;
+&lt;h1 id=&#34;erasing&#34;&gt;
+    &lt;a href=&#34;#erasing&#34;&gt;
+	Erasing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Because flash does not overwrite anything, ever, you can&amp;rsquo;t erase and sanitize the device the way you have done this in the past with hard drives. Instead there is drive encryption (&amp;ldquo;OPAL&amp;rdquo;), or the &lt;code&gt;nvme sanitize /dev/nvme0n1&lt;/code&gt; command&lt;/p&gt;
+&lt;p&gt;Or you shred the device, just make the shreds smaller than with hard disks: With hard disks, it is theoretically sufficient to break the drive, break the platters and make scratces. Drive shredders produce relatively large chunks of metal and glass, and are compliance.&lt;/p&gt;
+&lt;p&gt;Flash shredders exist, too, but in order to be compliant the actual chips in their cases need to be broken. So what they produce is usually much finer grained, a &amp;ldquo;sand&amp;rdquo; of plastics and silicon.&lt;/p&gt;
+&lt;h1 id=&#34;network&#34;&gt;
+    &lt;a href=&#34;#network&#34;&gt;
+	Network
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;You need a proper network, &lt;a href=&#34;https://twitter.com/isotopp/status/1397143957860143105&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Maik added&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;Distributed storage is storage at the other kind of the network cable. Every disk read and every disk write become a network access. So you do need a fairly recent network architecture, from 2010 or later: A leaf-and-spine architecture that is optionally oversubscription free so that the network will never break and never be the bottleneck.&lt;/p&gt;
+&lt;h2 id=&#34;leaf-and-spine&#34;&gt;
+    &lt;a href=&#34;#leaf-and-spine&#34;&gt;
+	Leaf-and-spine
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Brad Hedlund wrote about &lt;a href=&#34;https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;leaf-and-spine&lt;/a&gt;
+
+ in the context of Hadoop in 2012, but the first builds happened earlier, at Google, using specialized hardware. These days, it can be done with standard off the shelf hardware, from Arista or Juniper, for example.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/05/clos-40G.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Leaf-and-spine as shown by &lt;a href=&#34;https://bradhedlund.com/2012/01/25/construct-a-leaf-spine-design-with-40g-or-10g-an-observation-in-scaling-the-fabric/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Brad Hedlund&lt;/a&gt;
+
+. Today you&amp;rsquo;d use different hardware, but the design principle is still the same.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Here, the leaves are &amp;ldquo;Top of Rack&amp;rdquo; switches that are connected to computers, so we see 40x 10 GBit/s coming up to the red boxes labelled &amp;ldquo;Leaf&amp;rdquo;. We also provide green switches labelled &amp;ldquo;Spine&amp;rdquo;, and connect to them with up to 10x 40G for a complete oversubscription free network.&lt;/p&gt;
+&lt;p&gt;Using BGP, we can automatically build the routing tables, and we will have many routes going from one leaf switch to any other leaf switch - one for each spine switch in the image. Using Equal Cost Multipath (ECMP), we spread our traffic evenly across all the links. Any single connection will be limited to whatever the lowest bandwidth in the path is, but the aggregated bandwidth is actually never limited: we can always provide sufficient bandwidth for the aggregate capacity of all machines.&lt;/p&gt;
+&lt;p&gt;Of course, most people do not actually need that much network, so you do not start with a full build. Initially only provide a subset of that (three to four uplinks) and reserve switch ports and cable pathways for the missing links. Once you see the need you add them, for example when bandwidth utilization in the two digit percentages or you see Tail Drops/&lt;a href=&#34;https://en.wikipedia.org/wiki/Random_early_detection&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RED&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;racks-and-stacks&#34;&gt;
+    &lt;a href=&#34;#racks-and-stacks&#34;&gt;
+	Racks and Stacks
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One level of leaf-and-spine can build a number of racks that are bound together without oversubscription. We call this a stack, and depending on the switch hardware and the number of ports it provides, it&amp;rsquo;s 32-48 racks or so.&lt;/p&gt;
+&lt;p&gt;We can of course put another layer of leaf-and-spine on top to bundle stacks together, and we get a network layer that is never a bottleneck and that never disconnects, across an entire data center location.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Never disconnects?&amp;rdquo; Well, assuming three uplinks, and with a stack layer on top of the first leaf-and-spine layer, we get four hops from start to destination, and that 3^4 possible redundant pathes to every destination ToR via ECMP.&lt;/p&gt;
+&lt;p&gt;Chances are that you need to build a specialized monitoring to even notice a lost link. You can only have outages at the ToR.&lt;/p&gt;
+&lt;p&gt;With such a network a dedicated storage network is redundant (as in no longer needed), because frontend traffic and storage traffic can coexist on the same fabric.&lt;/p&gt;
+&lt;p&gt;A common test or demonstration is the Hadoop Terasort benchmark: Generate a terabyte or ten of random data, and sort it. That&amp;rsquo;s a no-op map phase that also does not reduce the amount of data, then sorting the data in the shuffle phase and then feeding the data (sorting does not make it smaller) across the network to the reducers.&lt;/p&gt;
+&lt;p&gt;Because the data is randomly generated, it will take about equal time to sort each Hadoop 128MB-&amp;ldquo;block&amp;rdquo;. All of them will be ready at approximately the same time, lift off and try to cross the network from their mapper node to the reducer node. If you network survives this, all is good - nothing can trouble it any more.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Trying lvmraid for real</title>
+      <link>https://blog.koehntopp.info/2019/12/03/trying-lvmraid-for-real.html</link>
+      <pubDate>Tue, 03 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/12/03/trying-lvmraid-for-real.html</guid>
+      <description>&lt;p&gt;So after testing &lt;a href=&#34;https://blog.koehntopp.info/2019/12/02/cloning-and-splitting-logical-volumes.html&#34;&gt;LVM Raid&lt;/a&gt;
+
+
+in princple, I have been trying it on some real hardware to see
+what happens. The idea was to estimate if it scales and if not,
+how it doesn&amp;rsquo;t. I was expecting to run into all kinds of obscure
+problems in my testing, but in fact, it was a quick and short
+death.&lt;/p&gt;
+&lt;p&gt;Here is my box: QuantaGrid D42A-2U with an &lt;a href=&#34;https://www.amd.com/en/products/cpu/amd-epyc-7551p&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AMD EPYC 7551P CPU&lt;/a&gt;
+
+
+(32C, HT off), 1024 GB of memory, a boot disk and 12x
+Micron_9200_MTFDHAL11TATCW
+(&lt;a href=&#34;https://www.micron.com/-/media/client/global/documents/products/product-flyer/9200_ssd_product_brief.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
+
+)
+for 120TB of disk storage.&lt;/p&gt;
+&lt;p&gt;The setup was very straight forward:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvcreate /dev/nvme*n1
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgcreate vg00 /dev/nvme*n1
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n mysqlvol -L60T vg00
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvconvert --type raid1 -m1 /dev/vg00/mysqlVol
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The objective was to ensure that an existing non-raided volume
+could be converted into a RAID after the fact. My installation
+is half-sized. The actual production version of this would be on
+a machine with 24 of these drives, 12 of them currently filled
+by a 90T database, and I just used a spare box to test the basic
+procedure.&lt;/p&gt;
+&lt;h2 id=&#34;it-works-slowly&#34;&gt;
+    &lt;a href=&#34;#it-works-slowly&#34;&gt;
+	It works, slowly
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;So, this worked:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
+&lt;span class=&#34;go&#34;&gt;  LV                  VG    Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  audit               sysvm -wi-ao----    1.95g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  log                 sysvm -wi-ao----   10.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  root                sysvm -wi-ao----    9.77g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  swap                sysvm -wi-ao---- 1000.00m
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  var                 sysvm -wi-ao----   35.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  mysqlVol            vg00  rwi-a-r---   60.00t                                    0.51                                      0 recover
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [mysqlVol_rimage_0] vg00  iwi-aor---   60.00t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [mysqlVol_rimage_1] vg00  Iwi-aor---   60.00t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [mysqlVol_rmeta_0]  vg00  ewi-aor---    4.00m
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [mysqlVol_rmeta_1]  vg00  ewi-aor---    4.00m
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;performance-metric&#34;&gt;
+    &lt;a href=&#34;#performance-metric&#34;&gt;
+	Performance metric
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;For very slow and single threaded values of work: &lt;code&gt;iostat -x -k 10&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/12/lvmraid-iostat.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;As you can see, nmve0n1 is being read at around 240 MB/s, and
+being written at the same speed to nvme6n1. The rimage_0 is
+dm-8, you can see the reading, and the writing goes to dm-10,
+the rimage_1.&lt;/p&gt;
+&lt;p&gt;At this rate, I will get a RAID sync in 3.5 days or so (60*1024/0.22 = 280k
+seconds).&lt;/p&gt;
+&lt;h2 id=&#34;expected-performance&#34;&gt;
+    &lt;a href=&#34;#expected-performance&#34;&gt;
+	Expected performance
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The expected behavior is to see a request queue deep enough to get the full
+transfer rate from a single NVME device (3.5 GB/s according to the spec
+sheet, anything above 2.5 GB/s sustained is good enough), and on all 6
+device pairs in parallel, for a total of anything above 6x 2.5GB/s = 15 GB/s
+for an unconstrained RAID-1 sync. That is what the hardware can do here. In
+this case, the sync would complete in 4096 seconds, a bit under 1.5h.&lt;/p&gt;
+&lt;p&gt;So basically this died in the crib, because it does not leverage any
+parallelism the CPU, the multitude of drives, the deep queues of the NVMEs
+or anything else would have to offer.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s from the past.&lt;/p&gt;
+&lt;p&gt;LVM is in need of serious overhaul in order to become a tool for the 2020&amp;rsquo;s.
+Outside of toy workloads, snapshots don&amp;rsquo;t work,
+&lt;a href=&#34;https://www.systutorials.com/docs/linux/man/7-lvmraid/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;lvmraid&lt;/a&gt;
+
+ also does
+not work.&lt;/p&gt;
+&lt;h2 id=&#34;why-is-this-slow&#34;&gt;
+    &lt;a href=&#34;#why-is-this-slow&#34;&gt;
+	Why is this slow?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A single NVME drive (we have 2x 6 of them) like the one I used is a 4xPCIe
+3.0 device, so we get a transfer rate on the bus of 32 GByte/s. The internal
+structure of the flash limits the performance here, and according to the
+technical specifications of the device we get 800k-ish IOPS (let&amp;rsquo;s say it&amp;rsquo;s
+a million) and 3.5 GByte/s from it.&lt;/p&gt;
+&lt;p&gt;We also can measure the device and see that it does have a read latency of
+around 100-120 microseconds, and a buffered write latency (to the internal
+RAM of the device, assume it has 512 MB or so) of 50 microseconds. If you
+write a lot, writes become unbuffered at, say, 420 micros.&lt;/p&gt;
+&lt;p&gt;In order to get 1 million IOPS single threaded at a queue depth of 1, you
+would need a latency of 1 microseconds. You don&amp;rsquo;t get that, so in order to
+get all IOPS, you need to have deep queues (and async IO) or many threads.&lt;/p&gt;
+&lt;p&gt;In order to get 3.5 GB/s (say, 4 GB/s) at 4 KB block size, you need 1
+million blocks per second (920k for 3.5 GB/s). Again, you need deep queues
+or many thread to get that.&lt;/p&gt;
+&lt;h2 id=&#34;addendum-unexpected-performance-limits&#34;&gt;
+    &lt;a href=&#34;#addendum-unexpected-performance-limits&#34;&gt;
+	Addendum: Unexpected performance limits
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Today, I monitored the still syncing array and it has been progressing at
+around 250 MB/s equalling around 1.1% per hours over night, and
+is now at 20-something percent synced.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvchange -maxrecoveryspeed&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1000k /dev/vg00/mysqlVol
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This works, and throttles the sync to just below 1000k per
+second. Conversely, setting a recovery speed of 0k falls back to
+the default 250 MB/s.&lt;/p&gt;
+&lt;p&gt;But: Setting it to 1000000k ups the speed to around 550 MB/s,
+which is the single threaded native speed of the array. I see
+around 4300 requests/s at a size of 256 KB at the NVME level,
+and around 8600 requests/s at a size of 128 KB one level higher
+in the dm-layer. There is also some kind of request merging
+going on somewhere in the stack, which for adjacent requests
+even makes sense.&lt;/p&gt;
+&lt;h2 id=&#34;addendum-interrupting-the-raid-sync&#34;&gt;
+    &lt;a href=&#34;#addendum-interrupting-the-raid-sync&#34;&gt;
+	Addendum: Interrupting the RAID sync
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you try to split the Volume while it is still synching, you
+will find that this is not possible.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvconvert --splitmirrors &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; -n splitlv /dev/vg00/mysqlVol
+&lt;span class=&#34;go&#34;&gt;  Unable to split vg00/mysqlVol while it is not in-sync.
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Another observationL While lvmraid employs mdraid code, working with
+devicemapper block devices for the data and external metadata, mdraid does
+not see any of this in /proc;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;cat /proc/mdstat
+&lt;span class=&#34;go&#34;&gt;Personalities : [raid6] [raid5] [raid4] [raid1]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;unused devices: &amp;lt;none&amp;gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can&amp;rsquo;t use any mdraid tooling to turn knobs inside lvm
+controlled mdraid code.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Cloning and splitting logical volumes</title>
+      <link>https://blog.koehntopp.info/2019/12/02/cloning-and-splitting-logical-volumes.html</link>
+      <pubDate>Mon, 02 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/12/02/cloning-and-splitting-logical-volumes.html</guid>
+      <description>&lt;p&gt;Where I work, we routinely run our databases on XFS on LVM2.&lt;/p&gt;
+&lt;h2 id=&#34;the-setup&#34;&gt;
+    &lt;a href=&#34;#the-setup&#34;&gt;
+	The setup
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Each database has their database on &lt;code&gt;/mysql/schemaname&lt;/code&gt;, with
+the subdirectories &lt;code&gt;/mysql/schemaname/{data,log,tmp}&lt;/code&gt;. The
+entire &lt;code&gt;/mysql/schemname&lt;/code&gt; tree is a LVM2 Logical Volume
+&lt;code&gt;mysqlVol&lt;/code&gt; on the Volume Group &lt;code&gt;vg00&lt;/code&gt;, which is then formatted
+as an XFS filesystem.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvcreate /dev/nvme*n1
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgcreate vg00 /dev/nvme*n1
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n mysqlVol -L...G vg00
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkfs -t xfs /dev/vg00/mysqlVol
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mount -t xfs /dev/vg00/mysqlVol /mysql/schemaname
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;basic-ops&#34;&gt;
+    &lt;a href=&#34;#basic-ops&#34;&gt;
+	Basic Ops
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You can grow an existing LVM Logical Volume with
+&lt;code&gt;lvextend -L+50G /dev/vg00/mysqlVol&lt;/code&gt; or similar, and then
+&lt;code&gt;xfs_grow /dev/vg00/myqlVol&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can also create a snapshot with
+&lt;code&gt;lvcreate -s -L50G -n SNAPSHOT /dev/vg00/mysqlVol&lt;/code&gt;
+and if you do this right, it will even be consistent or at least
+recoverable, from a database POV. But LVM snapshots are terribly
+inefficient, and you might not want to do that on a busy
+database.&lt;/p&gt;
+&lt;p&gt;The size you specified for the LVM snapshot is the amount of
+backing storage: When there is a logical write to the mysqlVol,
+LVM intercepts the write, physically reads the old target block,
+physically writes the old target block into the snapshot backing
+storage and then resumes the original write. This will do
+horrible things to your write latency, because the orignal write
+is stalled until the copy has been made, and I crashed a
+database at least once with Redo Log overflow while holding and
+reading a snapshot.&lt;/p&gt;
+&lt;p&gt;As the backing storage fills up, the snapshot will fail once it
+is running out of free space. If you still have free space, it
+is possible to extend the backing store using
+&lt;code&gt;lvextend -L+50G /dev/vg00/SNAPSHOT&lt;/code&gt; with a live snapshot being
+held.&lt;/p&gt;
+&lt;p&gt;Reads to the original mysqlVol can be satisfied the normal way
+now, as the data we see is always the most recent blocks. Reads
+from the snapshot will look for the data in the snapshot, and if
+they find it, will return with the old, snapshotted data. Or, if
+they do not find it, will look into the mysqlVol instead. In any
+case, the normal filesystem will show current data, while the
+snapshot will show old data, and as both volumes diverge,
+snapshot backing storage will be consumed up to the point where
+both volumes are completely diverged and the snapshot is as
+large as the original volume.&lt;/p&gt;
+&lt;p&gt;Mounting the XFS snapshot volume is a bit tricky: XFS will
+refuse to mount the same UUID filesystem twice, and since by
+definition the snapshot is a clone of the (past) original
+volume, it will of course have the same UUID. So we need to tell
+XFS that this is okay:
+&lt;code&gt;mount -t ro,nouuid /dev/vg00/SNAPSHOT /mnt&lt;/code&gt;
+to get it mounted.&lt;/p&gt;
+&lt;p&gt;Once unmounted again, you can turn the Logical Volume to offline
+and throw it away: &lt;code&gt;lvchange -an /dev/vg00/SNAPSHOT&lt;/code&gt; and
+&lt;code&gt;lvremove /dev/vg00/SNAPSHOT&lt;/code&gt; to get it done.&lt;/p&gt;
+&lt;h2 id=&#34;mirroring-using-dm-raid&#34;&gt;
+    &lt;a href=&#34;#mirroring-using-dm-raid&#34;&gt;
+	Mirroring using dm-raid
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One method to clone a machine is to convert an existing volume
+into a RAID1, then split the raid and move one half of the
+mirror to a new machine.&lt;/p&gt;
+&lt;p&gt;I made myself a small VM with seven tiny drives to test this:
+The boot disk is sda, and the drives sdb to sdg are for LVM
+testing.&lt;/p&gt;
+&lt;p&gt;The initial setup is like so: We copy the partition table of sda
+to all play drives. We then create a volume group testvg, to
+which we add the initial 3 drives only partitions, sdb1, sdc1
+and sdd1. We then create a simple concatenation of 2G extents
+from sdb1, sdbc1 and sdd1.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; i in sdb sdc sdd sde sdf sdg
+&lt;span class=&#34;gp&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;&amp;gt;   &lt;/span&gt;sfdisk -d /dev/sda &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; sfdisk /dev/&lt;span class=&#34;nv&#34;&gt;$i&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvcreate /dev/sd&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;b,c,d,e,f,g&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgcreate testvg /dev/sd&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;b,c,d&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n testlv -L2G testvg
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvextend -L+2G /dev/testvg/testlv /dev/sdc1
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvextend -L+2G /dev/testvg/testlv /dev/sdd1
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can now check what we have. We are looking at the &lt;code&gt;lvs&lt;/code&gt;
+output to see that we have a 6G LV. Then we check the &lt;code&gt;pvs&lt;/code&gt;
+output to see that we indeed have sdb1, sdc1 and sdd1 in testvg,
+and that 2G of each drive have been used. We can then finally
+proceed to &lt;code&gt;pvdisplay --map&lt;/code&gt; to validate the actual layout.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs
+&lt;span class=&#34;go&#34;&gt;  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv testvg -wi-a----- 6.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvs
+&lt;span class=&#34;go&#34;&gt;  PV         VG     Fmt  Attr PSize   PFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdb1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdc1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdd1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sde1         lvm2 ---  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdf1         lvm2 ---  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdg1         lvm2 ---  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvdisplay --map
+&lt;span class=&#34;go&#34;&gt;  --- Physical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Name               /dev/sdb1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG Name               testvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 0 to 511:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/testvg/testlv
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 511
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Name               /dev/sdc1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG Name               testvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 0 to 511:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/testvg/testlv
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     512 to 1023
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Name               /dev/sdd1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG Name               testvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 0 to 511:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/testvg/testlv
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     1024 to 1535
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this we can introduce the three additional drives, and
+convert the setup to a mirror:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# vgextend testvg /dev/sd{e,f,g}1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Volume group &amp;#34;testvg&amp;#34; successfully extended
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# pvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV         VG     Fmt  Attr PSize   PFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdb1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdc1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdd1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sde1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdf1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdg1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and the actual conversion.
+First, using &lt;code&gt;lvs&lt;/code&gt; we can watch the progress of the sync:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvconvert --type raid1 -m1 /dev/testvg/testlv
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Are you sure you want to convert linear LV testvg/testlv to raid1 with 2 images enhancing resilience? [y/n]: y
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical volume testvg/testlv successfully converted.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv testvg rwi-a-r--- 6.00g                                    6.25
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv testvg rwi-a-r--- 6.00g                                    15.92
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv testvg rwi-a-r--- 6.00g                                    100.00
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let&amp;rsquo;s check the disk layout again.&lt;/p&gt;
+&lt;p&gt;There are two competing implementations of this, &lt;code&gt;--type mirror&lt;/code&gt;
+and &lt;code&gt;--type raid1&lt;/code&gt;. The mirror implementation is very extremely
+strongly deprecated, the raid1 implementation is okay, which is
+why we used this one. It uses mdraid code internally, and we can
+show this using &lt;code&gt;lvs -a --segments -o+devices&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a --segments -o+devices
+&lt;span class=&#34;go&#34;&gt;  LV                VG     Attr       #Str Type   SSize Devices
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv            testvg rwi-a-r---    2 raid1  6.00g testlv_rimage_0(0),testlv_rimage_1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdb1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdc1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdd1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sde1(1)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [testlv_rmeta_0]  testvg ewi-aor---    1 linear 4.00m /dev/sdb1(512)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sde1(0)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This shows us the visible LV testlv as well as the hidden
+infrastructure that is being created to build it. The left leg
+of the RAID 1 is testlv_rimage_0, spread over 3 physical
+devices.&lt;/p&gt;
+&lt;p&gt;The right leg is testlv_rimage1, and because the data all fits
+onto one disk, we get this consolidated into a single 6G segment
+on a single device, not quite what we want. We also see two meta
+devices, which hold the metadata and a bitmap that can speed up
+array synchonisation.&lt;/p&gt;
+&lt;p&gt;Here we see the asymmetric layout again, at the &lt;code&gt;pvs&lt;/code&gt; level.
+Note how the allocation of the rmeta sub-LVs creats the &amp;ldquo;.99&amp;rdquo;
+free sizes.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# pvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV         VG     Fmt  Attr PSize   PFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdb1  testvg lvm2 a--  &amp;lt;20.00g  17.99g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdc1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdd1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sde1  testvg lvm2 a--  &amp;lt;20.00g  13.99g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdf1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdg1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvdisplay --map
+&lt;span class=&#34;go&#34;&gt;  --- Physical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Name               /dev/sde1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG Name               testvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 0 to 0:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/testvg/testlv_rmeta_1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 1 to 1536:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/testvg/testlv_rimage_1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 1535
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;maintaining-the-raid&#34;&gt;
+    &lt;a href=&#34;#maintaining-the-raid&#34;&gt;
+	Maintaining the RAID
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;As dm-raid uses md-raid plumbing internally, it has the same controls as
+md-raid. Among them are also controls that control the sync speed of a
+logical volume. The lvchange command can set these. For demonstration
+purposes we are setting these as low as possible, then force a resync of the
+RAID and check this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvchange /dev/testvg/testlv --minrecoveryrate 1k --maxrecoveryrate 100k
+&lt;span class=&#34;go&#34;&gt;  Logical volume testvg/testlv changed.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvchange --syncaction repair /dev/testvg/testlv
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
+&lt;span class=&#34;go&#34;&gt;  LV                VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv            testvg rwi-a-r--- 6.00g                                    0.19                   1     100          0 repair
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;--syncaction repair&lt;/code&gt; forces a RAID recovery, the &lt;code&gt;lvs&lt;/code&gt; command shows
+the data we need to see to track it.&lt;/p&gt;
+&lt;h2 id=&#34;splitting-the-raid-and-the-vg&#34;&gt;
+    &lt;a href=&#34;#splitting-the-raid-and-the-vg&#34;&gt;
+	Splitting the RAID and the VG
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We can now split the RAID into two unraided LVs with different
+names inside the same VG:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvconvert --splitmirrors 1 -n splitlv /dev/testvg/testlv
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Are you sure you want to split raid1 LV testvg/testlv losing all resilience? [y/n]: y
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV      VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  splitlv testvg -wi-a----- 6.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv  testvg -wi-a----- 6.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# pvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV         VG     Fmt  Attr PSize   PFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdb1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdc1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdd1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sde1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;14.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdf1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdg1  testvg lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Since the raid is now split, the rmeta sub-LVs are gone and the
+rimage sub-LVs are unwrapped and become the actual LVs (and
+those .99 numbers in the PFree column are nice and round again).&lt;/p&gt;
+&lt;p&gt;At this point we can then proceed to split the Volume Group in two,
+putting splitlv into a new Volume Group splitvg, then export
+that.&lt;/p&gt;
+&lt;p&gt;For that, we need to change the testvg to unavailable, then run
+vgsplit. Because of that, a data LV should always be on a data
+VG that is different from the Boot VG which would hold the boot
+LVs. If this is not the case, splitting the data LV would require
+a boot into a rescue image in order to be able to split the data
+LV: It is not possible to offline a boot LV without this.&lt;/p&gt;
+&lt;p&gt;The outcome:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# vgchange -an testvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  0 logical volume(s) in volume group &amp;#34;testvg&amp;#34; now active
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# vgsplit -n splitlv testvg splitvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  New volume group &amp;#34;splitvg&amp;#34; successfully split from &amp;#34;testvg&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# lvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV      VG      Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  splitlv splitvg -wi------- 6.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  testlv  testvg  -wi------- 6.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# pvs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV         VG      Fmt  Attr PSize   PFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdb1  testvg  lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdc1  testvg  lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdd1  testvg  lvm2 a--  &amp;lt;20.00g &amp;lt;18.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sde1  splitvg lvm2 a--  &amp;lt;20.00g &amp;lt;14.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdf1  testvg  lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  /dev/sdg1  testvg  lvm2 a--  &amp;lt;20.00g &amp;lt;20.00g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see that vgsplit automatically identified the physical
+drives that make up the splitlv volume, made sure nothing else
+is on these drives and moves them into a new VG splitvg.&lt;/p&gt;
+&lt;p&gt;We can now &lt;code&gt;vgexport&lt;/code&gt; that thing, eject the drives and move them
+elsewhere. Over there, we can &lt;code&gt;vgimport&lt;/code&gt; things and proceed.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@ubuntu:~# vgexport splitvg
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Volume group &amp;#34;splitvg&amp;#34; successfully exported
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It is now safe to pull the drive.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Filling disk space fast</title>
+      <link>https://blog.koehntopp.info/2019/11/11/filling-disk-space-fast.html</link>
+      <pubDate>Mon, 11 Nov 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/11/11/filling-disk-space-fast.html</guid>
+      <description>&lt;p&gt;Some of the databases at work are a tad on the large side, in the high
+2-digit terabytes of size. Copying these to new machines at the moment takes
+a rather long time, multiple days, up to a week. Speeding it up pays
+twice, because with shorter copy times there is also less binlog to catch
+up.&lt;/p&gt;
+&lt;p&gt;I have been looking into disk copy speeds in order to better understand the
+limits. When creating a partition from NVME devices, the most simple layout
+is a concatenation:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n kris -L 10t vg00
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;dd &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/dev/zero &lt;span class=&#34;nv&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;data.0 &lt;span class=&#34;nv&#34;&gt;bs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1024k &lt;span class=&#34;nv&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;10240&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Using a single &lt;code&gt;dd&lt;/code&gt; command, I get about 600 MB/sec read or written from it.
+For 50TB, this is 87400 seconds, slightly more than one day.&lt;/p&gt;
+&lt;p&gt;The key to NVME saturation is parallel access, so lets do this in parallel
+with multiple processes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;seq &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;128&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; parallel dd &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/dev/zero &lt;span class=&#34;nv&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;data.&lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;bs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1024k &lt;span class=&#34;nv&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;10240&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will run as many processes in parallel as I have CPUs. On the test
+machine it will keep 32 processes running at all times, filling the queues
+of the NVME device deeply. It can reach 3250 MB/s, so 50 TB translate into
+16130 seconds, 4.5h.&lt;/p&gt;
+&lt;p&gt;Had I created the NVME device as a striped RAID-0, I would have gotten even
+better performance:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -n kris -L 10t -i12 -I64k vg00
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;seq &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;128&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; parallel dd &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/dev/zero &lt;span class=&#34;nv&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;data.&lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;bs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1024k &lt;span class=&#34;nv&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;10240&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This configuration can reach up to 5.2 GB/s locally, so for 50TB, we get to
+2.75h disk write time.&lt;/p&gt;
+&lt;p&gt;Now, what I actually want is unfortunately something different: A copy of
+the original database image from machine A transferred to machine B. So that
+will translate into something along the lines of&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkdir /root/kris
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; !$
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;fpart -o chunk -n &lt;span class=&#34;m&#34;&gt;128&lt;/span&gt; /mysql/testschema
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;find . -type f &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; parallel rsync --files-from&lt;span class=&#34;o&#34;&gt;={}&lt;/span&gt; / kris@B:/mysql/testschema
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;but that is still suffering from all the rsync+ssh overhead. It will give
+you around 2.7 GB/s. Using tar, this becomes&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;find . -type f &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; 
+&lt;span class=&#34;gp&#34;&gt;&amp;gt; &lt;/span&gt;parallel &lt;span class=&#34;s1&#34;&gt;&amp;#39;tar cvf - --files-from={} | ssh kkoehntopp@B &amp;#34;tar -C /a -xf -&amp;#34;&amp;#39;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;which is much faster for a clean, non-incremental copy. But that is still
+using ssh to encrypt and can become a bottleneck in some use cases.&lt;/p&gt;
+&lt;p&gt;You could run &lt;a href=&#34;http://moo.nac.uci.edu/~hjm/tnc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tnc&lt;/a&gt;
+
+ to use tar and netcat
+to get rid of both sources of overhead to speed things up even more and run
+at media speed.
+&lt;a href=&#34;http://moo.nac.uci.edu/~hjm/HOWTO_move_data.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;How to transfer large amounts of data via network&lt;/a&gt;
+
+
+in general is a useful resource and has a few more ideas and tools on how to
+handle things.&lt;/p&gt;
+&lt;h2 id=&#34;tools-used&#34;&gt;
+    &lt;a href=&#34;#tools-used&#34;&gt;
+	Tools used
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;GNU &lt;code&gt;parallel&lt;/code&gt; - a perl script that is part of CentOS 7, which can
+comfortably construct and run command lines in parallel execution. It has no
+large advantage over &lt;code&gt;xargs -P&lt;/code&gt;, but I like the flexibility of the
+substitutions offer.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;fpart&lt;/code&gt; - a tool that will take a list of filenames or pairs of size and
+filename (du output) and sort it into chunks of files so that each chunk
+contains the approximately same amount of bytes.&lt;/p&gt;
+&lt;h2 id=&#34;other-tools&#34;&gt;
+    &lt;a href=&#34;#other-tools&#34;&gt;
+	Other tools
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;fpsync&lt;/code&gt; - deprecated tool, part of &lt;code&gt;fpart&lt;/code&gt;, does a parallel rsync, badly.
+Do not use this. Also, the successor tool (&lt;code&gt;parsyncfp&lt;/code&gt;) is not really
+valuable if you can do fpart and your transfer command of choice yourself.
+Actually doing it yourself is more transparent and easier to test.&lt;/p&gt;
+&lt;h2 id=&#34;this-requires-nvme&#34;&gt;
+    &lt;a href=&#34;#this-requires-nvme&#34;&gt;
+	This requires NVME
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;NVME devices have multiple deep queues. They can utilize parallel access and
+turn it into performance. In fact, getting the full performance out of a
+NVME device probably requires asyncio or parallel processes.&lt;/p&gt;
+&lt;p&gt;That is, because a single NVME device can give you around 800000 IOPS or
+more, so you should complete one IO every 1.2 microseconds. On the other
+hand, actual read latency is on the order to 100 micros, and write latency
+buffered/unbuffered is at around 50/450 micros, so a single threaded access
+can realize only a fraction of the total I/O potential of the device.&lt;/p&gt;
+&lt;p&gt;NVME devices are using the same flash storage that SSD use, but they remove
+the SATA controller from the equation. Instead the flash resides directly on
+the PCI bus. NVME can be made available locally or remotely, and the way we
+have set our network the network is not the bottleneck. Network access
+inside our data centers will add 20 micros or less in latency.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Ceph and NVME - not a good combination?</title>
+      <link>https://blog.koehntopp.info/2019/07/16/ceph-and-nvme-not-a-good-combination.html</link>
+      <pubDate>Tue, 16 Jul 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/07/16/ceph-and-nvme-not-a-good-combination.html</guid>
+      <description>&lt;p&gt;Saving an &lt;a href=&#34;https://twitter.com/isotopp/status/1151013922528534528&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;older twitter thread on Ceph&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://ceph.com/community/part-4-rhcs-3-2-bluestore-advanced-performance-investigation/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/ceph-blog.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;I just have finished reading
+&lt;a href=&#34;https://ceph.com/community/part-4-rhcs-3-2-bluestore-advanced-performance-investigation/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Part 4: RHCS 3.2 Bluestore Advanced Performance Investigation&lt;/a&gt;
+
+
+and now I do not know what to say.&lt;/p&gt;
+&lt;p&gt;Ceph set out with the idea to make storage a commodity by using
+regular PCs + a lot of local hard disks + software to make
+inexpensive storage. For that, you ran a number of control
+processes and an OSD process per disk (&amp;ldquo;object storage demon&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;Some people were very enthusiastic, envisioning OSD processes
+becoming an integrated part of any storage device as part of
+computational storage, even.&lt;/p&gt;
+&lt;p&gt;Something else happened: NVME. NVME is flash memory on a PCIe
+bus, giving you a very large number of IOPS with mediocre
+latency. You get around 1 million IO operations per second, but
+a read takes ~100 microseconds, and an unbuffered write takes
+about 420 micros. That means, you need to run 100s of parallel
+things.&lt;/p&gt;
+&lt;p&gt;Ceph is full of logs. Logs kill parallelism by design, or at
+least severely limit it. Also, Ceph is full of computational
+complexity. And that is ok, when a disk seek takes 5ms on a 3GHz
+CPU, and you got 15 million clock cycles think time per disk
+seek. Less so, when you need to keep 100s of ops in flight.
+Suddenly, the budget shrinks by /1000, and your serializing
+architecture gets in the way of things.&lt;/p&gt;
+&lt;p&gt;Now read this report. We are talking about NVME devices, 11T,
+maybe 16T per device, 4 PCIe lanes. These people are talking
+about 4 OSD processes (down to 2, and they consider this an
+improvement) per device. And they eat six (sic!) cores per NVME
+device. Apart from this never making it to computational storage
+for thermal reasons, this is an insane cost.&lt;/p&gt;
+&lt;p&gt;In modern storage, bandwidth is usually limited by the network,
+not the local devices: You can RAID your storage bandwidth until
+you saturated the 100 GBit/s network, and then you are done.&lt;/p&gt;
+&lt;p&gt;IOPS are unlimited in the same way: You get not quite 1 million
+IOPS per device, so if that is not sufficient, spread across
+many.&lt;/p&gt;
+&lt;p&gt;The only remaining challenge in this
+&lt;a href=&#34;https://blog.koehntopp.info/2017/07/07/the-data-center-in-the-age-of-abundance.html&#34;&gt;age of abundance in the data center&lt;/a&gt;
+
+
+is commit (fsync) latency: how long to push things to a
+persistent storage. Even that comes down a lot, with optane or
+NVRAM in the client or as early as possible in the server.&lt;/p&gt;
+&lt;p&gt;Relatively low powered all-flash iSCSI appliances do routinely
+250 micros commit latency, and things involving NVMEoF and RDMA
+can come down to under 100 micros reliably, if you have the
+coin. Want faster? Put Optane or NVRAM into each client.&lt;/p&gt;
+&lt;p&gt;And it is telling that the paper here talks about latency
+improvements only in relative numbers (&amp;ldquo;30% less&amp;rdquo;), but never
+actually speaks about absolute timings.&lt;/p&gt;
+&lt;p&gt;Maybe it is time to stop and think, and re-evaluate if this Ceph
+thing is the smart thing to do with storage in the face of NVME,
+Optane and NVRAM. Because the numbers look all wrong to me. Even
+the units look wrong, actually.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/antondollmaier/status/1151022173982724097&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Conversations deeper in the Thread&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;There was were questions on what to use for low-latency
+disaggregated storage and if one needed redundancy at all.&lt;/p&gt;
+&lt;p&gt;Examples of low-latency storage are software solutions from
+&lt;a href=&#34;http://lightbitslabs.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Lightbitslabs&lt;/a&gt;
+
+, from
+&lt;a href=&#34;http://datera.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Datera&lt;/a&gt;
+
+, and from
+&lt;a href=&#34;http://quobyte.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Quobyte&lt;/a&gt;
+
+. There are many more.&lt;/p&gt;
+&lt;p&gt;And funnily enough, if you talk to your inhouse customers, most
+actually don&amp;rsquo;t want any of this, because they talk to a database
+(MySQL, Cassandra, Elastic, &amp;hellip;) and not to &amp;ldquo;storage&amp;rdquo; directly.&lt;/p&gt;
+&lt;p&gt;Then you speak to the MySQL people and they say &amp;ldquo;We have
+replication and
+&lt;a href=&#34;https://github.com/github/orchestrator&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Orchestrator&lt;/a&gt;
+
+, even
+masters are throwaway&amp;rdquo;. You talk to the Cassandra team and they
+laugh in Paxos. And so on. So most of these teams actually
+prefer &amp;ldquo;RDMA to a NVME namespace&amp;rdquo; over storage software with
+redundancy, and do resiliency higher up on the stack, in
+application context.&lt;/p&gt;
+&lt;p&gt;As a storage team, you have to have some kind of low-latency
+non-replicated solution first, because that&amp;rsquo;s what is actually
+the primary demand. You also need a lowish-latency, OLTP-capable
+redundant solution (&amp;lt;500 microseconds is fine), but there is
+only unscaled, low level demand.&lt;/p&gt;
+&lt;p&gt;And then there is huge demand for volume at any latency,
+append-only preferred over rewriteable for many reasons. So S3
+with heavy tiering. Ceph is actually pretty good at that, but
+that is likely not NVME, but many large disk drives.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Not quite storage any more</title>
+      <link>https://blog.koehntopp.info/2019/06/14/not-quite-storage-any-more.html</link>
+      <pubDate>Fri, 14 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/06/14/not-quite-storage-any-more.html</guid>
+      <description>&lt;p&gt;While I was testing away on all the SSD and NVME toys, I got my hand on a test box with even stranger that usual equipment. It was a Dual Platinum-8280 box with a really weird amount of memory: 7.5 TB.&lt;/p&gt;
+&lt;p&gt;“&lt;a href=&#34;https://ark.intel.com/content/www/us/en/ark/products/192478/intel-xeon-platinum-8280-processor-38-5m-cache-2-70-ghz.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;8280&lt;/a&gt;
+
+”. This is a machine with a “2” in the second digit, indicating &lt;a href=&#34;https://en.wikipedia.org/wiki/Cascade_Lake_%28microarchitecture%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cascade Lake&lt;/a&gt;
+
+, CLX.&lt;/p&gt;
+&lt;p&gt;And one thing that is new with CLX is “Intel Optane Persistent Memory Technology”. That is actually &lt;a href=&#34;https://en.wikipedia.org/wiki/3D_XPoint&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;3D XPoint&lt;/a&gt;
+
+ (“Crosspoint”), a big invention in applied materials science. It is a thing that Intel and Micron have been co-developing, Intel sells it under the trade name of Optane (and internally it was named Apache Pass) and Micron has it as QuantX. So far I have only seen Optane.&lt;/p&gt;
+&lt;p&gt;Supposedly Optane is 10x denser than RAM (right now, it is 4x denser), and it is only 10x slower than RAM.&lt;/p&gt;
+&lt;h2 id=&#34;optane&#34;&gt;
+    &lt;a href=&#34;#optane&#34;&gt;
+	Optane
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;From a Unix point-of-view, Optane is weird. It is persistent, so storage, not memory. But unlike all the storage you know and hate, it is byte addressable. And that is a big thing.&lt;/p&gt;
+&lt;p&gt;For example, NAND flash is byte-readable, but really only erasable (and that means bulk-writeable) in fairly large chunks - 64 KB to 1024 KB blocks at a time. It is being fed to you through the means of a block device, to there is a file system buffer cache, and you get to touch it only through open(2), read(2) and write(2). You can use &lt;a href=&#34;http://man7.org/linux/man-pages/man2/mmap.2.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mmap(2)&lt;/a&gt;
+
+ and &lt;a href=&#34;http://man7.org/linux/man-pages/man2/msync.2.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;msync(2)&lt;/a&gt;
+
+, but the thing you are fondling through this interface is the buffer cache and not the actual device. All storage subsystems Unix has been dealing with in the last 50 years have been block storage, originally 512 bytes, these days mostly 4096 bytes per block.&lt;/p&gt;
+&lt;p&gt;Nobody has seen byte-addressable persistent storage in Unixland for a very long time, and worse, nobody has an API for it. There is no software that thinks “Oh, RAM. I am going to stuff things into it and that is safe for eternity.” (Well, MongoDB does, but that’s… incidental, if not accidental). Anyway, there is now a PMEM API, maintained by Intel, of course, but no applications use it – yet.&lt;/p&gt;
+&lt;p&gt;Optane also has a consistent latency, which is also very extremely low – it is about 10x as slow as RAM, which makes it 10x - 100x faster than NAND flash. RAM does 120ns, 0.12µs, and Optane is somewhere in the 1-2µs range.&lt;/p&gt;
+&lt;p&gt;So it’s a lot like &lt;a href=&#34;https://en.wikipedia.org/wiki/Core_rope_memory&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;core rope memory&lt;/a&gt;
+
+ is coming back, only this time it is small and fast (&lt;a href=&#34;https://www.youtube.com/watch?v=xx7Lfh5SKUQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Core Rope Memory flew us to the moon!&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;You get two flavors of Optane from Intel:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Intel Optane™ DC Persistent Memory, “Optane on the memory bus with byte addresses”&lt;/li&gt;
+&lt;li&gt;Intel Optane™ DC SSDs, “Optane on the PCIe bus with LBA”&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;optane-on-the-memory-bus&#34;&gt;
+    &lt;a href=&#34;#optane-on-the-memory-bus&#34;&gt;
+	Optane on the memory bus
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The flavor I have been tasting here is the former, Optane on the memory bus.&lt;/p&gt;
+&lt;p&gt;Basically, the box has 6 very special 512GB DIMMs for each socket, for a total of 12x 512GB = 6 TB persistent not-quite-RAM, and another set of 2x 6 DIMMs regular RAM, 128 GB each. Depending on the configuration, that can show as 7.5 TB memory (many tools are confused, because the idea of persistent memory in a Unix box did not exist until last year) or as 1.5 TB RAM and 6 TB in weird devices (/dev/pmem0 and /dev/pmem1, 3TB each).&lt;/p&gt;
+&lt;p&gt;The problem with Optane on the memory bus is that it stops at 6 TB.&lt;/p&gt;
+&lt;p&gt;Intel is not used to building machines with very many address lines - technically the CPU is 64 bit, but not all address bits have pins on the die, and the upper lines do not physically exist on the chip or the bus. CLX extends this, and at the same time limits it to Optane, because Intel does make “M” type CPUs (the number is extended by attaching an “M” at the end) and charges quite hefty surcharge for one additional bit of address space.&lt;/p&gt;
+&lt;p&gt;Anyway, 6 TB of Optane and 1.5 TB of RAM is the end of the line for this kind of box.&lt;/p&gt;
+&lt;h2 id=&#34;optane-on-the-pcie-bus&#34;&gt;
+    &lt;a href=&#34;#optane-on-the-pcie-bus&#34;&gt;
+	Optane on the PCIe bus
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;There is another flavor of Optane and that is the Optane SSD. These are NVME-like devices that sit on the PCIe bus, and they are being addressed like block storage. That does mean you gain a lot of latency – PCIe accesses are way slower than memory accesses.&lt;/p&gt;
+&lt;p&gt;But it also means that you get all the benefits of the large address space that LBA addresses give you, and you get very many PCIe lanes and slots to play with. And you get a storage controller in the middle.&lt;/p&gt;
+&lt;p&gt;This controller can make use of the fact that all accesses are block-sized, and it can do additional magic to do error correction. Stephen Bates gave a &lt;a href=&#34;https://www.snia.org/sites/default/files/SDC/2017/presentations/General_Session/Bates_Stephen_Linux_Optimizations_for_Low_Latency_Block_Devices.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;presentation about Low Latency Block Devices&lt;/a&gt;
+
+ in a 2017 &lt;a href=&#34;https://en.wikipedia.org/wiki/Storage_Networking_Industry_Association&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SNIA&lt;/a&gt;
+
+ conference that was interesting in its own right. But in one slide he dropped a really interesting observation on block storage and error correction, which he coined the Bates Conjecture.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/optane-bates.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Bates Conjecture Slide (Slide 10)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;He said that any kind of large storage has an Uncorrectable Bit Error Rate (UBER), and for new kinds of storage media, this is likely to be high in the beginning. If you access the media in blocks, you can transparently add error correction, and get a much better Recoverable Bit Error Rate (RBER). As you make the blocks larger, checksums have less overhead and can become larger, and the RBER goes down for a constantly bad UBER. So new and unreliable media will come as block storage to the market much easier.&lt;/p&gt;
+&lt;p&gt;So if you have the coin, Khajiit can build you a box with way more Optane on the PCIe bus than on the memory bus to hold your warez persistently. On the other hand, there are no prices listed anywhere close to where Intel pushes Optane at developers and that should make you stop and think.&lt;/p&gt;
+&lt;h2 id=&#34;abusing-pmem-as-a-disk&#34;&gt;
+    &lt;a href=&#34;#abusing-pmem-as-a-disk&#34;&gt;
+	Abusing PMEM as a disk
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We have the box, and it exposes the memory as two pmem devices, and they happen to be block devices. What is one going to do with it?&lt;/p&gt;
+&lt;p&gt;Architect an application that uses this magic memory in a transactional way, with lockless data structures that maximize parallel access by many threads with a minimum amount of delay, leveraging the tools made available to developers on the Intel website, of course.&lt;/p&gt;
+&lt;p&gt;Seriously, it’s a block device.&lt;/p&gt;
+&lt;p&gt;So let’s make a file system and use this one-of-a-kind pinnacle of 21st century storage technology as a really fast SSD, because… Well, it’s easier done than the other thing.&lt;/p&gt;
+&lt;p&gt;Anyway, here’s the fio:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=142k, BW=2212MiB/s (2319MB/s)(648GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (nsec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  227],  5.00th=[  231], 10.00th=[  233], 20.00th=[  243],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  245], 40.00th=[  249], 50.00th=[  253], 60.00th=[  258],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  266], 80.00th=[  274], 90.00th=[  298], 95.00th=[  314],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  338], 99.50th=[  350], 99.90th=[  438], 99.95th=[  540],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[10176]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Shut your mouth, please. The scale actually switched to ns (1/10E-9) instead of µs (1/10E-6). We are at 0.227µs - 0.350µs here, and are good till the 99.95th, actually.&lt;/p&gt;
+&lt;p&gt;So, dumb sysadmin bloke hodored 142 000 single threaded IOPS out of a /dev/pmem, xfs and fio combo, at a data rate of 2.3 GB/s. Imagine what an actual developer could do with this stuff (if they used a proper systems programming language instead of Javascript, that is).&lt;/p&gt;
+&lt;p&gt;Pure writes (times 8):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=63.3k, BW=989MiB/s (1037MB/s)(290GiB/300000msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (nsec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  249],  5.00th=[  255], 10.00th=[  258], 20.00th=[  262],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  266], 40.00th=[  270], 50.00th=[  274], 60.00th=[  274],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  290], 80.00th=[  326], 90.00th=[  370], 95.00th=[  382],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  430], 99.50th=[  438], 99.90th=[  470], 99.95th=[  482],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 3376]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;506400 IOPS, 8 GB/s, 0.249µs-0.482µs till the 99.95th. And the 8x read + 8x write is much of the same, 500k IOPS, 8 GB, stable latencies of 1/4 to 1/2 µs till the 99.95th.&lt;/p&gt;
+&lt;p&gt;Let’s get cocky and try to work our way up. We are sitting on two 8280 CPUs, that’s 56 real cores or 112 threads. How well does this thing deal with parallel access?&lt;/p&gt;
+&lt;p&gt;Well, up to 32 readers, I get an aggregate of 32 GB/s, 2m aggregated IOPS and the same latencies until the 99.90th, and then a slight degradation at the 99.95th. With even more threads, things tend to level out and then break down. The 100-way parallel run ends up with 200k IOPS only.&lt;/p&gt;
+&lt;h2 id=&#34;some-graphics&#34;&gt;
+    &lt;a href=&#34;#some-graphics&#34;&gt;
+	Some graphics
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Here is a comparison of some key performance data: SSD with smart controller, SSD direct, NVME direct and Optane.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/optane-latency.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Read, Buffered and Unbuffered Writes. The Optane Data is there, you just cannot see it, because it is too fast. The scale is µs.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Moral: NVME don’t buy you much latency, but look at those sweet IOPS, all available in parallel accesses/deep queues only.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/optane-iops.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;IOPS and Bandwidth of various storage hardware compared&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;recommendations&#34;&gt;
+    &lt;a href=&#34;#recommendations&#34;&gt;
+	Recommendations
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;“Optane on the memory bus” brings a new kind of storage to Linux. There are libraries to use it to the fullest.&lt;/p&gt;
+&lt;p&gt;Abusing “Optane on the memory bus” as a block device shows the potential of the technology, but is at the same time severely underutilizing the true capabilities of the hardware.&lt;/p&gt;
+&lt;p&gt;Despite Optane having even more IOPS than NVME NAND flash and being faster, the gap between latency and IOPS is smaller than with NVME NAND flash, thus the level of parallelism in access required to fully unlock the performance potential of the device is smaller.&lt;/p&gt;
+&lt;p&gt;The latency introduced by the Linux block device subsystem is increasingly becoming a problem, as is the age-old UNIX API around open(2) and friends. Since this is like the core of Unix, we are actually seeing the beginning of the end of the usefulness of the Unix API – that is, if something else is actually showing up to take its place instead. If you have experience with AS/400 aka IBM i-Series, now is the time to capitalize on it.&lt;/p&gt;
+&lt;p&gt;The slow takeup of Optane with consumers is not only due to Intels really outlandish pricing model, but also because to fully unlock the potential of Optane on the memory bus (beyond it being a really nifty flash disk) our applications and the way we design applications needs to be rethought.&lt;/p&gt;
+&lt;p&gt;At this point Intel is better off peddling Optane to application makers such as Oracle MySQL than us directly, because without applications truly making use of persistent memory we have no reason to buy it.&lt;/p&gt;
+&lt;p&gt;It’s still fun to play with.&lt;/p&gt;
+&lt;h2 id=&#34;pmdk&#34;&gt;
+    &lt;a href=&#34;#pmdk&#34;&gt;
+	PMDK
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Intel has classes for developers on using the persistent memory development kit (PMDK) and the underlying stuff. They are necessary, because an application rethink it coming up, which will fundamentally change the way we think about storage.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Adventures in Storageland</title>
+      <link>https://blog.koehntopp.info/2019/06/13/adventures-in-storageland.html</link>
+      <pubDate>Thu, 13 Jun 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/06/13/adventures-in-storageland.html</guid>
+      <description>&lt;h2 id=&#34;adventures-in-storageland&#34;&gt;
+    &lt;a href=&#34;#adventures-in-storageland&#34;&gt;
+	Adventures in Storageland
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;devices&#34;&gt;
+    &lt;a href=&#34;#devices&#34;&gt;
+	Devices
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;In the last few weeks, I have been benchmarking server storage in order to get a better idea what the state of the hardware is these days. There is a summary with recommendations at the end of this article.
+Storage technology&lt;/p&gt;
+&lt;p&gt;In the past, we had stored data on rotating disks.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/storage-hdd.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;An open hard disk chassis. You can see the topmost of a stack of disks, and the arm with the r/w heads.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;While the capacities of hard disks changed, access speeds and the underlying technology did not change so much. So today you can get a stack of rotating disks that stores 10, 12 or 14 TB per drive, but the access time is still in the millisecond range.&lt;/p&gt;
+&lt;p&gt;It is likely around or slightly below 5ms, so you get to transfer data from 200-250 different locations per second. Databases do mostly random access, and that means you get to write 200-250 commit/s to disk.&lt;/p&gt;
+&lt;p&gt;All of that changed around 2012 or so. At that time, NAND flash based storage became available at scale under the name of Solid State Drive (SSD). At work, first deployment of SSD at scale was in that year, in a very volatile replication chain and it completely transformed the way we worked with hotel room availability data.&lt;/p&gt;
+&lt;p&gt;SSD are plug-in replacements for traditional hard disks: They have the same connectors and bus systems, and the same form factor. They may be flatter, though: A modern U.2 (2.5”) SSD is either tall (15mm) or flat (7mm).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/storage-ssd.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;15mm U.2 drive and it’s content.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;On the inside they are different, though: They contain one logic board which houses a lot of flash NAND chips and a custom flash NAND controller. The logic board may be folded in order to make most use of the available height to increase storage capacity. The image above shows a SSD chassis and its content, unfolded.&lt;/p&gt;
+&lt;p&gt;The folded design is far from optimal: Inside such a chassis you have a thermal design power of 7W-9W in a consumer device, and up to 25W in an enterprise device - power consumption is linear with the number of chips, and superlinear with the clock rates of the chips. U.2 form factor is good for HDD, but not so good for SSD, because it is hard to cool.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/storage-m2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;M.2 flash drive in a holder on a mainboard.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;One attempt of handling this better is M.2, which is basically a logic board for flash NAND chips and a controller, and a board holder on the main board. This cools obviously much better, but is very hard to handle inside a data center and has a very limited lifetime in terms of number of plug-in/removal operations inside a consumer device.&lt;/p&gt;
+&lt;p&gt;The attempt to fix all of that is the “flash ruler”, “EDSFF”.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2019/06/storage-ruler.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Intel flash rulers in a 1U high chassis.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;“Ruler” type flash is built to the height of a rack unit, has a specificed chassis form that allows for cooling (up to 40W TDP per “long” device), has managed air flow, and is designed to be toolless, field replaceable and hot pluggable. It looks like the perfect solution.&lt;/p&gt;
+&lt;p&gt;Until you realise that there are two incompatible competing standards, each of which has exactly one supplier: Intel and Samsung.&lt;/p&gt;
+&lt;p&gt;So, for most, at the moment, U.2 it is, until the “ruler” proponents get their stuff sorted out.&lt;/p&gt;
+&lt;h3 id=&#34;interfaces&#34;&gt;
+    &lt;a href=&#34;#interfaces&#34;&gt;
+	Interfaces
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The interface we use to talk to hard disks has evolved and not evolved at the same time, for a very long time. In the past, we spoke SCSI commands over a parallel SCSI bus to our disks.&lt;/p&gt;
+&lt;p&gt;Today, we use multi-Gbit rated serial buses to speak ancient SCSI commands and SCSI command extensions to our devices. The bus is SATA or SAS - either serial attached consumer disk protocol, or serial attached enterprise disk protocol, so to speak, only that SATA has become good enough to be used in the enterprise, too. Bus speed is 3 GBit/s, 6 GBit/s (what most people actually use) or 12 Gbit/s.&lt;/p&gt;
+&lt;p&gt;SATA interfaces are block storage interfaces, so you get to access and address blocks of 512 bytes or 4096 bytes on the device, and you specify block numbers. In the past that was geometry addresses ( cylinder-head-sector ), but that became meaningless very quickly as storage technology improved and in the last 20 years everybody always has been using LBA and letting the storage controller do its thing.&lt;/p&gt;
+&lt;p&gt;Still, these days we are actually speaking to memory chips, and doing this through a block interface originally designed for rotating storage makes a lot of overhead and increasingly little sense.&lt;/p&gt;
+&lt;p&gt;How about putting the flash chips directly on the PCIe 3.0 bus, and dropping the controller interface? That’s NVME. You are taking the same form factor, the same flash chips and the same controller chip, with a different firmware and are plugging it into a PCIe 3.0 extension instead.&lt;/p&gt;
+&lt;p&gt;The result is about half the latency, and a much higher transfer bandwidth. We can in fact build connectors that accept and automatically switch between SATA and NVME, no problem.&lt;/p&gt;
+&lt;h3 id=&#34;benchmarking-it&#34;&gt;
+    &lt;a href=&#34;#benchmarking-it&#34;&gt;
+	Benchmarking it
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;So, in testing, what can we expect? In MySQL land, I/O is done in blocks of 16 KB, and is done as random I/O mostly, in reads as well as writes. So we are writing a benchmark specification for fio that is testing things: A single threaded 16 KB sequential read test for a baseline throughput benchmark, a 16 KB block size random-write benchmark, 8-way parallel for random I/O calibration, and a mixed r/w benchmark, 8 way parallel, to simulate an operational database.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[seq-read]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; rw=read
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; size=40g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; directory=/a/fio
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; fadvise_hint=0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; blocksize=16k
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; direct=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; numjobs=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; nrfiles=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; runtime=300
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; ioengine=libaio
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; time_based
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This spec defines a 40g test file in a benchmark directory, which is being read without caching, for 300s, linearly and single threaded.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[random-write]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; # 8 processes, 5g files each = 40g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; rw=randwrite
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; size=5g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; directory=/a/fio
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; fadvise_hint=0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; blocksize=16k
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; direct=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; numjobs=8
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; nrfiles=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; runtime=300
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; ioengine=libaio
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; time_based
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The same, but random writes, in 8 threads in parallel. Each writer has their own file, so 8 files at 5GB each, for 40 GB total.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[read-write]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; rw=rw
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; rwmixread=80
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; size=5g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; directory=/a/fio
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; fadvise_hint=0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; blocksize=16k
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; direct=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; numjobs=8
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; nrfiles=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; runtime=300
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; ioengine=libaio
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; time_based
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And the same as the randwrite, only this time 80% reads, 20% writes.&lt;/p&gt;
+&lt;h4 id=&#34;a-blade-with-a-sata-ssd&#34;&gt;
+    &lt;a href=&#34;#a-blade-with-a-sata-ssd&#34;&gt;
+	A blade with a SATA SSD
+    &lt;/a&gt;
+&lt;/h4&gt;
+&lt;p&gt;When running this on a normal blade, the SSD is actually attached to a caching RAID controller.&lt;/p&gt;
+&lt;p&gt;Such a controller is actually an ARM based computer in it’s own right, sitting on the PCIe board. It has a multi-core CPU, a few GB memory, and a supercapacitor to buffer things when the power fails. It is taking disk writes, caching them on the onboard memory and then does its things in the background to write this to some kind of storage.&lt;/p&gt;
+&lt;p&gt;Originally it is designed to make slow hard disks fast, but with SSD as a backing storage it is not unlikely that the only thing it does is increasing latency.&lt;/p&gt;
+&lt;p&gt;So here is the baseline for a traditional Dell M630 with a PERC controller and a 1.92TB SSD:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;fio --section&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;seq-read ./fio.cfg
+&lt;span class=&#34;go&#34;&gt;seq-read: (g=0): rw=read, bs=(R) 16.0KiB-16.0KiB, (W) 16.0KiB-16.0KiB, (T) 16.0KiB-16.0KiB, ioengine=libaio, iodepth=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;fio-3.1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Starting 1 process
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;seq-read: Laying out IO file (1 file / 40960MiB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Jobs: 1 (f=1): [R(1)][100.0%][r=245MiB/s,w=0KiB/s][r=15.7k,w=0 IOPS][eta 00m:00s]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;seq-read: (groupid=0, jobs=1): err= 0: pid=18818: Fri May 10 10:31:29 2019
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=15.3k, BW=239MiB/s (251MB/s)(70.0GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    slat (usec): min=4, max=186, avg= 5.63, stdev= 2.48
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat (nsec): min=1500, max=145648k, avg=58921.07, stdev=109647.10
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     lat (usec): min=56, max=145652, avg=64.67, stdev=109.74
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   53],  5.00th=[   53], 10.00th=[   53], 20.00th=[   53],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[   53], 40.00th=[   54], 50.00th=[   55], 60.00th=[   55],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[   59], 80.00th=[   60], 90.00th=[   73], 95.00th=[   75],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[   91], 99.50th=[   99], 99.90th=[  235], 99.95th=[  433],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 2343]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   bw (  KiB/s): min=38912, max=263456, per=100.00%, avg=244768.87, stdev=24405.41, samples=599
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   iops        : min= 2432, max=16466, avg=15298.03, stdev=1525.34, samples=599
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  lat (usec)   : 2=0.01%, 4=0.01%, 10=0.01%, 50=0.04%, 100=99.47%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  lat (usec)   : 250=0.39%, 500=0.05%, 750=0.01%, 1000=0.01%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  lat (msec)   : 2=0.02%, 4=0.01%, 10=0.01%, 20=0.01%, 50=0.01%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  lat (msec)   : 250=0.01%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  cpu          : usr=4.95%, sys=12.28%, ctx=4589759, majf=0, minf=114
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, &amp;gt;=64=0.0%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, &amp;gt;=64=0.0%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     issued rwt: total=4589635,0,0, short=0,0,0, dropped=0,0,0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     latency   : target=0, window=0, percentile=100.00%, depth=1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Run status group 0 (all jobs):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   READ: bw=239MiB/s (251MB/s), 239MiB/s-239MiB/s (251MB/s-251MB/s), io=70.0GiB (75.2GB), run=300001-300001msec
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Disk stats (read/write):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    dm-4: ios=4588416/35691, merge=0/0, ticks=259207/18045, in_queue=277259, util=86.48%, aggrios=4605315/37547, aggrmerge=274/2057, aggrticks=262279/21346, aggrin_queue=283104, aggrutil=86.21%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  sda: ios=4605315/37547, merge=274/2057, ticks=262279/21346, in_queue=283104, util=86.21%
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That’s a lot of output, but we are interested into a few key numbers here. This is a sequential benchmark, because we asked for that (–section=). We get 15.300 IO operations per second (IOPS), and a bandwidth of 239 MB/s (with 1024-based metric). In our 300s benchmark, we transferred 70 GB.&lt;/p&gt;
+&lt;p&gt;fio dynamically shifts units as it sees fit, so we need to make sure if we are looking at milliseconds (ms, 1/1000 of a second, 1 kHz event frequency), microseconds (µs, us, 1/1 000 000 of a second, 1 MHz event frequency) or nanoseconds (ns, 1/1 000 000 000 of a second, 1 GHz event frequency).&lt;/p&gt;
+&lt;p&gt;fio also knows three different latencies, lat, clat and slat. They do mean different things for different I/O engines, and in our case (using async I/O with libaio), the meaningful numbers are clat (completion latency) or overall lat, but not slat (submission latency numbers).&lt;/p&gt;
+&lt;p&gt;We do get a clat histogram in usec, and that is useful: There is a relatively stable completion time up to the 99.50th percentile, and then things rise. clat is 50µs (20 000 per second) to 100µs (10 000 per second), and we do indeed get 15 000 IOPS in total.&lt;/p&gt;
+&lt;p&gt;For the random write benchmark we get 8 times output like&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=2454, BW=38.4MiB/s (40.2MB/s)(11.2GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  202],  5.00th=[  237], 10.00th=[  249], 20.00th=[  269],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  285], 40.00th=[  302], 50.00th=[  314], 60.00th=[  330],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  347], 80.00th=[  396], 90.00th=[  482], 95.00th=[  570],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[ 2212], 99.50th=[ 2966], 99.90th=[ 6915], 99.95th=[ 7832],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 9503]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The total of the IOPS is 19588, and the clat inflection is around the 95th percentile with 200µs to 570µs write latency, and then runaway times in the ms range. Aggregated bandwidth is around 300 MB/s (6 GBit/s are 715 MB/s theoretical max).&lt;/p&gt;
+&lt;p&gt;And for the r/w mix (80% read/20% write), we get 8 readers and 8 writers, each reporting&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;...   
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  read: IOPS=2153, BW=33.6MiB/s (35.3MB/s)(9.86GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  155],  5.00th=[  204], 10.00th=[  231], 20.00th=[  265],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  297], 40.00th=[  322], 50.00th=[  338], 60.00th=[  355],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  379], 80.00th=[  412], 90.00th=[  478], 95.00th=[  873],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[ 2073], 99.50th=[ 2212], 99.90th=[ 2409], 99.95th=[ 2540],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 6849]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=540, BW=8647KiB/s (8855kB/s)(2533MiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   60],  5.00th=[   76], 10.00th=[   85], 20.00th=[  105],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  127], 40.00th=[  149], 50.00th=[  172], 60.00th=[  194],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  217], 80.00th=[  241], 90.00th=[  277], 95.00th=[  314],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  371], 99.50th=[  449], 99.90th=[ 1696], 99.95th=[ 2737],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 6456]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The sum of all IOPS is 21412, and the clat inflection is at the 95th with 155µs to 873µs for read, and at the 99.50th for write with 60µs to 449µs (and it’s actually more complicated than this for writers, but that’s a different story). We do see a total aggregated bandwidth of 336 MB/s (out of 715 MB/s max).&lt;/p&gt;
+&lt;p&gt;We are looking at a device that has a read-latency in the range of 150 µs, and that in linear read mode can likely leverage readahead and local buffers in some way to get below 50 µs in good cases.&lt;/p&gt;
+&lt;p&gt;Write latency is likely 3x that, unbuffered, but like all flash devices it has RAM and can use a fraction of that RAM to buffer a part of the writes. This is more effective for smaller write loads, and we can see that in the comparison of the numbers between the full write test compared to the r/w mix.&lt;/p&gt;
+&lt;h4 id=&#34;a-blade-without-the-smart-controller&#34;&gt;
+    &lt;a href=&#34;#a-blade-without-the-smart-controller&#34;&gt;
+	A blade without the smart controller
+    &lt;/a&gt;
+&lt;/h4&gt;
+&lt;p&gt;Let’s try a blade without the smart controller, this time a HP BL460c with a directly attached SSD without the caching RAID controller. In this test device, the disk controller is a dumb SATA attachment, no buffering, processing, RAIDing or other “smartness” inbetween.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=14.2k, BW=222MiB/s (233MB/s)(64.0GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   50],  5.00th=[   51], 10.00th=[   52], 20.00th=[   53],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[   53], 40.00th=[   55], 50.00th=[   56], 60.00th=[   62],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[   64], 80.00th=[   64], 90.00th=[   66], 95.00th=[   68],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[   77], 99.50th=[   79], 99.90th=[  355], 99.95th=[  537],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 3130]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So 14.2k instead of 15.3k with the expensive controller, and 50-79µs instead of 53-99µs with the expensive controller. For pure writes (times 8):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=3458, BW=54.0MiB/s (56.7MB/s)(15.8GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  151],  5.00th=[  188], 10.00th=[  194], 20.00th=[  227],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  237], 40.00th=[  245], 50.00th=[  253], 60.00th=[  260],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  262], 80.00th=[  269], 90.00th=[  306], 95.00th=[  375],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  938], 99.50th=[ 1057], 99.90th=[ 3916], 99.95th=[ 4228],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 5211]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So, 28507 IOPS in total (compared to 19588 for the expensive controller), and 150-375µs (compared to 200-570µs for the expensive controller), and better behavior for the runaway times, too.&lt;/p&gt;
+&lt;p&gt;For the mix (times 8):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=2296, BW=35.9MiB/s (37.6MB/s)(10.5GiB/300002msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  174],  5.00th=[  202], 10.00th=[  223], 20.00th=[  258],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  285], 40.00th=[  310], 50.00th=[  334], 60.00th=[  363],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  400], 80.00th=[  445], 90.00th=[  529], 95.00th=[  635],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[ 1876], 99.50th=[ 2966], 99.90th=[ 3490], 99.95th=[ 3654],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 4555]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=576, BW=9225KiB/s (9446kB/s)(2703MiB/300002msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   52],  5.00th=[   58], 10.00th=[   63], 20.00th=[   72],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[   89], 40.00th=[   98], 50.00th=[  116], 60.00th=[  124],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  139], 80.00th=[  155], 90.00th=[  174], 95.00th=[  190],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  223], 99.50th=[  237], 99.90th=[  258], 99.95th=[  273],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[  293]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That comes out as a total of 23005 IOPS (as opposed to 21412), and for reads, a range of 174-635µs (155-873µs for the expensive controller), while for writes it is 52-237µs (60-449µs).&lt;/p&gt;
+&lt;p&gt;Indeed, latency and degraded behavior are better for directly attached disks, the caching RAID controller (200€ extra per device) is substracting value.&lt;/p&gt;
+&lt;p&gt;We can confirm these results with more benchmarking in additional, slightly different configurations (Dell, HP, new and old machines) across the test zoo.&lt;/p&gt;
+&lt;h4 id=&#34;some-nvme&#34;&gt;
+    &lt;a href=&#34;#some-nvme&#34;&gt;
+	Some NVME
+    &lt;/a&gt;
+&lt;/h4&gt;
+&lt;p&gt;A colleague donated a NVME based HP box to the test. It actually has 4 NVME devices, and we naively build a striped RAID-0 from it using LVM2, because why not? Each 16 KB write goes to a different NVME device, in a round-robin fashion (This is a silly thing to do, but that would require a longer digression to explain - the 1M stripe setup does not fundamentally change things, though).&lt;/p&gt;
+&lt;p&gt;The outcome is unexpected and disappointing, or is it?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=8459, BW=132MiB/s (139MB/s)(38.7GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   97],  5.00th=[  101], 10.00th=[  102], 20.00th=[  102],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  103], 40.00th=[  106], 50.00th=[  116], 60.00th=[  119],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  123], 80.00th=[  123], 90.00th=[  124], 95.00th=[  127],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  133], 99.50th=[  145], 99.90th=[  186], 99.95th=[  196],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[  221]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;My colleague claims that a single NVME device is capable of a million IOPS, yet here we see fewer than 10 000, and 100-200µs completion latencies. What’s wrong?&lt;/p&gt;
+&lt;p&gt;Write test (times 8):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;write: IOPS=23.3k, BW=365MiB/s (383MB/s)(107GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   19],  5.00th=[   19], 10.00th=[   20], 20.00th=[   20],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[   21], 40.00th=[   22], 50.00th=[   24], 60.00th=[   26],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[   36], 80.00th=[   47], 90.00th=[   61], 95.00th=[   70],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[   95], 99.50th=[  114], 99.90th=[  192], 99.95th=[  293],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 2409]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Total IOPS: 183000, range: 19-200µs. Mix (times 8):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=6960, BW=109MiB/s (114MB/s)(31.9GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   97],  5.00th=[  103], 10.00th=[  104], 20.00th=[  108],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  112], 40.00th=[  118], 50.00th=[  121], 60.00th=[  125],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  126], 80.00th=[  129], 90.00th=[  141], 95.00th=[  169],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  412], 99.50th=[  611], 99.90th=[ 1385], 99.95th=[ 1696],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 2311]
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=1740, BW=27.2MiB/s (28.5MB/s)(8161MiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   19],  5.00th=[   19], 10.00th=[   20], 20.00th=[   20],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[   20], 40.00th=[   20], 50.00th=[   21], 60.00th=[   21],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[   22], 80.00th=[   23], 90.00th=[   27], 95.00th=[   30],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[   60], 99.50th=[   70], 99.90th=[   95], 99.95th=[  113],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[  202]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Total IOPS: 70010, range: 19-100µs for writes, and 100-200µs for reads. So we do get a large number of IOPS, but not in the first scenario.&lt;/p&gt;
+&lt;p&gt;What’s wrong? Well, latency is.&lt;/p&gt;
+&lt;p&gt;In the read-only case, we have a clat of 116µs in the 50th percentile, so with 1000000µs to the second, we get 1000000/116 = 8620 IOPS single threaded, and indeed we measured 8459. Math works, every single time.&lt;/p&gt;
+&lt;p&gt;So we might have a total IOPS capacity of the total device that may be 100k or even a million IOPS, but we also do have a (surprisingly constant) read latency of 100-200µs and that is not going to change. The only way to get all these IOPS is to have many concurrent accesses, all of which will take at least 100µs per read.&lt;/p&gt;
+&lt;p&gt;As we can see by going 8-way parallel (for pure writes) or 16 way parallel (8 readers, 8 writers) we get a lot more in terms of IOPS, at the expected latencies per thread.&lt;/p&gt;
+&lt;p&gt;And indeed, a sequential read test with 128 readers in parallel yields (times 128):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;   read: IOPS=5289, BW=82.7MiB/s (86.7MB/s)(24.2GiB/300001msec)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  118],  5.00th=[  126], 10.00th=[  133], 20.00th=[  141],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  147], 40.00th=[  155], 50.00th=[  163], 60.00th=[  176],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  192], 80.00th=[  215], 90.00th=[  247], 95.00th=[  281],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[  367], 99.50th=[  412], 99.90th=[  523], 99.95th=[  586],
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 1090]
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;These are not bad numbers at all: 648223 IOPS in total, at 100-400µs, and even above the 99.50th relatively stable times. The total aggregated bandwidth is 9.9GB/s (80 Gbit/s) with very little jitter (so we are not even maxing this out, we are not even at 1/3 the max for PCIe).&lt;/p&gt;
+&lt;h2 id=&#34;recommendations-and-learnings&#34;&gt;
+    &lt;a href=&#34;#recommendations-and-learnings&#34;&gt;
+	Recommendations and Learnings
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;From a SSD, we can expect about 20k IOPS, and about 3-4 GBit/s bandwidth (6 GBit/s bus) using MySQL type of workloads.&lt;/p&gt;
+&lt;p&gt;A caching RAID controller adds negative value: It costs more, but does not improve the numbers. Latency and jitter actually increase. We lose access to the SMART data, too, and have to rely on controller diagnostics instead. We should stop buying caching RAID controllers (and we have indeed done that).&lt;/p&gt;
+&lt;p&gt;NVME is a different bus to the same disk hardware (Flash NAND and controller) that is in a SSD, but it creates a much better latency and throughput. It can do that, because it attaches the storage directly to the PCIe bus instead of the much slower and more complicated SATA bus. It opens the gate to much higher bandwidth and IOPS numbers from the same hardware, but latency is unchanged (but much more stable under load).&lt;/p&gt;
+&lt;p&gt;We should stop buying SATA attached devices and focus on NVME instead. We should make sure that the pricing matches, because the hardware is essentially the same, only the bus interface changes.&lt;/p&gt;
+&lt;p&gt;Read latency is around 100µs for a NVME read, and write latency is around 420µs for an unbuffered flash write (20µs for a write to the supercap buffered cache RAM on the NVME device, and we have probably around 512 MB of that per NVME device).&lt;/p&gt;
+&lt;p&gt;That also means that access to the NVME flash disk needs to be as parallel as possible, up and beyond 100-way parallel, in order to unlock the full IOPS yield the hardware can do:&lt;/p&gt;
+&lt;p&gt;We have 1 000 000 µs to the second, but latency is not 1µs, but 100µs/400µs, so we can and need to run 100-400 parallel accesses to be able to saturate the device.&lt;/p&gt;
+&lt;p&gt;It is very hard to impossible to get 100-way parallel commits from a relational database, so in order to saturate even a single NVME device we are likely to need multiple applications or database instances on a single device. From an IOPS point-of-view, it should never be necessary to have more than one NVME device per box.&lt;/p&gt;
+&lt;p&gt;That means in order to make most of NVME you really need the capability to run multiple workloads on a single device. Virtual machine and Kubernetes based databases are becoming a necessity in order to make full use of our hardware, even at the storage level.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

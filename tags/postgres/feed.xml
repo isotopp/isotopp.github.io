@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>postgres on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/postgres.html</link>
+    <description>Recent content in postgres on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 19 Sep 2011 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/postgres/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Checkpoint Blues</title>
+      <link>https://blog.koehntopp.info/2011/09/19/checkpoint-blues.html</link>
+      <pubDate>Mon, 19 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/09/19/checkpoint-blues.html</guid>
+      <description>&lt;p&gt;Wer
+&lt;a href=&#34;https://blog.koehntopp.info/2008/01/30/die-innodb-storage-engine.html&#34;&gt;dies&lt;/a&gt;
+
+ und
+&lt;a href=&#34;https://blog.koehntopp.info/2008/02/03/die-innodb-storage-engine-konfiguration.html&#34;&gt;dies&lt;/a&gt;
+
+ gelesen hat, versteht mehr.&lt;/p&gt;
+&lt;p&gt;InnoDB ist eine Storage Engine, die mit Hilfe von
+&lt;a href=&#34;http://en.wikipedia.org/wiki/Multiversion_concurrency_control&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MVCC&lt;/a&gt;
+
+
+Transaktionen implementiert. Transaktionen zu implementieren
+bedeutet, daß man in der Lage ist, mehrere Änderungen
+zusammenzufassen und als eine Einheit als gültig zu markieren
+oder zurück zu nehmen. Damit das Ganze trotzdem schnell ist, muß
+man ein wenig herumtricksen.&lt;/p&gt;
+&lt;p&gt;Angenommen, wir wollen eine Spalte in einer Zeile in der Tabelle t ändern:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;UPDATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SET&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dann muß InnoDB das zunächst einmal in eine Zeilennummer in
+einer Speicherseite übersetzen: InnoDB speichert Daten in Seiten
+von 16 KB (Defaultgröße) ab, und macht allen I/O in Richtung
+Tablespace immer nur in ganzen Seiten. In unserem Beispiel
+bedeutet das also, daß wir die Seite p lokalisieren müssen, in
+der die ID=3 der Tabelle t gespeichert ist, und diese ganze
+Seite in den Speicher laden.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/checkpoint1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Laden der benötigen Seite in den Speicher. Aufbau der
+Transaktion im Log Buffer und Ändern der Seite im
+Speicher.&lt;/p&gt;
+&lt;p&gt;InnoDB lädt die Seite also aus dem Tablespace-File in den InnoDB
+Buffer Pool, und baut im Speicher die Transaktion auf. Dazu wird
+im Log Buffer die Transaktion gebastelt und parallel dazu die
+Speicherseite im InnoDB Buffer Pool angepaßt. Die alte Version
+der betroffenen Zeile wird außerdem in das Undo Log verschoben
+(dies ist nicht mit eingezeichnet, weil es in diesem Text nicht
+darum gehen soll). Die geänderte Speicherseite im RAM wird nicht
+zurück geschrieben - der Inhalt der Seite im RAM und auf der
+Platte divergieren, die Seite ist DIRTY (hier: rot markiert).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/checkpoint2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Beim COMMIT wird der Log Buffer in das Redo-Log geschrieben. Es
+besteht eine Verknüpfung zwischen der geänderten Speicherseite
+und der Transaktion im Redo-Log.&lt;/p&gt;
+&lt;p&gt;Beim COMMIT wird der Log Buffer ins Redo Log geschrieben. Die
+geänderte Speicherseite (rot: DIRTY) wird immer noch nicht
+zurück geschrieben.&lt;/p&gt;
+&lt;p&gt;Hätten wir stattdessen ein ROLLBACK durchgeführt, hätte InnoDB
+die alte Version der Zeile aus dem Undo-Log geprökelt und die
+Änderung zurück genommen - es wäre niemals zu einem
+Schreibzugriff im Redo-Log gekommen, und die DIRTY Page im
+Speicher wäre wieder CLEAN.&lt;/p&gt;
+&lt;p&gt;Zwischen dem Eintrag im Redo-Log und der als DIRTY markierten
+Speicherseite besteht eine Verbindung, denn irgendwann einmal
+muß die Seite ja doch geschrieben werden. InnoDB versucht das
+aber so gut es geht zu verzögern: Schreiben in das Redo-Log ist
+viel schneller als Schreiben in den Tablespace.&lt;/p&gt;
+&lt;p&gt;Zum einen werden im Redo-Log nur die Änderungen notiert, nicht
+ganze Speicherseiten. Daher ist das Volumen der Daten im
+Redo-Log pro Transaktion meistens kleiner als das Volumen der
+als DIRTY markierten Pages.&lt;/p&gt;
+&lt;p&gt;Und anderen ist es so, daß das Redo-Log ungefähr das Erste ist,
+was eine neue MySQL-Instanz bei der Inbetriebnahme als Dateien
+anlegt. Die Dateien sind also, wenn man alles richtig gemacht
+hat, in einem leeren oder fast leeren Dateisystem angelegt
+worden und nur sehr wenig fragmentiert. Da sie als Ringpuffer
+benutzt werden und niemals neu angelegt werden, bleibt diese
+Eigenschaft stabil über die Lebensdauer der Datenbank erhalten.&lt;/p&gt;
+&lt;p&gt;Schließlich ist es so, daß die Daten in InnoDB ja in der
+Reihenfolge der Primärschlüsselwerte abgespeichert werden. Wählt
+man diesen geschickt, dann ist es so, daß häufig zusammen
+angesprochene Daten auch physikalisch zusammen auf derselben
+InnoDB Speicherseite stehen. In diesem Fall ist es
+wahrscheinlich, daß eine bereits als DIRTY markierte Page noch
+ein weiteres Mal in naher Zukunft geändert wird. Hätte man die
+Änderung bereits zurück geschrieben, wäre die Seite wieder CLEAN
+und würde gleich wieder als DIRTY markiert werden, um dann
+wiederum neu geschrieben werden zu müssen.&lt;/p&gt;
+&lt;p&gt;Das Schreiben ins Redo-Log sichert also die Minimalmenge an
+Daten in einer Datei, die für lineares Schreiben optimiert ist,
+und verkleinert die zu schreibende Datenmenge, indem uns
+ermöglicht wird, das Zurückschreiben von ganzen Speicherseiten
+zu verzögern  und Änderungen zu aggregieren, ohne die
+D-Eigenschaft (Durability) von ACID zu verlieren.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/checkpoint3.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Beim Checkpoint werden aus den ältesten Redo-Log einträgen
+Speicherseiten bestimmt, die zurück geschrieben
+werden.&lt;/p&gt;
+&lt;p&gt;Irgendwann einmal müssen wir aber auch Speicherseiten zurück
+schreiben. InnoDB guckt sich dabei die ältesten Einträge im
+Redo-Log an und sucht die von diesen Einträgen referenzierten
+Speicherseiten. Sobald eine gewisse Menge (1MB, 64 Seiten) an
+Seiten gefunden ist, werden diese in den Tablespace zurück
+geschrieben. Dies bezeichnet man als Checkpoint.&lt;/p&gt;
+&lt;p&gt;Der Checkpoint setzt also DIRTY Pages auf CLEAN und gibt
+zugleich wieder Speicher im Redo-Log der Datenbank frei.&lt;/p&gt;
+&lt;p&gt;Dabei schreibt InnoDB Speicherseiten in zwei Schritten zurück:
+Eine einzelne Seite (16 KB) ist größer als ein Plattenblock.
+Wenn also das System mitten beim Schreiben einer Seite stehen
+bleibt, könnte es vorkommen, daß eine Seite zur Hälfte auf dem
+neuen und zur Hälfte auf dem alten Stand ist. InnoDB verhindert
+das, indem ein Satz von 64 Speicherseiten zunächt einmal in den
+Doublewrite-Buffer (nicht eingezeichnet) geschrieben wird, das
+Redo-Log als frei markiert wird und dann dieselben Seiten erst
+an Ort und Stelle geschrieben werden.&lt;/p&gt;
+&lt;p&gt;Bei einem Crash mitten im Schreiben in den Doublewrite-Buffer
+ist nichts verloren: Das System kann die ungeänderten Seiten aus
+dem Tablespace angeln, das Redo-Log anwenden, um diese im
+Speicher auf den neuen Stand zu patchen und dann ganz normal
+checkpointen.&lt;/p&gt;
+&lt;p&gt;Bei einem Crash mittem im Schreiben in den Tablespace ist
+ebenfalls nichts verloren: Das System fischt die neuen Versionen
+der Pages aus dem Doublewrite-Buffer und kopiert diese an die
+richtigen Stellen im Tablespace um.&lt;/p&gt;
+&lt;h2 id=&#34;drucksituationen&#34;&gt;
+    &lt;a href=&#34;#drucksituationen&#34;&gt;
+	Drucksituationen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Datenbank führt normalerweise einen Checkpoint aus, wenn sie
+sich langweilt: Ist InnoDB einige Zeit idle, wird irgendein
+Thread im System sich des Redo-Logs annehmen und die DIRTY Pages
+der Reihe nach lustig weg-checkpointen. Nach einer gewissen Zeit
+hat man 0 Redo-Log und 0 DIRTY Pages.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/checkpoint4.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Anteil des genutzten Redo-Log in einem MySQL 5.1 mit
+InnoDB-Plugin.&lt;/p&gt;
+&lt;p&gt;Wenn das fragliche System jedoch sehr beschäftigt ist und über
+eine längere Zeit eine kontinuierliche Schreiblast sieht, dann
+kann es passieren, daß gar nicht genug Idle-Zeiten vorhanden
+sind, um über diesen Prozeß Daten weg zu checkpointen. Im Bild
+oben sieht man eine InnoDB-Instanz mit Schreiblast und einem
+viel zu kleinen ib_logfile{0,1} von nur 2 x 128 MB. Nach einer
+Nachtpause wird das System wieder aktiv und bekommt genug
+Schreiblast, um im Redo-Log eine Art Backlog aufzubauen. Ab kurz
+nach 8 Uhr morgens ist die Last so groß, daß das genutzte
+Redo-Log fest auf ca. 50% Nutzung steht und das System
+kontinuierlich gezwungen ist, Daten nach hinten raus zu
+checkpointen.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/checkpoint5.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Menge der DIRTY-Pages derselben Maschine.&lt;/p&gt;
+&lt;p&gt;In einem anderen Graphen sieht man die Menge der DIRTY-Pages
+derselben Maschine - die Gesamtgröße des innodb_buffer_pool
+dieser Box ist 40 GB, der Anteil der Dirty-Pages ist also auch
+zu Spitzenzeiten kaum höher als 5%. Da das Redo-Log jedoch
+vergleichsweise klein ist, geht von dort ausreichend
+Schreibdruck aus, um Checkpoints zu erzwingen.&lt;/p&gt;
+&lt;p&gt;Es ist auch erkennbar, daß die Größen von Redo-Log und
+DIRTY-Pages nicht eng gekoppelt miteinander korrellieren: Zählt
+man in einer Schleife immer wieder denselben Zähler hoch
+(&amp;ldquo;UPDATE x SET z=z+1 WHERE id=1&amp;rdquo;), dann erzeugt man jede Menge
+Redo-Log, aber arbeitet immer auf derselben einen DIRTY Page
+rum. Andererseits kann man eine ID zufällig auswählen und dann
+nur ein einziges Bit in dieser Zeile ändern - dies würde eine
+zufällige, ganze 16 KB Page als DIRTY markieren, aber kaum
+Redo-Log erzeugen.&lt;/p&gt;
+&lt;h2 id=&#34;checkpoint-blues&#34;&gt;
+    &lt;a href=&#34;#checkpoint-blues&#34;&gt;
+	Checkpoint Blues
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Checkpointing bei InnoDB korrekt hin zu bekommen ist
+frustrierend schwierig: Die Größe des Logfiles ist bei InnoDB
+&lt;a href=&#34;http://dev.mysql.com/doc/refman/5.5/en/innodb-data-log-reconfiguration.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mehr oder weniger unveränderlich&lt;/a&gt;
+
+
+über die Lebensdauer der Installation. Andererseits möchte man
+das Checkpointen so lange als möglich herauszögern, damit man
+keine unnötige Schreiblast erzeugt (gerade geschriebene Pages
+werden durch weitere Änderungen wieder als DIRTY markiert).&lt;/p&gt;
+&lt;p&gt;Der Checkpointing-Algorithmus von InnoDB spielt also 17+4:
+Zögert er zu lange, läuft das Redo-Log voll, oder es sind keine
+Seiten im Buffer Pool mehr vorhanden, die nicht als DIRTY
+markiert sind. Dann muß das System einen Checkpoint erzwingen
+und hält alle Schreibzugriffe notgedrungen an, bis wieder Platz
+vorhanden ist. Das will man um jeden Preis vermeiden.
+Checkpointed der Algorithmus aber zu aggressiv, kommt es zu
+einer erhöhten Schreiblast im Plattensubsystem und die Datenbank
+kann nicht mit maximaler Performance schreiben.&lt;/p&gt;
+&lt;p&gt;Der perfekte Algorithmus müßte in die Zukunft schauen können: Er
+könnte anhand des noch vorhandenen Platzes, der Schreibkapazität
+der Spindeln und der kommenden Schreiblast maximal spät mit dem
+Schreiben anfangen.&lt;/p&gt;
+&lt;p&gt;Das ist offensichtlich unmöglich, und nicht perfekte Algorithmen
+verhalten sich im Benchmark etwa wie
+&lt;a href=&#34;http://www.mysqlperformanceblog.com/2011/09/18/disaster-mysql-5-5-flushing/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dieses MySQL 5.5&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;p&gt;In einer Maschine mit einem großen Buffer Pool (72G) und einem
+großen Logfile (3.8G) kommt es immer wieder zu Schreibstürmen,
+während derer die Datenbank mit dem Checkpointen so beschäftigt
+ist, daß sie keine oder kaum noch Kommandos ausführt - im
+Beispiel schafft es der Tester, die Datenbank wiederholt für
+Perioden von 4 Minuten lahm zu legen.&lt;/p&gt;
+&lt;h2 id=&#34;zum-vergleich-postgres&#34;&gt;
+    &lt;a href=&#34;#zum-vergleich-postgres&#34;&gt;
+	Zum Vergleich: Postgres
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Postgres hat dasselbe Problem zu lösen: Auch hier haben wir eine
+Datenbank mit MVCC, die Transaktionen loggt und als DIRTY
+markierte Pages im Speicher zu halten versucht. Drei Dinge sind
+grundsätzlich anders:&lt;/p&gt;
+&lt;p&gt;Zum Ersten hat Postgres kein Undo-Log: Alte und neue Versionen
+einer Zeile stehen in der Tabelle selbst. Diese &amp;ldquo;versandet&amp;rdquo; im
+Laufe der Zeit immer mehr, d.h. alte Versionen einer bestimmten
+Zeile blähen die Tabelle auf ein mehrfaches der minimal
+notwendigen Größe auf, im Index und in den Daten. Postgres
+kompaktiert Tabellen durch einen im Hintergrund laufenden Prozeß
+namen Vacuum, der alle Tabellen reihum durchgeht und veraltete
+Daten löscht.&lt;/p&gt;
+&lt;p&gt;Zum Zweiten hat Postgres keinen ausdrücklichen
+Doublewrite-Buffer. Stattdessen wird im Redo-Log (Postgres nennt
+es WAL: Write-Ahead-Log) eine Mixtur von ganzen Seiten und
+geänderten Zeilen abgelegt. Wenn eine Page vom Zustand CLEAN in
+den Zustand DIRTY wechselt, dann schreibt Postgres die ganze,
+bei Postgres nur 8 KB große Seite ins WAL. Wenn eine DIRTY Page
+weiter geändert wird, dann wird, wie bei InnoDB auch, nur die
+Änderungsinformation für die Zeile ins WAL geschrieben.&lt;/p&gt;
+&lt;p&gt;Stirbt Postgres im Checkpoint beim Schreiben eines Blocks im
+Tablespace, dann kann die alte Version des Blocks aus dem WAL
+gepult werden und mit den weiteren, ebenfalls dort geloggten
+Änderungen auf Stand gebracht werden.&lt;/p&gt;
+&lt;p&gt;Und zum Dritten ist das WAL bei Postgres nicht in seiner Größe
+begrenzt, sondern wird als fortlaufende Folge von numerierten
+WAL-Files analog zum MySQL-Binlog geschrieben. Unter Druck kann
+es wie bei InnoDB vorkommen, daß die Datenbank mit dem
+Checkpointen von DIRTY-Pages nicht hinterher kommt - der Anteil
+an WAL-Files, der in einer Recovery nach eine Crash benötigt
+werden würde, wächst so immer weiter über alle Grenzen hinaus.&lt;/p&gt;
+&lt;p&gt;Aber dafür kann es nicht vorkommen, daß die Datenbank die
+Ausführung von Kommandos verzögern muß, um Platz in ihren Logs
+zu schaffen - im Falle eines Crashes gibt es jedoch keine obere
+Grenze für die Recovery-Zeit, und für die WAL-Dateien gibt es
+keine Fragmentierungs-Garantien (das läßt sich durch das Führen
+der WAL-Dateien in einem separaten Dateisystem aber unter
+Kontrolle bringen).&lt;/p&gt;
+&lt;p&gt;Die Checkpointing-Strategien von Postgres und InnoDB arbeiten
+also unter grundsätzlich anderen Vorraussetzungen und sind nicht
+leicht vergleichbar.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Neue Releases im Datenbankland</title>
+      <link>https://blog.koehntopp.info/2011/09/13/neue-releases-im-datenbankland.html</link>
+      <pubDate>Tue, 13 Sep 2011 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2011/09/13/neue-releases-im-datenbankland.html</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://www.mongodb.org/display/DOCS/2.0%2BRelease%2BNotes&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MongoDB 2.0&lt;/a&gt;
+
+
+ist draußen, und implementiert eine Reihe interessanter neuer Dinge, die ich
+anderswo gerne hätte, insbesondere im Bereich
+&lt;a href=&#34;http://www.mongodb.org/display/DOCS/2.0%2BRelease%2BNotes#2.0ReleaseNotes-ReplicaSets&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Replica Sets&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Postgres hat das
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/release-9-1.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Release 9.1&lt;/a&gt;
+
+
+draußen. Die versprochene
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/warm-standby.html#SYNCHRONOUS-REPLICATION&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;synchrone Replikation&lt;/a&gt;
+
+
+ist jetzt verfügbar, sie ist grob vergleichbar mit der
+&lt;a href=&#34;http://dev.mysql.com/doc/refman/5.5/en/replication-semisync.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Semisynchronen Replikation&lt;/a&gt;
+
+
+in MySQL 5.5. Ein wesentlicher Unterschied ist, daß man bei Postgres
+einzelne, bestimmte Server als synchrone Slaves benennen kann, während MySQL
+nur garantiert, daß es mindestens einen (wechselnden) Slave gibt, der
+synchron repliziert hat. Die Postgres-Lösung ist einfacher als Teil eines
+Failover-Systems zu scripten, die MySQL-Lösung ist im Betrieb flexibler und
+potentiell schneller.&lt;/p&gt;
+&lt;p&gt;Postgres 9.1 implementiert
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/sql-createserver.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Create Server&lt;/a&gt;
+
+
+und
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/sql-createforeigntable.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Create Foreign Table&lt;/a&gt;
+
+,
+das ist so eine Art
+&lt;a href=&#34;http://dev.mysql.com/doc/refman/5.5/en/federated-storage-engine.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gegenstück zu FEDERATED&lt;/a&gt;
+
+
+in &amp;lsquo;nicht kaputt&amp;rsquo;.&lt;/p&gt;
+&lt;p&gt;Mit
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/collation.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;per-column collation support&lt;/a&gt;
+
+
+wird Postgres jetzt endlich ein wenig flexibler als in vorherigen Versionen,
+in denen man Zeichensatz und Collation bei der Erstellung einer
+Datenbank-Instanz global festlegen mußte. Noch immer ist man bei der Wahl
+des Zeichensatzes eingeschränkt: Bei der Erstellung der Instanz wird ein
+Systemzeichensatz festgelegt, der dann pro Datenbank überschrieben (und
+später nicht mehr leicht geändert) werden kann. Da Postgres hinsichtlich der
+Verwendung von UTF8 weniger Einschränkungen unterliegt als MySQL
+(Indexlänge, hirntot implementierte MEMORY Tables) ist das weniger ein
+Problem als man vermuten mag: Man verwende einfach immer utf8 und wähle die
+Collation nun endlich nach Bedarf per Column.&lt;/p&gt;
+&lt;p&gt;Postgres 9.1 definiert nun ebenfalls einen
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/transaction-iso.html#XACT-SERIALIZABLE&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Transaction Isolation Level Serializable&lt;/a&gt;
+
+,
+aber die genauen Definitionen von Transaction Isolation Levels variieren
+sowieso von Implementation zu Implementation ein wenig, sodaß diese nicht
+wirklich zwischen z.B. MySQL und Postgres vergleichbar sind (Dazu kommt, daß
+man vermutlich etwas falsch macht, wenn man in MySQL SERIALIZABLE
+tatsächlich benötigt.&lt;/p&gt;
+&lt;p&gt;Version 9.1 unterstützt nun
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/sql-createtable.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;die Option UNLOGGED&lt;/a&gt;
+
+
+bei CREATE TABLE. Dies bewirkt, daß Änderungen an einer Tabelle nicht in das
+Postgres WA-Log geschrieben werden. Die genauen Auswirkungen sind aus der
+Sicht eines MySQL-Entwicklers schwer zu beschreiben, da sich die Datenbanken
+hier zu sehr unterscheiden, als daß die Terminologie sinnvoll transferierbar
+wären: Eine UNLOGGED Table kann immer noch ein Rollback durchführen, da
+Postgres alte Versionen einer Row nicht in einem Undo-Log vorhält, sondern
+als Bestandteil der Tabelle speichert. Es ist also nicht so, daß eine solche
+Tabelle mit einer MyISAM-Tabelle vergleichbar wäre.&lt;/p&gt;
+&lt;p&gt;Eine UNLOGGED Table wird jedoch automatisch geleert, wenn die Datenbank
+abstürzt oder hart angehalten wird - das ist notwendig, da das WAL bei
+Postgres auch Funktionen wahrnimmt, die in MySQL etwa der Doublewrite-Buffer
+übernimmt und so nicht garantiert werden kann, in welchem Zustand die Daten
+sind, wenn die Datenbank beim Checkpointen einer Page in einer unlogged
+Table stehen bleibt.&lt;/p&gt;
+&lt;p&gt;Da kein WAL geschrieben wird, werden UNLOGGED Tables auch nicht repliziert.
+Es ist also ein wenig so wie eine Tabelle, für die SQL_LOG_BIN = 0 definiert
+ist, und für die kein Redo/Undo-Log geschrieben wird, und die sich bei
+Crashes verhält wie eine Memory-Tabelle, aber andererseits lockt die Tabelle
+immer noch vergleichbar InnoDB, und kann auch noch ein Rollback ausführen.&lt;/p&gt;
+&lt;p&gt;Eine besonders schöne Sache in 9.1 sind
+&lt;a href=&#34;http://www.postgresql.org/docs/9.1/static/queries-with.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Common Table Expressions in DML&lt;/a&gt;
+
+.
+Eine Common Table Expression (CTE, &amp;lsquo;WITH&amp;rsquo;) kann man sich wie eine temporäre
+Tabelle vorstellen, die Daten zwischen mehreren Statements sharen kann, mit
+RECURSIVE bekommt man damit auch Zeigerbäume in SQL sauber implementiert.
+Seit 9.1 kann man eine CTE auch als Datenverschiebe-Statement verwenden:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;WITH&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;transferme&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DELETE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;active&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;date&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2011&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;09&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;RETURNING&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INSERT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INTO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;inactive&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;transferme&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dies definiert eine temporäre Tabelle transferme als die Daten, die von dem
+Delete-Statement aus active gelöscht werden. Diese werden dann in die
+Tabelle inactive eingefügt.&lt;/p&gt;
+&lt;p&gt;Außerdem gibt es mehr SELinux-Support und Python als Stored Procedure Language.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Red vs Blue at Oracle, und ein paar Gedanken zu Postgres</title>
+      <link>https://blog.koehntopp.info/2010/11/04/red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.html</link>
+      <pubDate>Thu, 04 Nov 2010 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2010/11/04/red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.html</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;http://www.heise.de/ix/news/foren/S-Re-Kann-MySQL-eigentlich-irgendetwas/forum-188566/msg-19386125/read/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ich schrieb&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;heretic666 schrieb am 4. November 2010 12:11&lt;/p&gt;
+&lt;p&gt;&amp;hellip;das man nicht auch wahlweise mit PostgreSQL oder MS SQL erschlagen
+kann?&lt;/p&gt;
+&lt;p&gt;Mir fällt da im Moment kein Punkt ein&amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Postgres ist ein Repräsentant der klassischen Datenbanken und fällt in
+dieselbe Kategorie wie Oracle, MS SQL oder DB/2.  MySQL ist eine Datenbank,
+die sich in vielen Punkten an den Erfordernissen des Webs orientiert und
+ganz andere Schwerpunkte als Postgres oder Oracle setzt.  Das ist auch eine
+der Erfahrungen, die der rote Sales (Oracle Sales) gerade mit blauen Kunden
+(MySQL Kunden) macht: Die meisten lassen sich nicht einfach auf rot
+konvertieren, weil das rote Produkt schlicht nicht die Leistungen bietet,
+die blauen Kunden wichtig sind.&lt;/p&gt;
+&lt;p&gt;Um Deine Frage konkreter zu beantworten:&lt;/p&gt;
+&lt;p&gt;MySQL ist eine Einprozeß-Architektur mit mehreren Threads und einem
+Threadpool.  Ein Connect an die Datenbank ist vergleichbar teuer einem
+Connect an einen OpenLDAP-Server und MySQL kommt so gut mit transienten
+Verbindungen etwa eines mod_perl oder mod_php zurecht, daß man in MySQL in
+der Regel nicht mit Connection Pools arbeitet und 2-Tier Architekturen
+(Apache mit mod_irgendwas an MySQL) gut funktionieren.&lt;/p&gt;
+&lt;p&gt;Datenbanken, die on-connect einen Handlerprozeß forken haben sehr viel
+höhere Kosten in Speicher (MySQL 200 KB pro Connect vs.  zum Beispiel 5 MB
+für Oracle) und Zeit.  Mit solchen Datenbanken redet man in der Regel über
+einen Application-Server der persistente Verbindungen aus einem Connection
+Pool managed, und auf der anderen Seite von einem Webserver angestupst wird
+(3-Tier).&lt;/p&gt;
+&lt;p&gt;MySQL-Anwender skalieren Read-Leistung in der Regel horizontal.  Das heißt,
+sie kaufen keine größeren Server, sondern mehr Server, um zu wachsen.  In
+unserem Fall haben wir in einer Produktionshierarchie zum Beispiel 87 MySQL
+Slave-Server an einem Master hängen.  MySQL Replikation ist per Default
+asynchron und muß in der Anwendung durch ein passendes master_pos_wait()
+synchronisiert werden - jedes asynchrone System kann durch Einfügen von
+Waits synchron gemacht werden.&lt;/p&gt;
+&lt;p&gt;Das heißt, daß die Anwendung die Wahl hat, ob sie fortfahren oder warten
+will - und die meisten Leute wollen in der Anwendung lieber annähernd
+richtige Daten sofort liefern (und dann ggf später per AJAX aktualisieren)
+als auf absolut korrekte Daten zu warten, solange etwa im Web gebrowsed
+wird.  Wenn es zum Schwur - also zum Kauf - kommt, dann will man warten, und
+dann nimmt man Waypoints in Kauf - vorher aber nicht.&lt;/p&gt;
+&lt;p&gt;Postgres zum Beispiel hat erst jetzt mit 9.0 eine Replikation und diese ist
+auch nicht asynchron.  Das heißt, wenn man eine Anwendung hatte, die größer
+war als eine einzelne Kiste leisten konnte, dann mußte man an irgendeinem
+Punkt zu MySQL greifen - mein derzeitiger Arbeitgeber ist so vor etwa 10
+Jahren aus genau diesem Grunde von Postgres zu MySQL migriert.  Das war sehr
+mühsam und teuer, aber damals ein zwingender Grund (und ist es heute trotz
+9.0 wahrscheinlich auch noch).&lt;/p&gt;
+&lt;p&gt;MySQL, speziell InnoDB, ist eine ausgezeichnete Engine mit MVCC (also
+lockless reads) und mit sehr sinnvollen Strategien beim Layout von Daten auf
+der Platte (Clustering der Daten nach Primary Key + auto_increment = instant
+win für alle Leute mit normalen Zugriffspatterns).  Dadurch, daß MySQL
+außerdem Covering Indexes kann (Postgres auch in 9.0 leider noch nicht) sind
+bestimmte Optimierungen sehr leicht möglich und sehr effizient.  Domas
+(früher MySQL, jetzt Facebook, außerdem Wikipedia-DBA) beschreibt dies in
+&lt;a href=&#34;http://mituzas.lt/2007/01/26/mysql-covering-index-performance/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;einem Artikel&lt;/a&gt;
+
+
+recht ausführlich.&lt;/p&gt;
+&lt;p&gt;Ein anderes Feature, das bei der Skalierung von großen Datenbanken (größer
+als der Hauptspeicher) sehr extrem rockt sind PARTITION BY clauses in
+Tabellendefinitionen.  Man kann sich in Postgres vergleichbares manuell
+zusammentriggern (wie man sich auch Replikation zusammentriggern kann, wenn
+man keine Schmerzen spürt), aber nativ ist das Feature plötzlich auch für
+den normalbegabten DBA und vor allen Dingen auch für einen Entwickler
+zugänglich - und es ist sehr schnell.  Wir migrieren gerade eine unserer
+letzten MyISAM-Datenbanken von Merge-Tables auf InnoDB Plugin + Compressed
+Tables + Partititions und die Effekte sind sehr erstaunlich.&lt;/p&gt;
+&lt;p&gt;Ein weiteres Feature, bei dem ich nicht beurteilen kann, wie gut oder
+schlecht Postgres da steht, sind die Connectors in MySQL.&lt;/p&gt;
+&lt;p&gt;Connector/ODBC von MySQL ist - sagt man mir - sehr gut, ich habe in meiner
+beruflichen Praxis damit eine Reihe von Migrationen von Access- und MS
+SQL-Datenbanken auf ein MySQL Backend durchgeführt, und das war weitgehend
+problemlos (ODBC hat ein paar Konzepte, bei denen man wissen muß, wie sie
+auf MySQL abgebildet werden - wenn man das weiß, geht die ganze Umstellung
+vollkommen schmerzfrei).&lt;/p&gt;
+&lt;p&gt;Connector/J ist angeblich auch sehr gut - ich versuche Java zu vermeiden und
+habe daher nicht viel unmittelbare Erfahrung, kann aber sagen, daß man
+zumindest vielen Schmerz der Java-Leute durch Konfiguration obskurer
+JDBC-Parameter wegheilen kann ohne daß man ins Java rein muß.  :-)&lt;/p&gt;
+&lt;p&gt;Für PHP gibt es eine unabhängige Implementierung des Protokolls als mysqlnd.
+Das ist einmal lizenztechnisch interessant (PHP License statt GPL) und
+einmal speichertechnisch spannend.  Connector/C alias libmysqlclient.so lädt
+ja Ergebnisse aus dem Server in libmysqlclient.so runter und stellt sie als
+MySQL-interne Datentypen dar.  Diese werden dann durch mysql_fetch_assoc()
+und Freunde in PHP Zeile für Zeile in PHP ZVAL umgewandelt - am Ende hat man
+die Daten also zweimal: Einmal als PHP Hash in ZVAL-Format und einmal als
+MySQL-interne Typen in der Bibliothek - bis dann endlich mysql_free_result()
+gemacht wird, und die interne Kopie gelöscht wird.&lt;/p&gt;
+&lt;p&gt;mysqlnd verwendet jetzt gleich intern in der MySQL-Bibliothek PHP-interne
+ZVAL-Strukturen für die Ergebnisse, sodaß keine Daten mehr aus
+libmysqlclient.so in PHP umkopiert werden müssen, sondern die Daten quasi
+gleich als PHP-Hash in den Client runter geladen werden.&lt;/p&gt;
+&lt;p&gt;Ah, und schließlich sind die Zeichensatz-Fähigkeiten von MySQL recht
+bemerkenswert.  MySQL kann Zeichensätze und  Sortierungen per Spalte
+getrennt festlegen und wandelt dann zwischen Serverzeichensatz und
+Clientzeichensatz um.  Das tut es sehr schnell, so schnell, daß es bei uns
+in einigen Anwendungen schneller ist, die Zeichensatzumwandlungen durch den
+Server machen zu lassen, als lokal im Client mit Perl (Nein, wir machen das
+nicht, es ist nur so, daß unsere Benchmarks meinten, das sei schneller :-)
+).&lt;/p&gt;
+&lt;p&gt;MySQL ist auch extrem flexibel: Mit einem ALTER TABLE kann man Spalten
+bequem von einer Darstellung in eine andere umwandeln,  wenn sich die
+Anforderungen ändern, sodaß man sich dort nicht früh auf irgendwas festlegen
+muß.&lt;/p&gt;
+&lt;p&gt;Soweit ich weiß ist das sehr viel flexibler als die Mechanismen, die
+Postgres hier bietet.&lt;/p&gt;
+&lt;p&gt;In MySQL nutzt man oft eine Reihe von Dingen nicht, die man von einem
+klassischen Datenbankprodukt erwarten würde, wie es etwa an der Uni
+unterrichtet wird.  Das ist in dem Umfeld von MySQL weitgehend okay - wir
+zum Beispiel setzen MySQL auf eine Weise ein, bei der wir alle Zugriffe auf
+die Datenbank kontrollieren und bei der wir den Code zu allen Anwendungen
+haben und ändern können, die auf die Datenbank zugreifen.  Das macht gewisse
+Dinge auf der Clientseite möglich, die man anderswo im Server abhandeln muß.&lt;/p&gt;
+&lt;p&gt;Foreign Key Constraints zum Beispiel realisieren wir im Client in
+Bibliotheken.  Wir werden auch in der Regel keinen Code in der Datenbank
+einsetzen - also weder Views, noch Procedures noch Triggers, sondern machen
+alle diese Sachen im Client.  Wir sind aber ein privilegiertes Umfeld, weil
+wir in der Produktion durchgehend einen OSS Stack einsetzen und so den
+Quelltext zu allem vollkommen kontrollieren.  Wir sind außerdem größer als
+eine einzelne Maschine leisten kann, müssen also sowieso horizontal
+Skalieren, und es ist nun einmal günstiger, Client-CPUs zu kaufen als
+Datenbankserver-CPUs, also ist es für uns ökonomisch nicht sinnvoll, Code in
+der Datenbank laufen zu lassen (von den Managementerfordernissen, die Code
+in der Datenbank mit sich bringt mal ganz abgesehen).&lt;/p&gt;
+&lt;p&gt;Schließlich: MySQL hat eine Reihe von Eigenheiten, Einschränkungen und
+Fehlern.  Das ist okay, denn die meisten dieser Sachen sind bekannt und man
+kann mit ein wenig Erfahrung da leicht drum herum arbeiten.&lt;/p&gt;
+&lt;p&gt;MySQL hat jedoch auch eine riesengroße Community von Leuten mit zum Teil
+bemerkenswertem Niveau, sodaß man an die notwendigen Informationen
+herankommt - in seiner Landessprache, wahlweise für Geld oder gute Worte und
+auch auf Zeit.&lt;/p&gt;
+&lt;p&gt;MySQL hat auch erwiesenermaßen große Installationen, das heißt die
+versprochene Skalierbarkeit ist nicht hypothetisch, sondern die Konzepte
+sind bewiesen und verdienen bei anderen Leuten nachweisbar Millionen - pro
+Tag.&lt;/p&gt;
+&lt;p&gt;MySQL ist nicht schön.  Das muß es nicht, es soll nur den Job erledigen und
+die Kasse voll machen.  Und das tut es, zuverlässig, wiederholbar und vor
+allen Dingen auf eine Weise, die man normalbegabten Entwicklern in Kursen
+vermitteln kann.  Alles ist allem ist das in etwa das, was man von einem
+solchen Produkt erwarten würde.&lt;/p&gt;
+&lt;p&gt;Die Zusammenfassung dieses recht langen Textes ist in etwa:&lt;/p&gt;
+&lt;p&gt;Die reale Welt ist nicht die Uni, und die Erfordernisse der realen Welt
+werden für eine populäre Klasse von Anwendungen und Anforderungen von MySQL
+besser abgebildet als von jeder anderen Datenbank.  Das MySQL dabei gegen
+bestimmte traditionelle Lehren verstößt sorgt in gewissen Kreisen für
+schlechte Presse, aber das ist den Leuten, die das machen egal, solange die
+von ihnen erstellten Rechnungen korrekt genug sind um akzeptiert zu werden
+und den Kühlschrank voll machen.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Covering indexes und MVCC</title>
+      <link>https://blog.koehntopp.info/2010/09/09/covering-indexes-und-mvcc.html</link>
+      <pubDate>Thu, 09 Sep 2010 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2010/09/09/covering-indexes-und-mvcc.html</guid>
+      <description>&lt;p&gt;Für viele MySQL-Anwendungen sind
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Database_index#Covering_index&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Covering Indexes&lt;/a&gt;
+
+ eine
+wichtige Sache. Domas hat einen Artikel darüber
+&lt;a href=&#34;http://mituzas.lt/2007/01/26/mysql-covering-index-performance/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Wie Wikipedia von Covering Indexes profitiert&lt;/a&gt;
+
+,
+und auch sonst sind solche Indices für viele MySQLer ein täglicher
+Bestandteil der Optimierungsarbeit.&lt;/p&gt;
+&lt;p&gt;Nun las ich neulich in einem Artikel eine Seitenbemerkung, daß Postgres
+keine Covering Indices unterstützt und das scheint
+&lt;a href=&#34;http://www.wikivs.com/wiki/MySQL_vs_PostgreSQL#Advanced_Indexing&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tatsächlich der Fall zu sein&lt;/a&gt;
+
+,
+auch wenn ich in der Doku selber keine Hinweise darauf gefunden habe.&lt;/p&gt;
+&lt;p&gt;Warum Postgres das nicht kann ist zunächst einmal klar: MVCC macht das sehr
+schwierig. In meinem Vortrag zur InnoDB Storage Engine
+(&lt;a href=&#34;https://blog.koehntopp.info/2008/01/30/die-innodb-storage-engine.html&#34;&gt;Teil 1&lt;/a&gt;
+
+,
+&lt;a href=&#34;https://blog.koehntopp.info/2008/02/03/die-innodb-storage-engine-konfiguration.html&#34;&gt;Teil 2&lt;/a&gt;
+
+)
+habe ich schon einmal beschrieben, was passiert, wenn eine Zeile in InnoDB
+geschrieben wird.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/innodb-mvcc.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;MVCC, nach Art von InnoDB. Der Pfeil deutet ein Rollback an.&lt;/p&gt;
+&lt;p&gt;Die überschriebene Zeile wird aus der Tabelle in das Undo Log verschoben und
+mit der neuen Version der Zeile verkettet. Wird die Zeile ein weiteres Mal
+geändert, wird die überschriebene Version ebenfalls aus der Tabelle ins Undo
+Log verschoben und mit der aktuellsten Version verkettet. Auf diese Weise
+führt aus der Tabelle-Log ein Zeiger ins Undo-Log und von dort innerhalb des
+Undo-Logs eine lineare Liste zu vorhergehenden Versionen einer
+Tabellenversion. Man hat also eine verkettete Liste der Historie einer
+Zeile.&lt;/p&gt;
+&lt;p&gt;Ein separater Thread in InnoDB, der Purge Thread, bestimmt die älteste
+Transaktion, die im System noch aktiv ist, und welche Transaktionsnummer
+diese Transaktion noch sehen kann. Alle Daten aus dem Undo-Log, die noch
+älter sind, können gefahrlos gelöscht werden, da sie für keine Transaktion
+noch sichtbar sein können.&lt;/p&gt;
+&lt;p&gt;Postgres arbeitet ähnlich, aber nicht gleich: In Postgres verbleiben alte
+Versionen einer Zeile in der Tabelle (Postgres macht keine In-Place Updates
+wie InnoDB, sondern schreibt neue Versionen der Zeile an eine andere Stelle
+der Tabelle), sodaß die lineare Liste von Vorgängerversionen einer Zeile
+nicht im Undo-Log, sondern in der Tabelle aufgebaut wird. Dadurch wächst die
+Tabelle im Laufe der Zeit durch Schreibzugriffe über alle Grenzen und alte
+Versionen der Daten vergiften langsam die Datenhaltung und auch die
+Index-Effizienz.&lt;/p&gt;
+&lt;p&gt;Postgres wirkt dem entgegen, indem es einen Prozeß, der dem Purge Thread von
+InnoDB vergleichbar ist, ablaufen läßt: Vacuum geht zyklisch durch alle
+Tabellen und entfernt Datensätze, die so alt sind, daß sie von keiner
+Transaktion mehr benötigt werden. Anders als bei MySQL ist dabei jedoch mehr
+Arbeit notwendig, da Platz in der Tabelle freigegeben werden muß (InnoDB
+macht eine vergleichbare Mehrarbeit beim Checkpointing: Damit In-Place
+Updates sicher sind, muß es einen Doublewrite Buffer verwenden und Daten
+zwei Mal schreiben. Aber das ist Thema für einen anderen Artikel).&lt;/p&gt;
+&lt;p&gt;Alle diese Betrachtungen beziehen sich jedoch auf die Daten. Indices
+enthalten Extrakte aus den Daten, die in Indexreihenfolge angeordnet sind,
+und dann einen Zeiger auf die verbleibenden Daten, die nicht im Index
+enthalten sind. Wenn man jedoch mehr als eine Version eines Datensatzes hat,
+wie in MVCC, welche Version des Datensatzes indiziert man dann und wie
+stellt man sicher, daß Transaktionen, die alte Sichten auf die Daten haben,
+den Index dennoch zuverlässig verwenden können?&lt;/p&gt;
+&lt;p&gt;Nun haben wir in der Firma MySQL Support gekauft, und zwar von der Art, der
+auch &amp;lsquo;Consultative Support&amp;rsquo; enthält. Also schickte ich eine Supportanfrage
+los, denn diese Frage ist mit Sicherheit auch für den Support selbst
+interessant:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I understand  &lt;a href=&#34;http://mysqldump.azundris.com/categories/32-InnoDB&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;how InnoDB works and what MVCC is&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;What I do not know is how Indexes in InnoDB deal with this. That is, given
+a table such as&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;CREATE TABLE T (
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  id integer not null primary key,
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  d varchar(80) charset latin1 not null,
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  index(d)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;) engine = innodb;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and transactions that change &lt;code&gt;d&lt;/code&gt; values in &lt;code&gt;t&lt;/code&gt;, &lt;code&gt;id&lt;/code&gt; values in &lt;code&gt;t&lt;/code&gt;, delete
+&lt;code&gt;d&lt;/code&gt; values in &lt;code&gt;t&lt;/code&gt; or delete rows in &lt;code&gt;t&lt;/code&gt;, how does InnoDB treat the index
+&lt;code&gt;d&lt;/code&gt; and the index &lt;code&gt;PRIMARY&lt;/code&gt; in order to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;make the index &lt;code&gt;d&lt;/code&gt; still covering in &lt;code&gt;SELECT d from t where d = &#39;cookie&#39;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;make sure that old and new values are found in queries such as
+&lt;code&gt;SELECT id from t where d = &#39;cookie&#39;&lt;/code&gt;, when &lt;code&gt;d&lt;/code&gt; has been changed from
+&lt;code&gt;keks&lt;/code&gt; to &lt;code&gt;cookie&lt;/code&gt; in a transaction that has been comitted, but other
+connections still have an old consistent read view on the previous state
+of things.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I understand that Postgres does not have covering indexes because of such
+index problems wrt to transactions. How does InnoDB work around this?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Axel Schwenke von MySQL Support hat diese Frage beantwortet, und dabei Hilfe
+von Marko Mäkelä vom InnoDB Team bekommen:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A secondary index contains the newest version of a row, if a row update
+included the key then the old index record will be delete-marked (and
+removed later by the purge thread) and a new index record will point to
+the new version of the row.&lt;/p&gt;
+&lt;p&gt;Secondary index entries are not versioned, but each index leaf page
+carries a PAGE_MAX_TRX_ID denoting the last transaction that modified the
+page. If this is newer than the required read snapshot, then InnoDB dives
+to the clustered index for each hit from that index page to check the row
+version and will also follow to UNDO if required.&lt;/p&gt;
+&lt;p&gt;That means covering index reads might degrade to full row reads on InnoDB,
+depending on write activity and isolation level.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In Deutsch: Ein Index, der nicht der Primärschlüssel ist (und das ist bei
+InnoDB und Covering Indexes immer der Fall) hat Einträge für die neuste
+Version einer Zeile. Falls sich Felder einer Zeile verändern, die
+Bestandteil des Index sind, dann auch für die ältere Version. Der alte
+Eintrag wird zum Löschen markiert und zu einem passenden Zeitpunkt vom Purge
+Thread abgeräumt.&lt;/p&gt;
+&lt;p&gt;Indexeinträge in sekundären Indices haben keine Transaktionsnummern an den
+Einträgen selbst, sondern es gibt nur Einträge an den Blatt-Pages des Index,
+die die Transaktionsnummer der letzten Änderung der Index-Seite enthalten.
+Wenn die Seite zu neu ist, dann muß InnoDB tatsächlich den Primärschlüssel
+für jede Zeile lesen, die in der Seite enthalten ist (nicht nur für die
+geänderte Zeile, sondern auch für jede Zeile, die zufällig auf derselben
+Index-Blattseite gespeichert ist) und für die Zeilen, die durch den
+Schreibzugriff tatsächlich verändert worden sind, in das Undo-Log gehen, um
+alte Versionen der Daten zu finden. Das impliziert auch, daß ein Covering
+Index für diese Situation zu einem normalen Zeilen-Read führen kann (den man
+ja gerade vermeiden will) und dann für die tatsächlich geänderten Zeilen
+sogar noch einen Abstieg in das Undo-Log nach sich zieht, je nach
+Schreiblast und Isolation Level, der für den Reader eingestellt ist.&lt;/p&gt;
+&lt;p&gt;Mal sehen, ob ich das noch mal irgendwann in eine coole Zeichnung gießen
+kann, um zu verdeutlichen, was da genau vor sich geht. Auf jeden Fall:
+Danke, MySQL Support - das ist genau der Grund, warum wir bei Euch
+einkaufen!&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

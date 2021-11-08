@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>debug on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/debug.html</link>
+    <description>Recent content in debug on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 07 Jun 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/debug/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Fixing &#34;ip netns&#34; for docker</title>
+      <link>https://blog.koehntopp.info/2020/06/07/fixing-ip-netns-for-docker.html</link>
+      <pubDate>Sun, 07 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2020/06/07/fixing-ip-netns-for-docker.html</guid>
+      <description>&lt;p&gt;So I want to monitor my Jitsi Videobridge to get some useful statistics. The instructions say to &lt;a href=&#34;https://github.com/jitsi/jitsi-videobridge/blob/master/doc/statistics.md&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;enable Videobridge statistics&lt;/a&gt;
+
+ and then grab stuff from port 8080.&lt;/p&gt;
+&lt;p&gt;Ok, I think I did that, but it did not work. Time to dig into the container network config.&lt;/p&gt;
+&lt;p&gt;And while I have a lot of network namespaces, they are unknown to &lt;code&gt;ip netns&lt;/code&gt;, as can be seen when asking for a list. When we define a network namespace with &lt;code&gt;ip netns&lt;/code&gt;, it will symlink the assigned name from &lt;code&gt;/var/run/netns/&amp;lt;name&amp;gt;&lt;/code&gt; to &lt;code&gt;/proc/&amp;lt;pid&amp;gt;/ns/net&lt;/code&gt; of the process that leads that namespace.&lt;/p&gt;
+&lt;p&gt;So these are our container names, we want them as netns names:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;docker ps --format&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;{{.Names}}&amp;#39;&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;jitsi-jvb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can turn them into PIDs:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;docker inspect -f &lt;span class=&#34;s1&#34;&gt;&amp;#39;{{.State.Pid}}&amp;#39;&lt;/span&gt; jitsi-jvb
+&lt;span class=&#34;go&#34;&gt;3899821
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And with that, we can create a mapping script:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;! /bin/bash
+&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;names=&amp;#34;$(docker ps --format=&amp;#39;{{.Names}}&amp;#39;)&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;for name in $names
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;do
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  pid=&amp;#34;$(docker inspect -f &amp;#39;{{.State.Pid}}&amp;#39; $name)&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  if [ -z &amp;#34;$pid&amp;#34; ]; then echo &amp;#34;Cannot resolve $name&amp;#34;; continue; fi
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  echo $pid $name
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ln -sf /proc/$pid/ns/net &amp;#34;/var/run/netns/$name&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;done
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Sure enough, I can now &lt;code&gt;ip netns&lt;/code&gt; things:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ip netns list
+&lt;span class=&#34;go&#34;&gt;influxdb (id: 5)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mosquitto (id: 2)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;grafana (id: 0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;z2m (id: 8)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mqttbridge (id: 9)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;jitsi-web (id: 3)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;jitsi-prosody (id: 1)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;jitsi-jvb (id: 4)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;jitsi-jicofo (id: 6)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ip netns &lt;span class=&#34;nb&#34;&gt;exec&lt;/span&gt; jitsi-jvb lsof -i -n -P
+&lt;span class=&#34;go&#34;&gt;COMMAND     PID   USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;dockerd   16420   root  134u  IPv4 34920699      0t0  UDP 127.0.0.11:45441
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;dockerd   16420   root  138u  IPv4 34920700      0t0  TCP 127.0.0.11:34251 (LISTEN)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;java    3900157 docker  152u  IPv4 34917278      0t0  UDP 172.3.0.5:10000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;java    3900157 docker  153u  IPv4 34927830      0t0  TCP 172.3.0.5:59998-&amp;gt;172.3.0.2:5222 (ESTABLISHED)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;java    3900157 docker  157u  IPv4 34927885      0t0  UDP *:5000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;java    3900157 docker  159u  IPv6 34927887      0t0  UDP *:5000
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;https://twitter.com/ascii158/status/1269868957458186240&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@ascii158&lt;/a&gt;
+
+ points me at&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;console# nsenter -n -t $(docker inspect &amp;lt;containername&amp;gt; -f &#39;{{.State.Pid}}&#39;) lsof -i -n -P&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;as an alternative solution.
+That works, but is also quite a lot to type. Like the former solution it needs a script, just a different one.
+It still is more flexible: works with non-network namespaces and does not need to update a static lookup table.&lt;/p&gt;
+&lt;p&gt;It also highlights the fact that &lt;code&gt;docker ps&lt;/code&gt; prints a lot of different identifiers, none of which are the actual PID. Which is funny, because that is kind of the point of a thing called &lt;code&gt;ps&lt;/code&gt;, isn&amp;rsquo;t it?&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>House und Heisenberg revisited</title>
+      <link>https://blog.koehntopp.info/2012/09/25/house-und-heisenberg-revisited.html</link>
+      <pubDate>Tue, 25 Sep 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/09/25/house-und-heisenberg-revisited.html</guid>
+      <description>&lt;p&gt;Ich habe heute an dem Problem weiter geforscht und wir haben etabliert, dass
+die Ursache nicht der Quelltext des betreffenden Diamond-Collectors sein
+kann.&lt;/p&gt;
+&lt;p&gt;Auf allen betroffenen Kisten habe ich dann gesehen, daß die entsprechenden
+Queries gegen Performance-Schema ein&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;threads&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;zurück liefern.&lt;/p&gt;
+&lt;p&gt;Weitere Untersuchung stellt heraus: P_S ist aber an. Jedoch:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;setup_instruments&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;03&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;setup_timers&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;setup_consumers&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Empty&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;02&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und das bleibt auch so, sogar über Server-Restarts hinweg.  Warum ist das
+so?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /mysql/&lt;span class=&#34;se&#34;&gt;\*&lt;/span&gt;/data/performance_schema/
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;ls -l
+&lt;span class=&#34;go&#34;&gt;total 1840
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql  8624 Oct  6  2011 cond_instances.frm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql 98304 Oct  6  2011 cond_instances.ibd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql    61 Oct  6  2011 db.opt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql  9220 Oct  6  2011 events_waits_current.frm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql 98304 Oct  6  2011 events_waits_current.ibd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und ein SHOW CREATE TABLE bestätigt das.&lt;/p&gt;
+&lt;p&gt;Damit ist klar, wieso es überhaupt zu Transaktionen kommen kann:&lt;/p&gt;
+&lt;p&gt;Der Code im Diamond-Collector setzt nur Queries gegen performance_schema ab.
+Da dort normal keine Tabellen vorhanden sind, die Transaktionen
+unterstützen, kann es auch nie zu Transaktionen kommen.  In den defekten
+Kisten wurden die Tabellen in performance_schema fälschlicherweise als
+InnoDB erzeugt.  Das alleine hätte kein Problem erzeugt, weil jedes Kommando
+in MySQL eine Transaktion in sich selbst ist - AUTOCOMMIT = 1.&lt;/p&gt;
+&lt;p&gt;Aber:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Starting with 1.2.0, MySQLdb disables autocommit by default, as required
+by the DB-API standard (PEP-249)&amp;quot;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In diesem Fall generiert das Lesen von InnoDB-Tabellen den Start einer r/o
+Transaktion und erzeugt einen Stable View auf alle InnoDB Tabellen.  Dieser
+wird gehalten bis zum Ende der Transaktion, das niemals kommt, außer der
+Collector disconnected.&lt;/p&gt;
+&lt;p&gt;Die immer weiter wachsende Größe des Undo-Logs verlangsamt den Server bis
+zum Stillstand.  Ein KILL auf die Verbindung bringt nur vorübergehende
+Linderung.&lt;/p&gt;
+&lt;p&gt;Der Fix ist in der Tat&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;o&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;BNe&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;select 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  concat(&amp;#39;drop table &amp;#39;, table_name, &amp;#39;;&amp;#39;) 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;from 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  information_schema.tables 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;where 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  table_schema = &amp;#39;performance_schema&amp;#39;&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql_upgrade&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und alles wird gut - sogar ohne Neustart.&lt;/p&gt;
+&lt;p&gt;Die Ursache für das Seltsame Verhalten™ der betroffenen Büchsen bei einer
+automatisierten Installation verbleibt weiter unklar.  Der betreffende
+Collector läuft jetzt jedoch auch auf diesen Maschinen und liefert Daten.&lt;/p&gt;
+&lt;p&gt;Wie viele MySQLer bin ich der Auffassung, dass AUTOCOMMIT = 0 oder SELECT
+&amp;hellip;  FOR UPDATE eher schädlich sind.  Dies hier wird ein weiteres
+ausgezeichnetes Beispiel in meinem argumentativen Arsenal sein.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Der Herr House und der Herr Heisenberg haben Replication Delay</title>
+      <link>https://blog.koehntopp.info/2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.html</link>
+      <pubDate>Mon, 24 Sep 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/09/24/der-herr-house-und-der-herr-heisenberg-haben-replication-delay.html</guid>
+      <description>&lt;p&gt;Heute erreicht mich eine Mail, in der ein DBA sich über steigende
+Replication Delay in einer bestimmten Replikationshierarchie beschwert.&lt;/p&gt;
+&lt;p&gt;Das ist schlecht, denn die betreffende Hierarchie ist wichtig. Also die
+&amp;lsquo;Wenn die nicht geht schlafen Leute unter Brücken&amp;rsquo;-Art von wichtig.&lt;/p&gt;
+&lt;p&gt;Die Theorie war, daß die Änderungsrate in dieser Hierarchie so hoch ist, daß
+die Schreiblast von MySQL Replikation, die ja Single Threaded ist, nicht
+mehr bewältigt werden kann.  Für diese Theorie sprach nach dem ersten
+Augenschein, daß alle betroffenen Kisten keine lokalen Platten hatten,
+sondern auf einem Filer lagen, und Filer sterben wegen der hohen
+Kommunikationslatenz im SAN bei uns in der Regel weit vor lokalen Platten,
+wenn es um Replikation geht: Filer sind mehr so beim parallelen Schreiben
+mit mehreren Threads gut.&lt;/p&gt;
+&lt;p&gt;Wenn dem so wäre, wäre das schon einen Seufzer wert, denn die betreffende
+Replikationshierarchie war gerade beim Reengineering auf dem OP und sollte
+eigentlich derzeit kaum ausbeutbare Technical Debt haben.  Wenn die trotzdem
+Replication Delay akkumuliert, dann haben wir ein ernstes Problem.&lt;/p&gt;
+&lt;p&gt;Nun bin ich jemand, der Lügen gewohnt ist.  Leute lügen.  Und Maschinen
+lügen auch.  Aber schauen wir erst mal ins
+&lt;a href=&#34;http://graphite.wikidot.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Monitoring&lt;/a&gt;
+
+ und schauen wie schlimm es ist.
+Ich greife mir einen Host aus der angeblich kränkelnden Hierarchie:&lt;/p&gt;
+&lt;p&gt;![Graph: Replication Delay Monitor]({{ site.baseurl }}/uploads/replication-delay1.png)&lt;/p&gt;
+&lt;p&gt;Der brandneue Replication Load Monitor ist ein tolles Spielzeug.&lt;/p&gt;
+&lt;p&gt;Wir sehen eine Weiterentwicklung einer &lt;a href=&#34;http://www.markleith.co.uk/2012/07/24/a-mysql-replication-load-average-with-performance-schema/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Idee&lt;/a&gt;
+
+
+von Mark Leith: Mit Hilfe des Performance Schema überwachen wir,
+womit der SQL Thread der MySQL Replikation denn so seine Zeit verbringt und
+wieviel Prozent einer jeden Zeitscheibe er idle ist.&lt;/p&gt;
+&lt;p&gt;Mein SQL Thread auf der von mir zufällig herausgesuchten Maschine bringt
+etwa 20% seiner Zeit mit InnoDB Log IO zu und weitere 10-20% mit InnoDB Data
+IO.  60% sind Idle.  Montag irgendwann nach 13 Uhr hat jemand dann in Panik
+&amp;lsquo;innodb_flush_log_at_trx_commit = 2&amp;rsquo; gesetzt und damit fällt die InnoDB Log
+IO-Wartezeit komplett weg (Data IO natürlich nicht).&lt;/p&gt;
+&lt;p&gt;Wie dem auch sei, &lt;em&gt;so&lt;/em&gt; sieht der Graph einer überlasteten Hierarchie
+nicht aus.  Wir haben möglicherweise ein Problem auf einigen Servern der
+Hierarchie, aber definitiv nicht auf diesem.  Damit ist aber auch klar, daß
+das Problem nicht vom Master her kommen kann.  Gute Nachrichten!&lt;/p&gt;
+&lt;p&gt;Weiteres Nachbohren ergibt eine Liste von betroffenen Servern.  Zwei von
+denen sind Qualitätssicherungssysteme, die haben keinen Speicher und
+interessieren mich nicht.  Eines ist eine potentielle Produktionskiste, die
+derzeit aber vor sich hin idled.  Die hat Speicher, und ist trotzdem
+langsam.&lt;/p&gt;
+&lt;p&gt;Seit wann?  Ich schnappe mir den Replication Delay Graph und zoome einmal
+raus.  Das Problem besteht seit dem 20-Sep nachmittags, sagt der Graph.&lt;/p&gt;
+&lt;p&gt;Also zoome ich mich durch alle Graphen dieser Kiste für den 20-Sep und
+schaue einmal was mir da noch entgegen kommt.&lt;/p&gt;
+&lt;p&gt;![Graph: Betroffener Rechner]({{ site.base_url }}/uploads/replication-delay2.png)&lt;/p&gt;
+&lt;p&gt;Krankheitsbild: Akute und lebensbedrohliche DML-Schwäche seit Mitte des
+20-Sep.&lt;/p&gt;
+&lt;p&gt;Es ist offensichtlich, daß der Eimer ein Problem hat: Irgendwann am 20-Sep
+Nachmittags ist der von  150/250/50 I/U/D auf infinitesimal kleine Werte
+runter, und zwar nicht ruckartig wie bei einer Konfigurationsänderung,
+sondern in einer Entladungskurve, als ob sich irgendetwas zu zieht.
+Irgendwann am 21-Sep ist es der kranken Box dann noch mal ruckartig besser
+gegangen und wieder zieht sie sich dann bis zum Stillstand zu.&lt;/p&gt;
+&lt;p&gt;Das ist doch schon mal ein guter Hinweis: Erstens suchen wir fast sicher
+nicht nach einem direkten Config Change und zweitens sehen wir an dem Spike
+dahinter, daß Recovery möglich ist.&lt;/p&gt;
+&lt;p&gt;Wir suchen nicht nach einem direkten Config Change, und das ist gut so, denn
+es hat in letzter Zeit auch keine solchen gegeben:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;root&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dba&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;master&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;01&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dba&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;v_global_variables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;v_global_variables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;day&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;new&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;old&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;now&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;month&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-------------+----------------------------+--------------+--------------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;report_date&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_variable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;            &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;config_value&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-------------+----------------------------+--------------+--------------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2012&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;04&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;thread_cache_size&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;100&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;500&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2012&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;05&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_max_dirty_pages_pct&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;           &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;75&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;           &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-------------+----------------------------+--------------+--------------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;82&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Weiteres Wühlen im Graphite bringt Erleuchtung, denn wir finden das Inverse
+des Activity Patterns hier:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay3.png&#34; alt=&#34;Graph: InnoDB Undo Log Length&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Die Causa: Der InnoDB Purge Thread hat seine Arbeit Mitte des 20-Sep
+eingestellt, zuckt noch einmal kurz und idled dann lustig weiter.  Sollte
+&lt;a href=&#34;https://blog.koehntopp.info/2011/04/28/mysql-undo-log.html&#34;&gt;Captain Undo Log&lt;/a&gt;
+
+
+wieder unterwegs sein und mit dem Baseballschläger ausgeloggt
+werden wollen?&lt;/p&gt;
+&lt;p&gt;Eine kurze Inspektion der Prozeßliste zeigt nur zwei andere
+Kandidatenprozesse, einer ist ein root-User und einer ist ein cacti-Login.
+Mein Geld wette ich auf den root-user, ein kurzes Rumfragen auf dem Jabber
+und danach ein KILL auf die Connection-ID von dem Gesellen wird mir zeigen,
+ob ich Recht habe oder nicht: Wer nicht im Live-Channel auf dem Jabber ist
+wird sich schon melden, wenn ihm die Verbindungen wegfliegen.&lt;/p&gt;
+&lt;p&gt;Der Effekt ist&amp;hellip;  Null.&lt;/p&gt;
+&lt;p&gt;Also gut.  Dann kriegt halt der Cacti auf&amp;rsquo;s Maul, weil ich grad schlechte
+Laune habe.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay4.png&#34; alt=&#34;Graph: QPS &amp;amp;amp; Undo Log Size&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Nach Zufuhr einer passenden Dosis Laxativ (DBA KILL forte N) spontane
+Erholung, aber nach kurzer Linderung ein Wiedereinsetzen der Symptomatik.&lt;/p&gt;
+&lt;p&gt;Herzallerliebst.  Wir haben das Gegenteil eines Stehaufmännchens - ein
+Fallumchen.  Immer wenn der Cacti User eine Kelle kriegt, fällt das Undo Log
+wunschgemäß in sich zusammen und die Performance geht rauf.  Danach zieht es
+sich in kürzester Zeit wieder zu und wir fallen auf das alte Niveau runter.&lt;/p&gt;
+&lt;p&gt;Der alte Trick mit der Processlist klappt auch hier wieder: Das Login kommt
+von&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;performance_schema | ```
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Moment.  performance_schema?  Cacti?
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Nein.  Das ist nicht cacti.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;```console lsof -i -n -P | grep 44467 mysqld 17242 mysql 178u
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;IPv6 &lt;span class=&#34;m&#34;&gt;3599986352&lt;/span&gt; TCP
+&lt;span class=&#34;go&#34;&gt;...:3306-&amp;gt;...:44467 (ESTABLISHED) diamond 18596 root 1u IPv4 3599986351 TCP
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...:44467-&amp;gt;10.147.206.122:3306 (ESTABLISHED) ```
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Ja.  Das ist diamond, der Datenkollektor für Graphite.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Und welches Modul von Diamond/Graphite ist am 20-Sep nachmittags global
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;ausgerollt worden?
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;```console cd /etc/graphite/collectors ls -l MySQL*conf
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;-r-------- 1 root root 471 Sep 20 14:19 MySQLPerfCollector.conf 
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Der Replication Load Monitor.  Ja, der da ganz oben im ersten Bild.&lt;/p&gt;
+&lt;p&gt;Der liest zwar nur, aber aus irgendeinem Grund macht er das auf einigen
+Promille aller Boxen, und nur in dieser Replikationshierarchie!, in einer
+REPEATABLE READ read-only Transaction.  Und die macht Diamond beim Login
+einmal auf und hält sie dann für immer und ewig, es sei denn, die
+Diamond-MySQL-Verbindung kippt, aus welchen Gründen auch immer, um.  Und da
+die Verbindung auch nie Idle ist, timed sie auch nie aus.&lt;/p&gt;
+&lt;p&gt;Kurze Zeit nachdem Puppet dem Diamond die &lt;code&gt;MySQLPerfCollector.conf&lt;/code&gt; auf
+&lt;code&gt;enabled = false&lt;/code&gt; gesetzt hat haben wir eine dauerhafte Recovery:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay5.png&#34; alt=&#34;Graph: Replication Delay&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Natürliche Recovery nach Beseitigung der Ursache, ganz ohne KILL.&lt;/p&gt;
+&lt;p&gt;Wir lernen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Monitoring kann Performance-Effekte haben.  Okay,
+&lt;a href=&#34;http://blog.wl0.org/2012/09/checking-procnuma_maps-can-be-dangerous-for-mysql-client-connections/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;keine neue Erkenntnis&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;So ein Undo-Log und langlaufende Transaktionen können einen ganz schön runter ziehen.  Okay,
+auch keine neue Erkenntnis.&lt;/li&gt;
+&lt;li&gt;Es lag nicht an der Replikationslast, und auch nicht am Filer, auch wenn das gerade Mode ist,
+in diese Richtung zu blamen.&lt;/li&gt;
+&lt;li&gt;Und Graphite ist meine Hündin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication-delay6.jpg&#34; alt=&#34;House: Everybody lies&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Was House sagt.&lt;/p&gt;
+&lt;p&gt;Morgen schauen wir dem &lt;code&gt;MySQLPerfCollector.py&lt;/code&gt; mal tiefer in die Eingeweide.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>MySQL vs. Gigabit Network</title>
+      <link>https://blog.koehntopp.info/2012/08/22/mysql-vs-gigabit-network.html</link>
+      <pubDate>Wed, 22 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/08/22/mysql-vs-gigabit-network.html</guid>
+      <description>&lt;p&gt;Wir generieren eine neue Art von
+&lt;a href=&#34;https://blog.koehntopp.info/2012/08/15/materialized-view.html&#34;&gt;Materialized View&lt;/a&gt;
+
+
+mit dem bekannten Generator-Setup:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/queue.png&#34; alt=&#34;Materialized View Generator&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Das neue Setup unterscheidet sich in der Logik von denen, die wir bisher
+verwendet haben, und so kommt es beim Testlauf zu einem ungewöhnlichen und
+unerwarteten Ereignis:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication5-network.png&#34; alt=&#34;Network: Bytes/second&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Um 14:30: Ein Gigabit-Netzwerk mit 125 MB/sec ausgelastet.&lt;/p&gt;
+&lt;p&gt;Bei einem Probelauf gehen die Alarme los, weil der Gigabit-Netzwerkstrang
+zur Datenbank mit 125 MB/sec (Ein Gigabit/sec) vollständig ausgelastet ist.
+Wie man sehen kann, ist die Datenbank zu diesem Zeitpunkt nicht besonders
+beschäftigt:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication4-statement.png&#34; alt=&#34;MySQL: Queries/s&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Um 14:30: Keine auffällig hohe Anzahl von Queries/s.&lt;/p&gt;
+&lt;p&gt;Auch auf dem Binlog ist nichts besonderes zu sehen:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication3-binlog.png&#34; alt=&#34;Binlog: Bytes/s&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Keinerlei Ausschläge bei der Binlog-Größe - Replikation ist ja sonst immer
+wieder gerne genommen, um ein Netzwerksegment vollständig zu füllen.&lt;/p&gt;
+&lt;p&gt;Und auch der lokale Change auf der Datenbank hält sich in extrem
+überschaubaren Grenzen:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication2-checkpoint.png&#34; alt=&#34;MySQL: InnoDB Checkpoint Age&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Maximal 400 MB aktives Redo-Log auf einer Maschine mit 50GB oder 100GB
+Buffer Pool sind verschwindend gering.&lt;/p&gt;
+&lt;p&gt;Wie man sehen kann, ist das Redo-Log der Datenbank zum Zeitpunkt des
+Vorfalls weit unter 400 MB groß.  Auf einer Datenbank mit einem Buffer Pool
+von 50-100 GB bedeutet das einen verschwindend geringen Anteil von noch
+nicht zurückgeschriebenen Änderungen.&lt;/p&gt;
+&lt;p&gt;Auch die CPU der Maschine ist unauffällig - ein Multicore-Server mit einer
+Auslastung um die 100% (ein Core Busy) ist extrem entspannt.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/replication1-cpu.png&#34; alt=&#34;System: CPU Usage&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Multicore-Server mit einer CPU-Auslastung in der Gegend von einem Core.&lt;/p&gt;
+&lt;p&gt;Was zum Teufel geht hier vor?&lt;/p&gt;
+&lt;p&gt;Das wird schnell deutlich, denn man ein paar Dinge prüft, die mit dem Test
+zu tun haben.  Die relevante Tabelle sieht so aus:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;...&amp;#39;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;G&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;           &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Engine&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;InnoDB&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Avg_row_length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;77539&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;G&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mediumint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;body&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mediumblob&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;digest&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;binary&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;last_change&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;last_check&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PRIMARY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;last_check&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;last_check&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ENGINE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;InnoDB&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DEFAULT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CHARSET&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;latin1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir haben hier also ein System, bei dem Daten materialisiert und als Blob
+mit dem Namen &amp;lsquo;body&amp;rsquo; in der Tabelle gespeichert werden.  Ist der Blob schon
+vorhanden und auf Stand, muß der Blob selber nicht geändert werden, aber es
+wird das Feld &amp;lsquo;last_check&amp;rsquo; aktualisiert.&lt;/p&gt;
+&lt;p&gt;Außerdem ist Row Based Replication konfiguriert:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;global&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;variables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;binlog_format&amp;#39;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;G&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Variable_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;binlog_format&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Value&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;ROW&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Nun verhält es sich aber mit
+&lt;a href=&#34;http://dev.mysql.com/doc/refman/5.6/en/replication-options-binary-log.html#sysvar_binlog_row_image&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RBR folgemdermaßen&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In MySQL row-based replication, each row change event contains two images,
+a “before” image whose columns are matched against when searching for the
+row to be updated, and an “after” image containing the changes.  Normally,
+MySQL logs full rows (that is, all columns) for both the before and after
+images.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Wir haben also eine Average Row Length von 77539 Bytes, und wir loggen für
+jede Änderung die komplette Row zweimal: einmal in der alten und einmal in
+der neuen Version.  Wir schreiben also im Schnitt 140 KB, wenn ein
+last_changed Feld von 4 Bytes geändert wird.&lt;/p&gt;
+&lt;p&gt;Außerdem ist:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;processlist&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;binlog dump&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;            &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;45&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------+
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir drücken diese 140 KB pro Change also an 45 unabhängige Slaves raus (das
+ist hier hauptsächlich der Tatsache geschuldet, daß das Zielsystem
+eigentlich eine leicht andere Aufgabe hat und für diese Tests, die
+eigentlich keinen meßbaren Impact hätten haben sollen, zweckentfremdet
+wurde).&lt;/p&gt;
+&lt;p&gt;Das Problem ist in MySQL 5.6 gelöst, wo man mit der neu eingeführten
+Variable
+&lt;a href=&#34;http://dev.mysql.com/doc/refman/5.6/en/replication-options-binary-log.html#sysvar_binlog_row_image&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;binlog-row-image&lt;/a&gt;
+
+
+und den Modi &amp;lsquo;noblob&amp;rsquo; und &amp;lsquo;minimal&amp;rsquo; auf die Übertragung der ungeänderten
+Blobs verzichten kann.&lt;/p&gt;
+&lt;p&gt;In MySQL 5.5 löst man das Problem mit einer künstlichen 1:1- oder
+1:0-Relation, die die Blobs in einer gesonderten Tabelle speichert und so
+isoliert.&lt;/p&gt;
+&lt;p&gt;In normalen Umständen, also ohne Blob oder Text-Typen, sind RBR-Logfiles
+zwischen 50% und 66% kleiner als SBR (Statement Based Replication)-Logfiles.
+Nur bei extrem breiten Rows explodiert dies.&lt;/p&gt;
+&lt;p&gt;Man beachte, daß der Master diese Last auf der linken Backe absitzt.  Er
+zeigt tatsächlich auch nicht mal meßbar Disk-I/O, weil er seine Slaves aus
+dem File System Buffer Cache bedient.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>MySQL hakt...</title>
+      <link>https://blog.koehntopp.info/2012/08/21/mysql-hakt.html</link>
+      <pubDate>Tue, 21 Aug 2012 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2012/08/21/mysql-hakt.html</guid>
+      <description>&lt;p&gt;&amp;ldquo;Hey, Kris!  Wir haben zwischen 16:20 und 17:20 CEST einen Lasttest
+durchgeführt und kurz vor 17:00 Uhr einen unerklärlichen Spike und einen
+Leistungsabfall festgestellt.  Kannst Du mal gucken?&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Klar kann ich.  Wo ich arbeite machen wir etwas, das wir
+&lt;a href=&#34;https://blog.koehntopp.info/2011/12/02/testing-in-production.html&#34;&gt;Testing in Production&lt;/a&gt;
+
+
+nennen.&lt;/p&gt;
+&lt;p&gt;Für Lasttests bedeutet das, daß wir einzelne Systeme im Loadbalancer so
+lange relativ höher gewichten bis sie Probleme bekommen und umfallen.  Zur
+Kontrolle legen wir mit Apache Siege eine Reihe von Sensor-Requests in das
+zu testende System, nicht zur Lastgenerierung, sondern um zu sehen, wann die
+Latenz nach oben geht, also um Sättigung des zu testenden Systems zu
+bemerken bevor es Fehler zu generieren beginnt.&lt;/p&gt;
+&lt;p&gt;Wenn wir nahe an den Sättigungspunkt gelangen, erhöhen wir die Last in sehr
+winzigen Schritten, bis wir tatsächlich Systemversagen zu beobachten
+beginnen und können so nicht nur die Lastgrenze, sondern auch die Symptome
+beim Systemversterben genau und unter realistischen Bedingungen ermitteln.
+Das macht die Arbeit im Operations Team sehr viel einfacher.&lt;/p&gt;
+&lt;p&gt;Wenn ein System aber Probleme hat und dann bei statischer Load zurück kommt,
+liegt eine andere Situation vor.  Es ist wichtig herauszufinden, was genau
+hier passiert.&lt;/p&gt;
+&lt;p&gt;Hier die Metriken:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mysql-problem1-replication-delay.png&#34; alt=&#34;MySQL: Replication Delay&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Replication Delay legt das Krisenfenster in die Zeit zwischen 16:53 (Delay
+Spike) und 17:00 (Recovery).&lt;/p&gt;
+&lt;p&gt;Zur selben Zeit auch ein Disk Read Spike.  Read Spikes sind ungewöhnlich,
+weil das betreffende System so dimensioniert ist, daß es seinen Working Set
+praktisch vollständig im Hauptspeicher halten kann:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mysql-problem2-disk-read-spike.png&#34; alt=&#34;System: Disk I/O Operations&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Das fragliche System soll operativ für alle praktischen Zwecke gar nicht von
+der Platte lesen.&lt;/p&gt;
+&lt;p&gt;Wir können nun nach weiteren Quellen für ungewöhnliches Verhalten suchen:
+CPU und Connections gehen von 16:52 bis 17:00 hoch, aber es gibt keine Row
+Acces Spikes, keine Spikes bei Tmp-Tables-to-disk und auch keine Spikes bei
+Sortiervorgängen, insbesondere Merge Sorts.&lt;/p&gt;
+&lt;p&gt;Der InnoDB Buffer Pool Graph hat am Ende den entscheidenden Hinweis:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/mysql-problem3-buffer-pool-drop.png&#34; alt=&#34;MySQL: InnoDB Buffer Pool Usage&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;16:52 - InnoDB Buffer Pool &lt;em&gt;verkleinert&lt;/em&gt; sich.&lt;/p&gt;
+&lt;p&gt;Um 16:52 verkleinert sich der InnoDB Buffer Pool.  Das tritt im Normalfall
+nur dann auf, wenn Speicherseiten im Pool freigegeben werden, und das
+wiederum kann nur dann geschehen, wenn eine Tabelle mit TRUNCATE TABLE
+zurückgesetzt oder mit DROP TABLE gelöscht wird.&lt;/p&gt;
+&lt;p&gt;Wir müssen also schauen, ob es in der Zeit von 16:50 bis 16:53
+DDL-Statements gegeben haben, die Tabellen kürzen oder löschen.  Auf allen
+unseren Systemen läuft zu diesem Zweck
+&lt;a href=&#34;http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;log_processlist&lt;/a&gt;
+
+
+das eine Reihe interessanter Dinge aus der Datenbank für post-mortem
+Analysen lokal aufzeichnet und für bis zu eine Woche vorhält.&lt;/p&gt;
+&lt;p&gt;Tatsächlich findet sich:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;less 16_52.innodb.gz
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;SQL: SELECT * FROM INFORMATION_SCHEMA.INNODB_TRX
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;910556099       RUNNING 2012-08-08 16:51:59     
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  NULL    NULL    0       2       
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  TRUNCATE TABLE tmp_gethoteldescriptiontranslations
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  truncating table        1       1       0       376
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  0       0       0       
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  REPEATABLE READ 1       1       
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  NULL    0       10000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Der Pileup entsteht durch eine Folge von DDL-Locks, die durch ein
+Wartungsscript erzeugt werden.  Das Script lädt eine neue Tabelle in die
+Datenbank, tauscht die aktive Tabelle mit der neuen Tabelle aus und setzt
+die alte Tabelle dann zurück bevor es sie löscht.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.mysqlperformanceblog.com/2012/06/22/drop-table-and-stalls-lazy-drop-table-in-percona-server-and-the-new-fixes-in-mysql/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Background Table Drop&lt;/a&gt;
+
+
+würde hier helfen, aber die fragliche Kiste ist wie ihre Geschwister noch
+5.5.16 und nicht 5.5.23.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+
