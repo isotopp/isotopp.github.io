@@ -6,7 +6,272 @@
     <description>Recent content in replication on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Oct 2012 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/replication/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 08 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/replication/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Parallel Replication</title>
+      <link>https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html</link>
+      <pubDate>Mon, 08 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html</guid>
+      <description>&lt;p&gt;At work, &lt;a href=&#34;https://blog.koehntopp.info/2020/11/27/backups-and-replication.html&#34;&gt;replication&lt;/a&gt;
+
+ is a central feature in our MySQL Standard Architecture.&lt;/p&gt;
+&lt;p&gt;But until MySQL 5.6, replication was strictly sequential:
+Even if transactions happened in parallel on a primary, they would be downloaded to the replica by the IO_THREAD into the relay log.
+From there, a single SQL_THREAD would apply them, one after the other in strict binlog order.
+That can lead to Replication Delay.&lt;/p&gt;
+&lt;p&gt;We had a monitor for that, &lt;a href=&#34;https://blog.koehntopp.info/2012/09/28/mysql-replication-load-monitor.html&#34;&gt;courtesy of Dennis Kaarsemaker&lt;/a&gt;
+
+.
+That code looked at the time consumption in the SQL_THREAD, and counted the percentage of idle time over time, visualizing it in Graphite or Grafana.&lt;/p&gt;
+&lt;p&gt;This was the amount of runway we had.
+If the write-load to a specific replication hierarchy threatened to overwhelm a hierarchy, it was a candidate for a schema split.&lt;/p&gt;
+&lt;h1 id=&#34;execution-model&#34;&gt;
+    &lt;a href=&#34;#execution-model&#34;&gt;
+	Execution Model
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;About a decade ago, MySQL as a company started to work on that problem.
+The execution part of that is easy, and roughly looks like this:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/parallel-replication.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;As before, the IO_THREAD logs into the primary and downloads the binlog, then saves it to the local disk of the replica.
+This is called the relay log.&lt;/p&gt;
+&lt;p&gt;Unlike before, the single SQL_THREAD is replaced with a coordinator thread which picks up the relay log for consumption.
+It then schedules work to a number of worker threads.
+These apply the binlog to local tables in parallel.&lt;/p&gt;
+&lt;p&gt;The complicated part is to find what can be executed in parallel.
+This happens in the Primary, which will mark up the binlog for parallel execution on the replicas.&lt;/p&gt;
+&lt;h1 id=&#34;splitting-the-work-by-schema&#34;&gt;
+    &lt;a href=&#34;#splitting-the-work-by-schema&#34;&gt;
+	Splitting the work by schema
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The low-hanging fruit is splitting work by schema.
+We assume there are different schemata &lt;code&gt;a&lt;/code&gt;, &lt;code&gt;b&lt;/code&gt;, &lt;code&gt;c&lt;/code&gt;, &lt;code&gt;d&lt;/code&gt; on the Primary, and they are isolated from each other by permissions, in such way that write transactions are guaranteed to modify data only in exactly one schema.&lt;/p&gt;
+&lt;p&gt;It would allow two different write operations to different schemas on the primary to be applied in parallel, independent worker threads on the replica.&lt;/p&gt;
+&lt;p&gt;This was &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/replication-options-replica.html#sysvar_replica_parallel_type&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;replica-parallel-type=DATABASE&lt;/code&gt;&lt;/a&gt;
+
+, and while it is enormously useful with webhosters, the use-case did not fit our environment.&lt;/p&gt;
+&lt;p&gt;Newer versions of MySQL got replica-parallel-type=LOGICAL_CLOCK, which can handle parallel execution of compatible statements within a single schema.&lt;/p&gt;
+&lt;h1 id=&#34;splitting-the-work-with-logical_clocks&#34;&gt;
+    &lt;a href=&#34;#splitting-the-work-with-logical_clocks&#34;&gt;
+	Splitting the work with LOGICAL_CLOCKS
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Originally, MySQL would assign each transaction in the binlog a number, starting with 1 for each binlog, the &lt;code&gt;sequence_number&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;All transactions that were executed concurrently obviously were legal to execute in parallel, because they just did on the primary.
+MySQL would choose a sequence number from that group and assign it to all of these concurrently executed transactions, the commit group number.&lt;/p&gt;
+&lt;p&gt;On the replica, transactions with the same commit group number could be executed in parallel, because they did successfully do that on the primary.&lt;/p&gt;
+&lt;p&gt;While simple and fast, this method has a number of drawbacks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The degree of parallelism is variable, and workload dependent.
+On a mostly idle primary, few transactions would be marked up as &amp;ldquo;able to run in parallel&amp;rdquo;, because they would not run in parallel on an idle machine.
+While that would not be a disadvantage per se (low load on the primary also means low load on the replicas), it makes it really hard to calculate the runway that you still have on your replication hierarchy.&lt;/li&gt;
+&lt;li&gt;On an intermediate primary in a multilevel replication hierarchy, the degree of parallelism cannot go up, but can go down when things that happened concurrently in the primary did not in the intermediate.
+Execution times and parallelism in the leaf replicas would degrade.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Crude hacks were invented to improve the situation with regard to the first problem:
+We could artificially delay commit on the primary using a config variable, and hope for other transactions to accumulate in the time window.
+From their locking interaction we would see if they were good to be executed in parallel, and hopefully get larger parallel execution batches.&lt;/p&gt;
+&lt;p&gt;Thus, we would slow down the primary in order to speed up the replicas.&lt;/p&gt;
+&lt;h1 id=&#34;logical-clocks-with-dependency-trees&#34;&gt;
+    &lt;a href=&#34;#logical-clocks-with-dependency-trees&#34;&gt;
+	Logical Clocks with Dependency Trees
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;More modern logical clocks still number transactions in the binlog with a consecutive &lt;code&gt;sequence_number&lt;/code&gt; or &lt;code&gt;sn&lt;/code&gt;.
+They will also assign a second number, the sequence number of an earlier transaction, &lt;code&gt;last_committed&lt;/code&gt; or &lt;code&gt;lc&lt;/code&gt;,  which is the most recent earlier transaction in this binary log that might be conflicting (at least that is what the server that generated the binary log assumed).&lt;/p&gt;
+&lt;p&gt;So given a binary log that looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;T1: sn=5 lc=4
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;T2: sn=6 lc=5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;T3: sn=7 lc=5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;T4: sn=8 lc=6
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;T5: sn=9 lc=4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;we have:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;T2&lt;/code&gt; (&lt;code&gt;sn=6&lt;/code&gt;) depending on &lt;code&gt;T1&lt;/code&gt; (&lt;code&gt;T1&lt;/code&gt; has &lt;code&gt;sn=5&lt;/code&gt;, and &lt;code&gt;T2&lt;/code&gt;&amp;rsquo;s &lt;code&gt;lc&lt;/code&gt; is 5),&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;T3&lt;/code&gt; also depending on &lt;code&gt;T1&lt;/code&gt;,&lt;/li&gt;
+&lt;li&gt;and &lt;code&gt;T4&lt;/code&gt; depending on &lt;code&gt;T2&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;T6&lt;/code&gt; is much later in the log, but is dependent &lt;code&gt;lc=4&lt;/code&gt;, just like &lt;code&gt;T1&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The scheduler can schedule &lt;code&gt;T1&lt;/code&gt;, then must wait for &lt;code&gt;T1&lt;/code&gt; to commit.
+After that, it schedules &lt;code&gt;T2&lt;/code&gt; and &lt;code&gt;T3&lt;/code&gt; in parallel, because they do not conflict.
+&lt;code&gt;T4&lt;/code&gt; must wait for &lt;code&gt;T2&lt;/code&gt; to complete before it can run.&lt;/p&gt;
+&lt;p&gt;The transaction &lt;code&gt;T5&lt;/code&gt; can in theory be scheduled in parallel already with &lt;code&gt;T1&lt;/code&gt;, but due to a limitation of the scheduler can&amp;rsquo;t: The scheduler does not look ahead - any dependency boundary will act as a block. Thus, &lt;code&gt;T2&lt;/code&gt; and &lt;code&gt;T4&lt;/code&gt; are barriers that require everything before them to commit before the scheduler can proceed.&lt;/p&gt;
+&lt;h2 id=&#34;splitting-the-work-with-commit_order&#34;&gt;
+    &lt;a href=&#34;#splitting-the-work-with-commit_order&#34;&gt;
+	Splitting the work with COMMIT_ORDER
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;To generate such a dependency tree, for each transaction we look at the end of the transaction, the time interval after the last statement and before the commit.
+At this point in time all locks the transaction can have taken actually are taken, and they are being released at the end of the commit.&lt;/p&gt;
+&lt;p&gt;Two transactions are non-conflicting (can be run in parallel), when their time windows with all locks being taken do actually overlap - if they had overlapping, conflicting locks, that would not be possible.&lt;/p&gt;
+&lt;p&gt;These transactions are assigned the same &lt;code&gt;lc&lt;/code&gt; number.&lt;/p&gt;
+&lt;p&gt;Again, this is a short time window and the degree of parallelism is suboptimal, but at least it always works.&lt;/p&gt;
+&lt;h2 id=&#34;splitting-the-work-with-writeset&#34;&gt;
+    &lt;a href=&#34;#splitting-the-work-with-writeset&#34;&gt;
+	Splitting the work with WRITESET
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The introduction of Group Replication required the definition of Write Sets, the sets of primary keys that make up a transaction.
+They can also be used to improve parallel replication markup of the binlog:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;Two transactions with non-overlapping primary key sets can be executed in parallel.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Wait, what?
+That is actually wrong, in more than one way, but it is a useful simplification for many cases.&lt;/p&gt;
+&lt;p&gt;Two transactions are actually capable of running in parallel if their &lt;strong&gt;lock sets&lt;/strong&gt; are compatible and non-overlapping.&lt;/p&gt;
+&lt;p&gt;In a transaction, each primary key of any row that we write to gets an X-lock, and thus these two things (primary key set and lock set) are almost, but not quite the same.&lt;/p&gt;
+&lt;p&gt;When are they not the same?&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;We may theoretically have tables without a primary key.
+That&amp;rsquo;s bad, and basically while we can lock rows, we can still have two identical rows, one locked and not.
+We cannot handle WRITESET things for tables without primary keys (but any sensible DBA will require your tables to always have a primary key defined anyway, so that should never be an issue).&lt;/li&gt;
+&lt;li&gt;We may have tables with foreign key constraints, and the foreign key constraints may generate S-locks on REFERENCED rows.
+These locks in other tables may prevent other writes from proceeding.
+We cannot handle WRITESET things in the presence of foreign key constraint definitions.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;So:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;with Write Sets, we can create maximally parallel dependency trees for a large number of cases, and&lt;/li&gt;
+&lt;li&gt;with COMMIT_ORDER, we have a fallback plan when we can&amp;rsquo;t.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;how-parallel-is-our-workload&#34;&gt;
+    &lt;a href=&#34;#how-parallel-is-our-workload&#34;&gt;
+	How parallel is our workload?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Let&amp;rsquo;s write a bit of code to find that out.
+You can follow along &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-binlog-parallel/mysql-binlog-parallel.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Using the &lt;code&gt;mysqlbinlog&lt;/code&gt; program, we can read a MySQL binlog and extract the &lt;code&gt;lc&lt;/code&gt;/&lt;code&gt;sn&lt;/code&gt; pairs.
+The following &lt;code&gt;mysqlbinlog | grep&lt;/code&gt; will produce lines that look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;mysqlbinlog -vvv binlog.654321 &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;last_committed=&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; head -3
+&lt;span class=&#34;go&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;211102&lt;/span&gt;  8:44:24 server id &lt;span class=&#34;m&#34;&gt;210015197&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;475&lt;/span&gt; CRC32 0x61436ace 	
+&lt;span class=&#34;go&#34;&gt;    GTID	last_committed=0	sequence_number=1	rbr_only=yes
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 	original_committed_timestamp=1635839064507445
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 	immediate_commit_timestamp=1635839064507445	transaction_length=501
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;211102&lt;/span&gt;  8:44:24 server id &lt;span class=&#34;m&#34;&gt;210015197&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;976&lt;/span&gt; CRC32 0xb28c4330 	
+&lt;span class=&#34;go&#34;&gt;    GTID	last_committed=1	sequence_number=2	rbr_only=yes
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    original_committed_timestamp=1635839064507452	
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    immediate_commit_timestamp=1635839064507452	transaction_length=501
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;211102&lt;/span&gt;  8:44:24 server id &lt;span class=&#34;m&#34;&gt;210015197&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1477&lt;/span&gt; CRC32 0xca77099e
+&lt;span class=&#34;go&#34;&gt;    GTID	last_committed=2	sequence_number=3	rbr_only=yes
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    original_committed_timestamp=1635839064507455
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    immediate_commit_timestamp=1635839064507455	transaction_length=505
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Our code will need to grab the &lt;code&gt;lc&lt;/code&gt;/&lt;code&gt;sn&lt;/code&gt; pairs and store them into value objects of the Transaction type we create.
+We then add the transactions to the commit scheduler:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;line&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stdin&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;readline&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;re&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;search&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pattern&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;line&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;lc&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;group&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sn&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;group&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Transaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sched&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Adding a transaction with &lt;code&gt;sched.add(t)&lt;/code&gt; checks if the transaction is blocked by a still open conflicting transaction.
+If that is the case, it first forces the open transactions to be committed, before it adds the new transaction to the (now empty) list of open transactions.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Transaction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;wait_for&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lc&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;get&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;wait_for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;None&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;is&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;None&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;blocker&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+            &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;=}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; is blocked by &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;blocker&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;=}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;adding &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;=}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&amp;ldquo;Committing&amp;rdquo; is simple: We just clear the list.
+Before we do that, we collect a number of statistics.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+    &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;count&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+    &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hist&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;debug&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;incremental&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Commit: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;=}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;=}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; Avg=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;avg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;open&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Doing that, each time there is a conflict we collect the length of the list of parallel transactions, for a global average and also in a histogram.
+If incremental is on, we emit a running update with the current degree of parallelism.&lt;/p&gt;
+&lt;h2 id=&#34;actual-data&#34;&gt;
+    &lt;a href=&#34;#actual-data&#34;&gt;
+	Actual data
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We have some very low traffic hierarchies such as data archives, that have an extremely low degree of parallelism - mostly because they are idle most of the time.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mysqlbinlog -vvv binlog.000058 &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;last_committed=&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ./binlog.py
+&lt;span class=&#34;go&#34;&gt;1: 631546
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2: 481
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;3: 552
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;4: 300
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;5: 222
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;6: 423
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;7: 381
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;8: 184
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;9: 31
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;10: 13
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;11: 18
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;12: 9
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;13: 4
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;14: 1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;15: 3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;16: 3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Avg = 1.0155383957954558
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Max = 16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output is a histogram, so for this binlog, we had 3 instances where the open queue was 16 deep, and so on.
+On the average, degree of parallelism was 1.02, and the maximum was 16.&lt;/p&gt;
+&lt;p&gt;Others, showing a more normal workload, look a bit better:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mysqlbinlog -vvv binlog.000165 &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;last_committed=&amp;#34;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ./binlog.py
+&lt;span class=&#34;go&#34;&gt;1: 78255
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;2: 69955
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;3: 46694
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;4: 30747
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;5: 21162
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;6: 15942
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;7: 12431
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;8: 9465
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;9: 7580
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;10: 6059
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;11: 4984
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;12: 4155
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;13: 3583
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;14: 3018
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;15: 2565
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;16: 2218
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;17: 1960
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;18: 1635
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;19: 1406
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;20: 1196
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;62: 1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Avg = 4.569389646418146
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Max = 62
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here we end up with an average degree of parallelism of 4.6, and a maximum of 62.&lt;/p&gt;
+&lt;p&gt;For an internal control plane state storage, we get ~2.&lt;/p&gt;
+&lt;p&gt;And for our legacy central database, we get a whopping 18.
+That makes a lot of sense if you think about it - this is a shared database with a number of independent sets of tables that will never block each other.
+That&amp;rsquo;s why we are able to split it into individual smaller databases in the first place, which is what currently happens.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL has made great progress in being able to run parallel replication, and the work on Write Sets for Group Replication has helped tremendously with that.&lt;/p&gt;
+&lt;p&gt;Still, the degree of exploitable parallelism is workload dependent and varies a lot (20x!), depending on replication chain and also, unfortunately, time of day and month.&lt;/p&gt;
+&lt;p&gt;There are legit use-cases that have very extremely low degrees of exploitable parallelism, and any SLO on replication performance always must be made with the assumption of a &amp;ldquo;degree of parallelism=1&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;If, and how much parallelism there is, is entirely dependent on the database owner and the workload they have.
+It cannot be controlled by the database operators.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL 5.6.7-RC: GTID vs. MyISAM</title>
       <link>https://blog.koehntopp.info/2012/10/02/mysql-5-6-7-rc-gtid-vs-myisam.html</link>
