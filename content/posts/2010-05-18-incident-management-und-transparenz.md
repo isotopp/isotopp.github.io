@@ -4,7 +4,6 @@ date: "2010-05-18T11:14:06Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- itil
 - privacy
 - security
 - wlan

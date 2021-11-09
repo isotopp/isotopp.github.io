@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - lang_de
-- urheberrecht
+- copyright
 - internet
 title: Meister der Enteignung
 ---

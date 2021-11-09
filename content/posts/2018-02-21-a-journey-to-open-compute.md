@@ -9,7 +9,6 @@ tags:
 - energy
 - erklaerbaer
 - talk
-- open compute
 - lang_en
 title: A Journey to Open Compute
 ---

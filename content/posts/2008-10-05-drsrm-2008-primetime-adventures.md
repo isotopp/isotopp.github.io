@@ -6,7 +6,6 @@ published: true
 tags:
 - drsrm
 - roleplay
-- shadowrun
 - lang_de
 title: 'drsrm 2008: Primetime Adventures'
 ---

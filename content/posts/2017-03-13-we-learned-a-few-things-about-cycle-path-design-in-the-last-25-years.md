@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 status: publish
 tags:
-- post car society
+- mobility
 - lang_en
 title: We learned a few things about Cycle Path design in the last 25 years
 ---

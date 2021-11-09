@@ -5,6 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
 - bildung
+- schnuppel
 - politik
 title: Schulen digitalisieren
 ---

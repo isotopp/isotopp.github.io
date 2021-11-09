@@ -6,7 +6,7 @@ published: true
 tags:
 - computer
 - damals
-- network
+- networking
 - lang_de
 title: Yellow Cable
 ---

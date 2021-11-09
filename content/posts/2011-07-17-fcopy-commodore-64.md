@@ -5,7 +5,6 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - damals
-- linkdump
 - commodore
 - lang_de
 title: FCopy (Commodore 64)

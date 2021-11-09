@@ -5,8 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 status: publish
 tags:
-- post car society
-- europa
+- mobility
 - lang_en
 title: 'On Normalcy: The rest times of truck drivers in Europe'
 ---

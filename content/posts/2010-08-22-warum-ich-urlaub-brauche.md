@@ -5,10 +5,10 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - computer
-- urlaub
 - lang_de
 title: Warum ich Urlaub brauche
 ---
+
 Meine Firma verwendet SAP. Zum Glück habe ich damit nicht viel zu tun, außer
 um meine Beurteilungen abzusegnen und Urlaub zu beantragen. Das heißt, ich
 verwende SAP maximal 3 mal im Jahr. Bis vor kurzem hatte unser SAP keine

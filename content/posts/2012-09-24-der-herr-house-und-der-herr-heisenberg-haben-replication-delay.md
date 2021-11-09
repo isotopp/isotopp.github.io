@@ -5,8 +5,8 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - database
-- debug
 - monitoring
+- replication
 - mysql
 - performance
 - lang_de

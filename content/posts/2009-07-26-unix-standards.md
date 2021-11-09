@@ -6,7 +6,6 @@ published: true
 tags:
 - computer
 - linux
-- solaris
 - unix
 - lang_de
 title: Unix-"Standards"

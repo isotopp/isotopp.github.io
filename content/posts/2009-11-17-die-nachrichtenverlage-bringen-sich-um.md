@@ -5,7 +5,8 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - media
-- zeitungen
+- advertising
+- copyright
 - lang_de
 title: Die Nachrichtenverlage bringen sich um
 ---

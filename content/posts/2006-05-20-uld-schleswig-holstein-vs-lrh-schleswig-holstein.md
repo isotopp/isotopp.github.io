@@ -4,7 +4,7 @@ date: "2006-05-20T12:03:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- datenschutz
+- privacy
 - politik
 - security
 - lang_de

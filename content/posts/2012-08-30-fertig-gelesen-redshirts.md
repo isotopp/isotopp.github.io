@@ -8,7 +8,6 @@ tags:
 - review
 - media
 - scifi
-- star trek
 - lang_de
 title: 'Fertig gelesen: Redshirts'
 ---

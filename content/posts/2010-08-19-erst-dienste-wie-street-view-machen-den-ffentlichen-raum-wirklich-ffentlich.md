@@ -6,7 +6,6 @@ published: true
 tags:
 - anderswo
 - google
-- street view
 - lang_de
 title: 'Erst Dienste wie Street View machen den öffentlichen Raum wirklich öffentlich '
 ---

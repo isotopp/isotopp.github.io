@@ -4,7 +4,7 @@ date: "2011-07-25T07:49:16Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- datenschutz
+- privacy
 - politik
 - lang_de
 title: Vertrauensverschiß

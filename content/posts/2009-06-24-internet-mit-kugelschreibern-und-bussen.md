@@ -6,7 +6,7 @@ published: true
 tags:
 - identity
 - internet
-- routing
+- networking
 - zensur
 - lang_de
 title: Internet mit Kugelschreibern (und Bussen)

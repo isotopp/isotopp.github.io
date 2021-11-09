@@ -5,7 +5,6 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - mysql
-- umlaut
 - lang_de
 title: 'FAQ: Mein mysqldump zerstört meine Umlaute'
 ---

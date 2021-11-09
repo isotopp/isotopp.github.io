@@ -4,8 +4,7 @@ date: "2020-09-17T19:10:36Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
-- datenschutz
-- tesla
+- privacy
 title: Mein selbstfahrendes Auto hat Kameras, oh nein!
 ---
 Bei der ARD ist man empört! [Teslas Kameras: ARD rückt Datenschutzbedenken ins Licht](https://www.heise.de/news/Teslas-Kameras-ARD-rueckt-Datenschutzbedenken-ins-Licht-4904167.html). Will sagen, jemand hat älteren Personen gesteckt, daß ein selbstfahrendes Auto wenig überraschend Kameras braucht, um bei seiner bestimmungsgemäße Verwendung weniger ältere Personen überzumöllern.

@@ -7,6 +7,7 @@ tags:
 - mysql
 - nosql
 - database
+- development
 - lang_de
 title: Ein paar Gedanken zum Thema NoSQL
 ---

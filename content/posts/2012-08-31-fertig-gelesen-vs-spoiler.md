@@ -10,12 +10,12 @@ tags:
 - spoiler
 title: Fertig gelesen vs. Spoiler.
 ---
-Aus den Kommentaren in meinem Stream herausgezogen und noch einmal, ein einziges Mal, prominent hier hereingestellt.
+Aus den Kommentaren in meinem Stream herausgezogen und noch einmal, ein einziges Mal, prominent hier herein gestellt.
 
-Ich halte es mit dem Baedecker Reiseführer, wie im "Zimmer mit Aussicht" zitiert: Man sieht nur, was man schon kennt.
+Ich halte es mit dem Baedeker Reiseführer, wie im "Zimmer mit Aussicht" zitiert: Man sieht nur, was man schon kennt.
 
 ## Spoiler sind mir egal.
 
-Vollkommen egal. Ich werde sie weder absichtlich rein tun noch irgendetwas tun, um sie zu vermeiden, markieren oder sonstwie zu identifizieren.
+Vollkommen egal. Ich werde sie weder absichtlich hier einstellen, noch irgendetwas tun, um sie zu vermeiden, markieren oder sonst wie zu identifizieren.
 
 Wem das nicht paßt, der sollte mir nicht folgen.﻿

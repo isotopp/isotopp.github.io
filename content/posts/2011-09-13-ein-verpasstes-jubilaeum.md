@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - damals
-- datenschutz
+- privacy
 - politik
 - lang_de
 title: Ein verpaßtes Jubiläum

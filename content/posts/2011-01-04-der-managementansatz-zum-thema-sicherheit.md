@@ -4,7 +4,7 @@ date: "2011-01-04T14:58:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- admin
+- devops
 - security
 - lang_de
 title: Der Managementansatz zum Thema Sicherheit...

@@ -4,7 +4,7 @@ date: "2011-04-10T21:31:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- datenschutz
+- privacy
 - google
 - internet
 - privacy

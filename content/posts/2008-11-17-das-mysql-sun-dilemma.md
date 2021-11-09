@@ -5,9 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - architektur
-- benchmark
 - mysql
-- scaleout
 - lang_de
 title: Das MySQL-Sun-Dilemma
 ---

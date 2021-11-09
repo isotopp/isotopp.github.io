@@ -7,6 +7,7 @@ tags:
 - mysql
 - postgres
 - database
+- development
 - lang_de
 title: Red vs Blue at Oracle, und ein paar Gedanken zu Postgres
 ---

@@ -6,7 +6,6 @@ published: true
 tags:
 - piraten
 - politik
-- wirtschaft
 - lang_de
 title: The pursuit of happiness
 ---

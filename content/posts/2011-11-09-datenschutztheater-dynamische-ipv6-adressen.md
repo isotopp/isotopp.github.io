@@ -4,7 +4,7 @@ date: "2011-11-09T13:18:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- datenschutz
+- privacy
 - ipv6
 - politik
 - privacy

@@ -5,7 +5,6 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - apple
-- backup
 - computer
 - macos
 - lang_de

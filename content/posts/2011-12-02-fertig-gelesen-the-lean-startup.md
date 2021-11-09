@@ -8,7 +8,6 @@ tags:
 - review
 - media
 - software
-- wirtschaft
 - lang_de
 title: 'Fertig gelesen: The Lean Startup'
 ---

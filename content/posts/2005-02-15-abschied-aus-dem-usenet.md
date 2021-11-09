@@ -5,7 +5,6 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - computer
-- dtb
 - s9y
 - usenet
 - lang_de

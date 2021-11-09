@@ -6,7 +6,6 @@ published: true
 tags:
 - computer
 - linux
-- wayland
 - lang_de
 title: X11 auf dem Weg nach draußen
 ---

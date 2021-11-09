@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 status: publish
 tags:
-- post car society
+- mobility
 - netherlands
 - lang_en
 title: The bike as a feeder system to the train system

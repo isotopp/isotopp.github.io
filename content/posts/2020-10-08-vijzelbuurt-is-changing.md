@@ -4,6 +4,7 @@ date: "2020-10-08T18:11:50Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
+- mobility
 - amsterdam
 - netherlands
 - work

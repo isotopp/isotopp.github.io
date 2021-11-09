@@ -5,6 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - blog
+- usenet
 - lang_de
 title: Wir sind so geil, ...
 ---

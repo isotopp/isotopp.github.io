@@ -4,13 +4,14 @@ date: "2006-11-01T12:37:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
-- datenschutz
+- privacy
 - identity
 - politik
 - security
 - lang_de
 title: 'AN.ON: Thilo Weichert lädt ein'
 ---
+
 ![](/uploads/datenschutz.gif) 
 
 Am 24.11.2006 findet in Berlin am BMWi die Abschlußveranstaltung des

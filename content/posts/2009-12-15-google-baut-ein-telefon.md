@@ -6,7 +6,6 @@ published: true
 tags:
 - google
 - internet
-- telefon
 - lang_de
 title: Google baut ein Telefon
 ---
