@@ -66,3 +66,20 @@ Gerade bei den Wissensarbeitern ist das so:
 
 Kann man machen. Nicht schlau. So gar nicht.
 
+**Edit:** Nachtrag.
+
+Jemand schickt mir diesen [paywalled link zur SZ](https://www.sueddeutsche.de/wirtschaft/overemployed-home-office-usa-1.5461910), von dem eh nur der Anreißer interessant ist. Der Artikel beschreibt unter dem Begriff "Overemployed" Personen, die im Homeoffice so effizient sind, daß sie zwei bezahlte Vollzeitstellen besetzen, ohne Wissen der jeweiligen Arbeitgeber.
+
+Das geht natürlich nur mit [David Graeber's Bullshit Jobs](https://en.wikipedia.org/wiki/Bullshit_Jobs), aber es ist natürlich auch ein Zeichen dafür, daß die Arbeit, die diese Personen ausführen weder produktiv, noch notwendig noch sinnstiftend ist.
+
+Ich antwortete mit
+
+> Ich kann nur den Teaser lesen, aber das ist das, was wir im Informatik-Studium Semester 2 (und 4) gemacht haben.
+> Also 3 Leute in die Inf 2 Vorlesung schicken, parallel 3 Leute in Inf 4.
+> Mit dem Rest (gut 20 Leute, Rotationssystem) die Vorlesungen von 2x 90 Minuten in 45 Minuten durchziehen, und dann in 45 Minuten die Aufgaben machen.
+> Das hat sehr, sehr böses Blut gegeben
+
+Die Antwort war:
+
+> Dafür hatten wir [bei uns] die Mitschriften AG. Etwas anderer Studienablauf bei Nicht-Informatikern.
+
