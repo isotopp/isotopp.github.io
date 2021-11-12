@@ -54,7 +54,7 @@ We learn several things from this experiment:
 
 - Literal JSON values are always simple strings.
   - The character set in JSON objects is `utf8mb4`, the collation is `utf8mb4_bin`.
-  - Because the collation is a `_bin` collation, comparison is case sensitive. Charset and collation are fixed and cannot be changed without casting to a non-JSON type.
+  - Because the collation is a `_bin` collation, comparison is case-sensitive. Charset and collation are fixed and cannot be changed without casting to a non-JSON type.
   - We enclose them in single quotes, leveraging the fact that MySQL allows both single and double quotes as string terminators. This saves us a lot of quoting.
   - JSON null is written as the string `'null'`.
   - JSON true is written as the string `'true'`.
@@ -310,7 +310,7 @@ mysql> select j->"$.user" as user,
 Empty set (0.00 sec)
 ```
 
-We notice: while this works, it is working with JSON character sets, so it is `utf8mb4` with a collation of `utf8mb4_bin`, hence case sensitive comparison.
+We notice: while this works, it is working with JSON character sets, so it is `utf8mb4` with a collation of `utf8mb4_bin`, hence case-sensitive comparison.
 
 Using `JSON_SET()` we update the `$.paid` field of that user to `false`, and run into the next problem:
 
@@ -380,7 +380,7 @@ mysql> select id, j, json_type(j) as type from t where id = 1;
 
 There is [`JSON_REMOVE()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-remove), "Removes data from a JSON document". There are also [`JSON_SET()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-set), and friends:
 
-- [`JSON_SET()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-set) replaces existing values and adds nonexisting values.
+- [`JSON_SET()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-set) replaces existing values and adds nonexistent values.
 - [`JSON_INSERT()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-insert) inserts values without replacing existing values.
 - [`JSON_REPLACE()`](https://dev.mysql.com/doc/refman/8.0/en/json-modification-functions.html#function_json-replace) replaces only existing values.
 
