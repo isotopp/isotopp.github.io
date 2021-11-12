@@ -9,11 +9,11 @@ tags:
 title: SQL Clause is coming to town
 ---
 
-[Olya Kudriavtseva has an ugly christmas sweater](https://twitter.com/roliepoly/status/1342549035211661312):
+[Olya Kudriavtseva has an ugly Christmas sweater](https://twitter.com/roliepoly/status/1342549035211661312):
 
 [![](/uploads/2020/12/sql-clause.jpg)](https://twitter.com/roliepoly/status/1342549035211661312)
 
-*"He's making a table. He's sorting it twice. SELECT * FROM contacts WHERE behavior = "nice"; SQL Clause is coming town!*  ([buy here](https://www.xonot.com/product/sql-clause-sweatshirt/))
+*He's making a table. He's sorting it twice. SELECT * FROM contacts WHERE behavior = "nice"; SQL Clause is coming town!*  ([buy here](https://www.xonot.com/product/sql-clause-sweatshirt/))
 
 [Katie Bauer observes](https://twitter.com/imightbemary/status/1342676590145105921):
 
@@ -187,7 +187,7 @@ kris@localhost [kris]> explain
 Note (Code 1003): /* select#1 */ select `kris`.`santa`.`name` AS `name` from `kris`.`santa` where (`kris`.`santa`.`behavior` = 'nice') order by `kris`.`santa`.`name`
 ```
 
-In the `Code 1003 Note` we still see the exact same reconstituted query, but as can be seen in the plan annotastions, the internal handling changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.
+In the `Code 1003 Note` we still see the exact same reconstituted query, but as can be seen in the plan annotations, the internal handling changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.
 
 The 'using index condition' annotation points to [Index Condition Pushdown Optimization](https://dev.mysql.com/doc/refman/8.0/en/index-condition-pushdown-optimization.html) being used. In our example, this is not good.
 
@@ -197,7 +197,7 @@ The column we select on is a column with a cardinality of 2: `behavior` can be e
 
 Data from disk is read in pages of 16 KB. If one row in a page matches, the entire page has to be read from disk. In our example, we have a row length of around 200 Byte, so we end up with 75-80 records per page. Half of them will be `nice`, so with an average of around 40 `nice` records per page, we will very likely have to read all pages from disk anyway.
 
-Using the index will not decrease the amount of data read from disk at all. In fact we will have to read the index pages on top of the data pages, so using an index on a low cardinality column has the potential of making the situation slightly worse than even a full table scan.
+Using the index will not decrease the amount of data read from disk at all. In fact, we will have to read the index pages on top of the data pages, so using an index on a low cardinality column has the potential of making the situation slightly worse than even a full table scan.
 
 Generally speaking, defining an index on a low cardinality column is usually not helpful - if there are 10 or fewer values, benchmark carefully and decide, or just don't define an index.
 
@@ -228,6 +228,6 @@ If we added an `ORDER BY name` here, we would see `using filesort` again, becaus
   - The optimizer will be able to merge the multiple sorts and be able to deliver the result with one or no sorting, depending on our index construction.
   - The optimizer is not using the reconstituted query shown in the warning to plan the execution, and that is weird.
 - Selectivity matters, especially for indices on low cardinality columns.
-  - Asking for all `nice` behaviors on a `naughty`/`nice` column is usually not benefitting from index usage.
+  - Asking for all `nice` behaviors on a `naughty`/`nice` column is usually not benefiting from index usage.
   - Additional indexable conditions that improve selectivity can help, a lot.
 
