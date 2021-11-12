@@ -39,7 +39,7 @@ Was tun mit der freien Zeit?
 > And what did we do with that free time?
 > Well, mostly we spent it watching TV.
 
-Shirky sieht die freie Zeit als "kognitiven Überschuß", den wir verschwendet haben, weil keine Infrastruktur da war, um ihn sinnvoll anzuwenden.
+Shirky sieht die freie Zeit als "kognitiven Überschuss", den wir verschwendet haben, weil keine Infrastruktur da war, um ihn sinnvoll anzuwenden.
 Mit dem Internet, so argumentiert er, ändert sich das nun:
 
 > So how big is that surplus?
@@ -87,7 +87,7 @@ Die Umsetzung dieser Forderungen in einer sinnvollen Urheberrechtsreform und ein
 > 7. Staatliche Infrastrukturen befreien! Nur offene Standards und die Verwendung freier Software garantieren einen diskriminierungsfreien und nachhaltigen Zugriff auf Vorgänge und Abläufe in Politik und Verwaltung.
 > 8. Internet ist Grundversorgung. Kommunen müssen jedem Bürger einen Basiszugang zum Internet ermöglichen.
 > 9. Urheberrecht reformieren! Das Urheberrecht muss den gesellschaftlichen Realitäten angepasst werden - nicht die gesellschaftlichen Realitäten dem Urheberrecht.
-> 10. Gleiche Chancen für Alle! Die Netzneutralität muss festgeschrieben werden: es darf keine Klassengesellschaft im Netz entstehen.
-> 11. Medienkompetenz für Politiker Wir brauchen Politiker, für die das Internet kein Fremdkörper ist. Wir brauchen medienkompetente Politiker, die es sich nicht erst ausdrucken lassen müssen.
+> 10. Gleiche Chancen für alle! Die Netzneutralität muss festgeschrieben werden: Es darf keine Klassengesellschaft im Netz entstehen.
+> 11. Medienkompetenz für Politiker: Wir brauchen Politiker, für die das Internet kein Fremdkörper ist. Wir brauchen Medien-kompetente Politiker, die es sich nicht erst ausdrucken lassen müssen.
  
-Aber wie im ersten Text in den historischen Hintergründen beleuchtet ist eine partizipiatorische Demokratie gar nicht gewünscht.
+Aber wie im ersten Text in den historischen Hintergründen beleuchtet ist eine partizipatorische Demokratie gar nicht gewünscht.
