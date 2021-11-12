@@ -124,23 +124,23 @@ So
 - a machine load going up by 2 from 1 to 3 (per thread problem, two queries?)
 - long running
 
-We have [seen this before]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo log size:
+We have [seen this before]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo-log size:
 
 ![](/uploads/2020/10/mysql-undo-log.png)
 
-*Undo Log shark fin perfectly co-inciding with the incident.*
+*Undo-Log shark fin perfectly co-inciding with the incident.*
 
-We observe a shark fin in the Undo Log size that perfectly matches the time span of the incident and the increased CPU time.
+We observe a shark fin in the Undo-Log size that perfectly matches the time span of the incident and the increased CPU time.
 
 ## We knew this is bad
 
-We know from [MySQL Transactions - the physical side]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) what the Undo Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.
+We know from [MySQL Transactions - the physical side]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) what the Undo-Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.
 
-We learned in [MySQL Transactions - the logical side]({{< ref "/content/posts/2020-07-29-mysql-transactions-the-logical-view.md" >}}) how the Undo Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.
+We learned in [MySQL Transactions - the logical side]({{< ref "/content/posts/2020-07-29-mysql-transactions-the-logical-view.md" >}}) how the Undo-Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.
 
 The part where it says:
 
-> Starting a transaction at the default isolation level will force the Undo Log Purge Thread to stop at the position of our read view. Undo Log entries will no longer be purged, filling up and growing the Undo Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.
+> Starting a transaction at the default isolation level will force the Undo-Log Purge Thread to stop at the position of our read view. Undo-Log entries will no longer be purged, filling up and growing the Undo-Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.
 
 So it may be long running transactions.
 
@@ -166,7 +166,7 @@ This yields indeed two interesting queries: Both show a `cronjob=reserve_project
 
 There are indeed two long running queries, coinciding perfectly with a load increase of 2, and they are easily identifyable cron queries. They run from two different hosts, with the same cron banner.
 
-I have no idea what that job does, but we are looking at a `SELECT` statement in `REPEATABLE READ` isolation that has a run time of multiple hours, and unsurprisingly an Undo Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.
+I have no idea what that job does, but we are looking at a `SELECT` statement in `REPEATABLE READ` isolation that has a run time of multiple hours, and unsurprisingly an Undo-Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.
 
 ## What we can learn from this
 
@@ -184,7 +184,7 @@ With such tooling, we need to connect what we teach with actual incidents that s
 
 Which is why I am typing up this thing, right now and link to the actual writeups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.
 
-You know in your head what "Undo Log" means. Here you can understand what "Undo Log" feels like. Go, [touch the candle](https://blog.koehntopp.info/2020/08/31/on-touching-candles.html).
+You know in your head what "Undo-Log" means. Here you can understand what "Undo-Log" feels like. Go, [touch the candle](https://blog.koehntopp.info/2020/08/31/on-touching-candles.html).
 
 We have all the tooling, but it is from a different age. An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics. Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.
 

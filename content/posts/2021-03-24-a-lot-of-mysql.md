@@ -182,7 +182,7 @@ Gitops that?
 
 Everyday life in MySQL land is: Somebody oops'ed a table drop. Stop replication, locate a time delayed replica, fast forward it to before the oops'ed statement, stop it there, clone from this a new primary and a set of replicas, force feed it a modified replication stream for all the stuff that came after the oops'ed statement, and push this alternate history into production as a replacement for the oops'ed wreck.
 
-Everyday life in MySQL land is: A group of replicas died after having a bit of replication delay. Investigation finds a long running query maintaining a read view (sic!), leading to undo log growth, which inexplicably slows down everything on these instances. The fix is to connect to the affected instances and manually `KILL` the threads that hold the long running read views. Not a thing to be done with a git commit.
+Everyday life in MySQL land is: A group of replicas died after having a bit of replication delay. Investigation finds a long running query maintaining a read view (sic!), leading to undo-log growth, which inexplicably slows down everything on these instances. The fix is to connect to the affected instances and manually `KILL` the threads that hold the long running read views. Not a thing to be done with a git commit.
 
 So, yes, "continuous deployment" is a good idea, and I would like to see more of it. But before we are going to have *that* with stateful services, a number of hard problems need better solutions.
 

@@ -26,7 +26,7 @@ RECORD LOCKS space id 3523 page no 1106463 n bits 224 index PRIMARY of table `so
 
 and that is weird because of the `lock mode S locks gap` in the last line. We get the exact same statement with the exact same value on the second thread, but with `lock mode X locks gap`.
 
-Both transactions have an undo log entry of the length 1 - one row, single insert and the insert has an S-lock.
+Both transactions have an undo-log entry of the length 1 - one row, single insert and the insert has an S-lock.
 
 ## A mystery INSERT and opaque code
 

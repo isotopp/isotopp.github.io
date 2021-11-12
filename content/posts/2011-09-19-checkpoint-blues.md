@@ -47,7 +47,7 @@ InnoDB lädt die Seite also aus dem Tablespace-File in den InnoDB
 Buffer Pool, und baut im Speicher die Transaktion auf. Dazu wird
 im Log Buffer die Transaktion gebastelt und parallel dazu die
 Speicherseite im InnoDB Buffer Pool angepaßt. Die alte Version
-der betroffenen Zeile wird außerdem in das Undo Log verschoben
+der betroffenen Zeile wird außerdem in das Undo-Log verschoben
 (dies ist nicht mit eingezeichnet, weil es in diesem Text nicht
 darum gehen soll). Die geänderte Speicherseite im RAM wird nicht
 zurück geschrieben - der Inhalt der Seite im RAM und auf der

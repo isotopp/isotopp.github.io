@@ -57,14 +57,14 @@ Session2> select * from demo;
   stall us in any way.
 
 From the previous article we know that MySQL took the older version of the
-row and moved it to the Undo Log. It has to do that in order to still have
+row and moved it to the Undo-Log. It has to do that in order to still have
 the data around should we decide to `ROLLBACK`. The new version of the row
 in the actual tablespace contains a pointer to the older version of the Row
-in the Undo Log.
+in the Undo-Log.
 
 When looking at the row we see this older version, so something made the
 database read the current values of the rows 1, 2, 4, and so on from the
-tablespace, but for the row `id=3` sent us to the Undo Log.
+tablespace, but for the row `id=3` sent us to the Undo-Log.
 
 This is also a good thing, because we do not have to wait.
 
@@ -121,7 +121,7 @@ comitted.
 
 > At `TRANSACTION ISOLATION LEVEL READ COMMITTED` we are reading stuff from
 > the tablespace file, unless there is an ongoing transaction for a row. In
-> that case, the reader will consult the Undo Log one level deep and show us
+> that case, the reader will consult the Undo-Log one level deep and show us
 > the previous, committed version of the data. We never get to see ephemeral
 > data that can be rolled back.
 
@@ -232,7 +232,7 @@ been made after we started the transaction.
 
 > At `TRANSACTION ISOLATION LEVEL REPEATABLE READ` we are reading stuff from
 > the tablespace, unless it has been changed after we started our
-> transaction. In that case, the reader will consult the Undo Log multiple
+> transaction. In that case, the reader will consult the Undo-Log multiple
 > levels deep, in order to present us the newest version of the row that is
 > older than our read-only transaction.
 
@@ -243,8 +243,8 @@ present, skipping any intermediate steps.
 ### Repeatable Read and Long Running Transactions
 
 Starting a transaction at the default isolation level will force the Undo
-Log Purge Thread to stop at the position of our read view. Undo Log entries
-will no longer be purged, filling up and growing the Undo Log. Reads and
+Log Purge Thread to stop at the position of our read view. Undo-Log entries
+will no longer be purged, filling up and growing the Undo-Log. Reads and
 Index Lookups become more complicated and slower, slowing down the overall
 performance of the database.
 
@@ -256,16 +256,16 @@ maintaining a consistent read view by starting a long running transaction.
 As the dump of a large database can take some time, it is a good idea to do
 this at a point in time where the database is not so busy.  Specifically
 where the write activity is low.  Otherwise the incoming writes will blow up
-your Undo Log by the size of the data load, and make everything slow.
+your Undo-Log by the size of the data load, and make everything slow.
 
 While in theory these two operations - a data load and a backup - can happen
 concurrently and should not interfere, nothing is for free and the
 implementation of consistent read views will function better if you do not
 work against it.
 
-The Undo Log will not shrink, but will be freed internally and re-used,
+The Undo-Log will not shrink, but will be freed internally and re-used,
 should that space ever be needed. But you will end up, depending on your
-version of MySQL, with a very large ibdata1 file or very large Undo Log
+version of MySQL, with a very large ibdata1 file or very large Undo-Log
 segment files.
 
 ## Reading Data without Locks
@@ -298,7 +298,7 @@ recently committed or the newest version of the row older than its own
 
 By committing, a read-only transaction gives up its version of the past,
 retiring an older transaction, allowing the Purge Thread to move on and free
-Undo Log space.
+Undo-Log space.
 
 > At no point in time a read operation is ever stalled by a writer and
 > forced to wait. There are no write-locks ever stalling a reader. These two

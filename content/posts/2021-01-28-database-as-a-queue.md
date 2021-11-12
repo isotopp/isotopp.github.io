@@ -65,13 +65,13 @@ Your state machine would be eating one item from the input, perform the associat
 
 ## What if I don’t?
 
-### Undo Log woes
+### Undo-Log woes
 
 In [A Blast From The Past]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}) we see what happens to MySQL with long running transactions, and in [MySQL Transactions]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long running.
 
-Note that any database will at some point in time have long running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo Log explosion.
+Note that any database will at some point in time have long running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.
 
-So queue-as-a-database will eventually explosively grow the undo log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
+So queue-as-a-database will eventually explosively grow the undo-log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
 Binlog woes and Replication Delay
 
 In a replicated MySQL changes to any table (also queue tables) are written to the binlog, which is being kept for a few days for point in time recovery and for replication. This uses disk space.
@@ -88,7 +88,7 @@ It is also important to remember that this is per-instance, not per-table, and a
 
 So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all of the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.
 
-The undo log will grow out of bounds, and all 1000 customers will experience slow queries. 
+The undo-log will grow out of bounds, and all 1000 customers will experience slow queries. 
 
 This is how you denial-of-service a shared MySQL with no effort or expense at all.
 

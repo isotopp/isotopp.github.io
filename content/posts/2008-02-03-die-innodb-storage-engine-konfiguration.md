@@ -233,7 +233,7 @@ einem Dateisystem mit 200G Platz wird man also eine Schrittweite von 2048
 In jedem Fall sollte ein Tablespace-File so definiert sein, daß es auf
 "autoextend" konfiguriert ist, insbesondere auch bei `innodb_file_per_table =
 1`. Wenn nämlich durch viele Schreibzugriffe während einer lang andauernden
-Transaktion das Undo Log vorübergehend anschwillt und dabei nicht genug
+Transaktion das Undo-Log vorübergehend anschwillt und dabei nicht genug
 Platz im ibdata-File ist, kommt es zu sehr seltsamen und schwer zu
 diagnostizierbaren Fehlermeldungen, obwohl auf Dateisystemebene noch genug
 Platz vorhanden ist.

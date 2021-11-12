@@ -116,11 +116,11 @@ where
 Weiteres Wühlen im Graphite bringt Erleuchtung, denn wir finden das Inverse
 des Activity Patterns hier:
 
-![Graph: InnoDB Undo Log Length](/uploads/replication-delay3.png)
+![Graph: InnoDB Undo-Log Length](/uploads/replication-delay3.png)
 
 Die Causa: Der InnoDB Purge Thread hat seine Arbeit Mitte des 20-Sep
 eingestellt, zuckt noch einmal kurz und idled dann lustig weiter.  Sollte
-[Captain Undo Log]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}})
+[Captain Undo-Log]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}})
 wieder unterwegs sein und mit dem Baseballschläger ausgeloggt
 werden wollen?
 
@@ -136,13 +136,13 @@ Der Effekt ist...  Null.
 Also gut.  Dann kriegt halt der Cacti auf's Maul, weil ich grad schlechte
 Laune habe.
 
-![Graph: QPS & Undo Log Size](/uploads/replication-delay4.png)
+![Graph: QPS & Undo-Log Size](/uploads/replication-delay4.png)
 
 Nach Zufuhr einer passenden Dosis Laxativ (DBA KILL forte N) spontane
 Erholung, aber nach kurzer Linderung ein Wiedereinsetzen der Symptomatik.
 
 Herzallerliebst.  Wir haben das Gegenteil eines Stehaufmännchens - ein
-Fallumchen.  Immer wenn der Cacti User eine Kelle kriegt, fällt das Undo Log
+Fallumchen.  Immer wenn der Cacti User eine Kelle kriegt, fällt das Undo-Log
 wunschgemäß in sich zusammen und die Performance geht rauf.  Danach zieht es
 sich in kürzester Zeit wieder zu und wir fallen auf das alte Niveau runter.
 

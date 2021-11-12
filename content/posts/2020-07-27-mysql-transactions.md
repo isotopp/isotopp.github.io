@@ -43,7 +43,7 @@ InnoDB is a MVCC engine, that is, it uses Multi Value Concurrency Control. What 
 The diagram has four quadrants: 
 
 - The upper half talks about log structures, the lower half about data structures.
-    - Things on the upper half are in some Log: The Redo-Log, the Undo Log or the Double Write Buffer.
+    - Things on the upper half are in some Log: The Redo-Log, the Undo-Log or the Double Write Buffer.
     - Things on the lower half are in some tablespace file, so some .ibd file on disk.
 - The left half is about things in memory, not persisted. The right half is about things on disk, stored persistently. 
     - If you kill a machine by pulling a plug, things on the right half survive, and things on the left half are lost.
@@ -78,9 +78,9 @@ A second thing happens simultaneously: The data being “overwritten” needs to
 
 So the data page where this record is located is loaded from a data file (lower right quadrant) into memory (lower left quadrant), into the InnoDB Buffer Pool. That is a userspace data cache owned by the database process. It is the primary reason for the database process using a lot of memory.
 
-The row being “overwritten” is then being moved out of the table, and moved into the Undo Log. This is purely an in-memory operation, copying data from one page to another. A linked list is being built from the new, current version of the row to this older previous version of the row. This linked list can be long, pointing from the current version of the row to ever older version of that row in the Undo log. Following the list you get to see the past versions of this row, one by one.
+The row being “overwritten” is then being moved out of the table, and moved into the Undo-Log. This is purely an in-memory operation, copying data from one page to another. A linked list is being built from the new, current version of the row to this older previous version of the row. This linked list can be long, pointing from the current version of the row to ever older version of that row in the Undo log. Following the list you get to see the past versions of this row, one by one.
 
-If we were to `ROLLBACK` the transaction now, MySQL would move the data back from the Undo Log page into the Tablespace page. This is a comparatively slow operation - MySQL is set up and optimized for transactions being COMMIT’ed instead of rolled back most of the time.
+If we were to `ROLLBACK` the transaction now, MySQL would move the data back from the Undo-Log page into the Tablespace page. This is a comparatively slow operation - MySQL is set up and optimized for transactions being COMMIT’ed instead of rolled back most of the time.
 
 ## Comitting
 
@@ -90,9 +90,9 @@ Finally we finish the transaction and tell the database this using
 COMMIT
 ```
 
-On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged data base from the table space. The Undo Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.
+On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged data base from the table space. The Undo-Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.
 
-There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.
+There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo-Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.
 
 When we write the Log Buffer out, we write it to the Redo-Log. The Redo-Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib\_logfile\* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo-Log are fast, sequential writes, even on rotating hard disks.
 
@@ -213,7 +213,7 @@ An application is performing an initial data load, and reading the equivalent of
 
 Transactions are large here, larger than a log buffer in memory can hold. In this case, we write out log buffers prematurely to the Redo-Log, but without a commit flag at the end. If this crashed before the final commit, we would recover all of this from the Redo-Log, then encounter the end of the log without a commit and enter a monstrous Rollback. In the past that was hideously slow, these days it is just slow.
 
-Moral: Really large transactions are less than ideal, but this is rare. Still once upon a time, I have been paid, as a MySQL consultant, to watch a 2h Rollback/Undo Log recovery.
+Moral: Really large transactions are less than ideal, but this is rare. Still once upon a time, I have been paid, as a MySQL consultant, to watch a 2h Rollback/Undo-Log recovery.
 
 Loading a lot of data will fill up the Redo-Log quickly, or it will dirty a large number of pages. Eventually the system will run out of either clean page or Redo-Log space, and will feel what we call Checkpointing Pressure. If the Checkpointing Pressure becomes too large, it may even stall, not reacting to user commands for some time.
 
@@ -221,7 +221,7 @@ A system that is consistently seeing a lot of writes can profit from a large Red
 
 ### Data Deletion
 
-Deletion of data is also a write and copy operation: It could be rolled back until it is committed, so on delete data is actually pushed to the Undo Log. Depending on how things are organized, it can also trigger a lot of reorganisation of the Index Trees and other operations.
+Deletion of data is also a write and copy operation: It could be rolled back until it is committed, so on delete data is actually pushed to the Undo-Log. Depending on how things are organized, it can also trigger a lot of reorganisation of the Index Trees and other operations.
 
 If you want to delete all data, `TRUNCATE` is better than `DELETE`, because it does not cause these things.
 
@@ -229,9 +229,9 @@ If you want to structure data with regular expirations, have a look at table par
 
 ### Long running transactions
 
-Until you commit, you could roll back. That means the previous version of the row is being held in the Undo Log. In fact, Undo Log purge is a simplistic single threaded thing, so what happens in reality is that the system looks at all active transactions in the system and determines the oldest transaction number in the system that is still active.
+Until you commit, you could roll back. That means the previous version of the row is being held in the Undo-Log. In fact, Undo-Log purge is a simplistic single threaded thing, so what happens in reality is that the system looks at all active transactions in the system and determines the oldest transaction number in the system that is still active.
 
-It then deletes all Undo Log even older than this, but no more.
+It then deletes all Undo-Log even older than this, but no more.
 
 So if you
 
@@ -241,11 +241,11 @@ START TRANSACTION READ WRITE
 INSERT INTO t (id, data) VALUES (NULL, RANDOM_BYTES(255))
 ```
 
-and then go to lunch, purging of the Undo Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.
+and then go to lunch, purging of the Undo-Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.
 
 ![](/uploads/2020/07/transactions-undo-log.png)
 
-*As we build Undo Log, the database slows down. A lot. We kill the connection, the offender returns, and things slow down again, until the root cause is removed.*
+*As we build Undo-Log, the database slows down. A lot. We kill the connection, the offender returns, and things slow down again, until the root cause is removed.*
 
 I am mentioning this specifically as being problematic, because it happened. With somebody going to lunch after using a Cron Box for interactive data poking, and again in a similar way with Hadoop Data Loaders taking a long, long time to Hadoop Data Load.
 

@@ -14,7 +14,7 @@ title: MySQL Undo Log
 
 "Kris, kannst Du bitte mal gucken?"
 
-Seit heute morgen, 10:00 Uhr, wächst das Undo Log immer weiter an.
+Seit heute morgen, 10:00 Uhr, wächst das Undo-Log immer weiter an.
 
 Immer wenn InnoDB Daten schreibt wird die alte Version einer Zeile aus der
 Tabelle in das Undo-Log verschoben, also physikalisch von der ibd-Datei der
@@ -25,11 +25,11 @@ Undo-Log zeigt mit ihrem eigenen Roll-Pointer auf eine noch ältere Version
 derselben Zeile und so weiter - es entsteht für jede Zeile in der Datenbank
 eine lineare Liste von Versionen in die Vergangenheit einer Row.
 
-Der InnoDB Purge Thread hat die Aufgabe, das Undo Log zu verkürzen. Wenn er
+Der InnoDB Purge Thread hat die Aufgabe, das Undo-Log zu verkürzen. Wenn er
 das nicht tut, dann sieht das so aus wie oben im Graphen gezeigt. Dafür kann
 es zwei Gründe geben: Purge Lag - also mehr Writes als der Purge Thread
 wegschaffen kann. Oder lang laufende Transaktionen. Denn der Purge Thread
-kann nur dann eine Zeile aus dem Undo Log streichen, wenn es keine aktive
+kann nur dann eine Zeile aus dem Undo-Log streichen, wenn es keine aktive
 Transaktion mehr im ganzen System gibt, die älter ist als die zu streichende
 Zeile.
 

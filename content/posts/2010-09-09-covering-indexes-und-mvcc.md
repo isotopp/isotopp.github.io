@@ -34,7 +34,7 @@ geschrieben wird.
 
 MVCC, nach Art von InnoDB. Der Pfeil deutet ein Rollback an.
 
-Die überschriebene Zeile wird aus der Tabelle in das Undo Log verschoben und
+Die überschriebene Zeile wird aus der Tabelle in das Undo-Log verschoben und
 mit der neuen Version der Zeile verkettet. Wird die Zeile ein weiteres Mal
 geändert, wird die überschriebene Version ebenfalls aus der Tabelle ins Undo
 Log verschoben und mit der aktuellsten Version verkettet. Auf diese Weise
