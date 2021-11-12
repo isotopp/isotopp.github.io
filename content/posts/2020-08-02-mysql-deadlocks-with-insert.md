@@ -11,7 +11,10 @@ tags:
 - erklaerbaer
 title: MySQL Deadlocks with INSERT
 ---
-Support Channel. "Hi, I am getting deadlocks in the database and they occur when I have to rollback the transactions but if we don't have to roll back all transactions get executed." Wait, what? After some back and forth it becomes clear that the Dev experiences deadlocks and has data:
+
+Support Channel. "Hi, I am getting deadlocks in the database, and they occur when I have to roll back the transactions but if we don't have to roll back all transactions get executed." 
+Wait, what?
+After some back and forth it becomes clear that the Dev experiences deadlocks and has data:
 
 ```sql
 mysql> pager less
@@ -102,9 +105,11 @@ Session1> COMMIT;
 
 The `LOCK IN SHARE MODE` or equivalent `FOR SHARE` is not in the code, it is added implicitly by the isolation level `SERIALIZABLE`.
 
-We get an S-Lock, which is not good for writing. Our transaction now did not get the required locks necessary for reading at the start of the transaction, because the later `INSERT` requires an X-lock, like any write statement would. The database needs to aquire the X-lock, that is, it needs to upgrade the S-lock to an X-lock.
+We get an S-Lock, which is not good for writing.
+Our transaction now did not get the required locks necessary for reading at the start of the transaction, because the later `INSERT` requires an X-lock, like any write statement would.
+The database needs to acquire the X-lock, that is, it needs to upgrade the S-lock to an X-lock.
 
-If at that point in time another threads tries to run the exact same statement, which is what happens here, they already hold a second S-lock, preventing the first thread from completing their transaction (it is waiting until the second threads drops the S-lock or it times out).
+If at that point in time another threads tries to run the exact same statement, which is what happens here, they already hold a second S-lock, preventing the first thread from completing their transaction (it is waiting until the second threads drops the S-lock, or it times out).
 
 And then that second thread also tries to upgrade their S-lock into an X-lock, which it can't do, because that first thread is trying to do the same thing, and we have the deadlock and a rollback.
 
@@ -207,7 +212,7 @@ So many things to learn from this:
   - In `SERIALIZABLE` it is totally possible to deadlock yourself with a simple invisible `SELECT` and a lone `INSERT` or `UPDATE`.
 - The ORM will remove you quite a lot from the emitted SQL. Do you know how to trace your ORM and to get the actual SQL generated? If not, go and find out.
   - A server side trace will not save you - the server is a busy beast.
-  - It also cannot see your stackframes, so it can't link your SQL to the line in your code that called the ORM. Yes, in the client side SQL trace, ideally you also want the tracer to bubble up the stack and give you the first line outside of the ORM to identify what is causing the SQL to be emitted and where in the code that happens.
+  - It also cannot see your stackframes, so it can't link your SQL to the line in your code that called the ORM. Yes, in the client side SQL trace, ideally you also want the tracer to bubble up the stack and give you the first line outside the ORM to identify what is causing the SQL to be emitted and where in the code that happens.
 - The deadlock information in `SHOW ENGINE INNODB STATUS` is painfully opaque, but learning to read it is worthwhile.
   - In reproduction, using performance schema is much easier and makes the sequence of events much easier to understand.
   - The server is not very good at explaining the root cause of deadlocks to a developer in the error messages and warnings generated.
