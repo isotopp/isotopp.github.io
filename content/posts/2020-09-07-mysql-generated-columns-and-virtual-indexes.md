@@ -14,7 +14,7 @@ We have had a look at [how MySQL 8 handles JSON]({{< ref "/content/posts/2020-09
 
 JSON cannot be indexed.
 
-But MySQL 8 offers another feature that comes in handy: Generated columns and indexes on those. Let's look at the parts, step by step, and how to make them work, because they are useful even outside of the context of JSON.
+But MySQL 8 offers another feature that comes in handy: Generated columns and indexes on those. Let's look at the parts, step by step, and how to make them work, because they are useful even outside the context of JSON.
 
 ## An example table
 
@@ -54,7 +54,7 @@ A generated column is a column with values that are calculated from a determinis
 
 The column can be `VIRTUAL`, in which case the expression is evaluated when reading every time a value is needed, or `STORED`, in which case the value is materialized and stored on write.
 
-In may also contain inline index definition and a column comment.
+It may also contain inline index definitions and a column comment.
 
 ### VIRTUAL generated columns
 
@@ -306,7 +306,7 @@ mysql> insert into t2 select id, a, b from t1;
 ERROR 1136 (21S01): Column count doesn't match value count at row 1
 ```
 
-Awww, yes. Okay, the full monty:
+Aww, yes. Okay, the full monty:
 
 ```sql
 mysql> insert into t2 (id, a, b) select id, a, b from t1;
@@ -398,11 +398,11 @@ Warning (Code 1264): Out of range value for column 'c' at row 1030
 
 `SQL_MODE` helpfully detected the problem and prevented data loss. As usual, `SQL_MODE` was as useless as it was helpful - while it prevented data loss, it did not directly point us into the right direction with its error messages.
 
-By turning off `SQL_MODE` we get the clipped values copied and a bunch of warnings that everybody ignores all of the time, anyway, so I guess it's an improvement.
+By turning off `SQL_MODE` we get the clipped values copied and a bunch of warnings that everybody ignores all the time, anyway, so I guess it's an improvement.
 
 ### Allowed and disallowed functions
 
-For generated columns to work it is a requirement that the functions are deterministic, idempotent and side-effect free. All user defined functions and stored functions are disallowed, and the usual suspects from the set of builtins are also out:
+For generated columns to work it is a requirement that the functions are deterministic, idempotent and side effect free. All user defined functions and stored functions are disallowed, and the usual suspects from the set of builtins are also out:
 
 ```sql
 mysql> create table testme (id integer not null primary key auto_increment, a integer, b integer, c integer as (sleep(2)));
@@ -464,11 +464,11 @@ Query OK, 0 rows affected (5.62 sec)
 Records: 0  Duplicates: 0  Warnings: 0
 ```
 
-As expected, adding the index takes time, even if the column `c` is `VIRTUAL`: For an index we extract the indexed values from the table, sort them and store them together with pointers to the base row in the (secondary) index tree. In InnoDB, the pointer to the base row always is the primary key, so what we get in the index is actually pairs of `(c, id)`.
+As expected, adding the index takes time, even if the column `c` is `VIRTUAL`: For an index we extract the indexed values from the table, sort them and store them together with pointers to the base row in the (secondary) index tree. In InnoDB, the pointer to the base row is always the primary key, so what we get in the index is actually pairs of `(c, id)`.
 
 We can prove that: 
 
-1. Queries for `c` can be answered from the index. The index is called *covering*, it saves us chasing the row pointer and an access to the actual row. In an `EXPLAIN` we see this being indicated with `using index`.
+1. Queries for `c` can be answered from the index. The index is called *covering*, it saves us chasing the row pointer and access to the actual row. In an `EXPLAIN` we see this being indicated with `using index`.
 2. Queries for `c` and `id` should also be *covering*: the queried values are all present in the index so that going to the base row is unnecessary.
 3. Querying for `c` and `a` is not covering, so the `using index` should be gone.
 
@@ -512,7 +512,7 @@ In almost all cases `STORED` columns will not be paying off. They use disk space
 
 `STORED` generated columns make sense only if the expression is complicated and slow to calculate. But with the set of functions available to us that is hardly going to be the case, ever. So unless the expression is being evaluated really often the cost for the storage is not ever amortized.
 
-Even then, for generated columns `STORED` and `VIRTUAL`, many queries can probably be answered leveraging an index on the generated column so that we might try to get away with `VIRTUAL` columns all of the time.
+Even then, for generated columns `STORED` and `VIRTUAL`, many queries can probably be answered leveraging an index on the generated column so that we might try to get away with `VIRTUAL` columns all the time.
 
 ### Generated columns and the Optimizer
 
@@ -635,19 +635,19 @@ possible_keys: PRIMARY
 Note (Code 1003): /* select#1 */ select '1' AS `id`,'{"home": "/home/kris", "paid": false, "user": "kris"}' AS `j` from `kris`.`t` where true
 ```
 
-Yay, `ref: const`, primary key lookup in the optimizer and we did not even have a query to run.
+Yay, `ref: const`, primary key lookup in the optimizer, and we did not even have a query to run.
 
 ## Summary
 
 We have been looking at the two flavors of generated columns, and how they can make our life easier in many ways. We have been looking at various pitfalls with respect to copying data and table definitions around. We have been learning about indexing generated columns, and how the optimizer can leverage indexes even against the expressions defined in generated columns.
 
-Finally we put the parts together and made JSON data lookups fast.
+Finally, we put the parts together and made JSON data lookups fast.
 
 This should give us a number of ideas in terms of sensible table design around JSON. Often we use JSON for variable-ish data while we explore a data model. Then a JSON schema solidifies, and we can leverage values we require and rely on by putting them into generated columns and index these, then use these for search and access. 
 
-Eventually we may extract the columns from the variable JSON part of the schema completely and turn them into actually statically typed columns of the SQL schema, because we require them all of the time.
+Eventually we may extract the columns from the variable JSON part of the schema completely and turn them into actually statically typed columns of the SQL schema, because we require them all the time.
 
-This opens up a pathway to incremental schema design while at the same time being flexible enough to have bag style soft and denormalized data types where we need them.
+These open up a pathway to incremental schema design while at the same time being flexible enough to have bag style soft and denormalized data types where we need them.
 
 ## The Fine Manual
 
