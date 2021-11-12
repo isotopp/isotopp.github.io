@@ -11,9 +11,10 @@ tags:
 - mysqldev
 title: 'MySQL: Encoding fields for great profit.'
 ---
+
 Iterating schemas over time is not an uncommon thing. Often requirements emerge only after you have data, and then directed action is possible. Consequently, working on existing data, and structuring and cleaning it up is a common task.
 
-In todays example we work with a log table that logged state transitions of things in freeform `VARCHAR` fields. After some time the log table grew quite sizeable, and the log strings are repeated rather often, contributing to the overall size of the table considerably.
+In today's example we work with a log table that logged state transitions of things in freeform `VARCHAR` fields. After some time the log table grew quite sizeable, and the log strings are repeated rather often, contributing to the overall size of the table considerably.
 
 We are starting with this table:
 
@@ -30,7 +31,7 @@ CREATE TABLE `log` (
 
 That is, our log table has an `id` field to allow individual row addressing, and then logs the state change of a `device_id` at a certain `change_time` from an `old_state` into a `new_state`. The two state fields are `varchar(64)` and contain one of some 13 or so different strings.
 
-Maybe they also contain typos, outdated state codes or other stuff that will later needs remapping and cleanup, but in today example we want to concentrate on the cleanup.
+Maybe they also contain typos, outdated state codes or other stuff that will later need remapping and cleanup, but in today's example we want to concentrate on the cleanup.
 
 Some small manual sample data:
 
@@ -153,7 +154,8 @@ mysql> select * from map;
 6 rows in set (0.00 sec)
 ```
 
-Yay. A nice and autonumbered list of all possible states from the existing data. We need this indexed, and we also need indices on the two source columns.
+Yay. A nice and automatically numbered list of all possible states from the existing data. 
+We need this indexed, and we also need indices on the two source columns.
 
 ```sql
 mysql> alter table map add index(state);
@@ -276,7 +278,7 @@ mysql> select log.id,
 
 Note that we have to join against the map twice, once for each source column, and that also means we have to rename the map table to get unique names for each usage.
 
-Well, that's a toy example. Let's do that at scale, using a Python driver implementing exactly this procedure. [Code is on github.com](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py).
+Well, that's a toy example. Let's do that at scale, using a Python driver implementing exactly this procedure. [Code is on GitHub.com](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py).
 
 We [set up our source tables](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py#L95-L102) by going over the table creation statements in the [sql_setup list](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py#L19-L23).
 
@@ -410,7 +412,7 @@ TABLE_COLLATION: utf8mb4_0900_ai_ci
 
 So data length went from 59326464 bytes to 48824320 bytes, a reduction to 82.3% of the original size. We could save even more by not using `integer` 4-byte values to encode, but for example `tinyint unsigned` 1-byte values. On the other hand, that may become a problem later on when we exceed the id-space of the map table as we add new states.
 
-On top of that, the size of the target `log` table is now a function of the row number, as we have no variable length columns any more. The size of the source table is dependent on the variable length string values as well, so by encoding we also got a better plannable table size.
+On top of that, the size of the target `log` table is now a function of the row number, as we have no variable length columns anymore. The size of the source table is dependent on the variable length string values as well, so by encoding we also get predictable table sizes.
 
 TL;DR:
 
