@@ -13,14 +13,14 @@ The DBA experience at work suggests that every single schema at some point in it
 
 A variation on that theme is the state machine, in which jobs are placed by producers. Consumers do not immediately delete them, but update them a few times to indicate processing progress, before the rows are ultimately being deleted.
 
-Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective dequeueing”), while still maintaining the exactly-once semantics.
+Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective de-queueing”), while still maintaining the exactly-once semantics.
 
 ## Using a database as a queue can be ok-ish
 
 Using a database as a queue is not wrong, up to a point:
 
 - You get ACID semantics. That means your updates are atomic and isolated, transactional, and they are durable, persisted to disk. This makes it possible to build queues with “exactly once” execution semantics, which is a thing developers like a lot.
-- You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies and you do not need to learn additional technologies.
+- You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies, and you do not need to learn additional technologies.
 
 Now, once you pass “the point” in that “up to a point” phrase, things get nasty:
 
@@ -28,7 +28,7 @@ Now, once you pass “the point” in that “up to a point” phrase, things ge
 
 You get to enqueue, dequeue and state change your things exactly as quickly as a single server can flash its disk lights, and in the next step, as quickly as your replication hierarchy can pass on things downstream.
 
-On baremetal, that costs you a bit, but because baremetal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.
+On bare-metal, that costs you a bit, but because bare-metal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.
 
 In the cloud, using a database-as-a-queue is approximately equivalent to pouring petrol on money and throwing a match. It is the wrong technology for that kind of workload in that environment from the get-go.
 
@@ -36,19 +36,19 @@ In the cloud, using a database-as-a-queue is approximately equivalent to pouring
 
 ### Replayability
 
-One specific property of the above setup that is expensive, and hard to reproduce outside of a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.
+One specific property of the above setup that is expensive, and hard to reproduce outside a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.
 
-Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small time window of a few hours or a day, or whatever other deal you can make with the Kafka team.
+Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small window of a few hours or a day, or whatever other deal you can make with the Kafka team.
 
 Reading the same item multiple times is not a problem if the jobs in the queue are idempotent, that is, replayable.
 
-Not replayable are relative updates: “set x = x + 1”, “add order to table, give me the ordernumber”.
+Not replayable are relative updates: “set x = x + 1”, “add an order to the table, give me the ordernumber”.
 
 Replayable are absolute updates: “set x = 7” (you read 6, did the math and enqueued 7), “add order 17372 to order table” (you made an order number beforehand and push the order into the queue with an already fixed identity).
 
 Basically, to make things idempotent, you need to give them either fixed identities so that you can remember if you saw things before, or you need to make the writes absolute instead of incremental, or both.
 
-So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka and it would be cheaper. Much cheaper, in fact, in a cloud environment.
+So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka, and it would be cheaper. Much cheaper, in fact, in a cloud environment.
 
 ### Re-queuing and sorting
 
@@ -67,9 +67,9 @@ Your state machine would be eating one item from the input, perform the associat
 
 ### Undo-Log woes
 
-In [A Blast From The Past]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}) we see what happens to MySQL with long running transactions, and in [MySQL Transactions]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long running.
+In [A Blast From The Past]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}) we see what happens to MySQL with long-running transactions, and in [MySQL Transactions]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long-running.
 
-Note that any database will at some point in time have long running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.
+Note that any database will at some point in time have long-running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.
 
 So queue-as-a-database will eventually explosively grow the undo-log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
 Binlog woes and Replication Delay
@@ -86,7 +86,7 @@ If your producers write to the replication primary, but your consumers read from
 
 It is also important to remember that this is per-instance, not per-table, and also not per-schema. The purge thread looks at transactions, not at schemas or tables. In a transaction, a number of changes to the instance can happen, atomically.
 
-So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all of the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.
+So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.
 
 The undo-log will grow out of bounds, and all 1000 customers will experience slow queries. 
 
@@ -102,7 +102,7 @@ That is okay for a prototype. If you implement queues, state-machines or other r
 
 - As a benchmark, and for comparison: At this point in time, one specific application at work processes around 7-10 million auto-increment values per replication hierarchy per hour, with several updates per row. That is where we run into operational toil due to pushing the envelope.
   - That is around 3.000 new rows per second, and a multiple of that with updates. 
-- An unconstrained baremetal SSD can do around 20.000 commits per second in hardware.
+- An unconstrained bare-metal SSD can do around 20.000 commits per second in hardware.
   - That is why we run into operational toil with 3.000 new rows (with multiple updates per rows) per second with said application.
 - Our replication assumes around 2.000 transactions/s as minimum capability.
   - We can batch up some things and apply them in parallel, if the transaction structure allows that. That is why replication does not lag, even if the primary does more than 2.000 txn/s. How much parallel replication can help here is completely dependent on the ordering constraints imposed by the transactions themselves.
