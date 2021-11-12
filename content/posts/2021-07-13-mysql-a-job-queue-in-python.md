@@ -114,7 +114,7 @@ We will later use this in the `consumer()` to track the owner of a claimed job.
 
 Our generator takes the `generator_id` as a parameter, but makes no use of it.
 
-We generate random `d` and `e` fields, and use autoincremented numbers to identify the individual jobs.
+We generate random `d` and `e` fields, and use auto-incremented numbers to identify the individual jobs.
 The new job has the status of `unclaimed` and the `owner_id` and `owner_date` are `NULL`.
 For speed, we commit to the jobs table only every tenth job.
 
@@ -167,7 +167,7 @@ But if we did it like this, we would run into two problems:
   Other processes trying to claim jobs run the risk of running into our X-locks while scanning the table.
   These processes would hang.
 
-We need another approch to handle this to make it efficent.
+We need another approach to handle this to make it efficient.
 
 ### Smart approach using `SELECT ... FOR UPDATE SKIP LOCKED`
 
@@ -188,7 +188,7 @@ We need another `SELECT` statement before the locking `SELECT` in order to trans
 So this is the plan:
 
 1. Run a query to find a set of candidate primary keys (100 or fewer).
-   This query can run outside of our transaction and could use a replica to find a set of candidate primary keys.
+   This query can run outside our transaction and could use a replica to find a set of candidate primary keys.
 2. Start a transaction.
    This happens all the time and automatically in Python. 
     - In our transaction, run the `SELECT ... FROM josb WHERE id IN (...) FOR UPDATE SKIP LOCKED` as discussed.
@@ -223,7 +223,7 @@ def find_candidates(cursor, wanted):
 ```
 
 We are using some arbitrary SQL condition to find records.
-In our example, we are using `WHERE d LIKE 'a%' AND status = 'unclaimed'`, for variable intitial letters and for variable status values.
+In our example, we are using `WHERE d LIKE 'a%' AND status = 'unclaimed'`, for variable initial letters and for variable status values.
 We are only interested into the primary keys, so we return only these, in a `list`.
 
 #### Consuming jobs
@@ -289,7 +289,7 @@ This does two things:
 - it also X-locks the rows for claiming them permanently
 
 We generate a list of `claimed_ids` from the `claimed_records`, and check that this list is non-empty.
-If it was empty, we did have a list of candidate ids, but none of these came through.
+If it was empty, we did have a list of candidate ids, but none of them came through.
 That means another concurrent process snatched the candidates from us - all of them.
 We should be recording this, but are not in this example program.
 
