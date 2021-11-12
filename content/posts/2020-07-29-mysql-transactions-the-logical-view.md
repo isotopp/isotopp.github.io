@@ -14,7 +14,7 @@ After having a look [how MySQL handles transactions physically]({{< ref "/conten
 going on from a logical point of view.
 
 We are using a test table called demo with an id and a counter field, both
-integer. In it we have 10 counters, all set to 0.
+integer. In it, we have 10 counters, all set to 0.
 
 ```sql
 CREATE TABLE `demo` (
@@ -70,8 +70,8 @@ This is also a good thing, because we do not have to wait.
 
 ### Transaction Isolation Level Read Uncommitted
 
-This is what MVCC - [Multiversion Concurrency
-Control](https://en.wikipedia.org/wiki/Multiversion_concurrency_control)
+This is what MVCC - 
+[Multiversion Concurrency Control](https://en.wikipedia.org/wiki/Multiversion_concurrency_control) -
 does: It uses the old versions of the row to present us a consistent view of
 the data, depending on the `TRANSACTION ISOLATION LEVEL`. This is a thing we
 can change:
@@ -89,14 +89,14 @@ Session2> select * from demo;
 ```
 
 So once we `SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED`, we get to see
-the value 10 written by Session1, despite the fact that it never has been
+the value 10 written by Session1, despite the fact that it has never been
 committed.  In fact, if we would `ROLLBACK`, logically it would never have
 been there - but still Session2 saw it.
 
 > At `TRANSACTION ISOLATION LEVEL READ UNCOMMITTED` we are reading stuff
 > directly from the tablespace file. This can contain data that is not yet
-> committed, and due to `ROLLBACK` never will be - mere phantasies. The Undo
-> Log is never consulted.
+> committed, and due to `ROLLBACK` never will be - mere phantasies.
+> The Undo-Log is never consulted.
 
 ### Transaction Isolation Level Read Committed
 
@@ -117,7 +117,7 @@ Session2> select * from demo;
 ```
 
 That is, at this isolation level we will only see data that has been
-comitted.
+committed.
 
 > At `TRANSACTION ISOLATION LEVEL READ COMMITTED` we are reading stuff from
 > the tablespace file, unless there is an ongoing transaction for a row. In
@@ -242,20 +242,21 @@ present, skipping any intermediate steps.
 
 ### Repeatable Read and Long Running Transactions
 
-Starting a transaction at the default isolation level will force the Undo
-Log Purge Thread to stop at the position of our read view. Undo-Log entries
+Starting a transaction at the default isolation level will force 
+the Undo-Log Purge Thread to stop at the position of our read view. 
+Undo-Log entries
 will no longer be purged, filling up and growing the Undo-Log. Reads and
 Index Lookups become more complicated and slower, slowing down the overall
 performance of the database.
 
-It is a good idea to not have long running transactions.
+It is a good idea to not have long-running transactions.
 
 Maintenance Operations such as running `mysqldump --single transaction
 mydatabase` to make a logical backup achieve a consistent backup my
-maintaining a consistent read view by starting a long running transaction. 
+maintaining a consistent read view by starting a long-running transaction. 
 As the dump of a large database can take some time, it is a good idea to do
-this at a point in time where the database is not so busy.  Specifically
-where the write activity is low.  Otherwise the incoming writes will blow up
+this at a point in time when the database is not so busy.  Specifically
+where write activity is low.  Otherwise, the incoming writes will blow up
 your Undo-Log by the size of the data load, and make everything slow.
 
 While in theory these two operations - a data load and a backup - can happen
@@ -279,13 +280,13 @@ copy of a row before we modify it and keep it around.
 
 The fact that most transactions successfully commit and not roll back
 suggests that we would do well by putting the new version of the row into
-place properly and move the old version to a temporary storage, the Undo
-Log, before we throw it away by the way of the Purge Thread. Thay way we
-keep the tablespace clean and free from outdated, stale versions of rows.
+place properly and move the old version to a temporary storage, 
+the Undo-Log, before we throw it away by the way of the Purge Thread. 
+That way we keep the tablespace clean and free from outdated, stale versions of rows.
 
 Looking at all active transactions in the system we can easily determine the
 lowest, oldest transaction number in the system. By definition nothing else
-can ever reference any row version even oler than that, so these versions
+can ever reference any row version even older than that, so these versions
 are fair game for the Purge Thread.
 
 By linking old versions of a row, we get a thread from the current version
