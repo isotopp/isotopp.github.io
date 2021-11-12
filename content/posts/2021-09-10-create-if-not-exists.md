@@ -8,6 +8,7 @@ tags:
 - mysqldev
 title: 'MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW'
 ---
+
 For the MySQL Million Challenge, I was going through the server syntax in order to understand what things can be created in the server.
 And now my OCD triggered.
 DDL is a mess.

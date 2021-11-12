@@ -16,7 +16,7 @@ The table '../tmp/#sql…' is full
 
 # Before MySQL 8
 
-In older Versions of MySQL, implied temporary tables are being created, whenever your `EXPLAIN` contained the phrase `using temporary`.
+In older Versions of MySQL, implied temporary tables are being created whenever your `EXPLAIN` contained the phrase `using temporary`.
 
 In this case, MySQL would create an in-memory temporary table to materialize an intermediate query result, and then continue to process the data from there. If that temporary table was larger than some configurable limit, the temporary table would instead be converted to a MyISAM table on disk, streamed out, and then work would continue with this.
 
