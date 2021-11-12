@@ -68,9 +68,9 @@ MySQL unterhält wie Redis ein Bild der aktuellen Daten auf der Platte - Redis i
 Anders als Redis schreibt MySQL aber bei einem Checkpoint nicht die ganze Tabelle neu.
 Stattdessen sind ibd-Dateien (und der Speicher) in Seiten von 16 KB unterteilt.
 
-Und statt eines AOF-Rewrite, bei dem das ganze Redo Log neu geschrieben wird, schreibt MySQL für jeden Eintrag im Redo-Log die zugehörende Speicherseite auf die Platte - aber eben nur diese, und nicht die ganze Tabelle.
+Und statt eines AOF-Rewrite, bei dem das ganze Redo-Log neu geschrieben wird, schreibt MySQL für jeden Eintrag im Redo-Log die zugehörende Speicherseite auf die Platte - aber eben nur diese, und nicht die ganze Tabelle.
 MySQL macht dies außerdem auf eine Weise, bei der Daten nicht verloren gehen können, selbst dann, wenn die Datenbank mitten im Schreiben einer 16 KB-Seite den Strom abgeschaltet bekommt: 
-Die Daten landen einmal im Doublewrite-Buffer, dann wird das Redo Log aktualisiert und dann werden die
+Die Daten landen einmal im Doublewrite-Buffer, dann wird das Redo-Log aktualisiert und dann werden die
 Daten im *.ibd-File aktualisiert.
 Auf diese Weise, und mit den Prüfsummen in jeder Seite, kann MySQL die Datenbank sogar von halb geschriebenen Seiten sauber wieder herstellen.
 

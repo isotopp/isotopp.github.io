@@ -59,7 +59,7 @@ Beim COMMIT wird der Log Buffer in das Redo-Log geschrieben. Es
 besteht eine Verknüpfung zwischen der geänderten Speicherseite
 und der Transaktion im Redo-Log.
 
-Beim COMMIT wird der Log Buffer ins Redo Log geschrieben. Die
+Beim COMMIT wird der Log Buffer ins Redo-Log geschrieben. Die
 geänderte Speicherseite (rot: DIRTY) wird immer noch nicht
 zurück geschrieben.
 

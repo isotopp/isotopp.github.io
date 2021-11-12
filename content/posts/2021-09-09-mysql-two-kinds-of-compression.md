@@ -27,8 +27,8 @@ Compression and decompression happen in the Query thread, that is, the thread of
 
 If buffer pool space it tight, uncompressed pages can be evicted, and recreated as needed by decompressing them again.
 
-In order to be able to crash recover MySQL all possible shutdown scenarios, compressed pages are also written to the redo log on checkpointing.
-This also leads to larger redo logs, which may need to be upsized to allow for the additional traffic.
+In order to be able to crash recover MySQL all possible shutdown scenarios, compressed pages are also written to the redo-log on checkpointing.
+This also leads to larger redo-logs, which may need to be upsized to allow for the additional traffic.
 
 # Page Compression
 

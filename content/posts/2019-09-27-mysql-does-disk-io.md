@@ -69,7 +69,7 @@ commit:
 
 This is the only `fsync` that contributed to commit-Latency. The write is
 now persisted to disk, and can be reconstructed using the unmodified page
-from the tablespace and the change information from the redo log during
+from the tablespace and the change information from the redo-log during
 recovery. 
 
 The modified page is still in memory, though, and in order to reclaim redo
@@ -80,7 +80,7 @@ batch, for many commits and multiple pages, normally, but in our easily
 traceable test setup, it's looking like a lot of overhead.
 
 During normal operations, a page often is modified in multiple commits over
-a short amount of time. Each of these commits is a separate redo log sync,
+a short amount of time. Each of these commits is a separate redo-log sync,
 but all these changes are being accumulated on the dirty in-memory page, and
 get persisted into the tablespace in a single checkpoint write. Also, during
 checkpointing one doublewrite buffer worth of pages gets written out in a
@@ -145,7 +145,7 @@ being spread out to the individual pages in their respective
 tablefiles.
 
 This ensures that there is always a whole old page and a log
-entry with intructions to patch the old image ("Redo Log
+entry with intructions to patch the old image ("Redo-Log
 Recovery") or a whole image of the new page on disk inside the
 doublewrite buffer, for recovery of torn pages.
 
@@ -173,7 +173,7 @@ O_DIRECT mode.
 
 ### How are other systems doing it?
 
-Postgres writes a WAL, which is very similar to the redo log
+Postgres writes a WAL, which is very similar to the redo-log
 that MySQL writes. The main difference is that they write out a
 full page whenever a page transitions from clean to dirty, and
 then similar to MySQL write out incremental changes for
@@ -182,7 +182,7 @@ can pick up the full page and all additional incremental changes
 by simply going through the WAL front to back, and recreate the
 page that should have been written. MySQL could do the same and
 get rid of the doublewrite buffer writes, but it does not play
-well with the concept of the MySQL Redo Log being a ring buffer.
+well with the concept of the MySQL Redo-Log being a ring buffer.
 
 MyRocks, and all other variants of
 [LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree), 

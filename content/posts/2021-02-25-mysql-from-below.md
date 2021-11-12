@@ -46,7 +46,7 @@ So what we care about is disk writes. They are the same on every instance of a r
 
 ## The Write Model
 
-On Commit, we write out 1 KB (or more) of Redo Log. The write happens with `O_DIRECT` to XFS, and there is a lot of thought that goes into these few words.
+On Commit, we write out 1 KB (or more) of Redo-Log. The write happens with `O_DIRECT` to XFS, and there is a lot of thought that goes into these few words.
 
 Because it is `O_DIRECT`, the write already writes to disk. There is no need to `fsync()` or `fdatasync()` or anything else.
 

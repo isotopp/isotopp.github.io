@@ -18,7 +18,7 @@ The code for the series is also available in [isotopp/mysql-dev-examples](https:
 The Tag [#mysqldev](https://blog.koehntopp.info/tags/#mysqldev) will reference all articles from this series.
 
 - [MySQL Transactions - the physical side]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}).
-  Looking at how MySQL InnoDB handles transactions on the physical media, enabling rollback and commit. Introduces a number of important concepts: The Undo Log, the Redo Log, the Doublewrite Buffer, and the corrosponding in memory structures, the Log Buffer and the InnoDB Buffer Pool, as well as the concept of a page.
+  Looking at how MySQL InnoDB handles transactions on the physical media, enabling rollback and commit. Introduces a number of important concepts: The Undo Log, the Redo-Log, the Doublewrite Buffer, and the corrosponding in memory structures, the Log Buffer and the InnoDB Buffer Pool, as well as the concept of a page.
 
 - [MySQL Commit Size and Speed]({{< ref "/content/posts/2020-07-27-mysql-commit-size-and-speed.md" >}}).
   This article has code in Github, in mysql-commit-size/. We benchmark MySQL write speed as a function of number of rows written per commit.

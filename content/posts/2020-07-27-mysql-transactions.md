@@ -13,7 +13,7 @@ title: MySQL Transactions - the physical side
 ---
 So you talk to a database, doing transactions. What happens actually, behind the scenes? Let’s have a look.
 
-There is a test table and we write data into it inside a transaction:
+There is a test table, and we write data into it inside a transaction:
 
 ```sql
 CREATE TABLE t (
@@ -43,7 +43,7 @@ InnoDB is a MVCC engine, that is, it uses Multi Value Concurrency Control. What 
 The diagram has four quadrants: 
 
 - The upper half talks about log structures, the lower half about data structures.
-    - Things on the upper half are in some Log: The Redo Log, the Undo Log or the Double Write Buffer.
+    - Things on the upper half are in some Log: The Redo-Log, the Undo Log or the Double Write Buffer.
     - Things on the lower half are in some tablespace file, so some .ibd file on disk.
 - The left half is about things in memory, not persisted. The right half is about things on disk, stored persistently. 
     - If you kill a machine by pulling a plug, things on the right half survive, and things on the left half are lost.
@@ -94,37 +94,37 @@ On commit, the log buffer is being written to disk, as a kind of binary diff to 
 
 There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.
 
-When we write the Log Buffer out, we write it to the Redo Log. The Redo Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib\_logfile\* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo Log are fast, sequential writes, even on rotating hard disks.
+When we write the Log Buffer out, we write it to the Redo-Log. The Redo-Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib\_logfile\* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo-Log are fast, sequential writes, even on rotating hard disks.
 
 After that, we are done - the transaction is committed to stable storage and can no longer be lost. The application can move on.
 
 ## After committing: Checkpointing
 
-But wait! Isn’t the `.ibd` tablespace file changed? What about purging the Redo Log? How long can this go on?
+But wait! Isn’t the `.ibd` tablespace file changed? What about purging the Redo-Log? How long can this go on?
 
 We are constantly creating InnoDB Buffer Pool pages that are different from their original image on disk in the tablespace files. These pages are called dirty, and eventually they need to be written back.
 
-We are also constantly filling the Redo Log files, but they are a ring structure with a finite amount of space, and we need to eventually purge the Redo Log and free up space there.
+We are also constantly filling the Redo-Log files, but they are a ring structure with a finite amount of space, and we need to eventually purge the Redo-Log and free up space there.
 
 And there may be lulls in the application activity that allow the database to do stuff when it feels idle.
 
 That are three good reasons to actually write dirty InnoDB Buffer Pool pages back to the tablespaces. This is called checkpointing, and it will eventually happen, but hopefully much later than the actual commit.
 
-In checkpointing, we select the oldest entries from the Redo Log, determine which pages in the Buffer Pool they relate to, and then choose these pages for write-back. When this is complete, the on-disk image and the in-memory image are equal, the pages are clean and the Redo Log entries are no longer needed and can be overwritten.
+In checkpointing, we select the oldest entries from the Redo-Log, determine which pages in the Buffer Pool they relate to, and then choose these pages for write-back. When this is complete, the on-disk image and the in-memory image are equal, the pages are clean and the Redo-Log entries are no longer needed and can be overwritten.
 
 Pages are larger than disk blocks: They are usually 16 KB in size, and disk blocks are traditionally 512 Byte large, and these days  4 KB in size. Enterprise media (HDD, SSD and so on) usually guarantee atomic writes to a block, even in the face of power failure - so there won’t ever be half-written 512 Byte blocks or 4K pages.
 
 But that is not good enough for us. If the power was to fail in the write-back of a page, we would get back a half-written page, and we would not even know where the cutoff is. This is called a torn page scenario and in order to prevent it, we write the set of pages out as a large block to a staging area called the Double Write Buffer first. So there will be a large 1MB write to the DWB first, and then a set of 16K writes to the actual tablespace locations.
 
-After writing out the set of dirty pages, we can mark the Redo Log space as free again and also mark the pages in memory as clean.
+After writing out the set of dirty pages, we can mark the Redo-Log space as free again and also mark the pages in memory as clean.
 
 ## Recovery
 
 If we fail the database before committing, that’s ok. The application has not issued a commit statement, we did not acknowledge the commit, so no contract, and it is totally the obligation of the application to handle this situation.
 
-If we fail the database after committing, the data is in the Redo Log. On Recovery, we load the unaltered image of the page from the tablespace, load the binary diff from the Redo Log and have recreated the dirty page in memory. Eventually, it will be checkpointed.
+If we fail the database after committing, the data is in the Redo-Log. On Recovery, we load the unaltered image of the page from the tablespace, load the binary diff from the Redo-Log and have recreated the dirty page in memory. Eventually, it will be checkpointed.
 
-If we fail the database during checkpointing in the write to the Double Write Buffer, we still have the unaltered image of the page in the table space, and the Redo Log entry, so it is as before.
+If we fail the database during checkpointing in the write to the Double Write Buffer, we still have the unaltered image of the page in the table space, and the Redo-Log entry, so it is as before.
 
 If we fail the database during checkpointing in the write to the tablespace, creating torn pages, in recovery we can read the pages from the DWB and move them into place, then move on.
 
@@ -170,13 +170,13 @@ We observe some action on the table metadata and then the log write from the com
 [pid 29441] fsync(3)                    = 0
 ```
 
-This is the only `fsync` that contributed to commit-Latency. The write is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo log during recovery.
+This is the only `fsync` that contributed to commit-Latency. The write is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo-log during recovery.
 
-The modified page is still in memory, though, and in order to reclaim redo log space, needs to be eventually checkpointed.
+The modified page is still in memory, though, and in order to reclaim redo-log space, needs to be eventually checkpointed.
 
 This happens later, and with many more `fsync` operations. It does happen in batch, for many commits and multiple pages, normally, but in our easily traceable test setup, it’s looking like a lot of overhead.
 
-During normal operations, a page often is modified in multiple commits over a short amount of time. Each of these commits is a separate redo log `fsync` (it's not, there are some ways to cheat a bit). But in the Buffer Pool, on the file side of things, all these changes are being accumulated on the dirty in-memory page, and get persisted into the tablespace in a single checkpoint write. In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.
+During normal operations, a page often is modified in multiple commits over a short amount of time. Each of these commits is a separate redo-log `fsync` (it's not, there are some ways to cheat a bit). But in the Buffer Pool, on the file side of things, all these changes are being accumulated on the dirty in-memory page, and get persisted into the tablespace in a single checkpoint write. In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.
 
 Also, during checkpointing, one Double Write Buffer worth of pages gets written out in a single sync operation, so we do see a far better page/sync and MB/sync ratio than in this test setup.
 
@@ -196,7 +196,7 @@ And there follows again an update of the metadata and a write to the actual tabl
 [pid 29179] fsync(10)                   = 0
 ```
 
-After this, the Redo Log is no longer needed and we can take note of this:
+After this, the Redo-Log is no longer needed and we can take note of this:
 
 ```console
 [pid 29187] pwrite64(3, "\200\201\23E\1\271\0&\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0\*\201\20\2\0\201"..., 512, 34426880) = 512
@@ -211,13 +211,13 @@ When you write (or delete) a lot of data, things are getting a bit complicated. 
 
 An application is performing an initial data load, and reading the equivalent of 100 GB of data one-table-at-a-time in a single commit.
 
-Transactions are large here, larger than a log buffer in memory can hold. In this case, we write out log buffers prematurely to the Redo Log, but without a commit flag at the end. If this crashed before the final commit, we would recover all of this from the Redo Log, then encounter the end of the log without a commit and enter a monstrous Rollback. In the past that was hideously slow, these days it is just slow.
+Transactions are large here, larger than a log buffer in memory can hold. In this case, we write out log buffers prematurely to the Redo-Log, but without a commit flag at the end. If this crashed before the final commit, we would recover all of this from the Redo-Log, then encounter the end of the log without a commit and enter a monstrous Rollback. In the past that was hideously slow, these days it is just slow.
 
 Moral: Really large transactions are less than ideal, but this is rare. Still once upon a time, I have been paid, as a MySQL consultant, to watch a 2h Rollback/Undo Log recovery.
 
-Loading a lot of data will fill up the Redo Log quickly, or it will dirty a large number of pages. Eventually the system will run out of either clean page or Redo Log space, and will feel what we call Checkpointing Pressure. If the Checkpointing Pressure becomes too large, it may even stall, not reacting to user commands for some time.
+Loading a lot of data will fill up the Redo-Log quickly, or it will dirty a large number of pages. Eventually the system will run out of either clean page or Redo-Log space, and will feel what we call Checkpointing Pressure. If the Checkpointing Pressure becomes too large, it may even stall, not reacting to user commands for some time.
 
-A system that is consistently seeing a lot of writes can profit from a large Redo Log, and that is a thing that can be configured.
+A system that is consistently seeing a lot of writes can profit from a large Redo-Log, and that is a thing that can be configured.
 
 ### Data Deletion
 

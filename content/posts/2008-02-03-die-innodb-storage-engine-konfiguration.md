@@ -24,7 +24,7 @@ Transaktion auch noch nicht persistent gemacht zu werden.
 InnoDB versucht, eine Transaktion im Speicher zusammen zu bauen. Dies ist
 der `innodb_log_buffer`. Er sollte ausreichend groß gewählt werden, daß eine
 solche Transaktion in den meisten Fällen im Speicher gehalten werden kann
-und nicht partiell in ein Redo Log geschrieben werden muß. Eine Größe von 1
+und nicht partiell in ein Redo-Log geschrieben werden muß. Eine Größe von 1
 MB bis 8 MB ist normal.
 
 Wenn die Transaktion comitted wird, muß InnoDB die Speicherseite von der
@@ -94,7 +94,7 @@ innodb_max_dirty_pages_pct = 90
 Relevante Zähler in `SHOW GLOBAL STATUS`:
 
 ```sql
-# Statuszähler für das Event "Redo Log voll"
+# Statuszähler für das Event "Redo-Log voll"
 Innodb_log_waits 
 
 # Statuszähler für das Event "Keine Seite
