@@ -83,3 +83,10 @@ Die Antwort war:
 
 > Dafür hatten wir [bei uns] die Mitschriften AG. Etwas anderer Studienablauf bei Nicht-Informatikern.
 
+**Edit:** Nachtrag.
+
+Einige Arbeitgeber insistieren dringend, daß "Mitarbeiter wenigstens einen Tag in der Woche im Büro sind", ohne das näher zu begründen.
+
+Bohrt man unauffällig und inoffiziell nach, heißt es "Wir haben sehr viele Expats, und wenn die statt von hier von ihrem Heimatland aus arbeiten, dann kommen wir von der Unternehmenssteuer her in Teufels Küche."
+
+Unter Umständen sollte man hier offener kommunizieren, und dann versuchen, kooperativ Lösungen zu finden, denn unerklärliches blockierendes Verhalten eines Arbeitgebers ist in diesem Zusammenhang nicht produktiv und führt wieder zur Kündigungswelle.
