@@ -11,6 +11,7 @@ tags:
 - mysqldev
 title: 'MySQL: automatic partitions surely would be nice'
 ---
+
 In [Deleting data]({{< ref "/content/posts/2020-09-24-mysql-deleting-data.md" >}}) we have been looking at a process that loads data into MySQL, leveraging partitions to make it easier and faster to later get rid of the data again. For this, we created three processes, a data loader process, and two observers - one for creating partitions, and one for deleting them.
 
 The observer processes have been running `ANALYZE TABLES` and then polling `INFORMATION_SCHEMA.PARTITIONS` every 1/10th of a second to check if intervention is needed. They then have been dynamically generating the necessary `ALTER TABLE` statements maintaining the proper partitioning of the table by adding and dropping additional partitions.
@@ -76,15 +77,15 @@ I could put the logic of the partitioner and dropper into stored procedures and 
 
 Except that would still fail if I insert too many rows in a single transaction.
 
-I may be able to run the calls to my stored procedures in an insert trigger, but that is overhead I'd rather not have for each row inserted. Also, I am pretty confident that the trigger will also trigger a number of bugs in rarely used code pathes. :-)
+I may be able to run the calls to my stored procedures in an insert trigger, but that is overhead I'd rather not have for each row inserted. Also, I am pretty confident that the trigger will also trigger a number of bugs in rarely used code paths. :-)
 
 ## Wishful thinking
 
 An actual solution would be a less cumbersome notation for partitions, specifically range partitioning by an auto_increment primary key, and range partitioning along a time dimensions. 
 
-I should be able to write how many partitions of which bucket size I want insteaf of maintaining a giant if-then-else of `VALUES LESS THAN` statements. SQL is supposed to be a declarative language, after all.
+I should be able to write how many partitions of which bucket size I want instead of maintaining a giant if-then-else of `VALUES LESS THAN` statements. SQL is supposed to be a declarative language, after all.
 
-For the time dimension, I should be able to specifify the same, in retention time and intervals for the buckets. MySQL would then create and drop partitions automatically, and generate the names for them automatically, too.
+For the time dimension, I should be able to specify the same, in retention time and intervals for the buckets. MySQL would then create and drop partitions automatically, and generate the names for them automatically, too.
 
 So something like the following made-up syntax:
 
