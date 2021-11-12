@@ -27,7 +27,7 @@ If the database does not change while we make the backup, the backup is internal
 
 The server will periodically start new binlogs: When it becomes too large, when the server restarts, or when we ask it to do so using a `FLUSH BINARY LOGS` command.
 
-Each data changing transaction is being assigned a unique binlog position, and this way we also get a total order of all transactions (and that is becoming a problem later in the game).
+Every transaction that changes data is being assigned a unique binlog position, and this way we also get a total order of all transactions (and that is becoming a problem later in the game).
 
 ![](/uploads/2020/11/replication-02.png)
 
@@ -47,10 +47,10 @@ In complicated cases (We might have changed a table definition wrongly) we might
 
 As early as MySQL 3.23.15 from May 2000, we have replication:
 
-- We restore our original servers data directory to a new machine, effectively cloning it.
+- We restore our original servers' data directory to a new machine, effectively cloning it.
 - We tell our clone the binlog position of the parent server it was created from.
-- We tell this new machine where the parent server is, and give it login credentials.
-- The cloned server will then login to the parent, download the binlog as it is written, and apply it.
+- We tell this new machine where the parent server is, and give it credentials to log in to that parent.
+- The cloned server will then log in to the parent, download the binlog as it is written, and apply it.
 
 This is exactly the same process as with a restore and then applying the binlog that has been created since the backup was made. But with replication, it is live and ongoing as new binlog is being created. As a result, we get a cloned server that executes the same statements as its upstream parent, keeping its internal state a mirror copy of the parent.
 
@@ -87,7 +87,7 @@ For that we need add a communication mechanism to the replica, in which it can s
 This is *Semi-Synchronous Replication*, *SSR*, in MySQL, and it comes with a number of caveats:
 
 - SSR has a timeout. If a transaction is not acknowledged in time, a message is error logged and the server reverts to regular asynchronous replication. It will flip back to SSR once a replica responds within the timeout window.
-- If a source has zero replicas and a really high timeout, it never receives an acknowledgement, and will essentially block all applications. If your requirement is “transactions must be persisted on more than a single machine to be valid”, this is the desired behaviour. If your requirement is “It is more important to persist things at all than to ever hang the business”, then ASR is better than SSR for your use case. Nonetheless we have plenty of outages because of this: primary servers ending up with zero replicas due to bugs or circumstances.
+- If a source has zero replicas and a really high timeout, it never receives an acknowledgement, and will essentially block all applications. If your requirement is “transactions must be persisted on more than a single machine to be valid”, this is the desired behaviour. If your requirement is “It is more important to persist things at all than to ever hang the business”, then ASR is better than SSR for your use case. Nonetheless, we have plenty of outages because of this: primary servers ending up with zero replicas due to bugs or circumstances.
 - SSR guarantees that at least one more copy of the transaction exists, but it does not say where. To build a resilient system, you need orchestration to find out where, and make sure you fail to that machine in order to be able to continue. We are using a special program for this kind of orchestration, and it is being ingeniously called [MySQL Orchestrator](https://github.com/openark/orchestrator).
 - Depending on where your replicas reside, the most advanced replica server may be in the same data center or AZ as the source. In a scenario where the entire AZ fails this does not help you at all.
 
@@ -130,7 +130,7 @@ insert into t values (rand());
 
 What is being logged is
 1. The RAND_SEED values to make the statement deterministic.
-2. The timestamp of the server when executing the statement (this will also make the NOW() function deterministic.
+2. The timestamp of the server when executing the statement (this will also make the NOW() function deterministic).
 3. The actual statement.
 
 Despite the warning, this replicates well, and has done so for the last 20 years. What does not replicate well at all, ever, is stuff like `UPDATE t SET x = x+1 LIMIT 10`. As this lacks an `ORDER BY` clause, the server is free to order the row updates as it wishes, and can (and in NDB cluster actually will!) update 10 random rows, different ones on each instance of replication. It is the `LIMIT` clause that makes this non-deterministic.
@@ -207,9 +207,9 @@ Since the earliest days of replication, we could filter the binlog on the primar
 
 Filtering the binlog is never a good idea: It will break your ability to perform point-in-time restores. Filtering the relay log can be done, but most of the config directives that do this are broken:
 
-- `replicate-do-db` and `replicate-ignore-db` are matching the current database in statement based replication, and the actual statements database in row based replication. The statement `use a; insert into b.t values (...);` will be filtered differently in SBR than in RBR under a `replicate-do-db=a` rule. With the default setting of `row-format=MIXED`, the behavior is random, depending on the row format chosen by mysql.
+- `replicate-do-db` and `replicate-ignore-db` are matching the current database in statement based replication, and the actual statements' database in row based replication. The statement `use a; insert into b.t values (...);` will be filtered differently in SBR than in RBR under a `replicate-do-db=a` rule. With the default setting of `row-format=MIXED`, the behavior is random, depending on the row format chosen by mysql.
 - `replicate-do/ignore-table` are tedious, they require you to state each table explicitly, and nobody really wants to use them/
-- `replicate-wild-do/ignore-table` work in SBR and RBR, but [precedence](https://dev.mysql.com/doc/refman/8.0/en/replication-rules-table-options.html) is complicated, and it is adviseable to use either only positive or only negative logic.
+- `replicate-wild-do/ignore-table` work in SBR and RBR, but [precedence](https://dev.mysql.com/doc/refman/8.0/en/replication-rules-table-options.html) is complicated, and it is advisable to use either only positive or only negative logic.
 
 With group replication, which we do not discuss here, any filtering will break consistency in the group, so any filters are forbidden.
 
@@ -228,7 +228,7 @@ When you increment the counter, the entire row is logged, twice: Once as a pre-i
 
 This is how we got the setting `binlog-row-image`, which can be `FULL` (the default), `NOBLOB` or `MINIMAL`. In `NOBLOB` mode, blobs and text fields are not logged unless they change. In `MINIMAL` mode, the pre-image contains only the primary key, and the post-image contains only the changed fields new values.
 
-We can use RBR in `FULL` mode, not only for replication, but also for Change Data Capture, to feed Hadoop and Kafka with it. On the other hand, with  replication chains that are blobbyrequire `NOBLOB` or `MINIMAL` mode to not die on us.
+We can use RBR in `FULL` mode, not only for replication, but also for Change Data Capture, to feed Hadoop and Kafka with it. On the other hand, with  replication chains that are blobby require `NOBLOB` or `MINIMAL` mode to not die on us.
 
 ## Row Based Replication and Primary Keys
 
