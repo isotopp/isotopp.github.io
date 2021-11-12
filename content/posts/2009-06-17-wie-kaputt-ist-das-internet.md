@@ -9,9 +9,9 @@ title: Wie 'kaputt' ist das Internet?
 ---
 Jemand fragt mich per Mail: 
 
-> Was ich wissen möchte: Wieviel Geräte "im Internet", also bei Providern (nicht bei einem speziellen, sondern bei allen) und im Backbone, sind typischerweise zu einem Zeitpunkt "kaputt" (falsch konfiguriert, abgeraucht, in Wartung, nicht verfügbar)?
+> Was ich wissen möchte: Wie viel Geräte "im Internet", also bei Providern (nicht bei einem speziellen, sondern bei allen) und im Backbone, sind typischerweise zu einem Zeitpunkt "kaputt" (falsch konfiguriert, abgeraucht, in Wartung, nicht verfügbar)?
 > 
-> Die Frage kam neulich auf, als wir über IP fachsimpelten (jaja, fast Stammtischniveau), und uns fragten, wie nötig die lokale Wegfindung ist, die IP macht, und wie viel Arbeit sich TCP auf der Empfängerseite mit der Sortierung der Pakete machen muss.
+> Die Frage kam neulich auf, als wir über IP fachsimpelten (Ja, fast Stammtischniveau), und uns fragten, wie nötig die lokale Wegfindung ist, die IP macht, und wie viel Arbeit sich TCP auf der Empfängerseite mit der Sortierung der Pakete machen muss.
 >
 > Es ist klar, daß es da keine harten Zahlen gibt. 
 > Aber Deine Schätzung ist besser als meine, soviel wissen wir schon.
@@ -25,7 +25,7 @@ Das ist auf vielen Ebenen eine interessante und komplizierte Frage. Man kann sie
 
 Einmal geht es um Geräteausfall - aber Geräte fallen nicht einzeln aus, insbesondere Router nicht.
 Denn hinter Routern hängen andere Geräte und ein Ausfall eines Routers bedingt auch den Ausfall aller Komponenten 'hinter' dem Router, falls kein redundanter Pfad besteht. 
-Auch stehen Router nicht alleine auf weiter Flur, sondern in Rechenzentren in Racks, abhängig von Klimaanlangen, Stromzuleitungen und anderen Komponenten.
+Auch stehen Router nicht alleine auf weiter Flur, sondern in Rechenzentren in Racks, abhängig von Klimaanlagen, Stromzuleitungen und anderen Komponenten.
 Viele dieser Komponenten sind redundant, aber abhängig vom Fehlerszenario kann diese Redundanz unter Umständen nicht wirksam werden - es sind schon ganze Rechenzentren mit redundanter Klimatisierung abgeschaltet worden, weil die (notwendig nicht redundante) Steuerung der Klimaanlage fehlerhaft programmiert war.
 
 Wenn man also Ausfallwahrscheinlichkeiten und ihre Auswirkungen hier diskutieren will, dann landet man sehr schnell bei Ausfallbäumen und recht komplizierten mathematischen Modellen mit bedingten Wahrscheinlichkeiten. 
@@ -50,9 +50,9 @@ Evolutionäre Modelle, in denen Phasen langer Stabilität in großen Gebieten un
 ([Punctuated equilibrium](http://en.wikipedia.org/wiki/Punctuated_equilibrium)) 
 erzeugen wahrscheinlich bessere Mathematik auf diesem Gebiet.
 
-Aber Router arbeiten nicht nur über Routingprotokolle synchronisiert geographisch abgestimmt zusammen, sondern Router haben auch Tricks, mit denen sie die Tatsache auszunutzen versuchen, daß über dem verbindungslosen IP in vielen Fällen ein verbindungsorientiertes Protokoll in den Schichten 4 oder 5 und höher liegt.
+Aber Router arbeiten nicht nur über Routingprotokolle synchronisiert geografisch abgestimmt zusammen, sondern Router haben auch Tricks, mit denen sie die Tatsache auszunutzen versuchen, daß über dem verbindungslosen IP in vielen Fällen ein verbindungsorientiertes Protokoll in den Schichten 4 oder 5 und höher liegt.
 
-Im einfachsten Fall und ohne Kooperation untereinander sortiert man Routingeinträge aktiver Netze einfach in der Routingtabelle nach vorne oder lädt sie in einen speziellen Routing-Cache, wenn man außerdem Kooperation von Routern untereinander annehmen darf, werden Pakete sogar gekapselt oder getagged und so zu einer Verbindung gehörende Pakete erkennbar und identisch geroutet - im Extremfall wird für so eine getaggte Verbindung eine Route durch mehrere Router etabliert und nur für die Erstentscheidung CPU im Router verbraucht. Folgepakete mit demselben Tag werden dann von spezieller Hardware in den Netzkarte des Routers abgehandelt, also quasi mit dem Stammhirn geroutet.
+Im einfachsten Fall und ohne Kooperation untereinander sortiert man Routen aktiver Netze einfach in der Routingtabelle nach vorne oder lädt sie in einen speziellen Routing-Cache, wenn man außerdem Kooperation von Routern untereinander annehmen darf, werden Pakete sogar gekapselt oder getaggt und so zu einer Verbindung gehörende Pakete erkennbar und identisch geroutet - im Extremfall wird für so eine getaggte Verbindung eine Route durch mehrere Router etabliert und nur für die Erstentscheidung CPU im Router verbraucht. Folgepakete mit demselben Tag werden dann von spezieller Hardware in der Netzkarte des Routers abgehandelt, also quasi mit dem Stammhirn geroutet.
 
 Die Art und Weise, wie im Internet Routen gefunden werden, garantiert auch nicht, daß die Routen symmetrisch sind.
 Tatsächlich sind 
