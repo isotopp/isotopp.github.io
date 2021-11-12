@@ -59,7 +59,7 @@ Buy all his books, but if you are going to buy only one, choose this one.
 
 NULL values do not behave like `False`, and not like `True`. They also do not behave like `undef`, `nil` or `None` in the programming language of your choice.
 
-They also do not behave completely consistently. You need to learn the cases and actively look out for them. I am sorry, but SQL is 40+ years old, and sometime it shows.
+They also do not behave completely consistently. You need to learn the cases and actively look out for them. I am sorry, but SQL is 40+ years old, and sometimes it shows.
 
 Because of all this, we discourage NULL in schema definitions. When you want NULL values (or get them without wanting them, for example in a LEFT JOIN), you need to be able to tell their story. That is, you are expected to explain what they mean, and if that is not exactly one thing, you are looking at a problem. You are also expected to handle them.
 
@@ -320,8 +320,8 @@ root@localhost [kris]> select * from t as a join t as b on a.b <=> b.b;
 ## TL;DR
 
 - Do not define tables with nullable columns. You are not prepared to handle them.
-  - UNIQUE indexes on nullable columns aren’t.
-- When having nullable columns, or producing nullable columns in the right hand side of a LEFT JOIN, wrap the results in a COALESCE().
+  - UNIQUE indexes on nullable columns aren't.
+- When having nullable columns, or producing nullable columns in the right-hand side of a LEFT JOIN, wrap the results in a COALESCE().
 - Know your NULL math, operators and functions.
 
 And most importantly:
