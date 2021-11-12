@@ -11,33 +11,34 @@ tags:
 - erklaerbaer
 title: MySQL Foreign Keys and Foreign Key Constraints
 ---
+
 Foreign Keys are what links tables together and turns a set of tables into a model. Foreign Key Constraints are conditions that must be true for the content of the tables to be an internally consistent model. Foreign Key Constraints can be defined and enforced in InnoDB, but this comes at a considerable price, and for some it may hurt more than it is worth.
 
 ![](/uploads/2020/08/fk.png)
 
-*A very simple shop as a ER-model. `order_id` is the primary key of the Orders table.  `customer_id` in the Orders table is a foreign key: The primary key of another ("foreign") table in this table. Foreign keys can model relationships between tables ("entities") in an entity-relationship diagram.*
+*A very simple shop as an ER-model. `order_id` is the primary key of the Orders table.  `customer_id` in the Orders table is a foreign key: The primary key of another ("foreign") table in this table. Foreign keys can model relationships between tables ("entities") in an entity-relationship diagram.*
 
 ## Entities and their relationships
 
 In Entity-Relationship modelling we are using tables in a database to model entities in the real world. Each entry in such a table is meant to represent a "thing" in the real world. For example, in our very simple shop model above, we have Articles, and Customers as real world "things" in our model. We also have Orders, and Orders can have multiple lines, Orderlines. Each Orderline connects an Order with an Article.
 
-In order to be able to distinguish real world things in our tables, we require each entry to have a unique identifier, the Id. These will then show up in the real world as customer numbers, order numbers or article numbers. The uniqueness of these numbers in their respective tables makes them a Key.
+In order to be able to distinguish real world things in our tables, we require each entry to have a unique identifier, the id. These will then show up in the real world as customer numbers, order numbers or article numbers. The uniqueness of these numbers in their respective tables makes them a Key.
 
 ## Keys and Indexes
 
 Technically a Key does not have to have a corresponding Index in the table: Keys and Indexes are separate things.
 
-One - the Key - is a property of the model: "There exists a bijective function between the `customer_id` and the real world customers", meaning "Each customer has a `customer_id`", and "Any two different customers have different `customer_id`s". This is what allows us to use `customer_id`s as stand-ins for all the other values in the Customers table, and for the real world customers themselves, for the purpose of modelling them in the database.
+One - the Key - is a property of the model: "There exists a bijektive function between the `customer_id` and the real world customers", meaning "Each customer has a `customer_id`", and "Any two different customers have different `customer_id`s". This is what allows us to use `customer_id`s as stand-ins for all the other values in the Customers table, and for the real world customers themselves, for the purpose of modelling them in the database.
 
 The other - the Index - is a data structure that allows us to look up the other values of a Customer fast, given any `customer_id` value.
 
-There is no need for a Key to have an Index, but we need to ensure that a new `customer_id` is unique. We are also given `customer_id`s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up `customer_id`s in the Customers table all of the time, and without the index we can only resort to a full table scan for this. This is going to be so slow that the table will be without any real-world value for us.
+There is no need for a Key to have an Index, but we need to ensure that a new `customer_id` is unique. We are also given `customer_id`s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up `customer_id`s in the Customers table all the time, and without the index we can only resort to a full table scan for this. This is going to be so slow that the table will be without any real-world value for us.
 
 Practically, a Key and an Index go so much hand-in-hand that database people are using both terms interchangeably when they are clearly different things: An average database person will say Key, when they mean Index or the other way around, because in their minds having a Key without an Index is Not A Thing at all.
 
 There may be multiple things - or combinations of things - that uniquely identify real world things in a given table of our model of the world. We call these Key Candidates. We then elect one to be the actual Key (or make one up, a Synthetic Key such as a `customer_id`), and call that the Primary Key or just the Key.
 
-In the mind of a database person, the Primary Key is the row, and the row is the Primary Key. That is what bijective functions are for.
+In the mind of a database person, the Primary Key is the row, and the row is the Primary Key. That is what bijektive functions are for.
 
 Technically, a table doesn't need to not have a Primary Key. Practically, this creates so many kinds of problems that many databases have options to prevent this: They will reject table definitions without a primary key definition for good, and responsible database administrators enable these restrictions.
 
@@ -61,7 +62,7 @@ create table b (
 
 In this example the table `a` has a primary key `a.a_id`. Table `b` contains a reference to `a` in the form of the column `b.a_id`. This column is a foreign key. Technically, "foreign key" is a meaningless term, so actually "`b.a_id` is a foreign key of `a` in `b`" to be precise. When talking about tables, this is often implicitly clear, so many people omit this and just say "foreign key" and assume you understand what is means.
 
-As can be seen, table `b` is also defined with an `index a_id (a_id)` - what we model here ia a 1:n relationshop between `a` and `b` (an "a" can have many "b"), and we expect to look up all the `b`'s for a given `a` a lot, so having that index is a no-brainer.
+As can be seen, table `b` is also defined with an `index a_id (a_id)` - what we model here ia a 1:n relationship between `a` and `b` (an "a" can have many "b"), and we expect to look up all the `b`'s for a given `a` a lot, so having that index is a no-brainer.
 
 ```sql
 select *
@@ -108,7 +109,7 @@ There are many things to this, and all of them are required to make this work.
 - We have to define an index in the foreign key column in `b`. When we don't, MySQL does this automatically and uses the constraint name for this. Leave off `index a_id (a_id)` from our `CREATE TABLE b` statement, and see what you get.
 - The constraint we define can get a name, or MySQL chooses one when we leave of the `constraint a_id_exists` part of the statement.
 - We then describe which of "our" columns points to what column in the other table: `foreign key (a_id) references a(a_id)`.
-- Finally we get to say what shall happen when there are update or delete statements that would invalidate the relationship. This part is also optional.
+- Finally, we get to say what shall happen when there are update or delete statements that would invalidate the relationship. This part is also optional.
 
 Thus, the shortest possible definition of `b` would be
 
@@ -189,7 +190,7 @@ ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint f
 
 We can change the `b.aid` to values present in the `a.a_id` table. Changing them to invalid values is being rejected.
 
-Likewise we are prevented from deleting a row from `a` if there are still values in `b.a_id` referencing this row, and summary deletion, truncation or dropping of table `a` are also prevented as long as any reference from `b` to `a` exists.
+Likewise, we are prevented from deleting a row from `a` if there are still values in `b.a_id` referencing this row, and summary deletion, truncation or dropping of table `a` are also prevented as long as any reference from `b` to `a` exists.
 
 ```sql
 mysql> delete from a where a_id = 20;
@@ -219,7 +220,7 @@ create table d (
   foreign key (parent) references d (id) );
 ```
 
-This is a valid definition that is accepted by MySQL. In order for an insert to succeed, we would have to provide a valid value for `d.parent`, but the table is empty and we did not allow `NULL`.
+This is a valid definition that is accepted by MySQL. In order for an insert to succeed, we would have to provide a valid value for `d.parent`, but the table is empty, and we did not allow `NULL`.
 
 The only valid thing we could insert is the value we are inserting right now, and that value is then undeletable.
 
@@ -252,13 +253,13 @@ Both statements define the same tree structure, but one does it from the bottom 
 
 The same would be true if we used multiple insert statements inside the same transaction: Even if the entire set of rows is only committed at the end of the transaction, statements inside the transaction suddenly have to have an order, and all referential integrity constraints have to be valid at all times ("for each row").
 
-For individual tables or simple 1:1 relationships this matters little, but referential integrity is transitive and it is very easy to build completely validated structures that become uninsertable, unupdateable or undeletable, or to build referential integrity puzzles.
+For individual tables or simple 1:1 relationships this matters little, but referential integrity is transitive, and it is very easy to build completely validated structures that become uninsertable, unupdateable or undeletable, or to build referential integrity puzzles.
 
-The SQL Standard definies behavior for this - checking referential integrity only at the end of a transaction - but InnoDB does not implement this. This makes working with foreign key constraints very hard and limits their usefulness.
+The SQL Standard defines behavior for this - checking referential integrity only at the end of a transaction - but InnoDB does not implement this. This makes working with foreign key constraints very hard and limits their usefulness.
 
 ## Walking our tree
 
-But at least we can walk our tree, and be sure it is well defined:
+But at least we can walk our tree, and be sure it is well-defined:
 
 ```sql
 with recursive tree as (
