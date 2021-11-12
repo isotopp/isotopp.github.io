@@ -7,6 +7,7 @@ tags:
 - lang_de
 - blog
 - politik
+- work
 ---
 
 Ein guter Freund sinnierte gestern mit anderen Freunden von mir über die Situation auf der Arbeit und schrieb mir heute:
@@ -14,7 +15,7 @@ Ein guter Freund sinnierte gestern mit anderen Freunden von mir über die Situat
 > Wie man es auch dreht und wendet: Corona ist auch ein Lackmustest für Unternehmen in ihrer Rolle als Arbeitgeber.
 > Anhand der vierten Welle lässt sich das hervorragend nachvollziehen. 
 > 
-> Denn Unternehmen und Organisationen, denen am Wohl ihrer Mitarbeiter/-innen etwas liegt, haben schon vor Wochen überall dort, wo es möglich ist, ihre Leute kategorisch wieder ins Home Office geschickt und Präsenzveranstaltungen untersagt.
+> Denn Unternehmen und Organisationen, denen am Wohl ihrer Mitarbeiter/-innen etwas liegt, haben schon vor Wochen überall dort, wo es möglich ist, ihre Leute kategorisch wieder ins Homeoffice geschickt und Präsenzveranstaltungen untersagt.
 > Das hat selten etwas damit zu tun, dass diese Unternehmen herausragend schlau wären. 
 > Viel mehr schauen diese Unternehmen sich ausgehend vom Wunsch, die eigenen Leute nicht zu gefährden, ihr Corona-Handling dort ab, wo es funktioniert.
 > 
@@ -29,14 +30,14 @@ Ein guter Freund sinnierte gestern mit anderen Freunden von mir über die Situat
 > Die Menschen in diesen Unternehmen sollten das Corona-Handling ihres Arbeitgebers jedenfalls genau beobachten. 
 > Wer die Belegschaft unabhängig vom Impfstatus wieder ins Büro ruft, betreibt das Geschäft der Impfgegner.
 > Denn dann entsteht der Eindruck, der Impfstatus sei im Wesentlichen egal.
-> Wer nur geimpfte Menschen notlos ins Büro ruft, schafft dadurch indirekt sogar Incentives für Impfgegner, weil Home Office dann zu einem Privileg für diese wird.
+> Wer nur geimpfte Menschen notlos ins Büro ruft, schafft dadurch indirekt sogar Incentives für Impfgegner, weil Homeoffice dann zu einem Privileg für diese wird.
 > 
 > Beides wäre unerträglich. 
 > Und Menschen in diesen Firmen sollten ihren AG durchaus wissen lassen, dass das unerträglich ist. 
 > Falls alle Stricke reißen:
 > Kündigen und Namen der Manager notieren, damit man in deren Fängen sicher nie mehr landet.
 
-Bei den Amis heisst das [The Great Resignation](https://en.wikipedia.org/wiki/Great_Resignation):
+Bei den Amis heißt das [The Great Resignation](https://en.wikipedia.org/wiki/Great_Resignation):
 
 > The COVID-19 pandemic has allowed workers to rethink their careers, work conditions, and long-term goals.
 > As many workplaces attempted to bring their employees in-person, workers desired the freedom to work from home given during the pandemic.
@@ -53,9 +54,9 @@ Es sind die Läden, die die Realität der vergangenen 2 Jahre negieren, die jetz
 Und Mitarbeiter, die seit 2 Jahren bewiesen haben, daß sie sehr gut und erfolgreich arbeiten können,
 
 - ohne daß sie jeden Tag 2 Stunden im Berufsverkehr verschwenden,
-- ohne daß das Kind als Schlüsselkind nach Hause kommen muß,
+- ohne daß das Kind als Schlüsselkind nach Hause kommen muss,
 - ohne daß ihnen das Management auf die Bildschirme glotzt, 
-- und ohne daß sie 3 von 8 Stunden pro Tag in Meetings zu bringen von denen für sie maximal 20 Minuten relevant sind,
+- und ohne daß sie 3 von 8 Stunden pro Tag in Meetings zu bringen, von denen für sie maximal 20 Minuten relevant sind,
 
 solche Leute brechen jetzt auf - in Firmen, die anders arbeiten, in Berufe, die das nicht notwendig machen oder in ein Umfeld, das weniger dem späten 19. Jahrhundert verhaftet ist. Die Zukunft der Arbeit ist gerade angekommen, und die Leute ziehen um.
 
