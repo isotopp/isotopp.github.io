@@ -11,7 +11,11 @@ tags:
 - mysqldev
 title: 'MySQL: Deleting data'
 ---
-Completing the data lifecycle is often harder than originally expected: Deleting data can cost sometimes way more than inserting it in the first place. MySQL Partitions can offer a way out. We have an [earlier post]({{< ref "/content/posts/2020-05-13-deleting-data-from-mysql.md" >}}) on the subject.
+
+Completing the data lifecycle is often harder than originally expected:
+Deleting data can sometimes cost way more than inserting it in the first place.
+MySQL Partitions can offer a way out. 
+We have an [earlier post]({{< ref "/content/posts/2020-05-13-deleting-data-from-mysql.md" >}}) on the subject.
 
 ## A sample table, and a problem statement
 
@@ -74,11 +78,11 @@ The log table has three columns: `id`, an auto_increment counter, and two column
 
 If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from [ALTER TABLE for UUID]({{< ref "/content/posts/2020-09-22-alter-table-for-uuid.md" >}}) that the physical order of any InnoDB table is by primary key - our id-counter.
 
-Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffeled around in the tree.
+Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left-hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffled around in the tree.
 
 ![](/uploads/loeschen_einfuegen.png)
 
-*New data is added to the right hand side of the B+-Tree, while old data is being deleted at the left hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.*
+*New data is added to the right-hand side of the B+-Tree, while old data is being deleted at the left-hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.*
 
 Instead, we are defining partitions. In our case, we are using the simplest definition possible: A `PARTITION BY RANGE` on the primary key column. We are making bins of 10.000 rows each, because that is convenient for our demonstration here.
 
@@ -139,7 +143,7 @@ The Partitioner is an endless loop that runs an `ANALYZE TABLE data` command to 
 
 If there are fewer than 5 partitions in total, we generate new partitions no matter what.
 
-If there are not at least 5 partitions with no rows int them, we create new partitions.
+If there are not at least 5 partitions with no rows' int them, we create new partitions.
 
 If we did nothing, we wait for 1/10th of a second and then check again.
 
@@ -333,4 +337,4 @@ kris@localhost [kris]> select count(*) from data;
 1 row in set (0.01 sec)
 ```
 
-The complete example is available [on github.com](https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions).
+The complete example is available [on GitHub.com](https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions).
