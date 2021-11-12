@@ -98,7 +98,7 @@ everybody expects.
 Relaxing the disk write constraints speeds up writing considerably, because
 we no longer have to wait for the slow disk to acknowledge the writes.
 
-Further relaxing the disk write constraints does not make things faster,
+Relaxing the disk write constraints any further does not make things faster,
 just more dangerous:
 
 ```console
@@ -195,7 +195,7 @@ Execution time goes up further, from 20.4s to 25.3s.
 
 We can query the database differently, in a two stage process, allowing for
 more complex updates. Here we read a value from the database into the
-application (read phase), change it applicationn side (modify phase) and
+application (read phase), change it application side (modify phase) and
 then write the changed value back.
 
 Doing this is called a read-modify-write cycle.
@@ -224,19 +224,19 @@ def rmw_false(name, id, count):
         db.commit() 
 ```
 
-In this piece of code we again count to 1000, but we are doing it in a three
-step process, called a read-modify-write cycle. We also implemented it
+In this piece of code we again count to 1000, but we are doing it in a 
+three-step process, called a read-modify-write cycle. We also implemented it
 wrongly for demonstration purposes:
 
-- The read phase is done with a `SELECT` statement that retrieves the
+- The "read phase" is done with a `SELECT` statement that retrieves the
   current counter value from the database.
 
-- The modify phase increments the counter, application side, in memory. This
+- The "modify phase" increments the counter, application side, in memory. This
   can in real applications be an arbitrarily complicated process that takes
   a non-trivial amount of time and maybe even connects to different backend
   systems and services.
 
-- The write phase then uses `UPDATE` to write back the previously read value
+- The "write phase" then uses `UPDATE` to write back the previously read value
   to the database.
 
 There is no error handling, and - for the purposes of demonstration - no
@@ -290,7 +290,7 @@ $ mysql -u kris -pgeheim -e 'select * from demo where id = 3' kris
 The way we write this code, we extract the value from the database into the
 application, getting a value - say 10, and increment that.
 
-Meanwhile the other instance also reads the database, and gets the same
+Meanwhile, the other instance also reads the database, and gets the same
 value, also 10.
 
 We increment, and write back the new value, 11. Then the other instance does
