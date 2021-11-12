@@ -167,7 +167,7 @@
 <p><em>Symbol, Font, Encoding and Collation - what do they even mean?</em></p>
 <p>A character set is a collection of symbols that belong together. That is a completely abstract thing, and also almost useless. The only thing you can do with a character set is decide if a specific symbol is legal within a context or not. And, if it is legal, what position the symbol in the character set has (the code point).</p>
 <p>To be able to print symbols they need a shape, which is defined in a Font. For example is this here: &ldquo;<span style="font-family: Arial; font-size: 24px; font-weight: normal;">ö</span>&rdquo; a letter &ldquo;ö&rdquo; in Arial, and &ldquo;<span style="font-family: 'Times New Roman'; font-size: 24px; font-style: normal;">ö</span>&rdquo; the same thing in a different font, Times New Roman.</p>
-<p>To be able to use symbols with computers they need a binary represenation of their code point, an encoding. In my Terminal we are using utf8. The Text &ldquo;Köhntopp&rdquo; is being represented as the byte sequence <code>4b c3 b6 68 6e 74 6f 70 70</code>. <a href="https://www.compart.com/en/unicode/U&#43;00F6" target="_blank" rel="noopener">LATIN SMALL LETTER O WITH DIARESIS</a>
+<p>To be able to use symbols with computers they need a binary representation of their code point, an encoding. In my Terminal we are using utf8. The Text &ldquo;Köhntopp&rdquo; is being represented as the byte sequence <code>4b c3 b6 68 6e 74 6f 70 70</code>. <a href="https://www.compart.com/en/unicode/U&#43;00F6" target="_blank" rel="noopener">LATIN SMALL LETTER O WITH DIARESIS</a>
 
  has the code point <code>0x00F6</code>, which is being represented as <code>C3 B6</code> in utf8 encoding.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span><span class="nb">echo</span> Köhntopp <span class="p">|</span> hexdump -C
@@ -178,7 +178,7 @@
 <span class="go">00000000  4b f6 68 6e 74 6f 70  70 0a                       |K.hntopp.|
 </span><span class="go">00000009
 </span></code></pre></div><p>If you have two character sequences and want to compare or sort them, you need a set of comparison and ordering rules, a collation. You can think of a collation as a canonical representation of an encoding for comparison and sorting.</p>
-<p>For example, the collation latin1_german1_ci represents &ldquo;Köhntopp&rdquo; internally as &ldquo;kohntopp&rdquo; and uses this internal represenation to compare it to other strings or sort it. But in storage we always find the original string, &ldquo;Köhntopp&rdquo;.</p>
+<p>For example, the collation latin1_german1_ci represents &ldquo;Köhntopp&rdquo; internally as &ldquo;kohntopp&rdquo; and uses this internal representation to compare it to other strings or sort it. But in storage we always find the original string, &ldquo;Köhntopp&rdquo;.</p>
 <p>There is a second german language collation, latin1_german2_ci, which internally writes &ldquo;Köhntopp&rdquo; as &ldquo;koehntopp&rdquo; to compare and sort - but it will also save the same &ldquo;Köhntopp&rdquo; to disk.</p>
 <h2 id="the-variants-of-unicode-and-unicode-encoding">
     <a href="#the-variants-of-unicode-and-unicode-encoding">
@@ -193,8 +193,8 @@
 
  for details.</p>
 </blockquote>
-<p>Unicode development started in 1991 as a 16 bit character set, and it was assumed that this is sufficient to hold all characters from all possible writing systems. Unicode was design as a superset of ISO-8859-1, so codepoints that exist in both character sets are identical.</p>
-<p>In 1996 it became clear that a set of 65536 characters was not sufficient, and Unicode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.</p>
+<p>Unicode&rsquo;s development started in 1991 as a 16 bit character set, and it was assumed that this is sufficient to hold all characters from all possible writing systems. Unicode was design as a superset of ISO-8859-1, so codepoints that exist in both character sets are identical.</p>
+<p>In 1996, it became clear that a set of 65536 characters was not sufficient, and Unicode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.</p>
 <p>As of March 2020, Unicode 13.0 contains some 140k characters from 154 writing systems. The definition of Unicode 13.0 currently allows for 1.112064 possible characters. Some code points in the lower 65536 characters are reserved to encode <em>surrogate pairs</em>, basically extension characters for the original 16 bit character set, resulting in a weird number for the total possible characters.</p>
 <p>16 Bit Unicode can be stored as UCS2 (what Windows NT used to use) - a fixed length encoding, which instead of 8 bit characters now uses 16 bit characters. When writing western languages, every other byte in text is 0.</p>
 <p>UTF-16 extends UCS2 and uses variable length encoding of 2 bytes or 4 bytes to allow representation of all unicode characters, even those beyond the initial 65536 characters.</p>
@@ -215,13 +215,13 @@
 <p>The other thing in MySQL that <em>has</em> a character set and a collation is the connection. For the purpose of our discussion the connection represents the character set that your terminal or application uses in the server. So when you tell the server with <code>SET NAMES</code> what you are using, the server believes you.</p>
 <p>MySQL converts, if possible, between connection and column. So when you send a string in utf8 through your connection that ends up being stored in a latin1 column, MySQL will turn that <code>0xc3b6</code> in the connection into a <code>0xf6</code> on disk. On read, it will do the opposite, if necessary and possible.</p>
 <p>MySQL also converts if you convert columns. So if you <code>ALTER TABLE t MODIFY COLUMN c VARCHAR(80) CHARSET utf8</code> and that was previously a latin1 column, MySQL will take the <code>0xf6</code>es and turn them into <code>0xc3b6</code>es instead. All of that is automatic, safe and lossless, if possible. There are warnings and errors if not.</p>
-<p>But let&rsquo;s look at the details step by step.</p>
+<p>But let&rsquo;s look at the details, step by step.</p>
 <h2 id="setting-charset-and-collation-on-a-column">
     <a href="#setting-charset-and-collation-on-a-column">
 	Setting charset and collation on a column
     </a>
 </h2>
-<p>Every string in MySQL is labeled with an charset and a collation. For database objects that happens at the column level: A column with CHAR, VARCHAR, or any TEXT type always has a charset and a collation. The same can be true for an ENUM type that contains strings.</p>
+<p>Every string in MySQL is labeled with a charset and a collation. For database objects that happens at the column level: A column with CHAR, VARCHAR, or any TEXT type always has a charset and a collation. The same can be true for an ENUM type that contains strings.</p>
 <p>If you define these without specifying, the column will inherit the table defaults. If you specify no table default, the table will inherit the database default, which in turn inherits from the server default, which is defined in the <code>my.cnf</code>:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[mysqld]
 </span><span class="go">default-character-set=utf8mb4
@@ -247,7 +247,7 @@
 	String Literals
     </a>
 </h2>
-<p>A string literal in MySQL is written in double quotes, &ldquo;a string literal&rdquo;. When nothing else is specified, the connections character set and collation are being used.</p>
+<p>A string literal in MySQL is written in double quotes, &ldquo;a string literal&rdquo;. When nothing else is specified, the connections' character set and collation are being used.</p>
 <p>An identifier in MySQL is written as a bare word <code>tablename</code> or written in backticks `<code>weird tablename</code>`. When written in backticks, the identifier can contain any utf8 unicode character (unfortunately, not utf8mb4 character, so you have to constrain yourself to the BMP). <em>Don&rsquo;t do this in production, though.</em></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="o">`</span><span class="err">❤</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="o">`</span><span class="err">✔</span><span class="o">`</span><span class="w"> </span><span class="nb">serial</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">;</span><span class="w">
 </span><span class="w"></span><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">07</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
@@ -290,8 +290,8 @@
 	Charset on a connection
     </a>
 </h2>
-<p>The <em>other</em> thing that has a character set is the connection from the client to the database server. That is required, because when you type for example &ldquo;ö&rdquo; into a utf8 terminal to send it to <code>kris.chset</code>, column <code>t</code> as defined above, it has to be converted from utf8 (<code>C3B6</code>) to latin1 (<code>F6</code>), because the column <code>t</code> is defined with a charset of latin1.</p>
-<p>MySQL does that automatically for you, if a conversion exists: You sent a utf8 <code>c3b6</code>, MySQL detects the column defined as latin1, and tries to convert, yielding <code>f6</code>, which is then stored.</p>
+<p>The <em>other</em> thing that has a character set is the connection from the client to the database server. That is required, because when you type for example &ldquo;ö&rdquo; into an utf8 terminal to send it to <code>kris.chset</code>, column <code>t</code> as defined above, it has to be converted from utf8 (<code>C3B6</code>) to latin1 (<code>F6</code>), because the column <code>t</code> is defined with a charset of latin1.</p>
+<p>MySQL does that automatically for you, if a conversion exists: You sent an utf8 <code>c3b6</code>, MySQL detects the column defined as latin1, and tries to convert, yielding <code>f6</code>, which is then stored.</p>
 <p>How do you tell MySQL what charset the connection uses?</p>
 <p>You can set a default with <code>default-character-set</code> and <code>default-encoding</code> in the <code>[mysql]</code> section of your <code>my.cnf</code> to tell MySQL what character set your terminal uses, or use the command <code>SET NAMES</code> to change it on the fly.</p>
 <p>If I am setting up my terminal to send utf8, and <code>SET NAMES utf8</code>, these things match and all will be well and converted correctly, if at all possible.</p>
@@ -323,7 +323,7 @@
 	MySQL converts automatically
     </a>
 </h2>
-<p>Now, let&rsquo;s use a utf8-Client to store data into a column into <code>kris.chset.t</code>, which is latin1. What will happen?</p>
+<p>Now, let&rsquo;s use an utf8-Client to store data into a column into <code>kris.chset.t</code>, which is latin1. What will happen?</p>
 <p>MySQL converts this automatically and we can show this.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">root</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kris</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="k">names</span><span class="w"> </span><span class="n">utf8</span><span class="p">;</span><span class="w">
 </span><span class="w"></span><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
@@ -456,10 +456,10 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&#34;kohntopp&#34;</span><span class="p">;</span><span class="w">
 </span></code></pre></div><p>may find different results depending on the optimizer using an index (pre-update rules apply until the index is recreated) or not using an index (post-update rules apply immediately). This is unpredictable, and hence bad behavior.</p>
 <p>It was decided that MySQL will, in order to simplify updates, never do this ever again.</p>
-<p>Instead fixes and changes will be publicised under new names so that changes could be made at will and a pace set by the user by <code>ALTER TABLE</code>ing the index definitions from the old collation name to the new name.</p>
-<p>Hence we have utf8 (the 16-bit character set) and utf8mb4 (the larger than 16 bit character set) that was defined later. And we have even collations referring to different UCA rules for collating utf8mb4 in order to allow controlled migration to newer, better comparison rules.</p>
+<p>Instead, fixes and changes will be publicised under new names so that changes could be made at will and a pace set by the user by <code>ALTER TABLE</code>ing the index definitions from the old collation name to the new name.</p>
+<p>Hence, we have utf8 (the 16-bit character set) and utf8mb4 (the larger than 16 bit character set) that was defined later. And we have even collations referring to different UCA rules for collating utf8mb4 in order to allow controlled migration to newer, better comparison rules.</p>
 <p>The same is true for Timezones: MySQL does not use operating system sort and comparison rules as offered in the glibc functions, but brings its own, and it also does not use Timezone functions and rules as offered by glibc, but again uses its own.</p>
-<p>That provides stable and controlled migration that is also independent of operating system updates - the same comparison and index rules exist indendently of glibc updates, and on Linux, MacOS and Windows. This also keeps binary data files portable and upgradable across operating systems and database versions.</p>
+<p>That provides stable and controlled migration that is also independent of operating system updates - the same comparison and index rules exist independently of glibc updates, and on Linux, macOS and Windows. This also keeps binary data files portable and upgradable across operating systems and database versions.</p>
 <p>Compare that for example to Postgres, which uses glibc functions for string comparison, sorting and for timezone conversions. In Postgres, you have to be aware of operating system updates that affect sorting, comparison or timezones, and you have to recreate indexes every time you make changes to these operating system functions. Noticing glibc updates that affect the function of the database on a system with security auto-updates can be very hard.</p>
 <h2 id="fixing-broken-data">
     <a href="#fixing-broken-data">
@@ -467,7 +467,7 @@
     </a>
 </h2>
 <p>Sometimes data ends up inside the database, converted from latin1 to utf8 by an application and then again by the database. This can only happen when the declared character set of the connection (<code>SET NAMES</code>) and the data sent to not match.</p>
-<p>For example, if you define a table with a <code>VARCHAR</code> column in latin1, and set the connection to latin1, but then send actual utf8 data to the table, you not triggering a conversion (connection and column have the same character set), but the data is not valid latin1.</p>
+<p>For example, if you define a table with a <code>VARCHAR</code> column in latin1, and set the connection to latin1, but then send actual utf8 data to the table, you are not triggering a conversion (connection and column have the same character set), but the data is not valid latin1.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="w"> </span><span class="n">charset</span><span class="w"> </span><span class="n">latin1</span><span class="w"> </span><span class="p">);</span><span class="w">
 </span><span class="w"></span><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">08</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
 </span><span class="w">

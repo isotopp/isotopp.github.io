@@ -155,24 +155,24 @@
 <li>Transaktionen können mit SELECT &hellip; FOR UPDATE oder LOCK TABLES auch Locks erzeugen. Diese sind bei einem Disconnect wieder weg.</li>
 <li>Die mit LAST_INSERT_ID() abrufbare zuletzt von auto_increment vergebene ID wird in der Connection gespeichert. Sie ist nach einem Disconnect nicht mehr verfügbar.</li>
 <li>Mit CREATE TEMPORARY TABLE erzeugte Tabellen. Sie werden bei Disconnect gelöscht.</li>
-<li>Prepared Statements und der vorgeparste Code von Stored Code (CREATE PROCEDURE und CREATE FUNCTION) werden pro Connection verwaltet, auch wenn das technisch eine falsche Lösung ist.</li>
-<li>@-Variablen. <code>SET @bla = 10</code> oder <code>SELECT @bla := count(*) FROM keks;</code> definieren jeweils eine Connectionvariable mit dem Namen <code>@bla</code>, die beim Disconnect verloren ist.</li>
+<li>Prepared Statements und der geparste Code von Stored Code (CREATE PROCEDURE und CREATE FUNCTION) werden pro Connection verwaltet, auch wenn das technisch eine falsche Lösung ist.</li>
+<li>@-Variablen. <code>SET @bla = 10</code> oder <code>SELECT @bla := count(*) FROM keks;</code> definieren jeweils eine Connection Variable mit dem Namen <code>@bla</code>, die beim Disconnect verloren ist.</li>
 <li>SESSION-Parameter. <code>SET SESSION mysiam_sort_buffer_size = 1024*1024*64</code> oder <code>SET @@session.myisam_sort_buffer_size = 1024*1024*64</code> sind nach einen Disconnect verloren. Dies gilt auch für die häufig gesetzten Character Sets (<code>SET NAMES</code> ist nur ein Kürzel für drei bestimmte <code>SET SESSION ...</code>).</li>
-<li>Replikationsspezifische SET-Kommandos wie <code>SET TIMESTAMP</code> oder <code>SET LAST_INSERT_ID</code> können das Verhalten von Funktionen wie <code>SELECT NOW()</code> oder <code>SELECT LAST_INSERT_ID()</code> beeinflussen.</li>
+<li>SET-Kommandos mit spezieller Bedeutung im Kontext von Replikation, wie <code>SET TIMESTAMP</code> oder <code>SET LAST_INSERT_ID</code> können das Verhalten von Funktionen wie <code>SELECT NOW()</code> oder <code>SELECT LAST_INSERT_ID()</code> beeinflussen.</li>
 </ul>
 <p>Wir nennen so etwas Zustand im Scope der Connection oder Connection Scoped State (CSS, mal wieder).</p>
 <p>Ein Client, der also unkontrolliert disconnected oder bei dem ein Disconnect nicht korrekt gemeldet wird, ist defekt in dem Sinne, daß die o.a. Funktionalität nicht wie erwartet verfügbar ist.</p>
-<p>Das gilt für viele grafische Clients - viele von denen machen nach dem Absenden der Query und dem Lesen des Resultsets einen Disconnect und verbinden sich für die folgende Query neu, darunter auch der MySQL Query Browser.</p>
-<p>Das gilt auch für einige veraltete Versionen von Connectoren. Eine Zeit lang dachte das MySQL Connector/J-Team zum Beispiel, es sei eine gute Idee, Auto-Reconnect bei Verlust der Connection aus welchem Grund auch immer zu machen. Korrekt ist stattdessen, eine Java Exception dafür zu schmeissen, damit die Anwendung auch eine Chance hat, den Verlust des Session-Zustandes mitzubekommen. Denn wenn einem der Session-Verlust mitten in einer Transaktion passiert, und der Connector dann einfach wieder verbindet statt die Exception zu werfen, kann man ein paar echt schwer zu findende Heisenbugs bauen.</p>
+<p>Das gilt für viele grafische Clients - viele von denen machen nach dem Absenden der Query und dem Lesen des Result Sets einen Disconnect und verbinden sich für die folgende Query neu, darunter auch der MySQL Query Browser.</p>
+<p>Das gilt auch für einige veraltete Versionen von Connectoren. Eine Zeit lang dachte das MySQL Connector/J-Team zum Beispiel, es sei eine gute Idee, Auto-Reconnect bei Verlust der Connection aus welchem Grund auch immer zu machen. Korrekt ist stattdessen, eine Java Exception dafür zu schmeißen, damit die Anwendung auch eine Chance hat, den Verlust des Session-Zustandes mitzubekommen. Denn wenn einem der Session-Verlust mitten in einer Transaktion passiert, und der Connector dann einfach wieder verbindet, statt die Exception zu werfen, kann man ein paar echt schwer zu findende Heisenbugs bauen.</p>
 <p>Und das gilt prinzipbedingt auch für jeden Webclient wie phpMyAdmin einer ist. Es ist nun mal so, daß etwa Apache einen Haufen Worker Slaves hat und daß ein eingehender http-Request einen zufälligen Worker Slave zugeteilt wird. Es wäre also selbst mit <code>mysql_pconnect()</code> nicht möglich einen phpMyAdmin zu schreiben, der CSS korrekt behandelt.</p>
 <h2 id="kann-dein-client-css">
     <a href="#kann-dein-client-css">
 	Kann Dein Client CSS?
     </a>
 </h2>
-<p>Definiere in einer Query eine Sessionvariable: <code>SET @bla = 'Ich bin korrekt';</code></p>
-<p>In einer zweiten Query frage den Wert der Variaben ab: <code>SELECT @bla;</code></p>
-<p>Wenn Dein Client mit &lsquo;Ich bin korrekt&rsquo; antwortet, kann er CSS verwalten. Ansonsten ist er unbrauchbar und gehört auf den Müll - wer will schon einen Datenbankclient, mit dem man nicht mal eine Transaktion korrekt verwalten kann?</p>
+<p>Definiere in einer Query eine Session Variable: <code>SET @bla = 'Ich bin korrekt';</code></p>
+<p>In einer zweiten Query frage den Wert der Variable ab: <code>SELECT @bla;</code></p>
+<p>Wenn Dein Client mit &ldquo;Ich bin korrekt&rdquo; antwortet, kann er CSS verwalten. Ansonsten ist er unbrauchbar und gehört auf den Müll - wer will schon einen Datenbankclient, mit dem man nicht mal eine Transaktion korrekt verwalten kann?</p>
 
       </div>
     </div>

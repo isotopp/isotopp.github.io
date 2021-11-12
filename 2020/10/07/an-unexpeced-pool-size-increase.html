@@ -156,13 +156,13 @@
 <p><em>instance-918d is the current primary, in the blue AZ. Replicas in orange and green are in other AZs. Blue badges indicate multiple replicas, eg (38) means 38 machines.</em></p>
 <p>When you talk to a database, you get two database handles:</p>
 <ul>
-<li>A write handle which always points at the primary, here instance-918d currently, and</li>
-<li>a read handle.</li>
+<li>A write-handle which always points at the primary, here instance-918d currently, and</li>
+<li>a read-handle.</li>
 </ul>
-<p>The read handle should be in the same AZ as your client application, and should be selected randomly from the available replicas for reading.</p>
+<p>The read-handle should be in the same AZ as your client application, and should be selected randomly from the available replicas for reading.</p>
 <p>We also have other replicas, for cloning, to make more replicas, and for example time delayed replicas to correct accidental data deletions and other Oopses quickly.</p>
 <p>Machines that are available for reading are organised in “Pools” per AZ. Many replication chains have only one Pool, “&lt;name&gt;-misc”, but some replication chains also have additional pools for workload isolation. For example, some chains have “&lt;name&gt;-slow” pools, and you get a third handle, to which you are supposed to send slow queries that cannot be optimised.</p>
-<p>Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your &ldquo;application-xml” queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.</p>
+<p>Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your &ldquo;application-xml&rdquo; queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.</p>
 <p>In any case, we run automated capacity tests on each pool, and then adjust pool sizes as needed. We also report to ourselves on that. Sometimes that report is interesting:</p>
 <p><p class="md__image">
   <img src="/uploads/2020/10/mysql-pool-size-change.png" alt=""  />
@@ -172,13 +172,13 @@
 <p><em>The example-misc pool changed target size from 3 to 16 in the night of 05-Oct, which is a 433% increase.</em></p>
 <p>The minimum pool size is three, for redundancy reasons. The example chain is not busy, ever, and the pool size should <em>never</em> exceed three.</p>
 <p>DBA Operations talk to the customer: “I am reaching out to you because you are currently designated as owners of one or more of the database schemata in the example database chain. The schemata in question are &lt;list&gt;.</p>
-<p>Starting yesterday, the example chain (and, especifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”</p>
+<p>Starting yesterday, the example chain (and, specifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”</p>
 <p><p class="md__image">
   <img src="/uploads/2020/10/mysql-threads.png" alt=""  />
 </p>
 
 </p>
-<p><em>MySQL &ldquo;Threads Running&rdquo; going through the roof, load testing reports diminished capacity and we ready more instances. The world is safe again! Or, is it?</em></p>
+<p><em>MySQL &ldquo;Threads Running&rdquo; going through the roof, load testing reports diminished capacity, and we ready more instances. The world is safe again! Or, is it?</em></p>
 <p>So we detected an increased number of threads running, and that led to a general reduction in the capacity, and that requires <em>MOAR MACHINES!</em> Yay! So our bots threw more machinery to ride the load wave and that kept us afloat for the moment.</p>
 <p>Is that the story? It is not.</p>
 <h2 id="a-mysterious-mystery">
@@ -186,7 +186,7 @@
 	A mysterious mystery
     </a>
 </h2>
-<p>Humans descend on the problem and look. What are the machines in the pool, currently? Well, if have the privileges, you can check with our roster tool:</p>
+<p>Humans descend on the problem and look. What are the machines in the pool, currently? Well, if you have the privileges, you can check with our roster tool:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>sudo roster-tool list /persistent/pools/example-misc/az-west1-a
 <span class="go">0be2b240a6964a338f0a65f22a2bb09d-example-2016.dc1.prod.example.com
 </span><span class="go">421e3f5c81914082b26f93cd096c4d25-example-8050.dc2.prod.example.com
@@ -260,20 +260,20 @@
 <li>some, very few, slow queries, queries,</li>
 <li>an unsaturated database, not bottlenecking globally on any base resource</li>
 <li>a machine load going up by 2 from 1 to 3 (per thread problem, two queries?)</li>
-<li>long running</li>
+<li>long-running</li>
 </ul>
 <p>We have <a href="https://blog.koehntopp.info/2019/11/18/a-blast-from-the-past.html">seen this before</a>
 
 , and we have seen it <a href="https://blog.koehntopp.info/2011/04/28/mysql-undo-log.html">a long time before that</a>
 
- as well. Let’s check the undo log size:</p>
+ as well. Let’s check the undo-log size:</p>
 <p><p class="md__image">
   <img src="/uploads/2020/10/mysql-undo-log.png" alt=""  />
 </p>
 
 </p>
-<p><em>Undo Log shark fin perfectly co-inciding with the incident.</em></p>
-<p>We observe a shark fin in the Undo Log size that perfectly matches the time span of the incident and the increased CPU time.</p>
+<p><em>Undo-Log shark fin perfectly coinciding with the incident.</em></p>
+<p>We observe a shark fin in the Undo-Log size that perfectly matches the time span of the incident and the increased CPU time.</p>
 <h2 id="we-knew-this-is-bad">
     <a href="#we-knew-this-is-bad">
 	We knew this is bad
@@ -281,15 +281,15 @@
 </h2>
 <p>We know from <a href="https://blog.koehntopp.info/2020/07/27/mysql-transactions.html">MySQL Transactions - the physical side</a>
 
- what the Undo Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.</p>
+ what the Undo-Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.</p>
 <p>We learned in <a href="https://blog.koehntopp.info/2020/07/29/mysql-transactions-the-logical-view.html">MySQL Transactions - the logical side</a>
 
- how the Undo Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.</p>
+ how the Undo-Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.</p>
 <p>The part where it says:</p>
 <blockquote>
-<p>Starting a transaction at the default isolation level will force the Undo Log Purge Thread to stop at the position of our read view. Undo Log entries will no longer be purged, filling up and growing the Undo Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.</p>
+<p>Starting a transaction at the default isolation level will force the Undo-Log Purge Thread to stop at the position of our read view. Undo-Log entries will no longer be purged, filling up and growing the Undo-Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.</p>
 </blockquote>
-<p>So it may be long running transactions.</p>
+<p>So it may be long-running transactions.</p>
 <h2 id="proof">
     <a href="#proof">
 	Proof
@@ -300,14 +300,15 @@
 <p>This is such an obvious pressing need that <a href="http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/" target="_blank" rel="noopener">Simon Mudd wrote a script</a>
 
  to do that in the deep, dark past long before the term “observability” even existed.</p>
-<p>It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in /var/log/mysql_pl/&lt;weekday name&gt;. In an age of baremetal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:</p>
+<p>It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in <code>/var/log/mysql_pl/&lt;weekday name&gt;</code>.</p>
+<p>In an age of bare-metal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">/var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz &gt; /tmp/kris
 </span><span class="go">/var/log/mysql_pl/Sun $ vim /tmp/kris
 </span><span class="go">/var/log/mysql_pl/Sun $ awk -F&#39;\t&#39; &#39;($5 != &#34;Sleep&#34;) &amp;&amp; !match($7, /Waiting for/)&#39; /tmp/kris | less
 </span></code></pre></div><p>With a text editor we isolate the processlist recording from 23:48 on 04-Oct. We then use Unix Tooling to look at all non-sleeping connections that are also not idle replication connections.</p>
 <p>This yields indeed two interesting queries: Both show a <code>cronjob=reserve_projectname_upsert_transaction_ids</code> running on <code>cronapp-39.dc2.prod.example.com</code> and on <code>cronapp-02.dc2.prod.example.com</code>, with runtimes of 16220 and 22170 seconds.</p>
-<p>There are indeed two long running queries, coinciding perfectly with a load increase of 2, and they are easily identifyable cron queries. They run from two different hosts, with the same cron banner.</p>
-<p>I have no idea what that job does, but we are looking at a <code>SELECT</code> statement in <code>REPEATABLE READ</code> isolation that has a run time of multiple hours, and unsurprisingly an Undo Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.</p>
+<p>There are indeed two long-running queries, coinciding perfectly with a load increase of 2, and they are easily identifiable cron queries. They run from two different hosts, with the same cron banner.</p>
+<p>I have no idea what that job does, but we are looking at a <code>SELECT</code> statement in <code>REPEATABLE READ</code> isolation that has a run time of multiple hours, and unsurprisingly an Undo-Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.</p>
 <h2 id="what-we-can-learn-from-this">
     <a href="#what-we-can-learn-from-this">
 	What we can learn from this
@@ -321,11 +322,13 @@
 
 .</p>
 <p>With such tooling, we need to connect what we teach with actual incidents that show how the teachings connect to real world cases.</p>
-<p>Which is why I am typing up this thing, right now and link to the actual writeups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.</p>
-<p>You know in your head what &ldquo;Undo Log&rdquo; means. Here you can understand what &ldquo;Undo Log&rdquo; feels like. Go, <a href="https://blog.koehntopp.info/2020/08/31/on-touching-candles.html" target="_blank" rel="noopener">touch the candle</a>
+<p>Which is why I am typing up this thing, right now and link to the actual write-ups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.</p>
+<p>You know in your head what &ldquo;Undo-Log&rdquo; means. Here you can understand what &ldquo;Undo-Log&rdquo; feels like. Go, <a href="https://blog.koehntopp.info/2020/08/31/on-touching-candles.html">touch the candle</a>
 
 .</p>
-<p>We have all the tooling, but it is from a different age. An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics. Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.</p>
+<p>We have all the tooling, but it is from a different age.
+An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics.
+Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.</p>
 <p>We do no longer have access to root shells in production, and in the age of anything as a service not even to shells.</p>
 <p>Observability as taught by Charity Majors is your trusted <code>printf(“Checkpoint: I am here.\n”);</code> or your <a href="https://sourceforge.net/projects/dbug/files/dbug/" target="_blank" rel="noopener">Fred Fish Dbug Macros</a>
 

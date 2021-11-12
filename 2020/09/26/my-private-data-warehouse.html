@@ -387,7 +387,7 @@
 </span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">QSC</span><span class="w"> </span><span class="n">AG</span><span class="w">                                                  </span><span class="o">|</span><span class="w">       </span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">STADTWERKE</span><span class="w"> </span><span class="n">KARLSRUHE</span><span class="w">                                    </span><span class="o">|</span><span class="w">       </span><span class="mi">17</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="w"></span><span class="p">...</span><span class="w">
-</span></code></pre></div><p>Using the <code>category</code> I an also group this and make group totals.</p>
+</span></code></pre></div><p>Using the <code>category</code> I can also group this and make group totals.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="n">category</span><span class="p">,</span><span class="w"> 
 </span><span class="w">         </span><span class="k">count</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">payments</span><span class="p">,</span><span class="w"> 
 </span><span class="w">         </span><span class="k">sum</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total</span><span class="w"> 
@@ -396,14 +396,14 @@
 </span><span class="w"></span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">category</span><span class="w"> 
 </span><span class="w"></span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">total</span><span class="p">;</span><span class="w">
 </span></code></pre></div><p>This will tell me how I spend my money.</p>
-<p>Often I want to observe how my spending habits change over time, so I would not just use the categories from the moneysinks table as grouping critieron, but also group over some time dimension (<code>GROUP BY year(bookdate) as year, category</code>).</p>
-<p>As my data warehouse grows, it may be useful to run the aggregation query and save the result in some preaggregated table (by day or month), as a kind of materialized view of the aggregates. I can use these to create coarser grained aggregates faster (take daily sums and counts, and create monthly or yearly aggregates, fast).</p>
+<p>Often I want to observe how my spending habits change over time, so I would not just use the categories from the moneysinks table as grouping criterion, but also group over some time dimension (<code>GROUP BY year(bookdate) as year, category</code>).</p>
+<p>As my data warehouse grows, it may be useful to run the aggregation query and save the result in some pre-aggregated table (by day or month), as a kind of materialized view of the aggregates. I can use these to create coarser grained aggregates faster (take daily sums and counts, and create monthly or yearly aggregates, fast).</p>
 <h2 id="summary-and-outlook">
     <a href="#summary-and-outlook">
 	Summary and outlook
     </a>
 </h2>
-<p>Using account statements from a bank, we have built a basic data warehouse. We demonstrated data import, staging and cleaning processes. Using category tables, we demonstrated how bin individual records into larger sets that can be useful in statistical analysis, and we looked at how we could materialize these aggregation into preaggregated tables.</p>
+<p>Using account statements from a bank, we have built a basic data warehouse. We demonstrated data import, staging and cleaning processes. Using category tables, we demonstrated how bin individual records into larger sets that can be useful in statistical analysis, and we looked at how we could materialize these aggregations into pre-aggregated tables.</p>
 <p>This is a toy data warehouse, and it poses no challenges in data management due to the small size. Still, it has many properties that are also present in larger structures. Let&rsquo;s look at this in a more generalized way:</p>
 <p>A data warehouse is centered around one or more fact tables. Fact tables always have a time dimension, they have log-like nature.</p>
 <h3 id="literal-attribute-values-resolve-ids">
@@ -412,7 +412,8 @@
     </a>
 </h3>
 <p>Fact tables contain snapshot data that is not normalized, but contains literal values. In our example: actual account holder names, and account numbers.</p>
-<p>For example in a sales warehouse from a web shop, we are never interested in the current price of an item in a sales-fact table, but always in what we sold it for back then, for each individual sale. We are never interested where the customer lives now, but where we sent the article. Hence we log literal attributes, never ids pointing to the current article or customer record.</p>
+<p>For example in a sales warehouse from a web shop, we are never interested in the current price of an item in a sales-fact table, but always in what we sold it for back then, for each individual sale. We are never interested where the customer lives now, but where we sent the article.
+Hence, we log literal attributes, never ids pointing to the current article or customer record.</p>
 <h3 id="encoding-can-shrink-tables-but-do-only-what-is-necessary">
     <a href="#encoding-can-shrink-tables-but-do-only-what-is-necessary">
 	Encoding can shrink tables, but do only what is necessary
@@ -421,7 +422,7 @@
 <p>This often leads to data duplication. In our example, the string &ldquo;SCHECK IN CENTER KA DURLACH&rdquo; is repeated 36 times. For the amount of data shown in our example this does not matter.</p>
 <p>Even in the one million rows example in <a href="https://blog.koehntopp.info/2020/09/18/mysql-encoding-fields-for-great-profit.html">Coding fields for great profit</a>
 
- the gain is not critial, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.</p>
+ the gain is not critical, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.</p>
 <h3 id="the-star-and-the-snowflake">
     <a href="#the-star-and-the-snowflake">
 	The Star and the Snowflake
@@ -431,27 +432,27 @@
 <p>In data warehousing, this is obviously not the case - our data has a time dimension, and unlike OLTP, in a data warehouse we are interested in how things were then, not what they are like now. In our example, we are interested in how much we spent for the fuel back then, and not what the same amount would cost us now.</p>
 <p>Conversely, in a data warehouse the logged data usually does not change much after the fact: there can be</p>
 <ul>
-<li>backfilling, due to data arriving late,</li>
+<li>back filling, due to data arriving late,</li>
 <li>backpropagation of newly added attributes,</li>
 <li>or there can be corrections due to transactions changed after the fact at the business level</li>
 </ul>
 <p>All of these require us to be able to rewrite our logs for some time window. But eventually that window closes and the data becomes immutable, and we can seal it (run <code>OPTIMIZE TABLE</code>, and apply encoding and page level compression).</p>
 <p>In our example, once money is spent, it would not come back (or if, in a second corrective reverse booking), and the amounts booked would never change. The log records are immutable from the outset.</p>
 <p>Things that OLTP structures need to avoid by normalizing - insert, update and delete paradox - do not happen to us in the same way. Also, because our data does not change much (if ever), but grows a lot over time, it is useful to invest the CPU cycles for data compression (using encoding at the data model level, and using page compression at the database engine level, in this order) once the data can be sealed.</p>
-<p>The classical structure of a data warehouse is therefore the star, in which we have a fact table, and a number of category tables aiding binning, plus a number of generated daily/weekly/monthly preaggregates as outputs. All of these auxiliary tables group around the fact table, linked to it in some way, hence the &ldquo;Star Schema&rdquo;.</p>
+<p>The classical structure of a data warehouse is therefore the star, in which we have a fact table, and a number of category tables aiding binning, plus a number of generated daily/weekly/monthly pre-aggregates as outputs. All of these auxiliary tables group around the fact table, linked to it in some way, hence the &ldquo;Star Schema&rdquo;.</p>
 <p>In our example, we have the <code>b</code> fact table, and only a single binning input table, <code>moneysinks</code>. More complicated warehouses can have many more of these.</p>
 <p>We have no materialized output tables (<code>expenses per days</code> or similar), because our data set is small enough to do all of this ad-hoc. In larger warehouses, materializing aggregates that help to speed up reports is useful.</p>
-<p>If you add categories of catgeories, or produce multidimensional aggregates, you go from Star to Snowflake Schema.</p>
+<p>If you add categories of categories, or produce multidimensional aggregates, you go from Star to Snowflake Schema.</p>
 <blockquote>
-<p>The Star and the Snowflake are the normal forms for Data Warehosues, Normalization as practiced in transactional databases is not helpful, 3NF is not a thing.</p>
+<p>The Star and the Snowflake are the normal forms for Data Warehouses, Normalization as practiced in transactional databases is not helpful, 3NF is not a thing.</p>
 </blockquote>
 <h3 id="time-dimensional-tables-in-oltp-schemas">
     <a href="#time-dimensional-tables-in-oltp-schemas">
 	Time Dimensional Tables in OLTP schemas
     </a>
 </h3>
-<p>Almost every OLTP schema earning money has some tables in it that have a time dimension. It is often visble either in the table name (<code>shop.sales_202009</code>) or in the tables primary key - often a compound primary key which contains a pair of an id and a date.</p>
-<p>It will be visible in any case, if you think about each tables growth.</p>
+<p>Almost every OLTP schema earning money has some tables in it that have a time dimension. It is often visible either in the table name (<code>shop.sales_202009</code>) or in the tables primary key - often a compound primary key which contains a pair of an id and a date.</p>
+<p>It will be visible in any case, if you think about each tables' growth.</p>
 <blockquote>
 <p>Assume unchanging conditions - a webshop with a mostly fixed number of articles, and a mostly fixed number of customers buying at a fixed rate, which tables will stay at a fixed size, and which tables will grow without bounds?</p>
 <p>Solution: It is the <code>orders</code> table.</p>
@@ -462,7 +463,7 @@
 <p>In the Extract phase you create a monster join you resolve all id values present in your normalized data, extract the literal attributes of interest, and push them into a CSV or some staging table.</p>
 <p>Data in the OLTP system can now be deleted by the OLTP systems data lifecycle management without concern for other, non-transactional business functions: we have isolated the non-transactional concerns and confined them to the Extraction process (which will have to be adjusted when the OLTP schema changes, so we are a stakeholder in the OLTP schema evolution).</p>
 <p>This isolation of concerns means that the OLTP system of our shop can now delete or archive orders at will after fulfillment or whatever other concerns the transactional system has to serve. Our non-transactional needs are all served from the data gathered in the Extract phase of the ETL process.</p>
-<p>The staged extracted values can now be cleaned, categorized and aggregated, depending on the demands from the non-transactional business concerns (statistics, business intelligence, decision making and so on).</p>
+<p>The staged extracted values can now be cleaned, categorized and aggregated, depending on the demands from the non-transactional business concerns (statistics, business intelligence, decision-making and so on).</p>
 <p>Identifying data warehousey tables in OLTP systems, and isolating the transactional and non-transactional business concerns is important to keep the OLTP system small and agile.</p>
 <p>Without taking the non-transactional, long term business functions out the OLTP system will grow without bounds, and ultimately transactional performance will suffer - the system will choke on itself. The non-transactional concerns not being isolated and bundled will also impede OLTP schema evolution and choke the development process on the money-earning side.</p>
 <h3 id="data-lifecycle-management-at-the-warehouse">
@@ -475,7 +476,7 @@
 <p>Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL <a href="https://blog.koehntopp.info/2020/09/24/mysql-deleting-data.html">when using partitions</a>
 
 .</p>
-<p>In data warehouses, partitions are usually on a time value as the first dimension. That is, we partition our data set by year, month or day and we delete data by dropping old partitions. This leaves all internal B-Trees in all the partitions subtables untouched and as they have been after the import, optimization and compression.</p>
+<p>In data warehouses, partitions are usually on a time value as the first dimension. That is, we partition our data set by year, month or day, and we delete data by dropping old partitions. This leaves all internal B-Trees in all the partitions sub-tables untouched and as they have been after the import, optimization and compression.</p>
 <p>As queries also have a time dimension, the optimizer profits from this structure as well. It can exclude entire partitions from consideration, making the subset of data to look at much smaller.</p>
 <h3 id="daily-snapshots-are-slow-but-simple">
     <a href="#daily-snapshots-are-slow-but-simple">

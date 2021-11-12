@@ -6,7 +6,7 @@
     <description>Recent content in innodb on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Nov 2021 10:05:53 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/innodb/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Nov 2021 13:20:38 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/innodb/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: automatic partitions surely would be nice</title>
       <link>https://blog.koehntopp.info/2020/09/25/mysql-dynamic-partitions-suck.html</link>
@@ -73,15 +73,15 @@
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I could put the logic of the partitioner and dropper into stored procedures and use the MySQL Event Scheduler to have this running in the background at all times to maintain the partitions on the &lt;code&gt;data&lt;/code&gt; table.&lt;/p&gt;
 &lt;p&gt;Except that would still fail if I insert too many rows in a single transaction.&lt;/p&gt;
-&lt;p&gt;I may be able to run the calls to my stored procedures in an insert trigger, but that is overhead I&amp;rsquo;d rather not have for each row inserted. Also, I am pretty confident that the trigger will also trigger a number of bugs in rarely used code pathes. :-)&lt;/p&gt;
+&lt;p&gt;I may be able to run the calls to my stored procedures in an insert trigger, but that is overhead I&amp;rsquo;d rather not have for each row inserted. Also, I am pretty confident that the trigger will also trigger a number of bugs in rarely used code paths. :-)&lt;/p&gt;
 &lt;h2 id=&#34;wishful-thinking&#34;&gt;
     &lt;a href=&#34;#wishful-thinking&#34;&gt;
 	Wishful thinking
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;An actual solution would be a less cumbersome notation for partitions, specifically range partitioning by an auto_increment primary key, and range partitioning along a time dimensions.&lt;/p&gt;
-&lt;p&gt;I should be able to write how many partitions of which bucket size I want insteaf of maintaining a giant if-then-else of &lt;code&gt;VALUES LESS THAN&lt;/code&gt; statements. SQL is supposed to be a declarative language, after all.&lt;/p&gt;
-&lt;p&gt;For the time dimension, I should be able to specifify the same, in retention time and intervals for the buckets. MySQL would then create and drop partitions automatically, and generate the names for them automatically, too.&lt;/p&gt;
+&lt;p&gt;I should be able to write how many partitions of which bucket size I want instead of maintaining a giant if-then-else of &lt;code&gt;VALUES LESS THAN&lt;/code&gt; statements. SQL is supposed to be a declarative language, after all.&lt;/p&gt;
+&lt;p&gt;For the time dimension, I should be able to specify the same, in retention time and intervals for the buckets. MySQL would then create and drop partitions automatically, and generate the names for them automatically, too.&lt;/p&gt;
 &lt;p&gt;So something like the following made-up syntax:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- maintain 10 buckets,
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- equivalent to
@@ -123,7 +123,10 @@
       <pubDate>Thu, 24 Sep 2020 21:39:24 +0000</pubDate>
       
       <guid>https://blog.koehntopp.info/2020/09/24/mysql-deleting-data.html</guid>
-      <description>&lt;p&gt;Completing the data lifecycle is often harder than originally expected: Deleting data can cost sometimes way more than inserting it in the first place. MySQL Partitions can offer a way out. We have an &lt;a href=&#34;https://blog.koehntopp.info/2020/05/13/deleting-data-from-mysql.html&#34;&gt;earlier post&lt;/a&gt;
+      <description>&lt;p&gt;Completing the data lifecycle is often harder than originally expected:
+Deleting data can sometimes cost way more than inserting it in the first place.
+MySQL Partitions can offer a way out.
+We have an &lt;a href=&#34;https://blog.koehntopp.info/2020/05/13/deleting-data-from-mysql.html&#34;&gt;earlier post&lt;/a&gt;
 
  on the subject.&lt;/p&gt;
 &lt;h2 id=&#34;a-sample-table-and-a-problem-statement&#34;&gt;
@@ -185,13 +188,13 @@
 &lt;p&gt;If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from &lt;a href=&#34;https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html&#34;&gt;ALTER TABLE for UUID&lt;/a&gt;
 
  that the physical order of any InnoDB table is by primary key - our id-counter.&lt;/p&gt;
-&lt;p&gt;Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffeled around in the tree.&lt;/p&gt;
+&lt;p&gt;Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left-hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffled around in the tree.&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/loeschen_einfuegen.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;New data is added to the right hand side of the B+-Tree, while old data is being deleted at the left hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;New data is added to the right-hand side of the B+-Tree, while old data is being deleted at the left-hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Instead, we are defining partitions. In our case, we are using the simplest definition possible: A &lt;code&gt;PARTITION BY RANGE&lt;/code&gt; on the primary key column. We are making bins of 10.000 rows each, because that is convenient for our demonstration here.&lt;/p&gt;
 &lt;h2 id=&#34;three-processes&#34;&gt;
     &lt;a href=&#34;#three-processes&#34;&gt;
@@ -248,7 +251,7 @@
 &lt;/h2&gt;
 &lt;p&gt;The Partitioner is an endless loop that runs an &lt;code&gt;ANALYZE TABLE data&lt;/code&gt; command to refresh the statistics, and then queries &lt;code&gt;INFORMATION_SCHEMA.PARTITIONS&lt;/code&gt; for the five partitions with the highest &lt;code&gt;PARTITION_ORDINAL_POSITION&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;If there are fewer than 5 partitions in total, we generate new partitions no matter what.&lt;/p&gt;
-&lt;p&gt;If there are not at least 5 partitions with no rows int them, we create new partitions.&lt;/p&gt;
+&lt;p&gt;If there are not at least 5 partitions with no rows&#39; int them, we create new partitions.&lt;/p&gt;
 &lt;p&gt;If we did nothing, we wait for 1/10th of a second and then check again.&lt;/p&gt;
 &lt;p&gt;The new partition gets a range expression with a limit 10.000 values higher than the highest one found, and the partition name is derived from the limit by dividing by 10.000.&lt;/p&gt;
 &lt;p&gt;In code:&lt;/p&gt;
@@ -410,7 +413,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 |    80362 |
 +----------+
 1 row in set (0.01 sec)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The complete example is available &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on github.com&lt;/a&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The complete example is available &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on GitHub.com&lt;/a&gt;
 
 .&lt;/p&gt;
 </description>
@@ -423,7 +426,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
       
       <guid>https://blog.koehntopp.info/2020/09/18/mysql-encoding-fields-for-great-profit.html</guid>
       <description>&lt;p&gt;Iterating schemas over time is not an uncommon thing. Often requirements emerge only after you have data, and then directed action is possible. Consequently, working on existing data, and structuring and cleaning it up is a common task.&lt;/p&gt;
-&lt;p&gt;In todays example we work with a log table that logged state transitions of things in freeform &lt;code&gt;VARCHAR&lt;/code&gt; fields. After some time the log table grew quite sizeable, and the log strings are repeated rather often, contributing to the overall size of the table considerably.&lt;/p&gt;
+&lt;p&gt;In today&amp;rsquo;s example we work with a log table that logged state transitions of things in freeform &lt;code&gt;VARCHAR&lt;/code&gt; fields. After some time the log table grew quite sizeable, and the log strings are repeated rather often, contributing to the overall size of the table considerably.&lt;/p&gt;
 &lt;p&gt;We are starting with this table:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;log&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AUTO_INCREMENT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -434,7 +437,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PRIMARY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ENGINE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;InnoDB&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is, our log table has an &lt;code&gt;id&lt;/code&gt; field to allow individual row addressing, and then logs the state change of a &lt;code&gt;device_id&lt;/code&gt; at a certain &lt;code&gt;change_time&lt;/code&gt; from an &lt;code&gt;old_state&lt;/code&gt; into a &lt;code&gt;new_state&lt;/code&gt;. The two state fields are &lt;code&gt;varchar(64)&lt;/code&gt; and contain one of some 13 or so different strings.&lt;/p&gt;
-&lt;p&gt;Maybe they also contain typos, outdated state codes or other stuff that will later needs remapping and cleanup, but in today example we want to concentrate on the cleanup.&lt;/p&gt;
+&lt;p&gt;Maybe they also contain typos, outdated state codes or other stuff that will later need remapping and cleanup, but in today&amp;rsquo;s example we want to concentrate on the cleanup.&lt;/p&gt;
 &lt;p&gt;Some small manual sample data:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;log&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----+-----------+---------------------+---------------+---------------+
@@ -534,7 +537,8 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;live&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----+---------------+
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Yay. A nice and autonumbered list of all possible states from the existing data. We need this indexed, and we also need indices on the two source columns.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Yay. A nice and automatically numbered list of all possible states from the existing data.
+We need this indexed, and we also need indices on the two source columns.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;state&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;08&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Records&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Duplicates&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Warnings&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -635,7 +639,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----+-----------+---------------------+---------------+---------------+
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that we have to join against the map twice, once for each source column, and that also means we have to rename the map table to get unique names for each usage.&lt;/p&gt;
-&lt;p&gt;Well, that&amp;rsquo;s a toy example. Let&amp;rsquo;s do that at scale, using a Python driver implementing exactly this procedure. &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Code is on github.com&lt;/a&gt;
+&lt;p&gt;Well, that&amp;rsquo;s a toy example. Let&amp;rsquo;s do that at scale, using a Python driver implementing exactly this procedure. &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Code is on GitHub.com&lt;/a&gt;
 
 .&lt;/p&gt;
 &lt;p&gt;We &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-lookups/lookups.py#L95-L102&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;set up our source tables&lt;/a&gt;
@@ -769,7 +773,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  TABLE_COMMENT:
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;1 row in set (0.00 sec)
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So data length went from 59326464 bytes to 48824320 bytes, a reduction to 82.3% of the original size. We could save even more by not using &lt;code&gt;integer&lt;/code&gt; 4-byte values to encode, but for example &lt;code&gt;tinyint unsigned&lt;/code&gt; 1-byte values. On the other hand, that may become a problem later on when we exceed the id-space of the map table as we add new states.&lt;/p&gt;
-&lt;p&gt;On top of that, the size of the target &lt;code&gt;log&lt;/code&gt; table is now a function of the row number, as we have no variable length columns any more. The size of the source table is dependent on the variable length string values as well, so by encoding we also got a better plannable table size.&lt;/p&gt;
+&lt;p&gt;On top of that, the size of the target &lt;code&gt;log&lt;/code&gt; table is now a function of the row number, as we have no variable length columns anymore. The size of the source table is dependent on the variable length string values as well, so by encoding we also get predictable table sizes.&lt;/p&gt;
 &lt;p&gt;TL;DR:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Using a map table, and update statements with a subselect, we can encode variable length repeated string values into integer values.&lt;/li&gt;
@@ -797,7 +801,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions - the physical side&lt;/a&gt;
 
 .
-Looking at how MySQL InnoDB handles transactions on the physical media, enabling rollback and commit. Introduces a number of important concepts: The Undo Log, the Redo Log, the Doublewrite Buffer, and the corrosponding in memory structures, the Log Buffer and the InnoDB Buffer Pool, as well as the concept of a page.&lt;/p&gt;
+Looking at how MySQL InnoDB handles transactions on the physical media, enabling rollback and commit. Introduces a number of important concepts: The Undo-Log, the Redo-Log, the Doublewrite Buffer, and the corrosponding in memory structures, the Log Buffer and the InnoDB Buffer Pool, as well as the concept of a page.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-commit-size-and-speed.html&#34;&gt;MySQL Commit Size and Speed&lt;/a&gt;
@@ -815,7 +819,7 @@ Looking at things that are stateful and attached to a MySQL connection, and are 
 &lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/07/29/mysql-transactions-the-logical-view.html&#34;&gt;MySQL Transactions - the logical view&lt;/a&gt;
 
 .
-This article introduces the concept of &lt;code&gt;TRANSACTION ISOLATION LEVEL&lt;/code&gt; and how pushing things into the Undo Log, while a necessity to implement &lt;code&gt;ROLLBACK&lt;/code&gt; for a Writer, enables features for a Reader.&lt;/p&gt;
+This article introduces the concept of &lt;code&gt;TRANSACTION ISOLATION LEVEL&lt;/code&gt; and how pushing things into the Undo-Log, while a necessity to implement &lt;code&gt;ROLLBACK&lt;/code&gt; for a Writer, enables features for a Reader.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/07/30/mysql-transactions-writing-data.html&#34;&gt;MySQL Transactions - writing data&lt;/a&gt;
@@ -1089,26 +1093,26 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;A very simple shop as a ER-model. &lt;code&gt;order_id&lt;/code&gt; is the primary key of the Orders table.  &lt;code&gt;customer_id&lt;/code&gt; in the Orders table is a foreign key: The primary key of another (&amp;ldquo;foreign&amp;rdquo;) table in this table. Foreign keys can model relationships between tables (&amp;ldquo;entities&amp;rdquo;) in an entity-relationship diagram.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A very simple shop as an ER-model. &lt;code&gt;order_id&lt;/code&gt; is the primary key of the Orders table.  &lt;code&gt;customer_id&lt;/code&gt; in the Orders table is a foreign key: The primary key of another (&amp;ldquo;foreign&amp;rdquo;) table in this table. Foreign keys can model relationships between tables (&amp;ldquo;entities&amp;rdquo;) in an entity-relationship diagram.&lt;/em&gt;&lt;/p&gt;
 &lt;h2 id=&#34;entities-and-their-relationships&#34;&gt;
     &lt;a href=&#34;#entities-and-their-relationships&#34;&gt;
 	Entities and their relationships
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;In Entity-Relationship modelling we are using tables in a database to model entities in the real world. Each entry in such a table is meant to represent a &amp;ldquo;thing&amp;rdquo; in the real world. For example, in our very simple shop model above, we have Articles, and Customers as real world &amp;ldquo;things&amp;rdquo; in our model. We also have Orders, and Orders can have multiple lines, Orderlines. Each Orderline connects an Order with an Article.&lt;/p&gt;
-&lt;p&gt;In order to be able to distinguish real world things in our tables, we require each entry to have a unique identifier, the Id. These will then show up in the real world as customer numbers, order numbers or article numbers. The uniqueness of these numbers in their respective tables makes them a Key.&lt;/p&gt;
+&lt;p&gt;In order to be able to distinguish real world things in our tables, we require each entry to have a unique identifier, the id. These will then show up in the real world as customer numbers, order numbers or article numbers. The uniqueness of these numbers in their respective tables makes them a Key.&lt;/p&gt;
 &lt;h2 id=&#34;keys-and-indexes&#34;&gt;
     &lt;a href=&#34;#keys-and-indexes&#34;&gt;
 	Keys and Indexes
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;Technically a Key does not have to have a corresponding Index in the table: Keys and Indexes are separate things.&lt;/p&gt;
-&lt;p&gt;One - the Key - is a property of the model: &amp;ldquo;There exists a bijective function between the &lt;code&gt;customer_id&lt;/code&gt; and the real world customers&amp;rdquo;, meaning &amp;ldquo;Each customer has a &lt;code&gt;customer_id&lt;/code&gt;&amp;rdquo;, and &amp;ldquo;Any two different customers have different &lt;code&gt;customer_id&lt;/code&gt;s&amp;rdquo;. This is what allows us to use &lt;code&gt;customer_id&lt;/code&gt;s as stand-ins for all the other values in the Customers table, and for the real world customers themselves, for the purpose of modelling them in the database.&lt;/p&gt;
+&lt;p&gt;One - the Key - is a property of the model: &amp;ldquo;There exists a bijektive function between the &lt;code&gt;customer_id&lt;/code&gt; and the real world customers&amp;rdquo;, meaning &amp;ldquo;Each customer has a &lt;code&gt;customer_id&lt;/code&gt;&amp;rdquo;, and &amp;ldquo;Any two different customers have different &lt;code&gt;customer_id&lt;/code&gt;s&amp;rdquo;. This is what allows us to use &lt;code&gt;customer_id&lt;/code&gt;s as stand-ins for all the other values in the Customers table, and for the real world customers themselves, for the purpose of modelling them in the database.&lt;/p&gt;
 &lt;p&gt;The other - the Index - is a data structure that allows us to look up the other values of a Customer fast, given any &lt;code&gt;customer_id&lt;/code&gt; value.&lt;/p&gt;
-&lt;p&gt;There is no need for a Key to have an Index, but we need to ensure that a new &lt;code&gt;customer_id&lt;/code&gt; is unique. We are also given &lt;code&gt;customer_id&lt;/code&gt;s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up &lt;code&gt;customer_id&lt;/code&gt;s in the Customers table all of the time, and without the index we can only resort to a full table scan for this. This is going to be so slow that the table will be without any real-world value for us.&lt;/p&gt;
+&lt;p&gt;There is no need for a Key to have an Index, but we need to ensure that a new &lt;code&gt;customer_id&lt;/code&gt; is unique. We are also given &lt;code&gt;customer_id&lt;/code&gt;s all of the time, and then need to fetch the other data we have on this customer from the table. That means we need to look up &lt;code&gt;customer_id&lt;/code&gt;s in the Customers table all the time, and without the index we can only resort to a full table scan for this. This is going to be so slow that the table will be without any real-world value for us.&lt;/p&gt;
 &lt;p&gt;Practically, a Key and an Index go so much hand-in-hand that database people are using both terms interchangeably when they are clearly different things: An average database person will say Key, when they mean Index or the other way around, because in their minds having a Key without an Index is Not A Thing at all.&lt;/p&gt;
 &lt;p&gt;There may be multiple things - or combinations of things - that uniquely identify real world things in a given table of our model of the world. We call these Key Candidates. We then elect one to be the actual Key (or make one up, a Synthetic Key such as a &lt;code&gt;customer_id&lt;/code&gt;), and call that the Primary Key or just the Key.&lt;/p&gt;
-&lt;p&gt;In the mind of a database person, the Primary Key is the row, and the row is the Primary Key. That is what bijective functions are for.&lt;/p&gt;
+&lt;p&gt;In the mind of a database person, the Primary Key is the row, and the row is the Primary Key. That is what bijektive functions are for.&lt;/p&gt;
 &lt;p&gt;Technically, a table doesn&amp;rsquo;t need to not have a Primary Key. Practically, this creates so many kinds of problems that many databases have options to prevent this: They will reject table definitions without a primary key definition for good, and responsible database administrators enable these restrictions.&lt;/p&gt;
 &lt;h2 id=&#34;foreign-keys&#34;&gt;
     &lt;a href=&#34;#foreign-keys&#34;&gt;
@@ -1128,7 +1132,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this example the table &lt;code&gt;a&lt;/code&gt; has a primary key &lt;code&gt;a.a_id&lt;/code&gt;. Table &lt;code&gt;b&lt;/code&gt; contains a reference to &lt;code&gt;a&lt;/code&gt; in the form of the column &lt;code&gt;b.a_id&lt;/code&gt;. This column is a foreign key. Technically, &amp;ldquo;foreign key&amp;rdquo; is a meaningless term, so actually &amp;ldquo;&lt;code&gt;b.a_id&lt;/code&gt; is a foreign key of &lt;code&gt;a&lt;/code&gt; in &lt;code&gt;b&lt;/code&gt;&amp;rdquo; to be precise. When talking about tables, this is often implicitly clear, so many people omit this and just say &amp;ldquo;foreign key&amp;rdquo; and assume you understand what is means.&lt;/p&gt;
-&lt;p&gt;As can be seen, table &lt;code&gt;b&lt;/code&gt; is also defined with an &lt;code&gt;index a_id (a_id)&lt;/code&gt; - what we model here ia a 1:n relationshop between &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt; (an &amp;ldquo;a&amp;rdquo; can have many &amp;ldquo;b&amp;rdquo;), and we expect to look up all the &lt;code&gt;b&lt;/code&gt;&amp;rsquo;s for a given &lt;code&gt;a&lt;/code&gt; a lot, so having that index is a no-brainer.&lt;/p&gt;
+&lt;p&gt;As can be seen, table &lt;code&gt;b&lt;/code&gt; is also defined with an &lt;code&gt;index a_id (a_id)&lt;/code&gt; - what we model here ia a 1:n relationship between &lt;code&gt;a&lt;/code&gt; and &lt;code&gt;b&lt;/code&gt; (an &amp;ldquo;a&amp;rdquo; can have many &amp;ldquo;b&amp;rdquo;), and we expect to look up all the &lt;code&gt;b&lt;/code&gt;&amp;rsquo;s for a given &lt;code&gt;a&lt;/code&gt; a lot, so having that index is a no-brainer.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -1163,7 +1167,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;li&gt;We have to define an index in the foreign key column in &lt;code&gt;b&lt;/code&gt;. When we don&amp;rsquo;t, MySQL does this automatically and uses the constraint name for this. Leave off &lt;code&gt;index a_id (a_id)&lt;/code&gt; from our &lt;code&gt;CREATE TABLE b&lt;/code&gt; statement, and see what you get.&lt;/li&gt;
 &lt;li&gt;The constraint we define can get a name, or MySQL chooses one when we leave of the &lt;code&gt;constraint a_id_exists&lt;/code&gt; part of the statement.&lt;/li&gt;
 &lt;li&gt;We then describe which of &amp;ldquo;our&amp;rdquo; columns points to what column in the other table: &lt;code&gt;foreign key (a_id) references a(a_id)&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Finally we get to say what shall happen when there are update or delete statements that would invalidate the relationship. This part is also optional.&lt;/li&gt;
+&lt;li&gt;Finally, we get to say what shall happen when there are update or delete statements that would invalidate the relationship. This part is also optional.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Thus, the shortest possible definition of &lt;code&gt;b&lt;/code&gt; would be&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
@@ -1226,7 +1230,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;update&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ERROR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1452&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;23000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Cannot&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;or&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;update&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;child&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;foreign&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;constraint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fails&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CONSTRAINT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b_ibfk_1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FOREIGN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;REFERENCES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can change the &lt;code&gt;b.aid&lt;/code&gt; to values present in the &lt;code&gt;a.a_id&lt;/code&gt; table. Changing them to invalid values is being rejected.&lt;/p&gt;
-&lt;p&gt;Likewise we are prevented from deleting a row from &lt;code&gt;a&lt;/code&gt; if there are still values in &lt;code&gt;b.a_id&lt;/code&gt; referencing this row, and summary deletion, truncation or dropping of table &lt;code&gt;a&lt;/code&gt; are also prevented as long as any reference from &lt;code&gt;b&lt;/code&gt; to &lt;code&gt;a&lt;/code&gt; exists.&lt;/p&gt;
+&lt;p&gt;Likewise, we are prevented from deleting a row from &lt;code&gt;a&lt;/code&gt; if there are still values in &lt;code&gt;b.a_id&lt;/code&gt; referencing this row, and summary deletion, truncation or dropping of table &lt;code&gt;a&lt;/code&gt; are also prevented as long as any reference from &lt;code&gt;b&lt;/code&gt; to &lt;code&gt;a&lt;/code&gt; exists.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;delete&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ERROR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1451&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;23000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Cannot&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;delete&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;or&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;update&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;parent&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;foreign&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;constraint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fails&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CONSTRAINT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b_ibfk_1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FOREIGN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;REFERENCES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a_id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -1251,7 +1255,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;parent&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;bigint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;foreign&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;parent&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;references&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a valid definition that is accepted by MySQL. In order for an insert to succeed, we would have to provide a valid value for &lt;code&gt;d.parent&lt;/code&gt;, but the table is empty and we did not allow &lt;code&gt;NULL&lt;/code&gt;.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a valid definition that is accepted by MySQL. In order for an insert to succeed, we would have to provide a valid value for &lt;code&gt;d.parent&lt;/code&gt;, but the table is empty, and we did not allow &lt;code&gt;NULL&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;The only valid thing we could insert is the value we are inserting right now, and that value is then undeletable.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ERROR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1048&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;23000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;parent&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cannot&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;be&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -1273,14 +1277,14 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Records&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Duplicates&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Warnings&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Both statements define the same tree structure, but one does it from the bottom up, the other from the top down. We can see that even inside a single statement referential integrity is enforced at a per-row level and the first statement is impossible to load. Order suddenly matters.&lt;/p&gt;
 &lt;p&gt;The same would be true if we used multiple insert statements inside the same transaction: Even if the entire set of rows is only committed at the end of the transaction, statements inside the transaction suddenly have to have an order, and all referential integrity constraints have to be valid at all times (&amp;ldquo;for each row&amp;rdquo;).&lt;/p&gt;
-&lt;p&gt;For individual tables or simple 1:1 relationships this matters little, but referential integrity is transitive and it is very easy to build completely validated structures that become uninsertable, unupdateable or undeletable, or to build referential integrity puzzles.&lt;/p&gt;
-&lt;p&gt;The SQL Standard definies behavior for this - checking referential integrity only at the end of a transaction - but InnoDB does not implement this. This makes working with foreign key constraints very hard and limits their usefulness.&lt;/p&gt;
+&lt;p&gt;For individual tables or simple 1:1 relationships this matters little, but referential integrity is transitive, and it is very easy to build completely validated structures that become uninsertable, unupdateable or undeletable, or to build referential integrity puzzles.&lt;/p&gt;
+&lt;p&gt;The SQL Standard defines behavior for this - checking referential integrity only at the end of a transaction - but InnoDB does not implement this. This makes working with foreign key constraints very hard and limits their usefulness.&lt;/p&gt;
 &lt;h2 id=&#34;walking-our-tree&#34;&gt;
     &lt;a href=&#34;#walking-our-tree&#34;&gt;
 	Walking our tree
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;But at least we can walk our tree, and be sure it is well defined:&lt;/p&gt;
+&lt;p&gt;But at least we can walk our tree, and be sure it is well-defined:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;with&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;recursive&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tree&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;parent&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;level&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;convert&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;char&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;path&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
@@ -1330,7 +1334,9 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
       <pubDate>Sun, 02 Aug 2020 02:25:21 +0000</pubDate>
       
       <guid>https://blog.koehntopp.info/2020/08/02/mysql-deadlocks-with-insert.html</guid>
-      <description>&lt;p&gt;Support Channel. &amp;ldquo;Hi, I am getting deadlocks in the database and they occur when I have to rollback the transactions but if we don&amp;rsquo;t have to roll back all transactions get executed.&amp;rdquo; Wait, what? After some back and forth it becomes clear that the Dev experiences deadlocks and has data:&lt;/p&gt;
+      <description>&lt;p&gt;Support Channel. &amp;ldquo;Hi, I am getting deadlocks in the database, and they occur when I have to roll back the transactions but if we don&amp;rsquo;t have to roll back all transactions get executed.&amp;rdquo;
+Wait, what?
+After some back and forth it becomes clear that the Dev experiences deadlocks and has data:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pager&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;less&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;engine&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;G&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -1340,7 +1346,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;***&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;HOLDS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;THE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;LOCK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;S&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;RECORD&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LOCKS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;space&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3523&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;page&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;no&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1106463&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bits&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;224&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PRIMARY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;somedb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sometable&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;trx&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;9843342279&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;lock&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;mode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;S&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;locks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gap&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;before&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rec&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and that is weird because of the &lt;code&gt;lock mode S locks gap&lt;/code&gt; in the last line. We get the exact same statement with the exact same value on the second thread, but with &lt;code&gt;lock mode X locks gap&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Both transactions have an undo log entry of the length 1 - one row, single insert and the insert has an S-lock.&lt;/p&gt;
+&lt;p&gt;Both transactions have an undo-log entry of the length 1 - one row, single insert and the insert has an S-lock.&lt;/p&gt;
 &lt;h2 id=&#34;a-mystery-insert-and-opaque-code&#34;&gt;
     &lt;a href=&#34;#a-mystery-insert-and-opaque-code&#34;&gt;
 	A mystery INSERT and opaque code
@@ -1408,8 +1414,10 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Session1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INSERT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INTO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sometable&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;VALUES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- lock escalation to X
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Session1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;COMMIT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;LOCK IN SHARE MODE&lt;/code&gt; or equivalent &lt;code&gt;FOR SHARE&lt;/code&gt; is not in the code, it is added implicitly by the isolation level &lt;code&gt;SERIALIZABLE&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;We get an S-Lock, which is not good for writing. Our transaction now did not get the required locks necessary for reading at the start of the transaction, because the later &lt;code&gt;INSERT&lt;/code&gt; requires an X-lock, like any write statement would. The database needs to aquire the X-lock, that is, it needs to upgrade the S-lock to an X-lock.&lt;/p&gt;
-&lt;p&gt;If at that point in time another threads tries to run the exact same statement, which is what happens here, they already hold a second S-lock, preventing the first thread from completing their transaction (it is waiting until the second threads drops the S-lock or it times out).&lt;/p&gt;
+&lt;p&gt;We get an S-Lock, which is not good for writing.
+Our transaction now did not get the required locks necessary for reading at the start of the transaction, because the later &lt;code&gt;INSERT&lt;/code&gt; requires an X-lock, like any write statement would.
+The database needs to acquire the X-lock, that is, it needs to upgrade the S-lock to an X-lock.&lt;/p&gt;
+&lt;p&gt;If at that point in time another threads tries to run the exact same statement, which is what happens here, they already hold a second S-lock, preventing the first thread from completing their transaction (it is waiting until the second threads drops the S-lock, or it times out).&lt;/p&gt;
 &lt;p&gt;And then that second thread also tries to upgrade their S-lock into an X-lock, which it can&amp;rsquo;t do, because that first thread is trying to do the same thing, and we have the deadlock and a rollback.&lt;/p&gt;
 &lt;h2 id=&#34;reproduction-of-the-problem&#34;&gt;
     &lt;a href=&#34;#reproduction-of-the-problem&#34;&gt;
@@ -1493,7 +1501,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;li&gt;The ORM will remove you quite a lot from the emitted SQL. Do you know how to trace your ORM and to get the actual SQL generated? If not, go and find out.
 &lt;ul&gt;
 &lt;li&gt;A server side trace will not save you - the server is a busy beast.&lt;/li&gt;
-&lt;li&gt;It also cannot see your stackframes, so it can&amp;rsquo;t link your SQL to the line in your code that called the ORM. Yes, in the client side SQL trace, ideally you also want the tracer to bubble up the stack and give you the first line outside of the ORM to identify what is causing the SQL to be emitted and where in the code that happens.&lt;/li&gt;
+&lt;li&gt;It also cannot see your stackframes, so it can&amp;rsquo;t link your SQL to the line in your code that called the ORM. Yes, in the client side SQL trace, ideally you also want the tracer to bubble up the stack and give you the first line outside the ORM to identify what is causing the SQL to be emitted and where in the code that happens.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;The deadlock information in &lt;code&gt;SHOW ENGINE INNODB STATUS&lt;/code&gt; is painfully opaque, but learning to read it is worthwhile.
@@ -1514,7 +1522,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
       <guid>https://blog.koehntopp.info/2020/08/01/mysql-locks-and-deadlocks.html</guid>
       <description>&lt;p&gt;In a &lt;a href=&#34;https://blog.koehntopp.info/2020/07/30/mysql-transactions-writing-data.html&#34;&gt;previous article&lt;/a&gt;
 
- we wrote data to the database using atomic update statements, and then using transactions with &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt;. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;available on github.com&lt;/a&gt;
+ we wrote data to the database using atomic update statements, and then using transactions with &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt;. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;available on GitHub.com&lt;/a&gt;
 
 .&lt;/p&gt;
 &lt;h2 id=&#34;a-simple-row-lock&#34;&gt;
@@ -1574,7 +1582,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 	Inserting into a locked gap, with timeouts.
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;We can try do demonstrate that with a second session:&lt;/p&gt;
+&lt;p&gt;We demonstrate that with a second session:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;Session2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;transaction&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;write&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Session2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;33&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;33&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hangs&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -1605,9 +1613,9 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
 &lt;p&gt;Whenever we collect locks in a non-atomic fashion there is a risk of deadlocking.&lt;/p&gt;
 &lt;p&gt;A deadlock is any situation where a thread &lt;code&gt;A&lt;/code&gt; holds a resource &lt;code&gt;1&lt;/code&gt; and wants to lock a resource &lt;code&gt;2&lt;/code&gt;, where at the same time a thread &lt;code&gt;B&lt;/code&gt; holds the lock on &lt;code&gt;2&lt;/code&gt; and wants a lock on &lt;code&gt;1&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;A&lt;/code&gt; holds lock &lt;code&gt;1&lt;/code&gt; and needs a lock on &lt;code&gt;2&lt;/code&gt; to complete and release both locks, while &lt;code&gt;B&lt;/code&gt; holds the lock on &lt;code&gt;2&lt;/code&gt; and needs the lock on &lt;code&gt;1&lt;/code&gt; to complete and release both locks. There is no way to resolve this situation except with intervention from the outside, forcing one transaction to roll back (and hopefully retry). There is no problem for either A or B to complete the operation, but not while both are trying to finish concurrently.&lt;/p&gt;
-&lt;p&gt;The deadlock scenario is only possible because &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; do not aquire locks in a canoncial order: Had &lt;code&gt;B&lt;/code&gt; also aquired the locks in numerically ascending order (&lt;code&gt;1&lt;/code&gt;, &lt;code&gt;2&lt;/code&gt;), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.&lt;/p&gt;
+&lt;p&gt;The deadlock scenario is only possible because &lt;code&gt;A&lt;/code&gt; and &lt;code&gt;B&lt;/code&gt; do not acquire locks in a canonical order: Had &lt;code&gt;B&lt;/code&gt; also acquired the locks in numerically ascending order (&lt;code&gt;1&lt;/code&gt;, &lt;code&gt;2&lt;/code&gt;), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.&lt;/p&gt;
 &lt;p&gt;More complicated scenarios with 3 or more threads and larger circular dependencies are possible.&lt;/p&gt;
-&lt;p&gt;So, let&amp;rsquo;s excercise a deadlock with two sessions:&lt;/p&gt;
+&lt;p&gt;So, let&amp;rsquo;s exercise a deadlock with two sessions:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;Session1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;transaction&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;write&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Session1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;update&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----+-------+
@@ -1676,7 +1684,7 @@ MySQL 8 gains support of a JSON data type. How to get data in and out of JSON fi
     &lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Error&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
         &lt;span class=&#34;n&#34;&gt;click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;echo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;MySQL Error: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
         &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And a really dirty function with way too many parameters to exercise these two functions for pairs of records:&lt;/p&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And a quick and dirty function with way too many parameters to exercise these two functions for pairs of records:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;count_with_locking&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;tag&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;position1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;position2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;verbose&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;False&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
         &lt;span class=&#34;c1&#34;&gt;# I would rather have a START TRANSACTION READ WRITE&lt;/span&gt;
         &lt;span class=&#34;c1&#34;&gt;# but MySQLdb does not offer this natively.&lt;/span&gt;
@@ -1821,7 +1829,7 @@ completely dependent on how fast our hardware can commit data to disk.&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;sys     0m0.037s
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;14.4 seconds for 1000 commits are 14ms per commit, to an old SATA SSD - not
 very fast at all, but this is 10 years old hardware. This is slow, because
-the &lt;code&gt;db.commit()&lt;/code&gt; issues a single fsync to the Redo Log, waiting for it to
+the &lt;code&gt;db.commit()&lt;/code&gt; issues a single fsync to the Redo-Log, waiting for it to
 return - we have shown this &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;in an earlier article&lt;/a&gt;
 
 .&lt;/p&gt;
@@ -1848,7 +1856,7 @@ but the database will still be consistent - just not at the transaction
 everybody expects.&lt;/p&gt;
 &lt;p&gt;Relaxing the disk write constraints speeds up writing considerably, because
 we no longer have to wait for the slow disk to acknowledge the writes.&lt;/p&gt;
-&lt;p&gt;Further relaxing the disk write constraints does not make things faster,
+&lt;p&gt;Relaxing the disk write constraints any further does not make things faster,
 just more dangerous:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql -uroot -p -e &amp;#39;set global innodb_flush_log_at_trx_commit=0&amp;#39;
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Enter password:
@@ -1939,7 +1947,7 @@ writer can get access, and do its thing while the first writer has to wait.&lt;/
 &lt;/h3&gt;
 &lt;p&gt;We can query the database differently, in a two stage process, allowing for
 more complex updates. Here we read a value from the database into the
-application (read phase), change it applicationn side (modify phase) and
+application (read phase), change it application side (modify phase) and
 then write the changed value back.&lt;/p&gt;
 &lt;p&gt;Doing this is called a read-modify-write cycle.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
@@ -1963,22 +1971,22 @@ then write the changed value back.&lt;/p&gt;
         &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;update &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; set counter = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; where id = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;
         &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
         &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; 
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this piece of code we again count to 1000, but we are doing it in a three
-step process, called a read-modify-write cycle. We also implemented it
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In this piece of code we again count to 1000, but we are doing it in a
+three-step process, called a read-modify-write cycle. We also implemented it
 wrongly for demonstration purposes:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;The read phase is done with a &lt;code&gt;SELECT&lt;/code&gt; statement that retrieves the
+&lt;p&gt;The &amp;ldquo;read phase&amp;rdquo; is done with a &lt;code&gt;SELECT&lt;/code&gt; statement that retrieves the
 current counter value from the database.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;The modify phase increments the counter, application side, in memory. This
+&lt;p&gt;The &amp;ldquo;modify phase&amp;rdquo; increments the counter, application side, in memory. This
 can in real applications be an arbitrarily complicated process that takes
 a non-trivial amount of time and maybe even connects to different backend
 systems and services.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;The write phase then uses &lt;code&gt;UPDATE&lt;/code&gt; to write back the previously read value
+&lt;p&gt;The &amp;ldquo;write phase&amp;rdquo; then uses &lt;code&gt;UPDATE&lt;/code&gt; to write back the previously read value
 to the database.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -2022,7 +2030,7 @@ locking the results are wrong:&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;+----+---------+ 
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The way we write this code, we extract the value from the database into the
 application, getting a value - say 10, and increment that.&lt;/p&gt;
-&lt;p&gt;Meanwhile the other instance also reads the database, and gets the same
+&lt;p&gt;Meanwhile, the other instance also reads the database, and gets the same
 value, also 10.&lt;/p&gt;
 &lt;p&gt;We increment, and write back the new value, 11. Then the other instance does
 the same, and also writes back 11. Two increment events in two processes
@@ -2117,7 +2125,7 @@ slower.&lt;/p&gt;
 , let&amp;rsquo;s have a look at what is
 going on from a logical point of view.&lt;/p&gt;
 &lt;p&gt;We are using a test table called demo with an id and a counter field, both
-integer. In it we have 10 counters, all set to 0.&lt;/p&gt;
+integer. In it, we have 10 counters, all set to 0.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;demo&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;bigint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AUTO_INCREMENT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DEFAULT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;0&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -2152,23 +2160,23 @@ commit anything.&lt;/p&gt;
 stall us in any way.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;From the previous article we know that MySQL took the older version of the
-row and moved it to the Undo Log. It has to do that in order to still have
+row and moved it to the Undo-Log. It has to do that in order to still have
 the data around should we decide to &lt;code&gt;ROLLBACK&lt;/code&gt;. The new version of the row
 in the actual tablespace contains a pointer to the older version of the Row
-in the Undo Log.&lt;/p&gt;
+in the Undo-Log.&lt;/p&gt;
 &lt;p&gt;When looking at the row we see this older version, so something made the
 database read the current values of the rows 1, 2, 4, and so on from the
-tablespace, but for the row &lt;code&gt;id=3&lt;/code&gt; sent us to the Undo Log.&lt;/p&gt;
+tablespace, but for the row &lt;code&gt;id=3&lt;/code&gt; sent us to the Undo-Log.&lt;/p&gt;
 &lt;p&gt;This is also a good thing, because we do not have to wait.&lt;/p&gt;
 &lt;h3 id=&#34;transaction-isolation-level-read-uncommitted&#34;&gt;
     &lt;a href=&#34;#transaction-isolation-level-read-uncommitted&#34;&gt;
 	Transaction Isolation Level Read Uncommitted
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;This is what MVCC - &lt;a href=&#34;https://en.wikipedia.org/wiki/Multiversion_concurrency_control&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Multiversion Concurrency
-Control&lt;/a&gt;
+&lt;p&gt;This is what MVCC -
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Multiversion_concurrency_control&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Multiversion Concurrency Control&lt;/a&gt;
 
-
+ -
 does: It uses the old versions of the row to present us a consistent view of
 the data, depending on the &lt;code&gt;TRANSACTION ISOLATION LEVEL&lt;/code&gt;. This is a thing we
 can change:&lt;/p&gt;
@@ -2182,14 +2190,14 @@ can change:&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So once we &lt;code&gt;SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED&lt;/code&gt;, we get to see
-the value 10 written by Session1, despite the fact that it never has been
+the value 10 written by Session1, despite the fact that it has never been
 committed.  In fact, if we would &lt;code&gt;ROLLBACK&lt;/code&gt;, logically it would never have
 been there - but still Session2 saw it.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;At &lt;code&gt;TRANSACTION ISOLATION LEVEL READ UNCOMMITTED&lt;/code&gt; we are reading stuff
 directly from the tablespace file. This can contain data that is not yet
-committed, and due to &lt;code&gt;ROLLBACK&lt;/code&gt; never will be - mere phantasies. The Undo
-Log is never consulted.&lt;/p&gt;
+committed, and due to &lt;code&gt;ROLLBACK&lt;/code&gt; never will be - mere phantasies.
+The Undo-Log is never consulted.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;transaction-isolation-level-read-committed&#34;&gt;
     &lt;a href=&#34;#transaction-isolation-level-read-committed&#34;&gt;
@@ -2209,11 +2217,11 @@ before, at 0.&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is, at this isolation level we will only see data that has been
-comitted.&lt;/p&gt;
+committed.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;At &lt;code&gt;TRANSACTION ISOLATION LEVEL READ COMMITTED&lt;/code&gt; we are reading stuff from
 the tablespace file, unless there is an ongoing transaction for a row. In
-that case, the reader will consult the Undo Log one level deep and show us
+that case, the reader will consult the Undo-Log one level deep and show us
 the previous, committed version of the data. We never get to see ephemeral
 data that can be rolled back.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -2300,7 +2308,7 @@ been made after we started the transaction.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;At &lt;code&gt;TRANSACTION ISOLATION LEVEL REPEATABLE READ&lt;/code&gt; we are reading stuff from
 the tablespace, unless it has been changed after we started our
-transaction. In that case, the reader will consult the Undo Log multiple
+transaction. In that case, the reader will consult the Undo-Log multiple
 levels deep, in order to present us the newest version of the row that is
 older than our read-only transaction.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -2312,25 +2320,26 @@ present, skipping any intermediate steps.&lt;/p&gt;
 	Repeatable Read and Long Running Transactions
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Starting a transaction at the default isolation level will force the Undo
-Log Purge Thread to stop at the position of our read view. Undo Log entries
-will no longer be purged, filling up and growing the Undo Log. Reads and
+&lt;p&gt;Starting a transaction at the default isolation level will force
+the Undo-Log Purge Thread to stop at the position of our read view.
+Undo-Log entries
+will no longer be purged, filling up and growing the Undo-Log. Reads and
 Index Lookups become more complicated and slower, slowing down the overall
 performance of the database.&lt;/p&gt;
-&lt;p&gt;It is a good idea to not have long running transactions.&lt;/p&gt;
+&lt;p&gt;It is a good idea to not have long-running transactions.&lt;/p&gt;
 &lt;p&gt;Maintenance Operations such as running &lt;code&gt;mysqldump --single transaction mydatabase&lt;/code&gt; to make a logical backup achieve a consistent backup my
-maintaining a consistent read view by starting a long running transaction.
+maintaining a consistent read view by starting a long-running transaction.
 As the dump of a large database can take some time, it is a good idea to do
-this at a point in time where the database is not so busy.  Specifically
-where the write activity is low.  Otherwise the incoming writes will blow up
-your Undo Log by the size of the data load, and make everything slow.&lt;/p&gt;
+this at a point in time when the database is not so busy.  Specifically
+where write activity is low.  Otherwise, the incoming writes will blow up
+your Undo-Log by the size of the data load, and make everything slow.&lt;/p&gt;
 &lt;p&gt;While in theory these two operations - a data load and a backup - can happen
 concurrently and should not interfere, nothing is for free and the
 implementation of consistent read views will function better if you do not
 work against it.&lt;/p&gt;
-&lt;p&gt;The Undo Log will not shrink, but will be freed internally and re-used,
+&lt;p&gt;The Undo-Log will not shrink, but will be freed internally and re-used,
 should that space ever be needed. But you will end up, depending on your
-version of MySQL, with a very large ibdata1 file or very large Undo Log
+version of MySQL, with a very large ibdata1 file or very large Undo-Log
 segment files.&lt;/p&gt;
 &lt;h2 id=&#34;reading-data-without-locks&#34;&gt;
     &lt;a href=&#34;#reading-data-without-locks&#34;&gt;
@@ -2344,12 +2353,12 @@ these scenarios.&lt;/p&gt;
 copy of a row before we modify it and keep it around.&lt;/p&gt;
 &lt;p&gt;The fact that most transactions successfully commit and not roll back
 suggests that we would do well by putting the new version of the row into
-place properly and move the old version to a temporary storage, the Undo
-Log, before we throw it away by the way of the Purge Thread. Thay way we
-keep the tablespace clean and free from outdated, stale versions of rows.&lt;/p&gt;
+place properly and move the old version to a temporary storage,
+the Undo-Log, before we throw it away by the way of the Purge Thread.
+That way we keep the tablespace clean and free from outdated, stale versions of rows.&lt;/p&gt;
 &lt;p&gt;Looking at all active transactions in the system we can easily determine the
 lowest, oldest transaction number in the system. By definition nothing else
-can ever reference any row version even oler than that, so these versions
+can ever reference any row version even older than that, so these versions
 are fair game for the Purge Thread.&lt;/p&gt;
 &lt;p&gt;By linking old versions of a row, we get a thread from the current version
 of the row into the (still visible) past of that row as a linked list.&lt;/p&gt;
@@ -2359,7 +2368,7 @@ recently committed or the newest version of the row older than its own
 (read-only) transaction.&lt;/p&gt;
 &lt;p&gt;By committing, a read-only transaction gives up its version of the past,
 retiring an older transaction, allowing the Purge Thread to move on and free
-Undo Log space.&lt;/p&gt;
+Undo-Log space.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;At no point in time a read operation is ever stalled by a writer and
 forced to wait. There are no write-locks ever stalling a reader. These two
@@ -2377,7 +2386,7 @@ operations are completely independent.&lt;/p&gt;
       <guid>https://blog.koehntopp.info/2020/07/27/mysql-commit-size-and-speed.html</guid>
       <description>&lt;p&gt;When writing data to disk, for small transactions the cost of writing the
 commit out do disk dominates the execution time of the script. In order to
-show that, I wrote a little bit of Python.&lt;/p&gt;
+show that, I wrote a little Python script.&lt;/p&gt;
 &lt;p&gt;The script creates a test table in a database and writes 10.000 rows of test
 data into it, in commit sizes of 1, 2, 4, &amp;hellip;, 1024 rows.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./mysql.py --help
@@ -2413,12 +2422,13 @@ directory.&lt;/p&gt;
 &lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The result of the test run is as follows shown, and since at point 10.000
 rows were not enough, I later added a second test run with 100.000 rows and
-step sizes of 5..14 (32 rows to 16384 rows).&lt;/p&gt;
+step sizes of &lt;code&gt;5..14&lt;/code&gt; (32 rows to 16384 rows).&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/07/transactions-benchmark.jpg&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Script runtime as a function of commit batch size. x-Axis is logarithmic, y-axis is linear.&lt;/em&gt;&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -2537,7 +2547,8 @@ step sizes of 5..14 (32 rows to 16384 rows).&lt;/p&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;We observe: Going from single row commits to 16 row commits, we get a
+&lt;p&gt;&lt;em&gt;Raw data from the test runs.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We observe:&lt;/em&gt; Going from single row commits to 16 row commits, we get a
 10-fold speed increase, and going to 1024 row commits, we are seeing another
 factor of 10. After that, there is hardly any improvement for our chosen
 record size and hardware.&lt;/p&gt;
@@ -2547,8 +2558,8 @@ record size and hardware.&lt;/p&gt;
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;A transaction size of 1000 rows or larger does not seem to improve write
-speed (ie in a data load).&lt;/p&gt;
-&lt;p&gt;From 1 row/commit to 16 rows/commit, we see an increate of an order of
+speed (i.e. in a data load).&lt;/p&gt;
+&lt;p&gt;From 1 row/commit to 16 rows/commit, we see an increase of an order of
 magnitude, and another order of magnitude can be had by going from 16
 rows/commit to 1024 rows/commit.&lt;/p&gt;
 &lt;h2 id=&#34;the-script&#34;&gt;
@@ -2690,7 +2701,7 @@ rows/commit to 1024 rows/commit.&lt;/p&gt;
       
       <guid>https://blog.koehntopp.info/2020/07/27/mysql-transactions.html</guid>
       <description>&lt;p&gt;So you talk to a database, doing transactions. What happens actually, behind the scenes? Let’s have a look.&lt;/p&gt;
-&lt;p&gt;There is a test table and we write data into it inside a transaction:&lt;/p&gt;
+&lt;p&gt;There is a test table, and we write data into it inside a transaction:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;varbinary&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -2718,7 +2729,7 @@ rows/commit to 1024 rows/commit.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The upper half talks about log structures, the lower half about data structures.
 &lt;ul&gt;
-&lt;li&gt;Things on the upper half are in some Log: The Redo Log, the Undo Log or the Double Write Buffer.&lt;/li&gt;
+&lt;li&gt;Things on the upper half are in some Log: The Redo-Log, the Undo-Log or the Double Write Buffer.&lt;/li&gt;
 &lt;li&gt;Things on the lower half are in some tablespace file, so some .ibd file on disk.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
@@ -2749,50 +2760,50 @@ rows/commit to 1024 rows/commit.&lt;/p&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;is such a statement. It writes a &lt;code&gt;NULL&lt;/code&gt; to an &lt;code&gt;auto_increment&lt;/code&gt; field to get a new counter value, and then generates 255 random bytes of data to be written.&lt;/p&gt;
 &lt;p&gt;The transaction is being built up in memory, in the top left quadrant: A log buffer is being allocated and filled with data, step by step, until the log buffer overflows or the transaction commits.&lt;/p&gt;
 &lt;p&gt;A second thing happens simultaneously: The data being “overwritten” needs to be saved in order to have it around for rollback - this is more true of an &lt;code&gt;UPDATE&lt;/code&gt; or &lt;code&gt;DELETE&lt;/code&gt; than an &lt;code&gt;INSERT&lt;/code&gt; statement, though.&lt;/p&gt;
-&lt;p&gt;So the data page where this record is located is loaded from a data file (lower right quadrant) into memory (lower left quadrant), into the InnoDB Buffer Pool. That is a userspace data cache owned by the database process. It is the primary reason for the database process using a lot of memory.&lt;/p&gt;
-&lt;p&gt;The row being “overwritten” is then being moved out of the table, and moved into the Undo Log. This is purely an in-memory operation, copying data from one page to another. A linked list is being built from the new, current version of the row to this older previous version of the row. This linked list can be long, pointing from the current version of the row to ever older version of that row in the Undo log. Following the list you get to see the past versions of this row, one by one.&lt;/p&gt;
-&lt;p&gt;If we were to &lt;code&gt;ROLLBACK&lt;/code&gt; the transaction now, MySQL would move the data back from the Undo Log page into the Tablespace page. This is a comparatively slow operation - MySQL is set up and optimized for transactions being COMMIT’ed instead of rolled back most of the time.&lt;/p&gt;
-&lt;h2 id=&#34;comitting&#34;&gt;
-    &lt;a href=&#34;#comitting&#34;&gt;
-	Comitting
+&lt;p&gt;So the data page where this record is located is loaded from a data file (lower right quadrant) into memory (lower left quadrant), into the InnoDB Buffer Pool. That is an userspace data cache owned by the database process. It is the primary reason for the database process using a lot of memory.&lt;/p&gt;
+&lt;p&gt;The row being “overwritten” is then being moved out of the table, and moved into the Undo-Log. This is purely an in-memory operation, copying data from one page to another. A linked list is being built from the new, current version of the row to this older previous version of the row. This linked list can be long, pointing from the current version of the row to ever older version of that row in the Undo-Log. Following the list you get to see the past versions of this row, one by one.&lt;/p&gt;
+&lt;p&gt;If we were to &lt;code&gt;ROLLBACK&lt;/code&gt; the transaction now, MySQL would move the data back from the Undo-Log page into the Tablespace page. This is a comparatively slow operation - MySQL is set up and optimized for transactions being COMMIT’ed instead of rolled back most of the time.&lt;/p&gt;
+&lt;h2 id=&#34;committing&#34;&gt;
+    &lt;a href=&#34;#committing&#34;&gt;
+	Committing
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Finally we finish the transaction and tell the database this using&lt;/p&gt;
+&lt;p&gt;Finally, we finish the transaction and tell the database this using&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;COMMIT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged data base from the table space. The Undo Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.&lt;/p&gt;
-&lt;p&gt;There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.&lt;/p&gt;
-&lt;p&gt;When we write the Log Buffer out, we write it to the Redo Log. The Redo Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib_logfile* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo Log are fast, sequential writes, even on rotating hard disks.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged database from the table space. The Undo-Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.&lt;/p&gt;
+&lt;p&gt;There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo-Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.&lt;/p&gt;
+&lt;p&gt;When we write the Log Buffer out, we write it to the Redo-Log. The Redo-Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib_logfile* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo-Log are fast, sequential writes, even on rotating hard disks.&lt;/p&gt;
 &lt;p&gt;After that, we are done - the transaction is committed to stable storage and can no longer be lost. The application can move on.&lt;/p&gt;
 &lt;h2 id=&#34;after-committing-checkpointing&#34;&gt;
     &lt;a href=&#34;#after-committing-checkpointing&#34;&gt;
 	After committing: Checkpointing
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;But wait! Isn’t the &lt;code&gt;.ibd&lt;/code&gt; tablespace file changed? What about purging the Redo Log? How long can this go on?&lt;/p&gt;
+&lt;p&gt;But wait! Isn’t the &lt;code&gt;.ibd&lt;/code&gt; tablespace file changed? What about purging the Redo-Log? How long can this go on?&lt;/p&gt;
 &lt;p&gt;We are constantly creating InnoDB Buffer Pool pages that are different from their original image on disk in the tablespace files. These pages are called dirty, and eventually they need to be written back.&lt;/p&gt;
-&lt;p&gt;We are also constantly filling the Redo Log files, but they are a ring structure with a finite amount of space, and we need to eventually purge the Redo Log and free up space there.&lt;/p&gt;
+&lt;p&gt;We are also constantly filling the Redo-Log files, but they are a ring structure with a finite amount of space, and we need to eventually purge the Redo-Log and free up space there.&lt;/p&gt;
 &lt;p&gt;And there may be lulls in the application activity that allow the database to do stuff when it feels idle.&lt;/p&gt;
 &lt;p&gt;That are three good reasons to actually write dirty InnoDB Buffer Pool pages back to the tablespaces. This is called checkpointing, and it will eventually happen, but hopefully much later than the actual commit.&lt;/p&gt;
-&lt;p&gt;In checkpointing, we select the oldest entries from the Redo Log, determine which pages in the Buffer Pool they relate to, and then choose these pages for write-back. When this is complete, the on-disk image and the in-memory image are equal, the pages are clean and the Redo Log entries are no longer needed and can be overwritten.&lt;/p&gt;
+&lt;p&gt;In checkpointing, we select the oldest entries from the Redo-Log, determine which pages in the Buffer Pool they relate to, and then choose these pages for write-back. When this is complete, the on-disk image and the in-memory image are equal, the pages are clean and the Redo-Log entries are no longer needed and can be overwritten.&lt;/p&gt;
 &lt;p&gt;Pages are larger than disk blocks: They are usually 16 KB in size, and disk blocks are traditionally 512 Byte large, and these days  4 KB in size. Enterprise media (HDD, SSD and so on) usually guarantee atomic writes to a block, even in the face of power failure - so there won’t ever be half-written 512 Byte blocks or 4K pages.&lt;/p&gt;
-&lt;p&gt;But that is not good enough for us. If the power was to fail in the write-back of a page, we would get back a half-written page, and we would not even know where the cutoff is. This is called a torn page scenario and in order to prevent it, we write the set of pages out as a large block to a staging area called the Double Write Buffer first. So there will be a large 1MB write to the DWB first, and then a set of 16K writes to the actual tablespace locations.&lt;/p&gt;
-&lt;p&gt;After writing out the set of dirty pages, we can mark the Redo Log space as free again and also mark the pages in memory as clean.&lt;/p&gt;
+&lt;p&gt;But that is not good enough for us. If the power was to fail in the write-back of a page, we would get back a half-written page, and we would not even know where the cutoff is. This is called a torn page scenario and in order to prevent it, we write the set of pages out as a large block to a staging area called the Double Write Buffer first. So there will be a large 1 MB write to the DWB first, and then a set of 16 KB writes to the actual tablespace locations.&lt;/p&gt;
+&lt;p&gt;After writing out the set of dirty pages, we can mark the Redo-Log space as free again and also mark the pages in memory as clean.&lt;/p&gt;
 &lt;h2 id=&#34;recovery&#34;&gt;
     &lt;a href=&#34;#recovery&#34;&gt;
 	Recovery
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;If we fail the database before committing, that’s ok. The application has not issued a commit statement, we did not acknowledge the commit, so no contract, and it is totally the obligation of the application to handle this situation.&lt;/p&gt;
-&lt;p&gt;If we fail the database after committing, the data is in the Redo Log. On Recovery, we load the unaltered image of the page from the tablespace, load the binary diff from the Redo Log and have recreated the dirty page in memory. Eventually, it will be checkpointed.&lt;/p&gt;
-&lt;p&gt;If we fail the database during checkpointing in the write to the Double Write Buffer, we still have the unaltered image of the page in the table space, and the Redo Log entry, so it is as before.&lt;/p&gt;
-&lt;p&gt;If we fail the database during checkpointing in the write to the tablespace, creating torn pages, in recovery we can read the pages from the DWB and move them into place, then move on.&lt;/p&gt;
+&lt;p&gt;If we fail the database after committing, the data is in the Redo-Log. On Recovery, we load the unaltered image of the page from the tablespace, load the binary diff from the Redo-Log and have recreated the dirty page in memory. Eventually, it will be witten out in a Checkpoint.&lt;/p&gt;
+&lt;p&gt;If we fail the database during checkpointing while writing to the Double Write Buffer, we still have the unaltered image of the page in the table space, and the Redo-Log entry, so it is as before.&lt;/p&gt;
+&lt;p&gt;If we fail the database during checkpointing while writing to the tablespace, creating torn pages, in recovery we can read the pages from the DWB and move them into place, then move on.&lt;/p&gt;
 &lt;p&gt;There is never any data loss – unless there is a loss of the media the data was on, and it is the job of MySQL replication or of a simple RAID to protect us from that.&lt;/p&gt;
 &lt;h2 id=&#34;proof-and-observation&#34;&gt;
     &lt;a href=&#34;#proof-and-observation&#34;&gt;
 	Proof and Observation
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Let’s have a quiet instance of a local MySQL with AIO off, as described above, and check the filehandles for a later strace:&lt;/p&gt;
+&lt;p&gt;Let’s have a quiet instance of a local MySQL with AIO off, as described above, and check the file handles for a later strace:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lsof -p &lt;span class=&#34;m&#34;&gt;29169&lt;/span&gt;
 &lt;span class=&#34;go&#34;&gt;…
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
@@ -2813,20 +2824,23 @@ rows/commit to 1024 rows/commit.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[pid 29441] pread64(10, &amp;#34;H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0&amp;#34;..., 16384, 7028736) = 16384
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29441] pwrite64(3, &amp;#34;\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267&amp;gt;\0\0\r./k&amp;#34;..., 1024, 34426368) = 1024
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29441] fsync(3)                    = 0
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is the only &lt;code&gt;fsync&lt;/code&gt; that contributed to commit-Latency. The write is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo log during recovery.&lt;/p&gt;
-&lt;p&gt;The modified page is still in memory, though, and in order to reclaim redo log space, needs to be eventually checkpointed.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is the only &lt;code&gt;fsync&lt;/code&gt; that contributed to commit-Latency. The changed data is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo-log during recovery.&lt;/p&gt;
+&lt;p&gt;The modified page is still in memory, though, and in order to reclaim redo-log space, needs to be eventually written back in a Checkpoint.&lt;/p&gt;
 &lt;p&gt;This happens later, and with many more &lt;code&gt;fsync&lt;/code&gt; operations. It does happen in batch, for many commits and multiple pages, normally, but in our easily traceable test setup, it’s looking like a lot of overhead.&lt;/p&gt;
-&lt;p&gt;During normal operations, a page often is modified in multiple commits over a short amount of time. Each of these commits is a separate redo log &lt;code&gt;fsync&lt;/code&gt; (it&amp;rsquo;s not, there are some ways to cheat a bit). But in the Buffer Pool, on the file side of things, all these changes are being accumulated on the dirty in-memory page, and get persisted into the tablespace in a single checkpoint write. In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.&lt;/p&gt;
+&lt;p&gt;During normal operations, a page is often modified in multiple commits over a short amount of time.
+Each of these commits is a separate redo-log &lt;code&gt;fsync&lt;/code&gt; (it&amp;rsquo;s not, there are some ways to cheat a bit).
+But in the Buffer Pool, on the file side of things, all these changes are being accumulated on the dirty in-memory page, and get persisted into the tablespace in a single checkpoint write.
+In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.&lt;/p&gt;
 &lt;p&gt;Also, during checkpointing, one Double Write Buffer worth of pages gets written out in a single sync operation, so we do see a far better page/sync and MB/sync ratio than in this test setup.&lt;/p&gt;
-&lt;p&gt;Anyway, this is what checkpointing to the the Double Write Buffer, at offset 1M in the ibdata looks like:&lt;/p&gt;
+&lt;p&gt;Anyway, this is what checkpointing to the Double Write Buffer, at offset 1M in the ibdata looks like:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[pid 29181] pwrite64(10, &amp;#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;amp;\211\225\0\2\0\0\0\0\0\0&amp;#34;..., 32768, 1048576) = 32768
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29181] fsync(10)                   = 0
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And there follows again an update of the metadata and a write to the actual tablespace:&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And there follows again an update of the metadata, and the write back to the actual tablespace:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[pid 29179] pwrite64(10, &amp;#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;amp;\211\225\0\2\0\0\0\0\0\0&amp;#34;..., 16384, 7028736) = 16384
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29179] pwrite64(4, &amp;#34;.KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&amp;amp;\211\216E\277\0\0\0\0\0\0&amp;#34;..., 16384, 421871616) = 16384
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29179] fsync(4)                    = 0
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29179] fsync(10)                   = 0
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After this, the Redo Log is no longer needed and we can take note of this:&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After this, the Redo-Log is no longer needed, and we can take note of this:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[pid 29187] pwrite64(3, &amp;#34;\200\201\23E\1\271\0&amp;amp;\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0\*\201\20\2\0\201&amp;#34;..., 512, 34426880) = 512
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[pid 29187] fsync(3)                    = 0
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;writing-really-a-lot-of-data&#34;&gt;
@@ -2834,43 +2848,46 @@ rows/commit to 1024 rows/commit.&lt;/p&gt;
 	Writing really a lot of data
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;When you write (or delete) a lot of data, things are getting a bit complicated. Also, when you have really long running transactions, things can get complicated. Let’s go through a few scenarios:&lt;/p&gt;
+&lt;p&gt;When you write (or delete) a lot of data, things are getting a bit complicated. Also, when you have really long-running transactions, things can get complicated. Let’s go through a few scenarios:&lt;/p&gt;
 &lt;h3 id=&#34;data-loading&#34;&gt;
     &lt;a href=&#34;#data-loading&#34;&gt;
 	Data Loading
     &lt;/a&gt;
 &lt;/h3&gt;
 &lt;p&gt;An application is performing an initial data load, and reading the equivalent of 100 GB of data one-table-at-a-time in a single commit.&lt;/p&gt;
-&lt;p&gt;Transactions are large here, larger than a log buffer in memory can hold. In this case, we write out log buffers prematurely to the Redo Log, but without a commit flag at the end. If this crashed before the final commit, we would recover all of this from the Redo Log, then encounter the end of the log without a commit and enter a monstrous Rollback. In the past that was hideously slow, these days it is just slow.&lt;/p&gt;
-&lt;p&gt;Moral: Really large transactions are less than ideal, but this is rare. Still once upon a time, I have been paid, as a MySQL consultant, to watch a 2h Rollback/Undo Log recovery.&lt;/p&gt;
-&lt;p&gt;Loading a lot of data will fill up the Redo Log quickly, or it will dirty a large number of pages. Eventually the system will run out of either clean page or Redo Log space, and will feel what we call Checkpointing Pressure. If the Checkpointing Pressure becomes too large, it may even stall, not reacting to user commands for some time.&lt;/p&gt;
-&lt;p&gt;A system that is consistently seeing a lot of writes can profit from a large Redo Log, and that is a thing that can be configured.&lt;/p&gt;
+&lt;p&gt;Transactions are large here, larger than a log buffer in memory can hold.
+In this case, we write log buffers out prematurely to the Redo-Log, but without a commit flag at the end.
+If this crashed before the final commit, we would recover all of this from the Redo-Log, then encounter the end of the log without a commit and enter a monstrous Rollback.
+In the past that was hideously slow, these days it is just slow.&lt;/p&gt;
+&lt;p&gt;Moral: Really large transactions are less than ideal, but this is rare. Still once upon a time, I have been paid, as a MySQL consultant, to watch a 2h Rollback/Undo-Log recovery.&lt;/p&gt;
+&lt;p&gt;Loading a lot of data will fill up the Redo-Log quickly, or it will dirty a large number of pages. Eventually the system will run out of either clean page or Redo-Log space, and will feel what we call Checkpointing Pressure. If the Checkpointing Pressure becomes too large, it may even stall, not reacting to user commands for some time.&lt;/p&gt;
+&lt;p&gt;A system that is consistently seeing a lot of writes can profit from a large Redo-Log, and that is a thing that can be configured.&lt;/p&gt;
 &lt;h3 id=&#34;data-deletion&#34;&gt;
     &lt;a href=&#34;#data-deletion&#34;&gt;
 	Data Deletion
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Deletion of data is also a write and copy operation: It could be rolled back until it is committed, so on delete data is actually pushed to the Undo Log. Depending on how things are organized, it can also trigger a lot of reorganisation of the Index Trees and other operations.&lt;/p&gt;
+&lt;p&gt;Deletion of data is also a write and copy operation: It could be rolled back until it is committed, so on delete data is actually pushed to the Undo-Log. Depending on how things are organized, it can also trigger a lot of reorganisation of the Index Trees and other operations.&lt;/p&gt;
 &lt;p&gt;If you want to delete all data, &lt;code&gt;TRUNCATE&lt;/code&gt; is better than &lt;code&gt;DELETE&lt;/code&gt;, because it does not cause these things.&lt;/p&gt;
 &lt;p&gt;If you want to structure data with regular expirations, have a look at table partitioning and use dynamic DDL to create and drop partitions on a schedule instead of deleting data. This implies a temporal arrangement of the data, so a date or time is becoming part of the primary key.&lt;/p&gt;
 &lt;h3 id=&#34;long-running-transactions&#34;&gt;
     &lt;a href=&#34;#long-running-transactions&#34;&gt;
-	Long running transactions
+	Long-running transactions
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Until you commit, you could roll back. That means the previous version of the row is being held in the Undo Log. In fact, Undo Log purge is a simplistic single threaded thing, so what happens in reality is that the system looks at all active transactions in the system and determines the oldest transaction number in the system that is still active.&lt;/p&gt;
-&lt;p&gt;It then deletes all Undo Log even older than this, but no more.&lt;/p&gt;
+&lt;p&gt;Until you commit, you could roll back. That means the previous version of the row is being held in the Undo-Log. In fact, Undo-Log purge is a simplistic single threaded thing, so what happens in reality is that the system looks at all active transactions in the system and determines the oldest transaction number in the system that is still active.&lt;/p&gt;
+&lt;p&gt;It then deletes all Undo-Log even older than this, but no more.&lt;/p&gt;
 &lt;p&gt;So if you&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;START&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TRANSACTION&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;READ&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WRITE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INSERT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;INTO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;VALUES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;RANDOM_BYTES&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and then go to lunch, purging of the Undo Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and then go to lunch, purging of the Undo-Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/07/transactions-undo-log.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;As we build Undo Log, the database slows down. A lot. We kill the connection, the offender returns, and things slow down again, until the root cause is removed.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;As we build Undo-Log, the database slows down. A lot. We kill the connection, the offender returns, and things slow down again, until the root cause is removed.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;I am mentioning this specifically as being problematic, because it happened. With somebody going to lunch after using a Cron Box for interactive data poking, and again in a similar way with Hadoop Data Loaders taking a long, long time to Hadoop Data Load.&lt;/p&gt;
 &lt;p&gt;Don’t do this. Don’t do this on a box that is seeing any kind of shared usage, especially.&lt;/p&gt;
 &lt;h2 id=&#34;tldr&#34;&gt;
@@ -2878,7 +2895,7 @@ rows/commit to 1024 rows/commit.&lt;/p&gt;
 	TL;DR
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;MySQL takes great care when writing data to disk: As long as the physical media is undamaged, it will not lose data. You can pull the power cable, switch off the server, kill -9 the mysqld process, it matters not: When we return from a COMMIT, we have a valid copy of the data or we have a bug.&lt;/p&gt;
+&lt;p&gt;MySQL takes great care when writing data to disk: As long as the physical media is undamaged, it will not lose data. You can pull the power cable, switch off the server, kill -9 the mysqld process, it matters not: When we return from a COMMIT, we have a valid copy of the data, or we have a bug.&lt;/p&gt;
 &lt;p&gt;The cost for a COMMIT is a single fsync. You decide how many rows go into that single fsync, and we recommend you be somewhat economical (1k-10k rows are ideal from a performance PoV).&lt;/p&gt;
 &lt;p&gt;Writing the actual data out to disk later in the checkpoint is many more operations and fsync, but you will not notice that in your application unless you really write a lot of data, fast. In this case, some tuning is required.&lt;/p&gt;
 </description>
@@ -3026,10 +3043,10 @@ each, a table that itself has 540M rows. That takes time.&lt;/p&gt;
 &lt;p&gt;During that time the &amp;ldquo;select&amp;rdquo; statements maintains a read-only
 transaction to create a stable view of the table it is reading.
 That means that as we change rows in MessageLog the old versions
-of the row are being shifted to the Undo log, and while other
+of the row are being shifted to the Undo-Log, and while other
 transactions read the new version of the row from the
 tablespace, these transactions read old versions of the row from
-the Undo log.&lt;/p&gt;
+the Undo-Log.&lt;/p&gt;
 &lt;p&gt;Or they try. They hit the tablespace first, see a new version of
 the row, are being sent one version into the past, find that
 this is still too recent, go one step deeper into the past and
@@ -3162,9 +3179,9 @@ Mit einem
 MySQL unterhält wie Redis ein Bild der aktuellen Daten auf der Platte - Redis in Form des point-in-time snapshot, MySQL in Form von InnoDB *.ibd-Files.&lt;/p&gt;
 &lt;p&gt;Anders als Redis schreibt MySQL aber bei einem Checkpoint nicht die ganze Tabelle neu.
 Stattdessen sind ibd-Dateien (und der Speicher) in Seiten von 16 KB unterteilt.&lt;/p&gt;
-&lt;p&gt;Und statt eines AOF-Rewrite, bei dem das ganze Redo Log neu geschrieben wird, schreibt MySQL für jeden Eintrag im Redo-Log die zugehörende Speicherseite auf die Platte - aber eben nur diese, und nicht die ganze Tabelle.
+&lt;p&gt;Und statt eines AOF-Rewrite, bei dem das ganze Redo-Log neu geschrieben wird, schreibt MySQL für jeden Eintrag im Redo-Log die zugehörende Speicherseite auf die Platte - aber eben nur diese, und nicht die ganze Tabelle.
 MySQL macht dies außerdem auf eine Weise, bei der Daten nicht verloren gehen können, selbst dann, wenn die Datenbank mitten im Schreiben einer 16 KB-Seite den Strom abgeschaltet bekommt:
-Die Daten landen einmal im Doublewrite-Buffer, dann wird das Redo Log aktualisiert und dann werden die
+Die Daten landen einmal im Doublewrite-Buffer, dann wird das Redo-Log aktualisiert und dann werden die
 Daten im *.ibd-File aktualisiert.
 Auf diese Weise, und mit den Prüfsummen in jeder Seite, kann MySQL die Datenbank sogar von halb geschriebenen Seiten sauber wieder herstellen.&lt;/p&gt;
 &lt;p&gt;MySQL skaliert:
@@ -3256,7 +3273,7 @@ Speicher.&lt;/p&gt;
 Buffer Pool, und baut im Speicher die Transaktion auf. Dazu wird
 im Log Buffer die Transaktion gebastelt und parallel dazu die
 Speicherseite im InnoDB Buffer Pool angepaßt. Die alte Version
-der betroffenen Zeile wird außerdem in das Undo Log verschoben
+der betroffenen Zeile wird außerdem in das Undo-Log verschoben
 (dies ist nicht mit eingezeichnet, weil es in diesem Text nicht
 darum gehen soll). Die geänderte Speicherseite im RAM wird nicht
 zurück geschrieben - der Inhalt der Seite im RAM und auf der
@@ -3269,7 +3286,7 @@ Platte divergieren, die Seite ist DIRTY (hier: rot markiert).&lt;/p&gt;
 &lt;p&gt;Beim COMMIT wird der Log Buffer in das Redo-Log geschrieben. Es
 besteht eine Verknüpfung zwischen der geänderten Speicherseite
 und der Transaktion im Redo-Log.&lt;/p&gt;
-&lt;p&gt;Beim COMMIT wird der Log Buffer ins Redo Log geschrieben. Die
+&lt;p&gt;Beim COMMIT wird der Log Buffer ins Redo-Log geschrieben. Die
 geänderte Speicherseite (rot: DIRTY) wird immer noch nicht
 zurück geschrieben.&lt;/p&gt;
 &lt;p&gt;Hätten wir stattdessen ein ROLLBACK durchgeführt, hätte InnoDB
@@ -3492,7 +3509,7 @@ leicht vergleichbar.&lt;/p&gt;
 
 &lt;/p&gt;
 &lt;p&gt;&amp;ldquo;Kris, kannst Du bitte mal gucken?&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;Seit heute morgen, 10:00 Uhr, wächst das Undo Log immer weiter an.&lt;/p&gt;
+&lt;p&gt;Seit heute morgen, 10:00 Uhr, wächst das Undo-Log immer weiter an.&lt;/p&gt;
 &lt;p&gt;Immer wenn InnoDB Daten schreibt wird die alte Version einer Zeile aus der
 Tabelle in das Undo-Log verschoben, also physikalisch von der ibd-Datei der
 Tabelle in die ibdata1 im Datadir von MySQL. In der Tabelle wird in der
@@ -3501,11 +3518,11 @@ Zeile im Undo-Log installiert, der Roll(back)-Pointer. Die alte Version im
 Undo-Log zeigt mit ihrem eigenen Roll-Pointer auf eine noch ältere Version
 derselben Zeile und so weiter - es entsteht für jede Zeile in der Datenbank
 eine lineare Liste von Versionen in die Vergangenheit einer Row.&lt;/p&gt;
-&lt;p&gt;Der InnoDB Purge Thread hat die Aufgabe, das Undo Log zu verkürzen. Wenn er
+&lt;p&gt;Der InnoDB Purge Thread hat die Aufgabe, das Undo-Log zu verkürzen. Wenn er
 das nicht tut, dann sieht das so aus wie oben im Graphen gezeigt. Dafür kann
 es zwei Gründe geben: Purge Lag - also mehr Writes als der Purge Thread
 wegschaffen kann. Oder lang laufende Transaktionen. Denn der Purge Thread
-kann nur dann eine Zeile aus dem Undo Log streichen, wenn es keine aktive
+kann nur dann eine Zeile aus dem Undo-Log streichen, wenn es keine aktive
 Transaktion mehr im ganzen System gibt, die älter ist als die zu streichende
 Zeile.&lt;/p&gt;
 &lt;p&gt;Das ist die weitaus wahrscheinlichere Fehlerquelle. Wie also finden wir den
@@ -3587,7 +3604,7 @@ geschrieben wird.&lt;/p&gt;
 
 &lt;/p&gt;
 &lt;p&gt;MVCC, nach Art von InnoDB. Der Pfeil deutet ein Rollback an.&lt;/p&gt;
-&lt;p&gt;Die überschriebene Zeile wird aus der Tabelle in das Undo Log verschoben und
+&lt;p&gt;Die überschriebene Zeile wird aus der Tabelle in das Undo-Log verschoben und
 mit der neuen Version der Zeile verkettet. Wird die Zeile ein weiteres Mal
 geändert, wird die überschriebene Version ebenfalls aus der Tabelle ins Undo
 Log verschoben und mit der aktuellsten Version verkettet. Auf diese Weise

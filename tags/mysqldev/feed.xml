@@ -6,7 +6,7 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Nov 2021 10:05:53 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Nov 2021 13:20:38 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: Python and WHERE ... IN ()</title>
       <link>https://blog.koehntopp.info/2021/10/28/python-where-in.html</link>
@@ -1618,7 +1618,7 @@ But with MySQL 8 many things were overhauled, so let&amp;rsquo;s see what we can
 	Before MySQL 8
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;In older Versions of MySQL, implied temporary tables are being created, whenever your &lt;code&gt;EXPLAIN&lt;/code&gt; contained the phrase &lt;code&gt;using temporary&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In older Versions of MySQL, implied temporary tables are being created whenever your &lt;code&gt;EXPLAIN&lt;/code&gt; contained the phrase &lt;code&gt;using temporary&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;In this case, MySQL would create an in-memory temporary table to materialize an intermediate query result, and then continue to process the data from there. If that temporary table was larger than some configurable limit, the temporary table would instead be converted to a MyISAM table on disk, streamed out, and then work would continue with this.&lt;/p&gt;
 &lt;p&gt;This has a large number of disadvantages:&lt;/p&gt;
 &lt;ul&gt;
@@ -1685,8 +1685,8 @@ On load, a second uncompressed page in the buffer pool is allocated, and the dat
 As this happens on write and not on checkpoint, this is not ideal for tables that are written to a lot.
 Compression and decompression happen in the Query thread, that is, the thread of your connection, and therefore single-threaded.&lt;/p&gt;
 &lt;p&gt;If buffer pool space it tight, uncompressed pages can be evicted, and recreated as needed by decompressing them again.&lt;/p&gt;
-&lt;p&gt;In order to be able to crash recover MySQL all possible shutdown scenarios, compressed pages are also written to the redo log on checkpointing.
-This also leads to larger redo logs, which may need to be upsized to allow for the additional traffic.&lt;/p&gt;
+&lt;p&gt;In order to be able to crash recover MySQL all possible shutdown scenarios, compressed pages are also written to the redo-log on checkpointing.
+This also leads to larger redo-logs, which may need to be upsized to allow for the additional traffic.&lt;/p&gt;
 &lt;h1 id=&#34;page-compression&#34;&gt;
     &lt;a href=&#34;#page-compression&#34;&gt;
 	Page Compression
@@ -1896,7 +1896,7 @@ We will later use this in the &lt;code&gt;consumer()&lt;/code&gt; to track the o
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;Our generator takes the &lt;code&gt;generator_id&lt;/code&gt; as a parameter, but makes no use of it.&lt;/p&gt;
-&lt;p&gt;We generate random &lt;code&gt;d&lt;/code&gt; and &lt;code&gt;e&lt;/code&gt; fields, and use autoincremented numbers to identify the individual jobs.
+&lt;p&gt;We generate random &lt;code&gt;d&lt;/code&gt; and &lt;code&gt;e&lt;/code&gt; fields, and use auto-incremented numbers to identify the individual jobs.
 The new job has the status of &lt;code&gt;unclaimed&lt;/code&gt; and the &lt;code&gt;owner_id&lt;/code&gt; and &lt;code&gt;owner_date&lt;/code&gt; are &lt;code&gt;NULL&lt;/code&gt;.
 For speed, we commit to the jobs table only every tenth job.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;generator&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;generator_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
@@ -1946,7 +1946,7 @@ We would need to select them after claiming them (&lt;code&gt;SELECT id, d, e FR
 Other processes trying to claim jobs run the risk of running into our X-locks while scanning the table.
 These processes would hang.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;We need another approch to handle this to make it efficent.&lt;/p&gt;
+&lt;p&gt;We need another approach to handle this to make it efficient.&lt;/p&gt;
 &lt;h3 id=&#34;smart-approach-using-select--for-update-skip-locked&#34;&gt;
     &lt;a href=&#34;#smart-approach-using-select--for-update-skip-locked&#34;&gt;
 	Smart approach using &lt;code&gt;SELECT ... FOR UPDATE SKIP LOCKED&lt;/code&gt;
@@ -1969,7 +1969,7 @@ We need another &lt;code&gt;SELECT&lt;/code&gt; statement before the locking &lt
 &lt;p&gt;So this is the plan:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Run a query to find a set of candidate primary keys (100 or fewer).
-This query can run outside of our transaction and could use a replica to find a set of candidate primary keys.&lt;/li&gt;
+This query can run outside our transaction and could use a replica to find a set of candidate primary keys.&lt;/li&gt;
 &lt;li&gt;Start a transaction.
 This happens all the time and automatically in Python.
 &lt;ul&gt;
@@ -2004,7 +2004,7 @@ We may want to count and log that, in order to detect if our concurrency in cons
 
     &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;candidate_ids&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We are using some arbitrary SQL condition to find records.
-In our example, we are using &lt;code&gt;WHERE d LIKE &#39;a%&#39; AND status = &#39;unclaimed&#39;&lt;/code&gt;, for variable intitial letters and for variable status values.
+In our example, we are using &lt;code&gt;WHERE d LIKE &#39;a%&#39; AND status = &#39;unclaimed&#39;&lt;/code&gt;, for variable initial letters and for variable status values.
 We are only interested into the primary keys, so we return only these, in a &lt;code&gt;list&lt;/code&gt;.&lt;/p&gt;
 &lt;h4 id=&#34;consuming-jobs&#34;&gt;
     &lt;a href=&#34;#consuming-jobs&#34;&gt;
@@ -2067,7 +2067,7 @@ This does two things:&lt;/p&gt;
 &lt;li&gt;it also X-locks the rows for claiming them permanently&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;We generate a list of &lt;code&gt;claimed_ids&lt;/code&gt; from the &lt;code&gt;claimed_records&lt;/code&gt;, and check that this list is non-empty.
-If it was empty, we did have a list of candidate ids, but none of these came through.
+If it was empty, we did have a list of candidate ids, but none of them came through.
 That means another concurrent process snatched the candidates from us - all of them.
 We should be recording this, but are not in this example program.&lt;/p&gt;
 &lt;p&gt;We then run the actual &lt;code&gt;UPDATE&lt;/code&gt; that marks the jobs as claimed, and updates the owner and the datetime of taking possession.
@@ -2172,7 +2172,7 @@ After processing we clean up by deleting the jobs from the table.&lt;/p&gt;
       <guid>https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html</guid>
       <description>&lt;p&gt;The DBA experience at work suggests that every single schema at some point in its lifecycle holds a queue table. These are tables in which some processes (the “producers”) put rows, which a swarm of other processes (the “consumers”) lock and consume.&lt;/p&gt;
 &lt;p&gt;A variation on that theme is the state machine, in which jobs are placed by producers. Consumers do not immediately delete them, but update them a few times to indicate processing progress, before the rows are ultimately being deleted.&lt;/p&gt;
-&lt;p&gt;Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective dequeueing”), while still maintaining the exactly-once semantics.&lt;/p&gt;
+&lt;p&gt;Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective de-queueing”), while still maintaining the exactly-once semantics.&lt;/p&gt;
 &lt;h2 id=&#34;using-a-database-as-a-queue-can-be-ok-ish&#34;&gt;
     &lt;a href=&#34;#using-a-database-as-a-queue-can-be-ok-ish&#34;&gt;
 	Using a database as a queue can be ok-ish
@@ -2181,12 +2181,12 @@ After processing we clean up by deleting the jobs from the table.&lt;/p&gt;
 &lt;p&gt;Using a database as a queue is not wrong, up to a point:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;You get ACID semantics. That means your updates are atomic and isolated, transactional, and they are durable, persisted to disk. This makes it possible to build queues with “exactly once” execution semantics, which is a thing developers like a lot.&lt;/li&gt;
-&lt;li&gt;You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies and you do not need to learn additional technologies.&lt;/li&gt;
+&lt;li&gt;You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies, and you do not need to learn additional technologies.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Now, once you pass “the point” in that “up to a point” phrase, things get nasty:&lt;/p&gt;
 &lt;p&gt;“Exactly once”  semantics are really expensive to implement: They require that each insert, delete or update is associated with a transaction, which in turn is associated with a disk write.&lt;/p&gt;
 &lt;p&gt;You get to enqueue, dequeue and state change your things exactly as quickly as a single server can flash its disk lights, and in the next step, as quickly as your replication hierarchy can pass on things downstream.&lt;/p&gt;
-&lt;p&gt;On baremetal, that costs you a bit, but because baremetal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.&lt;/p&gt;
+&lt;p&gt;On bare-metal, that costs you a bit, but because bare-metal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.&lt;/p&gt;
 &lt;p&gt;In the cloud, using a database-as-a-queue is approximately equivalent to pouring petrol on money and throwing a match. It is the wrong technology for that kind of workload in that environment from the get-go.&lt;/p&gt;
 &lt;h2 id=&#34;not-using-databases-as-queues&#34;&gt;
     &lt;a href=&#34;#not-using-databases-as-queues&#34;&gt;
@@ -2198,13 +2198,13 @@ After processing we clean up by deleting the jobs from the table.&lt;/p&gt;
 	Replayability
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;One specific property of the above setup that is expensive, and hard to reproduce outside of a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.&lt;/p&gt;
-&lt;p&gt;Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small time window of a few hours or a day, or whatever other deal you can make with the Kafka team.&lt;/p&gt;
+&lt;p&gt;One specific property of the above setup that is expensive, and hard to reproduce outside a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.&lt;/p&gt;
+&lt;p&gt;Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small window of a few hours or a day, or whatever other deal you can make with the Kafka team.&lt;/p&gt;
 &lt;p&gt;Reading the same item multiple times is not a problem if the jobs in the queue are idempotent, that is, replayable.&lt;/p&gt;
-&lt;p&gt;Not replayable are relative updates: “set x = x + 1”, “add order to table, give me the ordernumber”.&lt;/p&gt;
+&lt;p&gt;Not replayable are relative updates: “set x = x + 1”, “add an order to the table, give me the ordernumber”.&lt;/p&gt;
 &lt;p&gt;Replayable are absolute updates: “set x = 7” (you read 6, did the math and enqueued 7), “add order 17372 to order table” (you made an order number beforehand and push the order into the queue with an already fixed identity).&lt;/p&gt;
 &lt;p&gt;Basically, to make things idempotent, you need to give them either fixed identities so that you can remember if you saw things before, or you need to make the writes absolute instead of incremental, or both.&lt;/p&gt;
-&lt;p&gt;So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka and it would be cheaper. Much cheaper, in fact, in a cloud environment.&lt;/p&gt;
+&lt;p&gt;So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka, and it would be cheaper. Much cheaper, in fact, in a cloud environment.&lt;/p&gt;
 &lt;h3 id=&#34;re-queuing-and-sorting&#34;&gt;
     &lt;a href=&#34;#re-queuing-and-sorting&#34;&gt;
 	Re-queuing and sorting
@@ -2227,16 +2227,16 @@ Your state machine would be eating one item from the input, perform the associat
 &lt;/h2&gt;
 &lt;h3 id=&#34;undo-log-woes&#34;&gt;
     &lt;a href=&#34;#undo-log-woes&#34;&gt;
-	Undo Log woes
+	Undo-Log woes
     &lt;/a&gt;
 &lt;/h3&gt;
 &lt;p&gt;In &lt;a href=&#34;https://blog.koehntopp.info/2019/11/18/a-blast-from-the-past.html&#34;&gt;A Blast From The Past&lt;/a&gt;
 
- we see what happens to MySQL with long running transactions, and in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions&lt;/a&gt;
+ we see what happens to MySQL with long-running transactions, and in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions&lt;/a&gt;
 
- we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long running.&lt;/p&gt;
-&lt;p&gt;Note that any database will at some point in time have long running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo Log explosion.&lt;/p&gt;
-&lt;p&gt;So queue-as-a-database will eventually explosively grow the undo log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
+ we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long-running.&lt;/p&gt;
+&lt;p&gt;Note that any database will at some point in time have long-running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.&lt;/p&gt;
+&lt;p&gt;So queue-as-a-database will eventually explosively grow the undo-log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
 Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;In a replicated MySQL changes to any table (also queue tables) are written to the binlog, which is being kept for a few days for point in time recovery and for replication. This uses disk space.&lt;/p&gt;
 &lt;p&gt;Note that any write is binlogged, even deletes. So when you delete data, you have less disk space (because deletes are binlogged), until after a few days the binlog is purged.&lt;/p&gt;
@@ -2248,8 +2248,8 @@ Binlog woes and Replication Delay&lt;/p&gt;
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;It is also important to remember that this is per-instance, not per-table, and also not per-schema. The purge thread looks at transactions, not at schemas or tables. In a transaction, a number of changes to the instance can happen, atomically.&lt;/p&gt;
-&lt;p&gt;So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all of the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.&lt;/p&gt;
-&lt;p&gt;The undo log will grow out of bounds, and all 1000 customers will experience slow queries.&lt;/p&gt;
+&lt;p&gt;So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.&lt;/p&gt;
+&lt;p&gt;The undo-log will grow out of bounds, and all 1000 customers will experience slow queries.&lt;/p&gt;
 &lt;p&gt;This is how you denial-of-service a shared MySQL with no effort or expense at all.&lt;/p&gt;
 &lt;h2 id=&#34;what-should-i-do-and-what-is-the-limit&#34;&gt;
     &lt;a href=&#34;#what-should-i-do-and-what-is-the-limit&#34;&gt;
@@ -2265,7 +2265,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;li&gt;That is around 3.000 new rows per second, and a multiple of that with updates.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;An unconstrained baremetal SSD can do around 20.000 commits per second in hardware.
+&lt;li&gt;An unconstrained bare-metal SSD can do around 20.000 commits per second in hardware.
 &lt;ul&gt;
 &lt;li&gt;That is why we run into operational toil with 3.000 new rows (with multiple updates per rows) per second with said application.&lt;/li&gt;
 &lt;/ul&gt;
@@ -2287,7 +2287,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
       <pubDate>Sat, 26 Dec 2020 16:37:59 +0000</pubDate>
       
       <guid>https://blog.koehntopp.info/2020/12/26/sql-clause-is-coming-to-town.html</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://twitter.com/roliepoly/status/1342549035211661312&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Olya Kudriavtseva has an ugly christmas sweater&lt;/a&gt;
+      <description>&lt;p&gt;&lt;a href=&#34;https://twitter.com/roliepoly/status/1342549035211661312&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Olya Kudriavtseva has an ugly Christmas sweater&lt;/a&gt;
 
 :&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/roliepoly/status/1342549035211661312&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
@@ -2297,7 +2297,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/a&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&amp;ldquo;He&amp;rsquo;s making a table. He&amp;rsquo;s sorting it twice. SELECT * FROM contacts WHERE behavior = &amp;ldquo;nice&amp;rdquo;; SQL Clause is coming town!&lt;/em&gt;  (&lt;a href=&#34;https://www.xonot.com/product/sql-clause-sweatshirt/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;buy here&lt;/a&gt;
+&lt;p&gt;&lt;em&gt;He&amp;rsquo;s making a table. He&amp;rsquo;s sorting it twice. SELECT * FROM contacts WHERE behavior = &amp;ldquo;nice&amp;rdquo;; SQL Clause is coming town!&lt;/em&gt;  (&lt;a href=&#34;https://www.xonot.com/product/sql-clause-sweatshirt/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;buy here&lt;/a&gt;
 
 )&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://twitter.com/imightbemary/status/1342676590145105921&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Katie Bauer observes&lt;/a&gt;
@@ -2449,7 +2449,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;warning&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Note&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Code&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1003&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* select#1 */&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;santa&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;santa&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;santa&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;behavior&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;nice&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;order&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;santa&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the &lt;code&gt;Code 1003 Note&lt;/code&gt; we still see the exact same reconstituted query, but as can be seen in the plan annotastions, the internal handling changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the &lt;code&gt;Code 1003 Note&lt;/code&gt; we still see the exact same reconstituted query, but as can be seen in the plan annotations, the internal handling changes - so the optimizer has not been working on this query at all times, but on some intermediary representation.&lt;/p&gt;
 &lt;p&gt;The &amp;lsquo;using index condition&amp;rsquo; annotation points to &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/index-condition-pushdown-optimization.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Index Condition Pushdown Optimization&lt;/a&gt;
 
  being used. In our example, this is not good.&lt;/p&gt;
@@ -2460,7 +2460,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/h2&gt;
 &lt;p&gt;The column we select on is a column with a cardinality of 2: &lt;code&gt;behavior&lt;/code&gt; can be either &lt;code&gt;naughty&lt;/code&gt; or &lt;code&gt;nice&lt;/code&gt;. That means, in an equidistribution, around half of the values are &lt;code&gt;naughty&lt;/code&gt;, the other half is &lt;code&gt;nice&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Data from disk is read in pages of 16 KB. If one row in a page matches, the entire page has to be read from disk. In our example, we have a row length of around 200 Byte, so we end up with 75-80 records per page. Half of them will be &lt;code&gt;nice&lt;/code&gt;, so with an average of around 40 &lt;code&gt;nice&lt;/code&gt; records per page, we will very likely have to read all pages from disk anyway.&lt;/p&gt;
-&lt;p&gt;Using the index will not decrease the amount of data read from disk at all. In fact we will have to read the index pages on top of the data pages, so using an index on a low cardinality column has the potential of making the situation slightly worse than even a full table scan.&lt;/p&gt;
+&lt;p&gt;Using the index will not decrease the amount of data read from disk at all. In fact, we will have to read the index pages on top of the data pages, so using an index on a low cardinality column has the potential of making the situation slightly worse than even a full table scan.&lt;/p&gt;
 &lt;p&gt;Generally speaking, defining an index on a low cardinality column is usually not helpful - if there are 10 or fewer values, benchmark carefully and decide, or just don&amp;rsquo;t define an index.&lt;/p&gt;
 &lt;p&gt;In our case, the index is not even equidistributed, but biased to 90% &lt;code&gt;nice&lt;/code&gt;. We end up with mostly &lt;code&gt;nice&lt;/code&gt; records, so we can guarantee that all data pages will be read for the SQL &lt;code&gt;SELECT * FROM santa WHERE behavior = &amp;quot;nice&amp;quot;&lt;/code&gt;, and the index usage will not be contributing in any positive way.&lt;/p&gt;
 &lt;p&gt;We could try to improve the query by adding conditions to make it more selective. For example, we could ask for people close to our current position, using an RTREE index such as this:&lt;/p&gt;
@@ -2488,7 +2488,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;Selectivity matters, especially for indices on low cardinality columns.
 &lt;ul&gt;
-&lt;li&gt;Asking for all &lt;code&gt;nice&lt;/code&gt; behaviors on a &lt;code&gt;naughty&lt;/code&gt;/&lt;code&gt;nice&lt;/code&gt; column is usually not benefitting from index usage.&lt;/li&gt;
+&lt;li&gt;Asking for all &lt;code&gt;nice&lt;/code&gt; behaviors on a &lt;code&gt;naughty&lt;/code&gt;/&lt;code&gt;nice&lt;/code&gt; column is usually not benefiting from index usage.&lt;/li&gt;
 &lt;li&gt;Additional indexable conditions that improve selectivity can help, a lot.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
@@ -2517,7 +2517,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;When we make a full backup of the database, we just copy away all tables in the data directory while the database does not change. This can be achieved by simply taking the server offline during the copy, or using more elegant methods that do not interrupt production, yet still look the same when done.&lt;/p&gt;
 &lt;p&gt;If the database does not change while we make the backup, the backup is internally referentially consistent, and it is associated with exactly one binlog position. And to keep things simple, the binlog position is  just the pair &lt;code&gt;(newest binlog filename, file length)&lt;/code&gt;. So a binlog position looks like &lt;code&gt;(binlog.000004, 7625)&lt;/code&gt; or similar.&lt;/p&gt;
 &lt;p&gt;The server will periodically start new binlogs: When it becomes too large, when the server restarts, or when we ask it to do so using a &lt;code&gt;FLUSH BINARY LOGS&lt;/code&gt; command.&lt;/p&gt;
-&lt;p&gt;Each data changing transaction is being assigned a unique binlog position, and this way we also get a total order of all transactions (and that is becoming a problem later in the game).&lt;/p&gt;
+&lt;p&gt;Every transaction that changes data is being assigned a unique binlog position, and this way we also get a total order of all transactions (and that is becoming a problem later in the game).&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/11/replication-02.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
@@ -2538,10 +2538,10 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/h1&gt;
 &lt;p&gt;As early as MySQL 3.23.15 from May 2000, we have replication:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;We restore our original servers data directory to a new machine, effectively cloning it.&lt;/li&gt;
+&lt;li&gt;We restore our original servers&#39; data directory to a new machine, effectively cloning it.&lt;/li&gt;
 &lt;li&gt;We tell our clone the binlog position of the parent server it was created from.&lt;/li&gt;
-&lt;li&gt;We tell this new machine where the parent server is, and give it login credentials.&lt;/li&gt;
-&lt;li&gt;The cloned server will then login to the parent, download the binlog as it is written, and apply it.&lt;/li&gt;
+&lt;li&gt;We tell this new machine where the parent server is, and give it credentials to log in to that parent.&lt;/li&gt;
+&lt;li&gt;The cloned server will then log in to the parent, download the binlog as it is written, and apply it.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;This is exactly the same process as with a restore and then applying the binlog that has been created since the backup was made. But with replication, it is live and ongoing as new binlog is being created. As a result, we get a cloned server that executes the same statements as its upstream parent, keeping its internal state a mirror copy of the parent.&lt;/p&gt;
 &lt;p&gt;We called the parent server a &lt;em&gt;master&lt;/em&gt; back then, and a &lt;em&gt;primary&lt;/em&gt; or &lt;em&gt;source server&lt;/em&gt; these days. The cloned server was a &lt;em&gt;slave&lt;/em&gt; back then and is now a &lt;em&gt;replica&lt;/em&gt;.&lt;/p&gt;
@@ -2576,7 +2576,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;This is &lt;em&gt;Semi-Synchronous Replication&lt;/em&gt;, &lt;em&gt;SSR&lt;/em&gt;, in MySQL, and it comes with a number of caveats:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;SSR has a timeout. If a transaction is not acknowledged in time, a message is error logged and the server reverts to regular asynchronous replication. It will flip back to SSR once a replica responds within the timeout window.&lt;/li&gt;
-&lt;li&gt;If a source has zero replicas and a really high timeout, it never receives an acknowledgement, and will essentially block all applications. If your requirement is “transactions must be persisted on more than a single machine to be valid”, this is the desired behaviour. If your requirement is “It is more important to persist things at all than to ever hang the business”, then ASR is better than SSR for your use case. Nonetheless we have plenty of outages because of this: primary servers ending up with zero replicas due to bugs or circumstances.&lt;/li&gt;
+&lt;li&gt;If a source has zero replicas and a really high timeout, it never receives an acknowledgement, and will essentially block all applications. If your requirement is “transactions must be persisted on more than a single machine to be valid”, this is the desired behaviour. If your requirement is “It is more important to persist things at all than to ever hang the business”, then ASR is better than SSR for your use case. Nonetheless, we have plenty of outages because of this: primary servers ending up with zero replicas due to bugs or circumstances.&lt;/li&gt;
 &lt;li&gt;SSR guarantees that at least one more copy of the transaction exists, but it does not say where. To build a resilient system, you need orchestration to find out where, and make sure you fail to that machine in order to be able to continue. We are using a special program for this kind of orchestration, and it is being ingeniously called &lt;a href=&#34;https://github.com/openark/orchestrator&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MySQL Orchestrator&lt;/a&gt;
 
 .&lt;/li&gt;
@@ -2616,7 +2616,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;What is being logged is&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;The RAND_SEED values to make the statement deterministic.&lt;/li&gt;
-&lt;li&gt;The timestamp of the server when executing the statement (this will also make the NOW() function deterministic.&lt;/li&gt;
+&lt;li&gt;The timestamp of the server when executing the statement (this will also make the NOW() function deterministic).&lt;/li&gt;
 &lt;li&gt;The actual statement.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;Despite the warning, this replicates well, and has done so for the last 20 years. What does not replicate well at all, ever, is stuff like &lt;code&gt;UPDATE t SET x = x+1 LIMIT 10&lt;/code&gt;. As this lacks an &lt;code&gt;ORDER BY&lt;/code&gt; clause, the server is free to order the row updates as it wishes, and can (and in NDB cluster actually will!) update 10 random rows, different ones on each instance of replication. It is the &lt;code&gt;LIMIT&lt;/code&gt; clause that makes this non-deterministic.&lt;/p&gt;
@@ -2680,11 +2680,11 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;Since the earliest days of replication, we could filter the binlog on the primary (using &lt;code&gt;binlog-do-*&lt;/code&gt; config directives) and the relay log on the replica (using &lt;code&gt;replicate-do-*&lt;/code&gt; config directives).&lt;/p&gt;
 &lt;p&gt;Filtering the binlog is never a good idea: It will break your ability to perform point-in-time restores. Filtering the relay log can be done, but most of the config directives that do this are broken:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;replicate-do-db&lt;/code&gt; and &lt;code&gt;replicate-ignore-db&lt;/code&gt; are matching the current database in statement based replication, and the actual statements database in row based replication. The statement &lt;code&gt;use a; insert into b.t values (...);&lt;/code&gt; will be filtered differently in SBR than in RBR under a &lt;code&gt;replicate-do-db=a&lt;/code&gt; rule. With the default setting of &lt;code&gt;row-format=MIXED&lt;/code&gt;, the behavior is random, depending on the row format chosen by mysql.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;replicate-do-db&lt;/code&gt; and &lt;code&gt;replicate-ignore-db&lt;/code&gt; are matching the current database in statement based replication, and the actual statements&#39; database in row based replication. The statement &lt;code&gt;use a; insert into b.t values (...);&lt;/code&gt; will be filtered differently in SBR than in RBR under a &lt;code&gt;replicate-do-db=a&lt;/code&gt; rule. With the default setting of &lt;code&gt;row-format=MIXED&lt;/code&gt;, the behavior is random, depending on the row format chosen by mysql.&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;replicate-do/ignore-table&lt;/code&gt; are tedious, they require you to state each table explicitly, and nobody really wants to use them/&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;replicate-wild-do/ignore-table&lt;/code&gt; work in SBR and RBR, but &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/replication-rules-table-options.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;precedence&lt;/a&gt;
 
- is complicated, and it is adviseable to use either only positive or only negative logic.&lt;/li&gt;
+ is complicated, and it is advisable to use either only positive or only negative logic.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;With group replication, which we do not discuss here, any filtering will break consistency in the group, so any filters are forbidden.&lt;/p&gt;
 &lt;p&gt;The summary of all that is basically: Don&amp;rsquo;t use binlog or replication filters, but if you have to, it&amp;rsquo;s best to stick to either &lt;code&gt;replicate-wild-do-table&lt;/code&gt; or &lt;code&gt;replicate-wild-ignore-table&lt;/code&gt;.&lt;/p&gt;
@@ -2698,7 +2698,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;05&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When you increment the counter, the entire row is logged, twice: Once as a pre-image, and once again as a post-image. You end up with 4 bytes integer changing, but two full copies of the &lt;code&gt;BLOB&lt;/code&gt;, which can be very large.&lt;/p&gt;
 &lt;p&gt;This is how we got the setting &lt;code&gt;binlog-row-image&lt;/code&gt;, which can be &lt;code&gt;FULL&lt;/code&gt; (the default), &lt;code&gt;NOBLOB&lt;/code&gt; or &lt;code&gt;MINIMAL&lt;/code&gt;. In &lt;code&gt;NOBLOB&lt;/code&gt; mode, blobs and text fields are not logged unless they change. In &lt;code&gt;MINIMAL&lt;/code&gt; mode, the pre-image contains only the primary key, and the post-image contains only the changed fields new values.&lt;/p&gt;
-&lt;p&gt;We can use RBR in &lt;code&gt;FULL&lt;/code&gt; mode, not only for replication, but also for Change Data Capture, to feed Hadoop and Kafka with it. On the other hand, with  replication chains that are blobbyrequire &lt;code&gt;NOBLOB&lt;/code&gt; or &lt;code&gt;MINIMAL&lt;/code&gt; mode to not die on us.&lt;/p&gt;
+&lt;p&gt;We can use RBR in &lt;code&gt;FULL&lt;/code&gt; mode, not only for replication, but also for Change Data Capture, to feed Hadoop and Kafka with it. On the other hand, with  replication chains that are blobby require &lt;code&gt;NOBLOB&lt;/code&gt; or &lt;code&gt;MINIMAL&lt;/code&gt; mode to not die on us.&lt;/p&gt;
 &lt;h2 id=&#34;row-based-replication-and-primary-keys&#34;&gt;
     &lt;a href=&#34;#row-based-replication-and-primary-keys&#34;&gt;
 	Row Based Replication and Primary Keys
@@ -2738,13 +2738,13 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;instance-918d is the current primary, in the blue AZ. Replicas in orange and green are in other AZs. Blue badges indicate multiple replicas, eg (38) means 38 machines.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;When you talk to a database, you get two database handles:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;A write handle which always points at the primary, here instance-918d currently, and&lt;/li&gt;
-&lt;li&gt;a read handle.&lt;/li&gt;
+&lt;li&gt;A write-handle which always points at the primary, here instance-918d currently, and&lt;/li&gt;
+&lt;li&gt;a read-handle.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;The read handle should be in the same AZ as your client application, and should be selected randomly from the available replicas for reading.&lt;/p&gt;
+&lt;p&gt;The read-handle should be in the same AZ as your client application, and should be selected randomly from the available replicas for reading.&lt;/p&gt;
 &lt;p&gt;We also have other replicas, for cloning, to make more replicas, and for example time delayed replicas to correct accidental data deletions and other Oopses quickly.&lt;/p&gt;
 &lt;p&gt;Machines that are available for reading are organised in “Pools” per AZ. Many replication chains have only one Pool, “&amp;lt;name&amp;gt;-misc”, but some replication chains also have additional pools for workload isolation. For example, some chains have “&amp;lt;name&amp;gt;-slow” pools, and you get a third handle, to which you are supposed to send slow queries that cannot be optimised.&lt;/p&gt;
-&lt;p&gt;Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your &amp;ldquo;application-xml” queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.&lt;/p&gt;
+&lt;p&gt;Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your &amp;ldquo;application-xml&amp;rdquo; queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.&lt;/p&gt;
 &lt;p&gt;In any case, we run automated capacity tests on each pool, and then adjust pool sizes as needed. We also report to ourselves on that. Sometimes that report is interesting:&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/10/mysql-pool-size-change.png&#34; alt=&#34;&#34;  /&gt;
@@ -2754,13 +2754,13 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;The example-misc pool changed target size from 3 to 16 in the night of 05-Oct, which is a 433% increase.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;The minimum pool size is three, for redundancy reasons. The example chain is not busy, ever, and the pool size should &lt;em&gt;never&lt;/em&gt; exceed three.&lt;/p&gt;
 &lt;p&gt;DBA Operations talk to the customer: “I am reaching out to you because you are currently designated as owners of one or more of the database schemata in the example database chain. The schemata in question are &amp;lt;list&amp;gt;.&lt;/p&gt;
-&lt;p&gt;Starting yesterday, the example chain (and, especifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”&lt;/p&gt;
+&lt;p&gt;Starting yesterday, the example chain (and, specifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/10/mysql-threads.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;MySQL &amp;ldquo;Threads Running&amp;rdquo; going through the roof, load testing reports diminished capacity and we ready more instances. The world is safe again! Or, is it?&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;MySQL &amp;ldquo;Threads Running&amp;rdquo; going through the roof, load testing reports diminished capacity, and we ready more instances. The world is safe again! Or, is it?&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;So we detected an increased number of threads running, and that led to a general reduction in the capacity, and that requires &lt;em&gt;MOAR MACHINES!&lt;/em&gt; Yay! So our bots threw more machinery to ride the load wave and that kept us afloat for the moment.&lt;/p&gt;
 &lt;p&gt;Is that the story? It is not.&lt;/p&gt;
 &lt;h2 id=&#34;a-mysterious-mystery&#34;&gt;
@@ -2768,7 +2768,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 	A mysterious mystery
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Humans descend on the problem and look. What are the machines in the pool, currently? Well, if have the privileges, you can check with our roster tool:&lt;/p&gt;
+&lt;p&gt;Humans descend on the problem and look. What are the machines in the pool, currently? Well, if you have the privileges, you can check with our roster tool:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;sudo roster-tool list /persistent/pools/example-misc/az-west1-a
 &lt;span class=&#34;go&#34;&gt;0be2b240a6964a338f0a65f22a2bb09d-example-2016.dc1.prod.example.com
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;421e3f5c81914082b26f93cd096c4d25-example-8050.dc2.prod.example.com
@@ -2842,20 +2842,20 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;li&gt;some, very few, slow queries, queries,&lt;/li&gt;
 &lt;li&gt;an unsaturated database, not bottlenecking globally on any base resource&lt;/li&gt;
 &lt;li&gt;a machine load going up by 2 from 1 to 3 (per thread problem, two queries?)&lt;/li&gt;
-&lt;li&gt;long running&lt;/li&gt;
+&lt;li&gt;long-running&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;We have &lt;a href=&#34;https://blog.koehntopp.info/2019/11/18/a-blast-from-the-past.html&#34;&gt;seen this before&lt;/a&gt;
 
 , and we have seen it &lt;a href=&#34;https://blog.koehntopp.info/2011/04/28/mysql-undo-log.html&#34;&gt;a long time before that&lt;/a&gt;
 
- as well. Let’s check the undo log size:&lt;/p&gt;
+ as well. Let’s check the undo-log size:&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/10/mysql-undo-log.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Undo Log shark fin perfectly co-inciding with the incident.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We observe a shark fin in the Undo Log size that perfectly matches the time span of the incident and the increased CPU time.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Undo-Log shark fin perfectly coinciding with the incident.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We observe a shark fin in the Undo-Log size that perfectly matches the time span of the incident and the increased CPU time.&lt;/p&gt;
 &lt;h2 id=&#34;we-knew-this-is-bad&#34;&gt;
     &lt;a href=&#34;#we-knew-this-is-bad&#34;&gt;
 	We knew this is bad
@@ -2863,15 +2863,15 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/h2&gt;
 &lt;p&gt;We know from &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions - the physical side&lt;/a&gt;
 
- what the Undo Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.&lt;/p&gt;
+ what the Undo-Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.&lt;/p&gt;
 &lt;p&gt;We learned in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/29/mysql-transactions-the-logical-view.html&#34;&gt;MySQL Transactions - the logical side&lt;/a&gt;
 
- how the Undo Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.&lt;/p&gt;
+ how the Undo-Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.&lt;/p&gt;
 &lt;p&gt;The part where it says:&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Starting a transaction at the default isolation level will force the Undo Log Purge Thread to stop at the position of our read view. Undo Log entries will no longer be purged, filling up and growing the Undo Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.&lt;/p&gt;
+&lt;p&gt;Starting a transaction at the default isolation level will force the Undo-Log Purge Thread to stop at the position of our read view. Undo-Log entries will no longer be purged, filling up and growing the Undo-Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;So it may be long running transactions.&lt;/p&gt;
+&lt;p&gt;So it may be long-running transactions.&lt;/p&gt;
 &lt;h2 id=&#34;proof&#34;&gt;
     &lt;a href=&#34;#proof&#34;&gt;
 	Proof
@@ -2882,14 +2882,15 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;This is such an obvious pressing need that &lt;a href=&#34;http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Simon Mudd wrote a script&lt;/a&gt;
 
  to do that in the deep, dark past long before the term “observability” even existed.&lt;/p&gt;
-&lt;p&gt;It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in /var/log/mysql_pl/&amp;lt;weekday name&amp;gt;. In an age of baremetal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:&lt;/p&gt;
+&lt;p&gt;It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in &lt;code&gt;/var/log/mysql_pl/&amp;lt;weekday name&amp;gt;&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In an age of bare-metal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;/var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz &amp;gt; /tmp/kris
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/var/log/mysql_pl/Sun $ vim /tmp/kris
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/var/log/mysql_pl/Sun $ awk -F&amp;#39;\t&amp;#39; &amp;#39;($5 != &amp;#34;Sleep&amp;#34;) &amp;amp;&amp;amp; !match($7, /Waiting for/)&amp;#39; /tmp/kris | less
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With a text editor we isolate the processlist recording from 23:48 on 04-Oct. We then use Unix Tooling to look at all non-sleeping connections that are also not idle replication connections.&lt;/p&gt;
 &lt;p&gt;This yields indeed two interesting queries: Both show a &lt;code&gt;cronjob=reserve_projectname_upsert_transaction_ids&lt;/code&gt; running on &lt;code&gt;cronapp-39.dc2.prod.example.com&lt;/code&gt; and on &lt;code&gt;cronapp-02.dc2.prod.example.com&lt;/code&gt;, with runtimes of 16220 and 22170 seconds.&lt;/p&gt;
-&lt;p&gt;There are indeed two long running queries, coinciding perfectly with a load increase of 2, and they are easily identifyable cron queries. They run from two different hosts, with the same cron banner.&lt;/p&gt;
-&lt;p&gt;I have no idea what that job does, but we are looking at a &lt;code&gt;SELECT&lt;/code&gt; statement in &lt;code&gt;REPEATABLE READ&lt;/code&gt; isolation that has a run time of multiple hours, and unsurprisingly an Undo Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.&lt;/p&gt;
+&lt;p&gt;There are indeed two long-running queries, coinciding perfectly with a load increase of 2, and they are easily identifiable cron queries. They run from two different hosts, with the same cron banner.&lt;/p&gt;
+&lt;p&gt;I have no idea what that job does, but we are looking at a &lt;code&gt;SELECT&lt;/code&gt; statement in &lt;code&gt;REPEATABLE READ&lt;/code&gt; isolation that has a run time of multiple hours, and unsurprisingly an Undo-Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.&lt;/p&gt;
 &lt;h2 id=&#34;what-we-can-learn-from-this&#34;&gt;
     &lt;a href=&#34;#what-we-can-learn-from-this&#34;&gt;
 	What we can learn from this
@@ -2903,11 +2904,13 @@ Binlog woes and Replication Delay&lt;/p&gt;
 
 .&lt;/p&gt;
 &lt;p&gt;With such tooling, we need to connect what we teach with actual incidents that show how the teachings connect to real world cases.&lt;/p&gt;
-&lt;p&gt;Which is why I am typing up this thing, right now and link to the actual writeups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.&lt;/p&gt;
-&lt;p&gt;You know in your head what &amp;ldquo;Undo Log&amp;rdquo; means. Here you can understand what &amp;ldquo;Undo Log&amp;rdquo; feels like. Go, &lt;a href=&#34;https://blog.koehntopp.info/2020/08/31/on-touching-candles.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;touch the candle&lt;/a&gt;
+&lt;p&gt;Which is why I am typing up this thing, right now and link to the actual write-ups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.&lt;/p&gt;
+&lt;p&gt;You know in your head what &amp;ldquo;Undo-Log&amp;rdquo; means. Here you can understand what &amp;ldquo;Undo-Log&amp;rdquo; feels like. Go, &lt;a href=&#34;https://blog.koehntopp.info/2020/08/31/on-touching-candles.html&#34;&gt;touch the candle&lt;/a&gt;
 
 .&lt;/p&gt;
-&lt;p&gt;We have all the tooling, but it is from a different age. An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics. Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.&lt;/p&gt;
+&lt;p&gt;We have all the tooling, but it is from a different age.
+An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics.
+Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.&lt;/p&gt;
 &lt;p&gt;We do no longer have access to root shells in production, and in the age of anything as a service not even to shells.&lt;/p&gt;
 &lt;p&gt;Observability as taught by Charity Majors is your trusted &lt;code&gt;printf(“Checkpoint: I am here.\n”);&lt;/code&gt; or your &lt;a href=&#34;https://sourceforge.net/projects/dbug/files/dbug/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fred Fish Dbug Macros&lt;/a&gt;
 
@@ -3347,7 +3350,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;QSC&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AG&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                                                  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;STADTWERKE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;KARLSRUHE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                                    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Using the &lt;code&gt;category&lt;/code&gt; I an also group this and make group totals.&lt;/p&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Using the &lt;code&gt;category&lt;/code&gt; I can also group this and make group totals.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;category&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;amount&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;payments&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;amount&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
@@ -3356,14 +3359,14 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;group&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;category&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;order&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will tell me how I spend my money.&lt;/p&gt;
-&lt;p&gt;Often I want to observe how my spending habits change over time, so I would not just use the categories from the moneysinks table as grouping critieron, but also group over some time dimension (&lt;code&gt;GROUP BY year(bookdate) as year, category&lt;/code&gt;).&lt;/p&gt;
-&lt;p&gt;As my data warehouse grows, it may be useful to run the aggregation query and save the result in some preaggregated table (by day or month), as a kind of materialized view of the aggregates. I can use these to create coarser grained aggregates faster (take daily sums and counts, and create monthly or yearly aggregates, fast).&lt;/p&gt;
+&lt;p&gt;Often I want to observe how my spending habits change over time, so I would not just use the categories from the moneysinks table as grouping criterion, but also group over some time dimension (&lt;code&gt;GROUP BY year(bookdate) as year, category&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;As my data warehouse grows, it may be useful to run the aggregation query and save the result in some pre-aggregated table (by day or month), as a kind of materialized view of the aggregates. I can use these to create coarser grained aggregates faster (take daily sums and counts, and create monthly or yearly aggregates, fast).&lt;/p&gt;
 &lt;h2 id=&#34;summary-and-outlook&#34;&gt;
     &lt;a href=&#34;#summary-and-outlook&#34;&gt;
 	Summary and outlook
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Using account statements from a bank, we have built a basic data warehouse. We demonstrated data import, staging and cleaning processes. Using category tables, we demonstrated how bin individual records into larger sets that can be useful in statistical analysis, and we looked at how we could materialize these aggregation into preaggregated tables.&lt;/p&gt;
+&lt;p&gt;Using account statements from a bank, we have built a basic data warehouse. We demonstrated data import, staging and cleaning processes. Using category tables, we demonstrated how bin individual records into larger sets that can be useful in statistical analysis, and we looked at how we could materialize these aggregations into pre-aggregated tables.&lt;/p&gt;
 &lt;p&gt;This is a toy data warehouse, and it poses no challenges in data management due to the small size. Still, it has many properties that are also present in larger structures. Let&amp;rsquo;s look at this in a more generalized way:&lt;/p&gt;
 &lt;p&gt;A data warehouse is centered around one or more fact tables. Fact tables always have a time dimension, they have log-like nature.&lt;/p&gt;
 &lt;h3 id=&#34;literal-attribute-values-resolve-ids&#34;&gt;
@@ -3372,7 +3375,8 @@ Binlog woes and Replication Delay&lt;/p&gt;
     &lt;/a&gt;
 &lt;/h3&gt;
 &lt;p&gt;Fact tables contain snapshot data that is not normalized, but contains literal values. In our example: actual account holder names, and account numbers.&lt;/p&gt;
-&lt;p&gt;For example in a sales warehouse from a web shop, we are never interested in the current price of an item in a sales-fact table, but always in what we sold it for back then, for each individual sale. We are never interested where the customer lives now, but where we sent the article. Hence we log literal attributes, never ids pointing to the current article or customer record.&lt;/p&gt;
+&lt;p&gt;For example in a sales warehouse from a web shop, we are never interested in the current price of an item in a sales-fact table, but always in what we sold it for back then, for each individual sale. We are never interested where the customer lives now, but where we sent the article.
+Hence, we log literal attributes, never ids pointing to the current article or customer record.&lt;/p&gt;
 &lt;h3 id=&#34;encoding-can-shrink-tables-but-do-only-what-is-necessary&#34;&gt;
     &lt;a href=&#34;#encoding-can-shrink-tables-but-do-only-what-is-necessary&#34;&gt;
 	Encoding can shrink tables, but do only what is necessary
@@ -3381,7 +3385,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;This often leads to data duplication. In our example, the string &amp;ldquo;SCHECK IN CENTER KA DURLACH&amp;rdquo; is repeated 36 times. For the amount of data shown in our example this does not matter.&lt;/p&gt;
 &lt;p&gt;Even in the one million rows example in &lt;a href=&#34;https://blog.koehntopp.info/2020/09/18/mysql-encoding-fields-for-great-profit.html&#34;&gt;Coding fields for great profit&lt;/a&gt;
 
- the gain is not critial, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.&lt;/p&gt;
+ the gain is not critical, though substantial. A data warehouse starting out can often skip encoding the values and just take the hit from the duplication. An encoding step can be performed later, as long as there is infrastructure in place for online schema change, and sufficient disk space.&lt;/p&gt;
 &lt;h3 id=&#34;the-star-and-the-snowflake&#34;&gt;
     &lt;a href=&#34;#the-star-and-the-snowflake&#34;&gt;
 	The Star and the Snowflake
@@ -3391,27 +3395,27 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;In data warehousing, this is obviously not the case - our data has a time dimension, and unlike OLTP, in a data warehouse we are interested in how things were then, not what they are like now. In our example, we are interested in how much we spent for the fuel back then, and not what the same amount would cost us now.&lt;/p&gt;
 &lt;p&gt;Conversely, in a data warehouse the logged data usually does not change much after the fact: there can be&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;backfilling, due to data arriving late,&lt;/li&gt;
+&lt;li&gt;back filling, due to data arriving late,&lt;/li&gt;
 &lt;li&gt;backpropagation of newly added attributes,&lt;/li&gt;
 &lt;li&gt;or there can be corrections due to transactions changed after the fact at the business level&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;All of these require us to be able to rewrite our logs for some time window. But eventually that window closes and the data becomes immutable, and we can seal it (run &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt;, and apply encoding and page level compression).&lt;/p&gt;
 &lt;p&gt;In our example, once money is spent, it would not come back (or if, in a second corrective reverse booking), and the amounts booked would never change. The log records are immutable from the outset.&lt;/p&gt;
 &lt;p&gt;Things that OLTP structures need to avoid by normalizing - insert, update and delete paradox - do not happen to us in the same way. Also, because our data does not change much (if ever), but grows a lot over time, it is useful to invest the CPU cycles for data compression (using encoding at the data model level, and using page compression at the database engine level, in this order) once the data can be sealed.&lt;/p&gt;
-&lt;p&gt;The classical structure of a data warehouse is therefore the star, in which we have a fact table, and a number of category tables aiding binning, plus a number of generated daily/weekly/monthly preaggregates as outputs. All of these auxiliary tables group around the fact table, linked to it in some way, hence the &amp;ldquo;Star Schema&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The classical structure of a data warehouse is therefore the star, in which we have a fact table, and a number of category tables aiding binning, plus a number of generated daily/weekly/monthly pre-aggregates as outputs. All of these auxiliary tables group around the fact table, linked to it in some way, hence the &amp;ldquo;Star Schema&amp;rdquo;.&lt;/p&gt;
 &lt;p&gt;In our example, we have the &lt;code&gt;b&lt;/code&gt; fact table, and only a single binning input table, &lt;code&gt;moneysinks&lt;/code&gt;. More complicated warehouses can have many more of these.&lt;/p&gt;
 &lt;p&gt;We have no materialized output tables (&lt;code&gt;expenses per days&lt;/code&gt; or similar), because our data set is small enough to do all of this ad-hoc. In larger warehouses, materializing aggregates that help to speed up reports is useful.&lt;/p&gt;
-&lt;p&gt;If you add categories of catgeories, or produce multidimensional aggregates, you go from Star to Snowflake Schema.&lt;/p&gt;
+&lt;p&gt;If you add categories of categories, or produce multidimensional aggregates, you go from Star to Snowflake Schema.&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;The Star and the Snowflake are the normal forms for Data Warehosues, Normalization as practiced in transactional databases is not helpful, 3NF is not a thing.&lt;/p&gt;
+&lt;p&gt;The Star and the Snowflake are the normal forms for Data Warehouses, Normalization as practiced in transactional databases is not helpful, 3NF is not a thing.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h3 id=&#34;time-dimensional-tables-in-oltp-schemas&#34;&gt;
     &lt;a href=&#34;#time-dimensional-tables-in-oltp-schemas&#34;&gt;
 	Time Dimensional Tables in OLTP schemas
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Almost every OLTP schema earning money has some tables in it that have a time dimension. It is often visble either in the table name (&lt;code&gt;shop.sales_202009&lt;/code&gt;) or in the tables primary key - often a compound primary key which contains a pair of an id and a date.&lt;/p&gt;
-&lt;p&gt;It will be visible in any case, if you think about each tables growth.&lt;/p&gt;
+&lt;p&gt;Almost every OLTP schema earning money has some tables in it that have a time dimension. It is often visible either in the table name (&lt;code&gt;shop.sales_202009&lt;/code&gt;) or in the tables primary key - often a compound primary key which contains a pair of an id and a date.&lt;/p&gt;
+&lt;p&gt;It will be visible in any case, if you think about each tables&#39; growth.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Assume unchanging conditions - a webshop with a mostly fixed number of articles, and a mostly fixed number of customers buying at a fixed rate, which tables will stay at a fixed size, and which tables will grow without bounds?&lt;/p&gt;
 &lt;p&gt;Solution: It is the &lt;code&gt;orders&lt;/code&gt; table.&lt;/p&gt;
@@ -3422,7 +3426,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;In the Extract phase you create a monster join you resolve all id values present in your normalized data, extract the literal attributes of interest, and push them into a CSV or some staging table.&lt;/p&gt;
 &lt;p&gt;Data in the OLTP system can now be deleted by the OLTP systems data lifecycle management without concern for other, non-transactional business functions: we have isolated the non-transactional concerns and confined them to the Extraction process (which will have to be adjusted when the OLTP schema changes, so we are a stakeholder in the OLTP schema evolution).&lt;/p&gt;
 &lt;p&gt;This isolation of concerns means that the OLTP system of our shop can now delete or archive orders at will after fulfillment or whatever other concerns the transactional system has to serve. Our non-transactional needs are all served from the data gathered in the Extract phase of the ETL process.&lt;/p&gt;
-&lt;p&gt;The staged extracted values can now be cleaned, categorized and aggregated, depending on the demands from the non-transactional business concerns (statistics, business intelligence, decision making and so on).&lt;/p&gt;
+&lt;p&gt;The staged extracted values can now be cleaned, categorized and aggregated, depending on the demands from the non-transactional business concerns (statistics, business intelligence, decision-making and so on).&lt;/p&gt;
 &lt;p&gt;Identifying data warehousey tables in OLTP systems, and isolating the transactional and non-transactional business concerns is important to keep the OLTP system small and agile.&lt;/p&gt;
 &lt;p&gt;Without taking the non-transactional, long term business functions out the OLTP system will grow without bounds, and ultimately transactional performance will suffer - the system will choke on itself. The non-transactional concerns not being isolated and bundled will also impede OLTP schema evolution and choke the development process on the money-earning side.&lt;/p&gt;
 &lt;h3 id=&#34;data-lifecycle-management-at-the-warehouse&#34;&gt;
@@ -3435,7 +3439,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL &lt;a href=&#34;https://blog.koehntopp.info/2020/09/24/mysql-deleting-data.html&#34;&gt;when using partitions&lt;/a&gt;
 
 .&lt;/p&gt;
-&lt;p&gt;In data warehouses, partitions are usually on a time value as the first dimension. That is, we partition our data set by year, month or day and we delete data by dropping old partitions. This leaves all internal B-Trees in all the partitions subtables untouched and as they have been after the import, optimization and compression.&lt;/p&gt;
+&lt;p&gt;In data warehouses, partitions are usually on a time value as the first dimension. That is, we partition our data set by year, month or day, and we delete data by dropping old partitions. This leaves all internal B-Trees in all the partitions sub-tables untouched and as they have been after the import, optimization and compression.&lt;/p&gt;
 &lt;p&gt;As queries also have a time dimension, the optimizer profits from this structure as well. It can exclude entire partitions from consideration, making the subset of data to look at much smaller.&lt;/p&gt;
 &lt;h3 id=&#34;daily-snapshots-are-slow-but-simple&#34;&gt;
     &lt;a href=&#34;#daily-snapshots-are-slow-but-simple&#34;&gt;
@@ -3512,15 +3516,15 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I could put the logic of the partitioner and dropper into stored procedures and use the MySQL Event Scheduler to have this running in the background at all times to maintain the partitions on the &lt;code&gt;data&lt;/code&gt; table.&lt;/p&gt;
 &lt;p&gt;Except that would still fail if I insert too many rows in a single transaction.&lt;/p&gt;
-&lt;p&gt;I may be able to run the calls to my stored procedures in an insert trigger, but that is overhead I&amp;rsquo;d rather not have for each row inserted. Also, I am pretty confident that the trigger will also trigger a number of bugs in rarely used code pathes. :-)&lt;/p&gt;
+&lt;p&gt;I may be able to run the calls to my stored procedures in an insert trigger, but that is overhead I&amp;rsquo;d rather not have for each row inserted. Also, I am pretty confident that the trigger will also trigger a number of bugs in rarely used code paths. :-)&lt;/p&gt;
 &lt;h2 id=&#34;wishful-thinking&#34;&gt;
     &lt;a href=&#34;#wishful-thinking&#34;&gt;
 	Wishful thinking
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;An actual solution would be a less cumbersome notation for partitions, specifically range partitioning by an auto_increment primary key, and range partitioning along a time dimensions.&lt;/p&gt;
-&lt;p&gt;I should be able to write how many partitions of which bucket size I want insteaf of maintaining a giant if-then-else of &lt;code&gt;VALUES LESS THAN&lt;/code&gt; statements. SQL is supposed to be a declarative language, after all.&lt;/p&gt;
-&lt;p&gt;For the time dimension, I should be able to specifify the same, in retention time and intervals for the buckets. MySQL would then create and drop partitions automatically, and generate the names for them automatically, too.&lt;/p&gt;
+&lt;p&gt;I should be able to write how many partitions of which bucket size I want instead of maintaining a giant if-then-else of &lt;code&gt;VALUES LESS THAN&lt;/code&gt; statements. SQL is supposed to be a declarative language, after all.&lt;/p&gt;
+&lt;p&gt;For the time dimension, I should be able to specify the same, in retention time and intervals for the buckets. MySQL would then create and drop partitions automatically, and generate the names for them automatically, too.&lt;/p&gt;
 &lt;p&gt;So something like the following made-up syntax:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- maintain 10 buckets,
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;-- equivalent to
@@ -3562,7 +3566,10 @@ Binlog woes and Replication Delay&lt;/p&gt;
       <pubDate>Thu, 24 Sep 2020 21:39:24 +0000</pubDate>
       
       <guid>https://blog.koehntopp.info/2020/09/24/mysql-deleting-data.html</guid>
-      <description>&lt;p&gt;Completing the data lifecycle is often harder than originally expected: Deleting data can cost sometimes way more than inserting it in the first place. MySQL Partitions can offer a way out. We have an &lt;a href=&#34;https://blog.koehntopp.info/2020/05/13/deleting-data-from-mysql.html&#34;&gt;earlier post&lt;/a&gt;
+      <description>&lt;p&gt;Completing the data lifecycle is often harder than originally expected:
+Deleting data can sometimes cost way more than inserting it in the first place.
+MySQL Partitions can offer a way out.
+We have an &lt;a href=&#34;https://blog.koehntopp.info/2020/05/13/deleting-data-from-mysql.html&#34;&gt;earlier post&lt;/a&gt;
 
  on the subject.&lt;/p&gt;
 &lt;h2 id=&#34;a-sample-table-and-a-problem-statement&#34;&gt;
@@ -3624,13 +3631,13 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from &lt;a href=&#34;https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html&#34;&gt;ALTER TABLE for UUID&lt;/a&gt;
 
  that the physical order of any InnoDB table is by primary key - our id-counter.&lt;/p&gt;
-&lt;p&gt;Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffeled around in the tree.&lt;/p&gt;
+&lt;p&gt;Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left-hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffled around in the tree.&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/loeschen_einfuegen.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;New data is added to the right hand side of the B+-Tree, while old data is being deleted at the left hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;New data is added to the right-hand side of the B+-Tree, while old data is being deleted at the left-hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;Instead, we are defining partitions. In our case, we are using the simplest definition possible: A &lt;code&gt;PARTITION BY RANGE&lt;/code&gt; on the primary key column. We are making bins of 10.000 rows each, because that is convenient for our demonstration here.&lt;/p&gt;
 &lt;h2 id=&#34;three-processes&#34;&gt;
     &lt;a href=&#34;#three-processes&#34;&gt;
@@ -3687,7 +3694,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/h2&gt;
 &lt;p&gt;The Partitioner is an endless loop that runs an &lt;code&gt;ANALYZE TABLE data&lt;/code&gt; command to refresh the statistics, and then queries &lt;code&gt;INFORMATION_SCHEMA.PARTITIONS&lt;/code&gt; for the five partitions with the highest &lt;code&gt;PARTITION_ORDINAL_POSITION&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;If there are fewer than 5 partitions in total, we generate new partitions no matter what.&lt;/p&gt;
-&lt;p&gt;If there are not at least 5 partitions with no rows int them, we create new partitions.&lt;/p&gt;
+&lt;p&gt;If there are not at least 5 partitions with no rows&#39; int them, we create new partitions.&lt;/p&gt;
 &lt;p&gt;If we did nothing, we wait for 1/10th of a second and then check again.&lt;/p&gt;
 &lt;p&gt;The new partition gets a range expression with a limit 10.000 values higher than the highest one found, and the partition name is derived from the limit by dividing by 10.000.&lt;/p&gt;
 &lt;p&gt;In code:&lt;/p&gt;
@@ -3849,7 +3856,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 |    80362 |
 +----------+
 1 row in set (0.01 sec)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The complete example is available &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on github.com&lt;/a&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The complete example is available &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on GitHub.com&lt;/a&gt;
 
 .&lt;/p&gt;
 </description>
@@ -3891,7 +3898,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 	.mylogin.cnf
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Some time in 2012, the &lt;code&gt;.mylogin.cnf&lt;/code&gt; mechanism and the &lt;code&gt;mysql_config_editor&lt;/code&gt; program were added. They provide little value in security as we will see, but allow storage of more than one set of credentials: It is now possible to store a number of login pathes (credential sets) in a mylogin file, and call the client program with &lt;code&gt;--login-path=...&lt;/code&gt;. The client program will then read the mylogin file and use the connection parameters from there.&lt;/p&gt;
+&lt;p&gt;Some time in 2012, the &lt;code&gt;.mylogin.cnf&lt;/code&gt; mechanism and the &lt;code&gt;mysql_config_editor&lt;/code&gt; program were added. They provide little value in security as we will see, but allow storage of more than one set of credentials: It is now possible to store a number of login paths (credential sets) in a mylogin file, and call the client program with &lt;code&gt;--login-path=...&lt;/code&gt;. The client program will then read the mylogin file and use the connection parameters from there.&lt;/p&gt;
 &lt;p&gt;mylogin files are being made with the &lt;code&gt;mysql_config_editor&lt;/code&gt; program, for example&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;mysql_config_editor &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; --login-path&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; --user&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;kris --host&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;localhost --password
 &lt;span class=&#34;go&#34;&gt;Enter password: geheim
@@ -3949,7 +3956,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
       
       <guid>https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html</guid>
       <description>&lt;p&gt;A question to the internal &lt;code&gt;#DBA&lt;/code&gt; channel at work: »Is it possible to change a column type from &lt;code&gt;BIGINT&lt;/code&gt; to &lt;code&gt;VARCHAR &lt;/code&gt;? Will the numbers be converted into a string version of the number or will be it a byte-wise transition that will screw the values?«&lt;/p&gt;
-&lt;p&gt;Further asking yielded more information: »The use-case is to have strings, to have UUIDs.«&lt;/p&gt;
+&lt;p&gt;Asking yielded more information: »The use-case is to have strings, to have UUIDs.«&lt;/p&gt;
 &lt;p&gt;So we have two questions to answer:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Is &lt;code&gt;ALTER TABLE t CHANGE COLUMN c&lt;/code&gt; lossy?&lt;/li&gt;
@@ -3991,7 +3998,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----+
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Having a test table, we can play.&lt;/p&gt;
-&lt;p&gt;I am running an &lt;code&gt;ALTER TABLE kris CHANGE COLUMN&lt;/code&gt; command. This requires that I specifiy the old name of the column, and then the full new column specifier including the new name, the new type and all details. Hence the “&lt;code&gt;id id ...&lt;/code&gt;”&lt;/p&gt;
+&lt;p&gt;I am running an &lt;code&gt;ALTER TABLE kris CHANGE COLUMN&lt;/code&gt; command. This requires that I specify the old name of the column, and then the full new column specifier including the new name, the new type and all details. Hence, the “&lt;code&gt;id id ...&lt;/code&gt;”&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;change&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;200&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;charset&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;latin1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1024&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;22&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Records&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1024&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Duplicates&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Warnings&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -4067,7 +4074,7 @@ kris@localhost [kris]&amp;gt; select count(*) from data;
 &lt;p&gt;When looking at the test-&lt;code&gt;SELECT&lt;/code&gt; we see there seems to be an order, and it changed.&lt;/p&gt;
 &lt;p&gt;There is an order, because the column I changed was the &lt;code&gt;PRIMARY KEY&lt;/code&gt;. The MySQL InnoDB storage engine stores data in a B+-Tree.&lt;/p&gt;
 &lt;p&gt;A B-Tree is a balanced tree. That is a tree in which the path length of the longest path from the root of the tree to any leaf is at most one step longer than the shortest path.&lt;/p&gt;
-&lt;p&gt;So assuming a database with a page size of 16384 bytes (16KB), as MySQL uses, and assuming index records of 10 bytes (4 byte integer plus some overhead), we can cram over 1500 index records into a single page. Assuming index records of 64 bytes - quite large - we still fit 256 records into one page.&lt;/p&gt;
+&lt;p&gt;So assuming a database with a page size of 16384 bytes (16 KB), as MySQL uses, and assuming index records of 10 bytes (4 byte integer plus some overhead), we can cram over 1500 index records into a single page. Assuming index records of 64 bytes - quite large - we still fit 256 records into one page.&lt;/p&gt;
 &lt;p&gt;We get an index tree with a fan-out per level of 100 or more (in our example: 256 to over 1500).&lt;/p&gt;
 &lt;p&gt;For a tree of depth 4, this is good for 100^4 = 100 million records, or in other words, with 4 index accesses we can point-access any record in a table of 100 million rows. Or, in other words, for any realistic table design, an index access finds you a record with at most 4 disk accesses.&lt;/p&gt;
 &lt;blockquote&gt;
@@ -4092,7 +4099,7 @@ The number of disk accesses to get any record in any table via an index.&lt;/p&g
 &lt;blockquote&gt;
 &lt;p&gt;In InnoDB the primary key value governs the physical layout of the table.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;Assuming that new data is accessed often and old data is accessed less often, using primary keys with an AUTO_INCREMENT value collects all new, hot records in a minimum number of data pages at the end of the table/the right hand side of the tree. The set of pages the database is accessing a lot is minimal, and most easily cached in memory.&lt;/p&gt;
+&lt;p&gt;Assuming that new data is accessed often and old data is accessed less often, using primary keys with an AUTO_INCREMENT value collects all new, hot records in a minimum number of data pages at the end of the table/the right-hand side of the tree. The set of pages the database is accessing a lot is minimal, and most easily cached in memory.&lt;/p&gt;
 &lt;p&gt;This design minimizes the amount of memory cache, and maximizes database speed automatically for many common access patterns and workloads.&lt;/p&gt;
 &lt;p&gt;That is why it was chosen and optimized for.&lt;/p&gt;
 &lt;h2 id=&#34;random-hash-or-uuid-primary-key&#34;&gt;
@@ -4101,7 +4108,7 @@ The number of disk accesses to get any record in any table via an index.&lt;/p&g
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;Consider table designs that assign a primary key in a random way. This would be for any design that uses a primary key that is an actual random number, the output of a cryptographic hash function such as SHA256(), or many UUID generators.&lt;/p&gt;
-&lt;p&gt;Using an &lt;code&gt;integer auto_increment primary key&lt;/code&gt;, we are likely to get hot data at the right hand side, cold data at the left hand side of the tree. We load hot pages, minimising the cache footprint:&lt;/p&gt;
+&lt;p&gt;Using an &lt;code&gt;integer auto_increment primary key&lt;/code&gt;, we are likely to get hot data at the right-hand side, cold data at the left-hand side of the tree. We load hot pages, minimising the cache footprint:&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
   &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/09/pk-order.png&#34; alt=&#34;&#34;  /&gt;
 &lt;/p&gt;
@@ -4114,7 +4121,7 @@ The number of disk accesses to get any record in any table via an index.&lt;/p&g
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Primary Key values are randomly chosen: Any page contains a primary key that is hot. As soon as it is being accessed, the entire 16KB page is loaded.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Primary Key values are randomly chosen: Any page contains a primary key that is hot. As soon as it is being accessed, the entire 16 KB page is loaded.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;So we need a comparatively larger (often: much larger) amount of memory to have a useful cache for this table.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;In MySQL, numeric integer primary key auto_increment optimizes memory footprint for many workloads.&lt;/p&gt;
@@ -4157,7 +4164,8 @@ The number of disk accesses to get any record in any table via an index.&lt;/p&g
 &lt;li&gt;The fourth number preserves temporal uniqueness in case the timestamp value loses monotonicity (for example, due to daylight saving time).&lt;/li&gt;
 &lt;li&gt;The fifth number is an IEEE 802 node number that provides spatial uniqueness. A random number is substituted if the latter is not available (for example, because the host device has no Ethernet card, or it is unknown how to find the hardware address of an interface on the host operating system). In this case, spatial uniqueness cannot be guaranteed. Nevertheless, a collision should have &lt;em&gt;very&lt;/em&gt; low probability.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Having the timestamp in front for printing is a requirement of the standard. But we need not store it that way:&lt;/p&gt;
+&lt;p&gt;Having the timestamp in front for printing is a requirement of the standard.
+But we need not store it that way:&lt;/p&gt;
 &lt;p&gt;MySQL 8 provides a &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid-to-bin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;UUID_TO_BIN()&lt;/a&gt;
 
  function, and this function has an optional second argument, swap_flag.&lt;/p&gt;
@@ -4167,7 +4175,7 @@ The number of disk accesses to get any record in any table via an index.&lt;/p&g
 	TL;DR
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;So if you must use an UUID in a primary key&lt;/p&gt;
+&lt;p&gt;So if you must use a UUID in a primary key&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Choose MySQL 8.&lt;/li&gt;
 &lt;li&gt;Make it VARBINARY(16).&lt;/li&gt;

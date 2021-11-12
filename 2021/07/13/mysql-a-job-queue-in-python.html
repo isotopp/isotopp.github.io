@@ -249,7 +249,7 @@ We will later use this in the <code>consumer()</code> to track the owner of a cl
     </a>
 </h2>
 <p>Our generator takes the <code>generator_id</code> as a parameter, but makes no use of it.</p>
-<p>We generate random <code>d</code> and <code>e</code> fields, and use autoincremented numbers to identify the individual jobs.
+<p>We generate random <code>d</code> and <code>e</code> fields, and use auto-incremented numbers to identify the individual jobs.
 The new job has the status of <code>unclaimed</code> and the <code>owner_id</code> and <code>owner_date</code> are <code>NULL</code>.
 For speed, we commit to the jobs table only every tenth job.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">generator_id</span><span class="p">):</span>
@@ -299,7 +299,7 @@ We would need to select them after claiming them (<code>SELECT id, d, e FROM job
 Other processes trying to claim jobs run the risk of running into our X-locks while scanning the table.
 These processes would hang.</li>
 </ul>
-<p>We need another approch to handle this to make it efficent.</p>
+<p>We need another approach to handle this to make it efficient.</p>
 <h3 id="smart-approach-using-select--for-update-skip-locked">
     <a href="#smart-approach-using-select--for-update-skip-locked">
 	Smart approach using <code>SELECT ... FOR UPDATE SKIP LOCKED</code>
@@ -322,7 +322,7 @@ We need another <code>SELECT</code> statement before the locking <code>SELECT</c
 <p>So this is the plan:</p>
 <ol>
 <li>Run a query to find a set of candidate primary keys (100 or fewer).
-This query can run outside of our transaction and could use a replica to find a set of candidate primary keys.</li>
+This query can run outside our transaction and could use a replica to find a set of candidate primary keys.</li>
 <li>Start a transaction.
 This happens all the time and automatically in Python.
 <ul>
@@ -357,7 +357,7 @@ We may want to count and log that, in order to detect if our concurrency in cons
 
     <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidate_ids</span><span class="p">]</span>
 </code></pre></div><p>We are using some arbitrary SQL condition to find records.
-In our example, we are using <code>WHERE d LIKE 'a%' AND status = 'unclaimed'</code>, for variable intitial letters and for variable status values.
+In our example, we are using <code>WHERE d LIKE 'a%' AND status = 'unclaimed'</code>, for variable initial letters and for variable status values.
 We are only interested into the primary keys, so we return only these, in a <code>list</code>.</p>
 <h4 id="consuming-jobs">
     <a href="#consuming-jobs">
@@ -420,7 +420,7 @@ This does two things:</p>
 <li>it also X-locks the rows for claiming them permanently</li>
 </ul>
 <p>We generate a list of <code>claimed_ids</code> from the <code>claimed_records</code>, and check that this list is non-empty.
-If it was empty, we did have a list of candidate ids, but none of these came through.
+If it was empty, we did have a list of candidate ids, but none of them came through.
 That means another concurrent process snatched the candidates from us - all of them.
 We should be recording this, but are not in this example program.</p>
 <p>We then run the actual <code>UPDATE</code> that marks the jobs as claimed, and updates the owner and the datetime of taking possession.

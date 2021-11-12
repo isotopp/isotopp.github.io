@@ -146,7 +146,9 @@
 
     <div class='row justify-content-center mx-0 mt-5 mb-5'>
       <div class='col-lg-8'>
-        <p>Support Channel. &ldquo;Hi, I am getting deadlocks in the database and they occur when I have to rollback the transactions but if we don&rsquo;t have to roll back all transactions get executed.&rdquo; Wait, what? After some back and forth it becomes clear that the Dev experiences deadlocks and has data:</p>
+        <p>Support Channel. &ldquo;Hi, I am getting deadlocks in the database, and they occur when I have to roll back the transactions but if we don&rsquo;t have to roll back all transactions get executed.&rdquo;
+Wait, what?
+After some back and forth it becomes clear that the Dev experiences deadlocks and has data:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pager</span><span class="w"> </span><span class="k">less</span><span class="w">
 </span><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">engine</span><span class="w"> </span><span class="n">innodb</span><span class="w"> </span><span class="n">status</span><span class="err">\</span><span class="k">G</span><span class="w">
 </span><span class="w"></span><span class="p">...</span><span class="w">
@@ -156,7 +158,7 @@
 </span><span class="w"></span><span class="o">***</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">HOLDS</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="k">LOCK</span><span class="p">(</span><span class="n">S</span><span class="p">):</span><span class="w">
 </span><span class="w"></span><span class="n">RECORD</span><span class="w"> </span><span class="n">LOCKS</span><span class="w"> </span><span class="k">space</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="mi">3523</span><span class="w"> </span><span class="n">page</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="mi">1106463</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">bits</span><span class="w"> </span><span class="mi">224</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="o">`</span><span class="n">somedb</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">sometable</span><span class="o">`</span><span class="w"> </span><span class="n">trx</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="mi">9843342279</span><span class="w"> </span><span class="k">lock</span><span class="w"> </span><span class="k">mode</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="n">locks</span><span class="w"> </span><span class="n">gap</span><span class="w"> </span><span class="k">before</span><span class="w"> </span><span class="n">rec</span><span class="w">
 </span></code></pre></div><p>and that is weird because of the <code>lock mode S locks gap</code> in the last line. We get the exact same statement with the exact same value on the second thread, but with <code>lock mode X locks gap</code>.</p>
-<p>Both transactions have an undo log entry of the length 1 - one row, single insert and the insert has an S-lock.</p>
+<p>Both transactions have an undo-log entry of the length 1 - one row, single insert and the insert has an S-lock.</p>
 <h2 id="a-mystery-insert-and-opaque-code">
     <a href="#a-mystery-insert-and-opaque-code">
 	A mystery INSERT and opaque code
@@ -224,8 +226,10 @@
 </span><span class="c1"></span><span class="n">Session1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">sometable</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="p">...)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="mi">10</span><span class="p">,</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">);</span><span class="w"> </span><span class="c1">-- lock escalation to X
 </span><span class="c1"></span><span class="n">Session1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">COMMIT</span><span class="p">;</span><span class="w">
 </span></code></pre></div><p>The <code>LOCK IN SHARE MODE</code> or equivalent <code>FOR SHARE</code> is not in the code, it is added implicitly by the isolation level <code>SERIALIZABLE</code>.</p>
-<p>We get an S-Lock, which is not good for writing. Our transaction now did not get the required locks necessary for reading at the start of the transaction, because the later <code>INSERT</code> requires an X-lock, like any write statement would. The database needs to aquire the X-lock, that is, it needs to upgrade the S-lock to an X-lock.</p>
-<p>If at that point in time another threads tries to run the exact same statement, which is what happens here, they already hold a second S-lock, preventing the first thread from completing their transaction (it is waiting until the second threads drops the S-lock or it times out).</p>
+<p>We get an S-Lock, which is not good for writing.
+Our transaction now did not get the required locks necessary for reading at the start of the transaction, because the later <code>INSERT</code> requires an X-lock, like any write statement would.
+The database needs to acquire the X-lock, that is, it needs to upgrade the S-lock to an X-lock.</p>
+<p>If at that point in time another threads tries to run the exact same statement, which is what happens here, they already hold a second S-lock, preventing the first thread from completing their transaction (it is waiting until the second threads drops the S-lock, or it times out).</p>
 <p>And then that second thread also tries to upgrade their S-lock into an X-lock, which it can&rsquo;t do, because that first thread is trying to do the same thing, and we have the deadlock and a rollback.</p>
 <h2 id="reproduction-of-the-problem">
     <a href="#reproduction-of-the-problem">
@@ -309,7 +313,7 @@
 <li>The ORM will remove you quite a lot from the emitted SQL. Do you know how to trace your ORM and to get the actual SQL generated? If not, go and find out.
 <ul>
 <li>A server side trace will not save you - the server is a busy beast.</li>
-<li>It also cannot see your stackframes, so it can&rsquo;t link your SQL to the line in your code that called the ORM. Yes, in the client side SQL trace, ideally you also want the tracer to bubble up the stack and give you the first line outside of the ORM to identify what is causing the SQL to be emitted and where in the code that happens.</li>
+<li>It also cannot see your stackframes, so it can&rsquo;t link your SQL to the line in your code that called the ORM. Yes, in the client side SQL trace, ideally you also want the tracer to bubble up the stack and give you the first line outside the ORM to identify what is causing the SQL to be emitted and where in the code that happens.</li>
 </ul>
 </li>
 <li>The deadlock information in <code>SHOW ENGINE INNODB STATUS</code> is painfully opaque, but learning to read it is worthwhile.

@@ -6,7 +6,7 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 12 Nov 2021 10:05:53 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Nov 2021 13:20:38 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: Parallel Replication</title>
       <link>https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html</link>
@@ -1883,7 +1883,7 @@ But with MySQL 8 many things were overhauled, so let&amp;rsquo;s see what we can
 	Before MySQL 8
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;In older Versions of MySQL, implied temporary tables are being created, whenever your &lt;code&gt;EXPLAIN&lt;/code&gt; contained the phrase &lt;code&gt;using temporary&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In older Versions of MySQL, implied temporary tables are being created whenever your &lt;code&gt;EXPLAIN&lt;/code&gt; contained the phrase &lt;code&gt;using temporary&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;In this case, MySQL would create an in-memory temporary table to materialize an intermediate query result, and then continue to process the data from there. If that temporary table was larger than some configurable limit, the temporary table would instead be converted to a MyISAM table on disk, streamed out, and then work would continue with this.&lt;/p&gt;
 &lt;p&gt;This has a large number of disadvantages:&lt;/p&gt;
 &lt;ul&gt;
@@ -1950,8 +1950,8 @@ On load, a second uncompressed page in the buffer pool is allocated, and the dat
 As this happens on write and not on checkpoint, this is not ideal for tables that are written to a lot.
 Compression and decompression happen in the Query thread, that is, the thread of your connection, and therefore single-threaded.&lt;/p&gt;
 &lt;p&gt;If buffer pool space it tight, uncompressed pages can be evicted, and recreated as needed by decompressing them again.&lt;/p&gt;
-&lt;p&gt;In order to be able to crash recover MySQL all possible shutdown scenarios, compressed pages are also written to the redo log on checkpointing.
-This also leads to larger redo logs, which may need to be upsized to allow for the additional traffic.&lt;/p&gt;
+&lt;p&gt;In order to be able to crash recover MySQL all possible shutdown scenarios, compressed pages are also written to the redo-log on checkpointing.
+This also leads to larger redo-logs, which may need to be upsized to allow for the additional traffic.&lt;/p&gt;
 &lt;h1 id=&#34;page-compression&#34;&gt;
     &lt;a href=&#34;#page-compression&#34;&gt;
 	Page Compression
@@ -2161,7 +2161,7 @@ We will later use this in the &lt;code&gt;consumer()&lt;/code&gt; to track the o
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;Our generator takes the &lt;code&gt;generator_id&lt;/code&gt; as a parameter, but makes no use of it.&lt;/p&gt;
-&lt;p&gt;We generate random &lt;code&gt;d&lt;/code&gt; and &lt;code&gt;e&lt;/code&gt; fields, and use autoincremented numbers to identify the individual jobs.
+&lt;p&gt;We generate random &lt;code&gt;d&lt;/code&gt; and &lt;code&gt;e&lt;/code&gt; fields, and use auto-incremented numbers to identify the individual jobs.
 The new job has the status of &lt;code&gt;unclaimed&lt;/code&gt; and the &lt;code&gt;owner_id&lt;/code&gt; and &lt;code&gt;owner_date&lt;/code&gt; are &lt;code&gt;NULL&lt;/code&gt;.
 For speed, we commit to the jobs table only every tenth job.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;generator&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;generator_id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
@@ -2211,7 +2211,7 @@ We would need to select them after claiming them (&lt;code&gt;SELECT id, d, e FR
 Other processes trying to claim jobs run the risk of running into our X-locks while scanning the table.
 These processes would hang.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;We need another approch to handle this to make it efficent.&lt;/p&gt;
+&lt;p&gt;We need another approach to handle this to make it efficient.&lt;/p&gt;
 &lt;h3 id=&#34;smart-approach-using-select--for-update-skip-locked&#34;&gt;
     &lt;a href=&#34;#smart-approach-using-select--for-update-skip-locked&#34;&gt;
 	Smart approach using &lt;code&gt;SELECT ... FOR UPDATE SKIP LOCKED&lt;/code&gt;
@@ -2234,7 +2234,7 @@ We need another &lt;code&gt;SELECT&lt;/code&gt; statement before the locking &lt
 &lt;p&gt;So this is the plan:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Run a query to find a set of candidate primary keys (100 or fewer).
-This query can run outside of our transaction and could use a replica to find a set of candidate primary keys.&lt;/li&gt;
+This query can run outside our transaction and could use a replica to find a set of candidate primary keys.&lt;/li&gt;
 &lt;li&gt;Start a transaction.
 This happens all the time and automatically in Python.
 &lt;ul&gt;
@@ -2269,7 +2269,7 @@ We may want to count and log that, in order to detect if our concurrency in cons
 
     &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;candidate_ids&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We are using some arbitrary SQL condition to find records.
-In our example, we are using &lt;code&gt;WHERE d LIKE &#39;a%&#39; AND status = &#39;unclaimed&#39;&lt;/code&gt;, for variable intitial letters and for variable status values.
+In our example, we are using &lt;code&gt;WHERE d LIKE &#39;a%&#39; AND status = &#39;unclaimed&#39;&lt;/code&gt;, for variable initial letters and for variable status values.
 We are only interested into the primary keys, so we return only these, in a &lt;code&gt;list&lt;/code&gt;.&lt;/p&gt;
 &lt;h4 id=&#34;consuming-jobs&#34;&gt;
     &lt;a href=&#34;#consuming-jobs&#34;&gt;
@@ -2332,7 +2332,7 @@ This does two things:&lt;/p&gt;
 &lt;li&gt;it also X-locks the rows for claiming them permanently&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;We generate a list of &lt;code&gt;claimed_ids&lt;/code&gt; from the &lt;code&gt;claimed_records&lt;/code&gt;, and check that this list is non-empty.
-If it was empty, we did have a list of candidate ids, but none of these came through.
+If it was empty, we did have a list of candidate ids, but none of them came through.
 That means another concurrent process snatched the candidates from us - all of them.
 We should be recording this, but are not in this example program.&lt;/p&gt;
 &lt;p&gt;We then run the actual &lt;code&gt;UPDATE&lt;/code&gt; that marks the jobs as claimed, and updates the owner and the datetime of taking possession.
@@ -3202,7 +3202,7 @@ After processing we clean up by deleting the jobs from the table.&lt;/p&gt;
 &lt;p&gt;The fix is &amp;ldquo;replication surgery&amp;rdquo;: Stop the replica and restart with replication disabled, emulate the deletion with truncate or an empty table creation, create an empty transaction for the skipped &lt;code&gt;DELETE&lt;/code&gt; with the skipped GTID, and reinstate normal replication.&lt;/p&gt;
 &lt;p&gt;Gitops that?&lt;/p&gt;
 &lt;p&gt;Everyday life in MySQL land is: Somebody oops&amp;rsquo;ed a table drop. Stop replication, locate a time delayed replica, fast forward it to before the oops&amp;rsquo;ed statement, stop it there, clone from this a new primary and a set of replicas, force feed it a modified replication stream for all the stuff that came after the oops&amp;rsquo;ed statement, and push this alternate history into production as a replacement for the oops&amp;rsquo;ed wreck.&lt;/p&gt;
-&lt;p&gt;Everyday life in MySQL land is: A group of replicas died after having a bit of replication delay. Investigation finds a long running query maintaining a read view (sic!), leading to undo log growth, which inexplicably slows down everything on these instances. The fix is to connect to the affected instances and manually &lt;code&gt;KILL&lt;/code&gt; the threads that hold the long running read views. Not a thing to be done with a git commit.&lt;/p&gt;
+&lt;p&gt;Everyday life in MySQL land is: A group of replicas died after having a bit of replication delay. Investigation finds a long running query maintaining a read view (sic!), leading to undo-log growth, which inexplicably slows down everything on these instances. The fix is to connect to the affected instances and manually &lt;code&gt;KILL&lt;/code&gt; the threads that hold the long running read views. Not a thing to be done with a git commit.&lt;/p&gt;
 &lt;p&gt;So, yes, &amp;ldquo;continuous deployment&amp;rdquo; is a good idea, and I would like to see more of it. But before we are going to have &lt;em&gt;that&lt;/em&gt; with stateful services, a number of hard problems need better solutions.&lt;/p&gt;
 &lt;p&gt;And &amp;ldquo;gitops&amp;rdquo; ain&amp;rsquo;t gonna happen soon. We are going to see AIP operations (&amp;ldquo;ass-in-produxction&amp;rdquo;) for quite some time, I am afraid.&lt;/p&gt;
 &lt;p&gt;And that is why I wear black and yell at the cloud.&lt;/p&gt;
@@ -3459,7 +3459,7 @@ We can prove that works: InnoDB can do point reads from memory at memcache speed
 	The Write Model
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;On Commit, we write out 1 KB (or more) of Redo Log. The write happens with &lt;code&gt;O_DIRECT&lt;/code&gt; to XFS, and there is a lot of thought that goes into these few words.&lt;/p&gt;
+&lt;p&gt;On Commit, we write out 1 KB (or more) of Redo-Log. The write happens with &lt;code&gt;O_DIRECT&lt;/code&gt; to XFS, and there is a lot of thought that goes into these few words.&lt;/p&gt;
 &lt;p&gt;Because it is &lt;code&gt;O_DIRECT&lt;/code&gt;, the write already writes to disk. There is no need to &lt;code&gt;fsync()&lt;/code&gt; or &lt;code&gt;fdatasync()&lt;/code&gt; or anything else.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;O_DIRECT&lt;/code&gt; writes also bypass the file system buffer cache, which is good, because then there is less memory pressure and less risk of paging out the database server. Usually when that happens (memory pressure forces paging on mysqld), you die a horrible and hard to debug death in latency problems and SLO violations.&lt;/p&gt;
 &lt;p&gt;We use XFS. XFS on the average takes twice as long as ext4 to write data to disk, but XFS always takes the same amount of time to write data – it has been specifically designed in a way that there is very low jitter. ext4, on the other hand, is known to have downspikes and large commit wait times every few seconds, and that is really, really bad when you run at 10.000 queries/s.&lt;/p&gt;
@@ -3873,7 +3873,7 @@ cp fio.cfg doit &lt;span class=&#34;nv&#34;&gt;$drive&lt;/span&gt;
       <guid>https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html</guid>
       <description>&lt;p&gt;The DBA experience at work suggests that every single schema at some point in its lifecycle holds a queue table. These are tables in which some processes (the “producers”) put rows, which a swarm of other processes (the “consumers”) lock and consume.&lt;/p&gt;
 &lt;p&gt;A variation on that theme is the state machine, in which jobs are placed by producers. Consumers do not immediately delete them, but update them a few times to indicate processing progress, before the rows are ultimately being deleted.&lt;/p&gt;
-&lt;p&gt;Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective dequeueing”), while still maintaining the exactly-once semantics.&lt;/p&gt;
+&lt;p&gt;Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective de-queueing”), while still maintaining the exactly-once semantics.&lt;/p&gt;
 &lt;h2 id=&#34;using-a-database-as-a-queue-can-be-ok-ish&#34;&gt;
     &lt;a href=&#34;#using-a-database-as-a-queue-can-be-ok-ish&#34;&gt;
 	Using a database as a queue can be ok-ish
@@ -3882,12 +3882,12 @@ cp fio.cfg doit &lt;span class=&#34;nv&#34;&gt;$drive&lt;/span&gt;
 &lt;p&gt;Using a database as a queue is not wrong, up to a point:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;You get ACID semantics. That means your updates are atomic and isolated, transactional, and they are durable, persisted to disk. This makes it possible to build queues with “exactly once” execution semantics, which is a thing developers like a lot.&lt;/li&gt;
-&lt;li&gt;You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies and you do not need to learn additional technologies.&lt;/li&gt;
+&lt;li&gt;You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies, and you do not need to learn additional technologies.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Now, once you pass “the point” in that “up to a point” phrase, things get nasty:&lt;/p&gt;
 &lt;p&gt;“Exactly once”  semantics are really expensive to implement: They require that each insert, delete or update is associated with a transaction, which in turn is associated with a disk write.&lt;/p&gt;
 &lt;p&gt;You get to enqueue, dequeue and state change your things exactly as quickly as a single server can flash its disk lights, and in the next step, as quickly as your replication hierarchy can pass on things downstream.&lt;/p&gt;
-&lt;p&gt;On baremetal, that costs you a bit, but because baremetal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.&lt;/p&gt;
+&lt;p&gt;On bare-metal, that costs you a bit, but because bare-metal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.&lt;/p&gt;
 &lt;p&gt;In the cloud, using a database-as-a-queue is approximately equivalent to pouring petrol on money and throwing a match. It is the wrong technology for that kind of workload in that environment from the get-go.&lt;/p&gt;
 &lt;h2 id=&#34;not-using-databases-as-queues&#34;&gt;
     &lt;a href=&#34;#not-using-databases-as-queues&#34;&gt;
@@ -3899,13 +3899,13 @@ cp fio.cfg doit &lt;span class=&#34;nv&#34;&gt;$drive&lt;/span&gt;
 	Replayability
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;One specific property of the above setup that is expensive, and hard to reproduce outside of a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.&lt;/p&gt;
-&lt;p&gt;Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small time window of a few hours or a day, or whatever other deal you can make with the Kafka team.&lt;/p&gt;
+&lt;p&gt;One specific property of the above setup that is expensive, and hard to reproduce outside a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.&lt;/p&gt;
+&lt;p&gt;Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small window of a few hours or a day, or whatever other deal you can make with the Kafka team.&lt;/p&gt;
 &lt;p&gt;Reading the same item multiple times is not a problem if the jobs in the queue are idempotent, that is, replayable.&lt;/p&gt;
-&lt;p&gt;Not replayable are relative updates: “set x = x + 1”, “add order to table, give me the ordernumber”.&lt;/p&gt;
+&lt;p&gt;Not replayable are relative updates: “set x = x + 1”, “add an order to the table, give me the ordernumber”.&lt;/p&gt;
 &lt;p&gt;Replayable are absolute updates: “set x = 7” (you read 6, did the math and enqueued 7), “add order 17372 to order table” (you made an order number beforehand and push the order into the queue with an already fixed identity).&lt;/p&gt;
 &lt;p&gt;Basically, to make things idempotent, you need to give them either fixed identities so that you can remember if you saw things before, or you need to make the writes absolute instead of incremental, or both.&lt;/p&gt;
-&lt;p&gt;So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka and it would be cheaper. Much cheaper, in fact, in a cloud environment.&lt;/p&gt;
+&lt;p&gt;So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka, and it would be cheaper. Much cheaper, in fact, in a cloud environment.&lt;/p&gt;
 &lt;h3 id=&#34;re-queuing-and-sorting&#34;&gt;
     &lt;a href=&#34;#re-queuing-and-sorting&#34;&gt;
 	Re-queuing and sorting
@@ -3928,16 +3928,16 @@ Your state machine would be eating one item from the input, perform the associat
 &lt;/h2&gt;
 &lt;h3 id=&#34;undo-log-woes&#34;&gt;
     &lt;a href=&#34;#undo-log-woes&#34;&gt;
-	Undo Log woes
+	Undo-Log woes
     &lt;/a&gt;
 &lt;/h3&gt;
 &lt;p&gt;In &lt;a href=&#34;https://blog.koehntopp.info/2019/11/18/a-blast-from-the-past.html&#34;&gt;A Blast From The Past&lt;/a&gt;
 
- we see what happens to MySQL with long running transactions, and in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions&lt;/a&gt;
+ we see what happens to MySQL with long-running transactions, and in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions&lt;/a&gt;
 
- we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long running.&lt;/p&gt;
-&lt;p&gt;Note that any database will at some point in time have long running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo Log explosion.&lt;/p&gt;
-&lt;p&gt;So queue-as-a-database will eventually explosively grow the undo log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
+ we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long-running.&lt;/p&gt;
+&lt;p&gt;Note that any database will at some point in time have long-running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.&lt;/p&gt;
+&lt;p&gt;So queue-as-a-database will eventually explosively grow the undo-log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
 Binlog woes and Replication Delay&lt;/p&gt;
 &lt;p&gt;In a replicated MySQL changes to any table (also queue tables) are written to the binlog, which is being kept for a few days for point in time recovery and for replication. This uses disk space.&lt;/p&gt;
 &lt;p&gt;Note that any write is binlogged, even deletes. So when you delete data, you have less disk space (because deletes are binlogged), until after a few days the binlog is purged.&lt;/p&gt;
@@ -3949,8 +3949,8 @@ Binlog woes and Replication Delay&lt;/p&gt;
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;It is also important to remember that this is per-instance, not per-table, and also not per-schema. The purge thread looks at transactions, not at schemas or tables. In a transaction, a number of changes to the instance can happen, atomically.&lt;/p&gt;
-&lt;p&gt;So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all of the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.&lt;/p&gt;
-&lt;p&gt;The undo log will grow out of bounds, and all 1000 customers will experience slow queries.&lt;/p&gt;
+&lt;p&gt;So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.&lt;/p&gt;
+&lt;p&gt;The undo-log will grow out of bounds, and all 1000 customers will experience slow queries.&lt;/p&gt;
 &lt;p&gt;This is how you denial-of-service a shared MySQL with no effort or expense at all.&lt;/p&gt;
 &lt;h2 id=&#34;what-should-i-do-and-what-is-the-limit&#34;&gt;
     &lt;a href=&#34;#what-should-i-do-and-what-is-the-limit&#34;&gt;
@@ -3966,7 +3966,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;li&gt;That is around 3.000 new rows per second, and a multiple of that with updates.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;An unconstrained baremetal SSD can do around 20.000 commits per second in hardware.
+&lt;li&gt;An unconstrained bare-metal SSD can do around 20.000 commits per second in hardware.
 &lt;ul&gt;
 &lt;li&gt;That is why we run into operational toil with 3.000 new rows (with multiple updates per rows) per second with said application.&lt;/li&gt;
 &lt;/ul&gt;

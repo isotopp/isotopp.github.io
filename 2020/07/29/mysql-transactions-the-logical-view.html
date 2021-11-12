@@ -151,7 +151,7 @@
 , let&rsquo;s have a look at what is
 going on from a logical point of view.</p>
 <p>We are using a test table called demo with an id and a counter field, both
-integer. In it we have 10 counters, all set to 0.</p>
+integer. In it, we have 10 counters, all set to 0.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="o">`</span><span class="n">demo</span><span class="o">`</span><span class="w"> </span><span class="p">(</span><span class="w">
 </span><span class="w">  </span><span class="o">`</span><span class="n">id</span><span class="o">`</span><span class="w"> </span><span class="nb">bigint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="n">AUTO_INCREMENT</span><span class="p">,</span><span class="w">
 </span><span class="w">  </span><span class="o">`</span><span class="n">counter</span><span class="o">`</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="s1">&#39;0&#39;</span><span class="p">,</span><span class="w">
@@ -186,23 +186,23 @@ commit anything.</p>
 stall us in any way.</li>
 </ul>
 <p>From the previous article we know that MySQL took the older version of the
-row and moved it to the Undo Log. It has to do that in order to still have
+row and moved it to the Undo-Log. It has to do that in order to still have
 the data around should we decide to <code>ROLLBACK</code>. The new version of the row
 in the actual tablespace contains a pointer to the older version of the Row
-in the Undo Log.</p>
+in the Undo-Log.</p>
 <p>When looking at the row we see this older version, so something made the
 database read the current values of the rows 1, 2, 4, and so on from the
-tablespace, but for the row <code>id=3</code> sent us to the Undo Log.</p>
+tablespace, but for the row <code>id=3</code> sent us to the Undo-Log.</p>
 <p>This is also a good thing, because we do not have to wait.</p>
 <h3 id="transaction-isolation-level-read-uncommitted">
     <a href="#transaction-isolation-level-read-uncommitted">
 	Transaction Isolation Level Read Uncommitted
     </a>
 </h3>
-<p>This is what MVCC - <a href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control" target="_blank" rel="noopener">Multiversion Concurrency
-Control</a>
+<p>This is what MVCC -
+<a href="https://en.wikipedia.org/wiki/Multiversion_concurrency_control" target="_blank" rel="noopener">Multiversion Concurrency Control</a>
 
-
+ -
 does: It uses the old versions of the row to present us a consistent view of
 the data, depending on the <code>TRANSACTION ISOLATION LEVEL</code>. This is a thing we
 can change:</p>
@@ -216,14 +216,14 @@ can change:</p>
 </span><span class="w"></span><span class="o">|</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">      </span><span class="mi">10</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="w"></span><span class="o">|</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span></code></pre></div><p>So once we <code>SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED</code>, we get to see
-the value 10 written by Session1, despite the fact that it never has been
+the value 10 written by Session1, despite the fact that it has never been
 committed.  In fact, if we would <code>ROLLBACK</code>, logically it would never have
 been there - but still Session2 saw it.</p>
 <blockquote>
 <p>At <code>TRANSACTION ISOLATION LEVEL READ UNCOMMITTED</code> we are reading stuff
 directly from the tablespace file. This can contain data that is not yet
-committed, and due to <code>ROLLBACK</code> never will be - mere phantasies. The Undo
-Log is never consulted.</p>
+committed, and due to <code>ROLLBACK</code> never will be - mere phantasies.
+The Undo-Log is never consulted.</p>
 </blockquote>
 <h3 id="transaction-isolation-level-read-committed">
     <a href="#transaction-isolation-level-read-committed">
@@ -243,11 +243,11 @@ before, at 0.</p>
 </span><span class="w"></span><span class="o">|</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span><span class="w"></span><span class="o">|</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">|</span><span class="w">       </span><span class="mi">0</span><span class="w"> </span><span class="o">|</span><span class="w">
 </span></code></pre></div><p>That is, at this isolation level we will only see data that has been
-comitted.</p>
+committed.</p>
 <blockquote>
 <p>At <code>TRANSACTION ISOLATION LEVEL READ COMMITTED</code> we are reading stuff from
 the tablespace file, unless there is an ongoing transaction for a row. In
-that case, the reader will consult the Undo Log one level deep and show us
+that case, the reader will consult the Undo-Log one level deep and show us
 the previous, committed version of the data. We never get to see ephemeral
 data that can be rolled back.</p>
 </blockquote>
@@ -334,7 +334,7 @@ been made after we started the transaction.</p>
 <blockquote>
 <p>At <code>TRANSACTION ISOLATION LEVEL REPEATABLE READ</code> we are reading stuff from
 the tablespace, unless it has been changed after we started our
-transaction. In that case, the reader will consult the Undo Log multiple
+transaction. In that case, the reader will consult the Undo-Log multiple
 levels deep, in order to present us the newest version of the row that is
 older than our read-only transaction.</p>
 </blockquote>
@@ -346,25 +346,26 @@ present, skipping any intermediate steps.</p>
 	Repeatable Read and Long Running Transactions
     </a>
 </h3>
-<p>Starting a transaction at the default isolation level will force the Undo
-Log Purge Thread to stop at the position of our read view. Undo Log entries
-will no longer be purged, filling up and growing the Undo Log. Reads and
+<p>Starting a transaction at the default isolation level will force
+the Undo-Log Purge Thread to stop at the position of our read view.
+Undo-Log entries
+will no longer be purged, filling up and growing the Undo-Log. Reads and
 Index Lookups become more complicated and slower, slowing down the overall
 performance of the database.</p>
-<p>It is a good idea to not have long running transactions.</p>
+<p>It is a good idea to not have long-running transactions.</p>
 <p>Maintenance Operations such as running <code>mysqldump --single transaction mydatabase</code> to make a logical backup achieve a consistent backup my
-maintaining a consistent read view by starting a long running transaction.
+maintaining a consistent read view by starting a long-running transaction.
 As the dump of a large database can take some time, it is a good idea to do
-this at a point in time where the database is not so busy.  Specifically
-where the write activity is low.  Otherwise the incoming writes will blow up
-your Undo Log by the size of the data load, and make everything slow.</p>
+this at a point in time when the database is not so busy.  Specifically
+where write activity is low.  Otherwise, the incoming writes will blow up
+your Undo-Log by the size of the data load, and make everything slow.</p>
 <p>While in theory these two operations - a data load and a backup - can happen
 concurrently and should not interfere, nothing is for free and the
 implementation of consistent read views will function better if you do not
 work against it.</p>
-<p>The Undo Log will not shrink, but will be freed internally and re-used,
+<p>The Undo-Log will not shrink, but will be freed internally and re-used,
 should that space ever be needed. But you will end up, depending on your
-version of MySQL, with a very large ibdata1 file or very large Undo Log
+version of MySQL, with a very large ibdata1 file or very large Undo-Log
 segment files.</p>
 <h2 id="reading-data-without-locks">
     <a href="#reading-data-without-locks">
@@ -378,12 +379,12 @@ these scenarios.</p>
 copy of a row before we modify it and keep it around.</p>
 <p>The fact that most transactions successfully commit and not roll back
 suggests that we would do well by putting the new version of the row into
-place properly and move the old version to a temporary storage, the Undo
-Log, before we throw it away by the way of the Purge Thread. Thay way we
-keep the tablespace clean and free from outdated, stale versions of rows.</p>
+place properly and move the old version to a temporary storage,
+the Undo-Log, before we throw it away by the way of the Purge Thread.
+That way we keep the tablespace clean and free from outdated, stale versions of rows.</p>
 <p>Looking at all active transactions in the system we can easily determine the
 lowest, oldest transaction number in the system. By definition nothing else
-can ever reference any row version even oler than that, so these versions
+can ever reference any row version even older than that, so these versions
 are fair game for the Purge Thread.</p>
 <p>By linking old versions of a row, we get a thread from the current version
 of the row into the (still visible) past of that row as a linked list.</p>
@@ -393,7 +394,7 @@ recently committed or the newest version of the row older than its own
 (read-only) transaction.</p>
 <p>By committing, a read-only transaction gives up its version of the past,
 retiring an older transaction, allowing the Purge Thread to move on and free
-Undo Log space.</p>
+Undo-Log space.</p>
 <blockquote>
 <p>At no point in time a read operation is ever stalled by a writer and
 forced to wait. There are no write-locks ever stalling a reader. These two

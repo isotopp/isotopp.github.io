@@ -148,7 +148,7 @@
       <div class='col-lg-8'>
         <p>In a <a href="https://blog.koehntopp.info/2020/07/30/mysql-transactions-writing-data.html">previous article</a>
 
- we wrote data to the database using atomic update statements, and then using transactions with <code>SELECT ... FOR UPDATE</code>. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also <a href="https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py" target="_blank" rel="noopener">available on github.com</a>
+ we wrote data to the database using atomic update statements, and then using transactions with <code>SELECT ... FOR UPDATE</code>. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also <a href="https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py" target="_blank" rel="noopener">available on GitHub.com</a>
 
 .</p>
 <h2 id="a-simple-row-lock">
@@ -208,7 +208,7 @@
 	Inserting into a locked gap, with timeouts.
     </a>
 </h2>
-<p>We can try do demonstrate that with a second session:</p>
+<p>We demonstrate that with a second session:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">Session2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="k">transaction</span><span class="w"> </span><span class="k">read</span><span class="w"> </span><span class="k">write</span><span class="p">;</span><span class="w">
 </span><span class="w"></span><span class="n">Session2</span><span class="o">&gt;</span><span class="w"> </span><span class="k">insert</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">kris</span><span class="w"> </span><span class="k">values</span><span class="w"> </span><span class="p">(</span><span class="mi">33</span><span class="p">,</span><span class="w"> </span><span class="mi">33</span><span class="p">);</span><span class="w">
 </span><span class="w"></span><span class="p">...</span><span class="w"> </span><span class="n">hangs</span><span class="w"> </span><span class="p">...</span><span class="w">
@@ -239,9 +239,9 @@
 <p>Whenever we collect locks in a non-atomic fashion there is a risk of deadlocking.</p>
 <p>A deadlock is any situation where a thread <code>A</code> holds a resource <code>1</code> and wants to lock a resource <code>2</code>, where at the same time a thread <code>B</code> holds the lock on <code>2</code> and wants a lock on <code>1</code>.</p>
 <p><code>A</code> holds lock <code>1</code> and needs a lock on <code>2</code> to complete and release both locks, while <code>B</code> holds the lock on <code>2</code> and needs the lock on <code>1</code> to complete and release both locks. There is no way to resolve this situation except with intervention from the outside, forcing one transaction to roll back (and hopefully retry). There is no problem for either A or B to complete the operation, but not while both are trying to finish concurrently.</p>
-<p>The deadlock scenario is only possible because <code>A</code> and <code>B</code> do not aquire locks in a canoncial order: Had <code>B</code> also aquired the locks in numerically ascending order (<code>1</code>, <code>2</code>), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.</p>
+<p>The deadlock scenario is only possible because <code>A</code> and <code>B</code> do not acquire locks in a canonical order: Had <code>B</code> also acquired the locks in numerically ascending order (<code>1</code>, <code>2</code>), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.</p>
 <p>More complicated scenarios with 3 or more threads and larger circular dependencies are possible.</p>
-<p>So, let&rsquo;s excercise a deadlock with two sessions:</p>
+<p>So, let&rsquo;s exercise a deadlock with two sessions:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">Session1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">start</span><span class="w"> </span><span class="k">transaction</span><span class="w"> </span><span class="k">read</span><span class="w"> </span><span class="k">write</span><span class="p">;</span><span class="w">
 </span><span class="w"></span><span class="n">Session1</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">kris</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">update</span><span class="p">;</span><span class="w">
 </span><span class="w"></span><span class="o">+</span><span class="c1">----+-------+
@@ -310,7 +310,7 @@
     <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;MySQL Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</code></pre></div><p>And a really dirty function with way too many parameters to exercise these two functions for pairs of records:</p>
+</code></pre></div><p>And a quick and dirty function with way too many parameters to exercise these two functions for pairs of records:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">count_with_locking</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">position1</span><span class="p">,</span> <span class="n">position2</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># I would rather have a START TRANSACTION READ WRITE</span>
         <span class="c1"># but MySQLdb does not offer this natively.</span>

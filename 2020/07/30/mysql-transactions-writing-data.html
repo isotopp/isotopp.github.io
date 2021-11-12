@@ -190,7 +190,7 @@ completely dependent on how fast our hardware can commit data to disk.</p>
 </span><span class="go">sys     0m0.037s
 </span></code></pre></div><p>14.4 seconds for 1000 commits are 14ms per commit, to an old SATA SSD - not
 very fast at all, but this is 10 years old hardware. This is slow, because
-the <code>db.commit()</code> issues a single fsync to the Redo Log, waiting for it to
+the <code>db.commit()</code> issues a single fsync to the Redo-Log, waiting for it to
 return - we have shown this <a href="https://blog.koehntopp.info/2020/07/27/mysql-transactions.html">in an earlier article</a>
 
 .</p>
@@ -217,7 +217,7 @@ but the database will still be consistent - just not at the transaction
 everybody expects.</p>
 <p>Relaxing the disk write constraints speeds up writing considerably, because
 we no longer have to wait for the slow disk to acknowledge the writes.</p>
-<p>Further relaxing the disk write constraints does not make things faster,
+<p>Relaxing the disk write constraints any further does not make things faster,
 just more dangerous:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">(venv) kris@server:~/Python/mysql$ mysql -uroot -p -e &#39;set global innodb_flush_log_at_trx_commit=0&#39;
 </span><span class="go">Enter password:
@@ -308,7 +308,7 @@ writer can get access, and do its thing while the first writer has to wait.</p>
 </h3>
 <p>We can query the database differently, in a two stage process, allowing for
 more complex updates. Here we read a value from the database into the
-application (read phase), change it applicationn side (modify phase) and
+application (read phase), change it application side (modify phase) and
 then write the changed value back.</p>
 <p>Doing this is called a read-modify-write cycle.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
@@ -332,22 +332,22 @@ then write the changed value back.</p>
         <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;update </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> set counter = </span><span class="si">{</span><span class="n">counter</span><span class="si">}</span><span class="s2"> where id = </span><span class="si">{</span><span class="nb">id</span><span class="si">}</span><span class="s2">&#34;</span>
         <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
         <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> 
-</code></pre></div><p>In this piece of code we again count to 1000, but we are doing it in a three
-step process, called a read-modify-write cycle. We also implemented it
+</code></pre></div><p>In this piece of code we again count to 1000, but we are doing it in a
+three-step process, called a read-modify-write cycle. We also implemented it
 wrongly for demonstration purposes:</p>
 <ul>
 <li>
-<p>The read phase is done with a <code>SELECT</code> statement that retrieves the
+<p>The &ldquo;read phase&rdquo; is done with a <code>SELECT</code> statement that retrieves the
 current counter value from the database.</p>
 </li>
 <li>
-<p>The modify phase increments the counter, application side, in memory. This
+<p>The &ldquo;modify phase&rdquo; increments the counter, application side, in memory. This
 can in real applications be an arbitrarily complicated process that takes
 a non-trivial amount of time and maybe even connects to different backend
 systems and services.</p>
 </li>
 <li>
-<p>The write phase then uses <code>UPDATE</code> to write back the previously read value
+<p>The &ldquo;write phase&rdquo; then uses <code>UPDATE</code> to write back the previously read value
 to the database.</p>
 </li>
 </ul>
@@ -391,7 +391,7 @@ locking the results are wrong:</p>
 </span><span class="go">+----+---------+ 
 </span></code></pre></div><p>The way we write this code, we extract the value from the database into the
 application, getting a value - say 10, and increment that.</p>
-<p>Meanwhile the other instance also reads the database, and gets the same
+<p>Meanwhile, the other instance also reads the database, and gets the same
 value, also 10.</p>
 <p>We increment, and write back the new value, 11. Then the other instance does
 the same, and also writes back 11. Two increment events in two processes
