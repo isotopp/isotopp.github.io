@@ -12,7 +12,7 @@ title: 'MySQL: ALTER TABLE for UUID'
 ---
 A question to the internal `#DBA` channel at work: »Is it possible to change a column type from `BIGINT` to `VARCHAR `? Will the numbers be converted into a string version of the number or will be it a byte-wise transition that will screw the values?«
 
-Further asking yielded more information: »The use-case is to have strings, to have UUIDs.«
+Asking yielded more information: »The use-case is to have strings, to have UUIDs.«
 
 So we have two questions to answer:
 
@@ -57,7 +57,7 @@ mysql> select id from kris limit 3;
 
 Having a test table, we can play.
 
-I am running an `ALTER TABLE kris CHANGE COLUMN` command. This requires that I specifiy the old name of the column, and then the full new column specifier including the new name, the new type and all details. Hence the “`id id ...`”
+I am running an `ALTER TABLE kris CHANGE COLUMN` command. This requires that I specify the old name of the column, and then the full new column specifier including the new name, the new type and all details. Hence, the “`id id ...`”
 
 ```sql
 mysql> alter table kris change column id id varchar(200) charset latin1 not null;
@@ -138,7 +138,7 @@ There is an order, because the column I changed was the `PRIMARY KEY`. The MySQL
 
 A B-Tree is a balanced tree. That is a tree in which the path length of the longest path from the root of the tree to any leaf is at most one step longer than the shortest path.
 
-So assuming a database with a page size of 16384 bytes (16KB), as MySQL uses, and assuming index records of 10 bytes (4 byte integer plus some overhead), we can cram over 1500 index records into a single page. Assuming index records of 64 bytes - quite large - we still fit 256 records into one page.
+So assuming a database with a page size of 16384 bytes (16 KB), as MySQL uses, and assuming index records of 10 bytes (4 byte integer plus some overhead), we can cram over 1500 index records into a single page. Assuming index records of 64 bytes - quite large - we still fit 256 records into one page.
 
 We get an index tree with a fan-out per level of 100 or more (in our example: 256 to over 1500).
 
@@ -161,7 +161,7 @@ We remember:
 
 > In InnoDB the primary key value governs the physical layout of the table.
 
-Assuming that new data is accessed often and old data is accessed less often, using primary keys with an AUTO_INCREMENT value collects all new, hot records in a minimum number of data pages at the end of the table/the right hand side of the tree. The set of pages the database is accessing a lot is minimal, and most easily cached in memory.
+Assuming that new data is accessed often and old data is accessed less often, using primary keys with an AUTO_INCREMENT value collects all new, hot records in a minimum number of data pages at the end of the table/the right-hand side of the tree. The set of pages the database is accessing a lot is minimal, and most easily cached in memory.
 
 This design minimizes the amount of memory cache, and maximizes database speed automatically for many common access patterns and workloads.
 
@@ -171,7 +171,7 @@ That is why it was chosen and optimized for.
 
 Consider table designs that assign a primary key in a random way. This would be for any design that uses a primary key that is an actual random number, the output of a cryptographic hash function such as SHA256(), or many UUID generators.
 
-Using an `integer auto_increment primary key`, we are likely to get hot data at the right hand side, cold data at the left hand side of the tree. We load hot pages, minimising the cache footprint:
+Using an `integer auto_increment primary key`, we are likely to get hot data at the right-hand side, cold data at the left-hand side of the tree. We load hot pages, minimising the cache footprint:
 
 ![](/uploads/2020/09/pk-order.png)
 
@@ -181,7 +181,7 @@ But with a random distribution of primary keys over the keyspace, there is no se
 
 ![](/uploads/2020/09/random-order.png)
 
-*Primary Key values are randomly chosen: Any page contains a primary key that is hot. As soon as it is being accessed, the entire 16KB page is loaded.*
+*Primary Key values are randomly chosen: Any page contains a primary key that is hot. As soon as it is being accessed, the entire 16 KB page is loaded.*
 
 So we need a comparatively larger (often: much larger) amount of memory to have a useful cache for this table.
 
@@ -225,7 +225,8 @@ The manual says:
 - The fourth number preserves temporal uniqueness in case the timestamp value loses monotonicity (for example, due to daylight saving time).
 - The fifth number is an IEEE 802 node number that provides spatial uniqueness. A random number is substituted if the latter is not available (for example, because the host device has no Ethernet card, or it is unknown how to find the hardware address of an interface on the host operating system). In this case, spatial uniqueness cannot be guaranteed. Nevertheless, a collision should have *very* low probability.
 
-Having the timestamp in front for printing is a requirement of the standard. But we need not store it that way:
+Having the timestamp in front for printing is a requirement of the standard.
+But we need not store it that way:
 
 MySQL 8 provides a [UUID_TO_BIN()](https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid-to-bin) function, and this function has an optional second argument, swap_flag.
 
@@ -233,7 +234,7 @@ MySQL 8 provides a [UUID_TO_BIN()](https://dev.mysql.com/doc/refman/8.0/en/misce
 
 # TL;DR
 
-So if you must use an UUID in a primary key
+So if you must use a UUID in a primary key
 
 - Choose MySQL 8.
 - Make it VARBINARY(16).
