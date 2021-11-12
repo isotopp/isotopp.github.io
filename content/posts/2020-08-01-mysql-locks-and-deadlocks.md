@@ -11,7 +11,8 @@ tags:
 - erklaerbaer
 title: 'MySQL: Locks and Deadlocks'
 ---
-In a [previous article]({{< ref "/content/posts/2020-07-30-mysql-transactions---writing-data.md" >}}) we wrote data to the database using atomic update statements, and then using transactions with `SELECT ... FOR UPDATE`. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also [available on github.com](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py).
+
+In a [previous article]({{< ref "/content/posts/2020-07-30-mysql-transactions---writing-data.md" >}}) we wrote data to the database using atomic update statements, and then using transactions with `SELECT ... FOR UPDATE`. In this article we will look at what happens when we continue doing this, in a more complicated way. Source code for this article is also [available on GitHub.com](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-deadlock/deadlock.py).
 
 ## A simple row lock
 
@@ -77,7 +78,7 @@ This, too, is a record-level lock, but this time it is `LOCK_MODE: X,GAP` and `L
 
 ## Inserting into a locked gap, with timeouts.
 
-We can try do demonstrate that with a second session:
+We demonstrate that with a second session:
 
 ```sql
 Session2> start transaction read write;
@@ -118,11 +119,11 @@ A deadlock is any situation where a thread `A` holds a resource `1` and wants to
 
 `A` holds lock `1` and needs a lock on `2` to complete and release both locks, while `B` holds the lock on `2` and needs the lock on `1` to complete and release both locks. There is no way to resolve this situation except with intervention from the outside, forcing one transaction to roll back (and hopefully retry). There is no problem for either A or B to complete the operation, but not while both are trying to finish concurrently.
 
-The deadlock scenario is only possible because `A` and `B` do not aquire locks in a canoncial order: Had `B` also aquired the locks in numerically ascending order (`1`, `2`), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.
+The deadlock scenario is only possible because `A` and `B` do not acquire locks in a canonical order: Had `B` also acquired the locks in numerically ascending order (`1`, `2`), the transactions would have had serialized themselves successfully, and no forced conflict resolution would have been necessary. You can think of the rollback with a later retry as a clumsy, forced serialisation of events instead.
 
 More complicated scenarios with 3 or more threads and larger circular dependencies are possible.
 
-So, let's excercise a deadlock with two sessions:
+So, let's exercise a deadlock with two sessions:
 
 ```sql
 Session1> start transaction read write;
@@ -224,7 +225,7 @@ def update(name, id, counter):
         sys.exit(0)
 ```
 
-And a really dirty function with way too many parameters to exercise these two functions for pairs of records:
+And a quick and dirty function with way too many parameters to exercise these two functions for pairs of records:
 
 ```python
 def count_with_locking(name, tag, position1, position2, verbose=False):
