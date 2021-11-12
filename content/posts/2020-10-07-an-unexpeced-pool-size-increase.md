@@ -20,16 +20,16 @@ Here is what the one sample chain looks like in Orchestrator:
 
 When you talk to a database, you get two database handles:
 
-- A write handle which always points at the primary, here instance-918d currently, and 
-- a read handle.
+- A write-handle which always points at the primary, here instance-918d currently, and 
+- a read-handle.
 
-The read handle should be in the same AZ as your client application, and should be selected randomly from the available replicas for reading.
+The read-handle should be in the same AZ as your client application, and should be selected randomly from the available replicas for reading.
 
 We also have other replicas, for cloning, to make more replicas, and for example time delayed replicas to correct accidental data deletions and other Oopses quickly.
 
 Machines that are available for reading are organised in “Pools” per AZ. Many replication chains have only one Pool, “\<name>-misc”, but some replication chains also have additional pools for workload isolation. For example, some chains have “\<name>-slow” pools, and you get a third handle, to which you are supposed to send slow queries that cannot be optimised.
 
-Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your "application-xml” queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.
+Other chains are shared between different applications, and in order to prevent crosstalk we have different pools, so that your "application-xml" queries do not mess with the regular “application-misc” queries. You are still using a “application-ro” handle, but it is non-overlapping between XML and normal application clients.
 
 In any case, we run automated capacity tests on each pool, and then adjust pool sizes as needed. We also report to ourselves on that. Sometimes that report is interesting:
 
@@ -41,11 +41,11 @@ The minimum pool size is three, for redundancy reasons. The example chain is not
 
 DBA Operations talk to the customer: “I am reaching out to you because you are currently designated as owners of one or more of the database schemata in the example database chain. The schemata in question are \<list>.
 
-Starting yesterday, the example chain (and, especifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”
+Starting yesterday, the example chain (and, specifically, its example-misc pool) has seen a significant increase in load, mostly in the blue AZ, as shown here:”
 
 ![](/uploads/2020/10/mysql-threads.png)
 
-*MySQL "Threads Running" going through the roof, load testing reports diminished capacity and we ready more instances. The world is safe again! Or, is it?*
+*MySQL "Threads Running" going through the roof, load testing reports diminished capacity, and we ready more instances. The world is safe again! Or, is it?*
 
 So we detected an increased number of threads running, and that led to a general reduction in the capacity, and that requires *MOAR MACHINES!* Yay! So our bots threw more machinery to ride the load wave and that kept us afloat for the moment.
 
@@ -53,7 +53,7 @@ Is that the story? It is not.
 
 ## A mysterious mystery
 
-Humans descend on the problem and look. What are the machines in the pool, currently? Well, if have the privileges, you can check with our roster tool:
+Humans descend on the problem and look. What are the machines in the pool, currently? Well, if you have the privileges, you can check with our roster tool:
 
 ```console
 $ sudo roster-tool list /persistent/pools/example-misc/az-west1-a
@@ -122,13 +122,13 @@ So
 - some, very few, slow queries, queries, 
 - an unsaturated database, not bottlenecking globally on any base resource
 - a machine load going up by 2 from 1 to 3 (per thread problem, two queries?)
-- long running
+- long-running
 
 We have [seen this before]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo-log size:
 
 ![](/uploads/2020/10/mysql-undo-log.png)
 
-*Undo-Log shark fin perfectly co-inciding with the incident.*
+*Undo-Log shark fin perfectly coinciding with the incident.*
 
 We observe a shark fin in the Undo-Log size that perfectly matches the time span of the incident and the increased CPU time.
 
@@ -142,7 +142,7 @@ The part where it says:
 
 > Starting a transaction at the default isolation level will force the Undo-Log Purge Thread to stop at the position of our read view. Undo-Log entries will no longer be purged, filling up and growing the Undo-Log. Reads and Index Lookups become more complicated and slower, slowing down the overall performance of the database.
 
-So it may be long running transactions.
+So it may be long-running transactions.
 
 ## Proof
 
@@ -152,7 +152,9 @@ And this is where metrics end, and observability starts. We would need a flight 
 
 This is such an obvious pressing need that [Simon Mudd wrote a script](http://blog.wl0.org/2011/02/log_processlist-sh-script-for-monitoring-mysql-instances/) to do that in the deep, dark past long before the term “observability” even existed.
 
-It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in /var/log/mysql_pl/\<weekday name>. In an age of baremetal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:
+It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in `/var/log/mysql_pl/<weekday name>`. 
+
+In an age of bare-metal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:
 
 ```console
 /var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz > /tmp/kris
@@ -164,7 +166,7 @@ With a text editor we isolate the processlist recording from 23:48 on 04-Oct. We
 
 This yields indeed two interesting queries: Both show a `cronjob=reserve_projectname_upsert_transaction_ids` running on `cronapp-39.dc2.prod.example.com` and on `cronapp-02.dc2.prod.example.com`, with runtimes of 16220 and 22170 seconds.
 
-There are indeed two long running queries, coinciding perfectly with a load increase of 2, and they are easily identifyable cron queries. They run from two different hosts, with the same cron banner.
+There are indeed two long-running queries, coinciding perfectly with a load increase of 2, and they are easily identifiable cron queries. They run from two different hosts, with the same cron banner.
 
 I have no idea what that job does, but we are looking at a `SELECT` statement in `REPEATABLE READ` isolation that has a run time of multiple hours, and unsurprisingly an Undo-Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.
 
@@ -182,11 +184,13 @@ We don’t have observability. We need to get better at this. Go, follow [Charit
 
 With such tooling, we need to connect what we teach with actual incidents that show how the teachings connect to real world cases.
 
-Which is why I am typing up this thing, right now and link to the actual writeups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.
+Which is why I am typing up this thing, right now and link to the actual write-ups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.
 
-You know in your head what "Undo-Log" means. Here you can understand what "Undo-Log" feels like. Go, [touch the candle](https://blog.koehntopp.info/2020/08/31/on-touching-candles.html).
+You know in your head what "Undo-Log" means. Here you can understand what "Undo-Log" feels like. Go, [touch the candle]({{< ref "/content/posts/2020-08-31-on-touching-candles.md" >}}).
 
-We have all the tooling, but it is from a different age. An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics. Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.
+We have all the tooling, but it is from a different age. 
+An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics.
+Observability by shell script on a root shell is a thing we have in abundance, because that was enough in that time and age.
 
 We do no longer have access to root shells in production, and in the age of anything as a service not even to shells.
 
