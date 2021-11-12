@@ -24,7 +24,7 @@ A character set is a collection of symbols that belong together. That is a compl
 
 To be able to print symbols they need a shape, which is defined in a Font. For example is this here: "<span style="font-family: Arial; font-size: 24px; font-weight: normal;">ö</span>" a letter "ö" in Arial, and "<span style="font-family: 'Times New Roman'; font-size: 24px; font-style: normal;">ö</span>" the same thing in a different font, Times New Roman.
 
-To be able to use symbols with computers they need a binary represenation of their code point, an encoding. In my Terminal we are using utf8. The Text "Köhntopp" is being represented as the byte sequence `4b c3 b6 68 6e 74 6f 70 70`. [LATIN SMALL LETTER O WITH DIARESIS](https://www.compart.com/en/unicode/U+00F6) has the code point `0x00F6`, which is being represented as `C3 B6` in utf8 encoding.
+To be able to use symbols with computers they need a binary representation of their code point, an encoding. In my Terminal we are using utf8. The Text "Köhntopp" is being represented as the byte sequence `4b c3 b6 68 6e 74 6f 70 70`. [LATIN SMALL LETTER O WITH DIARESIS](https://www.compart.com/en/unicode/U+00F6) has the code point `0x00F6`, which is being represented as `C3 B6` in utf8 encoding.
 
 ```console
 $ echo Köhntopp | hexdump -C
@@ -42,7 +42,7 @@ $ echo Köhntopp | hexdump -C
 
 If you have two character sequences and want to compare or sort them, you need a set of comparison and ordering rules, a collation. You can think of a collation as a canonical representation of an encoding for comparison and sorting.
 
-For example, the collation latin1_german1_ci represents "Köhntopp" internally as "kohntopp" and uses this internal represenation to compare it to other strings or sort it. But in storage we always find the original string, "Köhntopp".
+For example, the collation latin1_german1_ci represents "Köhntopp" internally as "kohntopp" and uses this internal representation to compare it to other strings or sort it. But in storage we always find the original string, "Köhntopp".
 
 There is a second german language collation, latin1_german2_ci, which internally writes "Köhntopp" as "koehntopp" to compare and sort - but it will also save the same "Köhntopp" to disk.
 
@@ -56,9 +56,9 @@ ISO-8859 also contained other character sets for Cyrillic, Arabic, Greek, Hebrew
 
 > *Note:* The character set called `latin1` in MySQL is actually `Windows CP1252`, which is a superset of `iso-8859-1`. See [this article](https://mysqlserverteam.com/debugging-character-set-issues-by-example/) for details.
 
-Unicode development started in 1991 as a 16 bit character set, and it was assumed that this is sufficient to hold all characters from all possible writing systems. Unicode was design as a superset of ISO-8859-1, so codepoints that exist in both character sets are identical.
+Unicode's development started in 1991 as a 16 bit character set, and it was assumed that this is sufficient to hold all characters from all possible writing systems. Unicode was design as a superset of ISO-8859-1, so codepoints that exist in both character sets are identical.
 
-In 1996 it became clear that a set of 65536 characters was not sufficient, and Unicode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.
+In 1996, it became clear that a set of 65536 characters was not sufficient, and Unicode 2.0 was fitted with an extension mechanism to allow more than 65536 symbols. Again, this extension is a true superset of original Unicode.
 
 As of March 2020, Unicode 13.0 contains some 140k characters from 154 writing systems. The definition of Unicode 13.0 currently allows for 1.112064 possible characters. Some code points in the lower 65536 characters are reserved to encode *surrogate pairs*, basically extension characters for the original 16 bit character set, resulting in a weird number for the total possible characters.
 
@@ -84,11 +84,11 @@ MySQL converts, if possible, between connection and column. So when you send a s
 
 MySQL also converts if you convert columns. So if you `ALTER TABLE t MODIFY COLUMN c VARCHAR(80) CHARSET utf8` and that was previously a latin1 column, MySQL will take the `0xf6`es and turn them into `0xc3b6`es instead. All of that is automatic, safe and lossless, if possible. There are warnings and errors if not.
 
-But let's look at the details step by step.
+But let's look at the details, step by step.
 
 ## Setting charset and collation on a column
 
-Every string in MySQL is labeled with an charset and a collation. For database objects that happens at the column level: A column with CHAR, VARCHAR, or any TEXT type always has a charset and a collation. The same can be true for an ENUM type that contains strings.
+Every string in MySQL is labeled with a charset and a collation. For database objects that happens at the column level: A column with CHAR, VARCHAR, or any TEXT type always has a charset and a collation. The same can be true for an ENUM type that contains strings.
 
 If you define these without specifying, the column will inherit the table defaults. If you specify no table default, the table will inherit the database default, which in turn inherits from the server default, which is defined in the `my.cnf`:
 
@@ -124,7 +124,7 @@ Create Table: CREATE TABLE `chset` (
 
 ## String Literals
 
-A string literal in MySQL is written in double quotes, "a string literal". When nothing else is specified, the connections character set and collation are being used.
+A string literal in MySQL is written in double quotes, "a string literal". When nothing else is specified, the connections' character set and collation are being used.
 
 An identifier in MySQL is written as a bare word `tablename` or written in backticks \``weird tablename`\`. When written in backticks, the identifier can contain any utf8 unicode character (unfortunately, not utf8mb4 character, so you have to constrain yourself to the BMP). *Don't do this in production, though.*
 
@@ -181,9 +181,9 @@ ERROR 1300 (HY000): Invalid utf8 character string: 'F6'
 
 ## Charset on a connection
 
-The *other* thing that has a character set is the connection from the client to the database server. That is required, because when you type for example "ö" into a utf8 terminal to send it to `kris.chset`, column `t` as defined above, it has to be converted from utf8 (`C3B6`) to latin1 (`F6`), because the column `t` is defined with a charset of latin1.
+The *other* thing that has a character set is the connection from the client to the database server. That is required, because when you type for example "ö" into an utf8 terminal to send it to `kris.chset`, column `t` as defined above, it has to be converted from utf8 (`C3B6`) to latin1 (`F6`), because the column `t` is defined with a charset of latin1.
 
-MySQL does that automatically for you, if a conversion exists: You sent a utf8 `c3b6`, MySQL detects the column defined as latin1, and tries to convert, yielding `f6`, which is then stored.
+MySQL does that automatically for you, if a conversion exists: You sent an utf8 `c3b6`, MySQL detects the column defined as latin1, and tries to convert, yielding `f6`, which is then stored.
 
 How do you tell MySQL what charset the connection uses?
 
@@ -225,7 +225,7 @@ So this actually works.
 
 ## MySQL converts automatically
 
-Now, let's use a utf8-Client to store data into a column into `kris.chset.t`, which is latin1. What will happen?
+Now, let's use an utf8-Client to store data into a column into `kris.chset.t`, which is latin1. What will happen?
 
 MySQL converts this automatically and we can show this.
 
@@ -393,13 +393,13 @@ may find different results depending on the optimizer using an index (pre-update
 
 It was decided that MySQL will, in order to simplify updates, never do this ever again. 
 
-Instead fixes and changes will be publicised under new names so that changes could be made at will and a pace set by the user by `ALTER TABLE`ing the index definitions from the old collation name to the new name.
+Instead, fixes and changes will be publicised under new names so that changes could be made at will and a pace set by the user by `ALTER TABLE`ing the index definitions from the old collation name to the new name.
 
-Hence we have utf8 (the 16-bit character set) and utf8mb4 (the larger than 16 bit character set) that was defined later. And we have even collations referring to different UCA rules for collating utf8mb4 in order to allow controlled migration to newer, better comparison rules.
+Hence, we have utf8 (the 16-bit character set) and utf8mb4 (the larger than 16 bit character set) that was defined later. And we have even collations referring to different UCA rules for collating utf8mb4 in order to allow controlled migration to newer, better comparison rules.
 
 The same is true for Timezones: MySQL does not use operating system sort and comparison rules as offered in the glibc functions, but brings its own, and it also does not use Timezone functions and rules as offered by glibc, but again uses its own.
 
-That provides stable and controlled migration that is also independent of operating system updates - the same comparison and index rules exist indendently of glibc updates, and on Linux, MacOS and Windows. This also keeps binary data files portable and upgradable across operating systems and database versions.
+That provides stable and controlled migration that is also independent of operating system updates - the same comparison and index rules exist independently of glibc updates, and on Linux, macOS and Windows. This also keeps binary data files portable and upgradable across operating systems and database versions.
 
 Compare that for example to Postgres, which uses glibc functions for string comparison, sorting and for timezone conversions. In Postgres, you have to be aware of operating system updates that affect sorting, comparison or timezones, and you have to recreate indexes every time you make changes to these operating system functions. Noticing glibc updates that affect the function of the database on a system with security auto-updates can be very hard.
 
@@ -407,7 +407,7 @@ Compare that for example to Postgres, which uses glibc functions for string comp
 
 Sometimes data ends up inside the database, converted from latin1 to utf8 by an application and then again by the database. This can only happen when the declared character set of the connection (`SET NAMES`) and the data sent to not match.
 
-For example, if you define a table with a `VARCHAR` column in latin1, and set the connection to latin1, but then send actual utf8 data to the table, you not triggering a conversion (connection and column have the same character set), but the data is not valid latin1.
+For example, if you define a table with a `VARCHAR` column in latin1, and set the connection to latin1, but then send actual utf8 data to the table, you are not triggering a conversion (connection and column have the same character set), but the data is not valid latin1.
 
 ```sql
 mysql> create table t ( id serial, d varchar(20) charset latin1 );
