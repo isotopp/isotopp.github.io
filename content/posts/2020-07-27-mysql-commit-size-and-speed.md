@@ -13,7 +13,7 @@ title: MySQL Commit Size and Speed
 ---
 When writing data to disk, for small transactions the cost of writing the
 commit out do disk dominates the execution time of the script. In order to
-show that, I wrote a little bit of Python.
+show that, I wrote a little Python script.
 
 The script creates a test table in a database and writes 10.000 rows of test
 data into it, in commit sizes of 1, 2, 4, ..., 1024 rows.
@@ -59,9 +59,11 @@ done
 
 The result of the test run is as follows shown, and since at point 10.000
 rows were not enough, I later added a second test run with 100.000 rows and
-step sizes of 5..14 (32 rows to 16384 rows).
+step sizes of `5..14` (32 rows to 16384 rows).
 
 ![](/uploads/2020/07/transactions-benchmark.jpg)
+
+*Script runtime as a function of commit batch size. x-Axis is logarithmic, y-axis is linear.* 
 
 | Txn Sz | Runtime | Rows/s | Runtime | Rows/s  |
 | -----: | ------: | -----: | ------: | ------: |
@@ -81,7 +83,9 @@ step sizes of 5..14 (32 rows to 16384 rows).
 |     13 |         |        |   13.59 | 7359    |
 |     14 |         |        |   13.26 | 7542    |
 
-We observe: Going from single row commits to 16 row commits, we get a
+*Raw data from the test runs.*
+
+*We observe:* Going from single row commits to 16 row commits, we get a
 10-fold speed increase, and going to 1024 row commits, we are seeing another
 factor of 10. After that, there is hardly any improvement for our chosen
 record size and hardware.
@@ -89,9 +93,9 @@ record size and hardware.
 ## TL;DR
 
 A transaction size of 1000 rows or larger does not seem to improve write
-speed (ie in a data load).
+speed (i.e. in a data load).
 
-From 1 row/commit to 16 rows/commit, we see an increate of an order of
+From 1 row/commit to 16 rows/commit, we see an increase of an order of
 magnitude, and another order of magnitude can be had by going from 16
 rows/commit to 1024 rows/commit.
 
