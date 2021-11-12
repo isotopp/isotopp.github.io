@@ -170,10 +170,10 @@ each, a table that itself has 540M rows. That takes time.
 During that time the "select" statements maintains a read-only
 transaction to create a stable view of the table it is reading.
 That means that as we change rows in MessageLog the old versions
-of the row are being shifted to the Undo log, and while other
+of the row are being shifted to the Undo-Log, and while other
 transactions read the new version of the row from the
 tablespace, these transactions read old versions of the row from
-the Undo log.
+the Undo-Log.
 
 Or they try. They hit the tablespace first, see a new version of
 the row, are being sent one version into the past, find that
