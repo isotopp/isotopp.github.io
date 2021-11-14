@@ -15,9 +15,9 @@ title: Leben mit Fehlern - der Schlüssel zum Scaleout
 Scaling Patterns
 
 In 2004 habe ich auf dem Linuxtag einen kleinen Vortrag zum Thema 
-[Skalierbarkeit](http://kris.koehntopp.de/artikel/linuxtag/) gehalten. Schon
-damals war
-[die Message](http://kris.koehntopp.de/artikel/linuxtag/img4.html) an
+[Skalierbarkeit]({{< ref "/content/posts/2004-06-23-von-10-hoch-3-nach-10-hoch-7.md" >}})
+gehalten. Schon damals war
+[die Message]({{< ref "/content/posts/2004-06-23-von-10-hoch-3-nach-10-hoch-7.md#reaktionen-auf-wachstum" >}}) an
 verschiedenen Stellen im Vortrag "Jedes Readproblem ist ein Caching-Problem,
 jedes Schreibproblem ist ein Verteilungs- und Batchproblem":
 

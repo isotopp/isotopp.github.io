@@ -6,6 +6,7 @@ published: true
 title: "Filtersysteme, Dongles und Co."
 tags:
 - lang_de
+- talk
 - publication
 - internet
 ---

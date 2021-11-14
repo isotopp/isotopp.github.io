@@ -5,6 +5,8 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - kryptographie
+- talk
+- publication
 - security
 - lang_de
 title: Einige kryptographische Grundlagen

@@ -6,6 +6,7 @@ published: true
 title: "Enterprise Intranet Integration"
 tags:
 - lang_de
+- talk
 - publication
 - internet
 ---

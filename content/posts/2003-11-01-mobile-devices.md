@@ -6,6 +6,7 @@ published: true
 title: "Mobile Devices - Der Feind in meiner Tasche"
 tags:
 - lang_de
+- talk
 - publication
 - internet
 ---
