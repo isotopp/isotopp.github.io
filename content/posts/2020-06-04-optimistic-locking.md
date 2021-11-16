@@ -4,7 +4,7 @@ date: "2020-06-04T09:00:01Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
-- mysql faq
+- mysqldev
 - mysql
 - erklaerbaer
 - reddit
