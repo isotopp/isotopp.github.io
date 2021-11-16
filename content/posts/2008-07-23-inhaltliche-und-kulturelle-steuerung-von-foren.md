@@ -18,7 +18,7 @@ Many years ago, late in 1999, I was involved in the creation of de.comp.lang.php
 That went on for four to five year, out of which I have been actively involved for two years, earning [good Karma]({{< ref "/content/posts/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md" >}}). But unfortunately [http://www.php-faq.de/](http://www.php-faq.de/) is now dead (or outdated and inactive).
 
 On my disk there was an old text, unpublished for many years, about the concept behind the engagement. I will just post it here, because the strategy might be salvaged and could be applied elsewhere to similarly structured environments. Other environments need different strategies, as shown in my talk about 
-[Flames]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbr-che-im-netz.md" >}}). Some of the things shown below I would present differently today, but the core is solid. Maybe it is useful to someone?
+[Flames]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md" >}}). Some of the things shown below I would present differently today, but the core is solid. Maybe it is useful to someone?
 
 ### Uplift or A Process to Create Useful USENET Newsgroups
 
