@@ -5,12 +5,12 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - community
-- media
-- php
+- publication
 - usenet
 - lang_en
-title: Inhaltliche und kulturelle Steuerung von Foren
+title: "Inhaltliche und kulturelle Steuerung von Foren"
 ---
+
 (*Update:* 2020-06-19 [Russian version](https://howtorecover.me/kontent-i-kulturnyy-kontrol-forumov) contributed by Vladimir Htr)
 
 Many years ago, late in 1999, I was involved in the creation of de.comp.lang.php, a USENET newsgroup. Since the group was new I began a personal experiment to influence the communication culture of an [open USENET group]({{< ref "/content/posts/2005-06-07-zehn-jahre-php.md" >}}).
@@ -18,9 +18,10 @@ Many years ago, late in 1999, I was involved in the creation of de.comp.lang.php
 That went on for four to five year, out of which I have been actively involved for two years, earning [good Karma]({{< ref "/content/posts/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md" >}}). But unfortunately [http://www.php-faq.de/](http://www.php-faq.de/) is now dead (or outdated and inactive).
 
 On my disk there was an old text, unpublished for many years, about the concept behind the engagement. I will just post it here, because the strategy might be salvaged and could be applied elsewhere to similarly structured environments. Other environments need different strategies, as shown in my talk about 
-[Flames]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md" >}}). Some of the things shown below I would present differently today, but the core is solid. Maybe it is useful to someone?
+[Flames]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md" >}}). 
+Some things shown below I would present differently today, but the core is solid. Maybe it is useful to someone?
 
-### Uplift or A Process to Create Useful USENET Newsgroups
+# Uplift or A Process to Create Useful USENET Newsgroups
 
 by Kristian Köhntopp
 
@@ -38,7 +39,7 @@ Uplift process has been tested over the period of one year with the german
 language newsgroup de.comp.lang.php (3800 articles/month in September; 22500
 articles overall until now).
 
-#### Newsgroup history and some past experiences
+## Newsgroup history and some past experiences
 
 de.comp.lang.php was created 01-Jan-2000 by vote of the german USENET
 community.
@@ -65,7 +66,7 @@ general:
   vicious cycle and did not improve nor shift topic. All action in the
   groups converged on flaming.
 
-#### The goals for de.comp.lang.php
+## The goals for de.comp.lang.php
 
 PHP is the most popular installed Apache module by far, and traffic on the
 german mailing list as well as the support for the RfD showed that a
@@ -90,7 +91,7 @@ myself to meddle with the groups sociodynamics. Also, the group would then
 be ripe for split due to high traffic volume and the groups concept would
 then be proven and could be applied to other groups as well.
 
-#### A few simple building blocks
+## A few simple building blocks
 
 Central to the establishment of a group culture is the ability to remember
 past discussions and their results. Without memory there is no past, and
@@ -106,7 +107,7 @@ three months with the most needed knowledge.
 
 Ideally, the FAQ is fat. That is, it does not only cover truly frequent
 questions, but also provides all background information needed to properly
-handle and understande that frequently requested information. The strategy
+handle and understand that frequently requested information. The strategy
 is to get Clients reading and keep them reading, feeding them not only
 solutions to the immediate problems, but also feed them parts of the larger
 picture as well as basic USENET traditions and rules.
@@ -123,21 +124,21 @@ USENET society and become a useful netizen.
 
 Of course, a client coming into the newsgroup with an immediate problem
 wants to hear solutions to that particular problem and is not interested in
-being force fed obscure traditions and customs. In order to overcome this
+being force-fed obscure traditions and customs. In order to overcome this
 learning block, the immediate problem of the Client must be solved quickly
 and to the point. If such a solution is being delivered in an answer
 posting, though, the Client usually is receptive and can be fed one or two
 bits of additional knowledge and culture as well. If this information is
-being kept in the same document as the answer to the Clients problem as
+being kept in the same document as the answer to the Clients' problem as
 well, it will be accepted even easier by that Client. Thus, a fat FAQ is a
 great help in the Uplift process.
 
 Of course, a vast and fat FAQ is no target to point a client to. The client
-has an _immediate_ problem and needs help urgently. Thus a reference to The
-Library should always be specific in nature, pointing the the Client to the
+has an _immediate_ problem and needs help urgently. Thus, a reference to The
+Library should always be specific in nature, pointing the Client to the
 properly phrased question, and containing the full URL of the answer. If the
 question and the answer do not match the specific question of the Client in
-full, it should be accompanied by some additional sentences of explaination,
+full, it should be accompanied by some additional sentences of explanation,
 showing the Client how to modify the Library provided answer in order to be
 useful.
 
@@ -154,12 +155,12 @@ have the form of
 > 1.16. Wie verweise ich auf die
 > FAQ?http://www.php-faq.de/q/q-newsgroup-faqreferenz.html
 
-accompanied by some additional lines of explaination. This form of
-reference to FAQable questions has been established very early after the
+accompanied by some additional lines of explanation. This form of
+reference to FAQ-able questions has been established very early after the
 creation of the newsgroup, and has been adopted by almost all contributors
 to the group with Patron capabilities.
 
-#### Opening the culture for self-sustenance
+## Opening the culture for self-sustenance
 
 The initial FAQ was copyrighted by me. Although that FAQ was available by
 CVS, and was written in an open format (LinuxDoc at that time), there was
@@ -167,7 +168,7 @@ little interest of potential contributors to add to the FAQ. The initial
 problem was that some people tried to take the FAQ's content and wanted to
 edit and republish it for their gain, and that I made it very clear that
 this was not acceptable by writing large COPYRIGHT notices all over the
-text. Potential contributores had no interest to contribute to a text that
+text. Potential contributors had no interest to contribute to a text that
 was clearly marked as the exclusive property of someone else. On the other
 hand I did not want to give text away for uncontrolled republication and
 modification.
@@ -180,13 +181,13 @@ which was found to balance all interests well enough to become accepted.
 
 Also, a mailing list was created to deliver FAQ commit messages and other
 important events and to provide a forum for discussion that is more private
-that the newsgroup itself. Thus, maintentance load is distributed between
+that the newsgroup itself. Thus, maintenance load is distributed between
 all interested parties, preventing early burnout.
 
 After the creation of the group, several problems arose which were not
 sufficiently covered by the initial charta of the group. Such problems were
 for example the handling of posted job offers within the group, or how to
-deal with rapidly recurring ontopic questions of little value to regulars
+deal with rapidly recurring on-topic questions of little value to regulars
 such as "Which provider/editor/operating system can be recommended?".
 
 It was important for the creation of a group culture that these problems
@@ -196,7 +197,7 @@ experience the problem themselves before having them vote on it, because
 common suffering enhances such "we-experiences". On the other hand, such
 resolutions must be found before the problem becomes so pressing that it
 inhibits normal operation of the group. And finally, there should not be to
-many such straw polls in rapid sucession, in order to keep the audience
+many such straw polls in rapid succession, in order to keep the audience
 interested and in order to keep meta-discussions low.
 
 The straw polls were held at a rate of at most one per month, and the
@@ -205,16 +206,16 @@ accepted. Still they were presented from a "Patron" point of view, by subtly
 highlighting the possible consequences of this or that decision where
 necessary. The outcome of the straw polls was documented in the first
 chapter of the FAQ, along with descriptions of acceptable behaviour around
-these topics and pointers to alternative or additional ressources.
+these topics and pointers to alternative or additional resources.
 
 This works reasonably well: 2 out of 3 atavistic throwbacks are usually
 quickly terminated by pointing the Client to the proper FAQ article handling
-such topics as provider recommendations, editor comparisions or language
+such topics as provider recommendations, editor comparisons or language
 advocacy.
 
 Job postings are usually not handled this way, because they are by nature
 hit-and-run events in which a company drops a shower of job offers in a
-number of newsgroups without caring about local group culture. Instead these
+number of newsgroups without caring about local group culture. Instead, these
 matters are usually resolved by a mail to their given contact address
 quoting the relevant FAQ article.
 
@@ -228,7 +229,7 @@ more.
 
 We have yet to see second-time offenders.
 
-#### Why does it work?
+## Why does it work?
 
 For Patrons, The Library makes it much easier to create useful answers by
 referencing the FAQ than to write an intelligent flame. Once this is
@@ -242,7 +243,7 @@ again in a followup posting. Asking followup questions is more work and has
 a higher round-trip-time than simply reading on and learning something. As
 long as the FAQ anticipates the next question along the path and provides
 stuff that is easily understandable and properly documented, the Client will
-not ask again but try to achieve something alone. This enhances the Clients
+not ask again but try to achieve something alone. This enhances the Clients'
 ability to work independently, Uplifting it further. It also cuts down on
 the total number of posts to the group, lightening the load for the
 contributors of answers.
@@ -260,9 +261,9 @@ Patron reputation by becoming a contributor of answers to the group. This
 enables older Patrons to move on and perhaps become FAQ committers.
 
 Patrons becoming dependent on the library feel a growing desire to
-contribute to The Library as soon as they hits holes multiple times when
+contribute to The Library as soon as they hit holes multiple times when
 writing answers. They feel that their business becomes significantly more
-difficult in areas not covered by the FAQ, and start comitting new answers
+difficult in areas not covered by the FAQ, and start committing new answers
 or even new chapters. Since all articles in the FAQ bear the name of the
 Patron who created it, adding to the FAQ is a way to gain status more
 permanently than by writing newsgroup articles: Unlike newsgroup answers
@@ -272,18 +273,18 @@ name in the light for a much longer time.
 This effectively creates two processes: 
 
 One process takes answers and threads from the newsgroup and compresses them
-to reuseable, tested and tried articles. Context-dependent information from
-a USENET thread, losely distributed over multiple articles, becomes
+to reusable, tested and tried articles. Context-dependent information from
+a USENET thread, loosely distributed over multiple articles, becomes
 context-independent, is peer reviewed and available in the much tighter
 format of a FAQ article. This process improves information.
 
 The second process is the process of Uplift, which educates contributors to
-the group in USENET etiquette as well as in matters covered by the groups
+the group in USENET etiquette as well as in matters covered by the groups'
 charta, by turning them from Clients asking questions into Patrons providing
 answers or even Senior Patrons contributing to the content of the FAQ. This
 process improves people.
 
-#### Dealing with Atavism
+## Dealing with Atavism
 
 USENET is showered with a constant rain of newbies. Usually, big loads of
 newbies in a short time lead to group degeneration, spontaneous topic
@@ -294,7 +295,7 @@ because before 1993 the month of September was the time when new students at
 the Universities hit the network.
 
 The Uplift process provides means to newsgroup regulars to deal with a
-larger number of newbies sucessfully, avoiding burnout and flamewars.
+larger number of newbies successfully, avoiding burnout and flamewars.
 Uplifting converts newbies into useful netizens faster than usual, too, and
 uses these fresh converts to deal with even newer newbies if applied
 successfully.
@@ -304,7 +305,7 @@ atavistic throws. This is usually the case when a Patron experiences
 burnout, and lets himself go publicly. Often this is provoked by a
 particularly clueless newbie posting, or an outright flame.
 
-To deal with atavism and have it not ruin the groups climate, it is
+To deal with atavism and have it not ruin the groups' climate, it is
 important to encourage Patrons to take their grievances to mail. This can be
 done by using the FAQ maintenance mailing list, or by encouraging the Patron
 to flame a newbie by mail and copy the flame to the FAQ maintenance mailing
@@ -313,16 +314,18 @@ particular case has been already taken care of). The german FAQ contains a
 section titled
 
 > 1.12 Warum bekomme ich Ermahnungsmails, wenn ich Autoren in der Gruppe auf
-> Netiquetteverstˆ&#64258;e aufmerksam mache?"Why do I get reminder mails,
-> when I remind people publicly of netiquette violations?"
+> Netiquetteverstöße aufmerksam mache?
+> 
+> "Why do I get reminder mails, when I remind people publicly of netiquette violations?"
 
 and this one is listed BEFORE
 
-> 1.13 Warum bekomme ich Ermahnungsmails?"Why am I mailed with netiquette
-> reminders?"
+> 1.13 Warum bekomme ich Ermahnungsmails?
+> 
+> "Why am I mailed with netiquette reminders?"
 
 It is not acceptable for a Patron to display behaviour which cannot be
-tolerated in Clients, and besides it does not help ontopic discussion in the
+tolerated in Clients, and besides it does not help on-topic discussion in the
 group if meta-discussion swamps the forum.
 
 The full answer to question 1.12 is (translated from German):
@@ -346,7 +349,7 @@ The full answer to question 1.12 is (translated from German):
 > That is: Answer the question of the offender or offer a solution to his
 > problem as good as possible. Only after that remind him about the
 > netiquette. If you cannot contribute to the original problem, do not post
-> or write mail. You are not alone in this group and you do not need to save
+> or write mail. You are not alone in this group, and you do not need to save
 > the world alone. Somebody else who knows the proper answer will write a
 > public reply and probably will remind the original author of proper
 > behaviour."
@@ -360,7 +363,7 @@ last for more than a day or two, if they happen at all.
 
 It is important for the users of the newsgroup to learn how to deal with
 flames properly, taking them as failed attempts to communicate instead of
-insults, and cooly pointing the offender to the relevant ressources to help
+insults, and coolly pointing the offender to the relevant resources to help
 him state his problem correctly. The answer to 1.13 translates as follows:
 
 > "Not only in de.comp.lang.php, but in most other German newsgroups you
@@ -389,7 +392,7 @@ The publicly visible component of the flamewar is usually silenced
 immediately after the mail exchange starts, with sometimes some erroneous
 postings by third parties coming in late.
 
-#### Lessons Learned
+## Lessons Learned
 
 _It is possible to take control of the content and the traditions of a
 USENET newsgroup for an extended amount of time, if the perceived change for
@@ -399,6 +402,7 @@ _The tools for affecting the change are the creation of a recorded tradition
 by the creation of a FAQ, making proper and improper behavioral standards
 explicit and addressable for reference in a discussion, and a specific
 procedure for teaching these standards to newcomers. This specific procedure
-involves taking the newcomers problem serious, solving it and pushing
+involves taking the newcomers' problem seriously, solving it and pushing
 additional corrective information with that answer in a non-offensive and
-non-degrading way at the newcomer._
+non-degrading way at the newcomer.
+

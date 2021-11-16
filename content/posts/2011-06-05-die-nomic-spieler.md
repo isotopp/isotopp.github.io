@@ -13,18 +13,20 @@ Douglas Hofstadter erwähnt in seinem
 [Megamagicum](http://www.amazon.de/Metamagicum-Fragen-Essenz-Geist-Struktur/dp/360895774X)
 das Spiel [Nomic](http://en.wikipedia.org/wiki/Nomic) von Peter Suber 
 ([The paradox of self-amendment](http://www.earlham.edu/~peters/writing/psa/)).
+
 Bei Nomic geht es darum, die Regeln eines Spiels regelkonform so zu ändern,
 daß man gewinnt. Das Spiel ist also total selbstbezüglich und es gibt nichts
 im Spiel außer den Regeln des Spiels selber, das wichtig ist - auch wenn der
 gerade aktive Regelsatz zu einem Zeitpunkt das möglicherweise verschleiert.
 
-"Nomic" ist auch ein failure mode von Diskurs- und Diskussionsystemen. Dabei
-geht es den NOMIC-Spielern um zwei Dinge: Zum einen darum, die Regeln der
+"Nomic" ist auch ein failure mode von Diskurs- und Diskussionsystemen. 
+
+Dabei geht es den NOMIC-Spielern um zwei Dinge: Zum einen darum, die Regeln der
 Gemeinschaft so zu verändern, daß ihr Standpunkt oder ihre Gruppe
 favorisiert wird, und zum anderen durch laufende Metadiskussion konkrete
 themenbezogene Arbeit lahmzulegen und den Gegner zu zermürben, weil es
-dieser Gruppe opportun erscheint, den Status Quo bei zu behalten und
-Veränderungen zu verzögern, oder einfach um den Teilnehmerkreis der
+dieser Gruppe opportun erscheint, den Status Quo beizubehalten und
+Veränderungen zu verzögern. Oder einfach um den Teilnehmerkreis der
 Diskussion auf Leute zu verengen, die hauptamtlich Gremienarbeit machen
 wollen - das kann aus vielerlei Gründen ein politisches Ziel einer Gruppe
 sein (Siehe auch 
@@ -32,24 +34,24 @@ sein (Siehe auch
 
 Typische Beispiele für diese Art des herbeigeführten Systsemversagens sind
 Admin-Gruppen im (speziell auch deutschsprachigen) USENET, zunehmend die
-Piratenpartei und - durchaus absichtlich so konstruiert  - die
+Piratenpartei und - durchaus absichtlich so konstruiert - die
 [EIDG](http://de.wikipedia.org/wiki/Enquete-Kommission_Internet_und_digitale_Gesellschaft).
 
 In meinem Folienset zum Thema
-[Flames](http://kris.koehntopp.de/artikel/flames/img0.html) versuche ich zu
+[Flames]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md" >}}) versuche ich zu
 erklären, was genau der failure mode "Flame" in einem Onlineforum ist und
 wie er entsteht. Ich behaupte, daß man 
-[eine Onlinekultur](http://kris.koehntopp.de/artikel/flames/img7.html) erschaffen
+[eine Onlinekultur]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#foren-als-soziales-system" >}}) erschaffen
 kann, die Flames verhindert und in konstruktives Verhalten umwandeln kann.
 In einem offenen System wie dem USENET 
-[fehlen repressive Instrumente](http://kris.koehntopp.de/artikel/flames/img9.html) und man muß
+[fehlen repressive Instrumente]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#foren-als-soziales-system-iii" >}}) und man muß
 ausschließlich positiv und appellativ arbeiten. Das erscheint anfangs
 mühsam, ist aber eine Form von respektbasierter Kommunikation (im Gegensatz
 zu angstbasierter Kommunikation), und daher weitaus nachhaltiger.
 
 Ich zeige an zwei Beispielen,
-[de.comp.lang.php](http://kris.koehntopp.de/artikel/flames/img14.html) und
-[de.rec.spiele.rpg.misc](http://kris.koehntopp.de/artikel/flames/img19.html)
+[de.comp.lang.php]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-dclp" >}}) und
+[de.rec.spiele.rpg.misc]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-drsrm" >}})
 zwei Methoden zur Organisation einer Community. Beide Verfahren basieren auf
 der Bildung einer FAQ zur Bildung von Erinnerungsvermögen und zur
 Kondensation eines Satzes von Regeln und Erkenntnissen der Gemeinschaft und
@@ -58,7 +60,7 @@ sich Mechanismen, an denen Neulinge akzeptables Verhalten lernen können und
 an denen die Gemeinschaft ihre Verhaltensnormen weiterentwickelt.
 
 An einem dritten Beispiel
-[de.talk.bizarre](http://kris.koehntopp.de/artikel/flames/img22.html) zeige
+[de.talk.bizarre]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-dtb" >}}) zeige
 ich, wie eine kleine Gruppe mit guter Kommunikation ("Der Hohe Rath Der
 Dreizehn Weisen Vom Feed" und "Die Allianz Wieder Den Hohen Rath" als deren
 scheinbarer Gegner, in Wahrheit eine zweite Marke des Rathes) und dem Willen
