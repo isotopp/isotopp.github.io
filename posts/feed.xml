@@ -6,11 +6,244 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Nov 2021 13:23:31 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 22 Nov 2021 16:32:03 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Arista Type 7 Passwords</title>
+      <link>https://blog.koehntopp.info/2021/11/22/arista-type-7-passwords.html</link>
+      <pubDate>Sun, 21 Nov 2021 17:29:00 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/11/22/arista-type-7-passwords.html</guid>
+      <description>&lt;p&gt;A friend of mine wanted to provision BGP passwords for their Arista switch configuration.&lt;/p&gt;
+&lt;p&gt;So a config stanza such as&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;router bgp 65001
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   router-id 10.1.1.1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   neighbor mydevices peer-group
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   neighbor mydevices password 7 8kjYaye5DsQh0epELyKNe0oZ3E3zp39X
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;requires generation of the Password (actually &amp;ldquo;supersecretpassword&amp;rdquo;) in an encrypted form.&lt;/p&gt;
+&lt;p&gt;Arista switches can do this using CLI tools, apparently.
+They seem to have an onboard Linux, which seems to provide limited tooling, but is good enough to run a 32-bit Python 3.7, and Arista provides modules to help with handling their configuration.
+&lt;a href=&#34;https://medium.com/@what_if/encrypting-decrypting-arista-bgp-bmp-ospf-passwords-ff2072460942&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ryan Gelobter&lt;/a&gt;
+
+
+documented these in an article on Medium.&lt;/p&gt;
+&lt;p&gt;Unfortunately, these modules are not well portable.
+They have been implemented in a CPython module for Python 3.7 on i386 (32bit) Linux, and they also have a lot of dependencies to other shared objects that are not easily available except in the switch environment.&lt;/p&gt;
+&lt;p&gt;So, if you wanted to provision switch configurations,
+you would need to run some code on the switch to generate the passwords the way Ryan Gelobter documents,
+or do the same in a virtual machine with a virtual switch.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;switch1# bash python -c &amp;#39;import DesCrypt;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;print DesCrypt.encrypt(&amp;#34;BMP1_passwd&amp;#34;, &amp;#34;supersecretpassword&amp;#34;)&amp;#39;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;JieKbldfLyl9IzUBJZRvKIcc1w5wWogI
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Looking at the &lt;code&gt;DesCrypt.py&lt;/code&gt; is not particularly helpful:
+The code in it does little more than&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;_DesCrypt&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;encryptedData&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;_DesCrypt&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cbcEncrypt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and &lt;code&gt;_DesCrypt&lt;/code&gt; is actually &lt;code&gt;_Descrypt.cpython-37m-i386-linux-gnu.so&lt;/code&gt;.
+Well, at least it is only 10 KB in size, so how hard can it be?&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s have a look:&lt;/p&gt;
+&lt;h1 id=&#34;ghidra&#34;&gt;
+    &lt;a href=&#34;#ghidra&#34;&gt;
+	Ghidra
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When we drop the module into Ghidra, we get do see a &lt;code&gt;PyInit__DesCrypt(void)&lt;/code&gt; symbol.
+The code in that function basically just calls out to &lt;code&gt;PyModuleCreate2(&amp;amp;PyModuleDef, 0x3f5)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Looking at the &lt;code&gt;PyModuleDef&lt;/code&gt; requires &lt;a href=&#34;https://docs.python.org/3/c-api/module.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the documentation&lt;/a&gt;
+
+, but then is easy.
+We identify two functions, &lt;code&gt;cbcEncrypt&lt;/code&gt; and &lt;code&gt;cbcDecrypt&lt;/code&gt; by their &lt;a href=&#34;https://docs.python.org/3/c-api/structures.html#c.PyMethodDef&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;PyMethodsDef&lt;/code&gt;&lt;/a&gt;
+
+.
+Two labels for entrypoints in a stripped binary identified.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/arista-pymethoddef.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The Python Method Definition Table for the _DesCrypt Module defined two functions, named &lt;code&gt;cbcEncrypt&lt;/code&gt; and &lt;code&gt;cbcDecrypt&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Looking at the &lt;code&gt;cbcEncrypt&lt;/code&gt; function shows us that it has a dependency on &lt;code&gt;cbc_crypt()&lt;/code&gt;,
+and that seems to be a function from &lt;code&gt;libc&lt;/code&gt;, according to &lt;a href=&#34;https://linux.die.net/man/3/cbc_crypt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the manpage&lt;/a&gt;
+
+.
+So it is ancient DES, in CBC mode that is being used.
+We should be able to do this in pure Python without many additional dependencies then.&lt;/p&gt;
+&lt;p&gt;Further investigation proves frustrating:
+&lt;code&gt;cbc_crypt()&lt;/code&gt; is no longer part of &lt;code&gt;libc&lt;/code&gt;.
+It is outdated, legacy, but unfortunately still in use.
+Not only by Arista, but also other companies and protocols.
+Among them some ancient RPC protocols.&lt;/p&gt;
+&lt;p&gt;It has been removed from &lt;code&gt;libc&lt;/code&gt; and moved to &lt;code&gt;libtirpc3&lt;/code&gt;, it seems.
+We need to install &lt;code&gt;libtirpc3&lt;/code&gt;, &lt;code&gt;libtirpc-dev&lt;/code&gt; and &lt;code&gt;libtirpc-common&lt;/code&gt; to be able to build code that calls &lt;code&gt;cbc_crypt()&lt;/code&gt;.
+Even then we seem to be limited to static linking, because for some reason the shared objects do no longer export the symbol.&lt;/p&gt;
+&lt;p&gt;Using Ghidra more, we can decode &lt;code&gt;cbcEncrypt()&lt;/code&gt; and the &lt;code&gt;getHashedKey()&lt;/code&gt; function it calls.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;getHashedKey&lt;/code&gt; generates the key the usual way, by xor-ing the incoming string with itself in an 8 bytes loop, but the starting value is not all zeroes, but some magic value.&lt;/p&gt;
+&lt;p&gt;Also, &lt;code&gt;cbcEncrypt&lt;/code&gt; pads the data, and embeds data about the padding - at the start of the encrypted string and in a way that is not PKCS#7 or any other standard way known to man.
+Instead, it is encoded in the high nibble of a fixed magic int that is used for padding, and that is always present, even if no padding happened.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/arista-gethashedkey.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Ghidra Output of the getHashedKey() function, with a bit of annotation and typing added to get a better view.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;With this information, we should be able to recreate the function in our own C-code and check if it can recreate the examples Ryan Gelobter provided.&lt;/p&gt;
+&lt;p&gt;Of course, it does not.&lt;/p&gt;
+&lt;h1 id=&#34;debugging-the-original-code&#34;&gt;
+    &lt;a href=&#34;#debugging-the-original-code&#34;&gt;
+	Debugging the original code
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We need to debug, and in order to be able to do that we need to be able to load and isolate &lt;code&gt;getHashedKey()&lt;/code&gt; first.
+The original version, to check what the actual hashed key should look like, and compare the result to our own.&lt;/p&gt;
+&lt;p&gt;That should be easy:
+An example &lt;a href=&#34;https://blog.koehntopp.info/2005/10/08/dynamisch-geladener-code.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;from 2005&lt;/a&gt;
+
+ (german language article) shows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;how to turn a function into a &lt;code&gt;libsomething.a&lt;/code&gt;,&lt;/li&gt;
+&lt;li&gt;then into &lt;code&gt;libsomething.so&lt;/code&gt;, and&lt;/li&gt;
+&lt;li&gt;then how to &lt;code&gt;dlopen()&lt;/code&gt; and &lt;code&gt;dlsym()&lt;/code&gt; that binary to call a single function in it.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Easy.&lt;/p&gt;
+&lt;h1 id=&#34;dependencies&#34;&gt;
+    &lt;a href=&#34;#dependencies&#34;&gt;
+	Dependencies
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Turns out, loading &lt;code&gt;_DesCrypt...so&lt;/code&gt; is not so easy, because of a dependency on &lt;code&gt;libtac.so.0&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;ldd _DesCrypt.cpython-37m-i386-linux-gnu.so
+&lt;span class=&#34;go&#34;&gt;        linux-gate.so.1 (0xf7f7c000)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        libtac.so.0 =&amp;gt; not found
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        libpython3.7m.so.1.0 =&amp;gt; not found
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        libstdc++.so.6 =&amp;gt; /lib32/libstdc++.so.6 (0xf7d81000)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        libm.so.6 =&amp;gt; /lib32/libm.so.6 (0xf7c7d000)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        libgcc_s.so.1 =&amp;gt; /lib32/libgcc_s.so.1 (0xf7c5e000)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        libc.so.6 =&amp;gt; /lib32/libc.so.6 (0xf7a73000)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        /lib/ld-linux.so.2 (0xf7f7e000)```
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So we are missing a &lt;code&gt;libpython3.7m.so.1.0&lt;/code&gt; and a &lt;code&gt;libtac.so.0&lt;/code&gt;.
+The Python is easily fixed:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;apt install gcc-multilib
+&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;wget https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tgz
+&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;tar xzf Python-3.7.5.tgz
+&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; Python-3.7.5/
+&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./configure --build&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;i686-pc-linux-gnu &lt;span class=&#34;nv&#34;&gt;CFLAGS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;-m32 &lt;span class=&#34;nv&#34;&gt;CXXFLAGS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;-m32 &lt;span class=&#34;nv&#34;&gt;LDFLAGS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;-m32 --enable-shared
+&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;make -j6
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We need to build for 32-bit, but on a 64-bit machine.
+The compile-flag &lt;code&gt;-m32&lt;/code&gt; does that, but it will fail due to some missing includes, until we install &lt;code&gt;gcc-multilib&lt;/code&gt; as shown above.
+We can then download the old version of Python, and quickly build it with the required flags for 32-bit support.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;libtac.so.0&lt;/code&gt; we could copy off the switch, but things then escalate quickly, because that in turn loads even more libraries, most of which we don&amp;rsquo;t have.
+And if we had them, they might load even more dependencies.&lt;/p&gt;
+&lt;p&gt;Looking into Ghidra again, we know that the code we are interested in does not really depend on &lt;code&gt;libtac,so.0&lt;/code&gt;.
+&lt;code&gt;cbcEncrypt()&lt;/code&gt; itself does, but only if something goes wrong and an exception is being raised,
+but at this stage we only want &lt;code&gt;getHashedKey()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Following the guide from 16 years ago, we can quickly write some code to &lt;code&gt;dlopen()&lt;/code&gt; the library:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;func_t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;mydevices_passwd&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;keylen&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strlen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;80&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;supersecretpassword&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+ 
+    &lt;span class=&#34;n&#34;&gt;func_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+ 
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;main start&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+ 
+    &lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlopen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LIBNAME&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;RTLD_LAZY&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;dlopen(%s, RTLD_LAZY) failed: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;LIBNAME&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;dlerror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+ 
+    &lt;span class=&#34;c1&#34;&gt;// find func
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlerror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlsym&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;_Z12getHashedKeyPKciPc&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlerror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;dlsym(%p, &lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;getHashedKey&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt; failed: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                &lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt;
+        &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+ 
+    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;gethashedKey %p&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+ 
+    &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keylen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dump&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keylen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dump&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;80&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dlclose&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+ 
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;killing-dependencies&#34;&gt;
+    &lt;a href=&#34;#killing-dependencies&#34;&gt;
+	Killing Dependencies
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;That way we can inspect the output of the function (it overwrites the first 8 bytes of data) and get a reference key value to debug against.
+Or could, if that would work.
+It does not, because the &lt;code&gt;.so&lt;/code&gt; we open still has listed &lt;code&gt;libtac.so.0&lt;/code&gt; as &lt;code&gt;NEEDED&lt;/code&gt; and we need to fix it.&lt;/p&gt;
+&lt;p&gt;There are many ways to edit ELF binaries, but most are badly maintained.
+An easy way is a web service such as &lt;a href=&#34;https://elfy.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;elfy.io&lt;/a&gt;
+
+.
+We upload the library, click &lt;code&gt;Load information&lt;/code&gt; -&amp;gt; &lt;code&gt;Loader directives&lt;/code&gt; and edit the first dependency (&lt;code&gt;libtac.so.0&lt;/code&gt;) (offset 0x270) to point to the second dependency (&lt;code&gt;libpython3.7m.so.1.0&lt;/code&gt; (offset 0x283) instead.
+Downloading the code again, we can rename it to &lt;code&gt;libtest.so&lt;/code&gt; and load it with our test program from above, getting a reference key value.
+So &lt;code&gt;mydevices_passwd&lt;/code&gt; in a non-broken implementation yields the raw key value of &lt;code&gt;4A 0E 5D 1A 70 4F 1F 23&lt;/code&gt; for DES.&lt;/p&gt;
+&lt;p&gt;Having that, debugging is easy, math is hard and Intel is a little-endian architecture.
+So a seed byte sequence &lt;code&gt;D5 A8 ... 8A 23&lt;/code&gt; actually is the long &lt;code&gt;238A…A8D5&lt;/code&gt;.
+The moment one does that right, things actually work.
+I am definitively not doing these things often enough anymore to not make this kind of mistake.&lt;/p&gt;
+&lt;h1 id=&#34;progress&#34;&gt;
+    &lt;a href=&#34;#progress&#34;&gt;
+	Progress!
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Using that, we can now look at &lt;code&gt;cbcEncrypt()&lt;/code&gt; and reverse that.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/arista-cbcencrypt.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The heart of &lt;code&gt;cbcEncrupt()&lt;/code&gt; fetches two Python &lt;code&gt;bytearray&lt;/code&gt;, &lt;code&gt;key&lt;/code&gt; and &lt;code&gt;data&lt;/code&gt; and works with them. The &lt;code&gt;key&lt;/code&gt; is processed with &lt;code&gt;getHashedKey()&lt;/code&gt;, then &lt;code&gt;cbc_crypt()&lt;/code&gt; is set up and called. The result it put pack into Python using &lt;code&gt;Py_BuildValue&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Again, a few short hiccups:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The padding value is a nibble, not a byte, and the long it is part of has to be little endian.&lt;/li&gt;
+&lt;li&gt;The padding needs to take the 4 bytes added by the padding itself into account.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the end we get code that reproduces the expected result.&lt;/p&gt;
+&lt;h1 id=&#34;in-python&#34;&gt;
+    &lt;a href=&#34;#in-python&#34;&gt;
+	In Python
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If, and that is important, &lt;code&gt;des_parity()&lt;/code&gt; is being called.
+If not, the Python code produces a different result - but the Python legacy DES function is supposed to ignore DES parity.
+So what goes on here, and how do we get &lt;code&gt;des_parity()&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;Turns out, &lt;code&gt;des_parity()&lt;/code&gt; is really weird code:
+it is supposed to make the 8 bytes of the DES code uneven parity by manipulating the low-value bits in the key.
+But the actual code &lt;a href=&#34;https://github.com/alisw/libtirpc/blob/master/src/des_soft.c#L33-L50&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+ also effectively masks out the high order bit, so we do not get an 56 bit keyspace, but only 48 bit.
+Yay, export crypto?&lt;/p&gt;
+&lt;p&gt;Anyway, this is the code Arista runs for their key obfuscation, so we need to duplicate it.
+In Python, it looks like &lt;a href=&#34;https://github.com/isotopp/arista_type_7/blob/main/pypoc.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Using this, it should be easy to produce a bit of Python for Ansible to be able to provison Arista config files with Type 7 passwords.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>A01:2021 - Broken Access Control</title>
       <link>https://blog.koehntopp.info/2021/11/16/a01-2021-broken-access-control.html</link>
-      <pubDate>Sun, 07 Nov 2021 11:28:27 +0100</pubDate>
+      <pubDate>Tue, 16 Nov 2021 11:28:27 +0100</pubDate>
       
       <guid>https://blog.koehntopp.info/2021/11/16/a01-2021-broken-access-control.html</guid>
       <description>&lt;p&gt;In einem
@@ -3858,61 +4091,6 @@ But with MySQL 8 many things were overhauled, so let&amp;rsquo;s see what we can
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Any other ideas that fit the general theme?&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: The table &#39;../tmp/#sql…&#39; is full</title>
-      <link>https://blog.koehntopp.info/2021/09/09/tmp-file-full.html</link>
-      <pubDate>Thu, 09 Sep 2021 17:01:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/09/tmp-file-full.html</guid>
-      <description>&lt;p&gt;We observe a large number of messages of the kind&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;The table &amp;#39;../tmp/#sql…&amp;#39; is full
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;before-mysql-8&#34;&gt;
-    &lt;a href=&#34;#before-mysql-8&#34;&gt;
-	Before MySQL 8
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In older Versions of MySQL, implied temporary tables are being created whenever your &lt;code&gt;EXPLAIN&lt;/code&gt; contained the phrase &lt;code&gt;using temporary&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;In this case, MySQL would create an in-memory temporary table to materialize an intermediate query result, and then continue to process the data from there. If that temporary table was larger than some configurable limit, the temporary table would instead be converted to a MyISAM table on disk, streamed out, and then work would continue with this.&lt;/p&gt;
-&lt;p&gt;This has a large number of disadvantages:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;A table in the &lt;code&gt;MEMORY&lt;/code&gt; storage engine can have no variable length columns. That means, any &lt;code&gt;VARCHAR&lt;/code&gt; column gets converted to a &lt;code&gt;CHAR&lt;/code&gt; column in the &lt;code&gt;MEMORY&lt;/code&gt; version of that table.
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Example:&lt;/strong&gt; Your 5 byte (plus overhead) long &amp;lsquo;&lt;code&gt;hello&lt;/code&gt;&amp;rsquo; in a &lt;code&gt;VARCHAR(255) CHARSET utf8&lt;/code&gt; would turn into a 765 byte &lt;code&gt;CHAR(255) CHARSET utf8&lt;/code&gt; monstrosity, right-padded with spaces.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Memory used by &lt;code&gt;MEMORY&lt;/code&gt; engine tables would be dynamically allocated on top of the other buffers the database uses, making the process size quite variable, depending on how many concurrent threads need to use temporary tables right now. This can lead to memory exhaustion and a visit from the OOM killer, or worse, to a paged out database server.&lt;/li&gt;
-&lt;li&gt;When being streamed out to disk, the original variable length data types would be used, so you would not even see what caused the temporary table on disk in many cases, unless you looked very hard at the schema.&lt;/li&gt;
-&lt;li&gt;Memory for efficient MyISAM table processing is usually not configured on an InnoDB MySQL instance.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Because of that, we encouraged our users at work to be wary of plans with &lt;code&gt;using temporary&lt;/code&gt;, to avoid use of utf8 columns except for human generated data, and to employ certain techniques for writing queries that handle strings in a nicer way.&lt;/p&gt;
-&lt;h1 id=&#34;mysql-8-fixes-this&#34;&gt;
-    &lt;a href=&#34;#mysql-8-fixes-this&#34;&gt;
-	MySQL 8 fixes this
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Starting with MySQL 8, implicit temporary tables are using the InnoDB storage engine exclusively. That means, temporary tables have largely the same properties as any ordinary table.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;It is safe to use &lt;code&gt;VARCHAR(...) CHARSET utf8mb4&lt;/code&gt;, and at work we now recommend that you use this to represent strings. Variable length data types are handled just fine. It is fine to use single byte character sets for internal strings (names of status fields and other internal strings), but even that is no longer necessary.&lt;/li&gt;
-&lt;li&gt;There is no preconfigured limit to where the table is being streamed to disk.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This is being done by creating (internally and invisibly to you) a special tablespace for tmp tables. Tables created in this tablespace are InnoDB tables, but they are not redo-logged, because there is no need for them to be crash-safe. After all, tmp tables are supposed to be gone after a server restart.&lt;/p&gt;
-&lt;p&gt;This saves a ton of I/O and makes these tables very fast, while they are still compatible with the rest of the InnoDB engine.&lt;/p&gt;
-&lt;p&gt;tmp tables are now also using the InnoDB buffer pool, the fixed giant data structure that all other data in the server is using, so the memory consumption of the server process fluctuates a lot less.&lt;/p&gt;
-&lt;p&gt;All pages in the buffer pool need to be backed by files, so that they can be written out if space in the buffer pool becomes tight. For MySQL, this is the &lt;code&gt;innodb_temp_data_file_path config&lt;/code&gt; variable.&lt;/p&gt;
-&lt;p&gt;At work, we configure this on our systems with a hard upper limit:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;innodb_temp_data_file_path=ibtmp1:12M:autoextend:max:100G
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This means you get a file, &lt;code&gt;ibtmp1&lt;/code&gt;, in the data directory of MySQL with an initial size of 12 MB. This file is auto-extended in increments up to a maximum size of 100 GB - in the default configuration it is not limited.&lt;/p&gt;
-&lt;p&gt;If you need more, you are very likely holding the database wrong.&lt;/p&gt;
-&lt;h1 id=&#34;i-am-getting-this-error-message&#34;&gt;
-    &lt;a href=&#34;#i-am-getting-this-error-message&#34;&gt;
-	&amp;ldquo;I am getting this error message&amp;rdquo;
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Isolate the offending query, &lt;code&gt;EXPLAIN FORMAT=JSON&lt;/code&gt; the plan and check if you can get rid of the &lt;code&gt;using temporary&lt;/code&gt;. If it is using up a 100 GB temporary file space, something is very wrong.&lt;/p&gt;
-&lt;p&gt;You should not increase the 100 GB limit: The &lt;code&gt;ibtmp1&lt;/code&gt; file will eat all your disk space, and you won&amp;rsquo;t get it back, as tablespace files never shrink.&lt;/p&gt;
 </description>
     </item>
     
