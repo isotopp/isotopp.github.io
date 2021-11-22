@@ -33,6 +33,6 @@ Self-driving cars are further away than they looked three years ago, and automat
 
 What is true is that AI can support human workers a lot in taking the boring parts of these jobs away, helping to provide rough estimates and marking clear cases as such.
 Still, AI in 2021 seems to be successful where it augments human workers instead of completely replacing them.
-In general, Lee's view of the world is very mechanistic, and way to optimistic in what AI can actually completely solve without having a complete model of the world it acts in.
+In general, Lee's view of the world is very mechanistic, and way too optimistic in what AI can actually completely solve without having a complete model of the world it acts in.
 
 Important input and still a good overview, but overtaken quickly by the real world.
