@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 title: "A01:2021 - Broken Access Control"
-date: 2021-11-07T11:28:27+01:00
+date: 2021-11-16T11:28:27+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
