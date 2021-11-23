@@ -84,7 +84,7 @@ There is a selection of standard methods for this, as offered for example by
 [Crypto.Util.Padding.pad()](https://pycryptodome.readthedocs.io/en/latest/src/util/util.html#Crypto.Util.Padding.pad)
 in pycryptodome ("pkcs7", "iso7816" and "x923").
 
-cbcEncrypt uses none of these standard methods, and implements it's own method:
+`cbcEncrypt` uses none of these standard methods, and implements its own method:
 the padding is encoded in the high nibble of a fixed magic int.
 
 That magic int is always prepended, even if no padding was necessary:
@@ -229,14 +229,6 @@ I am definitively not doing these things often enough anymore to not make this k
 Having a working `getHashedKey()` we can now look at `cbcEncrypt()` and reverse that.
 
 ![](/uploads/2021/11/arista-cbcencrypt.png)
-
-*The heart of `cbcEncrypt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result returned to Python using `Py_BuildValue`.*
-
-The moment we try to build this in C, it proves frustrating again:
-`cbc_crypt()` is no longer part of `libc`.
-It is outdated, legacy, but unfortunately still in use. 
-Not only by Arista, but also other companies and protocols.
-Among them some ancient RPC protocols.
 
 *The heart of `cbcEncrypt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result returned to Python using `Py_BuildValue`.*
 
