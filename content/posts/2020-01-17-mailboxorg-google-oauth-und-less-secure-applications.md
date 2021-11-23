@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2020-01-17T18:44:34Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_de
 - google

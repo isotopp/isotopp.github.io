@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2012-03-01T10:06:31Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - internet

@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2011-04-27T12:06:55Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - hack

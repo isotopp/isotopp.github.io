@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2011-08-10T19:45:27Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - cookie
@@ -29,7 +29,7 @@ Nun heißt es:
 Konkret heißt das: Die IP-Adresse, die das IVW-Teil speichert, wird um das
 letzte Byte verkürzt. Es werden also Gruppen von 256 IP-Nummern zusammen
 abgerechnet. Außerdem gibt es jetzt eine 
-[Opt-Out Möglichkeit](optout.iwbox.de). Abgerundet soll das ganze durch
+[Opt-Out Möglichkeit](https://optout.ivwbox.de). Abgerundet soll das ganze durch
 Vertragsänderungen zwischen der IVW-Betreibergesellschaft und der nutzenden
 Website.
 

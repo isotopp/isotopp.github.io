@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2005-12-28T19:06:48Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - ccc

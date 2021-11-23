@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2008-10-30T15:49:15Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - politik

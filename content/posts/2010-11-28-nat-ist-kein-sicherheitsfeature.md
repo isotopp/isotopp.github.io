@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2010-11-28T14:59:23Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - computer

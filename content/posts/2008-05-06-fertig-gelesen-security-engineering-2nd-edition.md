@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2008-05-06T07:27:00Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - review

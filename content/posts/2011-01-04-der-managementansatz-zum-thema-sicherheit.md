@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2011-01-04T14:58:51Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - devops

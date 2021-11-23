@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2007-03-30T11:47:38Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - php

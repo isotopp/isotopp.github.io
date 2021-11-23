@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2008-11-17T09:36:07Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 tags:
 - kryptographie
 - security

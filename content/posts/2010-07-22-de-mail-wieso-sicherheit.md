@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2010-07-22T09:54:00Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - demail

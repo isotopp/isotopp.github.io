@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2009-02-11T19:19:44Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 published: true
 tags:
 - kryptographie

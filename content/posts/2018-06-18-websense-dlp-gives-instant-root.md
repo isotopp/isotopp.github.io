@@ -1,7 +1,7 @@
 ---
 author-id: isotopp
 date: "2018-06-18T20:33:10Z"
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_en
 - security
