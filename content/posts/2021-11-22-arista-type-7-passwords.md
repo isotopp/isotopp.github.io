@@ -56,7 +56,7 @@ Let's have a look:
 
 # Ghidra
 
-When we drop the module into Ghidra, we get do see a `PyInit__DesCrypt(void)` symbol.
+When we drop the module into Ghidra, we get to see a `PyInit__DesCrypt(void)` symbol.
 The code in that function basically just calls out to `PyModuleCreate2(&PyModuleDef, 0x3f5)`.
 
 Looking at the `PyModuleDef` requires [the documentation](https://docs.python.org/3/c-api/module.html), but then is easy.
@@ -223,7 +223,7 @@ Using that, we can now look at `cbcEncrypt()` and reverse that.
 
 ![](/uploads/2021/11/arista-cbcencrypt.png)
 
-*The heart of `cbcEncrupt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result it put pack into Python using `Py_BuildValue`.*
+*The heart of `cbcEncrupt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result is put pack into Python using `Py_BuildValue`.*
 
 Again, a few short hiccups:
 
