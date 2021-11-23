@@ -129,7 +129,7 @@ Filesystem           Type  Size  Used Avail Use% Mounted on
 
 I am providing sufficient storage for about one year of data. I am using XFS as a file system, because while having higher commit latency than ext4, it has close to no jitter and consequently much better plan-able performance.
 
-This is a LVM2 partition on the `data` volume group, which contains two Samsung EVO 860 4 GB drives.
+This is a LVM2 partition on the `data` volume group, which contains two Samsung EVO 860 4 TB drives.
 
 ```console
 # pvs | grep data
