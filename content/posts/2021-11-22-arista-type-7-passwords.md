@@ -13,7 +13,7 @@ A friend of mine wanted to provision BGP passwords for their Arista switch confi
 
 So a config stanza such as
 
-```console
+```
 router bgp 65001
    router-id 10.1.1.1
    neighbor mydevices peer-group
@@ -23,16 +23,18 @@ router bgp 65001
 requires generation of the Password (actually "supersecretpassword") in an encrypted form.
 
 Arista switches can do this using CLI tools, apparently.
-They seem to have an onboard Linux, which seems to provide limited tooling, but is good enough to run a 32-bit Python 3.7, and Arista provides modules to help with handling their configuration.
+They seem to have an onboard Linux, which seems to provide limited tooling, but is good enough to run a 32-bit Python 3.7.
+Arista provides modules to help with handling their configuration.
 [Ryan Gelobter](https://medium.com/@what_if/encrypting-decrypting-arista-bgp-bmp-ospf-passwords-ff2072460942)
 documented these in an article on Medium.
 
 Unfortunately, these modules are not well portable.
-They have been implemented in a CPython module for Python 3.7 on i386 (32bit) Linux, and they also have a lot of dependencies to other shared objects that are not easily available except in the switch environment.
+They have been implemented in a CPython module for Python 3.7 on i386 (32bit) Linux.
+They also have a lot of dependencies to other shared objects that are not easily available except in the switch environment.
 
 So, if you wanted to provision switch configurations, 
 you would need to run some code on the switch to generate the passwords the way Ryan Gelobter documents, 
-or do the same in a virtual machine with a virtual switch.
+or do the same in a virtual machine with a virtual switch running in it.
 
 ```console
 switch1# bash python -c 'import DesCrypt;
@@ -57,37 +59,36 @@ Let's have a look:
 # Ghidra
 
 When we drop the module into Ghidra, we get to see a `PyInit__DesCrypt(void)` symbol.
-The code in that function basically just calls out to `PyModuleCreate2(&PyModuleDef, 0x3f5)`.
+The code in that function just calls out to `PyModuleCreate2(&PyModuleDef, 0x3f5)`.
 
-Looking at the `PyModuleDef` requires [the documentation](https://docs.python.org/3/c-api/module.html), but then is easy.
-We identify two functions, `cbcEncrypt` and `cbcDecrypt` by their [`PyMethodsDef`](https://docs.python.org/3/c-api/structures.html#c.PyMethodDef).
-Two labels for entrypoints in a stripped binary identified.
+Looking at the `PyModuleDef` requires [the documentation](https://docs.python.org/3/c-api/module.html) to properly understand what is going on.
+We identify two functions, `cbcEncrypt` and `cbcDecrypt` by their [`PyMethodDef`](https://docs.python.org/3/c-api/structures.html#c.PyMethodDef) entries.
+Two labels for entry points in a stripped binary identified.
 
 ![](/uploads/2021/11/arista-pymethoddef.png)
 
-*The Python Method Definition Table for the _DesCrypt Module defined two functions, named `cbcEncrypt` and `cbcDecrypt`.*
+*The Python Method Definition Table for the _DesCrypt Module defines two functions, named `cbcEncrypt` and `cbcDecrypt`.*
 
 Looking at the `cbcEncrypt` function shows us that it has a dependency on `cbc_crypt()`,
 and that seems to be a function from `libc`, according to [the manpage](https://linux.die.net/man/3/cbc_crypt).
 So it is ancient DES, in CBC mode that is being used.
 We should be able to do this in pure Python without many additional dependencies then.
 
-Further investigation proves frustrating:
-`cbc_crypt()` is no longer part of `libc`.
-It is outdated, legacy, but unfortunately still in use. 
-Not only by Arista, but also other companies and protocols.
-Among them some ancient RPC protocols.
-
-It has been removed from `libc` and moved to `libtirpc3`, it seems.
-We need to install `libtirpc3`, `libtirpc-dev` and `libtirpc-common` to be able to build code that calls `cbc_crypt()`.
-Even then we seem to be limited to static linking, because for some reason the shared objects do no longer export the symbol.
-
 Using Ghidra more, we can decode `cbcEncrypt()` and the `getHashedKey()` function it calls.
 
-`getHashedKey` generates the key the usual way, by xor-ing the incoming string with itself in an 8 bytes loop, but the starting value is not all zeroes, but some magic value.
+`getHashedKey` generates the key the usual way, by xor-ing the incoming string with itself in an 8 bytes long ring buffer, but the starting value is not all zeroes, but some magic value (`238ad5f51ec9a8d5`)
 
-Also, `cbcEncrypt` pads the data, and embeds data about the padding - at the start of the encrypted string and in a way that is not PKCS#7 or any other standard way known to man.
-Instead, it is encoded in the high nibble of a fixed magic int that is used for padding, and that is always present, even if no padding happened.
+Also, `cbcEncrypt` pads the data to an even 8 byte boundary as required by DES.
+How much was padded needs to be embedded in the ciphertext.
+There is a selection of standard methods for this, as offered for example by
+[Crypto.Util.Padding.pad()](https://pycryptodome.readthedocs.io/en/latest/src/util/util.html#Crypto.Util.Padding.pad)
+in pycryptodome ("pkcs7", "iso7816" and "x923").
+
+cbcEncrypt uses none of these standard methods, and implements it's own method:
+the padding is encoded in the high nibble of a fixed magic int.
+
+That magic int is always prepended, even if no padding was necessary:
+We get `?ebb884c`, with `?` indicating the number of padbytes (`0` to `7`).
 
 ![](/uploads/2021/11/arista-gethashedkey.png)
 
@@ -109,8 +110,8 @@ An example [from 2005](https://blog.koehntopp.info/2005/10/08/dynamisch-geladene
 - then into `libsomething.so`, and 
 - then how to `dlopen()` and `dlsym()` that binary to call a single function in it.
 
-Easy.
-
+That final piece of code will serve us well:
+We want to load the _DesCrypt module and call `getHashedKey()` in an isolated context to see what a correct return value looks like.
 
 # Dependencies
 
@@ -128,8 +129,12 @@ $ ldd _DesCrypt.cpython-37m-i386-linux-gnu.so
         /lib/ld-linux.so.2 (0xf7f7e000)```
 ```
 
-So we are missing a `libpython3.7m.so.1.0` and a `libtac.so.0`.
-The Python is easily fixed:
+So we are missing two libraries:
+
+- `libpython3.7m.so.1.0` and 
+- `libtac.so.0`.
+
+The Python bit is fixed by building a Python-3.7 in 32-bit:
 
 ```console
 $ apt install gcc-multilib
@@ -140,16 +145,18 @@ $ ./configure --build=i686-pc-linux-gnu CFLAGS=-m32 CXXFLAGS=-m32 LDFLAGS=-m32 -
 $ make -j6
 ```
 
-We need to build for 32-bit, but on a 64-bit machine.
-The compile-flag `-m32` does that, but it will fail due to some missing includes, until we install `gcc-multilib` as shown above.
-We can then download the old version of Python, and quickly build it with the required flags for 32-bit support.
+A minor roadbump: We need to build for 32-bit, but on a 64-bit machine.
+The compile-flag `-m32` does that, but it will fail due to some missing includes until we install `gcc-multilib` as shown above.
+We can then download the old version of Python, and build it with the required flags for 32-bit support.
 
-The `libtac.so.0` we could copy off the switch, but things then escalate quickly, because that in turn loads even more libraries, most of which we don't have.
+The `libtac.so.0` we could copy off the switch.
+If we try, things escalate quickly .
+That is, because that `.so` in turn loads even more libraries, most of which we don't have access to.
 And if we had them, they might load even more dependencies.
 
 Looking into Ghidra again, we know that the code we are interested in does not really depend on `libtac,so.0`.
 `cbcEncrypt()` itself does, but only if something goes wrong and an exception is being raised,
-but at this stage we only want `getHashedKey()`.
+but at this stage of our investigation we only want `getHashedKey()`.
 
 Following the guide from 16 years ago, we can quickly write some code to `dlopen()` the library:
 
@@ -202,7 +209,7 @@ int main(void) {
 
 # Killing Dependencies
 
-That way we can inspect the output of the function (it overwrites the first 8 bytes of data) and get a reference key value to debug against.
+That way we can inspect the output of the function (it overwrites the first 8 bytes of `data`) and get a reference key value to debug against.
 Or could, if that would work.
 It does not, because the `.so` we open still has listed `libtac.so.0` as `NEEDED` and we need to fix it.
 
@@ -212,38 +219,71 @@ We upload the library, click `Load information` -> `Loader directives` and edit 
 Downloading the code again, we can rename it to `libtest.so` and load it with our test program from above, getting a reference key value.
 So `mydevices_passwd` in a non-broken implementation yields the raw key value of `4A 0E 5D 1A 70 4F 1F 23` for DES.
 
-Having that, debugging is easy, math is hard and Intel is a little-endian architecture.
-So a seed byte sequence `D5 A8 ... 8A 23` actually is the long `238A…A8D5`.
-The moment one does that right, things actually work.
+Having that, debugging can continue.
+It turns out: math is hard and Intel is a little-endian architecture:
+The seed byte sequence `D5 A8 ... 8A 23` is of course the long `238A…A8D5`.
 I am definitively not doing these things often enough anymore to not make this kind of mistake.
 
 # Progress!
 
-Using that, we can now look at `cbcEncrypt()` and reverse that.
+Having a working `getHashedKey()` we can now look at `cbcEncrypt()` and reverse that.
 
 ![](/uploads/2021/11/arista-cbcencrypt.png)
 
-*The heart of `cbcEncrupt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result is put pack into Python using `Py_BuildValue`.*
+*The heart of `cbcEncrypt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result returned to Python using `Py_BuildValue`.*
 
-Again, a few short hiccups:
+The moment we try to build this in C, it proves frustrating again:
+`cbc_crypt()` is no longer part of `libc`.
+It is outdated, legacy, but unfortunately still in use. 
+Not only by Arista, but also other companies and protocols.
+Among them some ancient RPC protocols.
 
-- The padding value is a nibble, not a byte, and the long it is part of has to be little endian.
-- The padding needs to take the 4 bytes added by the padding itself into account.
+*The heart of `cbcEncrypt()` fetches two Python `bytearray`, `key` and `data` and works with them. The `key` is processed with `getHashedKey()`, then `cbc_crypt()` is set up and called. The result returned to Python using `Py_BuildValue`.*
+
+The moment we try to build this in C, it proves frustrating again:
+`cbc_crypt()` is no longer part of `libc`.
+It is outdated, legacy, but unfortunately still in use. 
+Not only by Arista, but also other companies and protocols.
+Among them some ancient RPC protocols.
+It has been removed from `libc` and moved to `libtirpc3`, it seems.
+We need to install `libtirpc3`, `libtirpc-dev` and `libtirpc-common` to be able to build code that calls `cbc_crypt()`.
+Even then we seem to be limited to static linking, because for some reason the shared objects do no longer export the symbol.
+
+Some more short short hiccups:
+
+- The padding value is a nibble, not a byte, and the long it is part of has to be little endian naturally.
+- The padding needs itself to take the 4 bytes added by the padding itself into account.
 
 In the end we get code that reproduces the expected result.
 
 # In Python
 
 If, and that is important, `des_parity()` is being called.
-If not, the Python code produces a different result - but the Python legacy DES function is supposed to ignore DES parity.
+In Python that function is not available, and should not be necessary:
+The legacy DES function in Python's module supposedly ignores DES parity bits automatically.
+
+But the Python code produces a different result.
 So what goes on here, and how do we get `des_parity()`?
 
 Turns out, `des_parity()` is really weird code: 
-it is supposed to make the 8 bytes of the DES code uneven parity by manipulating the low-value bits in the key.
-But the actual code [here](https://github.com/alisw/libtirpc/blob/master/src/des_soft.c#L33-L50) also effectively masks out the high order bit, so we do not get an 56 bit keyspace, but only 48 bit.
+Look at it [here](https://github.com/alisw/libtirpc/blob/master/src/des_soft.c#L33-L50).
+It is supposed to make the 8 bytes of the DES code uneven parity by manipulating the low-value bits in the key.
+But the actual code also effectively masks out the high order bit, so we do not get 56 bit of keyspace, but only 48 bit.
 Yay, export crypto?
 
-Anyway, this is the code Arista runs for their key obfuscation, so we need to duplicate it.
-In Python, it looks like [this](https://github.com/isotopp/arista_type_7/blob/main/pypoc.py).
+Anyway, this is the code Arista runs for their key obfuscation, so we need to duplicate it to produce correct data.
 
-Using this, it should be easy to produce a bit of Python for Ansible to be able to provison Arista config files with Type 7 passwords.
+[Here](https://github.com/isotopp/arista_type_7/blob/main/pypoc.py) is a PoC in Python.
+
+With the poc provided, it should be possible to
+
+```python
+from arista_descrypt import cbc_encrypt, cbc_decrypt
+
+encrypted = cbc_encrypt(b'mydevices_passwd', b'supersecretpassword')
+print(encrypted)
+```
+
+and that should be sufficient to build an Ansible module for Arista config provisioning.
+The code uses `cryptography` or `pycryptodome` automatically, one of the two is installed.
+It is not dependent on the legacy `cbc_crypt()` function that formerly was in `libc`.
