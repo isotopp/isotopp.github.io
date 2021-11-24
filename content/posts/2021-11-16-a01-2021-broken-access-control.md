@@ -65,7 +65,7 @@ Wenn ich zum Beispiel in einer Schul-App eine Schulzugehörigkeit und Klassenzug
 Stattdessen sollte eine Lehrperson sich das ansehen, mich fragen, ob ich das war und mich dann der Schule und der Klasse zuordnen.
 
 - Einer behaupteten, bestätigten und in der realen Welt verankerten Identität werden dann Zugriffsrechte zugeordnet.
-  Das ist eine **Autorisierung**, sie bestimmt, was dierse Identität im Kontext der Anwendung sehen, schreiben, verändern und löschen darf.
+  Das ist eine **Autorisierung**, sie bestimmt, was diese Identität im Kontext der Anwendung sehen, schreiben, verändern und löschen darf.
   Dazu werden wir unten noch ein wenig mehr reden.
 - Was ich dann in der Anwendung tu muss unter Umständen beweiskräftig mitgeschnitten werden.
   Etwa dann, wenn die Daten, auf die ich zugreife, besonders schützenswert sind, oder ihre Änderungshistorie dokumentiert werden muss.
@@ -140,7 +140,7 @@ Ich kann die Zugangsregeln für Schülerkontakte zum Beispiel so vereinfachen, d
 
 alle diese RBAC-Regeln werden zu
 
-- "Schule A kann mit Schüler B Kontakt aufnehmen, wenn `A.schule_id == B.schule_id`"
+- "Schüler A kann mit Schüler B Kontakt aufnehmen, wenn `A.schule_id == B.schule_id`"
 
 also wenn Schüler A und B denselben Wert im Attribut `schule_id` stehen haben.
 
