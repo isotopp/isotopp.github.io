@@ -6,7 +6,261 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Nov 2021 06:09:41 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 Nov 2021 22:30:17 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Moving Average</title>
+      <link>https://blog.koehntopp.info/2021/11/24/mysql-moving-average.html</link>
+      <pubDate>Wed, 24 Nov 2021 22:28:27 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/11/24/mysql-moving-average.html</guid>
+      <description>&lt;p&gt;MySQL window functions can be used to calculate daily averages or moving averages for a 24h time window relatively easily.
+In an &lt;a href=&#34;https://blog.koehntopp.info/2020/06/21/mysql-window-functions.html&#34;&gt;earlier article&lt;/a&gt;
+
+ basic window functions were already discussed.
+In this article, we want to see how we can get daily buckets and moving averages.&lt;/p&gt;
+&lt;p&gt;A sample program is available, as usual, &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-rolling-window/rolling-window.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on GitHub&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h1 id=&#34;getting-sample-data&#34;&gt;
+    &lt;a href=&#34;#getting-sample-data&#34;&gt;
+	Getting sample data
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We will be working with a data table named &lt;code&gt;data&lt;/code&gt;, with three columns: a sensor &lt;code&gt;id&lt;/code&gt;, a measurement datetime &lt;code&gt;d&lt;/code&gt; and a metric value &lt;code&gt;m&lt;/code&gt; that was sampled at that time.
+The table definition looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Create a data table&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;setup_tables&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sql_setup&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
+        &lt;span class=&#34;s2&#34;&gt;&amp;#34;drop table if exists data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+        &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34; create table data (
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                id integer not null,
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                d datetime not null,
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                m integer not null,
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                primary key (id, d)
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        )&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+    &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+
+    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sql_setup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OperationalError&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;echo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;setup_tables: failed &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; with &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For one year, each day and for each of our 11 (0-10) sensors, 1001 values will be collected.
+We insert a random time within the day, and a random measured value, an integer between 0 and 1000.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Fill data table with test data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nd&#34;&gt;@click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;option&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;--start&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;2020-01-01 00:00:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Start date and time yyyy-mm-dd hh:mm:ss&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nd&#34;&gt;@click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;option&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;--end&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;2020-12-31 23:59:59&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;End date and time yyyy-mm-dd hh:mm:ss&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;nd&#34;&gt;@click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;option&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;--count&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;default&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Number of values per day&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fill_table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;2020-01-01 00:00:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;end&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;2020-12-31 23:59:59&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# Get rid of the old data&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;truncate table data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+
+    &lt;span class=&#34;n&#34;&gt;today&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fromisoformat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;end&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fromisoformat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;end&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;one_day&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timedelta&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;days&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;c1&#34;&gt;# For one year, for each day:&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;today&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;end&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Date = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;today&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# For each measurement time:&lt;/span&gt;
+        &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+            &lt;span class=&#34;c1&#34;&gt;# a random sensor id, a random second in the day, and a random metric&lt;/span&gt;
+            &lt;span class=&#34;nb&#34;&gt;id&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;randint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;d&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;today&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;datetime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;timedelta&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;seconds&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;randint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;86399&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;randint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+            &lt;span class=&#34;c1&#34;&gt;# are written to the database.&lt;/span&gt;
+            &lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;insert into data (id, d, m) values (&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(id)s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;, &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(d)s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;, &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(m)s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;)&amp;#34;&lt;/span&gt;
+            &lt;span class=&#34;c1&#34;&gt;# If the (id, time) combination is not unique, we get an error that we pass&lt;/span&gt;
+            &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+                &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;m&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;
+            &lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;_exceptions&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IntegrityError&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+                &lt;span class=&#34;c1&#34;&gt;# The Birthday Paradox in Action&lt;/span&gt;
+                &lt;span class=&#34;c1&#34;&gt;# print(e)&lt;/span&gt;
+                &lt;span class=&#34;k&#34;&gt;pass&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+        &lt;span class=&#34;c1&#34;&gt;# next day.&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;today&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;one_day&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;daily-buckets-with-group-by&#34;&gt;
+    &lt;a href=&#34;#daily-buckets-with-group-by&#34;&gt;
+	Daily Buckets with GROUP BY
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Window Queries are somewhat related to aggregations with GROUP BY:
+With GROUP BY we make look at each row under the lens of the GROUP BY statement.
+All rows that have equal values as listed in the GROUP BY clause land on the same pile.
+We can then apply aggregation functions to measure the pile.&lt;/p&gt;
+&lt;p&gt;In our example, we could use &lt;code&gt;GROUP BY date(d)&lt;/code&gt;.
+That is, our &lt;code&gt;datetime&lt;/code&gt; is turned into a &lt;code&gt;date&lt;/code&gt;, the time component is cut off.
+Two values with the same date, but different times, are considered identical and would land on the same pile.
+Different &lt;code&gt;id&lt;/code&gt; values or different metric values &lt;code&gt;m&lt;/code&gt; are also not used to select different piles.&lt;/p&gt;
+&lt;p&gt;What we do is &lt;code&gt;GROUP BY id, date(d)&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Group by day&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;daily_groups&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    select id
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , date(d) as d
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , count(m) as cnt
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , sum(m) as total
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , sum(m)/count(m) as av 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;      from data 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    group by id, date(d)
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    order by id, d
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;id: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;2d&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; date: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;  -  cnt: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;cnt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;6d&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; sum: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;total&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; average: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;av&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So two measurements from the same sensor-id and taken on the same date are put onto the same pile.&lt;/p&gt;
+&lt;p&gt;MySQL offers us a number of functions to measure the pile: &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/aggregate-functions.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Aggregate Functions&lt;/a&gt;
+
+.
+We can &lt;code&gt;COUNT()&lt;/code&gt; the number of rows, we can &lt;code&gt;SUM()&lt;/code&gt; them up, we can ask for their &lt;code&gt;AVG()&lt;/code&gt;, &lt;code&gt;MIN()&lt;/code&gt; or &lt;code&gt;MAX()&lt;/code&gt;.
+But we can also ask for the values themselves as a comma separated list, using &lt;code&gt;GROUP_CONCAT()&lt;/code&gt;.
+We can also ask for the values to be turned into JSON using &lt;code&gt;JSON_ARRAYAGG()&lt;/code&gt; or &lt;code&gt;JSON_OBJECTAGG()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In our example above, we ask for the sum and the count and calculate the average ourselves.
+The output looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./rolling-window.py daily-groups &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; head -5
+&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01  -  cnt:     80 sum: 418888 average: 5236.1000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-02  -  cnt:     92 sum: 419129 average: 4555.7500
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-03  -  cnt:     94 sum: 417583 average: 4442.3723
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-04  -  cnt:     94 sum: 422754 average: 4497.3830
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-05  -  cnt:    101 sum: 515639 average: 5105.3366
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./rolling-window.py daily-groups &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; head -369 &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; tail -5
+&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-30  -  cnt:     95 sum: 513361 average: 5403.8000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31  -  cnt:     94 sum: 480321 average: 5109.7979
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-01  -  cnt:     86 sum: 415058 average: 4826.2558
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-02  -  cnt:     93 sum: 443509 average: 4768.9140
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-03  -  cnt:     84 sum: 453897 average: 5403.5357
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Since we aggregate and order by id first, we get all values from sensor 0 first, for an entire year.
+Then the values for sensor id 1 follow, starting again at the beginning of the year.
+Each row of output has values for one day, because we aggregated that way.&lt;/p&gt;
+&lt;p&gt;We can see how for each of the 10 sensors, approximately 90 values per day exist, but the actual value varies.
+We can also see that the average is around 5000, but again, it varies each day.&lt;/p&gt;
+&lt;h1 id=&#34;daily-partitions&#34;&gt;
+    &lt;a href=&#34;#daily-partitions&#34;&gt;
+	Daily Partitions
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Window functions work just like aggregates, if we ask for that with a PARTITION BY clause.
+But they will return all rows instead of making piles.
+So when we define &lt;code&gt;WINDOW w AS ( partition by id, date(d) order by id, d)&lt;/code&gt;, we will get our sensors by sensor and by date.
+Each now sensor id, and each new date will restart &amp;ldquo;data collection&amp;rdquo;, that is, our sums or counts will be reset.&lt;/p&gt;
+&lt;p&gt;Our code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Partition by day&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;daily_partitions&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    select id
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , d
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , count(m) over w as cnt
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , sum(m) over w as total
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , sum(m) over w/count(m) over w as av 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;      from data
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  window w as (
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    partition by id, date(d)
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    order by id, d)
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;id: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;2d&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; date: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;  -  cnt: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;cnt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;6d&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; sum: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;total&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; average: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;av&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can check the sums and counts, and see them be restarted:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./rolling-window.py daily-partitions &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; less
+&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 00:13:43  -  cnt:      1 sum: 6401 average: 6401.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 00:14:25  -  cnt:      2 sum: 15746 average: 7873.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 00:15:33  -  cnt:      3 sum: 19656 average: 6552.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 23:09:13  -  cnt:     79 sum: 411728 average: 5211.7468
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 23:27:16  -  cnt:     80 sum: 418888 average: 5236.1000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-02 00:14:48  -  cnt:      1 sum: 5834 average: 5834.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-02 00:15:21  -  cnt:      2 sum: 10970 average: 5485.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31 23:01:21  -  cnt:     92 sum: 475441 average: 5167.8370
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31 23:14:32  -  cnt:     93 sum: 475494 average: 5112.8387
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31 23:25:47  -  cnt:     94 sum: 480321 average: 5109.7979
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-01 00:24:46  -  cnt:      1 sum: 7079 average: 7079.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-01 00:32:22  -  cnt:      2 sum: 7989 average: 3994.5000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-01 01:01:40  -  cnt:      3 sum: 14551 average: 4850.3333
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can see how each time the day changes or the id changes the sum and count values start over.
+Initially our count is 1, the sum is 6401 and the average is larger than 5000.
+As we proceed through the day, we can see how the average converges against that expected value.&lt;/p&gt;
+&lt;p&gt;After &lt;code&gt;2020-01-01 23:27:16&lt;/code&gt; at a count of &lt;code&gt;80&lt;/code&gt; the new day starts and the counters reset.&lt;/p&gt;
+&lt;p&gt;The same happens at the end of the year, at &lt;code&gt;2020-01-01 23:27:16&lt;/code&gt; when we start over at the first of January, but with id=1.&lt;/p&gt;
+&lt;h1 id=&#34;moving-average&#34;&gt;
+    &lt;a href=&#34;#moving-average&#34;&gt;
+	Moving average
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Instead of partitioning the data set by date boundaries we can also define a moving window instead.
+This window is based on either values, or on date values.
+In our case, we want the latter: for each metric date &lt;code&gt;d&lt;/code&gt;, we want to do our math on the preceding 24 hours.&lt;/p&gt;
+&lt;p&gt;In code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Sliding window query - 24h&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;daily_window&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;    select id
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , d
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , count(m) over w as cnt
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , sum(m) over w as total
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;         , sum(m) over w/count(m) over w as av 
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;      from data
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  window w as (order by d range between interval 1 day preceding and current row)
+&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;  &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;id: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;2d&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; date: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;  -  cnt: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;cnt&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;6d&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; sum: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;total&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt; average: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;av&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The Window clause is &lt;code&gt;WINDOW w AS (order by d range between interval 1 day preceding and current row)&lt;/code&gt;.
+As we can see, the &lt;code&gt;id&lt;/code&gt; is out of the picture here:
+We cannot nest window definitions, and that means in this example we count and sum over the previous 24h of &lt;strong&gt;all&lt;/strong&gt; sensors, not sensors with the same id as ours.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;id:  6 date: 2020-01-01 00:03:44  -  cnt:      1 sum: 3420 average: 3420.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id: 10 date: 2020-01-01 00:07:50  -  cnt:      2 sum: 5359 average: 2679.5000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  5 date: 2020-01-01 00:08:35  -  cnt:      3 sum: 12441 average: 4147.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-04 20:40:46  -  cnt:    998 sum: 4842406 average: 4852.1102
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  7 date: 2020-01-04 20:41:49  -  cnt:    998 sum: 4842673 average: 4852.3778
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  8 date: 2020-01-04 20:43:00  -  cnt:    997 sum: 4833426 average: 4847.9699
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  1 date: 2020-01-04 20:43:05  -  cnt:    998 sum: 4837433 average: 4847.1273
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  7 date: 2020-12-31 23:54:52  -  cnt:   1003 sum: 5089623 average: 5074.3998
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  8 date: 2020-12-31 23:56:02  -  cnt:   1004 sum: 5092441 average: 5072.1524
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  8 date: 2020-12-31 23:59:56  -  cnt:   1000 sum: 5059683 average: 5059.6830````
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;From the changing &lt;code&gt;id&lt;/code&gt; values we can see that all sensors are considered.
+The count also shows that in the middle of the field around 1000 values are considered - the amount of values in one 24h range.&lt;/p&gt;
+&lt;p&gt;An expression such as &lt;code&gt;order by id, d range between interval 1 day preceding and current row&lt;/code&gt; is not valid: we get&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;MySQLdb._exceptions.OperationalError: (3587, &amp;#34;Window &amp;#39;w&amp;#39; with RANGE N PRECEDING/FOLLOWING frame requires exactly one ORDER BY expression, of numeric or temporal type&amp;#34;)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We would have to ask for values from one sensor, specifically:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;over&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cnt&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;over&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;over&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;m&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;over&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;av&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;window&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;order&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;between&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;interval&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;day&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;preceding&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;current&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and do that for each successive constant &lt;code&gt;id&lt;/code&gt; value.
+That is not fast nor elegant.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 00:13:43  -  cnt:      1 sum: 6401 average: 6401.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 00:14:25  -  cnt:      2 sum: 15746 average: 7873.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-01-01 00:15:33  -  cnt:      3 sum: 19656 average: 6552.0000
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-04-01 02:48:29  -  cnt:     99 sum: 463956 average: 4686.4242
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-04-01 03:07:43  -  cnt:    100 sum: 472922 average: 4729.2200
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-04-01 03:15:23  -  cnt:    101 sum: 478127 average: 4733.9307
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31 23:01:21  -  cnt:     97 sum: 500889 average: 5163.8041
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31 23:14:32  -  cnt:     96 sum: 487287 average: 5075.9063
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;id:  0 date: 2020-12-31 23:25:47  -  cnt:     97 sum: 492114 average: 5073.3402
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We would have to wrap all that into a dependent subquery to loop.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Parallel Replication</title>
       <link>https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html</link>
@@ -3862,123 +4116,6 @@ cp fio.cfg doit &lt;span class=&#34;nv&#34;&gt;$drive&lt;/span&gt;
 &lt;p&gt;To drive Ceph to 20.000 IOPS, you will have to run 16 threads at a queue depth of 2 (or 32 threads at queue depth 1) consistently, feeding all the driver queues in parallel. This is not a kind of workload a transactional system can easily produce.&lt;/p&gt;
 &lt;p&gt;To drive Datera to 20.000 IOPS, two or three threads running unlimited will suffice. This is still hard on a transactional system, but a doable challenge.&lt;/p&gt;
 &lt;p&gt;While the recommendation is clear (&amp;ldquo;Use Datera over Ceph for transactional distributed storage&amp;rdquo;), it is interesting to see how Ceph has matured and does no longer completely suck at doing small transactional workloads.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Database as a Queue</title>
-      <link>https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html</link>
-      <pubDate>Thu, 28 Jan 2021 08:02:20 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html</guid>
-      <description>&lt;p&gt;The DBA experience at work suggests that every single schema at some point in its lifecycle holds a queue table. These are tables in which some processes (the “producers”) put rows, which a swarm of other processes (the “consumers”) lock and consume.&lt;/p&gt;
-&lt;p&gt;A variation on that theme is the state machine, in which jobs are placed by producers. Consumers do not immediately delete them, but update them a few times to indicate processing progress, before the rows are ultimately being deleted.&lt;/p&gt;
-&lt;p&gt;Another variation is using the search and sort capabilities of the database to fetch jobs from the queue out of order (“queue with lookahead and selective de-queueing”), while still maintaining the exactly-once semantics.&lt;/p&gt;
-&lt;h2 id=&#34;using-a-database-as-a-queue-can-be-ok-ish&#34;&gt;
-    &lt;a href=&#34;#using-a-database-as-a-queue-can-be-ok-ish&#34;&gt;
-	Using a database as a queue can be ok-ish
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Using a database as a queue is not wrong, up to a point:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;You get ACID semantics. That means your updates are atomic and isolated, transactional, and they are durable, persisted to disk. This makes it possible to build queues with “exactly once” execution semantics, which is a thing developers like a lot.&lt;/li&gt;
-&lt;li&gt;You already have a database handle, and you already understand your ORM, so you do not have to pile on more dependencies, and you do not need to learn additional technologies.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Now, once you pass “the point” in that “up to a point” phrase, things get nasty:&lt;/p&gt;
-&lt;p&gt;“Exactly once”  semantics are really expensive to implement: They require that each insert, delete or update is associated with a transaction, which in turn is associated with a disk write.&lt;/p&gt;
-&lt;p&gt;You get to enqueue, dequeue and state change your things exactly as quickly as a single server can flash its disk lights, and in the next step, as quickly as your replication hierarchy can pass on things downstream.&lt;/p&gt;
-&lt;p&gt;On bare-metal, that costs you a bit, but because bare-metal gives you awesome amounts of capacity with very little jitter for very reasonable amounts of money, we can bear quite a bit of this work.&lt;/p&gt;
-&lt;p&gt;In the cloud, using a database-as-a-queue is approximately equivalent to pouring petrol on money and throwing a match. It is the wrong technology for that kind of workload in that environment from the get-go.&lt;/p&gt;
-&lt;h2 id=&#34;not-using-databases-as-queues&#34;&gt;
-    &lt;a href=&#34;#not-using-databases-as-queues&#34;&gt;
-	Not using databases as queues
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;replayability&#34;&gt;
-    &lt;a href=&#34;#replayability&#34;&gt;
-	Replayability
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;One specific property of the above setup that is expensive, and hard to reproduce outside a transactional database is the exactly-once thing. “At most once (maybe never)” or “at least once (maybe multiple times)” are alternative queue semantics that are much cheaper to implement, because they allow you to get rid of disk writes, and also of many disk seeks.&lt;/p&gt;
-&lt;p&gt;Kafka for example gives you “at least once”: You get to consume a stream, and you can jump backwards and re-consume what you already saw, in order, no searching. The jump backwards is possible for a small window of a few hours or a day, or whatever other deal you can make with the Kafka team.&lt;/p&gt;
-&lt;p&gt;Reading the same item multiple times is not a problem if the jobs in the queue are idempotent, that is, replayable.&lt;/p&gt;
-&lt;p&gt;Not replayable are relative updates: “set x = x + 1”, “add an order to the table, give me the ordernumber”.&lt;/p&gt;
-&lt;p&gt;Replayable are absolute updates: “set x = 7” (you read 6, did the math and enqueued 7), “add order 17372 to order table” (you made an order number beforehand and push the order into the queue with an already fixed identity).&lt;/p&gt;
-&lt;p&gt;Basically, to make things idempotent, you need to give them either fixed identities so that you can remember if you saw things before, or you need to make the writes absolute instead of incremental, or both.&lt;/p&gt;
-&lt;p&gt;So if you find a way to group your jobs into transactions, and make all individual operations in your transaction replayable, you could push the entire stream through Kafka, and it would be cheaper. Much cheaper, in fact, in a cloud environment.&lt;/p&gt;
-&lt;h3 id=&#34;re-queuing-and-sorting&#34;&gt;
-    &lt;a href=&#34;#re-queuing-and-sorting&#34;&gt;
-	Re-queuing and sorting
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;If you use a queue table with selecting and sorting (“queue with lookahead and selective dequeueing” from above), you can look into consuming a block of things from your input queue and splitting them into multiple streams or different topics, or maybe sort them and re-queue them.&lt;/p&gt;
-&lt;p&gt;So basically, instead of pushing things into a single queue and then grabbing items out of order, you can consume the input in blocks, perform your intermediate selection and sorting process and them push to multiple outputs.&lt;/p&gt;
-&lt;p&gt;Again, the result can ride on Kafka instead of MySQL and would be more cloud-compatible.&lt;/p&gt;
-&lt;h3 id=&#34;re-queuing-updates&#34;&gt;
-    &lt;a href=&#34;#re-queuing-updates&#34;&gt;
-	Re-queuing updates
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;For the state machine use-case you would have to solve writing updates to a base record, before it is finally consumed in total.
-Your state machine would be eating one item from the input, perform the associated action, and then push the updated record back into the same, or a different queue.&lt;/p&gt;
-&lt;h2 id=&#34;what-if-i-dont&#34;&gt;
-    &lt;a href=&#34;#what-if-i-dont&#34;&gt;
-	What if I don’t?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;h3 id=&#34;undo-log-woes&#34;&gt;
-    &lt;a href=&#34;#undo-log-woes&#34;&gt;
-	Undo-Log woes
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;In &lt;a href=&#34;https://blog.koehntopp.info/2019/11/18/a-blast-from-the-past.html&#34;&gt;A Blast From The Past&lt;/a&gt;
-
- we see what happens to MySQL with long-running transactions, and in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;MySQL Transactions&lt;/a&gt;
-
- we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long-running.&lt;/p&gt;
-&lt;p&gt;Note that any database will at some point in time have long-running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.&lt;/p&gt;
-&lt;p&gt;So queue-as-a-database will eventually explosively grow the undo-log, or individual tables, and disk space from these structures is hard to reclaim by the operating system. You will run at some point in time into disk space problems from churn, even if the absolute amount of data is small.
-Binlog woes and Replication Delay&lt;/p&gt;
-&lt;p&gt;In a replicated MySQL changes to any table (also queue tables) are written to the binlog, which is being kept for a few days for point in time recovery and for replication. This uses disk space.&lt;/p&gt;
-&lt;p&gt;Note that any write is binlogged, even deletes. So when you delete data, you have less disk space (because deletes are binlogged), until after a few days the binlog is purged.&lt;/p&gt;
-&lt;p&gt;The binlog is being consumed by replicas as close to realtime as possible. But if you write too much, again, it is possible to overwhelm the replicas, and you will experience replication delay.&lt;/p&gt;
-&lt;p&gt;If your producers write to the replication primary, but your consumers read from the replicas, replication delay will add additional latency. You will be unhappy (and see Kafka, above).&lt;/p&gt;
-&lt;h2 id=&#34;this-is-per-instance&#34;&gt;
-    &lt;a href=&#34;#this-is-per-instance&#34;&gt;
-	This is per-instance
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;It is also important to remember that this is per-instance, not per-table, and also not per-schema. The purge thread looks at transactions, not at schemas or tables. In a transaction, a number of changes to the instance can happen, atomically.&lt;/p&gt;
-&lt;p&gt;So imagine a shared mysqld process that has 1000 customers with different schemas, all of them unrelated, and one of them opens a transaction and keep it open for four hours. The purge thread will stop for all the customers, because in theory it is possible to have a single transaction that spans all 1000 customer’s schemas.&lt;/p&gt;
-&lt;p&gt;The undo-log will grow out of bounds, and all 1000 customers will experience slow queries.&lt;/p&gt;
-&lt;p&gt;This is how you denial-of-service a shared MySQL with no effort or expense at all.&lt;/p&gt;
-&lt;h2 id=&#34;what-should-i-do-and-what-is-the-limit&#34;&gt;
-    &lt;a href=&#34;#what-should-i-do-and-what-is-the-limit&#34;&gt;
-	What should I do? And what is the limit?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;As a developer, you want to write an application and get it going without piling on a lot of dependencies or learning too many technologies, or dealing with limitations such as unreliable or repeated queue deliveries.&lt;/p&gt;
-&lt;p&gt;MySQL can deliver such things, up to a point.&lt;/p&gt;
-&lt;p&gt;That is okay for a prototype. If you implement queues, state-machines or other rapidly writing structures in a MySQL, you should monitor transaction volume and prepare an escape strategy early, and implement that in time. Tech debt is okay, if it is managed properly.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;As a benchmark, and for comparison: At this point in time, one specific application at work processes around 7-10 million auto-increment values per replication hierarchy per hour, with several updates per row. That is where we run into operational toil due to pushing the envelope.
-&lt;ul&gt;
-&lt;li&gt;That is around 3.000 new rows per second, and a multiple of that with updates.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;An unconstrained bare-metal SSD can do around 20.000 commits per second in hardware.
-&lt;ul&gt;
-&lt;li&gt;That is why we run into operational toil with 3.000 new rows (with multiple updates per rows) per second with said application.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Our replication assumes around 2.000 transactions/s as minimum capability.
-&lt;ul&gt;
-&lt;li&gt;We can batch up some things and apply them in parallel, if the transaction structure allows that. That is why replication does not lag, even if the primary does more than 2.000 txn/s. How much parallel replication can help here is completely dependent on the ordering constraints imposed by the transactions themselves.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;In the cloud, the limits are likely to be much lower, depending on instance and volume sizes chosen, and going there is a solid cost item.&lt;/p&gt;
-&lt;p&gt;You will need to look at things with a much sharper lens.&lt;/p&gt;
 </description>
     </item>
     
