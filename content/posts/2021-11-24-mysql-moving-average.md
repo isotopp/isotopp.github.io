@@ -154,7 +154,7 @@ We can also see that the average is around 5000, but again, it varies each day.
 Window functions work just like aggregates, if we ask for that with a PARTITION BY clause.
 But they will return all rows instead of making piles.
 So when we define `WINDOW w AS ( partition by id, date(d) order by id, d)`, we will get our sensors by sensor and by date.
-Each now sensor id, and each new date will restart "data collection", that is, our sums or counts will be reset.
+Each new sensor id, and each new date will restart "data collection", that is, our sums or counts will be reset.
 
 Our code:
 
