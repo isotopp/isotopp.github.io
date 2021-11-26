@@ -140,7 +140,7 @@ For example, I can simplify the access rules for student contacts to allow conta
 
 all these RBAC-Rules become
 
-- "Student A can make contact with Student B, if `A.schule_id == B.schule_id`"
+- "Student A can make contact with Student B, if `A.school_id == B.school_id`"
 
 so if student A and B have the same value in the attribute `school_id`.
 
