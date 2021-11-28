@@ -1,12 +1,14 @@
 ---
 author-id: isotopp
 title: "A01:2021 - Broken Access Control (en)"
-date: 2021-11-23T22:34:33+01:00
+date: 2021-11-23T23:34:33+01:00
 feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_en
 - security
 ---
+
+Translation by Lenz Grimmer, German version [here]({{<ref "/content/posts/2021-11-16-a01-2021-broken-access-control.md" >}}).
 
 A 
 [twitter thread by Christian Basl](https://twitter.com/ChristianBasl/status/1459851276817158151)
