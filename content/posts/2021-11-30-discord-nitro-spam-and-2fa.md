@@ -1,6 +1,6 @@
 ---
 author-id: isotopp
-title: "Arista Type 7 Passwords"
+title: "Discord Nitro Spam and 2FA"
 date: 2021-11-30T08:29:00+01:00
 feature-img: assets/img/background/schloss.jpg
 tags:
