@@ -11,38 +11,87 @@ tags:
 title: Someting Kubernetes Containers
 ---
 
-002
-Title was not set when I applied for the talk, something about continers
-Now Containers at Booking
-Not there yet, it is a thing we are still working on
+Talk given at the Netways Open Source Data Center Conference 2017.
+There is a video of the talk [on Youtube](https://www.youtube.com/watch?v=ggiqbN3xAjs).
 
-003
-What we do, selling rooms, getting commission from the Hotel
-A very simple thing, it seems, but very different depending on where in the world you are
-Very hard to explain what a hotel offers, lots of reviews and images
-When we fail, somebody is sleeping under a bridge
-That is why we need to be boring.
 
-006
-Where we are:
-Automated Bare Metal
-Colocation Customer, multiple rooms in muiltiple data centers
-We have a set of Python Django Apps, written in House, that automatically provision stuff.
-ServerDB manages hardware, from managing procurement and vendor data ingest, to burnin, bios updates, inventorization of the HW, provisioning the hardware
-As a developer you ask ServerDB for servers in a location of a given type,
-ServerDB will flash these things up to spec, provision that for you, partition table and base OS, tell puppet what to do
-Puppet will install packages, hand over to class specific tooling
-Database tooling will create servers with appropriate tooling, 
-200 databases with nobody touching any piece of hardware, fully inserted into replication chains
+![](/uploads/2017/06/something/containers-002.jpg)
 
-Disadvantages:
-slow, because HW provisioning is always slow
-Hardware is often too large or too small for the task, the hardware we use is at the low end of the available spec
+The title of the talk was not final, when I submitted the proposal, so I just set it to "Something Mumble Containers Kubernetes".
+It came out as "Containers at Booking" in the end.
 
-009
-Current hardware is very powerful,
-one chassis = 10 U, around 1000 cores, 3 TB of memory, 320 GBit/s network, can consume up to 6400W.
-Racks cannot realistically hold 4 of these things
+This is kind of an interim report about how compute is changing, the factors and pressures at work there, and how that affects us.
+This is not a finished journey, yet.
+Things are still changing at Booking.
+
+# What we do
+
+![](/uploads/2017/06/something/containers-003.jpg)
+
+What Booking does was selling rooms, and getting commission from the hotel for that.
+That used to be a very simple thing, it seems, but it was already complicated enough, because the business is very different depending on where in the world you are.
+
+It is for example rather hard to explain what to expect from a hotel, as the product is not very standardized except when in the USA.
+Most of the hotels in the world are independently owned and operated, and not part of a hotel chain.
+So they are all very different in interior, room arrangement and facilities and many other details.
+Many reviews and images are necessary to set expectations properly with customers, and to build trust.
+
+Running the hotel website from an Infrastructure point of view means we aim to be boring:
+When we fail, or lose bookings, somebody is sleeping under a bridge and we have ruined a holiday.
+While adventure in a vacation is good, that is only when it is planned, and when it ends well.
+So being boringly reliable is what we aim for.
+
+# Where we are
+
+![](/uploads/2017/06/something/containers-006.jpg)
+
+At this point in time production is completely on bare metal.
+We are a colocation customer, we do not have our own data center buildings, but instead make use of multiple rooms in multiple locations.
+In these we have a few ten thousand machines.
+These are enterprise class blades from HP and Dell, mostly, plus a few pieces of special purpose hardware.
+
+To drive this, we have automated the handling and provisioning of the machinery, using several Python Django applications that have been developed in-house.
+They automatically provision stuff:
+
+- ServerDB managed hardware, from handling procurement and vendor dat ingest, to burn-in, BIOS updates, inventorization and hardware provisioning.
+- Nemo does the same for networking equipment and provisioning.
+
+As a developer, you ask ServerDB for servers of a given type in a location.
+ServerDB will flash these things up to spec, provision them for you.
+It will provide a partition table, install a base operating system and tell Puppet what to do.
+
+Puppet will install packages and configuration templates, and then hand over to class specific tooling.
+
+In the case of databases, for example, this is another piece of class specific tooling, B.admin ("badmin").
+This will then provide database packages, replication configuration, data and will ultimately arrange the databases in a replication hierarchy and make them discoverable for clients.
+
+It is possible and totally normal to get 200 databases ready to run in a replication chain, discoverable by applications, without a human touching anything in the course of the provisioning.
+
+## Disadvantages
+
+Despite this being fully automatic and comfortable, it has a number of disadvantages.
+For example, it is slow, because hardware provisioning is slow. Rebooting a Dell or HP Blade takes 300 seconds, and only then the OS install can begin. A full provisioning run easily takes around 20-30 minutes.
+
+[![](/uploads/2017/06/something-boots.png)](https://www.youtube.com/watch?v=R_qR9_fVIbQ)
+*Not a blade, but an HP 380DL booting, but not much of a difference in timing or handling.*
+
+Bare-metal hardware also is often too large or too small for the task:
+In our case the hardware we use is at the low end of the available specification, but in many cases already is too large for a single application to fully utilize.
+
+# Current hardware is too powerful
+
+![](/uploads/2017/06/something/containers-009.jpg)
+
+A current bladecenter chassis (HP C7000, Dell M1000e) uses 10 height units of rack space.
+It has room for 16 blades.
+When used with the large kind of CPU (2x Intel 6132 per blade), one chassis alone provides around 900 threads, 3 TB of memory and 320 GBit/s of aggregated network bandwidth, and will consume up to 6400 Watts of power under full load.
+
+While the rack theoretically has room for 4 of these things, it cannot realistically power that much compute under full load.
+Most data centers provide around 7000 Watt per rack, so with average load two of these blade centers can be put into a single rack.
+
+# Pressures on the data center environment
+
+![](/uploads/2017/06/something/containers-010.jpg)
 
 010
 We need to handle more developers,
