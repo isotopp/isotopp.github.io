@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 title: "MySQL: Moving Average"
 date: 2021-11-24T22:28:27+01:00
 feature-img: assets/img/background/mysql.jpg

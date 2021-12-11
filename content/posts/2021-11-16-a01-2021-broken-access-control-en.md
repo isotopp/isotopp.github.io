@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 title: "A01:2021 - Broken Access Control (en)"
 date: 2021-11-23T23:34:33+01:00
 feature-img: assets/img/background/schloss.jpg

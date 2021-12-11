@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 title: "MySQL: Parallel Replication"
 date: 2021-11-08T13:28:27+01:00
 feature-img: assets/img/background/mysql.jpg

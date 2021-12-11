@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2010-02-22T19:00:00Z"
 feature-img: assets/img/background/baellebad.jpg
 published: true

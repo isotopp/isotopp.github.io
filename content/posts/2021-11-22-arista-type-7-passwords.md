@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 title: "Arista Type 7 Passwords"
 date: 2021-11-21T17:29:00+01:00
 feature-img: assets/img/background/schloss.jpg

@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2020-06-04T09:00:01Z"
 feature-img: assets/img/background/mysql.jpg
 tags:

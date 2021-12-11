@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2008-10-30T12:24:53Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true

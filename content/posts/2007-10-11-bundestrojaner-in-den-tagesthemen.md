@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2007-10-11T11:40:31Z"
 feature-img: assets/img/background/schloss.jpg
 published: true

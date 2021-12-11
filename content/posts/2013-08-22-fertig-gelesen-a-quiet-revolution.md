@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2013-08-22T07:15:07Z"
 published: true
 tags:

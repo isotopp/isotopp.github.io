@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2020-05-25T21:27:26Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:

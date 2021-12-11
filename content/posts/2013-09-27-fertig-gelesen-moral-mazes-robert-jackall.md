@@ -1,5 +1,5 @@
 ---
-author-id: isotopp
+author: isotopp
 date: "2013-09-27T15:05:54Z"
 feature-img: assets/img/background/book.jpg
 published: true
