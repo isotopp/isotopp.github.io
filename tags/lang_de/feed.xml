@@ -6,7 +6,166 @@
     <description>Recent content in lang_de on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Dec 2021 21:21:25 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_de/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 14 Dec 2021 20:22:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_de/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Es funktioniert wie spezifiziert</title>
+      <link>https://blog.koehntopp.info/2021/12/14/funktioniert-wie-spezifiziert.html</link>
+      <pubDate>Tue, 14 Dec 2021 20:32:00 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/12/14/funktioniert-wie-spezifiziert.html</guid>
+      <description>&lt;p&gt;Dieser Artikel basiert auf
+&lt;a href=&#34;https://twitter.com/isotopp/status/1470668771962638339&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;einem Twitter-Thread&lt;/a&gt;
+
+
+und in deutscher Sprache als
+&lt;a href=&#34;https://www.heise.de/meinung/Kommentar-zu-log4j-Es-funktioniert-wie-spezifiziert-6294476.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Heise Kommentar&lt;/a&gt;
+
+
+erschienen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Über den Java-Slogan &amp;ldquo;Write Once, Run Everywhere&amp;rdquo; wurden schon viele Witze gemacht.
+Den log4j-Exploit behandeln viele nun wie einen Bug – das ist er nicht.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Eine kritische Lücke in der Java-Bibliothek Log4j beherrscht gerade die Schlagzeilen.
+Die IT-Welt ruft &amp;ldquo;Warnstufe Rot&amp;rdquo; aus – weil offenbar der log4j-Code JNDI-Variablenexpansion vornehmen kann.
+Doch was ist JNDI?
+Jindi al Dap ist der Name eines alten arabischen Philosophen und Mathematik-Pioniers, der für Sun/Oracle gearbeitet hat, um &lt;a href=&#34;https://docs.oracle.com/javase/tutorial/jndi/overview/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ein System von Directory Lookups in Java&lt;/a&gt;
+
+ zu entwickeln.
+Dieses System lädt irgendwie Code aus dem Internet nach.
+Aber selbst, wenn man länger auf das Systemdiagramm starrt, erkennt man nicht unbedingt sofort, an welcher Stelle sich der Java CLASSPATH so erweitert, dass er das gesamte Internet umfasst:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/12/spezifiziert1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;Systemdiagramm des JNDI Subsystems von Java, aus der &lt;a href=&#34;https://docs.oracle.com/javase/tutorial/jndi/overview/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dokumentation&lt;/a&gt;
+
+.&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;nichts-ist-jemals-simpel&#34;&gt;
+    &lt;a href=&#34;#nichts-ist-jemals-simpel&#34;&gt;
+	Nichts ist jemals simpel.
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das ist so, weil in Java nichts jemals simpel ist.
+Java Code ist unstrukturierter trockener Staub von Codefragmenten in Klassendateien, die inert in keiner Weise miteinander interagieren.
+Erst mit den passenden Factories, Delegates, Generators und ClassLoaders werden sie instanziiert und zusammengesetzt.
+Der entstehende Haufen an Querverweisen führt dann nur zufällig irgendwann einmal tatsächlich wirksamen Code aus. Man könnte jetzt auf die Idee kommen, eine IDE mit integrierter syntaktischer Codesuche zu verwenden, um diesen Quelltexthaufen in Form zu bringen und zu verstehen.
+Aber das ist vergebens:
+Auch mit der gesamten Codebasis und einem Index darauf kann man nicht vorhersagen, was eine gegebene Java Codebase tun wird, wenn man sie startet.&lt;/p&gt;
+&lt;p&gt;Es braucht auch noch Konfigurationsdateien.
+Diese sind ein weiterer Haufen &amp;ndash; Properties-Dateien &amp;ndash; in einem vorsintflutlichen Vorläufer von YAML geschrieben: XML.
+Oder jedenfalls, das ist es, was wir denken sollen:
+Mit den Properties und der Codebasis können wir endlich versuchen zu verstehen, was Java tut.
+Und das wäre auch beinahe so, aber JNDI ist genau angetreten, dieses Problem zu beheben:
+Directory Lookups!
+Statt also die Anwendung und ihre Konfiguration zu paketieren, und dann die Pakete in Produktion zu installieren, können wir nun mit JNDI die Konfiguration vom Netz lesen.
+Das heißt, die eigentlichen Konfigurationsdateien, die uns sagen, was die Anwendung tut sind&amp;hellip; nicht mehr da.
+Fortschritt!&lt;/p&gt;
+&lt;p&gt;Das stellt sicher, dass uns niemand mehr hacken kann, weil niemand den Code mehr versteht:
+Wichtige, zum Verständnis der Codebasis notwendige Informationen sind versteckt in einem Verzeichnisdienst, und wir wissen nicht mal welcher.
+Aber wir können das noch einen Schritt weiterspielen:
+Der Code, der den Directory Lookup vornimmt, ist auch nicht da, nur ein Bootstrap:
+&lt;a href=&#34;https://docs.oracle.com/javase/tutorial/jndi/overview/event&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Event and Service Provider Packages&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/12/spezifiziert2.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Laut &lt;a href=&#34;https://docs.oracle.com/javase/tutorial/jndi/overview/event&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dokumentation&lt;/a&gt;
+
+ können wir Objekte aus der Nameing API bekommen und dort hinein serialisieren. Wir bekommen also Printer-Objekte mit Printer-Methoden aus dieser API, wenn wir danach fragen.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dank JDNI SPI können wir also Java Classfiles von einem LDAP-Server ausliefern lassen, die angeblich ein Printer-Object generieren, wenn wir nach einem Printer fragen &amp;ndash; dann aber stattdessen Doom installieren.
+Oder einen Kryptominer oder Verschlüsselungstrojaner.
+So geht Enterprise Security!&lt;/p&gt;
+&lt;h2 id=&#34;write-once-run-everywhere&#34;&gt;
+    &lt;a href=&#34;#write-once-run-everywhere&#34;&gt;
+	Write Once, Run Everywhere!
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Der Java-Slogan ist ja &amp;ldquo;Write Once, Run Everywhere&amp;rdquo;.
+Wir haben da viele Witze drüber gemacht, weil Java so oft gecrashed ist &amp;ndash; die meisten Java-Anwendungen liefern inzwischen ja die gesamte Ausführungsumgebung einschließlich der JRE mit, damit überhaupt etwas funktioniert.
+Jetzt funktioniert endlich mal alles, und die Leute sind wieder unglücklich.
+Aber im Ernst: Viele behandeln den log4j-Exploit wie einen Bug, einen Programmierfehler, eine Verletzung einer Spezifikation.
+Genau das ist jedoch nicht der Fall:&lt;/p&gt;
+&lt;p&gt;Es funktioniert &amp;ndash; wortwörtlich &amp;ndash; endlich einmal alles wie spezifiziert und dokumentiert:
+All die Modularität und dynamische Erweiterbarkeit von Java hat ganz wunderbar und genau wie geplant zusammengearbeitet und funktioniert.
+Darauf haben wir dekadenlang hingearbeitet!&lt;/p&gt;
+&lt;h2 id=&#34;notabug-wontfix&#34;&gt;
+    &lt;a href=&#34;#notabug-wontfix&#34;&gt;
+	&amp;ldquo;NOTABUG, WONTFIX&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Und das ist das eigentliche Problem hier.
+Viele rufen jetzt nach &amp;ldquo;Mehr Kontrolle!&amp;rdquo;, &amp;ldquo;Mehr Review!&amp;rdquo;, &amp;ldquo;Mehr Funding!&amp;rdquo;, &amp;ldquo;Mehr Augen auf den Code!&amp;rdquo;.
+Was wirklich helfen würde wäre weniger Code, weniger Indirektion und Boilerplate, und einfach mehr&amp;hellip; Einfachheit.&lt;/p&gt;
+&lt;p&gt;Wieso brauche ich ein &lt;code&gt;LogAppenderFactorySingleton&lt;/code&gt;, das XML liest, um den Namen der Klasse zu bekommen, die es instanziieren muss, damit ich meine Logzeile da einwerfen kann, um sie asynchron an einen &lt;code&gt;LogStream&lt;/code&gt; anzuhängen?
+Das ist nicht einfach.
+Was ist einfach?
+JSON nach stderr drucken.
+Das ist einfach.
+Aber Firmen stellen seit etwa einer Dekade Leute ein, die nicht wissen, was stdout und stderr sind und das ist irgendwie okay, weil inzwischen ja sowieso alles ein Webservices ist&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/12/spezifiziert4.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Ein totales log4shell Nonmention von &lt;a href=&#34;https://twitter.com/apenwarr/status/1469183890749558784&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;apenwarr&lt;/a&gt;
+
+.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Softwareentwicklung ist viel moderner geworden:
+Wir haben Merge Requests mit Code Review, CI/CD-Pipelines, Infrastructure as Code und Immutable Infrastructure.
+Das nützt nur nix, wenn meine Java Logging Library &lt;a href=&#34;https://twitter.com/TheASF/status/1400875147163279374&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;auf dem Mars Code von Directory-Servern auf der Erde nachlädt&lt;/a&gt;
+
+ und so das &amp;ldquo;Remote&amp;rdquo; in RCE komplett neu definiert.
+Die Analyse von Dependencies hat nur dann Sinn, wenn die Liste dieser Abhängigkeiten endlich, und genau so immutable wie die Infrastruktur ist.&lt;/p&gt;
+&lt;p&gt;Java hatte einmal die notwendigen Kontrollknöpfe, mit denen wir erzwingen konnten, dass diese Liste von Abhängigkeiten endlich und unveränderlich ist.
+Wenn man auf diese Art von Lebensstil steht, gibt es etwas, das sich SM nennt: &lt;a href=&#34;https://docs.oracle.com/javase/tutorial/essential/environment/security.htmlOracle&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Oracle SM&lt;/a&gt;
+
+.
+SM bringt die notwendigen Verträge und die Disziplin, die eine Codebase braucht.
+Aber die meisten Anwender stehen nicht auf SM, und lehnen die Idee ab.
+Also wird die Funktionalität in Java 17 als deprecated (veraltet) gekennzeichnet und später entfernt werden (&lt;a href=&#34;https://openjdk.java.net/jeps/411&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;JEP 411: Deprecate the Security Manager for Removal&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/12/spezifiziert3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;h2 id=&#34;wie-ein-dreijähriger&#34;&gt;
+    &lt;a href=&#34;#wie-ein-dreij%c3%a4hriger&#34;&gt;
+	Wie ein Dreijähriger
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Auch JNDI hat SM abgelehnt und hat ein promiskuitives Interface, das Code irgendwoher lädt und ausführt.
+Man muss sich das wie einen Dreijährigen vorstellen, der sich jede Klasse in den Mund steckt, um herauszufinden wie sie schmeckt und ob sie sich ausführen lässt.
+Das ist am Ende genau die Spezifikation:
+Hier ist ein Object, deserialisiere es.
+In Java bedeutet das, dass der Code für die Klasse des Objektes irgendwo her kommen muss, deren Methoden dann ausgeführt werden.&lt;/p&gt;
+&lt;p&gt;Natürlich würde niemand das für eine gute Idee halten, wenn man es so formuliert.
+Aber andererseits hat es die Person, die das vor 8 Jahren implementiert hat, nicht gesehen, und auch die Hunderttausend, die log4j in ihre Codebasis importiert haben, sind nicht darüber gestolpert.
+Was sagt uns das über den Dependency-Management-Prozess von Organisationen, die Software entwickeln?
+Über das Verständnis der Codebase, der Abhängigkeiten, und der Prozesse, die Datenfluss und Releases planen?
+Ja, genau.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Wir verwenden eine modulare Architektur und agile Methoden, um die Entwicklungsgeschwindigkeit zu steigern.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;E = 1/2m*(v^2)&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Mehr Entwicklungsgeschwindigkeit macht größere Krater.&lt;/p&gt;
+&lt;h2 id=&#34;code-ist-nicht-dein-freund&#34;&gt;
+    &lt;a href=&#34;#code-ist-nicht-dein-freund&#34;&gt;
+	Code. Ist. Nicht. Dein. Freund.
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ganz besonders nicht dynamisch aus dem Internet nachgeladener Code.&lt;/p&gt;
+&lt;p&gt;Code. Ist. Nicht. Dein. Freund.&lt;/p&gt;
+&lt;p&gt;Ich weiß, es klingt komisch, wenn man Entwickler ist und den eigenen Lebensunterhalt damit bestreitet, dass man glaubt, man sei mit dem Code befreundet.&lt;/p&gt;
+&lt;p&gt;Aber so ist es.
+Weniger Code ist besserer Code.
+Am besten so wenig Code, dass man ihn zur Gänze und mit allen seinen Interaktionen verstehen kann.
+Und auch den Code, der notwendig ist, um den eigenen Code zu betreiben.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>A01:2021 - Broken Access Control</title>
       <link>https://blog.koehntopp.info/2021/11/16/a01-2021-broken-access-control.html</link>
@@ -2601,151 +2760,6 @@ Object Storages, LSM, &amp;ldquo;RocksDB&amp;rdquo; ist ca. 2014, um den Takt zu
 &lt;p&gt;Und Youtube. Youtube wird in der medialen Berichterstattung in Deutschland gerne einmal runtergemacht und als Halde voller Schrott und Propaganda dargestellt. Youtube ist die großartigste Selbstbedienung-Ausbildung, die es auf diesem Planeten gibt. Und mit der richtigen Voreinstellung im Kopf sortiert das Kind eventuell in die Timeline gespülten Schrott weitgehend selbstständig aus und hält sich selbst auf Spur.&lt;/p&gt;
 &lt;p&gt;Mit Neun ist das noch nicht perfekt, wie auch. Aber ich bin sehr beeindruckt von dem, was er so macht.&lt;/p&gt;
 &lt;p&gt;Wie dem auch sei: Mein Kind sitzt vor dem Computer. Auch, nicht nur. Das ist auch im wesentlichen gut so, und außerdem unvermeidlich. Also muß ich damit umgehen lernen, genau wie er.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Mailbox.org, Google, OAuth und Less Secure Applications</title>
-      <link>https://blog.koehntopp.info/2020/01/17/mailboxorg-google-oauth-und-less-secure-applications.html</link>
-      <pubDate>Fri, 17 Jan 2020 18:44:34 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2020/01/17/mailboxorg-google-oauth-und-less-secure-applications.html</guid>
-      <description>&lt;p&gt;Heise schreibt in
-&lt;a href=&#34;https://www.heise.de/ix/meldung/Mailbox-org-Google-sperrt-unsichere-Dritte-von-Kalender-aus-4640540.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mailbox.org: Google sperrt &amp;ldquo;unsichere&amp;rdquo; Dritte vom Kalender aus&lt;/a&gt;
-
-
-über Anwendungen von Dritten und den Zugriff auf Google Kalender, Google Mail und andere Dienste, die mit GSuite interagieren. Der Artikel wirft leider eine Reihe von Dingen durcheinander, was schade ist, weil er einen wichtigen Punkt machen will.&lt;/p&gt;
-&lt;h2 id=&#34;oauth2-vs-lsa&#34;&gt;
-    &lt;a href=&#34;#oauth2-vs-lsa&#34;&gt;
-	OAuth2 vs. LSA
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Im Artikel geht es um &lt;a href=&#34;https://en.wikipedia.org/wiki/OAuth&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OAuth2&lt;/a&gt;
-
-. OAuth2 ist kein neues Verfahren. Es handelt sich um einen Standard, bei dem ein Dienstleister Drittanwendungen den Zugriff auf Dienste erlaubt, indem er der Drittanwendung relativ automatisch ein Logintoken zuteilt, das&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;zeitlich begrenzt ist&lt;/li&gt;
-&lt;li&gt;die Identifikation der Anwendung und&lt;/li&gt;
-&lt;li&gt;des Anwenders erlaubt und&lt;/li&gt;
-&lt;li&gt;einen Scope (einen Satz eingeschränkte Zugriffsrechte) hat.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Um also auf den Google Kalender oder in Zukunft bald auch IMAP zugreifen zu können, muß eine Drittanwendung ein Token vorzeigen. Das Token, das etwa Busycal auf dem Mac verwendet, ist von dem Token verschieden, mit dem ACal+ auf Android auf meinen Google Kalender zugreift. Theoretisch könnte Busycal auch Vollzugriff auf den Kalender haben, während das ACal+ Token einen Read-Only Scope hat.&lt;/p&gt;
-&lt;p&gt;Beide sind verschieden von meinem mit 2FA gesicherten Zugang zu meinem Google Account, der nicht nur Kalender und Mail enthält, sondern auch mein Wallet, meine gekauften Inhalte, mein Youtube, meinen Google Cloud Zugang und meine Google Ads. Wird durch eine Sicherheitslücke eines der Token publik, ist das kein Beinbruch (der Schaden ist auf den Scope begrenzt) und leicht zu korrigieren (die Zugriffsrechte sind wiederrufbar).&lt;/p&gt;
-&lt;p&gt;Google gibt einem eine Security-Übersicht für Deinen Account in &lt;a href=&#34;https://myaccount.google.com/security&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Google Account&lt;/a&gt;
-
-. Auf der &lt;a href=&#34;https://myaccount.google.com/permissions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Permissions&lt;/a&gt;
-
--Seite kann man sehen, wer Zugriff hat und was die dürfen. Nach Anklicken sieht man auch, wann das war und man kann den Zugriff wiederrufen.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/lsa-review-screen.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://myaccount.google.com/permissions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Permissions&lt;/a&gt;
-
- Seite für OAuth2 Anwendungen in &lt;a href=&#34;https://myaccount.google.com/security&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Google Account&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Das alles ist eine Feine Sache™ und ein großer Fortschritt. In der Vergangenheit hätte man sich bei einem CalDAV oder IMAP Server mit dem Usernamen und Paßwort eingeloggt, und hätte dadurch den gesamten Google Account mit allen Diensten, die da dran hängen, exponiert und gefährdet. In so einem Kontext ist insbesondere der Wiederruf und die Recovery nach einem Security-Problem so gut wie unmöglich.&lt;/p&gt;
-&lt;p&gt;Das weiß Google auch, und daher gab es bisher für Programme, die OAuth2 nicht beherrschen, eine Sonderlocke: &amp;ldquo;Application Specific Passwords for Less Secure Applications&amp;rdquo; (LSA).&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/lsa-appspecific-passwords.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;Application Specific Passwords for Less Secure Applications&amp;rdquo; (LSA) ist auch in Google Account zu finden und hoffentlich leer.&lt;/p&gt;
-&lt;p&gt;Mit LSA legt man ein Kennwort für seinen Loginnamen fest, das an eine Anwendung gebunden ist und gescoped ist, also im Zugriff beschränkt. Da Google dieses Paßwort generiert, ist es auch sicher vom Accountpaßwort verschieden.&lt;/p&gt;
-&lt;p&gt;Man kann sich also mit einem Legacy Client, der auch in 2020 noch kein OAuth2 kann, auf einem GMail IMAP oder CalDAV einloggen und riskiert dennoch nicht seinen ganzen Account. Gut so.&lt;/p&gt;
-&lt;h2 id=&#34;oauth2-playground&#34;&gt;
-    &lt;a href=&#34;#oauth2-playground&#34;&gt;
-	OAuth2 Playground
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Es gibt einen &lt;a href=&#34;https://developers.google.com/oauthplayground/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OAuth2 Playground&lt;/a&gt;
-
- bei Google. Mit dem und der &lt;a href=&#34;https://developers.google.com/identity/protocols/OAuth2&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Entwicklerdokumentation&lt;/a&gt;
-
- kann man einmal herumspielen. Oder man verwendet deren &lt;a href=&#34;https://github.com/google/gmail-oauth2-tools/wiki/OAuth2DotPyRunThrough&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;oauth2.py&lt;/a&gt;
-
-. Für jeden Dienst gibt es eine Dokumentation, die die OAuth2 Scopes beschreibt, die existieren.&lt;/p&gt;
-&lt;p&gt;Hier ist die &lt;a href=&#34;https://developers.google.com/gmail/api/auth/scopes&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dokumentation für GMail Scopes&lt;/a&gt;
-
-. Sie ist wichtig, wir werden weiter unten noch darauf zurück kommen.&lt;/p&gt;
-&lt;p&gt;Wenn man den OAuth2 Playground einmal durchspielt passiert dies:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/lsa-oauth2-playground-1.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Schritt 1: Wähle einen OAuth2 Scope aus, hier gmail.readonly. Auf der rechten Seite sieht man die entsprechenden REST Requests und Responses, sodaß ein Entwickler gleich sehen kann, wie so etwas auf dem Kabel aussieht. In der Praxis wird dieser Schritt vom Anwendungsentwickler ausgeführt und man sieht ihn nicht.&lt;/p&gt;
-&lt;p&gt;Er legt die Identität der Anwendung fest, so wie sie für den Endanwender nachher in Google Account erscheint.&lt;/p&gt;
-&lt;p&gt;Führt man diesen Schritt durch, gibt es einen typischen Google Autorisierungscreen: Anwendung Google Playground will Read Access auf unseren Gmail Account. Ist das okay so?&lt;/p&gt;
-&lt;p&gt;Sagt man ja, gibt es einen Alarm via Push Notification und eine Nachricht in Google Mail: Jemand hat neuen Zugriff auf unseren Account bekommen.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/lsa-cellphone.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Terror auf meinem Handy: &amp;ldquo;Google OAuth2 Playground&amp;rdquo; darf jetzt auf mein GMail.&lt;/p&gt;
-&lt;p&gt;Das ist auch eine Gute Sache™, denn auf diese Weise ist sichergestellt, daß so ein Zugriff nicht leise und aus Versehen erfolgt.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/lsa-oauth2-playground-2.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Mit dem Authorization Code aus Schritt 1 kann die Anwendung sich jetzt ein Zugriffstoken holen, das eine Stunden gilt. Der Grund ist, daß auf diese Weise die Anwendung auf jeden Fall spätestens eine Stunde nach dem Widerruf von Rechten ausgesperrt ist, auch wenn dieses spezifische Token nicht gesondert widerrufen wird.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/lsa-oauth2-playground-3.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Und mit diesem Access Token kann die Anwendung dann endlich GMail API Funktionen aus dem Read Only Scope aufrufen, zum Beispiel Identity. Sie kann keine Non-GMail Aktionen ausführen und sie kann auch keine Nachrichten senden, Filter bearbeiten oder ähnliches. Das wäre ein anderer Scope.&lt;/p&gt;
-&lt;h2 id=&#34;scopes-in-gmail&#34;&gt;
-    &lt;a href=&#34;#scopes-in-gmail&#34;&gt;
-	Scopes in GMail
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Die Liste der &lt;a href=&#34;https://developers.google.com/gmail/api/auth/scopes&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gmail Scopes&lt;/a&gt;
-
- in der Entwicklerdokumentation klassifiziert Scopes auf verschiedene Weisen, Recommended, Sensitive und Restricted. Die meisten Scopes sind Restricted.&lt;/p&gt;
-&lt;p&gt;Die Doku sagt weiter:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Restricted—These scopes provide wide access to Google User Data and require you to go through a restricted scope verification process. For information on this requirement, see Google API Services: User Data Policy and Additional Requirements for Specific API Scopes. If you store restricted scope data on servers (or transmit), then you need to go through a security assessment.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Wenn man also eine Serveranwendung (Mailbox.org, Exchange, Open Exchange oder ähnliches) schreibt, und diese Restricted Scope Data runterlädt und speichert, dann wird ein Security Assessment notwendig.&lt;/p&gt;
-&lt;h2 id=&#34;den-heise-artikel-noch-einmal-lesen&#34;&gt;
-    &lt;a href=&#34;#den-heise-artikel-noch-einmal-lesen&#34;&gt;
-	Den Heise Artikel noch einmal lesen
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Jetzt lesen wir den &lt;a href=&#34;https://www.heise.de/ix/meldung/Mailbox-org-Google-sperrt-unsichere-Dritte-von-Kalender-aus-4640540.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Heise Artikel&lt;/a&gt;
-
- noch einmal.&lt;/p&gt;
-&lt;p&gt;Da heißt es:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Google forciert den Einsatz von Oauth für seine Mail-, Kalender- und Drive- Dienste, sperrt dabei aber viele Dienstleister und ältere Software aus. Wer bisher beispielsweise Googles Kalender in einer nicht von Google entwickelten Anwendung oder Webseite ohne Oauth integriert, muss sich demnächst entweder umstellen oder darauf hoffen, dass sich sein Anbieter von Google-Partnern in den USA in einem kostspieligen und wenig transparenten Verfahren zertifizieren lässt.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Was heißt das? Der Artikel erklärt das nicht.&lt;/p&gt;
-&lt;p&gt;Google hat bereits am 30. Oktober letzten Jahres &lt;a href=&#34;https://gsuiteupdates.googleblog.com/2019/07/limit-access-LSA.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LSA für Business Kunden&lt;/a&gt;
-
- sanft eingeschränkt. Alle Accounts mit einer leeren LSA Liste haben &amp;ldquo;LSA erlauben&amp;rdquo; auf &amp;ldquo;Nein&amp;rdquo; gestellt bekommen, für andere Accounts, die LSA Einträge haben, sind andere Einschränkungen gemacht worden.&lt;/p&gt;
-&lt;p&gt;Ab Mitte diesen Jahres wird &lt;a href=&#34;https://gsuiteupdates.googleblog.com/2019/12/less-secure-apps-oauth-google-username-password-incorrect.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LSA weiter eingeschränkt&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Das heißt, zum Zugriff auf Google Dienste wird LSA erschwert oder ganz abgeschaltet und OAuth2 verpflichtend. Soweit eine gute Sache.&lt;/p&gt;
-&lt;p&gt;Aber: Ein Mailserver hat bisher via LSA Vollzugriff auf einen GMail Account und einen Kalender bekommen, ohne sich dem für Restricted Scopes notwendigem Review zu unterziehen.&lt;/p&gt;
-&lt;p&gt;Dadurch, daß OAuth2 jetzt verpflichtend wird, werden Firmen wie Open Exchange und Mailbox.org also OAuth2 Reviews aufgezwungen, weil das LSA Schlupfloch nicht mehr existiert. Und das ist genau der Punkt, der beklagt wird, nur daß der Artikel das nicht erklärt.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Mailbox.org-Betreiber Peer Heinlein kritisiert Googles Vorgehen, das ab 15. Januar die Zertifizierung von &amp;ldquo;Less Secure Apps&amp;rdquo; vorschreibt. Im Gespräch mit der iX erklärt Heinlein, es sei grundsätzlich nicht verkehrt, wenn unseriöse Anbieter vom Zugriff auf Google-Konten ausgeschlossen werden und Missbrauch minimiert wird.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Das ist irreführtend, weil es primär gar nicht um LSA geht, sondern um OAuth2, und spezifisch um die mit OAuth2 Restricted Scopes verknüpften Audit-Anforderungen. LSA abzuschalten ist eine gute Sache, und LSA zu verwenden, um den Anforderungen für OAuth2 Restricted Scope zu entgehen eine mittelfristig zum Scheitern verurteilte Strategie.&lt;/p&gt;
-&lt;p&gt;Die Frage, um die es eigentlich gehen muß ist:&lt;/p&gt;
-&lt;p&gt;Darf Google für den Zugriff auf ihre Plattform einen solchen Audit verlangen oder ist dies eine unzulässige Wettbewerbseinschränkung?&lt;/p&gt;
-&lt;p&gt;Im Lichte der Entscheidung &lt;a href=&#34;https://www.heise.de/newsticker/meldung/Sofortueberweisung-vs-Banken-Kartellamt-sieht-Wettbewerb-behindert-3255361.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Banken vs. Sofortüberweisung&lt;/a&gt;
-
- kann man annehmen, daß es nicht das Problem von Google ist, Anforderungen an die Anwendungen zu stellen, die ein Anwender für seinen Account zuläßt. Insbesondere wenn der Anwender eine Firma ist und der Account Teil eines GSuite Business Accounts ist.&lt;/p&gt;
-&lt;p&gt;Und das ist die eigentliche Frage, die geklärt werden muß.&lt;/p&gt;
-&lt;p&gt;OAuth2 ist eine gute Sache. Auch Mailbox.org und OX wissen das und haben das korrekt implementiert, sind dabei aber in die OAuth2 Restricted Scope Requirements für Serverbetreiber gelaufen.&lt;/p&gt;
 </description>
     </item>
     
