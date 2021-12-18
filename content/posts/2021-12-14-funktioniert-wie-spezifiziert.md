@@ -10,7 +10,7 @@ tags:
 
 Dieser Artikel basiert auf
 [einem Twitter-Thread](https://twitter.com/isotopp/status/1470668771962638339)
-und in deutscher Sprache als
+und ist in deutscher Sprache als
 [Heise Kommentar](https://www.heise.de/meinung/Kommentar-zu-log4j-Es-funktioniert-wie-spezifiziert-6294476.html)
 erschienen.
 
