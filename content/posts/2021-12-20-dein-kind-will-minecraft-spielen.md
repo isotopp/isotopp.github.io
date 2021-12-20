@@ -9,7 +9,7 @@ tags:
 - microsoft
 ---
 
-Nachdem mich jetzt das dritte Paar computer-affiner Eltern zum dritten Mal gefragt hat, was man denn braucht, sobald der Nachwuchs sich "Minecraft" wünscht, hier der Aufschrieb zum Thema.
+Nachdem mich jetzt das dritte Paar computer-affiner Eltern Mal gefragt hat, was man denn braucht, sobald der Nachwuchs sich "Minecraft" wünscht, hier der Aufschrieb zum Thema.
 
 Minecraft ist ursprünglich von der schwedischen Firma Mojang in Java entwickelt worden.
 Der Eigner, Markus "Notch" Persson, hat das Spiel und die Firma Mitte 2014 auf Twitter zum Verkauf angeboten, und Microsoft hat die Firma gekauft.
