@@ -58,7 +58,8 @@ Das ist jedoch im Grunde alles nebensächlich, weil es in der ersten Iteration d
 ## Hardware-Anforderungen
 
 Wegen der Zielgruppe hat das Spiel (mindestens bis Version 1.14.4) praktisch keine Mindestanforderungen an die Hardware.
-Wortwörtlich jeder abgelegte Kartoffelcomputer kann Minecraft irgendwie ausführen.
+Wortwörtlich jeder abgelegte Kartoffelcomputer kann Minecraft irgendwie ausführen -- Probleme entstehen vermutlich erst, wenn eine IDE (siehe unten) oder ein Videoschnitt-System oder Streaming-Support dazu kommen. 
+Wie dem auch sei:
 Das schließt ein 2009er MacBook pro, einen Raspi 4 und circa jede Intel-Büchse der letzten 10 Jahre ein.
 Weil es Java ist, funktioniert das alles mit demselben Spiel.
 
@@ -141,13 +142,13 @@ Stattdessen durchläuft man den Installationsprozeß von [Bukkit oder Spigot](ht
 Dies setzt eine Maschine mit ausreichend Kernen und Speicher sowie einem installierten headless OpenJDK voraus.
 
 Bukkit
-: ist ein minimal veränderter Vanilla-Server und eher eine Demo für den Reverse Engineering und Patching Prozeß.
+: ist ein minimal veränderter Vanilla-Server und eher eine Demo für den Reverse Engineering und Patching Prozess.
 
 Spigot
 : ist ein auf Performance optimierter und weiter aufgehackter Bukkit, und eher die Version die man installieren will.
 
 PaperMC
-: ist ein weiterer Zweig, basierend auf Spigot, und noch klarer auf Performance optimiert.  PaperMC unterstützt jedoch anders als Spigot nur die beiden neusten Versionen von Minecraft aktiv. Wer älteres Minecraft verwenden will oder muß wird mit PaperMC nicht glücklich. 
+: ist ein weiterer Zweig, basierend auf Spigot, und noch klarer auf Performance optimiert. PaperMC unterstützt jedoch anders als Spigot nur die beiden neusten Versionen von Minecraft aktiv. Wer älteres Minecraft verwenden will oder muß wird mit PaperMC nicht glücklich. 
 
 Der Installationsprozeß ist dabei ein wahres Wunderwerk an Installationsautomation:
 Er lädt den originalen Minecraft-Server herunter, ein obfuscated JAR.
@@ -176,7 +177,7 @@ Der Serverprozeß ist ursprünglich recht klein, aber wenn man den Server mit Pl
 Andererseits liegt ein Strato VPS mit 8 Kernen und 32 GB Speicher bei monatlich kündbaren 17 Euro und ist reichlich überprovisioniert für die Aufgabe.
 Irgendwo zwischen dieser Größe und einem Raspi 4 findet man sicherlich was Passendes.
 
-Wer den Server nicht selbst installieren will, nimmt sich einen Servermanager -- es gibt viele mit zweifelhaftem Code und bunten Panels, und es gibt [minectl](https://github.com/dirien/minectl). Ich nehme einfach ein Shellscript:
+Wer den Server nicht selbst installieren will, nimmt sich einen Servermanager -- es gibt viele mit zweifelhaftem Code und bunten Panels, und es gibt [`minectl`](https://github.com/dirien/minectl). Ich nehme einfach ein Shellscript:
 
 ```bash
 ~minecraft/bukkit  $ cat starter.sh
@@ -235,7 +236,7 @@ Es ist also damit zu rechnen, daß der Server oder der Client verloren gehen.
 Eine Recovery-Strategie, etwa "der Server kann mit Ansible neu gemacht werden" und "es läuft nachts um 3 ein automatisches Backup" für den Server ist erfolgversprechender.
 Auch für den Client ("verwende Time Machine", "Hier ist ein Acronis") ist das notwendig.
 
-Wegen [COPPA](https://en.wikipedia.org/wiki/Children%27s_Online_Privacy_Protection_Act) läuft man Gefahr, Accounts bei US-Anbietern zu verlieren, wenn man nicht über das Geburtsjahr lügt - das Kind muß über 13 Jahre alt sein.
+Wegen [COPPA](https://en.wikipedia.org/wiki/Children%27s_Online_Privacy_Protection_Act) läuft man Gefahr, Accounts bei US-Anbietern zu verlieren, wenn man nicht über das Geburtsjahr lügt -- das Kind muss über 13 Jahre alt sein, um legal einen Account haben zu können.
 Anbieter, die Kinder unter 13 nicht komplett ablehnen, schränken die Accounts oft funktional bis zur Nutzlosigkeit ein.
 Mit einem regulären Account, ein wenig partnerschaftlicher Aufsicht, und einer Lüge bei der Altersangabe fährt man in der Regel weitaus besser als mit verdummten Accounts.
 
