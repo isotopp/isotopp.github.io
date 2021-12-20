@@ -18,7 +18,7 @@ Der Eigner, Markus "Notch" Persson, hat das Spiel und die Firma Mitte 2014 auf T
 
 Eine der Aktivitäten von Microsoft war, das Spiel in C# neu zu schreiben. Dies ist die Bedrock-Edition, im Gegensatz zur Java-Edition des Originalspiels. 
 
-Bedrock und Java sind nicht kompatibel, es gibt kein Crossplay, und die beiden Spiele werden nicht parallel entwickelt.
+Bedrock und Java sind nicht kompatibel, es gibt kei333n Crossplay, und die beiden Spiele werden nicht parallel entwickelt.
 Es sind für alle praktischen Zwecke zwei verschiedene Spiele.
 
 Man will unbedingt und ausschließlich die Java-Edition kaufen.
@@ -176,6 +176,14 @@ Danach kann man den Client dann mit Mods voll laden.
 
 ![](/uploads/2021/12/minecraft5.jpg)
 *MultiMC mit einer Instanze von Minecraft 1.14.4 und installiertem Fabric. Zu neue Minecraft-Versionen werden von der Mod-Community noch nicht voll untersützt, zu alte nicht mehr. Die 1.14-Serie hat im Moment gute Kompatibilität.*
+
+Mit den Mods und Plugins sollte man unbedingt mit dem Kind Vereinbarungen treffen.
+Je nach Lebenserfahrung und Verständnis von Werten kann das Kind hier leicht ein Opfer von Scam, Abzocke und Phishing werden.
+Auf der anderen Seiten kann man mit dem Kind, sobald es fragt oder sich die Gelegenheit bietet, über Merkmale von vertrauenswürdigen und seltsamen Webseiten reden und am Beispiel erklären, was eine Seite komisch aussehen lässt.
+
+Auch wenn man dem Kind zuhört, bieten die Geschichten von anderen und wie es ihnen ergangen ist, viele Haken und Themen, an denen man erklärend ansetzen kann, oder die man zum Anlass nehmen kann, gemeinsam nachzusehen und darüber zu sprechen, wie ehrliche und unehrliche Angebote aussehen.
+Einige alternative Clients bieten Anticheat-Möglichkeiten durch Totalüberwachung des Clients an.
+Auch hier kann man einhaken, Regeln setzen und erklären, warum zum Beispiel dauernd laufende Hintergrundprozesse, Gerätetreiber, die Tastendrücke überwachen und andere Kontrollmaßnahmen ein No-Go sind.
 
 ## "Content" konsumieren und produzieren
 
