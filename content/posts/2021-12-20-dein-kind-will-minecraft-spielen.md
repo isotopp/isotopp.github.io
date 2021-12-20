@@ -9,10 +9,15 @@ tags:
 - microsoft
 ---
 
-Nachdem mich jetzt das dritte Paar computer-affiner Eltern Mal gefragt hat, was man denn braucht, sobald der Nachwuchs sich "Minecraft" wünscht, hier der Aufschrieb zum Thema.
+Nachdem mich jetzt das dritte Paar computer-affiner Eltern mal gefragt hat, was man denn braucht, sobald der Nachwuchs sich "Minecraft" wünscht, hier der Aufschrieb zum Thema.
 
 Minecraft ist ursprünglich von der schwedischen Firma Mojang in Java entwickelt worden.
 Der Eigner, Markus "Notch" Persson, hat das Spiel und die Firma Mitte 2014 auf Twitter zum Verkauf angeboten, und Microsoft hat die Firma gekauft.
+
+[![](/uploads/2021/12/minecraft6.jpg)](https://twitter.com/notch/status/478766808841732096)
+*Spiel zu verkaufen - Minecraft ist auf Twitter angeboten worden. Jeder mit dem notwendigen Kleingeld -- 2.5 Milliarden USD -- konnte zuschlagen.*
+
+Techradar hat mehr zur [Geschichte von Minecraft](https://www.techradar.com/news/the-history-of-minecraft).
 
 ## Java und Bedrock-Edition
 
@@ -60,14 +65,14 @@ Weil es Java ist, funktioniert das alles mit demselben Spiel.
 Wegen der Modding-Community (dazu unten mehr) gibt es praktisch auch keine Höchstanforderungen an die Hardware:
 Wenn man Raytracing Renderer installiert hat, reizt das Spiel auch eine [Nvidia RTX 3090](https://www.youtube.com/watch?v=AdTxrggo8e8) voll aus.
 
-![](/uploads/2021/12/minecraft3.jpg)
+[![](/uploads/2021/12/minecraft3.jpg)](/uploads/2021/12/minecraft3.jpg)
 *Minecraft Standard und mit einem Raytracing Render Mod auf einer Nvidia RTX. Was ein paar hingeworfene Kissen ausmachen...*
 
 Minecraft ist eine Client-Server-Anwendung. Ein oder mehr Spieler verbinden ihre Clients mit dem Minecraft-Server und bespielen dann zusammen diese Welt.
 Spielt man "offline", startet der Launcher im Hintergrund einen lokalen Server auf dem Laptop, und verbindet den Client im Einzelspielermodus mit dem Server.
 
 Im Onlinebetrieb verbindet man sich mit einem zentralen Server, der von irgendjemandem betrieben wird, und spielt dann dort mit anderen.
-Das sind im Zweifel echt viele Spieler -- auf einen öffentlichen Server irgendwelche Personen irgendwelchen Alters.
+Das sind im Zweifel echt viele Spieler -- auf einem öffentlichen Server irgendwelche Personen irgendwelchen Alters.
 Auf einem privaten Server ist es so, wie immer es die Zugangs-Policy des Servers definiert.
 
 ## Kein Minecraft ohne Discord, kein Login ohne 2FA
@@ -135,14 +140,24 @@ Niemand verwendet ihn, außer als Grundlage für etwas Richtiges.
 Stattdessen durchläuft man den Installationsprozeß von [Bukkit oder Spigot](https://getbukkit.org/).
 Dies setzt eine Maschine mit ausreichend Kernen und Speicher sowie einem installierten headless OpenJDK voraus.
 
-Der Installationsprozeß lädt den originalen Minecraft-Server herunter, ein obfuscated JAR.
+Bukkit
+: ist ein minimal veränderter Vanilla-Server und eher eine Demo für den Reverse Engineering und Patching Prozeß.
+
+Spigot
+: ist ein auf Performance optimierter und weiter aufgehackter Bukkit, und eher die Version die man installieren will.
+
+PaperMC
+: ist ein weiterer Zweig, basierend auf Spigot, und noch klarer auf Performance optimiert.  PaperMC unterstützt jedoch anders als Spigot nur die beiden neusten Versionen von Minecraft aktiv. Wer älteres Minecraft verwenden will oder muß wird mit PaperMC nicht glücklich. 
+
+Der Installationsprozeß ist dabei ein wahres Wunderwerk an Installationsautomation:
+Er lädt den originalen Minecraft-Server herunter, ein obfuscated JAR.
 Dies wird dann dekompiliert und mit einer Symboltabelle deobfuscated.
 Dadurch entsteht ein reproduzierbarer lesbarer Sourcetree, der dann gepatcht wird.
 Der resultierende Sourcetree wird dann compiliert, zusammengepackt und ein neues Server-JAR entsteht.
 Dies ist dann die Grundlage für den eigenen Serverprozeß. 
-Der ganze komplizierte Prozess ist ein vollautomatischer Vorgang, der ausgesprochen reibungsfrei abläuft.
 
-Der gepatchte Serverprozeß ist deutlich ärmer an Fehlern, um Größenordnungen schneller und hat eine dokumentierte und stabile API für Server-Erweiterungen (Plugins).
+Der ganze komplizierte Prozess klingt komplett haarsträubend, ist ein aber vollautomatischer Vorgang, der ausgesprochen reibungsfrei abläuft.
+Der gepatchte Serverprozeß ist gegenüber dem Originalserver deutlich ärmer an Fehlern, um Größenordnungen schneller und hat eine dokumentierte und stabile API für Server-Erweiterungen (Plugins).
 
 Zum Server gehören auch noch eine `eula.txt`
 
@@ -160,6 +175,25 @@ eula=true
 Der Serverprozeß ist ursprünglich recht klein, aber wenn man den Server mit Plugins vollstopft nach oben offen.
 Andererseits liegt ein Strato VPS mit 8 Kernen und 32 GB Speicher bei monatlich kündbaren 17 Euro und ist reichlich überprovisioniert für die Aufgabe.
 Irgendwo zwischen dieser Größe und einem Raspi 4 findet man sicherlich was Passendes.
+
+Wer den Server nicht selbst installieren will, nimmt sich einen Servermanager -- es gibt viele mit zweifelhaftem Code und bunten Panels, und es gibt [minectl](https://github.com/dirien/minectl). Ich nehme einfach ein Shellscript:
+
+```bash
+~minecraft/bukkit  $ cat starter.sh
+#! /bin/bash --
+
+TIME=30
+DIR=/home/minecraft/bukkit
+SERVER=$(basename $DIR)
+
+cd $DIR
+while :
+do
+        java -Xmx8192M -Xms3072M -Xss1m -jar $DIR/server.jar nogui
+        echo "$SERVER: Java stopped or crashed. Waiting $TIME seconds..."
+        sleep $TIME
+done
+```
 
 ## Clients managen
 
@@ -201,19 +235,36 @@ Es ist also damit zu rechnen, daß der Server oder der Client verloren gehen.
 Eine Recovery-Strategie, etwa "der Server kann mit Ansible neu gemacht werden" und "es läuft nachts um 3 ein automatisches Backup" für den Server ist erfolgversprechender.
 Auch für den Client ("verwende Time Machine", "Hier ist ein Acronis") ist das notwendig.
 
+Wegen [COPPA](https://en.wikipedia.org/wiki/Children%27s_Online_Privacy_Protection_Act) läuft man Gefahr, Accounts bei US-Anbietern zu verlieren, wenn man nicht über das Geburtsjahr lügt - das Kind muß über 13 Jahre alt sein.
+Anbieter, die Kinder unter 13 nicht komplett ablehnen, schränken die Accounts oft funktional bis zur Nutzlosigkeit ein.
+Mit einem regulären Account, ein wenig partnerschaftlicher Aufsicht, und einer Lüge bei der Altersangabe fährt man in der Regel weitaus besser als mit verdummten Accounts.
+
+Falls das Kind selbst Content produziert ist das Risiko den Account zu verlieren oder gesperrt zu bekommen noch höher.
+Daher sollte man den privaten Account und den publizierenden Account des Kindes strikt trennen, sodaß bei einer Sperrung nicht die Kontakte, private Mail und alle Kommunikationsmöglichkeiten mit weg sind.
+Über Chrome Browser [User Profiles](https://www.techsolutions.support.com/how-to/how-to-create-and-switch-profiles-in-chrome-12564) kann man das schnell und bequem umschalten, und das Kind lernt gleich noch OpSec und sich selbst geschickt zu publizieren.
+
+[It's complicated](https://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS), und danah boyd ist immer lesenswert.
+
 ## Selber programmieren
 
 Minecraft ist eine Einstiegsdroge für die Programmierung.
 Das Potenzial für die Selbstmotivation ist enorm, und der Support in der Community gewaltig.
 
-Für JetBrains IntelliJ existieren ganz ausgezeichnete Plugins für Server-Plugins und Client-Mods.
-Die IDE selbst ist stabil (Eclipse meiner Erfahrung nach nicht) und hat einen sehr überschaubaren Ressourcenverbrauch (~2 GB maximale Prozeßgröße, realer Verbrauch oszilliert von 512 MB bis 1024 MB).
+Für JetBrains IntelliJ existieren ganz ausgezeichnete Plugins für Server-Plugins und Client-Mods: [Minecraft Development](https://plugins.jetbrains.com/plugin/8327-minecraft-development) unterstützt Bukkit, Spigot und PaperMC sowie einen Haufen weiterer populärer Servervarianten.
+
+IntelliJ selbst ist stabil (Eclipse meiner Erfahrung nach nicht) und hat einen sehr überschaubaren Ressourcenverbrauch: ~2 GB maximale Prozeßgröße, realer Verbrauch oszilliert von 512 MB bis 1024 MB.
 
 # Fazit
 
 - Maschine zum Spielen bereitstellen. Ein abgelegtes Mac oder Windows-Notebook tun sicher, die kommende Java-IDE wird die Maschine eher an die Grenzen bringen als das Spiel.
-- [Minecraft Java Edition](https://www.minecraft.net/en-us/store/minecraft-java-edition) kaufen. Den dazu notwendigen Microsoft-Account mit 2FA sichern. Einen Screenshot vom 2FA QR-Code offline (USB-Stick?) archivieren.
-- [Discord](https://discord.com/) Account machen. 2FA aktivieren. Den QR-Code sichern. Discord installieren.
+- [Minecraft Java Edition](https://www.minecraft.net/en-us/store/minecraft-java-edition) kaufen.
+  - Oder den Gamepass holen -- Minecraft ist seit kurzem in der Java und in der Bedrock Edition Teil vom Gamepass.
+  - Den dazu notwendigen Microsoft-Account mit 2FA sichern.
+  - Einen Screenshot vom 2FA QR-Code offline (USB-Stick?) archivieren.
+- [Discord](https://discord.com/) Account machen.
+  - 2FA aktivieren.
+  - Den QR-Code sichern. 
+  - Discord installieren.
 - Java installieren. 
   - Man will OpenJDK, nicht Oracle, und man will vermutlich JDK 11, 16 oder 17 (das hängt später ein wenig von den Mods ab). 
 - [MultiMC](https://multimc.org/#Download) installieren.
@@ -229,6 +280,6 @@ Die IDE selbst ist stabil (Eclipse meiner Erfahrung nach nicht) und hat einen se
   - Backup einrichten und Restore testen.
   - Server Buildprozess durchlaufen lassen, resultierendes Binary ansibilisieren.
   - Server in Betrieb nehmen, Zugang kontrollieren.
-- Zusammen mit dem Server auch gleich eine virtuellen Discord-Serverinstanz für die Spieler einrichten.
+- Zusammen mit dem Server auch gleich eine virtuelle Discord-Serverinstanz für die Spieler einrichten.
   - Selbst Owner vom Dicord bleiben: Kind so weit entrechten, daß es den Server noch moderieren kann, aber nicht kaputt machen.
   - Das Kind wird vermutlich bald selbst eine 2. Discord-Instanz ohne Eltern einrichten.
