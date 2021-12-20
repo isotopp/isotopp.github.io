@@ -136,8 +136,8 @@ Stattdessen durchläuft man den Installationsprozeß von [Bukkit oder Spigot](ht
 Dies setzt eine Maschine mit ausreichend Kernen und Speicher sowie einem installierten headless OpenJDK voraus.
 
 Der Installationsprozeß lädt den originalen Minecraft-Server herunter, ein obfuscated JAR.
-Dies wird dann decompiliert und mit einer Symboltabelle deobfuscated.
-Dadurch entsteht ein reproduzierbarer lesbarer Sourcetree, der dann gepatched wird.
+Dies wird dann dekompiliert und mit einer Symboltabelle deobfuscated.
+Dadurch entsteht ein reproduzierbarer lesbarer Sourcetree, der dann gepatcht wird.
 Der resultierende Sourcetree wird dann compiliert, zusammengepackt und ein neues Server-JAR entsteht.
 Dies ist dann die Grundlage für den eigenen Serverprozeß. 
 Der ganze komplizierte Prozess ist ein vollautomatischer Vorgang, der ausgesprochen reibungsfrei abläuft.
@@ -155,11 +155,11 @@ eula=true
  und eine etwa längliche `server.properties`-Datei, die die eigentliche [Konfiguration](https://www.spigotmc.org/wiki/spigot-configuration-server-properties/) des Basis-Servers darstellt.
 
 ![](/uploads/2021/12/minecraft4.jpg)
-*Dem Serverprozeß wird reichlich Speicher gegeben, aber trotz der großen Anzahl von Plugins liegt die effektive Prozeßgröße bei circa 3GB (aber es laufen 84 Java-Threads).*
+*Dem Serverprozeß wird reichlich Speicher gegeben, aber trotz der großen Anzahl von Plugins liegt die effektive Prozeßgröße bei circa 3 GB (aber es laufen 84 Java-Threads).*
 
 Der Serverprozeß ist ursprünglich recht klein, aber wenn man den Server mit Plugins vollstopft nach oben offen.
 Andererseits liegt ein Strato VPS mit 8 Kernen und 32 GB Speicher bei monatlich kündbaren 17 Euro und ist reichlich überprovisioniert für die Aufgabe.
-Irgendwo zwischen dieser Größe und einem Raspi 4 findet man sicherlich was passendes.
+Irgendwo zwischen dieser Größe und einem Raspi 4 findet man sicherlich was Passendes.
 
 ## Clients managen
 
@@ -170,19 +170,19 @@ Bastelt man intensiver am Client rum, hat man aber schnell das Problem, bestimmt
 Das Werkzeug der Wahl für die Client-Verwaltung ist [MultiMC](https://multimc.org/#Download).
 
 Es erlaubt es, das Spiel mit einem anderen, moderneren JDK auszuführen, unterschiedliche Spieler-Accounts zu verwalten.
-Es automatisiert auch analog zum Server-Build, den Client automatisiert zu decompilieren und zu patchen, um ihm eine stabile Mod-API zu verpassen.
+Es automatisiert auch analog zum Server-Build, den Client automatisiert zu dekompilieren und zu patchen, um ihm eine stabile Mod-API zu verpassen.
 Populär sind Forge und Fabric, die direkt von MultiMC integriert werden.
 Danach kann man den Client dann mit Mods voll laden.
 
 ![](/uploads/2021/12/minecraft5.jpg)
-*MultiMC mit einer Instanze von Minecraft 1.14.4 und installiertem Fabric. Zu neue Minecraft-Versionen werden von der Mod-Community noch nicht voll untersützt, zu alte nicht mehr. Die 1.14-Serie hat im Moment gute Kompatibilität.*
+*MultiMC mit einer Instanz von Minecraft 1.14.4 und installiertem Fabric. Zu neue Minecraft-Versionen werden von der Mod-Community noch nicht voll unterstützt, zu alte nicht mehr. Die 1.14-Serie hat im Moment gute Kompatibilität.*
 
 Mit den Mods und Plugins sollte man unbedingt mit dem Kind Vereinbarungen treffen.
 Je nach Lebenserfahrung und Verständnis von Werten kann das Kind hier leicht ein Opfer von Scam, Abzocke und Phishing werden.
 Auf der anderen Seiten kann man mit dem Kind, sobald es fragt oder sich die Gelegenheit bietet, über Merkmale von vertrauenswürdigen und seltsamen Webseiten reden und am Beispiel erklären, was eine Seite komisch aussehen lässt.
 
 Auch wenn man dem Kind zuhört, bieten die Geschichten von anderen und wie es ihnen ergangen ist, viele Haken und Themen, an denen man erklärend ansetzen kann, oder die man zum Anlass nehmen kann, gemeinsam nachzusehen und darüber zu sprechen, wie ehrliche und unehrliche Angebote aussehen.
-Einige alternative Clients bieten Anticheat-Möglichkeiten durch Totalüberwachung des Clients an.
+Einige alternative Clients bieten Anti-Cheat-Möglichkeiten durch Totalüberwachung des Clients an.
 Auch hier kann man einhaken, Regeln setzen und erklären, warum zum Beispiel dauernd laufende Hintergrundprozesse, Gerätetreiber, die Tastendrücke überwachen und andere Kontrollmaßnahmen ein No-Go sind.
 
 ## "Content" konsumieren und produzieren
@@ -204,7 +204,7 @@ Auch für den Client ("verwende Time Machine", "Hier ist ein Acronis") ist das n
 ## Selber programmieren
 
 Minecraft ist eine Einstiegsdroge für die Programmierung.
-Das Potential für die Selbstmotivation ist enorm, und der Support in der Community gewaltig.
+Das Potenzial für die Selbstmotivation ist enorm, und der Support in der Community gewaltig.
 
 Für JetBrains IntelliJ existieren ganz ausgezeichnete Plugins für Server-Plugins und Client-Mods.
 Die IDE selbst ist stabil (Eclipse meiner Erfahrung nach nicht) und hat einen sehr überschaubaren Ressourcenverbrauch (~2 GB maximale Prozeßgröße, realer Verbrauch oszilliert von 512 MB bis 1024 MB).
@@ -227,8 +227,8 @@ Die IDE selbst ist stabil (Eclipse meiner Erfahrung nach nicht) und hat einen se
   - VPS oder ähnlich besorgen.
   - Installation ansibilisieren.
   - Backup einrichten und Restore testen.
-  - Server Buildprozeß durchlaufen lassen, resultierendes Beinary ansibilisieren.
+  - Server Buildprozess durchlaufen lassen, resultierendes Binary ansibilisieren.
   - Server in Betrieb nehmen, Zugang kontrollieren.
 - Zusammen mit dem Server auch gleich eine virtuellen Discord-Serverinstanz für die Spieler einrichten.
-  - Selbst Owner vom Dicord bleiben: Kind soweit entrechten, daß es den Server noch moderieren kann, aber nicht kaputt machen.
-  - Das Kind wird vermutlich bald selbst eine 2. Disord-Instanz ohne Eltern einrichten.
+  - Selbst Owner vom Dicord bleiben: Kind so weit entrechten, daß es den Server noch moderieren kann, aber nicht kaputt machen.
+  - Das Kind wird vermutlich bald selbst eine 2. Discord-Instanz ohne Eltern einrichten.
