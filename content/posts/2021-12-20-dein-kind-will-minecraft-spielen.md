@@ -18,7 +18,7 @@ Der Eigner, Markus "Notch" Persson, hat das Spiel und die Firma Mitte 2014 auf T
 
 Eine der Aktivitäten von Microsoft war, das Spiel in C# neu zu schreiben. Dies ist die Bedrock-Edition, im Gegensatz zur Java-Edition des Originalspiels. 
 
-Bedrock und Java sind nicht kompatibel, es gibt kei333n Crossplay, und die beiden Spiele werden nicht parallel entwickelt.
+Bedrock und Java sind nicht kompatibel, es gibt kein Crossplay, und die beiden Spiele werden nicht parallel entwickelt.
 Es sind für alle praktischen Zwecke zwei verschiedene Spiele.
 
 Man will unbedingt und ausschließlich die Java-Edition kaufen.
