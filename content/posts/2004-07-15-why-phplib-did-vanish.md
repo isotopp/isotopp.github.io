@@ -19,7 +19,7 @@ In ["ADO-donkey" will prevail](http://phplens.com/phpeverywhere/?q=node/view/69)
 As one of the principal designers of PHPLIB, I am entitled to clear things up.
 
 PHPLIB was fallout. When I was doing web application design for 
-[NetUSE](http://www.netuse.de)/SHonline in the final days of PHP/FI and during the PHP3 RCs, I pretty quick came across the Session problem. I was at all times carrying around a large number of persistent variables in GET and POST requests, and was revalidating them over and over due to their source being the untrustworthy Internet.
+[NetUSE](http://www.netuse.de)/SHonline in the final days of PHP/FI and during the PHP3 RCs, I pretty quickly came across the Session problem. I was at all times carrying around a large number of persistent variables in GET and POST requests, and was revalidating them over and over due to their source being the untrustworthy Internet.
 
 I asked on the PHP support mailing list, and got my hands on a piece of code by Rasmus, which serialized an array of at most three dimensions into a string. Together with Boris Erdmann, with whom I was working at that time, I wrote a more generic serializer, which could handle about any number and any type of variable including objects. This, plus an authentication and authorization scheme plus a very simple and lightweight database wrapper class became the 
 [core of PHPLIB](https://marc.info/?l=php-general&amp;m=90222503034131&amp;w=2).
