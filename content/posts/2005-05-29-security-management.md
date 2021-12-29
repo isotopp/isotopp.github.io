@@ -10,6 +10,7 @@ tags:
 - publication
 - internet
 - security
+- karlsruhe
 ---
 
 Der folgende Vortrag stammt einem "Dienstags-Vortrag" in Karlsruhe-Durlach, und versucht zu erklären, was der Kontext für ein Information Security Management System (ISMS) ist.

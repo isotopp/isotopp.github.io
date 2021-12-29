@@ -9,6 +9,7 @@ tags:
 - talk
 - publication
 - internet
+- karlsruhe
 ---
 
 Der folgende Vortrag stammt einem "Dienstags-Vortrag" in Karlsruhe-Durlach.
