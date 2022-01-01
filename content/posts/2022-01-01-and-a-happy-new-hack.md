@@ -76,6 +76,17 @@ Es genügt, mit dem Stand aus dem Backup weiterzufahren.
 Das ist angenehm:
 Zwar ist der Server vollständig ansibilisiert und mit dem Backup in weniger als 30 Minuten aus einer kompletten Neuinstallation wiederherzustellen, aber wenn das nicht notwendig ist, ist das angenehm.
 
+### Der User
+
+Der betreffende User hat Accounts auf Dutzenden von Minecraft-Servern.
+Als engagierter und intensiver Spieler oft mit Sonderrechten.
+Alle diese Server sind beschädigt, viele weniger automatisiert als unserer.
+
+Account-Recovery ohne 2FA ist schwierig.
+Account-Recovery bei gleichem Paßwort für Minecraft und die Recovery-Mailadresse unmöglich.
+Daraus folgt, daß man seine Recoveryadresse für den Minecraft Account eventuell nicht bei Hotmail haben sollte.
+Daraus folgt auch, daß man Kindern Passwort Re-Use gar nicht früh genug aberziehen kann.
+
 ## Maßnahmen und Fazit
 
 Wir verlangen in Zukunft für alle Benutzer mit Rechten auf dem Server oder im Discord zu beweisen, daß sowohl ihr Minecraft (Microsoft) Account als auch ihr Discord-Account mit Zwei-Faktor-Authentisierung gesichert sind.
