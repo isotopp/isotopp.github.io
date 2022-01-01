@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "... and a happy new hack."
-date: 2021-12-20T13:32:00+01:00
+date: 2022-01-01T16:28:00+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
