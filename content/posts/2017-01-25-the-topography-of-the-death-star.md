@@ -6,7 +6,6 @@ published: true
 status: publish
 tags:
 - fluffy fluff
-- star wars
 - lang_en
 title: The Topography of the Death Star
 ---

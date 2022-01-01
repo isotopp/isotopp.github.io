@@ -7,6 +7,7 @@ tags:
 - lang_en
 - security
 - identity
+- minecraft
 ---
 
 This morning the Discord account of my son started to send "free nitro" spam to his friends on the friend list, and to some Discords he was a member of.
@@ -85,4 +86,3 @@ Also note that while Discord is the better Slack, it does have UI/UX design prob
 Never use this function.
 Train your kid to not use this function.
 Always login with username, password and 2FA.
-

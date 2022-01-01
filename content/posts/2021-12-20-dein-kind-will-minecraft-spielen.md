@@ -7,6 +7,7 @@ tags:
 - lang_de
 - gaming
 - microsoft
+- minecraft
 ---
 
 Nachdem mich jetzt das dritte Paar computer-affiner Eltern mal gefragt hat, was man denn braucht, sobald der Nachwuchs sich "Minecraft" wünscht, hier der Aufschrieb zum Thema.
