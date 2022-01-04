@@ -71,7 +71,8 @@ Das Vorgehen sieht jedoch nicht systematisch und auch nicht schnell aus:
 Die Aktion dauert beinahe 30 Minuten.
 Das spricht nicht für einen gescripteten Angriff, und ist inkonsistent mit meinem Bild von einem "Free Nitro" Scammer und Angreifer.
 
-Das Logbuch des Serves und der mit `depsums` verifizierte Zustand des Systems macht eine Reinstallation von allem vermutlich nicht notwendig.
+Das Logbuch des Serves und der mit `debsums` verifizierte Zustand des Systems macht eine Reinstallation von allem 
+vermutlich nicht notwendig.
 Es genügt, mit dem Stand aus dem Backup weiterzufahren.
 Das ist angenehm:
 Zwar ist der Server vollständig ansibilisiert und mit dem Backup in weniger als 30 Minuten aus einer kompletten Neuinstallation wiederherzustellen, aber wenn das nicht notwendig ist, ist das angenehm.
