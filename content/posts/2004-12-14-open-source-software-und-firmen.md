@@ -6,6 +6,7 @@ published: true
 tags:
 - computer
 - lang_de
+- free software
 title: Open Source Software und Firmen
 ---
 
