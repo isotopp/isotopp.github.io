@@ -6,7 +6,165 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 07 Jan 2022 14:40:13 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 10 Jan 2022 09:42:27 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Never check for an error condition you don&#39;t know how to handle</title>
+      <link>https://blog.koehntopp.info/2022/01/10/never-check-for-an-error-condition.html</link>
+      <pubDate>Mon, 10 Jan 2022 07:11:35 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/01/10/never-check-for-an-error-condition.html</guid>
+      <description>&lt;p&gt;Computer scientists are weird.
+In their science there are a few rules that sound wrong when you hear them first, but make a lot of sense if you think about them.
+Some of them are making sense even outside of computer science.&lt;/p&gt;
+&lt;p&gt;One of those rules is&lt;/p&gt;
+&lt;h1 id=&#34;never-check-for-an-error-condition-you-dont-know-how-to-handle&#34;&gt;
+    &lt;a href=&#34;#never-check-for-an-error-condition-you-dont-know-how-to-handle&#34;&gt;
+	Never check for an error condition you don&amp;rsquo;t know how to handle.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When you encounter this the first time that sounds very questionable.
+There are known error conditions in my program that I know they can happen, and I should not check for them?&lt;/p&gt;
+&lt;p&gt;If you read that left to right, that&amp;rsquo;s exactly what it means.
+Let&amp;rsquo;s have a look at an example and try to understand what goes on.
+Here is a very simple case: I could try to allocate memory from the operating system and that can fails.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;malloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;someSize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;what_now&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is a very typical situation.
+For example, why does the library function &lt;code&gt;malloc()&lt;/code&gt; not check itself for &lt;code&gt;p == NULL&lt;/code&gt;  and handles this case?
+Because it does not, I have to do that every time and must not forget that in a single case.&lt;/p&gt;
+&lt;p&gt;Indeed, most programs have a function &lt;code&gt;safe_malloc()&lt;/code&gt;, which wraps &lt;code&gt;malloc()&lt;/code&gt; and more or less looks like the example above.
+The point being that each program has their own implementation of &lt;code&gt; what_now()&lt;/code&gt;, because the desired behavior is specific to the application and cannot be provided by the library.&lt;/p&gt;
+&lt;p&gt;One could argue that &lt;code&gt;malloc()&lt;/code&gt; should internally call a &lt;code&gt;what_now()&lt;/code&gt;, and each library user would have to provide an implementation for that.
+But that would proscribe a certain mode of usage for &lt;code&gt;malloc()&lt;/code&gt;.
+The solution that &lt;code&gt;malloc()&lt;/code&gt; does not do the check, but only signals the error, is the most flexible solution &amp;ndash; and hence suitable for a library function, because it leaves the choice to the user.
+It provides mechanism, but not policy.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Side thought:&lt;/strong&gt; That&amp;rsquo;s one of the main differences between a library and a framework.
+Libraries provide mechanism, but do not enforce a policy.
+They do not proscribe a default way of working with problems.
+Frameworks are opinionated, and have been designed with a specific way of working in mind, and provide policies that are considered default solutions in the context of the framework.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Side side though:&lt;/strong&gt; Kernel, libraries and frameworks are all infrastructure, and as all infrastructure they are being judged by how they fail.
+In this case: What solutions exist to bypass the policy in a framework, if the policy does not fit.
+&amp;ldquo;How can I have queries in &lt;a href=&#34;https://en.wikipedia.org/wiki/Ruby_on_Rails&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RoR&lt;/a&gt;
+
+ that bypass &lt;a href=&#34;https://en.wikipedia.org/wiki/Active_record_pattern&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Active Record&lt;/a&gt;
+
+&amp;rdquo; is one example.
+How free of policy is this library?
+Is it just a mechanism or is there an obvious or hidden intention, a policy?&lt;/p&gt;
+&lt;p&gt;A library ideally supplies just a mechanism, but that makes it mandatory for the developer to think about a policy for error handling and how to implement it.
+That&amp;rsquo;s a relatively obvious point, but one that in my experience is not taught sufficiently.
+If it wasn&amp;rsquo;t, we&amp;rsquo;d have less bad code in many projects.
+And I do not want to limit myself to the tons of toxic PHP-MYSQL that fire queries at a database without checking for errors at all.&lt;/p&gt;
+&lt;p&gt;The point is rather that a missing policy for error handling requires that you provide one in the application (or at least some minimal standards in the application).
+Some programming environments have a name for such an informal construct:
+A convention, a contract between library developer and application developer that is informal and not enforced by the mechanisms of the language.
+The convention is also often unspoken, or not made explicit enough in the documentation of the library.
+And hence taught insufficiently, and then implemented insufficiently.&lt;/p&gt;
+&lt;p&gt;But you can take the sentence&lt;/p&gt;
+&lt;h1 id=&#34;never-check-for-an-error-condition-you-dont-know-how-to-handle-1&#34;&gt;
+    &lt;a href=&#34;#never-check-for-an-error-condition-you-dont-know-how-to-handle-1&#34;&gt;
+	Never check for an error condition you don&amp;rsquo;t know how to handle.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;and read it backwards.
+What exactly does it mean to handle an error condition?
+Specifically, if the error happens, what are our options and what is the desired failure mode?
+What is supposed to happen?&lt;/p&gt;
+&lt;p&gt;Going back to the &lt;code&gt;malloc()&lt;/code&gt; above:
+When that happens, the operating system can&amp;rsquo;t or won&amp;rsquo;t give us more memory.
+We don&amp;rsquo;t know why, so we have to assume the worst.
+That is: memory is full, nobody gets any memory any more.
+In fact, there could be another program that permanently allocates more memory.
+So even if we gave memory back to the operating system, we wouldn&amp;rsquo;t get it back when trying to reserve it.&lt;/p&gt;
+&lt;p&gt;So handling this error means that we already have all memory required to recover from the situation before the error happens.
+That&amp;rsquo;s a really complicated situation, and too complicated for most application developers when we force them to think about it.
+At the point in time when this happens they are usually busy with completing the non-failing, actually function path of the application before they are ready to turn to failure modes and their code pathes.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Side thought:&lt;/strong&gt; This is another main reason for bad code:
+We force developers to think about failing code pathes at the wrong point in time.
+They really want to write programs that work well.
+But we shouldn&amp;rsquo;t bother them with failure handling right when they are busy with completing the money earning part of the code.&lt;/p&gt;
+&lt;p&gt;If we bother devs at the wrong moment in time, we get error handling like this at best:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;malloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;someSize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ENOMEM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// out of memory error
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Well, at least they checked for an error.
+Maybe there are even some &lt;code&gt; atexit(3)&lt;/code&gt; handlers stacked that will try to clean up, but did you ever see any of those?&lt;/p&gt;
+&lt;p&gt;If you see code like this, it is screaming at you &amp;ldquo;Yes, yes, I know, but I am really busy now with other things. Go away!&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Another common problem is that we need to check for the error at the lowest level, but need more context at the higher levels of our code to handle it properly.
+Sometimes there is not even a contract on how errors are being bubbled up to the next layer without losing information.
+The interiors of the MySQL codebase used to be a prime example of that.
+You could find code that mapped error codes similar to&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;errcode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;doSomeThing&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;switch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;errcode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;E_THIS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;E_THAT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is taking detailed internal error codes and flattens them into larger categories, losing detail.
+Sometimes a higher level handler has more context, but no longer sufficient detail to decide what exactly went wrong at the lower layers.&lt;/p&gt;
+&lt;p&gt;The rule&lt;/p&gt;
+&lt;h1 id=&#34;never-check-for-an-error-condition-you-dont-know-how-to-handle-2&#34;&gt;
+    &lt;a href=&#34;#never-check-for-an-error-condition-you-dont-know-how-to-handle-2&#34;&gt;
+	Never check for an error condition you don&amp;rsquo;t know how to handle.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;means we need to discuss things.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Diagnosis:&lt;/strong&gt; Capture the error. Formulate a test which at some point in the code checks that we have a problem and distinctively signals which error that is.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Policy:&lt;/strong&gt; Determine the desired behavior for handling the error, that is, have a policy that explains how to handle the error.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Context:&lt;/strong&gt; Decide where in the stack the error can be handled best, or if we need to escalate. When we escalate, make sure an escalation is expected at the higher layer and check for their policy. They need to have one. Also make sure the escalation does not lose detail.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;this-is-useful-outside-of-computer-science&#34;&gt;
+    &lt;a href=&#34;#this-is-useful-outside-of-computer-science&#34;&gt;
+	This is useful outside of computer science.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The original trigger to write this article in 2009 was a discussion about a 911-button (110-Taste) in a web browser.
+&amp;ldquo;If you see something, say something&amp;rdquo;: If you find web pages that contain things that may be relevant for law enforcement, have a way to call for help.&lt;/p&gt;
+&lt;p&gt;That&amp;rsquo;s a very german and very 2009 idea, but suppose you want that: Coding that is easy, right? A button in a browser that raises an alarm somewhere should be very few lines of code in an extension.&lt;/p&gt;
+&lt;p&gt;The real problem - and that is not a code problem - is the &lt;code&gt;what_now()&lt;/code&gt;.
+What is supposed to happen with that alarm signal.
+That&amp;rsquo;s a process question, that is &lt;strong&gt;WHO needs to talk WHEN with WHOM about WHAT?&lt;/strong&gt;
+What information needs to be sent when the button is pressed and what reaction is then expected?&lt;/p&gt;
+&lt;p&gt;Do we build a central emergency call center?
+Do we transport location and identity information together with the call, if that is necessary?
+If so, how?&lt;/p&gt;
+&lt;p&gt;What other information is necessary to provide context?
+The current URL?
+The persistent state of the browser, with all bookmarks, the history and so on?
+The volatile state of the browser, eg with all active spywat, but also all legit variables?
+The whole state of the computer, processlist, memory and program information, installed software and so on?&lt;/p&gt;
+&lt;p&gt;How is that call then handled and classified?&lt;/p&gt;
+&lt;p&gt;What are standard reactions to verified and classfied emergency escalations?
+Can the emergency call center take over the computer and extract further information and do a full forensic analysis?
+Can they write and change the state of the machine to help?
+Or can they just call back, and request a read-only screen sharing session to talk the user trough the emergency?&lt;/p&gt;
+&lt;p&gt;What taxonomy of emergencies do we build, and what are the required steps to verify a case?&lt;/p&gt;
+&lt;p&gt;Do we plan for preventatice action, when we register a spike in incidents of a certain type (ie a computer virus outbreak)?
+Do we have a problem management and change managent on top of our incident management that would want to and be able to prevent a large scale situation in the field?
+In the case of an outbreak, for example, by forcing patches on all machines?&lt;/p&gt;
+&lt;p&gt;How to we build the technical and legal framework for this?
+How do we build the organisartion for this?
+How to we enforce the technical changes required to be able to do this?
+Do we make the installation of some software mandatory to be able to be on the Internet?
+How do we protect this infrastructure against abuse?&lt;/p&gt;
+&lt;p&gt;The check was easy &amp;ndash; an emergency call button in a browser.&lt;/p&gt;
+&lt;p&gt;The work is in the handling, which can be &amp;ldquo;somewhat involved&amp;rdquo;.
+But these are details that are gracefully elided in the discussion when politicans demand such a button.
+That&amp;rsquo;s providing quite simplicistic disucssions:
+Why do we not have such a button in every browser already?&lt;/p&gt;
+&lt;p&gt;Can&amp;rsquo;t be that hard, right?&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>... and a happy new hack.</title>
       <link>https://blog.koehntopp.info/2022/01/01/and-a-happy-new-hack.html</link>
@@ -3782,89 +3940,6 @@ wenn irgendwo in einer gut geführten Softwarefirma eine Outage war, dann setzen
 &lt;p&gt;Wieder braucht es dazu aber auch in der öffentlichen Verwaltung eine andere Kultur:
 einen grundlegenden Wandel, ein Bekenntnis zu Offenheit, Transparenz, Kooperation und Open Source.
 Solange sich das nicht ändert, wird sich die Tragödie vom Scheitern der Digitalisierung in der deutschen Verwaltung wieder und wieder und wieder wiederholen.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Software Defined Silicon</title>
-      <link>https://blog.koehntopp.info/2021/09/30/software-defined-silicon.html</link>
-      <pubDate>Thu, 30 Sep 2021 20:01:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/30/software-defined-silicon.html</guid>
-      <description>&lt;p&gt;Golem titelt &lt;a href=&#34;https://www.golem.de/news/software-defined-silicon-intel-will-xeon-funktionen-als-lizenz-update-verkaufen-2109-159912.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Intel will Xeon-Funktionen als Lizenz-Update verkaufen&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Intel will Xeon-Funktionen als Lizenz-Update verkaufen.&lt;/p&gt;
-&lt;p&gt;Mit dem Software Defined Silicon will Intel in Xeon-Hardware zunächst abgeschaltete Funktionen künftig als Lizenz-Upgrade bereitstellen.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;a href=&#34;https://twitter.com/HonkHase/status/1442760700112343044&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Manuel Atug ranted&lt;/a&gt;
-
- darüber auf Twitter:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/09/intel-software-silicon.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Wenn dir die eigene Hardware nicht mehr gehört&amp;hellip;
-Intel will Xeon-Funktionen als Lizenz-Update verkaufen
-&amp;ldquo;Mit dem Software Defined Silicon will Intel in Xeon-Hardware zunächst abgeschaltete Funktionen künftig als Lizenz-Upgrade bereitstellen.&amp;quot;&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Ich &lt;a href=&#34;https://twitter.com/isotopp/status/1442896442926895104&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;antwortete&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;p&gt;Das braucht wesentlich mehr Kontext.&lt;/p&gt;
-&lt;h1 id=&#34;xeons-sind-selten-und-haben-nicht-viele-kunden&#34;&gt;
-    &lt;a href=&#34;#xeons-sind-selten-und-haben-nicht-viele-kunden&#34;&gt;
-	Xeons sind selten und haben nicht viele Kunden
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Intel stellt zurzeit eine sehr kleine einstellige Anzahl Millionen Xeon CPUs her.
-Davon gehen 85 % an weniger als 10 Kunden - Hyperscaler in den USA und China.
-12 % oder so gehen an ca. 150 Kunden, die messbare Stückzahlen der Produktion aufkaufen.
-Der Rest sind Kleinkunden.&lt;/p&gt;
-&lt;p&gt;Das ist eine sehr ungesunde Marktstruktur, und Intel weiß um die Probleme, die das mit sich bringt.
-Dies ist keine neue Situation, sondern war schon ein Problem, bevor Apple mit ARM losgelegt hat und AMD mit dem EPYC auf den Markt kam.
-Diese beiden Ereignisse haben die Situation aber noch verkompliziert.&lt;/p&gt;
-&lt;p&gt;Dazu kommt noch, dass die obigen Prozentangaben nach Stückzahlen sind, nicht nach Core-Count.
-Denn ansonsten sähe die Situation noch extremer aus:
-Hyperscaler haben Interesse an immer größeren CPUs mit immer mehr Kernen, und immer höherer Dichte in ihren Rechenzentren.
-Hyperscaler haben CPU Utilization und Return-per-Core als KPI und wollen Custom Silicon zum Auslagern der Virtualisierung, für das Netz, oder spezielle Tensorflow CPUs.&lt;/p&gt;
-&lt;p&gt;Normale Kunden sehen das nicht so:
-man kann in einer 64C/128T-Core-Single-Socket-Konfiguration mit 2-4 TB RAM unter Umständen den gesamten Serverbedarf einer kleineren Firma in einer einzelnen physikalischen Maschine in VMs unterbringen.
-Das Problem dabei: Explosionsradius, wenn mal etwas ausfällt.&lt;/p&gt;
-&lt;h1 id=&#34;cloud-und-on-premise-driften-auseinander&#34;&gt;
-    &lt;a href=&#34;#cloud-und-on-premise-driften-auseinander&#34;&gt;
-	Cloud und On-Premise driften auseinander
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Effektiv bewirkt dies, dass die Bauweise der Rechner, die in der Public Cloud Dienst tun, und die Bauweise der Rechner in den Rechenzentren normaler Leute stehen auseinander driften.
-Das fängt heute an, aber der Bruch wird sich in den kommenden 5-10 Jahren noch vertiefen.&lt;/p&gt;
-&lt;p&gt;Ein Xeon-Markt für Hyperscaler ist groß, aber der Xeon-Markt &amp;ldquo;Server CPU für Cloud-Feinde&amp;rdquo; wird eher klein sein und schrumpfen.
-Und wird sich dann irgendwann nicht mehr lohnen.&lt;/p&gt;
-&lt;p&gt;Davon mal abgesehen wird durch die laufend verbesserte Integration Chipfläche frei, und Intel muss sehen, was damit anzufangen ist, wenn es nicht &amp;ldquo;immer mehr Cores&amp;rdquo; sein können.
-Software Defined Silicon ist ein Testballon, mit dem man das herausfinden kann.
-Für die Firma wäre es schon wichtig, das herauszufinden:
-von oben drücken die Hyperscaler mit ihren Forderungen nach Mengenrabatten, von der Seite drängt AMD mit ihrer derzeit überlegenen EPYC-Architektur in den Markt und von unten drückt ARM.&lt;/p&gt;
-&lt;p&gt;Vielen Kunden können diese Pay-to-Play Features egal sein:
-Eine Webshop-Workload sieht in einem Intel vTune aus wie ein REP MOVSB Benchmark, memcpy() at scale, Variablen werden in HTML Templates eingesetzt.&lt;/p&gt;
-&lt;p&gt;Sogar die FPU und die ganzen AVX-Instruktionen - das ist alles Verschwendung von Chipfläche für die meisten Kunden.
-Nur wenige Anwendungen brauchen und nutzen diese Funktionalität in der CPU wirklich.&lt;/p&gt;
-&lt;p&gt;Man stelle sich vor, man muss zum Beispiel für einen Inference Offloader (&amp;ldquo;bestehende Machine Learning Netze ausführen, nicht lernen&amp;rdquo;) bezahlen, und dann wird der auf den meisten Maschinen nie angewendet.
-Aber eine Serie CPUs herstellen, die diesen Inference Offloader hat, ihnen eine eigene Seriennummer zu geben und sie einzeln zu verkaufen will auch keiner.
-Die Stückzahlen und die Preise geben das nicht her.&lt;/p&gt;
-&lt;h1 id=&#34;der-marktdruck-zeigt-zur-cloud&#34;&gt;
-    &lt;a href=&#34;#der-marktdruck-zeigt-zur-cloud&#34;&gt;
-	Der Marktdruck zeigt zur Cloud
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Wenn aber absehbar ist, dass in 5-10 Jahren die Trennung von Cloud-Hardware und On-Premise Hardware vollzogen sein wird, dann ist es auch klar, dass es nach Ablauf dieser Zeit nicht mehr möglich sein wird, ein Rechenzentrum mit Private Cloud kompetitiv zu betreiben.
-Das wird so kommen, weil die Cloud-Technik schlicht proprietär und für normalsterbliche Kunden nicht zu haben sein wird.&lt;/p&gt;
-&lt;p&gt;Bei der Technik und der Wirtschaftlichkeit zeigen alle Push- und Pull-Faktoren derzeit massiv in Richtung Cloud.
-Wer sein Unternehmen und seine IT darin nicht mit Gewalt und jetzt in die Public Cloud bringt, der wird nach dem Vollzug dieser Trennung in die Röhre schauen.&lt;/p&gt;
-&lt;p&gt;Eigene Server vor Ort sind - bei vorhersagbarem Bedarf - auf viele Weisen billiger als in der Cloud zu mieten.
-Aber man muss dann auch die eigenen Operations professionalisieren und man muss sich überlegen, wo in 5-10 Jahren die Technik herkommen soll.&lt;/p&gt;
-&lt;p&gt;Und wenn wir uns noch einmal die eingangs diskutierte Kundenstruktur von Intel ansehen, dann gibt es weniger als 200 Unternehmen weltweit, die dazu die erforderliche Masse haben.
-Das ist sehr frustrierend.&lt;/p&gt;
 </description>
     </item>
     
