@@ -86,10 +86,10 @@ So even if we gave memory back to the operating system, we wouldn't get it back 
 
 So handling this error means that we already have all memory required to recover from the situation before the error happens.
 That's a really complicated situation, and too complicated for most application developers when we force them to think about it.
-At the point in time when this happens they are usually busy with completing the non-failing, actually function path of the application before they are ready to turn to failure modes and their code pathes.
+At the point in time when this happens they are usually busy with completing the non-failing, actually function path of the application before they are ready to turn to failure modes and their code paths.
 
 **Side thought:** This is another main reason for bad code:
-We force developers to think about failing code pathes at the wrong point in time.
+We force developers to think about failing code paths at the wrong point in time.
 They really want to write programs that work well.
 But we shouldn't bother them with failure handling right when they are busy with completing the money earning part of the code.
 
@@ -174,8 +174,8 @@ Do we plan for preventatice action, when we register a spike in incidents of a c
 Do we have a problem management and change managent on top of our incident management that would want to and be able to prevent a large scale situation in the field?
 In the case of an outbreak, for example, by forcing patches on all machines?
 
-How to we build the technical and legal framework for this?
-How do we build the organisartion for this?
+How do we build the technical and legal framework for this?
+How do we build the organisation for this?
 How to we enforce the technical changes required to be able to do this?
 Do we make the installation of some software mandatory to be able to be on the Internet?
 How do we protect this infrastructure against abuse?
@@ -184,7 +184,7 @@ The check was easy -- an emergency call button in a browser.
 
 The work is in the handling, which can be "somewhat involved".
 But these are details that are gracefully elided in the discussion when politicans demand such a button.
-That's providing quite simplicistic disucssions:
+That's providing quite simplicistic discussions:
 Why do we not have such a button in every browser already?
 
 Can't be that hard, right?
