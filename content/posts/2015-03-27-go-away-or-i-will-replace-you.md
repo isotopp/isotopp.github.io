@@ -159,7 +159,7 @@ Applying developer methods to operations problems changes the environment and to
 - Systems are provisioned with "Infrastructure as Code", automatically and on demand, via an API with no humans involved.
 - The code for the application and the infrastructure itself resides in a shared version control system, where it can also be subject to automation.
 - There is a one step build and deploy automation that produces deliverables. These are then automatically deployed into production with zero humans involved, if so desired.
-- The deployment and the activation of code pathes is separated, using feature flags and instrumentation to compare performance aspects of these code pathes. Separation of deployment and activation is key to safe and fast rollouts, gradual activation and [one-click rollbacks]({{< ref "/content/posts/2020-01-17-rolling-back-a-rollout.md" >}}).
+- The deployment and the activation of code paths is separated, using feature flags and instrumentation to compare performance aspects of these code paths. Separation of deployment and activation is key to safe and fast rollouts, gradual activation and [one-click rollbacks]({{< ref "/content/posts/2020-01-17-rolling-back-a-rollout.md" >}}).
 - Monitoring and freshness indicator on monitoring metrics are key to proper failure detection.
 - Instant and shared communication is key to decisive join action in failure situations.
 

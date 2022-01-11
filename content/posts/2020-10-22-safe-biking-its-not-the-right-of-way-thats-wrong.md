@@ -95,7 +95,7 @@ This is not an unusual trip in the Netherlands. In another article in this blog,
 
 ## But these bike paths are empty!
 
-"But, Kris! All these bike pathes are always empty!" Yes, they are. It's awesome. You get to ride at your own speed, and without disturbance. It also is a great example that shows how incredibly space efficient bikes are, compared to cars. In fact, how incredibly space efficient *anything* is, compared to cars.
+"But, Kris! All these bike paths are always empty!" Yes, they are. It's awesome. You get to ride at your own speed, and without disturbance. It also is a great example that shows how incredibly space efficient bikes are, compared to cars. In fact, how incredibly space efficient *anything* is, compared to cars.
 
 ![](/uploads/2020/10/bike-60people.jpg)
 

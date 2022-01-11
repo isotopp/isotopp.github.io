@@ -51,7 +51,7 @@ This not only enables quantified reasoning over the change the experiment introd
 
 ### Production load testing numbers for capacity
 
-But in order to allow developers to experiment safely, you need to have accurate capacity metrics, which CPU load is not. Testing in production, safely, specifically automated load tests with actual production users and separate monitoring of experiment codepathes (and consumption attribution at the request level to experiment variants) will provide these numbers.
+But in order to allow developers to experiment safely, you need to have accurate capacity metrics, which CPU load is not. Testing in production, safely, specifically automated load tests with actual production users and separate monitoring of experiment codepaths (and consumption attribution at the request level to experiment variants) will provide these numbers.
 
 And that is the way to go: From reactive scaling ("CPU Load too high, raise capacity") to predictive scaling ("Our capacity is x req/m per box, and we have n. Evening peak will be m, so we need y boxen more by 16:00."). Which brings us back to the spiky loads where we started.
 

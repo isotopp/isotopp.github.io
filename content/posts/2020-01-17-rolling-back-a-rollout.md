@@ -81,7 +81,7 @@ Your second iteration of the experiment framework will therefore measure the *im
 
 Business impact measurements would answer questions such as "What influence has Experiment 17 on conversion?" or "Does variant B of experiment 17 not only improve conversion, but also customer support call rate, and if so, it is still a positive experiment in the monetary sense"?
 
-But as a gate to the entry of code pathes, the experiment framework can also encapsulate Probes that collect metrics over a Span, delivering technical measurements about the performance cost of an experiment. I can ask questions such as "Show me all messages in variant B of rollout 64fd32f that never appear when running variant A", or "What messages appear since rollout 64fd32f that did not appear before".
+But as a gate to the entry of code paths, the experiment framework can also encapsulate Probes that collect metrics over a Span, delivering technical measurements about the performance cost of an experiment. I can ask questions such as "Show me all messages in variant B of rollout 64fd32f that never appear when running variant A", or "What messages appear since rollout 64fd32f that did not appear before".
 
 I can also carry metrics and classify them by experiment related selectors. "Show me SQL time spent in variant B compared to variant A of rollout 64fd32f in all sections guarded by experiment 13, normalized by number of executions". In other words, what exactly is the latency contribution of experiment 13b, since 64fd32f?
 

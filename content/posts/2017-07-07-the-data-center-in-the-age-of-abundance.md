@@ -52,13 +52,13 @@ gets a dual-25 GBit/s network card).
 
 Companies like Mellanox have switches with a large two digit
 number of 100 GBit/s Interfaces. We have leaf-and-spine
-architectures available that allow us to build data pathes
+architectures available that allow us to build data paths
 between tens of thousands of computers inside a single data
 center with no chokepoints - we are actually getting the 1
 GBit/s per thread on the entire path between _any_ thread and
 _any_ disk in our data center, concurrently.
 
-In the past, commit latency to a disk along these pathes used to
+In the past, commit latency to a disk along these paths used to
 be on the upside of 500 µs (1/2000 of a second) and more likely
 in the low milliseconds. But with current cards, offloading and
 other trickery we can get at or below 200 µs. Add scary stuff

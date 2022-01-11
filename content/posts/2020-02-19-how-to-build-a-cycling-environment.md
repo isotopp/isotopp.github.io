@@ -149,7 +149,7 @@ A [second video](https://www.youtube.com/watch?v=FlApbxLz6pA) ([same video in Ge
 
 ## Did you say 15 km/h?
 
-The *design* speed for cycle pathes in the Netherlands is for an average speed of 15 km/h.
+The *design* speed for cycle paths in the Netherlands is for an average speed of 15 km/h.
 
 The cycle infrastructure is excellent, and you can often and for long stretches read a much higher speed, but there are two core ideas behind the entire network that lead to the 15 km/h design speed:
 
@@ -159,7 +159,7 @@ That leads to a design requirement in which a 4-year-old can cycle to school sup
 
 It also leads to the design requirement that two cyclists can ride abreast - parents riding with their children, or just two people riding together and chatting, like they would do in a car. A cycle path that wide (per direction) also enables overtaking, and has sufficient space for transport bikes.
 
-The key idea is that bike pathes are a system for the many, not for the fittest.
+The key idea is that bike paths are a system for the many, not for the fittest.
 
 **Multimodal Transport** The bike system in the Netherlands and the public transport (OV) system are designed to work together. The designers envision the bike trip of commuters to be <7.5km (<30m travel time on bike, <20m at 25 km/h), ending at a train station.
 

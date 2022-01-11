@@ -148,7 +148,7 @@ One level of leaf-and-spine can build a number of racks that are bound together 
 
 We can of course put another layer of leaf-and-spine on top to bundle stacks together, and we get a network layer that is never a bottleneck and that never disconnects, across an entire data center location.
 
-"Never disconnects?" Well, assuming three uplinks, and with a stack layer on top of the first leaf-and-spine layer, we get four hops from start to destination, and that 3^4 possible redundant pathes to every destination ToR via ECMP.
+"Never disconnects?" Well, assuming three uplinks, and with a stack layer on top of the first leaf-and-spine layer, we get four hops from start to destination, and that 3^4 possible redundant paths to every destination ToR via ECMP.
 
 Chances are that you need to build a specialized monitoring to even notice a lost link. You can only have outages at the ToR.
 

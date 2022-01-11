@@ -33,7 +33,7 @@ enough.
 
 - It reduces cycling in "weak" cyclists, very young and older people,
   feeling insecure close to cars.
-- It prevents building wide cycle pathes, and prevents "social" cycling, that is,
+- It prevents building wide cycle paths, and prevents "social" cycling, that is,
   usually two cyclists can't be riding side by side, talking while cycling,
   like people in a car would be able to do it.
 - It comes with speed limits on the car in order to be safe. In the
