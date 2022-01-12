@@ -6,7 +6,7 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 12 Jan 2022 21:51:30 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 12 Jan 2022 22:27:05 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>UTF8MB4</title>
       <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
@@ -170,7 +170,7 @@ And you define an index on it:&lt;/p&gt;
 We store rows in the table &lt;code&gt;kris&lt;/code&gt; by inserting data.
 The database assigns a primary key &lt;code&gt;id&lt;/code&gt;, and stores the tuple &lt;code&gt;(id, c, d)&lt;/code&gt; in the table.
 It also needs to maintain the index on &lt;code&gt;c&lt;/code&gt;, so it will take the &lt;code&gt;c&lt;/code&gt;-value of each row and store it in the index &lt;strong&gt;in sorted order&lt;/strong&gt; with a pointer to the full row.&lt;/p&gt;
-&lt;p&gt;In InnoDB, the row pointer used by secondary indexes is actually the primary, &lt;code&gt;id&lt;/code&gt;, so we do het the index &lt;code&gt;c&lt;/code&gt; as tuples &lt;code&gt;(c, id)&lt;/code&gt;.
+&lt;p&gt;In InnoDB, the row pointer used by secondary indexes is actually the primary, &lt;code&gt;id&lt;/code&gt;, so we do get the index &lt;code&gt;c&lt;/code&gt; as tuples of &lt;code&gt;(c, id)&lt;/code&gt;.
 That means each secondary has the primary key as a tail, so the primary key better be short.
 In our case, it is a &lt;code&gt;BIGINT&lt;/code&gt;, so 8 bytes are added as a row pointer to the index, for each row.&lt;/p&gt;
 &lt;p&gt;Notice the fat &lt;strong&gt;in sorted order&lt;/strong&gt;?&lt;/p&gt;
@@ -182,14 +182,14 @@ So let&amp;rsquo;s have a look at character ordering.&lt;/p&gt;
 	Collations are comparison rules for characters
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Our collation is given as &lt;code&gt;utf8mb4_0900_ai_ci&lt;/code&gt;, and that are the Unicode Collation Algorithm (UCA) 9.0 sorting rules for 4-byte UTF*, with accent insensitivity and case insensitivity.&lt;/p&gt;
+&lt;p&gt;Our collation is given as &lt;code&gt;utf8mb4_0900_ai_ci&lt;/code&gt;, and that are the Unicode Collation Algorithm (UCA) 9.0 sorting rules for 4-byte UTF8, with accent insensitivity (&lt;code&gt;ai&lt;/code&gt;)&lt;code&gt;and case insensitivity (&lt;/code&gt;ci`).&lt;/p&gt;
 &lt;p&gt;We need to learn even more:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Collations are rules for handling comparisons between glyphs in a specific encoding.
 There are encodings for &lt;code&gt;latin1&lt;/code&gt;, other ones specific to &lt;code&gt;utf8&lt;/code&gt; and again different ones for &lt;code&gt;utf8mb4&lt;/code&gt;.&lt;/li&gt;
 &lt;li&gt;Collations define &lt;em&gt;sort orders&lt;/em&gt; and &lt;em&gt;equality rules&lt;/em&gt;.
 &lt;code&gt;ci&lt;/code&gt; means the &lt;em&gt;sort order&lt;/em&gt; is case insensitive, so &amp;ldquo;Köhntopp&amp;rdquo;, &amp;ldquo;KÖHNTOPP&amp;rdquo; and &amp;ldquo;köhntopp&amp;rdquo; sort the same. With &lt;code&gt;cs&lt;/code&gt; they would not.
-&lt;code&gt;ai&lt;/code&gt; means accent insentitive, so &lt;code&gt;WHERE c = &amp;quot;Kohntopp&amp;quot;&lt;/code&gt; matches &amp;ldquo;Köhntopp&amp;rdquo;. With &lt;code&gt;as&lt;/code&gt; they would not.&lt;/li&gt;
+&lt;code&gt;ai&lt;/code&gt; means accent insentitive, so &lt;code&gt;WHERE c = &amp;quot;Kohntopp&amp;quot;&lt;/code&gt; matches &amp;ldquo;Köhntopp&amp;rdquo;. With &lt;code&gt;as&lt;/code&gt; it would not.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;We can show the collations for a given character set.
 There are over 250 of them, and 75 alone for &lt;code&gt;utf8mb4&lt;/code&gt;.
@@ -228,7 +228,8 @@ Sure enough:&lt;/p&gt;
 &lt;/h4&gt;
 &lt;p&gt;The xxx_general_mysql500_ci collations preserve the pre-5.1.24 ordering of the original xxx_general_ci collations and permit upgrades for tables created before MySQL 5.1.24 (Bug #27877).&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;This is another important fact we need to remember.&lt;/p&gt;
+&lt;p&gt;MySQL 5.1.24 was released on 2008-04-08, 14 years ago.
+We have &lt;em&gt;buggy&lt;/em&gt; sort orders used back then maintained in current MySQL for the sake of upgradability.&lt;/p&gt;
 &lt;h3 id=&#34;tldr-so-far&#34;&gt;
     &lt;a href=&#34;#tldr-so-far&#34;&gt;
 	TL;DR, so far
@@ -246,15 +247,15 @@ Sure enough:&lt;/p&gt;
 &lt;li&gt;Sort orders are a property of character sets.&lt;/li&gt;
 &lt;li&gt;UTF8 sorted according to UCA 4.x and UCA 5.0, UTF8MB4 sorts according to UCA 9.0. Specifically, the concept of segregating sort order comparison from equality comparison, and introducing accent insensitivity is new in UCA 9.0 and not present in previous UCA versions.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;That means, while &lt;code&gt;utf8&lt;/code&gt; is a strict subset of &lt;code&gt;utf8mb4&lt;/code&gt; in terms of character repertoire and encoding, it sorts differently.
+&lt;p&gt;That means, while &lt;code&gt;utf8&lt;/code&gt; is a strict subset of &lt;code&gt;utf8mb4&lt;/code&gt; in terms of character repertoire and encoding (modulo bug fixes), it sorts differently.
 An &lt;code&gt;ALTER TABLE kris MODIFY COLUMN c varchar(20) charset utf8&lt;/code&gt; in our example table implies a drop on the index &lt;code&gt;c&lt;/code&gt;, and it&amp;rsquo;s recreation with a different sort order, from scratch.
 Not fast on a large table.&lt;/p&gt;
-&lt;h2 id=&#34;so-what-would-happen-if-utf8-suddently-means-utf8mb4&#34;&gt;
-    &lt;a href=&#34;#so-what-would-happen-if-utf8-suddently-means-utf8mb4&#34;&gt;
-	So what would happen if &lt;code&gt;utf8&lt;/code&gt; suddently means &lt;code&gt;utf8mb4&lt;/code&gt;?
+&lt;h2 id=&#34;so-what-would-happen-if-utf8-suddently-meant-utf8mb4&#34;&gt;
+    &lt;a href=&#34;#so-what-would-happen-if-utf8-suddently-meant-utf8mb4&#34;&gt;
+	So what would happen if &lt;code&gt;utf8&lt;/code&gt; suddently meant &lt;code&gt;utf8mb4&lt;/code&gt;?
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Let&amp;rsquo;s imagine a MySQL 9.0 comes out, and in that release &lt;code&gt;utf8&lt;/code&gt; suddenly means &lt;code&gt;utf8mb4&lt;/code&gt;?
+&lt;p&gt;Let&amp;rsquo;s imagine a MySQL 9.0 comes out, and in that release &lt;code&gt;utf8&lt;/code&gt; suddenly means &lt;code&gt;utf8mb4&lt;/code&gt;.
 If you greenfield a new installation, no problem.&lt;/p&gt;
 &lt;p&gt;If you apply the update to an existing installation, all your character columns that are part of an index need to be checked, and if required, rebuilt.
 At the time when you apply the database update.
@@ -269,8 +270,8 @@ That can be quite inconvenient.&lt;/p&gt;
 Unless you do.&lt;/p&gt;
 &lt;p&gt;So you could create new columns using the new character set and collations, even in existing tables.
 That is possible, because unlike in the other database, in MySQL a charset and collation is a column attribute.
-Tables, databases and servers just provides defaults that are inherited at the time of object creation.&lt;/p&gt;
-&lt;p&gt;So if you wanted to upgrade your database, you&amp;rsquo;d installa new version.
+Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.&lt;/p&gt;
+&lt;p&gt;So if you wanted to upgrade your database, you&amp;rsquo;d install a new version.
 Then you would check all columns and note which one need changing.
 And then you would change them, table by table, at your own leisure.
 Possibly using tooling such as Percona Online Table Change (&amp;ldquo;OSC&amp;rdquo;), making the change in the background without service interruption.&lt;/p&gt;
@@ -278,7 +279,7 @@ Possibly using tooling such as Percona Online Table Change (&amp;ldquo;OSC&amp;r
 It never changes collations any more (it did, in the dark, evil past, creating a lot of suffering).
 It is not even correcting bugs in existing collations any more (except by creating newly renamed collations).
 Instead you run your collation migrations as it fits into your operational schedule.&lt;/p&gt;
-&lt;p&gt;For Unicode that means, 4-byte Unicode is &lt;code&gt;utf8mb4&lt;/code&gt; in MySQL.&lt;/p&gt;
+&lt;p&gt;For Unicode that means, 4-byte Unicode is &lt;code&gt;utf8mb4&lt;/code&gt; in MySQL, because the name &lt;code&gt;utf8&lt;/code&gt; was already taken by a previous version of the Unicode character set.&lt;/p&gt;
 &lt;h2 id=&#34;not-using-libc&#34;&gt;
     &lt;a href=&#34;#not-using-libc&#34;&gt;
 	Not using libc.
@@ -291,6 +292,9 @@ It means that, unlike the other database, MySQL does not break when you upgrade 
 If MySQL used &lt;code&gt;libc&lt;/code&gt; fort sorting and comparing, the database could break without any changes to the database whatsoever - an innocent security update to the operation systems &lt;code&gt;libc&lt;/code&gt; that for some reason also touched &lt;code&gt;libc&lt;/code&gt; sorting and comparison would break all character indexes in your database.&lt;/p&gt;
 &lt;p&gt;MySQL does not do that.
 It lets you migrate these things in a way that is operationally convenient.&lt;/p&gt;
+&lt;p&gt;It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.
+Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
+MySQL is MySQL on any platform, and copying files and replication always work across these boundaries.&lt;/p&gt;
 &lt;h2 id=&#34;dude-thats-complicated&#34;&gt;
     &lt;a href=&#34;#dude-thats-complicated&#34;&gt;
 	Dude, that&amp;rsquo;s complicated
@@ -298,14 +302,14 @@ It lets you migrate these things in a way that is operationally convenient.&lt;/
 &lt;/h2&gt;
 &lt;p&gt;Yes.
 Databases are weird, complicated and large.&lt;/p&gt;
-&lt;p&gt;Thaty is because they keep the state for your program, so that your program can be stateless and easy to manage.
+&lt;p&gt;That is because they keep the state for your program, so that your program can be stateless and easy to manage.
 Guess where all that complexity and technical debt management went?&lt;/p&gt;
 &lt;p&gt;Where I work there is a replication hierarchy where the database instances are 120 TB in size, with the largest table being 35 TB in size.
-Cloning a new instance at 400 MB/s takes around a week, plus replication catchup, so you wait around two weeks for a new instance, if nothing goes wrong.
-Moving this to &lt;code&gt;utf8mb4&lt;/code&gt; is a 6 month project, at least, and most of it is waiting.&lt;/p&gt;
+Cloning a new instance at 400 MB/s takes around a week, plus replication catchup, so you wait around two weeks for a new instance, if nothing goes wrong.&lt;/p&gt;
+&lt;p&gt;Moving this to &lt;code&gt;utf8mb4&lt;/code&gt; is a 6 month project, at least, and most of it is waiting.&lt;/p&gt;
 &lt;p&gt;This database was created around 16 years ago.
-It has an unbroken chain of state changes (&amp;ldquo;inserts, updates and deletes&amp;rdquo;) from back then to the present.
-It was born as MySQL 4.x, at some point became a MariaDB and is now an Oracle MySQL 5.7.
+It has an unbroken chain of state changes (&amp;ldquo;inserts, updates and deletes&amp;rdquo;) from back then to the present.&lt;/p&gt;
+&lt;p&gt;It was born as MySQL 4.x, at some point became a MariaDB and is now an Oracle MySQL 5.7.
 None of the code that was running when it was created still exists.
 But the bugs and faulty updates that code did, back then, still exist somewhere in the data, unless they have been found and corrected.&lt;/p&gt;
 &lt;p&gt;Persistence systems - databases and their NoSQL brethren that actually manage to write data to disk properly - are stateful systems.
@@ -328,15 +332,15 @@ That is, the database creates the full rows of the result table in memory, using
 It then sorts these rows in memory by shuffling around the full rows.
 That uses up a lot of memory bandwidth, because we copy around full rows, which can be large.&lt;/p&gt;
 &lt;p&gt;Sometimes we do not want to move around full rows.
-So we only sort the columns specified in the &lt;code&gt;ORDER BY CLAUSE&lt;/code&gt;, which is a tiny subset of the full columns set of each row of the result table, and attach a row pointer to each of these sort rows.
-In the end we have a tiny in-memory table in sort order, which only holds columns from the &lt;code&gt;ORDER BY&lt;/code&gt;, and each row in there points to the unsorted full rows somewhere else - in memory or on disk.
+So we only sort the columns specified in the &lt;code&gt;ORDER BY CLAUSE&lt;/code&gt;, which is a tiny subset of the full columns set of each row of the result table, and attach a row pointer to each of these sort rows.&lt;/p&gt;
+&lt;p&gt;In the end we have a tiny in-memory table in sort order, which only holds columns from the &lt;code&gt;ORDER BY&lt;/code&gt;, and each row in there points to the unsorted full rows somewhere else - in memory or on disk.
 We then output the full rows in sort order, but that means we generate a lot of seeks - possibly on disk.
 That is, because the full rows have not been sorted, so the row pointers from the sorted data to the full rows are a mess.&lt;/p&gt;
 &lt;p&gt;Sometimes we have very many rows.
 So we do as before, but for a subset of all rows - as many as fit into our sort buffer.
 When the sort buffer is full, we write it out to disk.
 Then we continue with the next batch.
-Across all results we perform a merge sort.&lt;/p&gt;
+Across all partial results we perform a merge sort.&lt;/p&gt;
 &lt;p&gt;If the things sorted were full rows, we can emit full result rows rather quickly.
 If the things sorted were only &lt;code&gt;ORDER BY&lt;/code&gt; columns or other partial result set rows with row pointers attached, we may have to perform one or multiple seeks in order to get the missing columns from all tables involved.&lt;/p&gt;
 &lt;p&gt;The optimizer has to decide which strategy to use here, based on estimates of the row width, size of the result set (which has not yet been produced, so it&amp;rsquo;s a guess) and the available amount of resources.&lt;/p&gt;
@@ -345,19 +349,19 @@ If the things sorted were only &lt;code&gt;ORDER BY&lt;/code&gt; columns or othe
 	And then, implementation issues
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Older versions of MySQL has different storage engines: &lt;code&gt;MYISAM&lt;/code&gt;, &lt;code&gt;INNODB&lt;/code&gt;, &lt;code&gt;MEMORY&lt;/code&gt; and others.
+&lt;p&gt;Older versions of MySQL have different storage engines: &lt;code&gt;MYISAM&lt;/code&gt;, &lt;code&gt;INNODB&lt;/code&gt;, &lt;code&gt;MEMORY&lt;/code&gt; and others.
 Modern MySQL has only &lt;code&gt;INNODB&lt;/code&gt;, but for temporary tables has a few tricks ready to make things faster (for example, temporary tables can be recreated and do not need to be crash safe, so no redo and undo logging is required).&lt;/p&gt;
-&lt;p&gt;Other storage engines than &lt;code&gt;INNODB&lt;/code&gt; had restrictions.
-For example, &lt;code&gt;MEMORY&lt;/code&gt; tables could not have variable length columns, there was no &lt;code&gt;VARCHAR&lt;/code&gt;, only &lt;code&gt;CHAR&lt;/code&gt;.
+&lt;p&gt;Other storage engines than &lt;code&gt;INNODB&lt;/code&gt; had restrictions.&lt;/p&gt;
+&lt;p&gt;For example, &lt;code&gt;MEMORY&lt;/code&gt; tables could not have variable length columns, there was no &lt;code&gt;VARCHAR&lt;/code&gt;, only &lt;code&gt;CHAR&lt;/code&gt;.
 So when sorting with temporary tables in memory, MySQL created these tables as &lt;code&gt;MEMORY&lt;/code&gt; tables, promoting every &lt;code&gt;varchar(255)&lt;/code&gt; to &lt;code&gt;CHAR(255)&lt;/code&gt;, and so a row with a varchar value of &lt;code&gt;hello&lt;/code&gt; suddenly used 255 bytes instead of 6 bytes to represent the string &lt;code&gt;hello&lt;/code&gt; (plus a lot of padding).&lt;/p&gt;
-&lt;p&gt;Of course, with &lt;code&gt;utf8&lt;/code&gt;, a &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; is promoted to a &lt;code&gt;char(255) charset utf8&lt;/code&gt;, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string &lt;code&gt;hello&lt;/code&gt; and the rest is padding.&lt;/p&gt;
+&lt;p&gt;Of course, with &lt;code&gt;utf8&lt;/code&gt;, a &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; is promoted to a &lt;code&gt;char(255) charset utf8&lt;/code&gt;, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string &lt;code&gt;hello&lt;/code&gt;, and the rest is wasteful padding.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;MEMORY&lt;/code&gt; tables had a configurable size limit, and if your table exceeded that (which happened rather quickly, given the above restrictions), it was converted to an on-disk temporary table in &lt;code&gt;MYISAM&lt;/code&gt; format.
 That, of course had &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; as a native type and your &lt;code&gt;hello&lt;/code&gt; would again shrink to six bytes.
 Looking at the on disk temporary file, which was rather small, you might wander what caused the spill.&lt;/p&gt;
 &lt;p&gt;MySQL 8 introduces unlogged &lt;code&gt;INNODB&lt;/code&gt; temporary tables (and a failed experiment involving mmap that you may want to disable).
 So this problem is gone, once and for all: &lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem.&lt;/p&gt;
-&lt;p&gt;In MySQL 8.
-This is in fact one of the major reasons to graduate from 5.7 for many people.&lt;/p&gt;
+&lt;p&gt;In MySQL 8.&lt;/p&gt;
+&lt;p&gt;This is in fact one of the major reasons to graduate from 5.7 for many people.&lt;/p&gt;
 &lt;h3 id=&#34;sorting-tldr-and-unicode&#34;&gt;
     &lt;a href=&#34;#sorting-tldr-and-unicode&#34;&gt;
 	Sorting TLDR and Unicode
