@@ -6,7 +6,7 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Jan 2022 18:18:47 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 14 Jan 2022 18:33:09 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>UTF8MB4</title>
       <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
@@ -20,21 +20,13 @@
  on MySQL and the weird &lt;code&gt;utf8mb4&lt;/code&gt; character set.&lt;/p&gt;
 &lt;p&gt;The recommendation is correct:
 In MySQL, use &lt;code&gt;utf8mb4&lt;/code&gt; when you mean to work with &lt;code&gt;utf8&lt;/code&gt; in your programming language.
-The background and reasoning why this is is wrong and way more complicated.&lt;/p&gt;
+The background and reasoning for this (and why it is wrong) is way more complicated.&lt;/p&gt;
 &lt;p&gt;So let&amp;rsquo;s walk through this:&lt;/p&gt;
 &lt;h2 id=&#34;mysql-utf8-means-unicode-10-bmp&#34;&gt;
     &lt;a href=&#34;#mysql-utf8-means-unicode-10-bmp&#34;&gt;
 	MySQL &lt;code&gt;utf8&lt;/code&gt; means Unicode 1.0 BMP
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;UTF8 in MySQL encodes the &lt;a href=&#34;https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode BMP&lt;/a&gt;
-
-.
-The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane of Unicode 1.0.
-It was thought to be enough for all scripts in the world.
-It wasn&amp;rsquo;t.
-Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
-There can now be up to 17 Unicode planes.&lt;/p&gt;
 &lt;p&gt;In the &lt;a href=&#34;https://github.com/isotopp/isotopp.github.io/commit/9cf96bafb3552be90a7a3f06558256e54d4097bd#r63857214&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commit to this blog entry&lt;/a&gt;
 
 , Vladislav Vaintroub commented.
@@ -50,6 +42,14 @@ Although already by 2001 (Unicode 3.1) there were characters in supplemental ran
 Thus only few people needed supplemental characters, until everyone&amp;rsquo;s favorite U+1F4A9 PILE OF POO premiered in Unicode 6.0, in 2010, actually a couple of years after, until smartphone made emoji ubiquitous.&lt;/p&gt;
 &lt;p&gt;So that gamble - that supplemental plane remains rarely used, did not work out, but who would know that by 2003.&lt;/p&gt;
 &lt;/blockquote&gt;
+&lt;p&gt;UTF8 in MySQL encodes the &lt;a href=&#34;https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode BMP&lt;/a&gt;
+
+.
+The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane of Unicode 1.0.
+It was thought to be enough for all scripts in the world.
+It wasn&amp;rsquo;t.
+Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
+There can be up to 17 Unicode planes now.&lt;/p&gt;
 &lt;p&gt;There are various ways to encode codepoints of Unicode.&lt;/p&gt;
 &lt;p&gt;Some of them are fixed with.
 For example, Windows uses internally a 16 bit character encoding, also from the time when people thought that Unicode 1.0 would solve the worlds writing problems.
@@ -94,7 +94,8 @@ There is a difference between 2, glyph is &amp;ldquo;graphical&amp;rdquo;, chara
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------+---------------------------------+---------------------+--------+
 &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Specifically, there are the &lt;code&gt;utf16&lt;/code&gt;, &lt;code&gt;utf16le&lt;/code&gt; and &lt;code&gt;utf32&lt;/code&gt; encodings.
-And we can check what they do. In my terminal, which incidentally uses &lt;code&gt;utf8&lt;/code&gt; to talk to the database, I can  &lt;code&gt;select hex(&amp;quot;ö&amp;quot;) as ch&lt;/code&gt; to check the representation of an o-Umlaut as bytes.&lt;/p&gt;
+And we can check what they do.
+In my terminal, which incidentally uses &lt;code&gt;utf8&lt;/code&gt; to talk to the database, I can &lt;code&gt;select hex(&amp;quot;ö&amp;quot;) as ch&lt;/code&gt; to check the representation of an o-Umlaut as bytes.&lt;/p&gt;
 &lt;p&gt;I can also &lt;code&gt;select hex(convert(&amp;quot;ö&amp;quot; using &amp;lt;somecharset&amp;gt;))) as ch&lt;/code&gt; to check what these bytes would be in other encodings.&lt;/p&gt;
 &lt;p&gt;Let&amp;rsquo;s do that:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ö&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -204,7 +205,7 @@ So let&amp;rsquo;s have a look at character ordering.&lt;/p&gt;
 	Collations are comparison rules for characters
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Our collation is given as &lt;code&gt;utf8mb4_0900_ai_ci&lt;/code&gt;, and that are the Unicode Collation Algorithm (UCA) 9.0 sorting rules for 4-byte UTF8, with accent insensitivity (&lt;code&gt;ai&lt;/code&gt;)&lt;code&gt;and case insensitivity (&lt;/code&gt;ci`).&lt;/p&gt;
+&lt;p&gt;Our collation is given as &lt;code&gt;utf8mb4_0900_ai_ci&lt;/code&gt;, and that are the Unicode Collation Algorithm (UCA) 9.0 sorting rules for 4-byte UTF8, with accent insensitivity (&lt;code&gt;ai&lt;/code&gt;) and case insensitivity (&lt;code&gt;ci&lt;/code&gt;).&lt;/p&gt;
 &lt;p&gt;We need to learn even more:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Collations are rules for handling comparisons between glyphs in a specific encoding.
@@ -260,14 +261,14 @@ We have &lt;em&gt;buggy&lt;/em&gt; sort orders used back then maintained in curr
 &lt;ul&gt;
 &lt;li&gt;Databases use indexes to access data quickly.&lt;/li&gt;
 &lt;li&gt;Indexes physically materialize a column (and row pointers) in sort order.&lt;/li&gt;
-&lt;li&gt;Sort order for character sets character set dependent, and national language dependent.&lt;/li&gt;
+&lt;li&gt;Sort order for character sets is character set dependent, and national language dependent.&lt;/li&gt;
 &lt;li&gt;Sort order also got major upgrades during the evolution of Unicode: Not only did we move from &amp;ldquo;only BMP&amp;rdquo; to 17 planes, we also went through at least 9 revisions of the Unicode Collation Algorithm.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;So:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;If you change the collation (the sort order) of an index, the index needs to be rebuilt.&lt;/li&gt;
 &lt;li&gt;Sort orders are a property of character sets.&lt;/li&gt;
-&lt;li&gt;UTF8 sorted according to UCA 4.x and UCA 5.0, UTF8MB4 sorts according to UCA 9.0. Specifically, the concept of segregating sort order comparison from equality comparison, and introducing accent insensitivity is new in UCA 9.0 and not present in previous UCA versions.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;utf8&lt;/code&gt; sorted according to UCA 4.x and UCA 5.0, &lt;code&gt;utf8mb4&lt;/code&gt; sorts according to UCA 9.0. Specifically, the concept of segregating sort order comparison from equality comparison, and introducing accent insensitivity is new in UCA 9.0 and not present in previous UCA versions.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;That means, while &lt;code&gt;utf8&lt;/code&gt; is a strict subset of &lt;code&gt;utf8mb4&lt;/code&gt; in terms of character repertoire and encoding (modulo bug fixes), it sorts differently.
 An &lt;code&gt;ALTER TABLE kris MODIFY COLUMN c varchar(20) charset utf8&lt;/code&gt; in our example table implies a drop on the index &lt;code&gt;c&lt;/code&gt;, and it&amp;rsquo;s recreation with a different sort order, from scratch.
@@ -381,25 +382,24 @@ So when sorting with temporary tables in memory, MySQL created these tables as &
 That, of course had &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; as a native type and your &lt;code&gt;hello&lt;/code&gt; would again shrink to six bytes.
 Looking at the on disk temporary file, which was rather small, you might wander what caused the spill.&lt;/p&gt;
 &lt;p&gt;MySQL 8 introduces unlogged &lt;code&gt;INNODB&lt;/code&gt; temporary tables (and a failed experiment involving mmap that you may want to disable).
-So this problem is gone, once and for all: &lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem.&lt;/p&gt;
-&lt;p&gt;In MySQL 8.&lt;/p&gt;
+So this problem is gone, once and for all: &lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem - if you use MySQL 8.&lt;/p&gt;
 &lt;p&gt;This is in fact one of the major reasons to graduate from 5.7 for many people.&lt;/p&gt;
 &lt;h3 id=&#34;sorting-tldr-and-unicode&#34;&gt;
     &lt;a href=&#34;#sorting-tldr-and-unicode&#34;&gt;
 	Sorting TLDR and Unicode
     &lt;/a&gt;
 &lt;/h3&gt;
-&lt;p&gt;Sorting Unicode columns was expensive in versions of MySQL before MySQL 8.
-That is because the memory engine used did not understand variable length data types at all.
+&lt;p&gt;Sorting Unicode columns was expensive in versions before MySQL 8.
+That is because the &lt;code&gt;MEMORY&lt;/code&gt; engine used in sorting did not understand variable length data types at all.
 That led to all kinds of recommendations restricting the use of Unicode columns:
 Don&amp;rsquo;t use them, if you do not need them.
 Keep them short.
-Exclude BLOB and TEXT columns from sorting.
+Exclude &lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; columns from sorting.
 And so on.&lt;/p&gt;
 &lt;p&gt;MySQL 8 fixes all that.
 Use Unicode columns as you see fit.
 They work well, and as expected.
-BLOB and TEXT are no longer a problem with sorting (well, they are, but for other reasons, but they do not longer trigger an immediate spill, no matter how tiny they are).&lt;/p&gt;
+&lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; are no longer a problem with sorting (well, they are, but for other reasons, but they no longer trigger an immediate spill, no matter how tiny they are).&lt;/p&gt;
 &lt;h2 id=&#34;tldr&#34;&gt;
     &lt;a href=&#34;#tldr&#34;&gt;
 	TLDR
