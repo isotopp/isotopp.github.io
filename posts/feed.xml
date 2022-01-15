@@ -6,7 +6,7 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Jan 2022 19:11:34 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 15 Jan 2022 11:31:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>UTF8MB4</title>
       <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
@@ -20,344 +20,180 @@
  on MySQL and the weird &lt;code&gt;utf8mb4&lt;/code&gt; character set.&lt;/p&gt;
 &lt;p&gt;The recommendation is correct:
 In MySQL, use &lt;code&gt;utf8mb4&lt;/code&gt; when you mean to work with &lt;code&gt;utf8&lt;/code&gt; in your programming language.
-The background and reasoning for this (and why it is wrong) is way more complicated.&lt;/p&gt;
+The background and reasoning for this (and why it is wrong) is way more complicated than outlined by Adam Hooper.&lt;/p&gt;
 &lt;p&gt;So let&amp;rsquo;s walk through this:&lt;/p&gt;
-&lt;h2 id=&#34;mysql-utf8-means-unicode-10-bmp&#34;&gt;
-    &lt;a href=&#34;#mysql-utf8-means-unicode-10-bmp&#34;&gt;
-	MySQL &lt;code&gt;utf8&lt;/code&gt; means Unicode 1.0 BMP
+&lt;h1 id=&#34;mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp&#34;&gt;
+    &lt;a href=&#34;#mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp&#34;&gt;
+	MySQL &lt;code&gt;utf8&lt;/code&gt; means 3-byte Unicode, and access to only the BMP
     &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In the &lt;a href=&#34;https://github.com/isotopp/isotopp.github.io/commit/9cf96bafb3552be90a7a3f06558256e54d4097bd#r63857214&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commit to this blog entry&lt;/a&gt;
-
-, Vladislav Vaintroub commented.
-I copy them here, because they are interesting:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Nope, it does not mean that. Unicode 1.0 had a &lt;a href=&#34;https://en.wikipedia.org/wiki/Hangul_%28obsolete_Unicode_block%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;different range for Hangul&lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;utf-8 in MySQL encodes the &lt;a href=&#34;https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode BMP&lt;/a&gt;
 
 .
-Unicode 2.0 fixed that, and remapped Hangul (which is really unique action, and they issued a policy to forbid remappings in the future).&lt;/p&gt;
+The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane, the only character plane available in Unicode 1.0
+It was thought to be enough for all scripts in the world.
+It wasn&amp;rsquo;t.&lt;/p&gt;
+&lt;p&gt;Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
+Currently, there can be up to 17 Unicode planes, but most of them are unused.&lt;/p&gt;
+&lt;p&gt;Vladislav Vaintroub commented to me:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Unicode 1.0 had a &lt;a href=&#34;https://en.wikipedia.org/wiki/Hangul_%28obsolete_Unicode_block%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;different range for Hangul&lt;/a&gt;
+
+.
+Unicode 2.0 fixed that, and remapped Hangul (which is a unique action, and they issued a policy to forbid remapping in the future).&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;encodings-and-the-65536-character-barrier&#34;&gt;
+    &lt;a href=&#34;#encodings-and-the-65536-character-barrier&#34;&gt;
+	Encodings and the 65536 character barrier
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;There are various ways to encode codepoints of Unicode.
+Originally, with only the BMP existing, people thought of extending the concept of &amp;ldquo;byte&amp;rdquo; = &amp;ldquo;character&amp;rdquo; to double bytes.
+This is how you get the &lt;code&gt;wchar&lt;/code&gt; and a 16 bit character set, the obsolete ucs-2 encoding.&lt;/p&gt;
+&lt;p&gt;When it became clear that 65536 characters are insufficient to represent all scripts and languages in the world, a larger 31-bit space was introduced and the naive encoding of that, ucs-4.
+This would require 4 bytes per character.&lt;/p&gt;
+&lt;p&gt;Both are incredibly wasteful:
+Using ucs-2 with western scripts means that every other byte is a null byte, and with ucs-4 for every character there will be 3 null bytes.
+Even with non-western scripts there will be at least one, if not two null bytes per character.&lt;/p&gt;
+&lt;p&gt;Extending Unicode beyond the BMP posed a bit of a problem, because Windows NT had started to use Unicode as a character set, and ucs-2 as the standard encoding in Windows NT.
+The solution was the character range 0xD800 to 0xDFFF, which was unassigned to characters, so far:
+2048 (11 bit) of unassigned positions.&lt;/p&gt;
+&lt;p&gt;The resulting encoding takes characters beyond the BMP, with codes greater than 0xFFFF, and subtracts 0x10000.
+This leaves a 20 bit number, which is then split into a high 10 bit part and a low 10 bit part.
+The high ten bits are added to 0xd800 (0xd800-0xdbff), the low then bits are added to 0xdc00 (0xdc00-0xdfff).
+This was called utf-16 encoding, and became the character set of Windows starting with Windows 2000.&lt;/p&gt;
+&lt;p&gt;utf-16 also, for now, limits the number of characters that can be represented in Unicode encodings to a number far below 31 bit.&lt;/p&gt;
+&lt;h2 id=&#34;plan-9-and-utf-8&#34;&gt;
+    &lt;a href=&#34;#plan-9-and-utf-8&#34;&gt;
+	Plan 9 and utf-8
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In the Unix world, the experimental Plan 9 operating systems from A&amp;amp;T explored variable width encodings of Unicode:
+utf-8 could represent 31-bit Unicode with encodings between 1 and 6 bytes in length.
+Single byte codes would be compatible with ASCII, so that valid ASCII is also valid utf-8.&lt;/p&gt;
+&lt;p&gt;Because the utf-16 hack had restricted the number of possible Unicode characters effectively from 31 bit to 21 bit, utf-8 encodings can only be up to 4 bytes long.
+And because utf-8 is so much denser than other encodings, it is by far the dominant encoding of Unicode.
+Even Microsoft, heavily invested in ucs-2 and utf-16 with Windows, started to support utf-8, beginning with the development of Windows 11 in 2019.&lt;/p&gt;
+&lt;p&gt;In a utf-8 multibyte sequence, the &amp;ldquo;number of 1-bits before the first 0-bit&amp;rdquo; in the first byte of a multibyte character determine the length of the encoding:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Single byte characters are in the range 0x00-0x7f (0 leading 1-bits, single byte), for ASCII compatibility.&lt;/li&gt;
+&lt;li&gt;Multibyte characters start with 110xxxxx for a two byte sequence, 1110xxxx for a three byte sequence and 11110xxx for a four byte sequence.&lt;/li&gt;
+&lt;li&gt;The second, and possible third and fourth byte are all of the form 10xxxxxx, which is otherwise unused, so that these bytes are always identifiable as continuation bytes in a multibyte encoding.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This makes utf-8 restartable: If you end up at a byte of the form 10xxxxxx, you can backtrack a few bytes and check for the clearly recognizable start pattern of a multibyte encoding, or error out with an invalid encoding.&lt;/p&gt;
+&lt;p&gt;We get 128 single byte characters that are identical to ASCII, 1920 two byte characters and three bytes for the rest of the BMP.
+Four bytes are needed for rare CJK characters, a bunch of math, some dead scripts and
+&lt;a href=&#34;https://blog.koehntopp.info/2017/11/05/unicode-is-over-and-it-dies-over-emoji.html&#34;&gt;a ton of emoji that should not exist in the first place&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;mysql-and-three-byte-utf8&#34;&gt;
+    &lt;a href=&#34;#mysql-and-three-byte-utf8&#34;&gt;
+	MySQL, and three byte &lt;code&gt;utf8&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;MySQL did support the &amp;ldquo;full full&amp;rdquo; range of 31 bit Unicode in the beginning, with up to 6 bytes being used for a single character.
+That was changed &lt;a href=&#34;https://github.com/mysql/mysql-server/commit/43a506c0ced0e6ea101d3ab8b4b423ce3fa327d0&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in a single commit&lt;/a&gt;
+
+ in September 2002.
+&lt;a href=&#34;https://dri.es/the-history-of-mysql-ab&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Back then&lt;/a&gt;
+
+ MySQL 3.23 was the active release and InnoDB was not yet enabled by default.&lt;/p&gt;
+&lt;p&gt;Vladislav Vaintroub commented about this:&lt;/p&gt;
+&lt;blockquote&gt;
 &lt;p&gt;Anyway MySQL&amp;rsquo;s utf8 was always meant to be castrated utf8, from its invention.
 It was a little gamble, and hope that supplemental plane won&amp;rsquo;t be used much, thus we could save a couple of bytes in filesort.
 Although already by 2001 (Unicode 3.1) there were characters in supplemental range, they could be seen as &amp;ldquo;rarely used&amp;rdquo; (music notation, old Egyptian, Deseret and what not).
 Thus only few people needed supplemental characters, until everyone&amp;rsquo;s favorite U+1F4A9 PILE OF POO premiered in Unicode 6.0, in 2010, actually a couple of years after, until smartphone made emoji ubiquitous.&lt;/p&gt;
 &lt;p&gt;So that gamble - that supplemental plane remains rarely used, did not work out, but who would know that by 2003.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;UTF8 in MySQL encodes the &lt;a href=&#34;https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode BMP&lt;/a&gt;
+&lt;p&gt;Vaintroub&amp;rsquo;s comment about sorting refers to a limitation of MySQL that was only removed in MySQL 8.
+More about that below.&lt;/p&gt;
+&lt;h2 id=&#34;character-sets-have-sort-and-comparison-rules-called-collations&#34;&gt;
+    &lt;a href=&#34;#character-sets-have-sort-and-comparison-rules-called-collations&#34;&gt;
+	Character sets have sort and comparison rules, called collations
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Unicode not only defines character sets, they also define a comparison algorithm for characters.
+This is called UCA, Unicode Comparison Algorithm.
+Like Unicode itself, &lt;a href=&#34;https://unicode.org/Public/UCA/9.0.0/ReadMe.txt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;it is versioned&lt;/a&gt;
 
-.
-The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane of Unicode 1.0.
-It was thought to be enough for all scripts in the world.
-It wasn&amp;rsquo;t.
-Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
-There can be up to 17 Unicode planes now.&lt;/p&gt;
-&lt;p&gt;There are various ways to encode codepoints of Unicode.&lt;/p&gt;
-&lt;p&gt;Some of them are fixed with.
-For example, Windows uses internally a 16 bit character encoding, also from the time when people thought that Unicode 1.0 would solve the worlds writing problems.
-This is not only limited, but also wasteful:
-When writing western text, every other byte in Windows Unicode text is a null byte.&lt;/p&gt;
-&lt;p&gt;In Unix, specifically originally in Plan 9 from AT&amp;amp;T, a variable length encoding for Unicode was developed.
-Basically, the number of consecutive high bits of the first byte determines how long the byte sequence is.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;So a thing starting with &lt;code&gt;0x8?&lt;/code&gt; denotes a single character sequence,&lt;/li&gt;
-&lt;li&gt;a thing starting with &lt;code&gt;0xc?&lt;/code&gt; identifies a two character sequence and&lt;/li&gt;
-&lt;li&gt;a &lt;code&gt;0xe?&lt;/code&gt; a three byte sequence.&lt;/li&gt;
-&lt;li&gt;Four byte codepoints start with &lt;code&gt;0xf?&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;MySQL also is from the time when people still believed in 65536 glyphs, and offers a number of encodings.&lt;/p&gt;
-&lt;p&gt;Again, &lt;a href=&#34;https://github.com/isotopp/isotopp.github.io/commit/9cf96bafb3552be90a7a3f06558256e54d4097bd#r63857634&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Vladislav chimes in&lt;/a&gt;
+.&lt;/p&gt;
+&lt;p&gt;Originally, there was just one type of comparison defined, and it was used for sorting and equality tests.&lt;br&gt;
+So if &amp;ldquo;Köhntopp&amp;rdquo; is supposed to sort like &amp;ldquo;Kohntopp&amp;rdquo;, it would also return &lt;code&gt;true&lt;/code&gt; for the comparison &lt;code&gt;WHERE &amp;quot;Köhntopp&amp;quot; = &amp;quot;Kohntopp&amp;quot;&lt;/code&gt;.
+That is clearly wrong and annoying.
+&lt;a href=&#34;https://lefred.be/content/mysql-character-sets-unicode-and-uca-compliant-collations/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;lefred&amp;rsquo;s Blog article&lt;/a&gt;
 
-:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;65536 characters, not 65536 glyphs.
-There is a difference between 2, glyph is &amp;ldquo;graphical&amp;rdquo;, character is &amp;ldquo;textual&amp;rdquo;, and there are more glyphs than characters.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;You can list the interesting ones with &lt;code&gt;SHOW CHARSET WHERE MAXLEN &amp;gt; 1&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;charset&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;maxlen&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------+---------------------------------+---------------------+--------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Charset&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Description&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Default&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;collation&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Maxlen&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------+---------------------------------+---------------------+--------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;big5&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Big5&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Traditional&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Chinese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;big5_chinese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cp932&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SJIS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Windows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Japanese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cp932_japanese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;eucjpms&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UJIS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Windows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Japanese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;eucjpms_japanese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;euckr&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;EUC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;KR&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Korean&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;euckr_korean_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gb18030&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;China&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;National&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Standard&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;GB18030&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gb18030_chinese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gb2312&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;GB2312&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Simplified&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Chinese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gb2312_chinese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gbk&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;GBK&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Simplified&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Chinese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;          &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gbk_chinese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sjis&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Shift&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;JIS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Japanese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;              &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sjis_japanese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ucs2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UCS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Unicode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ucs2_general_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ujis&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;EUC&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;JP&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Japanese&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                 &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ujis_japanese_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf16&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Unicode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf16_general_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf16le&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Unicode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf16le_general_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf32&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;32&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Unicode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf32_general_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Unicode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8_general_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;UTF&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Unicode&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4_0900_ai_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------+---------------------------------+---------------------+--------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;15&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Specifically, there are the &lt;code&gt;utf16&lt;/code&gt;, &lt;code&gt;utf16le&lt;/code&gt; and &lt;code&gt;utf32&lt;/code&gt; encodings.
-And we can check what they do.
-In my terminal, which incidentally uses &lt;code&gt;utf8&lt;/code&gt; to talk to the database, I can &lt;code&gt;select hex(&amp;quot;ö&amp;quot;) as ch&lt;/code&gt; to check the representation of an o-Umlaut as bytes.&lt;/p&gt;
-&lt;p&gt;I can also &lt;code&gt;select hex(convert(&amp;quot;ö&amp;quot; using &amp;lt;somecharset&amp;gt;))) as ch&lt;/code&gt; to check what these bytes would be in other encodings.&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s do that:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ö&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;C3B6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;convert&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ö&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;using&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;latin1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;F6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;convert&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ö&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;using&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf16&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;F6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;convert&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ö&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;using&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf16le&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;F600&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hex&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;convert&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ö&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;using&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf32&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;000000&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;F6&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So we learn:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;The &lt;code&gt;UTF8&lt;/code&gt; o-Umlaut is &lt;code&gt;0xc3b6&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;In the fixed 8-bit charset &lt;code&gt;latin1&lt;/code&gt; that becomes &lt;code&gt;0xf6&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;In &lt;code&gt;UTF16&lt;/code&gt;, a superset of that, it becomes &lt;code&gt;0x00f6&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Unsurprisingly, in &lt;code&gt;UTF16LE&lt;/code&gt; that is now the same, backwards, &lt;code&gt;0xf600&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;And in the staggering wasteful &lt;code&gt;UTF32&lt;/code&gt; we actually get three null bytes per glyph when storing western script, &lt;code&gt;0x000000f6&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;In fact, to encode all possible 17 unicode planes we require only 21 bits, so &lt;code&gt;UTF32&lt;/code&gt; is hopelessly wasteful even for non-western scripts.
-That is at least one null byte for each glyph in any script.&lt;/p&gt;
-&lt;h2 id=&#34;later-unicode-revisions-add-more-planes&#34;&gt;
-    &lt;a href=&#34;#later-unicode-revisions-add-more-planes&#34;&gt;
-	Later Unicode revisions add more planes
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;But: The singular Basic Multilingual Plane was not enough for all of earths scripts, so it needed to be extended.
-So we get characters that no longer fit a Windows &lt;code&gt;wchar&lt;/code&gt;, and also not the 3-byte &lt;code&gt;utf8&lt;/code&gt; encoding.&lt;/p&gt;
-&lt;p&gt;MySQL extends the character representation to 4 bytes, which covers all possible 17 Unicode planes, and names that character set &lt;code&gt;utf8mb4&lt;/code&gt;.
-Case closed.&lt;/p&gt;
-&lt;p&gt;When working with modern Unicode in MySQL, always define the character set as &lt;code&gt;utf8mb4&lt;/code&gt;.
-It is that simple.&lt;/p&gt;
-&lt;h2 id=&#34;but-why-is-the-4-byte-utf8-named-differently&#34;&gt;
-    &lt;a href=&#34;#but-why-is-the-4-byte-utf8-named-differently&#34;&gt;
-	But why is the 4-byte &lt;code&gt;utf8&lt;/code&gt; named differently?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;So why did MySQL name the 4-byte &lt;code&gt;utf8&lt;/code&gt; weirdly &lt;code&gt;utf8mb4&lt;/code&gt; and did not update the definition of &lt;code&gt;utf8&lt;/code&gt; to 4 bytes?&lt;/p&gt;
-&lt;p&gt;That is, because in databases you cannot ever change the definition of a character set or character set sort order (&amp;ldquo;collation&amp;rdquo;) without great pains.
-You can easily add more, but you can never change what you have delivered to customers, ever.&lt;/p&gt;
-&lt;h3 id=&#34;indexes-physically-materialize-columns-in-sort-order-for-fast-lookups&#34;&gt;
-    &lt;a href=&#34;#indexes-physically-materialize-columns-in-sort-order-for-fast-lookups&#34;&gt;
-	Indexes physically materialize columns in sort order for fast lookups
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;So, databases have this thing called indexes.
-Suppose you have a table with a character column (a column of any datatype that has a charset and a collation), it may be a &lt;code&gt;char&lt;/code&gt;, &lt;code&gt;varchar&lt;/code&gt; or any of the four &lt;code&gt;text&lt;/code&gt; types.
-And you define an index on it:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;28&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;G&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;bigint&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unsigned&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NOT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AUTO_INCREMENT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DEFAULT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DEFAULT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;UNIQUE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;KEY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ENGINE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;InnoDB&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DEFAULT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;CHARSET&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;COLLATE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4_0900_ai_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;What happens here?
-We store rows in the table &lt;code&gt;kris&lt;/code&gt; by inserting data.
-The database assigns a primary key &lt;code&gt;id&lt;/code&gt;, and stores the tuple &lt;code&gt;(id, c, d)&lt;/code&gt; in the table.
-It also needs to maintain the index on &lt;code&gt;c&lt;/code&gt;, so it will take the &lt;code&gt;c&lt;/code&gt;-value of each row and store it in the index &lt;strong&gt;in sorted order&lt;/strong&gt; with a pointer to the full row.&lt;/p&gt;
-&lt;p&gt;In InnoDB, the row pointer used by secondary indexes is actually the primary, &lt;code&gt;id&lt;/code&gt;, so we do get the index &lt;code&gt;c&lt;/code&gt; as tuples of &lt;code&gt;(c, id)&lt;/code&gt;.
-That means each secondary has the primary key as a tail, so the primary key better be short.
-In our case, it is a &lt;code&gt;BIGINT&lt;/code&gt;, so 8 bytes are added as a row pointer to the index, for each row.&lt;/p&gt;
-&lt;p&gt;Notice the fat &lt;strong&gt;in sorted order&lt;/strong&gt;?&lt;/p&gt;
-&lt;p&gt;The index &lt;code&gt;c&lt;/code&gt; is sorted, in the order defined by the collation for the character set.
-That is going to be critically important.
-So let&amp;rsquo;s have a look at character ordering.&lt;/p&gt;
-&lt;h3 id=&#34;collations-are-comparison-rules-for-characters&#34;&gt;
-    &lt;a href=&#34;#collations-are-comparison-rules-for-characters&#34;&gt;
-	Collations are comparison rules for characters
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Our collation is given as &lt;code&gt;utf8mb4_0900_ai_ci&lt;/code&gt;, and that are the Unicode Collation Algorithm (UCA) 9.0 sorting rules for 4-byte UTF8, with accent insensitivity (&lt;code&gt;ai&lt;/code&gt;) and case insensitivity (&lt;code&gt;ci&lt;/code&gt;).&lt;/p&gt;
-&lt;p&gt;We need to learn even more:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Collations are rules for handling comparisons between glyphs in a specific encoding.
-There are encodings for &lt;code&gt;latin1&lt;/code&gt;, other ones specific to &lt;code&gt;utf8&lt;/code&gt; and again different ones for &lt;code&gt;utf8mb4&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Collations define &lt;em&gt;sort orders&lt;/em&gt; and &lt;em&gt;equality rules&lt;/em&gt;.
-&lt;code&gt;ci&lt;/code&gt; means the &lt;em&gt;sort order&lt;/em&gt; is case insensitive, so &amp;ldquo;Köhntopp&amp;rdquo;, &amp;ldquo;KÖHNTOPP&amp;rdquo; and &amp;ldquo;köhntopp&amp;rdquo; sort the same. With &lt;code&gt;cs&lt;/code&gt; they would not.
-&lt;code&gt;ai&lt;/code&gt; means accent insentitive, so &lt;code&gt;WHERE c = &amp;quot;Kohntopp&amp;quot;&lt;/code&gt; matches &amp;ldquo;Köhntopp&amp;rdquo;. With &lt;code&gt;as&lt;/code&gt; it would not.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We can show the collations for a given character set.
-There are over 250 of them, and 75 alone for &lt;code&gt;utf8mb4&lt;/code&gt;.
-Let&amp;rsquo;s check just the &lt;code&gt;utf8mb4%_ai_ci&lt;/code&gt; ones.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;collation&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;collation&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf8mb4%_ai_ci&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------------------------+---------+-----+---------+----------+---------+---------------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Collation&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Charset&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;Default&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Compiled&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Sortlen&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Pad_attribute&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------------------------+---------+-----+---------+----------+---------+---------------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4_0900_ai_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Yes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Yes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PAD&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4_cs_0900_ai_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;266&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Yes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PAD&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4_vi_0900_ai_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8mb4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;277&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Yes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NO&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PAD&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----------------------------+---------+-----+---------+----------+---------+---------------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;22&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So many nation specific sort orders.
-And if you define an index on a character column, it has a collation attached and the data will be physically sorted in that nations sort order.&lt;/p&gt;
-&lt;p&gt;These things are in fact even versioned:
-If there is an UCA 9.0, are there other, earlier ones?
-Sure enough:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;collations&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;collation_name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;%general_mysql%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;--------------------------+--------------------+-----+------------+-------------+---------+---------------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;COLLATION_NAME&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;           &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CHARACTER_SET_NAME&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ID&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IS_DEFAULT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;IS_COMPILED&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;SORTLEN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PAD_ATTRIBUTE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;--------------------------+--------------------+-----+------------+-------------+---------+---------------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ucs2_general_mysql500_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ucs2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;               &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;159&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;            &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Yes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PAD&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SPACE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8_general_mysql500_ci&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;utf8&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;               &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;223&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;            &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Yes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;PAD&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SPACE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;     &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;--------------------------+--------------------+-----+------------+-------------+---------+---------------+
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The fine manual notes, at the bottom of &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/charset-unicode-sets.html#charset-unicode-sets-uca&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode Character Sets&lt;/a&gt;
+ and &lt;a href=&#34;https://dev.mysql.com/blog-archive/sushi-beer-an-introduction-of-utf8-support-in-mysql-8-0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Manyi Lu&amp;rsquo;s article&lt;/a&gt;
 
-:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;h4 id=&#34;miscellaneous-information&#34;&gt;
-    &lt;a href=&#34;#miscellaneous-information&#34;&gt;
-	Miscellaneous Information
-    &lt;/a&gt;
-&lt;/h4&gt;
-&lt;p&gt;The xxx_general_mysql500_ci collations preserve the pre-5.1.24 ordering of the original xxx_general_ci collations and permit upgrades for tables created before MySQL 5.1.24 (Bug #27877).&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;MySQL 5.1.24 was released on 2008-04-08, 14 years ago.
-We have &lt;em&gt;buggy&lt;/em&gt; sort orders used back then maintained in current MySQL for the sake of upgradability.&lt;/p&gt;
-&lt;h3 id=&#34;tldr-so-far&#34;&gt;
-    &lt;a href=&#34;#tldr-so-far&#34;&gt;
-	TL;DR, so far
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Databases use indexes to access data quickly.&lt;/li&gt;
-&lt;li&gt;Indexes physically materialize a column (and row pointers) in sort order.&lt;/li&gt;
-&lt;li&gt;Sort order for character sets is character set dependent, and national language dependent.&lt;/li&gt;
-&lt;li&gt;Sort order also got major upgrades during the evolution of Unicode: Not only did we move from &amp;ldquo;only BMP&amp;rdquo; to 17 planes, we also went through at least 9 revisions of the Unicode Collation Algorithm.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;So:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;If you change the collation (the sort order) of an index, the index needs to be rebuilt.&lt;/li&gt;
-&lt;li&gt;Sort orders are a property of character sets.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;utf8&lt;/code&gt; sorted according to UCA 4.x and UCA 5.0, &lt;code&gt;utf8mb4&lt;/code&gt; sorts according to UCA 9.0. Specifically, the concept of segregating sort order comparison from equality comparison, and introducing accent insensitivity is new in UCA 9.0 and not present in previous UCA versions.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;That means, while &lt;code&gt;utf8&lt;/code&gt; is a strict subset of &lt;code&gt;utf8mb4&lt;/code&gt; in terms of character repertoire and encoding (modulo bug fixes), it sorts differently.
-An &lt;code&gt;ALTER TABLE kris MODIFY COLUMN c varchar(20) charset utf8&lt;/code&gt; in our example table implies a drop on the index &lt;code&gt;c&lt;/code&gt;, and it&amp;rsquo;s recreation with a different sort order, from scratch.
-Not fast on a large table.&lt;/p&gt;
-&lt;h2 id=&#34;so-what-would-happen-if-utf8-suddently-meant-utf8mb4&#34;&gt;
-    &lt;a href=&#34;#so-what-would-happen-if-utf8-suddently-meant-utf8mb4&#34;&gt;
-	So what would happen if &lt;code&gt;utf8&lt;/code&gt; suddently meant &lt;code&gt;utf8mb4&lt;/code&gt;?
+ about the &lt;a href=&#34;https://bugs.mysql.com/bug.php?id=76553&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sushi-Beer issue&lt;/a&gt;
+
+ explain this in depth.&lt;/p&gt;
+&lt;h2 id=&#34;indexes-are-materialized-collations&#34;&gt;
+    &lt;a href=&#34;#indexes-are-materialized-collations&#34;&gt;
+	Indexes are materialized collations
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Let&amp;rsquo;s imagine a MySQL 9.0 comes out, and in that release &lt;code&gt;utf8&lt;/code&gt; suddenly means &lt;code&gt;utf8mb4&lt;/code&gt;.
-If you greenfield a new installation, no problem.&lt;/p&gt;
-&lt;p&gt;If you apply the update to an existing installation, all your character columns that are part of an index need to be checked, and if required, rebuilt.
-At the time when you apply the database update.
-Which can take a very long time, during which the database is not available.
-That can be quite inconvenient.&lt;/p&gt;
-&lt;h2 id=&#34;what-happens-instead-if-we-dont-do-that&#34;&gt;
-    &lt;a href=&#34;#what-happens-instead-if-we-dont-do-that&#34;&gt;
-	What happens instead if we don&amp;rsquo;t do that?
+&lt;p&gt;Databases have indexes, and these extract values from a column, &lt;strong&gt;sort them&lt;/strong&gt; and store back pointers to the full row with each extracted column value.
+This allows for fast sorting.
+Thus, indexes are materialized collations, and when a collation (or a charset) is changed, all indexes that contain values of that charset are invalid and need to be recreated.&lt;/p&gt;
+&lt;p&gt;In the deep dark past, MySQL made changes and bugfixes to existing collations, which made MySQL upgrades a pain.
+That is, because the moment you apply the upgrade, you are forced to drop and recreate the indexes.
+Depending on the amount of data that requires an extraordinary amount of time and makes updates complicated.&lt;/p&gt;
+&lt;h1 id=&#34;utf8mb4-because-utf8-was-taken&#34;&gt;
+    &lt;a href=&#34;#utf8mb4-because-utf8-was-taken&#34;&gt;
+	&lt;code&gt;utf8mb4&lt;/code&gt;, because &lt;code&gt;utf8&lt;/code&gt; was taken.
     &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In that case, &lt;code&gt;utf8&lt;/code&gt; means &lt;code&gt;utf8&lt;/code&gt;, nothing changes, and &lt;code&gt;utf8mb4&lt;/code&gt; is added and not used at all.
-Unless you do.&lt;/p&gt;
-&lt;p&gt;So you could create new columns using the new character set and collations, even in existing tables.
-That is possible, because unlike in the other database, in MySQL a charset and collation is a column attribute.
+&lt;/h1&gt;
+&lt;p&gt;As a policy, MySQL these days never updates existing character sets and collations, not even for bugfixes.
+And because the name &lt;code&gt;utf8&lt;/code&gt; was taken, a new name was needed: &lt;code&gt;utf8mb4&lt;/code&gt; is the version of Unicode utf-8 in MySQL that extends past the BMP, and also uses UCA 9.0 for comparison.
+Compare to &lt;code&gt;utf8&lt;/code&gt; which encodes only the BMP, and uses an older UCA for comparison.
+So &lt;code&gt;utf8&lt;/code&gt; not only has a smaller character range, it also sorts differently.&lt;/p&gt;
+&lt;p&gt;With MySQL and the immutable character set and collation rule, you can create new columns using the new character set and collations, even in existing tables.
+That is possible, because in MySQL a charset and collation is a column attribute.
 Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.&lt;/p&gt;
 &lt;p&gt;So if you wanted to upgrade your database, you&amp;rsquo;d install a new version.
-Then you would check all columns and note which one need changing.
+Nothing would change, you are just running new code that hopefully sorts and orders as before.&lt;/p&gt;
+&lt;p&gt;Then you would check all columns, and note which ones need changing.
 And then you would change them, table by table, at your own leisure.
 Possibly using tooling such as Percona Online Table Change (&amp;ldquo;OSC&amp;rdquo;), making the change in the background without service interruption.&lt;/p&gt;
-&lt;p&gt;That is what MySQL does.
-It never changes collations any more (it did, in the dark, evil past, creating a lot of suffering).
-It is not even correcting bugs in existing collations any more (except by creating newly renamed collations).
-Instead you run your collation migrations as it fits into your operational schedule.&lt;/p&gt;
-&lt;p&gt;For Unicode that means, 4-byte Unicode is &lt;code&gt;utf8mb4&lt;/code&gt; in MySQL, because the name &lt;code&gt;utf8&lt;/code&gt; was already taken by a previous version of the Unicode character set.&lt;/p&gt;
-&lt;h2 id=&#34;not-using-libc&#34;&gt;
-    &lt;a href=&#34;#not-using-libc&#34;&gt;
-	Not using libc.
+&lt;h2 id=&#34;side-note-mysqls-sorting-and-file-formats-are-portable&#34;&gt;
+    &lt;a href=&#34;#side-note-mysqls-sorting-and-file-formats-are-portable&#34;&gt;
+	Side note: MySQL&amp;rsquo;s sorting and file formats are portable
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;MySQL does not use &lt;code&gt;libc&lt;/code&gt; and the character set comparison functions in there for itself.
-Instead it brings its own collations.&lt;/p&gt;
+It brings its own collations instead.&lt;/p&gt;
 &lt;p&gt;That is also an important lesson.
 It means that, unlike the other database, MySQL does not break when you upgrade the operating system &lt;code&gt;libc&lt;/code&gt; on your machine.
-If MySQL used &lt;code&gt;libc&lt;/code&gt; fort sorting and comparing, the database could break without any changes to the database whatsoever - an innocent security update to the operation systems &lt;code&gt;libc&lt;/code&gt; that for some reason also touched &lt;code&gt;libc&lt;/code&gt; sorting and comparison would break all character indexes in your database.&lt;/p&gt;
+If MySQL used &lt;code&gt;libc&lt;/code&gt; fort sorting and comparing, the database could break without any changes to the database whatsoever &amp;ndash; an innocent security update to the operating system &lt;code&gt;libc&lt;/code&gt; which for some reason also touched &lt;code&gt;libc&lt;/code&gt; sorting and comparison would break all character indexes in your database.&lt;/p&gt;
 &lt;p&gt;MySQL does not do that.
 It lets you migrate these things in a way that is operationally convenient.&lt;/p&gt;
 &lt;p&gt;It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.
 Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
 MySQL is MySQL on any platform, and copying files and replication always work across these boundaries.&lt;/p&gt;
-&lt;h2 id=&#34;dude-thats-complicated&#34;&gt;
-    &lt;a href=&#34;#dude-thats-complicated&#34;&gt;
-	Dude, that&amp;rsquo;s complicated
+&lt;h1 id=&#34;so-why-the-6-to-3-byte-commit&#34;&gt;
+    &lt;a href=&#34;#so-why-the-6-to-3-byte-commit&#34;&gt;
+	So why the 6-to-3-byte commit?
     &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Yes.
-Databases are weird, complicated and large.&lt;/p&gt;
-&lt;p&gt;That is because they keep the state for your program, so that your program can be stateless and easy to manage.
-Guess where all that complexity and technical debt management went?&lt;/p&gt;
-&lt;p&gt;Where I work there is a replication hierarchy where the database instances are 120 TB in size, with the largest table being 35 TB in size.
-Cloning a new instance at 400 MB/s takes around a week, plus replication catchup, so you wait around two weeks for a new instance, if nothing goes wrong.&lt;/p&gt;
-&lt;p&gt;Moving this to &lt;code&gt;utf8mb4&lt;/code&gt; is a 6 month project, at least, and most of it is waiting.&lt;/p&gt;
-&lt;p&gt;This database was created around 16 years ago.
-It has an unbroken chain of state changes (&amp;ldquo;inserts, updates and deletes&amp;rdquo;) from back then to the present.&lt;/p&gt;
-&lt;p&gt;It was born as MySQL 4.x, at some point became a MariaDB and is now an Oracle MySQL 5.7.
-None of the code that was running when it was created still exists.
-But the bugs and faulty updates that code did, back then, still exist somewhere in the data, unless they have been found and corrected.&lt;/p&gt;
-&lt;p&gt;Persistence systems - databases and their NoSQL brethren that actually manage to write data to disk properly - are stateful systems.
-The data they store usually outlives the code that created the records.
-Changes to this data are forever.
-Mistakes in handling the data or the updates are forever, too.&lt;/p&gt;
-&lt;p&gt;DBA are a very special folk.
-They are very paranoid.
-They have tested restores of their backups, and their backups have backups.
-That is, because if they make a mistake and data is gone, it is gone forever, and no rollout to fix things is possible.&lt;/p&gt;
-&lt;h2 id=&#34;sorting-stuff&#34;&gt;
-    &lt;a href=&#34;#sorting-stuff&#34;&gt;
-	Sorting stuff
+&lt;/h1&gt;
+&lt;p&gt;Not that it matters much: Because Unicode and UCA changes between versions of Unicode, you&amp;rsquo;d still have to use different names for character sets and collations, and migrations to do.
+But why was it important that &amp;ldquo;we could save a couple of bytes in filesort&amp;rdquo; as Vaintroub puts it?
+Here we go:&lt;/p&gt;
+&lt;h2 id=&#34;sorting-is-important-and-hard-to-scale&#34;&gt;
+    &lt;a href=&#34;#sorting-is-important-and-hard-to-scale&#34;&gt;
+	Sorting is important, and hard to scale
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;Not only can databases, tables and individual indexes be very large, they also need to be kept sorted, and sometimes data needs to be re-sorted.
-Databases ususally have a large number of strategies for that.&lt;/p&gt;
+Databases usually have a large number of strategies for that.&lt;/p&gt;
 &lt;p&gt;Small things are sorted in memory.
 That is, the database creates the full rows of the result table in memory, using all columns.
 It then sorts these rows in memory by shuffling around the full rows.
 That uses up a lot of memory bandwidth, because we copy around full rows, which can be large.&lt;/p&gt;
-&lt;p&gt;Sometimes we do not want to move around full rows.
+&lt;p&gt;Sometimes we do not want to move around full rows, because these rows are large.
 So we only sort the columns specified in the &lt;code&gt;ORDER BY CLAUSE&lt;/code&gt;, which is a tiny subset of the full columns set of each row of the result table, and attach a row pointer to each of these sort rows.&lt;/p&gt;
-&lt;p&gt;In the end we have a tiny in-memory table in sort order, which only holds columns from the &lt;code&gt;ORDER BY&lt;/code&gt;, and each row in there points to the unsorted full rows somewhere else - in memory or on disk.
-We then output the full rows in sort order, but that means we generate a lot of seeks - possibly on disk.
+&lt;p&gt;In the end we have a tiny in-memory table in sort order, which only holds columns from the &lt;code&gt;ORDER BY&lt;/code&gt;, and each row in it points to the unsorted full rows somewhere else - in memory or on disk.
+We can then output the full rows in sort order, but at the cost of a lot of seeks - possibly on disk.
 That is, because the full rows have not been sorted, so the row pointers from the sorted data to the full rows are a mess.&lt;/p&gt;
 &lt;p&gt;Sometimes we have very many rows.
 So we do as before, but for a subset of all rows - as many as fit into our sort buffer.
@@ -367,39 +203,28 @@ Across all partial results we perform a merge sort.&lt;/p&gt;
 &lt;p&gt;If the things sorted were full rows, we can emit full result rows rather quickly.
 If the things sorted were only &lt;code&gt;ORDER BY&lt;/code&gt; columns or other partial result set rows with row pointers attached, we may have to perform one or multiple seeks in order to get the missing columns from all tables involved.&lt;/p&gt;
 &lt;p&gt;The optimizer has to decide which strategy to use here, based on estimates of the row width, size of the result set (which has not yet been produced, so it&amp;rsquo;s a guess) and the available amount of resources.&lt;/p&gt;
-&lt;h3 id=&#34;and-then-implementation-issues&#34;&gt;
+&lt;h2 id=&#34;and-then-implementation-issues&#34;&gt;
     &lt;a href=&#34;#and-then-implementation-issues&#34;&gt;
 	And then, implementation issues
     &lt;/a&gt;
-&lt;/h3&gt;
+&lt;/h2&gt;
 &lt;p&gt;Older versions of MySQL have different storage engines: &lt;code&gt;MYISAM&lt;/code&gt;, &lt;code&gt;INNODB&lt;/code&gt;, &lt;code&gt;MEMORY&lt;/code&gt; and others.
-Modern MySQL has only &lt;code&gt;INNODB&lt;/code&gt;, but for temporary tables has a few tricks ready to make things faster (for example, temporary tables can be recreated and do not need to be crash safe, so no redo and undo logging is required).&lt;/p&gt;
+Modern MySQL has only &lt;code&gt;INNODB&lt;/code&gt;, but for temporary tables has a few tricks ready to make things faster:
+for example, temporary tables can be recreated and do not need to be crash safe, so no redo and undo logging is required.&lt;/p&gt;
 &lt;p&gt;Other storage engines than &lt;code&gt;INNODB&lt;/code&gt; had restrictions.&lt;/p&gt;
 &lt;p&gt;For example, &lt;code&gt;MEMORY&lt;/code&gt; tables could not have variable length columns, there was no &lt;code&gt;VARCHAR&lt;/code&gt;, only &lt;code&gt;CHAR&lt;/code&gt;.
-So when sorting with temporary tables in memory, MySQL created these tables as &lt;code&gt;MEMORY&lt;/code&gt; tables, promoting every &lt;code&gt;varchar(255)&lt;/code&gt; to &lt;code&gt;CHAR(255)&lt;/code&gt;, and so a row with a varchar value of &lt;code&gt;hello&lt;/code&gt; suddenly used 255 bytes instead of 6 bytes to represent the string &lt;code&gt;hello&lt;/code&gt; (plus a lot of padding).&lt;/p&gt;
-&lt;p&gt;Of course, with &lt;code&gt;utf8&lt;/code&gt;, a &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; is promoted to a &lt;code&gt;char(255) charset utf8&lt;/code&gt;, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string &lt;code&gt;hello&lt;/code&gt;, and the rest is wasteful padding.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;MEMORY&lt;/code&gt; tables had a configurable size limit, and if your table exceeded that (which happened rather quickly, given the above restrictions), it was converted to an on-disk temporary table in &lt;code&gt;MYISAM&lt;/code&gt; format.
-That, of course had &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; as a native type and your &lt;code&gt;hello&lt;/code&gt; would again shrink to six bytes.
+So when sorting with temporary tables in memory, MySQL created these temp tables as &lt;code&gt;MEMORY&lt;/code&gt; tables, promoting every &lt;code&gt;varchar(255)&lt;/code&gt; to &lt;code&gt;CHAR(255)&lt;/code&gt;.
+A row with a varchar value of &lt;code&gt;hello&lt;/code&gt; suddenly used 255 bytes instead of 6 bytes to represent the string &lt;code&gt;hello&lt;/code&gt; (plus a lot of padding).&lt;/p&gt;
+&lt;p&gt;Of course, with &lt;code&gt;utf8&lt;/code&gt;, a &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; is promoted to a &lt;code&gt;char(255) charset utf8&lt;/code&gt;, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string &lt;code&gt;hello&lt;/code&gt;, and the rest is wasteful padding.
+With 6 bytes, it would be twice that amount of memory.
+So reducing this from 6 to 3 bytes was quite worthwhile.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;MEMORY&lt;/code&gt; tables had a configurable size limit, and if your table exceeded that (which happened rather quickly, given the above restrictions), it was converted to an on-disk temporary table in &lt;code&gt;MYISAM&lt;/code&gt; format: a spill.
+&lt;code&gt;MYISAM&lt;/code&gt; of course had &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; as a native type, and your &lt;code&gt;hello&lt;/code&gt; would again shrink to six bytes.
 Looking at the on disk temporary file, which was rather small, you might wander what caused the spill.&lt;/p&gt;
 &lt;p&gt;MySQL 8 introduces unlogged &lt;code&gt;INNODB&lt;/code&gt; temporary tables (and a failed experiment involving mmap that you may want to disable).
-So this problem is gone, once and for all: &lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem - if you use MySQL 8.&lt;/p&gt;
+So this problem is gone, once and for all:
+&lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem - if you use MySQL 8.&lt;/p&gt;
 &lt;p&gt;This is in fact one of the major reasons to graduate from 5.7 for many people.&lt;/p&gt;
-&lt;h3 id=&#34;sorting-tldr-and-unicode&#34;&gt;
-    &lt;a href=&#34;#sorting-tldr-and-unicode&#34;&gt;
-	Sorting TLDR and Unicode
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Sorting Unicode columns was expensive in versions before MySQL 8.
-That is because the &lt;code&gt;MEMORY&lt;/code&gt; engine used in sorting did not understand variable length data types at all.
-That led to all kinds of recommendations restricting the use of Unicode columns:
-Don&amp;rsquo;t use them, if you do not need them.
-Keep them short.
-Exclude &lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; columns from sorting.
-And so on.&lt;/p&gt;
-&lt;p&gt;MySQL 8 fixes all that.
-Use Unicode columns as you see fit.
-They work well, and as expected.
-&lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; are no longer a problem with sorting (well, they are, but for other reasons, but they no longer trigger an immediate spill, no matter how tiny they are).&lt;/p&gt;
 &lt;h2 id=&#34;tldr&#34;&gt;
     &lt;a href=&#34;#tldr&#34;&gt;
 	TLDR
@@ -410,9 +235,9 @@ They work well, and as expected.
 &lt;li&gt;Your programming languages &lt;code&gt;utf8&lt;/code&gt; is called &lt;code&gt;utf8mb4&lt;/code&gt; in MySQL.&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;utf8&lt;/code&gt; and &lt;code&gt;utf8mb4&lt;/code&gt; sort differently due to changes in the Unicode Collation Algorithm (UCA).&lt;/li&gt;
 &lt;li&gt;Indexes are physically materialized sort orders of column sets. They can become pretty large.&lt;/li&gt;
-&lt;li&gt;MySQL never changes sort orders of character sets (collations), even if they are buggy. Instead a new collation with a new name is created.&lt;/li&gt;
+&lt;li&gt;MySQL never changes character sets or collations, even if they are buggy. Instead a new collation with a new name is created.&lt;/li&gt;
 &lt;li&gt;That is, because changing a sort order may require dropping and recreating an index, which is expensive if the index is large.&lt;/li&gt;
-&lt;li&gt;Sorting things can be done in many different ways, depending on data set size, column size and other considerations.&lt;/li&gt;
+&lt;li&gt;Sorting things can be done in different ways, depending on data set size, column size and other considerations.&lt;/li&gt;
 &lt;li&gt;Implementation details can make sorting even more complicated.&lt;/li&gt;
 &lt;li&gt;MySQL 8 is a worthwhile upgrade.&lt;/li&gt;
 &lt;li&gt;Databases manage state so you don&amp;rsquo;t have to. If you think databases are complicated, consider what you would have to do if the database and your DBA would not be there for you.&lt;/li&gt;
