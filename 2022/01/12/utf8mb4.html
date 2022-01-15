@@ -152,70 +152,79 @@
  an <a href="https://adamhooper.medium.com/in-mysql-never-use-utf8-use-utf8mb4-11761243e434" target="_blank" rel="noopener">article by Adam Hooper</a>
 
  on MySQL and the weird <code>utf8mb4</code> character set.</p>
-<p>The recommendation is correct:
-In MySQL, use <code>utf8mb4</code> when you mean to work with <code>utf8</code> in your programming language.
-The background and reasoning for this (and why it is wrong) is way more complicated than outlined by Adam Hooper.</p>
-<p>So let&rsquo;s walk through this:</p>
+<p>The recommendation is correct:</p>
+<p>In MySQL, use <code>utf8mb4</code> when you mean to work with <code>utf8</code> in your programming language.</p>
+<p>The background and reasoning for this (and why it is wrong) is way more complicated than outlined by Adam Hooper.
+So let&rsquo;s walk through this:</p>
 <h1 id="mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp">
     <a href="#mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp">
 	MySQL <code>utf8</code> means 3-byte Unicode, and access to only the BMP
     </a>
 </h1>
-<p>utf-8 in MySQL encodes the <a href="https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane" target="_blank" rel="noopener">Unicode BMP</a>
+<p><code>utf8</code> in MySQL encodes the <a href="https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane" target="_blank" rel="noopener">Unicode BMP</a>
 
 .
-The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane, the only character plane available in Unicode 1.0
+The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane.
+It was the only character plane available in Unicode 1.0
 It was thought to be enough for all scripts in the world.
 It wasn&rsquo;t.</p>
 <p>Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
 Currently, there can be up to 17 Unicode planes, but most of them are unused.</p>
-<p>Vladislav Vaintroub commented to me:</p>
+<p>Uncode 1.0 is also different in other ways. Vladislav Vaintroub commented to me:</p>
 <blockquote>
 <p>Unicode 1.0 had a <a href="https://en.wikipedia.org/wiki/Hangul_%28obsolete_Unicode_block%29" target="_blank" rel="noopener">different range for Hangul</a>
 
 .
 Unicode 2.0 fixed that, and remapped Hangul (which is a unique action, and they issued a policy to forbid remapping in the future).</p>
 </blockquote>
+<p>Making things immutable is important with character sets and sort orders, also for databases, as we will see.
+It is in fact the entire reason for <code>utf8mb4</code> to exist.</p>
 <h2 id="encodings-and-the-65536-character-barrier">
     <a href="#encodings-and-the-65536-character-barrier">
 	Encodings and the 65536 character barrier
     </a>
 </h2>
-<p>There are various ways to encode codepoints of Unicode.
-Originally, with only the BMP existing, people thought of extending the concept of &ldquo;byte&rdquo; = &ldquo;character&rdquo; to double bytes.
+<p>There are various ways to encode codepoints of Unicode.</p>
+<p>Originally, with only the BMP existing, people thought of extending the concept of &ldquo;byte&rdquo; = &ldquo;character&rdquo; to double bytes.
 This is how you get the <code>wchar</code> and a 16 bit character set, the obsolete ucs-2 encoding.</p>
 <p>When it became clear that 65536 characters are insufficient to represent all scripts and languages in the world, a larger 31-bit space was introduced and the naive encoding of that, ucs-4.
 This would require 4 bytes per character.</p>
-<p>Both are incredibly wasteful:
-Using ucs-2 with western scripts means that every other byte is a null byte, and with ucs-4 for every character there will be 3 null bytes.
+<p>Both are incredibly wasteful:</p>
+<p>Using ucs-2 with western scripts means that every other byte is a null byte, and with ucs-4 for every character there will be 3 null bytes.
 Even with non-western scripts there will be at least one, if not two null bytes per character.</p>
-<p>Extending Unicode beyond the BMP posed a bit of a problem, because Windows NT had started to use Unicode as a character set, and ucs-2 as the standard encoding in Windows NT.
-The solution was the character range 0xD800 to 0xDFFF, which was unassigned to characters, so far:
+<p>Extending Unicode beyond the BMP posed a bit of a problem:
+Windows NT had started to use Unicode as a character set, and ucs-2 as the standard encoding.</p>
+<p>The solution was the character range 0xD800 to 0xDFFF, which was unassigned to characters, so far:
 2048 (11 bit) of unassigned positions.</p>
 <p>The resulting encoding takes characters beyond the BMP, with codes greater than 0xFFFF, and subtracts 0x10000.
-This leaves a 20 bit number, which is then split into a high 10 bit part and a low 10 bit part.
-The high ten bits are added to 0xd800 (0xd800-0xdbff), the low then bits are added to 0xdc00 (0xdc00-0xdfff).
-This was called utf-16 encoding, and became the character set of Windows starting with Windows 2000.</p>
-<p>utf-16 also, for now, limits the number of characters that can be represented in Unicode encodings to a number far below 31 bit.</p>
+This leaves a 20 bit number, which is then split into a high 10 bit part and a low 10 bit part.</p>
+<ul>
+<li>The high ten bits are added to 0xd800 (0xd800-0xdbff).</li>
+<li>The low then bits are added to 0xdc00 (0xdc00-0xdfff).</li>
+</ul>
+<p>This was called utf-16 encoding, and became the character set of Windows starting with Windows 2000.</p>
+<p>utf-16 also, for now, limits the number of characters that can be represented in Unicode to 1112064, a number that can be represented in 21 bits.</p>
 <h2 id="plan-9-and-utf-8">
     <a href="#plan-9-and-utf-8">
 	Plan 9 and utf-8
     </a>
 </h2>
-<p>In the Unix world, the experimental Plan 9 operating systems from A&amp;T explored variable width encodings of Unicode:
+<p>In the Unix world, the experimental Plan 9 operating system from A&amp;T explored variable length encodings of Unicode:
 utf-8 could represent 31-bit Unicode with encodings between 1 and 6 bytes in length.
 Single byte codes would be compatible with ASCII, so that valid ASCII is also valid utf-8.</p>
-<p>Because the utf-16 hack had restricted the number of possible Unicode characters effectively from 31 bit to 21 bit, utf-8 encodings can only be up to 4 bytes long.
+<p>Because the utf-16 hack had restricted the number of possible Unicode characters effectively from 31 bit to 21 bit, actual utf-8 encodings can only be up to 4 bytes long.
 And because utf-8 is so much denser than other encodings, it is by far the dominant encoding of Unicode.
 Even Microsoft, heavily invested in ucs-2 and utf-16 with Windows, started to support utf-8, beginning with the development of Windows 11 in 2019.</p>
-<p>In a utf-8 multibyte sequence, the &ldquo;number of 1-bits before the first 0-bit&rdquo; in the first byte of a multibyte character determine the length of the encoding:</p>
+<p>In an utf-8 multibyte sequence, the &ldquo;number of 1-bits before the first 0-bit&rdquo; in the first byte of a multibyte character determine the length of the encoding:</p>
 <ul>
 <li>Single byte characters are in the range 0x00-0x7f (0 leading 1-bits, single byte), for ASCII compatibility.</li>
-<li>Multibyte characters start with 110xxxxx for a two byte sequence, 1110xxxx for a three byte sequence and 11110xxx for a four byte sequence.</li>
-<li>The second, and possible third and fourth byte are all of the form 10xxxxxx, which is otherwise unused, so that these bytes are always identifiable as continuation bytes in a multibyte encoding.</li>
+<li>Multibyte characters start with <code>110xxxxx</code> for a two byte sequence, <code>1110xxxx</code> for a three byte sequence and <code>11110xxx</code> for a four byte sequence.</li>
+<li>The second, and possible third and fourth byte are all of the form <code>10xxxxxx</code>, which is otherwise unused, so that these bytes are always identifiable as continuation bytes in a multibyte encoding.</li>
 </ul>
-<p>This makes utf-8 restartable: If you end up at a byte of the form 10xxxxxx, you can backtrack a few bytes and check for the clearly recognizable start pattern of a multibyte encoding, or error out with an invalid encoding.</p>
-<p>We get 128 single byte characters that are identical to ASCII, 1920 two byte characters and three bytes for the rest of the BMP.
+<p>This makes utf-8 restartable:
+If you end up at a byte of the form <code>10xxxxxx</code>, you know you are in the middle of a multibyte sequence of at most 4 bytes length.
+You can backtrack a few bytes, and check for the clearly recognizable start pattern of a multibyte encoding, or error out with an invalid encoding.</p>
+<p>We get 128 single byte characters that are identical to ASCII, 1920 two byte characters, and three bytes for the rest of the BMP.
 Four bytes are needed for rare CJK characters, a bunch of math, some dead scripts and
 <a href="https://blog.koehntopp.info/2017/11/05/unicode-is-over-and-it-dies-over-emoji.html">a ton of emoji that should not exist in the first place</a>
 
@@ -226,7 +235,7 @@ Four bytes are needed for rare CJK characters, a bunch of math, some dead script
     </a>
 </h2>
 <p>MySQL did support the &ldquo;full full&rdquo; range of 31 bit Unicode in the beginning, with up to 6 bytes being used for a single character.
-That was changed <a href="https://github.com/mysql/mysql-server/commit/43a506c0ced0e6ea101d3ab8b4b423ce3fa327d0" target="_blank" rel="noopener">in a single commit</a>
+That was changed <a href="https://github.com/mysql/mysql-server/commit/43a506c0ced0e6ea101d3ab8b4b423ce3fa327d0" target="_blank" rel="noopener">in a single byte change commit</a>
 
  in September 2002.
 <a href="https://dri.es/the-history-of-mysql-ab" target="_blank" rel="noopener">Back then</a>
@@ -234,17 +243,17 @@ That was changed <a href="https://github.com/mysql/mysql-server/commit/43a506c0c
  MySQL 3.23 was the active release and InnoDB was not yet enabled by default.</p>
 <p>Vladislav Vaintroub commented about this:</p>
 <blockquote>
-<p>Anyway MySQL&rsquo;s utf8 was always meant to be castrated utf8, from its invention.
-It was a little gamble, and hope that supplemental plane won&rsquo;t be used much, thus we could save a couple of bytes in filesort.
+<p>Anyway MySQL&rsquo;s utf8 was always meant to be castrated utf8, from its invention.</p>
+<p>It was a little gamble, and hope that supplemental plane won&rsquo;t be used much, thus we could save a couple of bytes in filesort.
 Although already by 2001 (Unicode 3.1) there were characters in supplemental range, they could be seen as &ldquo;rarely used&rdquo; (music notation, old Egyptian, Deseret and what not).
 Thus only few people needed supplemental characters, until everyone&rsquo;s favorite U+1F4A9 PILE OF POO premiered in Unicode 6.0, in 2010, actually a couple of years after, until smartphone made emoji ubiquitous.</p>
 <p>So that gamble - that supplemental plane remains rarely used, did not work out, but who would know that by 2003.</p>
 </blockquote>
 <p>Vaintroub&rsquo;s comment about sorting refers to a limitation of MySQL that was only removed in MySQL 8.
 More about that below.</p>
-<h2 id="character-sets-have-sort-and-comparison-rules-called-collations">
-    <a href="#character-sets-have-sort-and-comparison-rules-called-collations">
-	Character sets have sort and comparison rules, called collations
+<h2 id="character-sets-have-collations">
+    <a href="#character-sets-have-collations">
+	Character sets have collations
     </a>
 </h2>
 <p>Unicode not only defines character sets, they also define a comparison algorithm for characters.
@@ -252,14 +261,14 @@ This is called UCA, Unicode Comparison Algorithm.
 Like Unicode itself, <a href="https://unicode.org/Public/UCA/9.0.0/ReadMe.txt" target="_blank" rel="noopener">it is versioned</a>
 
 .</p>
-<p>Originally, there was just one type of comparison defined, and it was used for sorting and equality tests.<br>
-So if &ldquo;Köhntopp&rdquo; is supposed to sort like &ldquo;Kohntopp&rdquo;, it would also return <code>true</code> for the comparison <code>WHERE &quot;Köhntopp&quot; = &quot;Kohntopp&quot;</code>.
-That is clearly wrong and annoying.
+<p>Older versions of UCA had issues in various ways:
 <a href="https://lefred.be/content/mysql-character-sets-unicode-and-uca-compliant-collations/" target="_blank" rel="noopener">lefred&rsquo;s Blog article</a>
 
- and <a href="https://dev.mysql.com/blog-archive/sushi-beer-an-introduction-of-utf8-support-in-mysql-8-0/" target="_blank" rel="noopener">Manyi Lu&rsquo;s article</a>
+ and
+<a href="https://dev.mysql.com/blog-archive/sushi-beer-an-introduction-of-utf8-support-in-mysql-8-0/" target="_blank" rel="noopener">Manyi Lu&rsquo;s article</a>
 
- about the <a href="https://bugs.mysql.com/bug.php?id=76553" target="_blank" rel="noopener">Sushi-Beer issue</a>
+ about the
+<a href="https://bugs.mysql.com/bug.php?id=76553" target="_blank" rel="noopener">Sushi-Beer issue</a>
 
  explain this in depth.</p>
 <h2 id="indexes-are-materialized-collations">
@@ -268,28 +277,32 @@ That is clearly wrong and annoying.
     </a>
 </h2>
 <p>Databases have indexes, and these extract values from a column, <strong>sort them</strong> and store back pointers to the full row with each extracted column value.
-This allows for fast sorting.
-Thus, indexes are materialized collations, and when a collation (or a charset) is changed, all indexes that contain values of that charset are invalid and need to be recreated.</p>
-<p>In the deep dark past, MySQL made changes and bugfixes to existing collations, which made MySQL upgrades a pain.
-That is, because the moment you apply the upgrade, you are forced to drop and recreate the indexes.
-Depending on the amount of data that requires an extraordinary amount of time and makes updates complicated.</p>
+This allows for fast searching.</p>
+<p>Thus, indexes are materialized collations, and when a collation (or a charset) is changed, all indexes that contain values of that charset are invalid and need to be recreated.</p>
+<p>In the deep dark past, MySQL made changes and bugfixes to existing collations, which made MySQL upgrades a pain:
+The moment you apply the upgrade, you are forced to drop and recreate the indexes.
+Depending on the amount of data and the size of the index, that requires an extraordinary amount of time and makes updates complicated.</p>
 <h1 id="utf8mb4-because-utf8-was-taken">
     <a href="#utf8mb4-because-utf8-was-taken">
 	<code>utf8mb4</code>, because <code>utf8</code> was taken.
     </a>
 </h1>
-<p>As a policy, MySQL these days never updates existing character sets and collations, not even for bugfixes.
-And because the name <code>utf8</code> was taken, a new name was needed: <code>utf8mb4</code> is the version of Unicode utf-8 in MySQL that extends past the BMP, and also uses UCA 9.0 for comparison.
-Compare to <code>utf8</code> which encodes only the BMP, and uses an older UCA for comparison.
+<p>MySQL adopted a polity similat to the Unicode Consortium itself:</p>
+<p>MySQL never updates existing character sets and collations, not even for bugfixes.</p>
+<p>And because the name <code>utf8</code> was taken, a new name was needed:
+<code>utf8mb4</code> is the version of Unicode utf-8 in MySQL that extends past the BMP, and also uses UCA 9.0 for comparison.</p>
+<p>Compare to <code>utf8</code> which encodes only the BMP, and uses an older UCA for comparison.
 So <code>utf8</code> not only has a smaller character range, it also sorts differently.</p>
-<p>With MySQL and the immutable character set and collation rule, you can create new columns using the new character set and collations, even in existing tables.
-That is possible, because in MySQL a charset and collation is a column attribute.
-Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.</p>
-<p>So if you wanted to upgrade your database, you&rsquo;d install a new version.
-Nothing would change, you are just running new code that hopefully sorts and orders as before.</p>
-<p>Then you would check all columns, and note which ones need changing.
-And then you would change them, table by table, at your own leisure.
-Possibly using tooling such as Percona Online Table Change (&ldquo;OSC&rdquo;), making the change in the background without service interruption.</p>
+<p>This makes upgrades mich simpler:</p>
+<ul>
+<li>You install a new version.
+Nothing changes, you are just running new code which hopefully sorts and orders as before.</li>
+<li>You can create new columns using the new character set and collations, even in existing tables, because in MySQL a charset and collation is a column attribute.
+Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.</li>
+<li>To complete the upgrade check all columns, and note which ones need changing.</li>
+<li>Actually change these columns, table by table, at your own leisure.
+If necessary, use tooling such as Percona Online Table Change (&ldquo;OSC&rdquo;), making the change in the background without service interruption.</li>
+</ul>
 <h2 id="side-note-mysqls-sorting-and-file-formats-are-portable">
     <a href="#side-note-mysqls-sorting-and-file-formats-are-portable">
 	Side note: MySQL&rsquo;s sorting and file formats are portable
@@ -297,21 +310,21 @@ Possibly using tooling such as Percona Online Table Change (&ldquo;OSC&rdquo;), 
 </h2>
 <p>MySQL does not use <code>libc</code> and the character set comparison functions in there for itself.
 It brings its own collations instead.</p>
-<p>That is also an important lesson.
-It means that, unlike the other database, MySQL does not break when you upgrade the operating system <code>libc</code> on your machine.
-If MySQL used <code>libc</code> fort sorting and comparing, the database could break without any changes to the database whatsoever &ndash; an innocent security update to the operating system <code>libc</code> which for some reason also touched <code>libc</code> sorting and comparison would break all character indexes in your database.</p>
+<p>That is also an important fact.
+It means that MySQL does not break when you upgrade the operating system <code>libc</code> on your machine.</p>
+<p>If MySQL used <code>libc</code> fort sorting and comparing, the database could break without any changes to the database whatsoever &ndash; an innocent security update to the operating system <code>libc</code> (which for some reason also touched <code>libc</code> sorting and comparison) would break all character indexes in your database.</p>
 <p>MySQL does not do that.
 It lets you migrate these things in a way that is operationally convenient.</p>
-<p>It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.
-Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
+<p>It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.</p>
+<p>Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
 MySQL is MySQL on any platform, and copying files and replication always work across these boundaries.</p>
 <h1 id="so-why-the-6-to-3-byte-commit">
     <a href="#so-why-the-6-to-3-byte-commit">
 	So why the 6-to-3-byte commit?
     </a>
 </h1>
-<p>Not that it matters much: Because Unicode and UCA changes between versions of Unicode, you&rsquo;d still have to use different names for character sets and collations, and migrations to do.
-But why was it important that &ldquo;we could save a couple of bytes in filesort&rdquo; as Vaintroub puts it?
+<p>Not that it matters much: Because Unicode and UCA changes between versions of Unicode, you&rsquo;d still have to use different names for character sets and collations, and migrations to do.</p>
+<p>But why was it important that &ldquo;we could save a couple of bytes in filesort&rdquo; as Vaintroub puts it?
 Here we go:</p>
 <h2 id="sorting-is-important-and-hard-to-scale">
     <a href="#sorting-is-important-and-hard-to-scale">
