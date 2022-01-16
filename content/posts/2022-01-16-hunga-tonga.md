@@ -7,10 +7,9 @@ tags:
 - lang_en
 ---
 
-This is the Hunga Tonga underwater volcano explosion in Pacific Ocean:
+This is the Hunga Tonga underwater volcano explosion in Pacific Ocean (animated gif, click to start):
 
 ![](/uploads/2022/01/hunga-tonga3.gif)
-
 
 This is data from [my sensors]({{< ref "/content/posts/2020-11-15-my-home-sensor-network.md" >}}), 15h later:
 
