@@ -6,7 +6,180 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 26 Jan 2022 10:57:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Feb 2022 20:55:37 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Time to grow the file server</title>
+      <link>https://blog.koehntopp.info/2022/02/01/disk-surgery.html</link>
+      <pubDate>Tue, 01 Feb 2022 21:06:03 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/01/disk-surgery.html</guid>
+      <description>&lt;p&gt;The old file server was full, and since the little one got more local storage in his laptop, I also needed more storage for backup to match.
+I am running a 5x cage using up 3 disk slots in a Midi-Tower.
+Two slots are filled with Seagate Ironwolf 10 TB disks already, the rest is available.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.de/-/en/gp/product/B019HE69FO&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/cold-storage1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A 5x &lt;a href=&#34;https://www.amazon.de/-/en/gp/product/B019HE69FO&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hot swap disk cage&lt;/a&gt;
+
+ using 3 disk slots in a midi tower.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The disk situation in the machine was like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo vgs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[sudo] password for kris: 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG     #PV #LV #SN Attr   VSize   VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data     2  16   0 wz--n-   7.28t   3.24t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  hdd      2   5   0 wz--n-   9.08t   5.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 234.94g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;hdd&lt;/code&gt; volume group is running in a RAID-1 configuration using &lt;code&gt;mdraid&lt;/code&gt; for historical reasons - this is a very old machine.
+Additional space would be added as another &lt;code&gt;mdraid&lt;/code&gt;, and then linearly extend the existing volume.
+That is fine, the disks are used as backup targets for a number of Mac devices only and speed or seeks are not our primary goal.&lt;/p&gt;
+&lt;p&gt;I ordered two additional Seagate Ironwolf 10 TB disks to match the existing ones.
+They came in rather cold from the delivery van:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/cold-storage2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;After unpacking the disk chassis had single digit celsius temperatures.
+When I remembered to take a thermal image they were already warmed up a bit.
+I let them warm up a bit more before I put them in.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Pushing in the disks generated a lot of kernel log, and also a nice graph in the temperature monitoring:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/cold-storage3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The new disks are warming up rapidly. The dropping line is a scratch disk that I have been taking out of slot 3 and pushing back in into slot 5.&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[556459.695008] ata2: SRST failed (errno=-16)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.651016] ata2: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.671217] ata2.00: ATA-11: ST10000VN0008-2PJ103, SC61, max UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.671220] ata2.00: 19532873728 sectors, multi 16: LBA48 NCQ (depth 31/32)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676016] ata2.00: configured for UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676157] scsi 1:0:0:0: Direct-Access     ATA      ST10000VN0008-2P SC61 PQ: 0 ANSI: 5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676549] sd 1:0:0:0: Attached scsi generic sg1 type 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676844] sd 1:0:0:0: [sdb] 19532873728 512-byte logical blocks: (10.0 TB/9.10 TiB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676847] sd 1:0:0:0: [sdb] 4096-byte physical blocks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676879] sd 1:0:0:0: [sdb] Write Protect is off
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676885] sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676973] sd 1:0:0:0: [sdb] Write cache: enabled, read cache: enabled, doesn&amp;#39;t support DPO or FUA
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.771798] sd 1:0:0:0: [sdb] Attached SCSI disk
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556464.406986] ata3: link is slow to respond, please be patient (ready=0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556468.514986] ata3: SRST failed (errno=-16)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.586999] ata3: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.589417] ata3.00: ATA-11: ST10000VN0008-2PJ103, SC61, max UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.589420] ata3.00: 19532873728 sectors, multi 16: LBA48 NCQ (depth 31/32)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594222] ata3.00: configured for UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594361] scsi 2:0:0:0: Direct-Access     ATA      ST10000VN0008-2P SC61 PQ: 0 ANSI: 5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594676] sd 2:0:0:0: Attached scsi generic sg2 type 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594933] sd 2:0:0:0: [sdc] 19532873728 512-byte logical blocks: (10.0 TB/9.10 TiB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594937] sd 2:0:0:0: [sdc] 4096-byte physical blocks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.595017] sd 2:0:0:0: [sdc] Write Protect is off
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.595022] sd 2:0:0:0: [sdc] Mode Sense: 00 3a 00 00
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.595120] sd 2:0:0:0: [sdc] Write cache: enabled, read cache: enabled, doesn&amp;#39;t support DPO or FUA
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.695659] sd 2:0:0:0: [sdc] Attached SCSI disk
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Yup, 3 GBps. This is an old &lt;code&gt;i7-3770&lt;/code&gt; with an old SATA subsystem to match.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;I created partition tables using &lt;code&gt;sfdisk&lt;/code&gt;, copying from the existing &lt;code&gt;sda&lt;/code&gt; (another Ironwolf) to the new devices &lt;code&gt;sdb&lt;/code&gt; and &lt;code&gt;sdc&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo sfdisk -d /dev/sda | sudo sfdisk /dev/sdb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo sfdisk -d /dev/sda | sudo sfdisk /dev/sdc
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo sfdisk -d /dev/sdb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;label: gpt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;label-id: ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;device: /dev/sdb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;unit: sectors
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;first-lba: 34
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;last-lba: 19532873694
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/sdb1 : start=        2048, size=    20971520, type=..., uuid=...., name=&amp;#34;Linux filesystem&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/sdb2 : start=    20973568, size= 19511900127, type=..., uuid=...., name=&amp;#34;Linux RAID&amp;#34;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This works, because &lt;code&gt;sfdisk&lt;/code&gt; like &lt;code&gt;sgdisk&lt;/code&gt; understands about MBR and GPT partition tables, and can handle large 10 TB partitions. We have a 10 GB &lt;code&gt;/dev/sdb1&lt;/code&gt; as a potential boot space, and use the rest of the disk as a giant &lt;code&gt;/dev/sdb2&lt;/code&gt; in LVM2. The other disk, &lt;code&gt;/dev/sdc&lt;/code&gt; matches this.&lt;/p&gt;
+&lt;p&gt;We can then construct the RAID from the two partitions &lt;code&gt;/dev/sd{b,c}2&lt;/code&gt;. Because this is a large device, &lt;code&gt;mdadm&lt;/code&gt; will also automatically add an internal bitmap.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo mdadm -C /dev/md126 --level=1 --raid-devices=2 /dev/sd{b,c}2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo mdadm --detail /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/md126:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;           Version : 1.2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Creation Time : Tue Feb  1 20:23:20 2022
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        Raid Level : raid1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        Array Size : 9755817920 (9303.87 GiB 9989.96 GB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Used Dev Size : 9755817920 (9303.87 GiB 9989.96 GB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;      Raid Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Total Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       Persistence : Superblock is persistent
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Intent Bitmap : Internal
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       Update Time : Tue Feb  1 21:27:07 2022
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;             State : clean, resyncing
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Active Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   Working Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Failed Devices : 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Spare Devices : 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Consistency Policy : bitmap
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Resync Status : 0% complete
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              Name : server:126  (local to host server)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              UUID : ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;            Events : 799
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Number   Major   Minor   RaidDevice State
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       0       8       18        0      active sync   /dev/sdb2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       1       8       34        1      active sync   /dev/sdc2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And while the RAID synchronizes in the background, we can turn the new device into a physical volume and add it to the &lt;code&gt;hdd&lt;/code&gt; volume group.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo pvcreate /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Physical volume &amp;#34;dev/md126&amp;#34; successfully created.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo vgextend hdd /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Volume Group &amp;#34;hdd&amp;#34; successfully extended
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ vgs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG     #PV #LV #SN Attr   VSize   VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data     2  16   0 wz--n-   7.28t   3.24t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  hdd      2   5   0 wz--n-  18.17t   9.09t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 234.94g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With that, we now have sufficient disk space to continue to work.
+After the sync completes, I will &lt;code&gt;lvconvert&lt;/code&gt; two existing backup partitions into mirrors to move them to the new disk pair, and then dissolve the mirror, dropping the image on the old half.&lt;/p&gt;
+&lt;p&gt;Demo with a small LV:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -L1g -n &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; hdd
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# lvdisplay --map /dev/hdd/test&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;  --- Logical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV Path                /dev/hdd/test
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical extents 0 to 0:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Type                linear
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical volume     /dev/md127
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical extents    4091 to 4091
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a tiny LV on the old disk pair, &lt;code&gt;/dev/md127&lt;/code&gt;. We mirror it, wait for the mirroring process to complete and then remove the &lt;code&gt;/dev/md127&lt;/code&gt; half of the mirror:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvconvert -m1 hdd/test --mirrorlog core --background
+&lt;span class=&#34;go&#34;&gt;  Logical volume hdd/test converted.
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This converts in the background, and we have to check with &lt;code&gt;lvs -a&lt;/code&gt; that it is completed before we can continue.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;  test            hdd    mwi-a-m---   1.00g                                    100.00
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [test_mimage_0] hdd    iwi-aom---   1.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [test_mimage_1] hdd    iwi-aom---   1.00g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is done, 100.00% complete, and we can now split the mirror. In this, we need to name the mirror half to drop, &lt;code&gt;/dev/md127&lt;/code&gt;. The surviving image is now on &lt;code&gt;/dev/md126&lt;/code&gt;, the new disk.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#  &lt;/span&gt;lvconvert -m0 hdd/test /dev/md127
+&lt;span class=&#34;go&#34;&gt;  Logical volume hdd/test converted.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;  test        hdd    -wi-a-----   1.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvdisplay --map /dev/hdd/test
+&lt;span class=&#34;go&#34;&gt;  --- Logical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV Path                /dev/hdd/test
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical extents 0 to 0:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Type                linear
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical volume     /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical extents    0 to 0
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Doing this with multi-TB volumes will take some time, though.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Hunga Tonga</title>
       <link>https://blog.koehntopp.info/2022/01/16/hunga-tonga.html</link>
@@ -3753,95 +3926,6 @@ This assists in reconstruction a &lt;code&gt;.git&lt;/code&gt; directory from fr
 &lt;p&gt;It is followed by the actual file contents, which in this case is a commit, in ASCII.&lt;/p&gt;
 &lt;p&gt;Things in gits object storage can get orphaned or grow without size.
 Maintenance procedures exist that walk the various structures, identify orphaned objects and clean up things.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Empty commits and other wrong tools for the job</title>
-      <link>https://blog.koehntopp.info/2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html</link>
-      <pubDate>Wed, 06 Oct 2021 09:46:10 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://twitter.com/akrey/status/1445656529877680129&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This&lt;/a&gt;
-
- is how you can make an empty commit:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git commit --allow-empty -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;Kick it&amp;#34;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This has the disadvantage of also generating a commit message.
-&lt;a href=&#34;https://twitter.com/akrey/status/1445656529877680129&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Another way&lt;/a&gt;
-
- to achieve this seems to be&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git commit --amend --no-edit &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; git push -f
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;but that will make people hate you in other ways.&lt;/p&gt;
-&lt;p&gt;So lets stop and ask:
-Why would you want to make an empty commit?&lt;/p&gt;
-&lt;p&gt;Most people want this because they attached a server-side action to a commit, a CI/CD activity.&lt;/p&gt;
-&lt;h1 id=&#34;this-is-wrong&#34;&gt;
-    &lt;a href=&#34;#this-is-wrong&#34;&gt;
-	This is wrong
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;This is wrong in the same way &lt;a href=&#34;https://blog.koehntopp.info/2021/01/05/using-python-to-bash.html&#34;&gt;writing Shell Scripts&lt;/a&gt;
-
- is wrong:
-It kind of works, but now you have another, worse problem and still no solution to the original problem.&lt;/p&gt;
-&lt;p&gt;You need to stop and question your life choices, and most importantly, wake up the engineer in you.&lt;/p&gt;
-&lt;h2 id=&#34;but-i-need-to-debug-my-cicd-pipeline&#34;&gt;
-    &lt;a href=&#34;#but-i-need-to-debug-my-cicd-pipeline&#34;&gt;
-	But I need to debug my CI/CD pipeline
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Kick it off using the tooling provided to you.
-Your environment has an API that is specifically built to enable you to do that.
-Use it.&lt;/p&gt;
-&lt;p&gt;In Gitlab:
-&lt;a href=&#34;https://docs.gitlab.com/ee/ci/triggers/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Triggering pipelines through the API &lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;In GitHub:
-&lt;a href=&#34;https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow#running-a-workflow-using-the-rest-api&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Running a workflow using the REST API&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;This not only works reliably, you can get proper error messages.
-On top of that, you just did &lt;em&gt;not&lt;/em&gt; pee into your commit history.&lt;/p&gt;
-&lt;h2 id=&#34;but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance&#34;&gt;
-    &lt;a href=&#34;#but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance&#34;&gt;
-	But I need to redeploy, because I need a Terraform run after I just lost an instance
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;This is fractally broken, there is breakage in your breakage.&lt;/p&gt;
-&lt;p&gt;The proper solution is a reconciliation loop of the kind Kubernetes has: Measure the existing state and compare it to the desired state. Then execute the actions necessary to transform the measured state into the desired state, in a loop.&lt;/p&gt;
-&lt;p&gt;So if you are not on K8s, you need to move to K8s or re-invent K8s for your environment, badly.
-Yes, Terraform, Harness and friends have it all wrong.&lt;/p&gt;
-&lt;p&gt;Erecting infrastructure quickly and portably across backends surely is nice, but assumes a properly functioning declarative environment.
-That is an environment where you describe the desired state of the infrastructure and the platform takes care of maintaining that desired state for you.&lt;/p&gt;
-&lt;p&gt;Most platforms do not work that way.
-Some fake it, badly.
-For example, nobody uses AWS autoscalers to autoscale, but they surely are useful to protect your instance count.&lt;/p&gt;
-&lt;h2 id=&#34;the-problem-inside-this-problem&#34;&gt;
-    &lt;a href=&#34;#the-problem-inside-this-problem&#34;&gt;
-	The problem inside this problem
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;And since we are talking about CI/CD pipelines:
-Don&amp;rsquo;t YAML them. Don&amp;rsquo;t JSON them. Don&amp;rsquo;t XML them.&lt;/p&gt;
-&lt;p&gt;All of these things surely are nice to describe static objects that have static properties.
-You can successfully use any of them to express the desired state of a thing in a declarative way.&lt;/p&gt;
-&lt;p&gt;If you see anything that looks like &amp;ldquo;foreach&amp;rdquo;, &amp;ldquo;when&amp;rdquo;, &amp;ldquo;unless&amp;rdquo; or similar, it&amp;rsquo;s procedural.
-These are control structures.
-They are part of programming languages.
-Which any of these three are decidedly not.&lt;/p&gt;
-&lt;p&gt;Programming in any of these three is wrong use of tooling, and you should not do it.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;YAML, JSON and XML are for declarative things.&lt;/li&gt;
-&lt;li&gt;Python, Go and Rust are for procedural things.&lt;/li&gt;
-&lt;li&gt;Bash is for interactive use only.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Use the proper tooling for the job.
-Be an engineer.&lt;/p&gt;
-&lt;p&gt;Otherwise, you&amp;rsquo;ll just get your old bash rsync deployment scripts back, in a harder to debug packaging, and wrapped in conditionals and loops in YAML &amp;ldquo;syntax&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;That is not what progress looks like.
-At all.
-Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
 </description>
     </item>
     

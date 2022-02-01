@@ -6,7 +6,180 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 26 Jan 2022 10:57:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Feb 2022 20:55:37 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Time to grow the file server</title>
+      <link>https://blog.koehntopp.info/2022/02/01/disk-surgery.html</link>
+      <pubDate>Tue, 01 Feb 2022 21:06:03 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/01/disk-surgery.html</guid>
+      <description>&lt;p&gt;The old file server was full, and since the little one got more local storage in his laptop, I also needed more storage for backup to match.
+I am running a 5x cage using up 3 disk slots in a Midi-Tower.
+Two slots are filled with Seagate Ironwolf 10 TB disks already, the rest is available.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.amazon.de/-/en/gp/product/B019HE69FO&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/cold-storage1.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A 5x &lt;a href=&#34;https://www.amazon.de/-/en/gp/product/B019HE69FO&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hot swap disk cage&lt;/a&gt;
+
+ using 3 disk slots in a midi tower.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The disk situation in the machine was like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo vgs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[sudo] password for kris: 
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG     #PV #LV #SN Attr   VSize   VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data     2  16   0 wz--n-   7.28t   3.24t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  hdd      2   5   0 wz--n-   9.08t   5.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 234.94g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;hdd&lt;/code&gt; volume group is running in a RAID-1 configuration using &lt;code&gt;mdraid&lt;/code&gt; for historical reasons - this is a very old machine.
+Additional space would be added as another &lt;code&gt;mdraid&lt;/code&gt;, and then linearly extend the existing volume.
+That is fine, the disks are used as backup targets for a number of Mac devices only and speed or seeks are not our primary goal.&lt;/p&gt;
+&lt;p&gt;I ordered two additional Seagate Ironwolf 10 TB disks to match the existing ones.
+They came in rather cold from the delivery van:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/cold-storage2.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;After unpacking the disk chassis had single digit celsius temperatures.
+When I remembered to take a thermal image they were already warmed up a bit.
+I let them warm up a bit more before I put them in.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Pushing in the disks generated a lot of kernel log, and also a nice graph in the temperature monitoring:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/cold-storage3.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The new disks are warming up rapidly. The dropping line is a scratch disk that I have been taking out of slot 3 and pushing back in into slot 5.&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;[556459.695008] ata2: SRST failed (errno=-16)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.651016] ata2: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.671217] ata2.00: ATA-11: ST10000VN0008-2PJ103, SC61, max UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.671220] ata2.00: 19532873728 sectors, multi 16: LBA48 NCQ (depth 31/32)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676016] ata2.00: configured for UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676157] scsi 1:0:0:0: Direct-Access     ATA      ST10000VN0008-2P SC61 PQ: 0 ANSI: 5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676549] sd 1:0:0:0: Attached scsi generic sg1 type 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676844] sd 1:0:0:0: [sdb] 19532873728 512-byte logical blocks: (10.0 TB/9.10 TiB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676847] sd 1:0:0:0: [sdb] 4096-byte physical blocks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676879] sd 1:0:0:0: [sdb] Write Protect is off
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676885] sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.676973] sd 1:0:0:0: [sdb] Write cache: enabled, read cache: enabled, doesn&amp;#39;t support DPO or FUA
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556461.771798] sd 1:0:0:0: [sdb] Attached SCSI disk
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556464.406986] ata3: link is slow to respond, please be patient (ready=0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556468.514986] ata3: SRST failed (errno=-16)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.586999] ata3: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.589417] ata3.00: ATA-11: ST10000VN0008-2PJ103, SC61, max UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.589420] ata3.00: 19532873728 sectors, multi 16: LBA48 NCQ (depth 31/32)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594222] ata3.00: configured for UDMA/133
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594361] scsi 2:0:0:0: Direct-Access     ATA      ST10000VN0008-2P SC61 PQ: 0 ANSI: 5
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594676] sd 2:0:0:0: Attached scsi generic sg2 type 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594933] sd 2:0:0:0: [sdc] 19532873728 512-byte logical blocks: (10.0 TB/9.10 TiB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.594937] sd 2:0:0:0: [sdc] 4096-byte physical blocks
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.595017] sd 2:0:0:0: [sdc] Write Protect is off
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.595022] sd 2:0:0:0: [sdc] Mode Sense: 00 3a 00 00
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.595120] sd 2:0:0:0: [sdc] Write cache: enabled, read cache: enabled, doesn&amp;#39;t support DPO or FUA
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[556470.695659] sd 2:0:0:0: [sdc] Attached SCSI disk
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Yup, 3 GBps. This is an old &lt;code&gt;i7-3770&lt;/code&gt; with an old SATA subsystem to match.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;I created partition tables using &lt;code&gt;sfdisk&lt;/code&gt;, copying from the existing &lt;code&gt;sda&lt;/code&gt; (another Ironwolf) to the new devices &lt;code&gt;sdb&lt;/code&gt; and &lt;code&gt;sdc&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo sfdisk -d /dev/sda | sudo sfdisk /dev/sdb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo sfdisk -d /dev/sda | sudo sfdisk /dev/sdc
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo sfdisk -d /dev/sdb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;label: gpt
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;label-id: ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;device: /dev/sdb
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;unit: sectors
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;first-lba: 34
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;last-lba: 19532873694
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/sdb1 : start=        2048, size=    20971520, type=..., uuid=...., name=&amp;#34;Linux filesystem&amp;#34;
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/sdb2 : start=    20973568, size= 19511900127, type=..., uuid=...., name=&amp;#34;Linux RAID&amp;#34;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This works, because &lt;code&gt;sfdisk&lt;/code&gt; like &lt;code&gt;sgdisk&lt;/code&gt; understands about MBR and GPT partition tables, and can handle large 10 TB partitions. We have a 10 GB &lt;code&gt;/dev/sdb1&lt;/code&gt; as a potential boot space, and use the rest of the disk as a giant &lt;code&gt;/dev/sdb2&lt;/code&gt; in LVM2. The other disk, &lt;code&gt;/dev/sdc&lt;/code&gt; matches this.&lt;/p&gt;
+&lt;p&gt;We can then construct the RAID from the two partitions &lt;code&gt;/dev/sd{b,c}2&lt;/code&gt;. Because this is a large device, &lt;code&gt;mdadm&lt;/code&gt; will also automatically add an internal bitmap.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo mdadm -C /dev/md126 --level=1 --raid-devices=2 /dev/sd{b,c}2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo mdadm --detail /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;/dev/md126:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;           Version : 1.2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Creation Time : Tue Feb  1 20:23:20 2022
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        Raid Level : raid1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;        Array Size : 9755817920 (9303.87 GiB 9989.96 GB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Used Dev Size : 9755817920 (9303.87 GiB 9989.96 GB)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;      Raid Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Total Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       Persistence : Superblock is persistent
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Intent Bitmap : Internal
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       Update Time : Tue Feb  1 21:27:07 2022
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;             State : clean, resyncing
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Active Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;   Working Devices : 2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Failed Devices : 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Spare Devices : 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Consistency Policy : bitmap
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;     Resync Status : 0% complete
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              Name : server:126  (local to host server)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;              UUID : ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;            Events : 799
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Number   Major   Minor   RaidDevice State
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       0       8       18        0      active sync   /dev/sdb2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;       1       8       34        1      active sync   /dev/sdc2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And while the RAID synchronizes in the background, we can turn the new device into a physical volume and add it to the &lt;code&gt;hdd&lt;/code&gt; volume group.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo pvcreate /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Physical volume &amp;#34;dev/md126&amp;#34; successfully created.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ sudo vgextend hdd /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; Volume Group &amp;#34;hdd&amp;#34; successfully extended
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ vgs
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG     #PV #LV #SN Attr   VSize   VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data     2  16   0 wz--n-   7.28t   3.24t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  hdd      2   5   0 wz--n-  18.17t   9.09t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 234.94g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With that, we now have sufficient disk space to continue to work.
+After the sync completes, I will &lt;code&gt;lvconvert&lt;/code&gt; two existing backup partitions into mirrors to move them to the new disk pair, and then dissolve the mirror, dropping the image on the old half.&lt;/p&gt;
+&lt;p&gt;Demo with a small LV:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -L1g -n &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; hdd
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# lvdisplay --map /dev/hdd/test&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;  --- Logical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV Path                /dev/hdd/test
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical extents 0 to 0:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Type                linear
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical volume     /dev/md127
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical extents    4091 to 4091
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a tiny LV on the old disk pair, &lt;code&gt;/dev/md127&lt;/code&gt;. We mirror it, wait for the mirroring process to complete and then remove the &lt;code&gt;/dev/md127&lt;/code&gt; half of the mirror:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvconvert -m1 hdd/test --mirrorlog core --background
+&lt;span class=&#34;go&#34;&gt;  Logical volume hdd/test converted.
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This converts in the background, and we have to check with &lt;code&gt;lvs -a&lt;/code&gt; that it is completed before we can continue.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;  test            hdd    mwi-a-m---   1.00g                                    100.00
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [test_mimage_0] hdd    iwi-aom---   1.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [test_mimage_1] hdd    iwi-aom---   1.00g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is done, 100.00% complete, and we can now split the mirror. In this, we need to name the mirror half to drop, &lt;code&gt;/dev/md127&lt;/code&gt;. The surviving image is now on &lt;code&gt;/dev/md126&lt;/code&gt;, the new disk.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#  &lt;/span&gt;lvconvert -m0 hdd/test /dev/md127
+&lt;span class=&#34;go&#34;&gt;  Logical volume hdd/test converted.
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;  test        hdd    -wi-a-----   1.00g
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvdisplay --map /dev/hdd/test
+&lt;span class=&#34;go&#34;&gt;  --- Logical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV Path                /dev/hdd/test
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical extents 0 to 0:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Type                linear
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical volume     /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical extents    0 to 0
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Doing this with multi-TB volumes will take some time, though.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Hunga Tonga</title>
       <link>https://blog.koehntopp.info/2022/01/16/hunga-tonga.html</link>
@@ -3894,61 +4067,6 @@ But with MySQL 8 many things were overhauled, so let&amp;rsquo;s see what we can
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Any other ideas that fit the general theme?&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: The table &#39;../tmp/#sql…&#39; is full</title>
-      <link>https://blog.koehntopp.info/2021/09/09/tmp-file-full.html</link>
-      <pubDate>Thu, 09 Sep 2021 17:01:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/09/tmp-file-full.html</guid>
-      <description>&lt;p&gt;We observe a large number of messages of the kind&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;The table &amp;#39;../tmp/#sql…&amp;#39; is full
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;before-mysql-8&#34;&gt;
-    &lt;a href=&#34;#before-mysql-8&#34;&gt;
-	Before MySQL 8
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In older Versions of MySQL, implied temporary tables are being created whenever your &lt;code&gt;EXPLAIN&lt;/code&gt; contained the phrase &lt;code&gt;using temporary&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;In this case, MySQL would create an in-memory temporary table to materialize an intermediate query result, and then continue to process the data from there. If that temporary table was larger than some configurable limit, the temporary table would instead be converted to a MyISAM table on disk, streamed out, and then work would continue with this.&lt;/p&gt;
-&lt;p&gt;This has a large number of disadvantages:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;A table in the &lt;code&gt;MEMORY&lt;/code&gt; storage engine can have no variable length columns. That means, any &lt;code&gt;VARCHAR&lt;/code&gt; column gets converted to a &lt;code&gt;CHAR&lt;/code&gt; column in the &lt;code&gt;MEMORY&lt;/code&gt; version of that table.
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Example:&lt;/strong&gt; Your 5 byte (plus overhead) long &amp;lsquo;&lt;code&gt;hello&lt;/code&gt;&amp;rsquo; in a &lt;code&gt;VARCHAR(255) CHARSET utf8&lt;/code&gt; would turn into a 765 byte &lt;code&gt;CHAR(255) CHARSET utf8&lt;/code&gt; monstrosity, right-padded with spaces.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Memory used by &lt;code&gt;MEMORY&lt;/code&gt; engine tables would be dynamically allocated on top of the other buffers the database uses, making the process size quite variable, depending on how many concurrent threads need to use temporary tables right now. This can lead to memory exhaustion and a visit from the OOM killer, or worse, to a paged out database server.&lt;/li&gt;
-&lt;li&gt;When being streamed out to disk, the original variable length data types would be used, so you would not even see what caused the temporary table on disk in many cases, unless you looked very hard at the schema.&lt;/li&gt;
-&lt;li&gt;Memory for efficient MyISAM table processing is usually not configured on an InnoDB MySQL instance.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Because of that, we encouraged our users at work to be wary of plans with &lt;code&gt;using temporary&lt;/code&gt;, to avoid use of utf8 columns except for human generated data, and to employ certain techniques for writing queries that handle strings in a nicer way.&lt;/p&gt;
-&lt;h1 id=&#34;mysql-8-fixes-this&#34;&gt;
-    &lt;a href=&#34;#mysql-8-fixes-this&#34;&gt;
-	MySQL 8 fixes this
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Starting with MySQL 8, implicit temporary tables are using the InnoDB storage engine exclusively. That means, temporary tables have largely the same properties as any ordinary table.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;It is safe to use &lt;code&gt;VARCHAR(...) CHARSET utf8mb4&lt;/code&gt;, and at work we now recommend that you use this to represent strings. Variable length data types are handled just fine. It is fine to use single byte character sets for internal strings (names of status fields and other internal strings), but even that is no longer necessary.&lt;/li&gt;
-&lt;li&gt;There is no preconfigured limit to where the table is being streamed to disk.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This is being done by creating (internally and invisibly to you) a special tablespace for tmp tables. Tables created in this tablespace are InnoDB tables, but they are not redo-logged, because there is no need for them to be crash-safe. After all, tmp tables are supposed to be gone after a server restart.&lt;/p&gt;
-&lt;p&gt;This saves a ton of I/O and makes these tables very fast, while they are still compatible with the rest of the InnoDB engine.&lt;/p&gt;
-&lt;p&gt;tmp tables are now also using the InnoDB buffer pool, the fixed giant data structure that all other data in the server is using, so the memory consumption of the server process fluctuates a lot less.&lt;/p&gt;
-&lt;p&gt;All pages in the buffer pool need to be backed by files, so that they can be written out if space in the buffer pool becomes tight. For MySQL, this is the &lt;code&gt;innodb_temp_data_file_path config&lt;/code&gt; variable.&lt;/p&gt;
-&lt;p&gt;At work, we configure this on our systems with a hard upper limit:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;innodb_temp_data_file_path=ibtmp1:12M:autoextend:max:100G
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This means you get a file, &lt;code&gt;ibtmp1&lt;/code&gt;, in the data directory of MySQL with an initial size of 12 MB. This file is auto-extended in increments up to a maximum size of 100 GB - in the default configuration it is not limited.&lt;/p&gt;
-&lt;p&gt;If you need more, you are very likely holding the database wrong.&lt;/p&gt;
-&lt;h1 id=&#34;i-am-getting-this-error-message&#34;&gt;
-    &lt;a href=&#34;#i-am-getting-this-error-message&#34;&gt;
-	&amp;ldquo;I am getting this error message&amp;rdquo;
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Isolate the offending query, &lt;code&gt;EXPLAIN FORMAT=JSON&lt;/code&gt; the plan and check if you can get rid of the &lt;code&gt;using temporary&lt;/code&gt;. If it is using up a 100 GB temporary file space, something is very wrong.&lt;/p&gt;
-&lt;p&gt;You should not increase the 100 GB limit: The &lt;code&gt;ibtmp1&lt;/code&gt; file will eat all your disk space, and you won&amp;rsquo;t get it back, as tablespace files never shrink.&lt;/p&gt;
 </description>
     </item>
     
