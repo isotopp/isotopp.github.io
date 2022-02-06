@@ -6,13 +6,328 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 01 Feb 2022 20:55:37 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 06 Feb 2022 20:45:57 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Revisiting the file server</title>
+      <link>https://blog.koehntopp.info/2022/02/06/revisiting-the-file-server.html</link>
+      <pubDate>Sun, 06 Feb 2022 21:06:03 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/06/revisiting-the-file-server.html</guid>
+      <description>&lt;p&gt;The new disks in the file server had synchronized nicely, and that resulted in an interesting graph:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/02/disk-sync.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Sectors on the outer part of a hard disk are transferred faster than inner sectors. You can see how the disk speed halves between the outermost and the innermost part.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;While watching, I decided on a whim that I wanted to convert the entire setup from using Linux &lt;code&gt;mdraid&lt;/code&gt; to &lt;code&gt;dmraid&lt;/code&gt;, the LVM2 implementation of RAID1.
+It is essentially the same code, but integrated into LVM2 instead of using &lt;code&gt;mdadm&lt;/code&gt; for control.&lt;/p&gt;
+&lt;p&gt;I had already experimented with &lt;code&gt;dmraid&lt;/code&gt; before, as documented in &lt;a href=&#34;https://blog.koehntopp.info/2019/12/02/cloning-and-splitting-logical-volumes.html&#34;&gt;an earlier article&lt;/a&gt;
+
+, and that was &lt;a href=&#34;https://blog.koehntopp.info/2019/12/03/trying-lvmraid-for-real.html&#34;&gt;not without problems&lt;/a&gt;
+
+.
+But since the array would contain no original data, only backups, I decided to give it a try.&lt;/p&gt;
+&lt;p&gt;So here we go:&lt;/p&gt;
+&lt;h1 id=&#34;destroying-the-mdraid&#34;&gt;
+    &lt;a href=&#34;#destroying-the-mdraid&#34;&gt;
+	Destroying the &lt;code&gt;mdraid&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I had created a RAID-1 pair of the disks &lt;code&gt;/dev/sdb2&lt;/code&gt; and &lt;code&gt;/dev/sdc2&lt;/code&gt; under the name &lt;code&gt;/dev/md126&lt;/code&gt;, then added &lt;code&gt;/dev/md126&lt;/code&gt; to the &lt;code&gt;hdd&lt;/code&gt; volume group. In order to get the disks back, I had to undo this.&lt;/p&gt;
+&lt;p&gt;So we need to check if the &lt;code&gt;/dev/md126&lt;/code&gt; PV is empty:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvdisplay --map /dev/sda2
+&lt;span class=&#34;go&#34;&gt;  --- Physical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Name               /dev/md126
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG Name               hdd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Size               9.09 TiB / not usable 1022.98 MiB
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Allocatable           yes
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PE Size               1.00 GiB
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Total PE              9303
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Free PE               9303
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Allocated PE          0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV UUID               ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 1 to 9302:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    FREE
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That&amp;rsquo;s fine. We can remove the pair from the volume group again, remove the LVM2 label, and then stop and destroy the raid:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgreduce hdd /dev/md126
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvremove /dev/md126
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mdadm --stop /dev/md126
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mdadm --remove /dev/md126
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mdadm --zero-superblock /dev/sdb2 /dev/sdc2
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That did not work: An Ubuntu Component, &lt;code&gt;os-prober&lt;/code&gt;, took possession of the devices after removing the RAID-1. I had to actually uninstall the component and remove the &lt;code&gt;osprober&lt;/code&gt; from devicemapper before I could continue:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;### After uninstalling os-prober:&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;dmsetup ls
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;dmsetup remove osprober-linux-sdb2
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;dmsetup remove osprober-linux-sdc2
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mdadm --zero-superblock /dev/sdb2 /dev/sdc2
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;preparing-the-disks-individually-for-lvm2&#34;&gt;
+    &lt;a href=&#34;#preparing-the-disks-individually-for-lvm2&#34;&gt;
+	Preparing the disks individually for LVM2
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Only then I could continue, add the disks to LVM2 and extend the &lt;code&gt;hdd&lt;/code&gt; volume group:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvcreate /dev/sd&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;b,c&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgextend hdd /dev/sd&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;b,c&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We now have a very weird, asymmetric VG in which there is a single 9.09 TiB raid PV and two 9.09 TiB unraided PVs.
+Our next objective is to evacuate the raided PV, and then destroy this as well, adding the disks back unraided.
+This will result in a 36 TiB total VG.&lt;/p&gt;
+&lt;h1 id=&#34;evacuating-devmd127-to-unraid-it&#34;&gt;
+    &lt;a href=&#34;#evacuating-devmd127-to-unraid-it&#34;&gt;
+	Evacuating &lt;code&gt;/dev/md127&lt;/code&gt; to unraid it
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This is going to take a long time. We need to do this in a &lt;code&gt;tmux&lt;/code&gt; session:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvmove /dev/md127 /dev/sdb2
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will, over the course of about one day, move all physical extents from &lt;code&gt;/dev/md127&lt;/code&gt; to &lt;code&gt;/dev/sdb2&lt;/code&gt;.
+This exposes us to disk failure, as for the moment the data on &lt;code&gt;/dev/sdb2&lt;/code&gt; is unraided.&lt;/p&gt;
+&lt;h1 id=&#34;restoring-redundancy&#34;&gt;
+    &lt;a href=&#34;#restoring-redundancy&#34;&gt;
+	Restoring redundancy
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There are two kinds of backup on this disk pack:
+A number of Apple Time Machine targets and an Acronis Windws target, &lt;code&gt;tm_*&lt;/code&gt; and &lt;code&gt;win_*&lt;/code&gt;, and an internal backup that is being produced by a cron job, &lt;code&gt;rsync&lt;/code&gt;ing data from the internal SSDs to the disks, &lt;code&gt;/backup&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I decided to destroy the &lt;code&gt;/backup&lt;/code&gt; LV and recreate it as a &lt;code&gt;raid10&lt;/code&gt; across all 4 disks.
+This was relatively easy, and worked immediately &amp;ndash; it just took a few hours for the backup job to run from scratch.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;umount /backup
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvremove /dev/hdd/backup
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate --type raid10 -i2 -m1 -n backup -L4T hdd
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mkfs -t xfs -f /dev/hdd/backup
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;mount /backup
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;/root/bin/make-backup
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For the Time Machine and Acronis targets, I decided to &lt;code&gt;lvconvert&lt;/code&gt; them to &lt;code&gt;raid1&lt;/code&gt;.
+&lt;a href=&#34;https://blog.koehntopp.info/2019/12/02/cloning-and-splitting-logical-volumes.html&#34;&gt;As stated before&lt;/a&gt;
+
+, there are two competing implementations of of RAID in LVM2, &lt;code&gt;--type mirror&lt;/code&gt; and &lt;code&gt;--type raid1&lt;/code&gt;.
+The &lt;code&gt;mirror&lt;/code&gt; implementation is very extremely strongly deprecated, the &lt;code&gt;raid1&lt;/code&gt; implementation is okay, because it uses the same code as  &lt;code&gt;mdraid&lt;/code&gt; internally.&lt;/p&gt;
+&lt;p&gt;We need to make sure to specify &lt;code&gt;--type raid1&lt;/code&gt; in the &lt;code&gt;lvconvert&lt;/code&gt; command to ensure the proper type is being used.
+For each target we do&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvconvert --type raid1 -m1 /dev/hdd/tm_...
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This returns immediately, and begins to sync the mirror halves internally.
+If we at this point convert all Time Machine and Acronis targets at once, the sync speed is abysmally slow, because of disk head treshing.
+There is no way to stop this.
+The only option is to slow down all resyncs except one:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;### for all targets, slow them down to minimum&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;#  &lt;/span&gt;lvchange -maxrecoveryspeed&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1k /dev/hdd/tm_...
+&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;### for one target, set a very large max speed:&lt;/span&gt;
+&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvchange -maxrecoveryspeed&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;100000k /dev/hdd/tm_...
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and then let one &lt;code&gt;tm_...&lt;/code&gt; target finish.
+After that, we can increase the max sync speed for the next target, and so on.&lt;/p&gt;
+&lt;p&gt;This is what a &lt;code&gt;--type raid1&lt;/code&gt; looks like in &lt;code&gt;lsblk&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lsblk /dev/sda2 /dev/sdg2
+&lt;span class=&#34;go&#34;&gt;NAME                     MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;sda2                       8:2    0  9.1T  0 part
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;├─hdd-tm_aircat_rmeta_0  253:18   0    1G  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;│ └─hdd-tm_aircat        253:20   0    1T  0 lvm  /export/tm_aircat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;├─hdd-tm_aircat_rimage_0 253:25   0    1T  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;│ └─hdd-tm_aircat        253:20   0    1T  0 lvm  /export/tm_aircat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;sdg2                       8:98   0  9.1T  0 part
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;├─hdd-tm_aircat_rmeta_1  253:26   0    1G  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;│ └─hdd-tm_aircat        253:20   0    1T  0 lvm  /export/tm_aircat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;├─hdd-tm_aircat_rimage_1 253:30   0    1T  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;│ └─hdd-tm_aircat        253:20   0    1T  0 lvm  /export/tm_aircat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is, for each leg of the RAID1 you get a &lt;code&gt;rimage&lt;/code&gt; and &lt;code&gt;rmeta&lt;/code&gt; LV.
+If the LVs are named &lt;code&gt;mimage_0&lt;/code&gt; and &lt;code&gt;mimage1&lt;/code&gt; and there is no &lt;code&gt;rmeta&lt;/code&gt; but only a single &lt;code&gt;mlog&lt;/code&gt;, this is not &lt;code&gt;--type raid&lt;/code&gt;, but the deprecated &lt;code&gt;mirror&lt;/code&gt; implementation.
+This is not good, and should be converted to &lt;code&gt;--type raid1&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;There is no way to convert a &lt;code&gt;linear&lt;/code&gt; or &lt;code&gt;raid1&lt;/code&gt; to &lt;code&gt;raid10&lt;/code&gt;, unfortunately.&lt;/p&gt;
+&lt;h1 id=&#34;checking-status-and-progress&#34;&gt;
+    &lt;a href=&#34;#checking-status-and-progress&#34;&gt;
+	Checking status and progress
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;A few handy commands to check the status and the progress of the conversion.&lt;/p&gt;
+&lt;p&gt;Monitor the sync state of the devices:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a -o name,copy_percent,devices,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action hdd
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;-a&lt;/code&gt; shows all the LVs, even the internal ones.
+We are interested into the &lt;code&gt;copy_percent&lt;/code&gt; to see the progress of the sync.
+We also want the &lt;code&gt;max_recovery_rate&lt;/code&gt;, because we might have throttled it with the &lt;code&gt;lvchange&lt;/code&gt; command mentioned above.
+And we want to see the &lt;code&gt;raid_mismatch_count&lt;/code&gt; and &lt;code&gt;raid_sync_action&lt;/code&gt; to see what&amp;rsquo;s going on.&lt;/p&gt;
+&lt;p&gt;Of course, the ubiquitous &lt;code&gt;lvs -a -o +devices&lt;/code&gt; is always handy to get an impression of the entire VG:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a -o +devices hdd
+&lt;span class=&#34;go&#34;&gt;  LV                   VG  Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert Devices
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  backup               hdd rwi-aor---   4.00t                                    100.00           backup_rimage_0(0),backup_rimage_1(0),backup_rimage_2(0),backup_rimage_3(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rimage_0]    hdd iwi-aor---   2.00t                                                     /dev/sdb2(2561)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rimage_1]    hdd iwi-aor---   2.00t                                                     /dev/sdc2(1)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rimage_2]    hdd iwi-aor---   2.00t                                                     /dev/sda2(1026)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rimage_3]    hdd iwi-aor---   2.00t                                                     /dev/sdg2(3158)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rmeta_0]     hdd ewi-aor---   1.00g                                                     /dev/sdb2(2560)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rmeta_1]     hdd ewi-aor---   1.00g                                                     /dev/sdc2(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rmeta_2]     hdd ewi-aor---   1.00g                                                     /dev/sda2(1025)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [backup_rmeta_3]     hdd ewi-aor---   1.00g                                                     /dev/sdg2(3157)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  tm_aircat            hdd rwi-aor---   1.00t                                    100.00           tm_aircat_rimage_0(0),tm_aircat_rimage_1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_aircat_rimage_0] hdd iwi-aor---   1.00t                                                     /dev/sda2(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_aircat_rimage_1] hdd iwi-aor---   1.00t                                                     /dev/sdg2(2133)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_aircat_rmeta_0]  hdd ewi-aor---   1.00g                                                     /dev/sda2(1024)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_aircat_rmeta_1]  hdd ewi-aor---   1.00g                                                     /dev/sdg2(2132)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  tm_joram             hdd rwi-aor---   1.50t                                    100.00           tm_joram_rimage_0(0),tm_joram_rimage_1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_joram_rimage_0]  hdd iwi-aor---   1.50t                                                     /dev/sdc2(2049)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_joram_rimage_1]  hdd iwi-aor---   1.50t                                                     /dev/sdb2(1)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_joram_rmeta_0]   hdd ewi-aor---   1.00g                                                     /dev/sdc2(3585)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_joram_rmeta_1]   hdd ewi-aor---   1.00g                                                     /dev/sdb2(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  tm_mini              hdd rwi-aor--- 512.00g                                    100.00           tm_mini_rimage_0(0),tm_mini_rimage_1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_mini_rimage_0]   hdd iwi-aor--- 512.00g                                                     /dev/sdb2(8786)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_mini_rimage_1]   hdd iwi-aor--- 512.00g                                                     /dev/sdc2(4609)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_mini_rmeta_0]    hdd ewi-aor---   1.00g                                                     /dev/sdb2(9298)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [tm_mini_rmeta_1]    hdd ewi-aor---   1.00g                                                     /dev/sdc2(4608)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  win_kk               hdd rwi-aor---   2.08t                                    100.00           win_kk_rimage_0(0),win_kk_rimage_1(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [win_kk_rimage_0]    hdd iwi-aor---   2.08t                                                     /dev/sdg2(2)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [win_kk_rimage_1]    hdd iwi-aor---   2.08t                                                     /dev/sda2(3075)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [win_kk_rmeta_0]     hdd ewi-aor---   1.00g                                                     /dev/sdg2(0)
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [win_kk_rmeta_1]     hdd ewi-aor---   1.00g                                                     /dev/sda2(3074)
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Another way to look at the construct is &lt;code&gt;lsblk&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lsblk /dev/sd&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;a,b,c,g&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;NAME                       MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;sda                          8:0    0  9.1T  0 disk
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;├─sda1                       8:1    0   10G  0 part
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;└─sda2                       8:2    0  9.1T  0 part
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ├─hdd-tm_aircat_rmeta_0  253:18   0    1G  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  │ └─hdd-tm_aircat        253:20   0    1T  0 lvm  /export/tm_aircat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ├─hdd-tm_aircat_rimage_0 253:25   0    1T  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  │ └─hdd-tm_aircat        253:20   0    1T  0 lvm  /export/tm_aircat
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ├─hdd-backup_rmeta_2     253:35   0    1G  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  │ └─hdd-backup           253:39   0    4T  0 lvm  /backup
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ├─hdd-backup_rimage_2    253:36   0    2T  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  │ └─hdd-backup           253:39   0    4T  0 lvm  /backup
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  ├─hdd-win_kk_rmeta_1     253:42   0    1G  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  │ └─hdd-win_kk           253:23   0  2.1T  0 lvm  /export/win_kk
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  └─hdd-win_kk_rimage_1    253:43   0  2.1T  0 lvm
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    └─hdd-win_kk           253:23   0  2.1T  0 lvm  /export/win_kk
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;what-is-where&#34;&gt;
+    &lt;a href=&#34;#what-is-where&#34;&gt;
+	What is where?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;And of course, we might be interested into the actual distribution of data on the disk:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvdisplay --map /dev/sd&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;a,b,c,g&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical volume ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Name               /dev/sdg2
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  VG Name               hdd
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV Size               9.09 TiB / not usable 1022.98 MiB
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Allocatable           yes
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PE Size               1.00 GiB
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Total PE              9303
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Free PE               4098
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Allocated PE          5205
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  PV UUID               ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Physical Segments ---
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 0 to 0:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/win_kk_rmeta_0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 1 to 1:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    FREE
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 2 to 2131:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/win_kk_rimage_0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 2129
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 2132 to 2132:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/tm_aircat_rmeta_1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 2133 to 3156:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/tm_aircat_rimage_1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 1023
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 3157 to 3157:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/backup_rmeta_3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 0
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 3158 to 5205:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/backup_rimage_3
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 2047
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 5206 to 9302:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    FREE
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;defragmenting-devsdb2&#34;&gt;
+    &lt;a href=&#34;#defragmenting-devsdb2&#34;&gt;
+	Defragmenting &lt;code&gt;dev/sdb2&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Due to the way we created things, initially all &lt;code&gt;RAID1&lt;/code&gt; have the left leg of their mirror on &lt;code&gt;/dev/sdb2&lt;/code&gt;, because that is where we &lt;code&gt;pvmove&lt;/code&gt;ed stuff initially.
+We might want to fix that, and push a few things over.
+I did that, as can be seen by the &lt;code&gt;lvs -a -o +devices hdd&lt;/code&gt; output further up.&lt;/p&gt;
+&lt;p&gt;Here is how:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvmove -n &amp;lt;LV_name&amp;gt; /dev/sdb2 /dev/sdg2
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will move all data belonging to &lt;code&gt;LV_name&lt;/code&gt; that is currently on &lt;code&gt;/dev/sdb2&lt;/code&gt; to &lt;code&gt;/dev/sdg2&lt;/code&gt;.
+Again, this will take a long time, and there should be no other sync action currently active for maximum speed, as rotating disks slow down a lot when there are competing disk seeks.&lt;/p&gt;
+&lt;p&gt;This leaves us with a fragmented &lt;code&gt;/dev/sdb2&lt;/code&gt; and LVs on higher numbered extents, which are a lot slower than lower numbered extents.
+We could fix that as well, again with &lt;code&gt;pvmove&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvdisplay --map /dev/sdc2
+&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 3587 to 3596:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/keks_rimage_1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 9
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 3597 to 4607:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    FREE
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;pvmove -n keks --alloc anywhere /dev/sdc2:3587-3596 /dev/sdc2:4000-4009
+&lt;span class=&#34;go&#34;&gt; /dev/sdc2: Moved: 0.00%
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; ...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt; /dev/sdc2: Moved: 100.00%
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This moves extents internally on a drive.
+&lt;code&gt;pvmove&lt;/code&gt; normally refuses to do this, so we have to tell it to shut up about this, using &lt;code&gt;--alloc anywhere&lt;/code&gt;.
+We then use extent-addressing to change the map manually:
+We move data from &lt;code&gt;/dev/sdc2:3587-3596&lt;/code&gt;, the entire &lt;code&gt;keks&lt;/code&gt; Test-LV, somewhere into the &lt;code&gt;FREE&lt;/code&gt; space, &lt;code&gt;4000-4009&lt;/code&gt;.
+The result looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 3587 to 3999:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    FREE
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 4000 to 4009:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical volume      /dev/hdd/keks_rimage_1
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Logical extents     0 to 9
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Physical extent 4010 to 4607:
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    FREE
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvremove /dev/hdd/keks
+&lt;span class=&#34;go&#34;&gt;Do you really want to remove and DISCARD active logical volume hdd/keks? [y/n]: y
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical volume &amp;#34;keks&amp;#34; successfully removed
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And that concludes a largely pointless refactoring of my home storage, because I could.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;vgs
+&lt;span class=&#34;go&#34;&gt;  VG     #PV #LV #SN Attr   VSize   VFree
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  data     2  15   0 wz--n-   7.28t   3.25t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  hdd      4   5   0 wz--n-  36.34t  18.17t
+&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 234.94g
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;do-you-have-checksums&#34;&gt;
+    &lt;a href=&#34;#do-you-have-checksums&#34;&gt;
+	Do you have checksums?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Not yet.
+There is a thing called &lt;code&gt;dm-integrity&lt;/code&gt;, though, and a &lt;a href=&#34;https://gist.github.com/MawKKe/caa2bbf7edcc072129d73b61ae7815fb&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gist&lt;/a&gt;
+
+ that I have to try. The &lt;a href=&#34;https://www.kernel.org/doc/html/latest/admin-guide/device-mapper/dm-integrity.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dm-integrity Documentation&lt;/a&gt;
+
+ is here.
+And &lt;code&gt;integritysetup&lt;/code&gt; is part of &lt;code&gt;cryptsetup-bin&lt;/code&gt; on Ubuntu.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Time to grow the file server</title>
-      <link>https://blog.koehntopp.info/2022/02/01/disk-surgery.html</link>
+      <link>https://blog.koehntopp.info/2022/02/01/time-to-grow-the-file-server.html</link>
       <pubDate>Tue, 01 Feb 2022 21:06:03 +0100</pubDate>
       
-      <guid>https://blog.koehntopp.info/2022/02/01/disk-surgery.html</guid>
+      <guid>https://blog.koehntopp.info/2022/02/01/time-to-grow-the-file-server.html</guid>
       <description>&lt;p&gt;The old file server was full, and since the little one got more local storage in his laptop, I also needed more storage for backup to match.
 I am running a 5x cage using up 3 disk slots in a Midi-Tower.
 Two slots are filled with Seagate Ironwolf 10 TB disks already, the rest is available.&lt;/p&gt;
@@ -143,40 +458,6 @@ I let them warm up a bit more before I put them in.&lt;/em&gt;&lt;/p&gt;
 &lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  system   1   4   0 wz--n- 466.94g 234.94g
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With that, we now have sufficient disk space to continue to work.
 After the sync completes, I will &lt;code&gt;lvconvert&lt;/code&gt; two existing backup partitions into mirrors to move them to the new disk pair, and then dissolve the mirror, dropping the image on the old half.&lt;/p&gt;
-&lt;p&gt;Demo with a small LV:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvcreate -L1g -n &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt; hdd
-&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# lvdisplay --map /dev/hdd/test&lt;/span&gt;
-&lt;span class=&#34;go&#34;&gt;  --- Logical volume ---
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV Path                /dev/hdd/test
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Segments ---
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical extents 0 to 0:
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Type                linear
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical volume     /dev/md127
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical extents    4091 to 4091
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a tiny LV on the old disk pair, &lt;code&gt;/dev/md127&lt;/code&gt;. We mirror it, wait for the mirroring process to complete and then remove the &lt;code&gt;/dev/md127&lt;/code&gt; half of the mirror:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvconvert -m1 hdd/test --mirrorlog core --background
-&lt;span class=&#34;go&#34;&gt;  Logical volume hdd/test converted.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This converts in the background, and we have to check with &lt;code&gt;lvs -a&lt;/code&gt; that it is completed before we can continue.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt;
-&lt;span class=&#34;go&#34;&gt;  test            hdd    mwi-a-m---   1.00g                                    100.00
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [test_mimage_0] hdd    iwi-aom---   1.00g
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  [test_mimage_1] hdd    iwi-aom---   1.00g
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is done, 100.00% complete, and we can now split the mirror. In this, we need to name the mirror half to drop, &lt;code&gt;/dev/md127&lt;/code&gt;. The surviving image is now on &lt;code&gt;/dev/md126&lt;/code&gt;, the new disk.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#  &lt;/span&gt;lvconvert -m0 hdd/test /dev/md127
-&lt;span class=&#34;go&#34;&gt;  Logical volume hdd/test converted.
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvs -a &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; grep &lt;span class=&#34;nb&#34;&gt;test&lt;/span&gt;
-&lt;span class=&#34;go&#34;&gt;  test        hdd    -wi-a-----   1.00g
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;# &lt;/span&gt;lvdisplay --map /dev/hdd/test
-&lt;span class=&#34;go&#34;&gt;  --- Logical volume ---
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  LV Path                /dev/hdd/test
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  --- Segments ---
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;  Logical extents 0 to 0:
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Type                linear
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical volume     /dev/md126
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    Physical extents    0 to 0
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Doing this with multi-TB volumes will take some time, though.&lt;/p&gt;
 </description>
     </item>
     
@@ -3752,180 +4033,6 @@ Mode erlaubt auch einfacheren Neuverkauf, siehe auch Apple Watch Zubehör.&lt;/p
 &lt;p&gt;It’s gonna be epic to bring the squid game to the metaverse. Salute to your team! I am a big fan of the TV series. I am super excited to have a chance to participate in this game! LFG!!!&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;Noch mehr Laser Eyes.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Understanding git</title>
-      <link>https://blog.koehntopp.info/2021/10/12/understanding-git.html</link>
-      <pubDate>Tue, 12 Oct 2021 17:50:52 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/10/12/understanding-git.html</guid>
-      <description>&lt;p&gt;It occurred to me that I do not know nearly enough how git works, internally.
-The contents of the .git directory seem to be accessible enough, so I am going on a Safari in the git repository of this blog.
-You can follow along if you check out &lt;a href=&#34;https://github.com/isotopp/isotopp.github.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the blog&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;h1 id=&#34;refs&#34;&gt;
-    &lt;a href=&#34;#refs&#34;&gt;
-	Refs
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;All things git live in &lt;code&gt;.git&lt;/code&gt;.
-The thing we are working with seem to live in &lt;code&gt;.git/refs&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;find .git/refs -type f
-&lt;span class=&#34;go&#34;&gt;.git/refs/heads/main
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/github/main
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/origin/HEAD
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/origin/main
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/remotes/origin/master
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;.git/refs/stash
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let&amp;rsquo;s have a look at &lt;code&gt;.git/refs/heads/main&lt;/code&gt; and the &lt;code&gt;.git/refs/remotes&lt;/code&gt; here.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat .git/refs/heads/main
-&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat .git/refs/remotes/github/main
-&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;cat .git/refs/remotes/origin/main
-&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;commits&#34;&gt;
-    &lt;a href=&#34;#commits&#34;&gt;
-	Commits
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;So it appears that all these things reference the same &amp;ldquo;thing&amp;rdquo;, &lt;code&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a&lt;/code&gt;.
-This appears to be a 40 character (40 * 4 bit = 160 bit) SHA-1 hash value.
-git has low level commands to type this, and print it.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t daad5e31926cdf8a3af0ecff517c4d5892b6f62a
-&lt;span class=&#34;go&#34;&gt;commit
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -p daad5e31926cdf8a3af0ecff517c4d5892b6f62a
-&lt;span class=&#34;go&#34;&gt;tree ba5a4ceb371d42d766832dae545ecf00b9194ea2
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent 75077bc79697ea1e37da496b1210ca26f3c66c2c
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent b71d9463ad8c3b71bd279e88e74ce15e01de2aee
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;author Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;committer Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Merge remote-tracking branch &amp;#39;github/main&amp;#39; into main
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So this is a file of the type &lt;code&gt;commit&lt;/code&gt;, and it contains ASCII lines that describe the commit.
-Attributes of the commit are a tree, zero or more parent commits, an author, and a committer, as well as a log-message.
-The author and commit lines contain a name, a mail address, a Unix timestamp and a timezone.
-We can &lt;a href=&#34;https://rachelbythebay.com/w/2021/10/05/cmd/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;convert that timestamp carefully&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;date -d @1633513546
-&lt;span class=&#34;go&#34;&gt;Wed Oct  6 11:45:46 CEST 2021
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can also check out the things the commit points to:
-We will find that the parent entries also reference commits (the two commits that precede this one), and the tree entry references a tree object.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t 75077bc79697ea1e37da496b1210ca26f3c66c2c
-&lt;span class=&#34;go&#34;&gt;commit
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t b71d9463ad8c3b71bd279e88e74ce15e01de2aee
-&lt;span class=&#34;go&#34;&gt;commit
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t ba5a4ceb371d42d766832dae545ecf00b9194ea2
-&lt;span class=&#34;go&#34;&gt;tree
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Graphically, the highlighted part of the structure:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/10/git-tree-view.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The commit &lt;code&gt;daad5e31...&lt;/code&gt; has two parents: It is a merge commit of &lt;code&gt;b71d9463...&lt;/code&gt; and &lt;code&gt;75077bc7...&lt;/code&gt;&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;tree&#34;&gt;
-    &lt;a href=&#34;#tree&#34;&gt;
-	Tree
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;So a commit references a tree.
-A tree is a list of files and other trees, which function as subdirectories.
-Together they form a snapshot of the entire blog at this point in time (at this commit).&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -p  bf447432a99b33174809dbe10d1df43576a032b3
-&lt;span class=&#34;go&#34;&gt;100644 blob 199ea559714ed3569a88ab932476b11444244885    .gitignore
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;100644 blob 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d    CNAME
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;040000 tree f7fe2d64de25404f660561f7cfbce8d78bf05c09    _drafts
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;040000 tree fe33a062dcb4406a5ecf836ddeb1cfcd9ba85e8b    _includes
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The important takeaway seems to be that git does not store changes made to a file, it stores full files.
-That is less inefficient than it sounds, because unchanged files will have the same hash.
-Things with the same  hash will exist only once in storage, no matter in how many commits (or trees) they are being referenced.&lt;/p&gt;
-&lt;h1 id=&#34;blob&#34;&gt;
-    &lt;a href=&#34;#blob&#34;&gt;
-	Blob
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;And finally files: We can list their content, again, with the same tool.
-Using the &lt;code&gt;-t&lt;/code&gt; and &lt;code&gt;-s&lt;/code&gt; options we can also see their type and size.&lt;/p&gt;
-&lt;p&gt;Using &lt;code&gt;09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d&lt;/code&gt; for the &lt;code&gt;CNAME&lt;/code&gt; file from the tree above we get:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -t 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
-&lt;span class=&#34;go&#34;&gt;blob
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -s 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
-&lt;span class=&#34;go&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;git cat-file -p 09e9c05d0fcf4a403addb0b2b8ee613bc4bd4b1d
-&lt;span class=&#34;go&#34;&gt;blog.koehntopp.info
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;diffs&#34;&gt;
-    &lt;a href=&#34;#diffs&#34;&gt;
-	Diffs
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Diffs do not exist in git.
-They are instead generated on the fly, by comparing two trees.
-Again, this is less inefficient that one might think:
-All unchanged files will have also unchanged hashes and therefore need no consideration for a diff.&lt;/p&gt;
-&lt;p&gt;For objects with different hashes (but identical names), git then generates a diff.&lt;/p&gt;
-&lt;h1 id=&#34;other-structures&#34;&gt;
-    &lt;a href=&#34;#other-structures&#34;&gt;
-	Other structures
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;When you &lt;code&gt;checkout&lt;/code&gt;, you ask git to construct a certain tree using a hash, a tag name, branch or anything else.
-Every time, git records the checkout in the &lt;code&gt;reflog&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;daad5e3 (HEAD -&amp;gt; main, origin/main, github/main) HEAD@{0}: checkout: moving from 8a650853c5525013800c42f68c92b4d431b7b97c to main
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;8a65085 HEAD@{1}: checkout: moving from main to 8a650853c5525013800c42f68c92b4d431b7b97c
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;daad5e3 (HEAD -&amp;gt; main, origin/main, github/main) HEAD@{2}: merge github/main: Merge made by the &amp;#39;recursive&amp;#39; strategy.
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;75077bc HEAD@{3}: commit: fix 2021-10-06-empty-commits-and-other-wrong-tools-for-the-job.md
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;72ab462 HEAD@{4}: commit: fix 2021-10-06-empty-commits-and-other-wrong-tools-for-the-job.md
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can use this list of commit hashes to reconstruct what you did, where known good locations are, and of course to return to them.
-This is essential to repair a git repository that somehow was changed unintentionally and that still contains important salvageable data.&lt;/p&gt;
-&lt;p&gt;We find the original data git uses in &lt;code&gt;.git/logs/HEAD&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;tail -4 .git/logs/HEAD
-&lt;span class=&#34;go&#34;&gt;72ab462c4d134b02da1e474d3edb9db201e7aecb 75077bc79697ea1e37da496b1210ca26f3c66c2c Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633508667 +0200      commit: fix 2021-10-06-empty-commits-and-other-wrong-tools-for-the-job.md
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;75077bc79697ea1e37da496b1210ca26f3c66c2c daad5e31926cdf8a3af0ecff517c4d5892b6f62a Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200      merge github/main: Merge made by the &amp;#39;recursive&amp;#39; strategy.
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;daad5e31926cdf8a3af0ecff517c4d5892b6f62a 8a650853c5525013800c42f68c92b4d431b7b97c Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1634064444 +0200      checkout: moving from main to 8a650853c5525013800c42f68c92b4d431b7b97c
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;8a650853c5525013800c42f68c92b4d431b7b97c daad5e31926cdf8a3af0ecff517c4d5892b6f62a Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1634064654 +0200      checkout: moving from 8a650853c5525013800c42f68c92b4d431b7b97c to main
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;object-storage&#34;&gt;
-    &lt;a href=&#34;#object-storage&#34;&gt;
-	Object storage
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;git stores all things with a hashed name in .git/objects.
-The first byte (the first two letters) of the SHA-1 name make up a directory name, the rest goes into a file name.
-File content is stored compressed, using zlib.&lt;/p&gt;
-&lt;p&gt;We can check that using any programming language that supports zlib.
-Here in Python:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# $ git log | head -1&lt;/span&gt;
-&lt;span class=&#34;c1&#34;&gt;# commit daad5e31926cdf8a3af0ecff517c4d5892b6f62a&lt;/span&gt;
-&lt;span class=&#34;c1&#34;&gt;# &lt;/span&gt;
-&lt;span class=&#34;c1&#34;&gt;# $ python3&lt;/span&gt;
-&lt;span class=&#34;c1&#34;&gt;# Python 3.8.10 (default, Jun  2 2021, 10:49:15)&lt;/span&gt;
-
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;zlib&lt;/span&gt;
-&lt;span class=&#34;k&#34;&gt;with&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;.git/objects/da/ad5e31926cdf8a3af0ecff517c4d5892b6f62a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;rb&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-   &lt;span class=&#34;n&#34;&gt;fi&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;zlib&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decompress&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fi&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;decode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;utf-8&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;commit 333tree ba5a4ceb371d42d766832dae545ecf00b9194ea2
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent 75077bc79697ea1e37da496b1210ca26f3c66c2c
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;parent b71d9463ad8c3b71bd279e88e74ce15e01de2aee
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;author Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;committer Kristian Koehntopp &amp;lt;kris-git@koehntopp.de&amp;gt; 1633513546 +0200
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Merge remote-tracking branch &amp;#39;github/main&amp;#39; into main
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see the file has a header, &lt;code&gt;commit 333&lt;/code&gt;, terminated by a NULL byte.
-This assists in reconstruction a &lt;code&gt;.git&lt;/code&gt; directory from fragments, if any structures are lost.&lt;/p&gt;
-&lt;p&gt;It is followed by the actual file contents, which in this case is a commit, in ASCII.&lt;/p&gt;
-&lt;p&gt;Things in gits object storage can get orphaned or grow without size.
-Maintenance procedures exist that walk the various structures, identify orphaned objects and clean up things.&lt;/p&gt;
 </description>
     </item>
     
