@@ -5,6 +5,7 @@ feature-img: assets/img/background/mysql.jpg
 published: true
 tags:
 - mysql
+- mysqldev
 - lang_en
 title: Nermalisation
 ---
