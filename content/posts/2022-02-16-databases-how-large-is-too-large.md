@@ -90,7 +90,7 @@ From this we get a few very strong recommendations:
 - **2-4 TB** data size give you "several attempts at maintenance per day", and also fit standard blade on premises or i3.2xl and i3.4xl instances in EC2.
   They are probably the upper end of supportable database size in terms of wait times due to data copies.
 - **10 TB** data size is where toil explodes, because they are in the "a single attempt per day" class. 
-  If you have databases that are larger than this, but you need to have a long and hard look at you life and architecture choices, and the implications of them.
+  If you have databases that are larger than this, you need to have a long and hard look at your life and architecture choices, and the implications of them.
 
 # Reactive autoscaling is not a thing
 
