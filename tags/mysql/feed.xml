@@ -6,7 +6,123 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Feb 2022 15:45:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Feb 2022 13:50:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases: How large is too large?</title>
+      <link>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</link>
+      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</guid>
+      <description>&lt;p&gt;A database is a special kind of structured, persistent, global variable with concurrent access over the network.&lt;/p&gt;
+&lt;p&gt;You write data to a cell of a row of a table in a schema in the server, and it is being kept around for you, with a lifetime longer than the runtime of your program.
+The database takes care of making sure of ordering access to that data, so there is a clearly defined series of changes to the data – locking, transactions, isolation are things that make databases popular.&lt;/p&gt;
+&lt;p&gt;And so one gets to have a lot of database schemas in server instances, and they grow.
+Sometimes that becomes a problem.&lt;/p&gt;
+&lt;h1 id=&#34;databases-dont-scale-even-when-they-scale&#34;&gt;
+    &lt;a href=&#34;#databases-dont-scale-even-when-they-scale&#34;&gt;
+	Databases don&amp;rsquo;t scale, even when they scale
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;These days, the MySQL server can easily utilize the resources even of very large servers.
+At work, we have taken instances easily up to 400.000 queries per second on AMD EPYC servers with 64 cores and one terabyte of memory, without special tuning.
+With careful tuning, more than a million QPS is achievable.
+MySQL scales extremely well these days.&lt;/p&gt;
+&lt;p&gt;For a long time, MySQL also has been a very low latency/high connection database:
+since it uses a multithreading approach with a pre-generated thread pool, it can handle up to around 10k connections comfortably, and three times more at cost.
+It can handle disconnect and reconnect situations in a way that is more reminiscent of an LDAP server than a database.&lt;/p&gt;
+&lt;p&gt;And it can answer single point primary key lookups from memory – the workload a &lt;code&gt;memcached&lt;/code&gt; handles – at &lt;code&gt;memcached&lt;/code&gt; speeds:
+We see query resolution times including SQL parsing that are as low as 0.12ms (120µs).&lt;/p&gt;
+&lt;h1 id=&#34;what-doesnt-scale-_server-creation-time_&#34;&gt;
+    &lt;a href=&#34;#what-doesnt-scale-_server-creation-time_&#34;&gt;
+	What doesn&amp;rsquo;t scale: &lt;em&gt;server creation time&lt;/em&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL replication hierarchies are designed as shared-nothing architectures.
+Creating a new server means you have to copy the data for the server into place, and then let replication catch up.&lt;/p&gt;
+&lt;p&gt;There are storage trickeries that can be played, but they have long term consequences that need mitigation.
+They also tie their user to very costly and very specific storage architectures and that is not a thing anybody can afford to have as a technical debt item on their sheet.&lt;/p&gt;
+&lt;h1 id=&#34;a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+    &lt;a href=&#34;#a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+	A Relativity Theory of databases: For data, space is time.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When we create new databases, we copy the data over.
+In the end, the network is very fast:
+At 10  Gbit/s, we are looking at a stream of 1.25 GB/s coming in that we need to be able to persist at the receiving end, and that we need to provide at the sending end.&lt;/p&gt;
+&lt;p&gt;Looking at storage, we can see that in all but one situations, the bottleneck is not the network:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A conventional HDD with rotating rust can serve reliably around 200 MB/s in a linear read or write (&lt;a href=&#34;https://toshiba.semicon-storage.com/ap-en/storage/product/data-center-enterprise/cloud-scale-capacity/articles/mg07acaxxx.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toshiba HDD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;A SSD usually gives us twice this, so we see streams of around 400-500 MB/s (&lt;a href=&#34;https://www.micron.com/-/media/client/global/documents/products/product-flyer/5300_product_brief.pdf?la=en&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron SSD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;Openstack instances are quota&amp;rsquo;ed, and often get something like 400 MB/s quota again, which nicely matches expectations of SSD users.&lt;/li&gt;
+&lt;li&gt;A NVME flash device can provide on the upside of 3000 MB/s (3 GB/s) sustained data rate when enterprise grade hardware is purchased (&lt;a href=&#34;http://brochure.stebis.nl/Micron9300.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron NVME specs&lt;/a&gt;
+
+ provide some reference).
+This is the one single case where a 10 GBit/s network interface actually is becoming a bottleneck, but of course more network is available if you have the coin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How long does it take to copy one Terabyte of data, assuming linear streaming access?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;At 200 MB/s, we get 12000 MB/min = ~12 GB/min, or around 85.3 minutes for 1024 GB.&lt;/li&gt;
+&lt;li&gt;At 400 MB/s, that is twice the speed or half the time, 42.6 minutes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Add time for replication to catch up, and round up to a nice round number for rule of thumb estimates:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;At 400 MB/s, copying one Terabyte of data takes 45 minutes to copy and 15 minutes for replication catchup, for a total of &lt;strong&gt;one hour per Terabyte of data size&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;size-constraints-for-databases&#34;&gt;
+    &lt;a href=&#34;#size-constraints-for-databases&#34;&gt;
+	Size constraints for databases
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In database land, we copy databases all the time:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;To make backups.&lt;/li&gt;
+&lt;li&gt;To make more replicas in order to scale a pool up.&lt;/li&gt;
+&lt;li&gt;To replace replicas that have left the pool to go into maintenance.&lt;/li&gt;
+&lt;li&gt;To create special purpose replicas that may or may not be useful after having served their special purpose.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Each replica we make needs a donor instance, and often a donor instance can donate only to one receiver at a single point in time.&lt;/p&gt;
+&lt;p&gt;All taken together means that asking for more replicas is not instantaneous.
+You will have to wait one hour per TB of data size, and longer if there is need to clone up some donors to be able to parallelize cloning.&lt;/p&gt;
+&lt;p&gt;Here are some good numbers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Typical HPE or Dell blades at work have a single or two internal drives of 1.92 TB (&amp;ldquo;two TB&amp;rdquo;) each.
+If the instances make full use of them, preparing a blade takes slightly under 2h or 4h.&lt;/li&gt;
+&lt;li&gt;In a single workday of 8h, you can probably expect one attempt per day to do &amp;ldquo;a thing&amp;rdquo;  to a database of ~10 TB size.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;From this we get a few very strong recommendations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;200-250 GB&lt;/strong&gt; databases can be replicated in intervals that fit into K8s readiness probes.
+That is why Vitess and also many Postgres based clustering products recommend small instance sizes of 250 GB or less.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2-4 TB&lt;/strong&gt; data size give you &amp;ldquo;several attempts at maintenance per day&amp;rdquo;, and also fit standard blade on premises or i3.2xl and i3.4xl instances in EC2.
+They are probably the upper end of supportable database size in terms of wait times due to data copies.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;10 TB&lt;/strong&gt; data size is where toil explodes, because they are in the &amp;ldquo;a single attempt per day&amp;rdquo; class.
+If you have databases that are larger than this, but you need to have a long and hard look at you life and architecture choices, and the implications of them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;reactive-autoscaling-is-not-a-thing&#34;&gt;
+    &lt;a href=&#34;#reactive-autoscaling-is-not-a-thing&#34;&gt;
+	Reactive autoscaling is not a thing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It also means that reactive autoscaling of database instances does not work at all:
+By the time you have scaled up, the demand is already handled by existing capacity or you have died.&lt;/p&gt;
+&lt;p&gt;You will need ongoing capacity testing and predictive autoscaling that gives you some headroom  for the unexpected.&lt;/p&gt;
+&lt;p&gt;Using spot instances is also very likely to make you very unhappy or very offline or both.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is a soft 2 TB boundary and a hard 10 TB boundary.
+They are defined by physics, so they are not negotiable and cannot be removed by throwing money at it.&lt;/p&gt;
+&lt;p&gt;When you reach these sizes, talk to your DBA about alternatives.
+Treat the 2TB boundary as a complexity inflection point, and use the remaining time as runway to branch out into alternative solutions.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>UTF8MB4</title>
       <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
@@ -3916,247 +4032,6 @@ After processing we clean up by deleting the jobs from the table.&lt;/p&gt;
 &lt;li&gt;Size your instances around memory.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Forget about CPU or Network. If you have to care about these things, somebody is holding the database very wrongly. They need to be found, and be advised to commit a fix.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL from Below</title>
-      <link>https://blog.koehntopp.info/2021/02/25/mysql-from-below.html</link>
-      <pubDate>Thu, 25 Feb 2021 22:02:20 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/02/25/mysql-from-below.html</guid>
-      <description>&lt;p&gt;When you insert data into a database and run COMMIT you expect things to be there: &lt;a href=&#34;https://en.wikipedia.org/wiki/ACID&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Atomically, Consistent, Isolated and Durable&lt;/a&gt;
-
-, like Codd commanded us 40 years ago, but also quickly. There is a surprising amount of sophistication being poured into this, but since I do not want to shame MongoDB and Redis developers in this post, I am not going to talk about that much in this place.&lt;/p&gt;
-&lt;p&gt;We are instead trying to understand what our databases are doing all day, from the point of view of the storage stack.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/linux_observability_tools.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;That Brendan Gregg Graphics&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Here is your performance tooling (sans EBPF) as shown by Brendan Gregg in various iterations. We are interested into the various blues in this graphic, VFS and downwards. The most detailed information of what goes on in the blue stack is given by blktrace. It’s an I/O request recorder.&lt;/p&gt;
-&lt;p&gt;Unfortunately, blktrace tooling sucks big time. You have the choice between blkparse, iowatcher and seekwatcher, and they either give you unappealing and hard to read ASCII dumps, or are hard to use and abandoned to boot. A colleague threw &lt;a href=&#34;https://www.oakgatetech.com/applications/analytics&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Workload Analytics&lt;/a&gt;
-
- around. And with that you can actually see what goes on.&lt;/p&gt;
-&lt;p&gt;So, let’s have a look.&lt;/p&gt;
-&lt;h1 id=&#34;workload-classes&#34;&gt;
-    &lt;a href=&#34;#workload-classes&#34;&gt;
-	Workload Classes
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;When you go to our Grafana, and ask nicely, you can basically divide our databases into three load classes: “200 commit/s”, “2000 commit/s”, and “20.000 commit/s”, so “low write load”, “busy write load” and “should be thinking about what they are doing really soon” write load.&lt;/p&gt;
-&lt;p&gt;I am using representatives from every workload class to point out a few things.&lt;/p&gt;
-&lt;h2 id=&#34;but-what-about-reads&#34;&gt;
-    &lt;a href=&#34;#but-what-about-reads&#34;&gt;
-	But what about Reads?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Amazingly, at work we do not really care much about disk reads from databases.&lt;/p&gt;
-&lt;p&gt;We build our databases, especially customer facing databases, in a way that we try to hold the working set of the database in memory.&lt;/p&gt;
-&lt;p&gt;The “working set” of anything is the set of things that you will be needing in the near future. Unfortunately, predicting the future is hard, so what we define as the working set instead is “the set of things that we have most recently used and are therefore hoping to use in the near future again”, which works reasonably well until there is a change in workload pattern.&lt;/p&gt;
-&lt;p&gt;In our databases, the “anything” that matters is a 16 KB database page as it resides in the InnoDB Buffer Pool. So what we do is simple: We spend money on memory, warm up the InnoDB Buffer Pool and then serve data from memory.
-We can prove that works: InnoDB can do point reads from memory at memcache speeds, which is why we don’t use much of memcache and Redis in the first place – they don’t help.&lt;/p&gt;
-&lt;p&gt;We can also capacity test our databases, and we will find that as we increase the load the number of disk reads does not go up. Data is served from memory, and not from disk.&lt;/p&gt;
-&lt;p&gt;So what we care about is disk writes. They are the same on every instance of a replication chain, because of the shared nothing architecture of replication: Each chain member must apply the same set of changes from the primary down to all leaf replicas.&lt;/p&gt;
-&lt;h2 id=&#34;the-write-model&#34;&gt;
-    &lt;a href=&#34;#the-write-model&#34;&gt;
-	The Write Model
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;On Commit, we write out 1 KB (or more) of Redo-Log. The write happens with &lt;code&gt;O_DIRECT&lt;/code&gt; to XFS, and there is a lot of thought that goes into these few words.&lt;/p&gt;
-&lt;p&gt;Because it is &lt;code&gt;O_DIRECT&lt;/code&gt;, the write already writes to disk. There is no need to &lt;code&gt;fsync()&lt;/code&gt; or &lt;code&gt;fdatasync()&lt;/code&gt; or anything else.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;O_DIRECT&lt;/code&gt; writes also bypass the file system buffer cache, which is good, because then there is less memory pressure and less risk of paging out the database server. Usually when that happens (memory pressure forces paging on mysqld), you die a horrible and hard to debug death in latency problems and SLO violations.&lt;/p&gt;
-&lt;p&gt;We use XFS. XFS on the average takes twice as long as ext4 to write data to disk, but XFS always takes the same amount of time to write data – it has been specifically designed in a way that there is very low jitter. ext4, on the other hand, is known to have downspikes and large commit wait times every few seconds, and that is really, really bad when you run at 10.000 queries/s.&lt;/p&gt;
-&lt;p&gt;XFS also is capable of having multiple concurrent writers on a file when the file is open with O_DIRECT. Unlike all other Linux File Systems, &lt;a href=&#34;https://blog.koehntopp.info/2018/11/29/but-is-it-atomic.html&#34;&gt;it does not lock the file’s in-memory inode globally&lt;/a&gt;
-
- to guarantee atomic writes in this case. Such a feature is very dear to database people.&lt;/p&gt;
-&lt;p&gt;The Commit is what users have to wait for. When it is done, the database can do the real data write later, often much later, and in the background. So what we really care for is the actual commit latency.&lt;/p&gt;
-&lt;p&gt;The real write happens later, in the Checkpoint. &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html&#34;&gt;What happens is complicated enough to justify a writeup of its own&lt;/a&gt;
-
-. But, to make it short, we write data to the Doublewrite Buffer in a few very large linear writes as protection against torn pages, and then we writev() a scatter I/O of 16K pages to update in place.&lt;/p&gt;
-&lt;p&gt;This is different from Postgres, and enables us to avoid costly vacuum runs. We make an assumption here, and that is: Rollbacks are rare (and expensive in MySQL).&lt;/p&gt;
-&lt;h2 id=&#34;the-test-write-model&#34;&gt;
-    &lt;a href=&#34;#the-test-write-model&#34;&gt;
-	The Test Write Model
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;All that complexity is basically nonsense for benchmarking.&lt;/p&gt;
-&lt;p&gt;If you want to know if a thing can run MySQL, and how well, you simply randwrite 16KB pages in &lt;code&gt;O_DIRECT&lt;/code&gt; and see what happens. That’s a gross simplification compared to above, but holds up surprisingly well as a model for predicting MySQL speed and capacity.&lt;/p&gt;
-&lt;h1 id=&#34;the-200-commits-class&#34;&gt;
-    &lt;a href=&#34;#the-200-commits-class&#34;&gt;
-	The 200 Commit/s Class
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In order to see what real databases do to their disks, I went to the chosen representative for the 200-class and &lt;code&gt;blktrace&lt;/code&gt;’ed it.&lt;/p&gt;
-&lt;p&gt;It turns out that you can’t &lt;code&gt;blktrace&lt;/code&gt; a single disk database machine, because the disk writes from the &lt;code&gt;blktrace&lt;/code&gt; will mess up the metrics from the database. It also turns out that &lt;code&gt;systemd&lt;/code&gt; mounts a 12GB ramdisk as &lt;code&gt;/run/user/&amp;lt;uid&amp;gt;&lt;/code&gt; that can hold a 10 minute &lt;code&gt;blktrace&lt;/code&gt; with no problems.&lt;/p&gt;
-&lt;p&gt;When we feed that trace to Workload Intelligence, we get this:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-iops.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The low red line is the 200 IOPS baseline load. Turns out, there are spikes, up and past 2000 IOPS.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The first thing we learn: Kris is right. There are no reads.&lt;/p&gt;
-&lt;p&gt;The second thing we learn: 200 IO Operations per Second it may be, but there are spikes, up to and past 2000 IOPS even. They are not long, but they happen often enough.&lt;/p&gt;
-&lt;p&gt;So how long does it take to write to disk? Well, there is no disk. There is Flash Storage, and it does not even have a disk interface any more – it sits directly on the PCI bus. A Flash drive that is directly on the PCI bus is called NVME instead of SSD (it is otherwise the same drive).&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-latency.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Most of the time there is very little wait.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Flash is not fast, but NVME is: The drive not only has flash, it also has (large capacitor buffered) non-volatile memory it uses to buffer write and rearrange things in the background. It also has its own ARM processor with its own operating system.&lt;/p&gt;
-&lt;p&gt;Sometimes we have to wait a bit, but most of the time it’s really, really fast. How fast? We need to go deeper:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-latency-detail.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;30µs or 0.03ms is the time it takes to write to memory over the PCI bus.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;When we talk to the remote NVRAM on the other side of the PCI bus, it takes 30µs, or 0.03ms. As long as we do not overwhelm the NVRAM buffers of the drive, we have a 30µs commit latency on local memory.&lt;/p&gt;
-&lt;p&gt;Another number, which will come in handy later, is the time to cross our entire network stack within the same data center: That’s around 6 switches and routers, and it will add another 60µs to any round trip across the network in the best of all cases. So a remote flash drive never can be faster than around 100µs or 0.1ms.&lt;/p&gt;
-&lt;p&gt;Where do the writes go? We can plot the Linear Block Addresses and see:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-lba.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;LBA over time. See the position of the log files, and the checkpoints.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;When you plot “addresses written to over time”, you will see that there is a bunch of blocks that get written to again and again. These are the various logs and write buffers the database uses.&lt;/p&gt;
-&lt;p&gt;The drive internally has a flash translation layer (FTL), which makes sure that these block rewrites are actually distributed across all the positions in the flash you have. This kind of Wear Leveling makes sure the drive actually can live 7-10 years before the flash wears out.&lt;/p&gt;
-&lt;p&gt;The SD card or USB memory stick you are using in your local Raspi does not have that, and neither has the on board flash in the entertainment module of your Tesla. That is why they fail rapidly as actual fixed blocks of flash are being rewritten a few thousand times. Use a proper drive with a proper FTL and that does not happen.&lt;/p&gt;
-&lt;p&gt;In the graphics above you can also see the checkpoints scatter writes happen, and you can see how they are spaced apart widely, many tens of thousands of transactions. Checkpointing allows the database to aggregate changes in in-memory pages (and the log, for persistence). All that complexity is actually saving you disk writes!&lt;/p&gt;
-&lt;p&gt;Flash does not have a single write head as disk drives do. They are not forced to do things sequentially, but in fact all the various chips in your drive can do things concurrently. Deep disk write queues are necessary to keep all these channels fed for NVME, while they are poison of SSD and HDD.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-qdepth.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Queue Depth over time&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;A low concurrency hierarchy such as this one is not even touching the true write potential of a single NVME: A single drive can do 20.000 disk writes per second, sequentially in a single thread, if you are pushing really hard, but it can do 800.000 disk writes per second if you are feeding it with sufficient concurrency.&lt;/p&gt;
-&lt;p&gt;These are two other important numbers to keep in mind. They are the reason why “IOPS Quotas” should be a thing of the past – it is impossible for any reasonable workload to actually exhaust a single NVME drive, and distributed storages usually have hundreds of them.&lt;/p&gt;
-&lt;p&gt;Let’s have a look at the latency diagram from above, again, and check the distribution of completion times in a Latency Histogram. It tells us how prevalent slow writes are over the observation window:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-latency-histo.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;It&amp;rsquo;s called Flash for a reason.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;So even with these curtains in the latency over time diagram, we can see that 90% of all writes happen in the 30µs window, and there are noteworthy amounts of writes in the &amp;gt;100µs class (they do exist, but they are so rare, they do not show up in the histogram).&lt;/p&gt;
-&lt;p&gt;Write sizes over time:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-iosize.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Write sizes: Loads of small writes&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We can see that the grossly simplified 16 KB Randwrite model is actually not wrong, even if it is an oversimplification. Modelling more precisely does not significantly impact predictive performance, though, and this way it’s only a few lines of fio to get data.&lt;/p&gt;
-&lt;p&gt;So that’s our tour of the 200-class from the underside – this is how your storage sees your commits.&lt;/p&gt;
-&lt;h1 id=&#34;2000-commits-class&#34;&gt;
-    &lt;a href=&#34;#2000-commits-class&#34;&gt;
-	2000 Commit/s Class
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;I chose this particular database as a member of the 2000 Commit/s Class, also because it is the oldest and wildest of the database replication hierarchies that we have. At a time it was our performance bottleneck and was running over 20.000 queries/s with spikes into the 32.000, and with the hardware of that time that was not stable at all.&lt;/p&gt;
-&lt;p&gt;We are much better now. I am not missing the old times at all.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-2000-iops.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;IOPS over time, 2000 with Spikes to 5000.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;»Yes, Kris, we know about your “Look, Mom, no reads” already!«&lt;/p&gt;
-&lt;p&gt;True, but see, even a big and old monster such as this one can live with the working set in memory, completely. You, too, can be a successful database performance consultant: Say “Buy more memory!” and “There is an index missing” as needed (add “That’s going to be expensive”, if you work for SAP or Oracle).&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-2000-qdepth.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Our Write Queues are more busy.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;A quick look at the Write Queue Depth over Time: NVME loves this.&lt;/p&gt;
-&lt;p&gt;Write Latencies from the helicopter looks a bit worrysome:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-2000-latency.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;These 5ms Curtains, how dense are they compared to the baseline?&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We can zoom in: They are not bad.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-2000-latency-detail.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;We can see horizontal latency bands at fixed latencies. They expose internal structure of the Flash storage that I have not enough knowledge of. Grumble!&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We do see dark green, fixed bands of latency layers at 30µs, 120µs and 220µs. The higher layers show a repeating pattern over time. These are shenanigans of the FTL that are visible as delays to external users, but they are way below any critical level. I do not know enough about flash internals to explain these things, and that bothers me. A lot.&lt;/p&gt;
-&lt;p&gt;They are also visible in the latency histogram:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-2000-latency-histo.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Our 30µs, 120µs and 220µs bands as bumps in the histogram. Anything below 500µs is probably immaterial in terms of worry.&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;20000-commits-class&#34;&gt;
-    &lt;a href=&#34;#20000-commits-class&#34;&gt;
-	20.000 commit/s class
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The chosen example is a &lt;a href=&#34;https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html&#34;&gt;database as a queue&lt;/a&gt;
-
-, that logs changes from one data set for processing and creation of a materialized view in another data set. It is an example of &lt;a href=&#34;https://martinfowler.com/bliki/CQRS.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CQRS&lt;/a&gt;
-
- in Fowlerspeak.&lt;/p&gt;
-&lt;p&gt;It is also very busy.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-20000-iops.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;During the sampling, 2500 baseline, with spikes up to 7500.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;During the sampling, they ran at 2500 commit/s, with spikes up to 7500. The hardware will do up to 20.000 with them, and at times the queue will do as well.&lt;/p&gt;
-&lt;p&gt;So what can NVME do for us?&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-20000-qdepth.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Queues in our Queues!&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Turns out, writes to a Queue Databases keep the Queues to the NVME busy to their fullest potential.&lt;/p&gt;
-&lt;p&gt;Is that bad for latency?&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-20000-latency.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Latency Curtains for Writes&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Well, if you kept up to this point you are probably not surprised to see write latency curtains, and you will probably also be seeing that they mirror the queue depth changes without me pointing that out specifically.&lt;/p&gt;
-&lt;p&gt;Let’s zoom in a bit:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-20000-latency-detail.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;We do see the curtains under the microscope, true, but look at this dark green band of fast writes below all of this.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;As you can see in the dark green band of fast writes below all of the curtains, the FTL of this particular drive is kept well busy. It is also worth it’s money - no gross delays due to internal reorg is what you get when you pay for enterprise flash instead of home equipment.&lt;/p&gt;
-&lt;p&gt;As a histogram:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-20000-latency-histo.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;By far the most writes are still to NVRAM drive-side. Above 0.25ms we are basically clean.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Smooth customer experience, even with an abusive customer such as this queue-database – bring it on, we can take your writes.&lt;/p&gt;
-&lt;p&gt;Histograms are fun, by the way. We can for example count disk writes per block address:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-20000-lba-histo.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;We basically always change the same few pages.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;In a database as a queue, if all works well, the tables change a lot, but never grow. There are very few actual data pages that make up the small queue table, but very many inserts and deletes. We have to persist them to disk to be ACID, in the log. But there is hardly any need to checkpoint, and even then it’s very few full pages to write out.&lt;/p&gt;
-&lt;p&gt;Here you can see how much log writes dominate checkpoints in this extreme scenario.&lt;/p&gt;
-&lt;p&gt;If you made it this far, welcome and get your storage nerd badge at the counter.&lt;/p&gt;
 </description>
     </item>
     

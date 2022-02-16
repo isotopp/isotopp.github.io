@@ -6,7 +6,123 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Feb 2022 15:45:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Feb 2022 13:50:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases: How large is too large?</title>
+      <link>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</link>
+      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</guid>
+      <description>&lt;p&gt;A database is a special kind of structured, persistent, global variable with concurrent access over the network.&lt;/p&gt;
+&lt;p&gt;You write data to a cell of a row of a table in a schema in the server, and it is being kept around for you, with a lifetime longer than the runtime of your program.
+The database takes care of making sure of ordering access to that data, so there is a clearly defined series of changes to the data – locking, transactions, isolation are things that make databases popular.&lt;/p&gt;
+&lt;p&gt;And so one gets to have a lot of database schemas in server instances, and they grow.
+Sometimes that becomes a problem.&lt;/p&gt;
+&lt;h1 id=&#34;databases-dont-scale-even-when-they-scale&#34;&gt;
+    &lt;a href=&#34;#databases-dont-scale-even-when-they-scale&#34;&gt;
+	Databases don&amp;rsquo;t scale, even when they scale
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;These days, the MySQL server can easily utilize the resources even of very large servers.
+At work, we have taken instances easily up to 400.000 queries per second on AMD EPYC servers with 64 cores and one terabyte of memory, without special tuning.
+With careful tuning, more than a million QPS is achievable.
+MySQL scales extremely well these days.&lt;/p&gt;
+&lt;p&gt;For a long time, MySQL also has been a very low latency/high connection database:
+since it uses a multithreading approach with a pre-generated thread pool, it can handle up to around 10k connections comfortably, and three times more at cost.
+It can handle disconnect and reconnect situations in a way that is more reminiscent of an LDAP server than a database.&lt;/p&gt;
+&lt;p&gt;And it can answer single point primary key lookups from memory – the workload a &lt;code&gt;memcached&lt;/code&gt; handles – at &lt;code&gt;memcached&lt;/code&gt; speeds:
+We see query resolution times including SQL parsing that are as low as 0.12ms (120µs).&lt;/p&gt;
+&lt;h1 id=&#34;what-doesnt-scale-_server-creation-time_&#34;&gt;
+    &lt;a href=&#34;#what-doesnt-scale-_server-creation-time_&#34;&gt;
+	What doesn&amp;rsquo;t scale: &lt;em&gt;server creation time&lt;/em&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL replication hierarchies are designed as shared-nothing architectures.
+Creating a new server means you have to copy the data for the server into place, and then let replication catch up.&lt;/p&gt;
+&lt;p&gt;There are storage trickeries that can be played, but they have long term consequences that need mitigation.
+They also tie their user to very costly and very specific storage architectures and that is not a thing anybody can afford to have as a technical debt item on their sheet.&lt;/p&gt;
+&lt;h1 id=&#34;a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+    &lt;a href=&#34;#a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+	A Relativity Theory of databases: For data, space is time.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When we create new databases, we copy the data over.
+In the end, the network is very fast:
+At 10  Gbit/s, we are looking at a stream of 1.25 GB/s coming in that we need to be able to persist at the receiving end, and that we need to provide at the sending end.&lt;/p&gt;
+&lt;p&gt;Looking at storage, we can see that in all but one situations, the bottleneck is not the network:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A conventional HDD with rotating rust can serve reliably around 200 MB/s in a linear read or write (&lt;a href=&#34;https://toshiba.semicon-storage.com/ap-en/storage/product/data-center-enterprise/cloud-scale-capacity/articles/mg07acaxxx.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toshiba HDD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;A SSD usually gives us twice this, so we see streams of around 400-500 MB/s (&lt;a href=&#34;https://www.micron.com/-/media/client/global/documents/products/product-flyer/5300_product_brief.pdf?la=en&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron SSD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;Openstack instances are quota&amp;rsquo;ed, and often get something like 400 MB/s quota again, which nicely matches expectations of SSD users.&lt;/li&gt;
+&lt;li&gt;A NVME flash device can provide on the upside of 3000 MB/s (3 GB/s) sustained data rate when enterprise grade hardware is purchased (&lt;a href=&#34;http://brochure.stebis.nl/Micron9300.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron NVME specs&lt;/a&gt;
+
+ provide some reference).
+This is the one single case where a 10 GBit/s network interface actually is becoming a bottleneck, but of course more network is available if you have the coin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How long does it take to copy one Terabyte of data, assuming linear streaming access?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;At 200 MB/s, we get 12000 MB/min = ~12 GB/min, or around 85.3 minutes for 1024 GB.&lt;/li&gt;
+&lt;li&gt;At 400 MB/s, that is twice the speed or half the time, 42.6 minutes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Add time for replication to catch up, and round up to a nice round number for rule of thumb estimates:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;At 400 MB/s, copying one Terabyte of data takes 45 minutes to copy and 15 minutes for replication catchup, for a total of &lt;strong&gt;one hour per Terabyte of data size&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;size-constraints-for-databases&#34;&gt;
+    &lt;a href=&#34;#size-constraints-for-databases&#34;&gt;
+	Size constraints for databases
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In database land, we copy databases all the time:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;To make backups.&lt;/li&gt;
+&lt;li&gt;To make more replicas in order to scale a pool up.&lt;/li&gt;
+&lt;li&gt;To replace replicas that have left the pool to go into maintenance.&lt;/li&gt;
+&lt;li&gt;To create special purpose replicas that may or may not be useful after having served their special purpose.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Each replica we make needs a donor instance, and often a donor instance can donate only to one receiver at a single point in time.&lt;/p&gt;
+&lt;p&gt;All taken together means that asking for more replicas is not instantaneous.
+You will have to wait one hour per TB of data size, and longer if there is need to clone up some donors to be able to parallelize cloning.&lt;/p&gt;
+&lt;p&gt;Here are some good numbers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Typical HPE or Dell blades at work have a single or two internal drives of 1.92 TB (&amp;ldquo;two TB&amp;rdquo;) each.
+If the instances make full use of them, preparing a blade takes slightly under 2h or 4h.&lt;/li&gt;
+&lt;li&gt;In a single workday of 8h, you can probably expect one attempt per day to do &amp;ldquo;a thing&amp;rdquo;  to a database of ~10 TB size.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;From this we get a few very strong recommendations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;200-250 GB&lt;/strong&gt; databases can be replicated in intervals that fit into K8s readiness probes.
+That is why Vitess and also many Postgres based clustering products recommend small instance sizes of 250 GB or less.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2-4 TB&lt;/strong&gt; data size give you &amp;ldquo;several attempts at maintenance per day&amp;rdquo;, and also fit standard blade on premises or i3.2xl and i3.4xl instances in EC2.
+They are probably the upper end of supportable database size in terms of wait times due to data copies.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;10 TB&lt;/strong&gt; data size is where toil explodes, because they are in the &amp;ldquo;a single attempt per day&amp;rdquo; class.
+If you have databases that are larger than this, but you need to have a long and hard look at you life and architecture choices, and the implications of them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;reactive-autoscaling-is-not-a-thing&#34;&gt;
+    &lt;a href=&#34;#reactive-autoscaling-is-not-a-thing&#34;&gt;
+	Reactive autoscaling is not a thing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It also means that reactive autoscaling of database instances does not work at all:
+By the time you have scaled up, the demand is already handled by existing capacity or you have died.&lt;/p&gt;
+&lt;p&gt;You will need ongoing capacity testing and predictive autoscaling that gives you some headroom  for the unexpected.&lt;/p&gt;
+&lt;p&gt;Using spot instances is also very likely to make you very unhappy or very offline or both.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is a soft 2 TB boundary and a hard 10 TB boundary.
+They are defined by physics, so they are not negotiable and cannot be removed by throwing money at it.&lt;/p&gt;
+&lt;p&gt;When you reach these sizes, talk to your DBA about alternatives.
+Treat the 2TB boundary as a complexity inflection point, and use the remaining time as runway to branch out into alternative solutions.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Revisiting the file server</title>
       <link>https://blog.koehntopp.info/2022/02/06/revisiting-the-file-server.html</link>
@@ -3595,444 +3711,6 @@ Fashion also allows easier re-sales of the same item, see also Apple Watch acces
 &lt;p&gt;It’s gonna be epic to bring the squid game to the metaverse. Salute to your team! I am a big fan of the TV series. I am super excited to have a chance to participate in this game! LFG!!!&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;More Laser Eyes.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Metaverse</title>
-      <link>https://blog.koehntopp.info/2021/10/26/metaverse.html</link>
-      <pubDate>Tue, 26 Oct 2021 20:55:51 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/10/26/metaverse.html</guid>
-      <description>&lt;p&gt;Ich &lt;a href=&#34;https://twitter.com/isotopp/status/1450739310546886657&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;schrieb auf Twitter&lt;/a&gt;
-
- was zum aktuellen Begriff &amp;ldquo;Metaverse&amp;rdquo;.
-Das hat zu einem Kontakt mit &lt;a href=&#34;https://twitter.com/michacarl&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Michael Carl&lt;/a&gt;
-
- geführt, der mich in seinem &lt;a href=&#34;https://carls-zukunft.de/folge-58-how-to-build-a-metaversum-in-three-simple-steps/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Podcast&lt;/a&gt;
-
- haben wollte.
-Meine &lt;a href=&#34;https://docs.google.com/document/d/1_OIl_bcrjVczLQrMrVnt5IoYbitp1504mb2GbQK0EM4/edit#heading=h.wbe6wnc7fg59&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gesprächsnotizen und Vorbereitung&lt;/a&gt;
-
- habe ich nun auch hier:&lt;/p&gt;
-&lt;h1 id=&#34;metaverse&#34;&gt;
-    &lt;a href=&#34;#metaverse&#34;&gt;
-	Metaverse
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Der Begriff &amp;ldquo;Metaverse&amp;rdquo; stammt ursprünglich von Neal Stephenson, aus dem Jahre 1992, aber er ist im aktuellen Kontext von Matthew Ball in &lt;a href=&#34;https://www.matthewball.vc/all/themetaverse&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Metaverse: What It Is, Where to Find it, Who Will Build It, and Fortnite&lt;/a&gt;
-
- mit Sinn gefüllt worden. Ball hat dann später &lt;a href=&#34;https://www.matthewball.vc/the-metaverse&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mehr zum Thema&lt;/a&gt;
-
- geschrieben, und so den aktuellen Silicon Valley Hype erzeugt.&lt;/p&gt;
-&lt;p&gt;Die Überlegung beginnt mit Spielen, die nicht mehr sind, was sie mal waren, sondern irgendwie mehr geworden sind:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Fortnite von Epic Games, in der nun auch Nicht-Fortnite-Aktivitäten stattfinden,&lt;/li&gt;
-&lt;li&gt;Roblox, eine Plattform zur spielerischen Generierung von Computerspielen, und&lt;/li&gt;
-&lt;li&gt;Minecraft in der Java- und der Bedrock-Edition, um zu zeigen, wie beides auf seine Weise unternehmerische Fehlschläge sind.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;fortnite&#34;&gt;
-    &lt;a href=&#34;#fortnite&#34;&gt;
-	Fortnite
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Fortnite war mal Battle Royale, aber ist inzwischen auch eine &amp;ldquo;Veranstaltungsplattform&amp;rdquo;, man kann dort Skins kaufen, Partnerschaften mit anderem IP, zum Beispiel Marvel/DC Super Heroes.
-Leute haben dort Konzerte gegeben oder andere Veranstaltungen durchgeführt.
-Epic unterstützt das, recht offen, weil es Fortnite so auch bei Leuten bekannt macht, die an Battle Royal und Gamer-Kultur nicht primär interessiert sind.&lt;/p&gt;
-&lt;p&gt;Epic Games macht auch die Unreal Engine, und die dazu gehörenden Pipelines zum Erstellen und Editieren von digitalen Game-Assets, betreibt einen Markt für diese Dinge und baut auch sonst eine lebendige Infrastruktur zur Spielerzeugung und zur Vermarktung auf.
-Gewissermaßen ist dies die unsichtbare &amp;ldquo;Rückseite&amp;rdquo; von Spielen.&lt;/p&gt;
-&lt;h2 id=&#34;roblox&#34;&gt;
-    &lt;a href=&#34;#roblox&#34;&gt;
-	Roblox
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Ganz ähnlich, aber viel mehr casual betreibt Roblox sowieso eine Plattform zur Erzeugung von Spielen, und macht so Assets, aber auch einen Markt für Assets.
-Roblox ist vor allen Dingen bei jungen und sehr jungen Menschen populär, und wird bei älteren Menschen weit unterschätzt.&lt;/p&gt;
-&lt;h2 id=&#34;minecraft-in-zwei-geschmacksrichtungen&#34;&gt;
-    &lt;a href=&#34;#minecraft-in-zwei-geschmacksrichtungen&#34;&gt;
-	Minecraft in zwei Geschmacksrichtungen
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Minecraft ist ein Klassiker: Das originale Minecraft ist in Java geschrieben und inzwischen komplett durch Komponenten von Drittherstellern ersetzbar. Es gibt alternative Clients, alternative Server, alternative Assets.
-Das Spiel ist schlecht: Es ist eine Sandbox ohne viel Story und ohne Spielziel mit primitiver Grafik, die originalen Server sind langsam und fehlerhaft.&lt;/p&gt;
-&lt;p&gt;Aber die Grafik ist simpel, sodass das Spiel auch auf abgelegten Kartoffelcomputern funktioniert.
-Es ist alles in Java geschrieben, das sich leicht reversen und dann unkooperativ erweitern lässt, und so gibt es eine reichhaltige Community mit Moddern, Server- und Client-Plugins, und vielen anderen Erweiterungen.
-Das macht das Spiel populär und zu einer &amp;ldquo;Einstiegsdroge&amp;rdquo; in die Java-Programmierung bei jungen Menschen, weil es ein unglaubliches Potenzial für Selbstmotivation bietet.&lt;/p&gt;
-&lt;p&gt;Nichts davon ist durch den derzeitigen Eigentümer Microsoft monetarisierbar.
-Als IP ist Minecraft für Microsoft gescheitert, weil Microsoft nach dem Kauf des Spiels nicht mehr Teil der Verwertungskette ist.&lt;/p&gt;
-&lt;p&gt;Daher gibt es von Microsoft &amp;ldquo;Minecraft Bedrock Edition&amp;rdquo;, performanter und besser designt, und von Grund auf mit einem Asset-Markt integriert.
-Erweiterungen für Bedrock sind im Laden kaufbar, und nur dort.
-Man muss als Anbieter IP von Microsoft lizenzieren und dann Prozente zahlen, als Kunde sowieso.
-Bei den Spielern ist es deswegen kaum populär, steril und ohne eigene Kultur.
-Im Vergleich zu Java Edition noch ein größerer Fehlschlag.&lt;/p&gt;
-&lt;p&gt;Das Bedrock-Modell ist vergleichbar mit dem Apple Entwicklermodell, aber kleiner im Scope:
-Man kann nicht ernsthaft für Apple entwickeln ohne Apple-ID, Entwickler-Lizenz, Cloud-Nutzung für Handover und Storage und ohne Prozente im Apple Store zu bezahlen.
-Bedrock ist danach modelliert, aber halt kein Computer-Tablet-ökosystem, sondern nur ein Spiel.&lt;/p&gt;
-&lt;h1 id=&#34;metaverse-eine-erste-definition&#34;&gt;
-    &lt;a href=&#34;#metaverse-eine-erste-definition&#34;&gt;
-	Metaverse: Eine erste Definition
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Die tatsächliche Definition von &amp;ldquo;Metaverse&amp;rdquo; sind also nicht 3D-Brillen, sondern &amp;ldquo;die Integration der Computerspieleindustrie mit der Wertschöpfungskette der Unterhaltungsindustrie für einen offenen, digitalen Assetmarkt&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;Oder offener: Das Anzapfen der Spieleverwertungskette an jeder Stelle im Produktionsfluß, und das Aufwerten der Spieleverwertungskette durch Integration mit Intellectual Property aus Filmen und Büchern.&lt;/p&gt;
-&lt;p&gt;Es geht also darum, aus dem Lebenszeit-Konsum-Budget einer Person mehr Geld herauszuziehen, ohne zu viel Lebenszeit bei dieser Person zu verbrauchen, also um eine Aufweitung von Ausgaben für &amp;ldquo;Medien&amp;rdquo; im aller weitesten Sinne.&lt;/p&gt;
-&lt;h2 id=&#34;budgets-für-aufmerksamkeit-und-geld&#34;&gt;
-    &lt;a href=&#34;#budgets-f%c3%bcr-aufmerksamkeit-und-geld&#34;&gt;
-	Budgets für Aufmerksamkeit und Geld
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Menschen haben Geldlimits für ihre Freizeit, der &lt;a href=&#34;https://de.wikipedia.org/wiki/Verf%C3%BCgbares_Einkommen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Konsumanteil des verfügbaren Einkommens&lt;/a&gt;
-
-.
-Sie haben auch Zeitlimits für ihre Freizeit, ein Budget für Aufmerksamkeit.
-Beides ist konvertibel, aber das hängt am Medium.&lt;/p&gt;
-&lt;p&gt;Nimmt man eine nützliche Lebenszeit, in der ich &amp;ldquo;Lesen&amp;rdquo; kann von 60 Jahren an, und unterstellt man einem fleißigen Leser 40 Bücher (eines pro Woche) im Jahr, dann wird diese Person in ihrem Leben 2400 Bücher lesen, im Wert von sagen wir ~30 Euro pro Stück.&lt;/p&gt;
-&lt;p&gt;Arbeitet man mit Computerspielen der AAA-Klasse, dann schafft man eventuell 4-6 Spiele im Jahr sinnvoll durchzuspielen, also im Leben 240-300 Titel, im Wert von ~60 Euro pro Stück.&lt;/p&gt;
-&lt;p&gt;Das setzt eine Größenordnung von Lebensumsatz pro Person für diese Dinge, also ~70k Euro in Büchern oder 20k Euro in Spielen pro Personenleben.&lt;/p&gt;
-&lt;p&gt;Wir sehen insbesondere, daß Spiele im Vergleich zu ihrem Produktionsaufwand viel zu billig sind, aber ein höherer Preis als 60 Euro ist auch für einen AAA-Titel nicht durchsetzbar.
-Das ist einer der Gründe, warum in jedem einzelnen dieser Spiele weitere Möglichkeiten zum Geldausgeben enthalten sind.&lt;/p&gt;
-&lt;p&gt;Generell ist es aber bei beiden Medien so, daß das Geldausgeben im Vergleich zu der aufgewendeten Zeit zu langsam ist:
-Die Burnrate muss hoch.
-Bücher, aber auch Filme und insbesondere AAA-Titel von Computerspielen sind viel zu werthaltig, und ihr Konsum ist zu aufwendig.
-Wir suchen was anderes, bei dem nicht so viele Minuten Lebenszeit pro ausgegebenem Euro aufgewendet werden müsse.&lt;/p&gt;
-&lt;p&gt;Das ist kritisch, weil es ja auch noch viele freie Inhalte gibt, die auch um Aufmerksamkeit buhlen und &amp;ldquo;gut genug&amp;rdquo; sind, um bezahlte Inhalte zu verdrängen.
-Sie kosten Minuten Aufmerksamkeit, ohne Geld zu verdienen.&lt;/p&gt;
-&lt;h2 id=&#34;nebenschauplatz-sterben-und-erben&#34;&gt;
-    &lt;a href=&#34;#nebenschauplatz-sterben-und-erben&#34;&gt;
-	Nebenschauplatz: Sterben und Erben
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Angesichts der alternden Bevölkerung gibt es auch noch den Nebenschauplatz &amp;ldquo;Boomer sterben, Kinder erben&amp;rdquo;.
-Ich habe zum Beispiel genau jetzt ca. 600 Steam Titel und 1000 Kindle Books.
-Wenn ich sterbe, sind das einige 10k Euro Wert.
-Wie vererbe ich die meinem Sohn?
-Die Politik hat keine Antworten, und die Hersteller lassen das nicht zu.
-Ich kann meinem Kind also nur mein Steam Login vermachen und von meinen Kindle-Büchern das DRM knacken.&lt;/p&gt;
-&lt;p&gt;Wirtschaftlich sind Kindle und Steam-Erbschaften für die Hersteller weitgehend irrelevant, oder wären sogar positiv, und es ist unklar, wieso man sich so sträubt:&lt;/p&gt;
-&lt;p&gt;Wenn ein Haus am See erbe, kann ich da hereingehen, die Veranda aufschließen, in den Park gehen und so das Asset genießen.
-Das kostet mich nicht viel Zeit.&lt;/p&gt;
-&lt;p&gt;Erbe ich dagegen eine Kindle- oder Steam-Library, kostet mich das viel Zeit in der Erschließung:
-Wenn ich 1200 Bücher erbe, sind das 30 Jahre Lebenszeit, die ich investieren muss, um das Erbe zu verarbeiten.
-Wenn ich 1000 Spiele erbe, sind da Titel von 2002 bei, die heute wie Dreck aussehen.
-Ich erbe &amp;ldquo;Skyrim&amp;rdquo;, muss aber &amp;ldquo;Skyrim VR&amp;rdquo; und &amp;ldquo;Skyrim Remastered&amp;rdquo; selbst kaufen.&lt;/p&gt;
-&lt;p&gt;Wir sehen sofort: Erben ist für den Hersteller kein relevanter Umsatzverlust, sondern eher noch ein Mittel zur Verkaufsförderung.&lt;/p&gt;
-&lt;h2 id=&#34;assets-hoher-geldaufwand-geringer-zeitaufwand&#34;&gt;
-    &lt;a href=&#34;#assets-hoher-geldaufwand-geringer-zeitaufwand&#34;&gt;
-	Assets: hoher Geldaufwand, geringer Zeitaufwand
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Bereits heute ist in Spielen neben Lootboxen und Pay-to-Win und Pay-to-Skip Modellen der Verkauf von Cosmetics eine der größten Einnahmequellen, und im Gegensatz zu den anderen Geldquellen weitgehend unumstritten.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Pay-to-Win: Das Spiel ist nicht erfolgreich zu beenden, außer man kauft Ausrüstungsgegenstände für Echtgeld dazu. Idealerweise wird das erst sichtbar, wenn man bereits eine Menge Zeit und Emotion in das Spiel investiert hat.&lt;/li&gt;
-&lt;li&gt;Pay-to-Skip: Das Spiel wird immer wieder durch ärgerliche Wartepausen unterbrochen, in denen man nicht weiterspielen kann, außer man kauft die Pause durch Echtgeld weg.&lt;/li&gt;
-&lt;li&gt;Lootboxen: Das Spiel verkauft einem Container einem zufälligen Inhalt an Spielgegenständen, bei denen selten wertvolle Dinge enthalten sind. Das eigentliche Spiel ist also eine Verpackung für ein Glücksspiel im Inneren. Diese Praxis ist mittlerweile in einigen EU-Ländern verboten.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Im Gegensatz dazu sind Cosmetics weitgehend unumstritten: Das sind Gegenstände, die der Spielfigur und ihrer Ausrüstung ein anderes Aussehen geben, ein virtuelles Haus und seine Einrichtung, die auf das Spiel keine wesentliche Auswirkung haben und ähnliches.&lt;/p&gt;
-&lt;p&gt;Im Spiel &amp;ldquo;Elder Scrolls Online&amp;rdquo; zum Beispiel bekommt man als Spieler leicht und zu geringen Kosten virtuelle Wohnhäuser in der Spielwelt, die sehr spektakulär liegen und aussehen und viel leeren Platz bieten.
-Gegenstände zum Einrichten kann man sich als Trophäen erspielen, aber wesentliche Alltagsgegenstände zur Einrichtung sind nur via Echtgeld-Einsatz im Shop zu kaufen.&lt;/p&gt;
-&lt;p&gt;Das für den Hersteller wunderbare dabei:
-Der Spieler kann in den Kauf von Cosmetics beliebig viel Geld reinpumpen und wird dabei kaum Lebenszeit oder Aufmerksamkeit aufbringen müssen.
-Limitierend kann also nur die Geldbörse des Kunden wirken, nicht aber sein Zeitbudget.
-Das macht so etwas zu einem viel besseren Geschäftsfeld als Bücher, Filme oder die Spiele selbst.
-Das Spiel liefert nur den Kontext und Anlass für die Cosmetics zu existieren und bestimmt ihr Aussehen.&lt;/p&gt;
-&lt;h2 id=&#34;epic-games&#34;&gt;
-    &lt;a href=&#34;#epic-games&#34;&gt;
-	Epic Games
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Dies ist genau die Geschäftsgrundlage von Epic Games:
-Mit der Unreal Engine bietet die Firma eine Plattform zum schnellen und effizienten Design von sehr gut aussehenden Videospielen.
-Dazu gehören auch Werkzeuge zum Erzeugen der Ingame-Assets, aber auch der Betrieb einer Verkaufsplattform für solche Assets an Spielhersteller.
-Mit dem Epic Launcher und dem darin integrierten Shop auch eine Plattform zum Verkauf von Spielen, und zum Erfassen von Meta- und Nutzungsdaten an Epic, die dann wiederum (gegen Geld) dem Spielhersteller als Analytics angeboten werden.
-Das von Epic betriebene Payment-System ist die Pipeline, über die Geld vom Kunden zum Spielhersteller fließen kann, und über die nicht nur die Spiele, sondern auch Erweiterungen, In-Game Käufe und andere Geldausgaben abgewickelt werden können.&lt;/p&gt;
-&lt;p&gt;Mit Fortnite hat man aber auch ein eigenes Spiel am Start, das zugleich auch 3D Assets an Endkunden als Ausrüstungsgegenstände, Cosmetics oder sonst wie verkaufen kann.&lt;/p&gt;
-&lt;p&gt;Fortnite ist eine bestimmte Sorte Spiel - Player vs. Player, im Battle Royal Modus, Spieler treten gegeneinander an und der letzte Überlebende gewinnt.
-Diese Sorte Spiel ist nicht für alle Zielgruppen interessant, aber die Engine von Fortnite lässt sich auch anderweitig nutzen.
-Entsprechend weckt man Interesse durch Nutzung von Fortnite als &amp;ldquo;virtuelle Veranstaltungsplattform&amp;rdquo; und hält das Interesse durch Media Tie-Ins und Licensed IP aufrecht.&lt;/p&gt;
-&lt;p&gt;Die Interpretation von Metaverse als Verwertungskette von digitalen Assets, speziell 3D Assets, als &amp;ldquo;Online-Merchandise&amp;rdquo; greift jedoch zu kurz:
-Als Ökosystem mit einer kontrollierten Anzahl von großen Marktbetreibern und einer großen Anzahl von Kunden und Kreativen steht man viel besser und vor allen Dingen dauerhafter da.
-Man kann Dritten auf diese Weise erlauben, untereinander Handel zu treiben, aber dabei laufend einen geringen Anteil an allen Transaktionen abgreifen.
-Gewissermaßen will man die Idee der &amp;ldquo;Microsoft-Tax&amp;rdquo; in einem anderen Kontext wieder aufleben lassen.&lt;/p&gt;
-&lt;h1 id=&#34;spieler-am-markt&#34;&gt;
-    &lt;a href=&#34;#spieler-am-markt&#34;&gt;
-	Spieler am Markt
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Unterschiedliche Ausgangspositionen bei&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Epic Games/Fortnite - schwach bei IP, aber original IP, wenn auch Nische, Unreal Engine und die anderen Dinge auf der &amp;ldquo;Rückseite&amp;rdquo; der Spiele als große Stärke.&lt;/li&gt;
-&lt;li&gt;Roblox - original IP, sehr junge Kundschaft, erzieht sich gerade Kinder, 10 Jahre warten, groß unterschätzt.&lt;/li&gt;
-&lt;li&gt;Microsoft - Minecraft, MS Store et al, zu Enterprise um erfolgreich zu sein? Aber Halo, MSFS.&lt;/li&gt;
-&lt;li&gt;Apple (sic!) - kein IP, aber Plattform/Kette.&lt;/li&gt;
-&lt;li&gt;Disney (sic!) - nur IP, aber schwach in Verwertung außerhalb von Filmen/offline Merchandise.&lt;/li&gt;
-&lt;li&gt;Facebook - will da unbedingt rein, &amp;ldquo;Enterprise Pivot&amp;rdquo;: wenn Social in Zukunft &amp;ldquo;hier&amp;rdquo; stattfindet, dann muss Facebook &amp;ldquo;hier&amp;rdquo; sein.&lt;/li&gt;
-&lt;li&gt;Google - insbesondere der Grund, wieso Google Stadia nicht wirklich einstellen kann, selbst wenn es ein Flop wird/ist.&lt;/li&gt;
-&lt;li&gt;Amazon - hier ist auch die Spiele Strategie von Amazon mit einordnen. Amazon wäre gerne das AWS der Spielewelt anstelle von Epic.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;tech-maturity-cycle-und-standards&#34;&gt;
-    &lt;a href=&#34;#tech-maturity-cycle-und-standards&#34;&gt;
-	Tech Maturity Cycle und Standards
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Cynefin_framework&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cynefin&lt;/a&gt;
-
- als Market Maturity Model.&lt;/p&gt;
-&lt;p&gt;Wir sind derzeit in einer chaotischen Phase der Marktentwicklung:
-Niemand hat ein Geschäftsmodell in diesem Markt, es ist unklar, wie dieser überhaupt aussehen wird.
-Standards existieren noch nicht.&lt;/p&gt;
-&lt;p&gt;Es geht um Landgrab, also um den Aufbau von Marktanteilen in einem entstehenden und wachsenden Markt.
-Interop ist sekundär, weil noch keine Idee vorhanden ist, wie die Standards aussehen werden.
-Man versucht sich vom Mitbewerb durch Features zu differenzieren, und dabei auch herauszufinden, was wichtig ist.
-Alle Spieler wachsen in einem wachsenden, entstehenden Markt.&lt;/p&gt;
-&lt;p&gt;Sobald es ein Geschäftsmodell, stabile Featurelisten und ein System zur Geldextraktion gibt, wird sich der Markt konsolidieren.
-Dann beherrschen 3-5 Firmen den Markt, der auch aus dem Hyperwachstum heraus geht.
-Die marktbeherrschenden Firmen erkennen einander an und konkurrieren semi-kooperativ miteinander:
-Es ist wichtiger, den Marktzugang von Disruptoren zu erschweren, und es wird komplexe, schwierig zu implementierende Standards geben, mit Compliance Prüfungen und anderen Kostenfaktoren.
-Das wird dann aber auch - zähneknirschend - zu Interoperabilität führen.&lt;/p&gt;
-&lt;h1 id=&#34;metaverse-überarbeitete-definition&#34;&gt;
-    &lt;a href=&#34;#metaverse-%c3%bcberarbeitete-definition&#34;&gt;
-	Metaverse, überarbeitete Definition
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Das führt uns zur überarbeiteten Definition von Metaverse:
-Die Integration der Spieleindustrie mit der Unterhaltungsindustrie und die Integration der Wertschöpfungsketten, mit der Möglichkeit die Verwertungskette an jeder Stelle im Produktionsfluß mit einer Art Steuer zu belegen.
-Ein systematisches Anzapfen des Lifetime Intellectual Property-Konsumbudgets einer Person, und die Aufweitung des Marktes, der für einen Konsumenten relevant ist.&lt;/p&gt;
-&lt;p&gt;Die Erkenntnis, daß Buch, Filme und Spiele zu zeitaufwendig zu erstellen und zu konsumieren sind.
-3D Assets ist viel größere Verkaufsgelegenheit, ohne daß der Kunde so viel Lebenszeit investieren muss, um tatsächlich den Kauf zu konsumieren.&lt;/p&gt;
-&lt;p&gt;Vor diesem Hintergrund ist auch die laufende Auseinandersetzung von Epic vs. Apple und Google vor Gericht zu lesen: Es geht darum, das Anzapf-Monopol von Apple und den von Apple dominierten Markt für andere zu Öffnen zu unterminieren.&lt;/p&gt;
-&lt;p&gt;Besondere deutsche Probleme dabei:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;keine Infrastruktur für Highspeed, Low Latency wie man das für Spiele braucht.&lt;/li&gt;
-&lt;li&gt;keine deutsche Firma mit nennenswerter Identity Plattform (web.de? T-Online? &amp;ldquo;Login mit x&amp;rdquo;).&lt;/li&gt;
-&lt;li&gt;keine deutschen Ressourcen im 3D-Asset Tooling, Produktion, &amp;hellip; Markt.&lt;/li&gt;
-&lt;li&gt;keine deutsche Film/Fernseh/Lit Industrie zur Produktion von IP, Stories, die weltweit wiedererkennbare Kultur prägen, die man verkaufen kann.&lt;/li&gt;
-&lt;li&gt;Deutscher Blick geht nach innen, ins eigene Land, nicht auf einen Weltmarkt.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche dabei Korea: koreanische Produktionsketten in K-Pop; die &amp;ldquo;cultural technology&amp;rdquo; die andere Stile und Kunstrichtungen aufgreift und in K-Pop integriert; Produktionspipelines für Stars und Sternchen, aber auch für IP (beginnend).
-Im Vergleich ist Deutschland essenziell wehrlos und angehängt.&lt;/p&gt;
-&lt;h2 id=&#34;toxisch-dystopische-interpretation&#34;&gt;
-    &lt;a href=&#34;#toxisch-dystopische-interpretation&#34;&gt;
-	Toxisch-dystopische Interpretation
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Das &amp;ldquo;Eigentum&amp;rdquo; in einer simulierten Realität sieht aus wie Eigentum, ist aber virtuell und kopierbar.
-Es kommt im virtuellen zur einer Entfernung von Ressourcenknappheit bei der Produktion, aber &amp;ldquo;Wert&amp;rdquo; entsteht nur, wenn die Ware künstlich verknappt wird beim Konsum.&lt;/p&gt;
-&lt;p&gt;Die Zollhaus-Stellen, Plattformbetreiber haben volle Markttransparenz, und können das Freizeit-Konsumverhalten jeder Person genau ausmessen.
-Sie wissen, was Du siehst und hörst, was Du benutzt, welche Stile Dir zusagen und können diese Information gegen Geld an Kreative verkaufen, und verkaufen den Kreativen auch gegen Geld den Zugang zu Dir.&lt;/p&gt;
-&lt;p&gt;Ein Freund von mir:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Nur ein halber Witz: man muss in Zukunft bei Geburt eines Kindes als Erstes entscheiden muss, ob es Apple-, Google- oder Facebook-Angehöriger wird und der Name erst danach entsprechend den Regeln des Dienstes festgelegt wird. Wechsel zwischen den Services ist dann komplex wie eine Emigration nach Nordkorea.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Zentraler Bestandteil bezüglich der Verknappung auch DRM, hier unter dem Modenamen &amp;ldquo;NFT&amp;rdquo; - &amp;ldquo;NFT&amp;rdquo; ist das Blockchain Wort für DRM, nur zusätzlich mit Umweltvergiftung durch Energieverschwendung.
-Unikate gibt es nur mit:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Rechner zunageln,&lt;/li&gt;
-&lt;li&gt;TPM,&lt;/li&gt;
-&lt;li&gt;in-game nur lizenzierte Assets und Mods verwendbar, und&lt;/li&gt;
-&lt;li&gt;NFT Laser Eyes Kryptoscheisse, die den Planeten verbrennt.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;In diesem Kontext ist auch das aktuelle Engagement von Epic im NFT Misthaufen zu lesen sehen.
-Daher: korrekte Standards sind wichtig, und Identität ist die Grundlage für &amp;ldquo;Eigentum&amp;rdquo;.
-Das braucht nicht nur keine Blockchain, es funktioniert auch besser ohne - die Plattformen sind eh zentral.&lt;/p&gt;
-&lt;p&gt;Der Freund kommentiert wieder:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Es geht darum, dass die Leute aus dem Universum nicht rauskommen können (Stichwort: Hyperinklusion).
-Sie kaufen in Metaverse-Shops, daten ihre Partner in Metaverse-Locations, sehen nur noch Werbung für im Metaverse verfügbare Waren, können Metaverse-kritische Gedanken kaum noch formulieren.
-Es gibt keinen Public-Space mehr im Leben, alles ist Teil der gated community (Vgl. Verlust der Almende).&lt;/p&gt;
-&lt;p&gt;Du hast vielleicht noch einen Wettbewerb zwischen x Metaversen, aber innerhalb eines Metaversums gibt es dann einen oder nur noch einen gesteuerten Wettbewerb.
-D.h. das Metaversum monopolisiert den Menschen in seiner Gesamtheit.&lt;/p&gt;
-&lt;p&gt;Das ist ein bisschen wie die Minenstädte in den USA Ende des 19. Jhd.
-Der Shop gehörte der Mine, der Pfarrer arbeitete für die Mine, die Mine stellte Sheriff und Bürgermeister.&lt;/p&gt;
-&lt;p&gt;Effektiv will FB durch das Metaversum ihr gegenwärtiges Social-Media-Monopol verewigen.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Das führt thematisch zur Geldtheorie:&lt;/p&gt;
-&lt;h2 id=&#34;currency&#34;&gt;
-    &lt;a href=&#34;#currency&#34;&gt;
-	Currency
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Durch die CryptoCurrencies ist für die großen jetzt klar, dass die Geldschöpfung &amp;ldquo;up for the grabs&amp;rdquo; ist. Ein Metaversum wäre der perfekte Ansatz das &amp;ldquo;en passant&amp;rdquo; zu realisieren.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;An dieser Stelle kommt dann gleich wieder das Epic Engagement bei &amp;ldquo;Cryptocurrentcies&amp;rdquo; zum Tragen.
-Das ist sehr problematisch:
-Metaversum und Produktion dort nimmt nur Ressourcen aus der realen Welt, produziert dort aber nicht.
-Am Ende wird die reale Welt ärmer, dort leben wir aber.
-Was heißt das langfristig für Wertschöpfung und Geld?&lt;/p&gt;
-&lt;h1 id=&#34;material&#34;&gt;
-    &lt;a href=&#34;#material&#34;&gt;
-	Material
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;URL-Sammlung&lt;/p&gt;
-&lt;h2 id=&#34;unsortierte-seitenlinien&#34;&gt;
-    &lt;a href=&#34;#unsortierte-seitenlinien&#34;&gt;
-	Unsortierte Seitenlinien
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Immature Market, Geschäftsmodell existiert noch nicht als erprobter Business Plan (Cynefin Chaotic)&lt;/li&gt;
-&lt;li&gt;Einzelne Firmen weiter (Liste oben), Cynefin Complex&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Alle Firmen unvollständig aufgestellt. Akquise schwierig, wen kaufen? Und die zu kaufenden Firmen sind selbst noch nicht fertig: Integration auch schwierig.&lt;/p&gt;
-&lt;h2 id=&#34;golem-auf-der-suche-nach-dem-wal&#34;&gt;
-    &lt;a href=&#34;#golem-auf-der-suche-nach-dem-wal&#34;&gt;
-	Golem &amp;ldquo;Auf der Suche nach dem Wal&amp;rdquo;
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.golem.de/news/geschaeftsethik-bei-videospielen-auf-der-suche-nach-dem-wal-2110-160163.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Auf der Suche nach dem Wal&lt;/a&gt;
-
-&amp;rdquo;, Videospiele Growth Manager, ein Bericht. Richtige Richtung, zu kurz, erklärt aber die Kette.&lt;/p&gt;
-&lt;p&gt;Im Gegensatz zu einem typischen Videospiel, bei dem man versucht, so viele Leute wie möglich dazu zu bringen, einmalig 60 Dollar für ein Spiel auszugeben, will ein Free-to-Play Spiel so viele Leute wie möglich zum Spielen zu animieren. Sobald sie spielen, bemüht sich das Unternehmen, so viele digitale Güter wie möglich an sie zu verkaufen. Es gibt zwar eine Obergrenze dafür, wie viel man für ein Spiel verlangen kann, aber es gibt keine Obergrenze für die Zahl an sinnlosen digitalen Tokens, die man verhökern kann.&lt;/p&gt;
-&lt;p&gt;Metaverse: Industrialisiere diesen Prozess und mainstreame ihn. Aspekte: Spielen nach Termin, Pay to Skip, Pay to Win.&lt;/p&gt;
-&lt;h2 id=&#34;colorado-law-review-dark-patterns&#34;&gt;
-    &lt;a href=&#34;#colorado-law-review-dark-patterns&#34;&gt;
-	Colorado Law Review Dark Patterns
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Link aus dem oa Golem Artikel.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.google.com/url?q=https://lawreview.colorado.edu/printed/when-the-cats-away-techlash-loot-boxes-and-regulating-dark-patterns-in-the-video-game-industrys-monetization-strategies/%23IV_Broad_Guidance_for_Crafting_Effective_Dark_Pattern_Regulation_in_the_Video_Game_Industry&amp;amp;sa=D&amp;amp;source=docs&amp;amp;ust=1635284752797000&amp;amp;usg=AOvVaw30IDuuhFqtcvDbNj32joER&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;When the Cat’s Away: Techlash, Loot Boxes, and Regulating “Dark Patterns” in the Video Game Industry’s Monetization Strategies&lt;/a&gt;
-
-&amp;rdquo;,
-Sektion &amp;ldquo;IV. Broad Guidance for Crafting Effective Dark Pattern Regulation in the Video Game Industry&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;Es gibt eine Feedbackschleife zwischen den Spieldesignern und dem Wal (der Person, die sinnlos investiert):
-Ungesund für beide Seiten, macht das Spiel schnell zu einem Spiel für wenige Vielzahler, und damit langfristig global schlecht; besondere Herausforderung beim Produktmanagement.&lt;/p&gt;
-&lt;h2 id=&#34;matthew-ballhttpstwittercomballmatthew&#34;&gt;
-    &lt;a href=&#34;#matthew-ballhttpstwittercomballmatthew&#34;&gt;
-	&lt;a href=&#34;https://twitter.com/ballmatthew&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Matthew Ball&lt;/a&gt;
-
-
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.matthewball.vc/all/themetaverse&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Metaverse: What It Is, Where to Find it, Who Will Build It, and Fortnite&lt;/a&gt;
-
-: Original Metaverse Article&lt;/p&gt;
-&lt;p&gt;Medienseite:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;By the time Netflix launched its streaming service, much of Hollywood knew that the future of television was online (IP TV had been deployed in the late 1999s). The challenge was timing and how to package such a service (it took another 10 years for Hollywood to accept all of their channels, genres and content needs to be collapsed into a single app/brand).&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Ball schreibt:&lt;/p&gt;
-&lt;p&gt;The Metaverse, we think, will be &amp;hellip;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Persistent.&lt;/li&gt;
-&lt;li&gt;Synchronous and live.&lt;/li&gt;
-&lt;li&gt;Be without any cap to concurrent users, while also providing each user with an individual sense of “presence”&lt;/li&gt;
-&lt;li&gt;Be a fully functioning economy&lt;/li&gt;
-&lt;li&gt;Be an experience that spans both the digital and physical worlds, private and public networks/experiences, and open and closed platforms&lt;/li&gt;
-&lt;li&gt;Offer unprecedented interoperability of data, digital items/assets, content, and so on across each of these experiences&lt;/li&gt;
-&lt;li&gt;Be populated by “content” and “experiences” created and operated by an incredibly wide range of contributors&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;The Metaverse is not…&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;A “virtual world”&lt;/li&gt;
-&lt;li&gt;A “virtual space”  (2nd life)&lt;/li&gt;
-&lt;li&gt;“Virtual reality”&lt;/li&gt;
-&lt;li&gt;A “digital and virtual economy”&lt;/li&gt;
-&lt;li&gt;A &amp;ldquo;game&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;A “virtual theme park or Disneyland”&lt;/li&gt;
-&lt;li&gt;A “new app store”&lt;/li&gt;
-&lt;li&gt;A “new UGC platform”&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Das ist natürlich Unsinn, es wird alle diese Dinge &lt;em&gt;auch&lt;/em&gt; sein.
-Das ist alles Valley Hype, um The Next Internet als Begriff zu etablieren und eine gemeinsame Erzählung zu haben.
-Aber am Ende ist geht es genau um diese 8 Dinge die es angeblich NICHT sein soll.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.matthewball.vc/the-metaverse-primer&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Neuere Artikel Serie, 9 Artikel lang&lt;/a&gt;
-
- dazu.&lt;/p&gt;
-&lt;h2 id=&#34;fortnite-loyalty-programhttpstwittercomduddyalan233status1391884040547049473&#34;&gt;
-    &lt;a href=&#34;#fortnite-loyalty-programhttpstwittercomduddyalan233status1391884040547049473&#34;&gt;
-	&lt;a href=&#34;https://twitter.com/DuddyAlan233/status/1391884040547049473&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fortnite Loyalty Program&lt;/a&gt;
-
-
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Es geht darum, User Engagement zu erhalten.
-Das Problem muss jedes MMO lösen, denn&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Die Leute leben nicht im Metaverse, die leben hier.&lt;/li&gt;
-&lt;li&gt;Primärer Konsum ist Casual, nicht High End Gamer.&lt;/li&gt;
-&lt;li&gt;Das ist die Schwachstelle des Konzeptes.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Erst wenn das Ding zu einem ständigen Ort wird, kann es ein Metaversum werden.
-Das ist noch ein langer Weg:
-Meine VR-Brille steht hier ungenutzt rum (Oculus verkauft, wegen FB Zwang).&lt;/p&gt;
-&lt;p&gt;Das ist so, weil &amp;ldquo;in VR zu gehen&amp;rdquo; ein Akt ist (aufbauen, kalibrieren), und die Brille isoliert (ich bin dann weg), und weil es nicht viele Spiele gibt, die das sinnvoll nutzen (Elite Dangerous, MSFS-2020, Moss, selten auch Space Pirate Trainer).&lt;/p&gt;
-&lt;h2 id=&#34;epic-and-facebook-the-race-called-metaversehttpstwittercomthegamespodcaststatus1450468392952115233&#34;&gt;
-    &lt;a href=&#34;#epic-and-facebook-the-race-called-metaversehttpstwittercomthegamespodcaststatus1450468392952115233&#34;&gt;
-	&lt;a href=&#34;https://twitter.com/thegamespodcast/status/1450468392952115233&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Epic and Facebook: The Race called Metaverse&lt;/a&gt;
-
-
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;h2 id=&#34;pastry-eth-threadhttpstwittercompastryethstatus1423803492314009606&#34;&gt;
-    &lt;a href=&#34;#pastry-eth-threadhttpstwittercompastryethstatus1423803492314009606&#34;&gt;
-	&lt;a href=&#34;https://twitter.com/PastryEth/status/1423803492314009606&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pastry Eth Thread&lt;/a&gt;
-
-
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Crypto Dummlall mit einigen guten Ideen, aber Illusionen über wie es laufen wird&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&amp;ldquo;1/5 of Facebook now working on AR&amp;rdquo;, für FB ist das Metaverse zur Zeit &amp;ldquo;Oculus&amp;rdquo;, &amp;ldquo;VR&amp;rdquo;. Das ist ein gefährlicher Tunnelblick (siehe oben &amp;ldquo;casual&amp;rdquo;).&lt;/li&gt;
-&lt;li&gt;&amp;ldquo;The &amp;ldquo;Metaverse&amp;rdquo; is a virtual space created by the convergence of virtually enhanced physical reality, AR &amp;amp; the internet: Our current 2D search based version of the internet is giving way to a fully 3D immersive reality&amp;rdquo;: Das ist Quatsch, solange 3D nicht komplett Casual konsumierbar wird, und eine 3D Brille ist derzeit isolierend, schwer und verkabelt. 3D Assets in Pancake Games sind leichter und direkt zu verkaufen, jetzt. &amp;ldquo;Cosmetics&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;&amp;ldquo;The Metaverse is always “on” &amp;amp; is beyond the control of any individual. It exists in real time, can host any size audience, has a functioning economy, spans across platforms, provides interoperability for digital assets, &amp;amp; consists of the content and experiences its users create.&amp;rdquo; Das Konzept 2nd 2nd Life, und die &amp;ldquo;3D Shoppingmalls&amp;rdquo; der frühen 90er feiern fröhliche Urständ, als Konzept nicht falsch und gleichzeitig total falsch. 3D Events, die Presence ersetzen sind interessant, aber super hart.
-Auch hier Korean Cultural Technology, K-POP Konsum während COVID-19 (Pancake, large Audiences, Gemeinschaftserlebnisse, &amp;ldquo;VR&amp;rdquo; Nebensache)&lt;/li&gt;
-&lt;li&gt;&amp;ldquo;In the Metaverse, the earning power for young creators won’t be limited to the top 1%. There will be an entire new era of young entrepreneurs making a living in virtual worlds, earning real value and steady income quicker than ever imagined.&amp;rdquo; LOL. In erster Linie geht es um Zollhäuschen entlang der Verwertungskette, mit dem durch Creators erschaffenen Mehrwert als Motor.&lt;/li&gt;
-&lt;li&gt;&amp;ldquo;Creators who were once limited in their ability by technological constraints, lack of capital, time, or creativity, now have everything that is needed. What happens when physical objects are dematerialized? All formerly scarce materials become abundant.&amp;rdquo; LOL. DRM all the way ist notwendig, damit das funktioniert. Außerdem das Dauerversprechen vom Creators Paradise, wenn es tatsächlich um Monopolisierung der Wertschöpfungskette geht.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Danach: Thread degrades in Laser Eyes Nonsense&lt;/p&gt;
-&lt;h2 id=&#34;digital-twinshttpswwwdezeencom20210723digital-twins-metaverse-david-weir-mccall-epic-games&#34;&gt;
-    &lt;a href=&#34;#digital-twinshttpswwwdezeencom20210723digital-twins-metaverse-david-weir-mccall-epic-games&#34;&gt;
-	&lt;a href=&#34;https://www.dezeen.com/2021/07/23/digital-twins-metaverse-david-weir-mccall-epic-games/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Digital Twins&lt;/a&gt;
-
-
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Digital twins will act as &amp;ldquo;foundations of the metaverse&amp;rdquo; and allow people to move between real and virtual spaces&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Das ist &amp;ldquo;2nd 2nd Life&amp;rdquo; &lt;a href=&#34;https://en.wikipedia.org/wiki/Skeuomorph&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Skeumorphism&lt;/a&gt;
-
- ist, was wir machen, wenn wir noch nicht wissen, was die Design Language für eine neue Welt ist. Die ersten Autos sagen aus wie Kutschen, die ersten Apple Anwendungen haben Rolodexe und Moleskine imitiert. &amp;ldquo;Digital Twins&amp;rdquo; sind dasselbe Konzept, aber für ein Metaversum.&lt;/p&gt;
-&lt;p&gt;Und die Kernidee:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;In April 2020, music artist Travis Scott staged a virtual concert inside the game that was attended live by 12.3 million people. It was a global phenomenon that sent the American rapper to the top of all music charts and earned him a reported $20 million.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Lies: &amp;ldquo;OMG, jemand hat in einem Kinder-Battle Royale Spiel Geld verdient ohne zu metzeln, sondern mit traditioneller Medienarbeit&amp;rdquo; führt sofort zu &amp;ldquo;Alle Ideen von 2nd Life, von denen wir schon wissen, dass sie problematisch sind, feiern Wiederauferstehung.&amp;rdquo;&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;If the metaverse is an equivalent reality that coexists next to the physical reality, there needs to be a connection,&amp;rdquo; said Weir-McCall.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Ist es nicht, muss es nicht. Wenn es dann doch muss, eventuell eher AR als 3D-Modelle, denn Connection zur realen Welt hat man mit einer vollen VR-Brille eben nicht. Was ich oben über Casual Konsum sage.&lt;/p&gt;
-&lt;p&gt;Mein Freund merkt an:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Digital Twins / Digital Shadows sind übrigens auch Begriffe um den die Datenspur von Leuten zu bezeichnen.
-Der Gesundheitsbereich versucht das ebenso zu etablieren, um anhand dieser Zwillinge Diagnostik betreiben zu können.
-Das wird auch noch einmal spannend, wie das mit dem Metaverse verbunden wird.
-Gerade aus Facebooks Sicht - welche Daten kann das Metaversum aus Deinem Avatar auslesen?&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&#34;facebook-glasshttpswwwreuterscomtechnologyfacebook-unveils-its-first-smart-glasses-2021-09-09-und-akzeptanz&#34;&gt;
-    &lt;a href=&#34;#facebook-glasshttpswwwreuterscomtechnologyfacebook-unveils-its-first-smart-glasses-2021-09-09-und-akzeptanz&#34;&gt;
-	&lt;a href=&#34;https://www.reuters.com/technology/facebook-unveils-its-first-smart-glasses-2021-09-09/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Facebook Glass&lt;/a&gt;
-
- und Akzeptanz
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Bei Google Brille waren die Träger erkennbar, der Begriff Glassholes entstand.
-Mit Ray Ban ist das besser zu tarnen.
-Ray Ban hat keinen technischen Beitrag zu Oculus und AR, es geht nur darum, den Markennamen und das Design als Tarnung für Oculus zu nehmen, um den Google Glass Effect zu vermeiden.
-Außerdem ist AR mehr Casual als VR.
-Mode erlaubt auch einfacheren Neuverkauf, siehe auch Apple Watch Zubehör.&lt;/p&gt;
-&lt;h2 id=&#34;laser-eyeshttpstwittercomcryptomarsmoonstatus1448249433573904384&#34;&gt;
-    &lt;a href=&#34;#laser-eyeshttpstwittercomcryptomarsmoonstatus1448249433573904384&#34;&gt;
-	&lt;a href=&#34;https://twitter.com/Cryptomarsmoon/status/1448249433573904384&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Laser Eyes&lt;/a&gt;
-
-
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;blockquote&gt;
-&lt;p&gt;It’s gonna be epic to bring the squid game to the metaverse. Salute to your team! I am a big fan of the TV series. I am super excited to have a chance to participate in this game! LFG!!!&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Noch mehr Laser Eyes.&lt;/p&gt;
 </description>
     </item>
     

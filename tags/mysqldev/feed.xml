@@ -6,7 +6,123 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Feb 2022 15:45:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Feb 2022 13:50:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases: How large is too large?</title>
+      <link>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</link>
+      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</guid>
+      <description>&lt;p&gt;A database is a special kind of structured, persistent, global variable with concurrent access over the network.&lt;/p&gt;
+&lt;p&gt;You write data to a cell of a row of a table in a schema in the server, and it is being kept around for you, with a lifetime longer than the runtime of your program.
+The database takes care of making sure of ordering access to that data, so there is a clearly defined series of changes to the data – locking, transactions, isolation are things that make databases popular.&lt;/p&gt;
+&lt;p&gt;And so one gets to have a lot of database schemas in server instances, and they grow.
+Sometimes that becomes a problem.&lt;/p&gt;
+&lt;h1 id=&#34;databases-dont-scale-even-when-they-scale&#34;&gt;
+    &lt;a href=&#34;#databases-dont-scale-even-when-they-scale&#34;&gt;
+	Databases don&amp;rsquo;t scale, even when they scale
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;These days, the MySQL server can easily utilize the resources even of very large servers.
+At work, we have taken instances easily up to 400.000 queries per second on AMD EPYC servers with 64 cores and one terabyte of memory, without special tuning.
+With careful tuning, more than a million QPS is achievable.
+MySQL scales extremely well these days.&lt;/p&gt;
+&lt;p&gt;For a long time, MySQL also has been a very low latency/high connection database:
+since it uses a multithreading approach with a pre-generated thread pool, it can handle up to around 10k connections comfortably, and three times more at cost.
+It can handle disconnect and reconnect situations in a way that is more reminiscent of an LDAP server than a database.&lt;/p&gt;
+&lt;p&gt;And it can answer single point primary key lookups from memory – the workload a &lt;code&gt;memcached&lt;/code&gt; handles – at &lt;code&gt;memcached&lt;/code&gt; speeds:
+We see query resolution times including SQL parsing that are as low as 0.12ms (120µs).&lt;/p&gt;
+&lt;h1 id=&#34;what-doesnt-scale-_server-creation-time_&#34;&gt;
+    &lt;a href=&#34;#what-doesnt-scale-_server-creation-time_&#34;&gt;
+	What doesn&amp;rsquo;t scale: &lt;em&gt;server creation time&lt;/em&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL replication hierarchies are designed as shared-nothing architectures.
+Creating a new server means you have to copy the data for the server into place, and then let replication catch up.&lt;/p&gt;
+&lt;p&gt;There are storage trickeries that can be played, but they have long term consequences that need mitigation.
+They also tie their user to very costly and very specific storage architectures and that is not a thing anybody can afford to have as a technical debt item on their sheet.&lt;/p&gt;
+&lt;h1 id=&#34;a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+    &lt;a href=&#34;#a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+	A Relativity Theory of databases: For data, space is time.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When we create new databases, we copy the data over.
+In the end, the network is very fast:
+At 10  Gbit/s, we are looking at a stream of 1.25 GB/s coming in that we need to be able to persist at the receiving end, and that we need to provide at the sending end.&lt;/p&gt;
+&lt;p&gt;Looking at storage, we can see that in all but one situations, the bottleneck is not the network:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A conventional HDD with rotating rust can serve reliably around 200 MB/s in a linear read or write (&lt;a href=&#34;https://toshiba.semicon-storage.com/ap-en/storage/product/data-center-enterprise/cloud-scale-capacity/articles/mg07acaxxx.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toshiba HDD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;A SSD usually gives us twice this, so we see streams of around 400-500 MB/s (&lt;a href=&#34;https://www.micron.com/-/media/client/global/documents/products/product-flyer/5300_product_brief.pdf?la=en&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron SSD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;Openstack instances are quota&amp;rsquo;ed, and often get something like 400 MB/s quota again, which nicely matches expectations of SSD users.&lt;/li&gt;
+&lt;li&gt;A NVME flash device can provide on the upside of 3000 MB/s (3 GB/s) sustained data rate when enterprise grade hardware is purchased (&lt;a href=&#34;http://brochure.stebis.nl/Micron9300.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron NVME specs&lt;/a&gt;
+
+ provide some reference).
+This is the one single case where a 10 GBit/s network interface actually is becoming a bottleneck, but of course more network is available if you have the coin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How long does it take to copy one Terabyte of data, assuming linear streaming access?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;At 200 MB/s, we get 12000 MB/min = ~12 GB/min, or around 85.3 minutes for 1024 GB.&lt;/li&gt;
+&lt;li&gt;At 400 MB/s, that is twice the speed or half the time, 42.6 minutes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Add time for replication to catch up, and round up to a nice round number for rule of thumb estimates:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;At 400 MB/s, copying one Terabyte of data takes 45 minutes to copy and 15 minutes for replication catchup, for a total of &lt;strong&gt;one hour per Terabyte of data size&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;size-constraints-for-databases&#34;&gt;
+    &lt;a href=&#34;#size-constraints-for-databases&#34;&gt;
+	Size constraints for databases
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In database land, we copy databases all the time:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;To make backups.&lt;/li&gt;
+&lt;li&gt;To make more replicas in order to scale a pool up.&lt;/li&gt;
+&lt;li&gt;To replace replicas that have left the pool to go into maintenance.&lt;/li&gt;
+&lt;li&gt;To create special purpose replicas that may or may not be useful after having served their special purpose.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Each replica we make needs a donor instance, and often a donor instance can donate only to one receiver at a single point in time.&lt;/p&gt;
+&lt;p&gt;All taken together means that asking for more replicas is not instantaneous.
+You will have to wait one hour per TB of data size, and longer if there is need to clone up some donors to be able to parallelize cloning.&lt;/p&gt;
+&lt;p&gt;Here are some good numbers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Typical HPE or Dell blades at work have a single or two internal drives of 1.92 TB (&amp;ldquo;two TB&amp;rdquo;) each.
+If the instances make full use of them, preparing a blade takes slightly under 2h or 4h.&lt;/li&gt;
+&lt;li&gt;In a single workday of 8h, you can probably expect one attempt per day to do &amp;ldquo;a thing&amp;rdquo;  to a database of ~10 TB size.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;From this we get a few very strong recommendations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;200-250 GB&lt;/strong&gt; databases can be replicated in intervals that fit into K8s readiness probes.
+That is why Vitess and also many Postgres based clustering products recommend small instance sizes of 250 GB or less.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2-4 TB&lt;/strong&gt; data size give you &amp;ldquo;several attempts at maintenance per day&amp;rdquo;, and also fit standard blade on premises or i3.2xl and i3.4xl instances in EC2.
+They are probably the upper end of supportable database size in terms of wait times due to data copies.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;10 TB&lt;/strong&gt; data size is where toil explodes, because they are in the &amp;ldquo;a single attempt per day&amp;rdquo; class.
+If you have databases that are larger than this, but you need to have a long and hard look at you life and architecture choices, and the implications of them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;reactive-autoscaling-is-not-a-thing&#34;&gt;
+    &lt;a href=&#34;#reactive-autoscaling-is-not-a-thing&#34;&gt;
+	Reactive autoscaling is not a thing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It also means that reactive autoscaling of database instances does not work at all:
+By the time you have scaled up, the demand is already handled by existing capacity or you have died.&lt;/p&gt;
+&lt;p&gt;You will need ongoing capacity testing and predictive autoscaling that gives you some headroom  for the unexpected.&lt;/p&gt;
+&lt;p&gt;Using spot instances is also very likely to make you very unhappy or very offline or both.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is a soft 2 TB boundary and a hard 10 TB boundary.
+They are defined by physics, so they are not negotiable and cannot be removed by throwing money at it.&lt;/p&gt;
+&lt;p&gt;When you reach these sizes, talk to your DBA about alternatives.
+Treat the 2TB boundary as a complexity inflection point, and use the remaining time as runway to branch out into alternative solutions.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>UTF8MB4</title>
       <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
@@ -4062,308 +4178,6 @@ Hence, we log literal attributes, never ids pointing to the current article or c
 &lt;/span&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PARTITION&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;BY&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AUTOMATIC&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TIME&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;RANGE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;created&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PARTITIONS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;VALUES&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;INTERVAL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DAY&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This would get rid of any manually maintained procedures, events, triggers, and most importantly, implementations, and specify procedurally how and when partitions are created and how long they are kept.&lt;/p&gt;
 &lt;p&gt;Not quite as automatic as Cassandra TTL fields, but a large step forward.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Deleting data</title>
-      <link>https://blog.koehntopp.info/2020/09/24/mysql-deleting-data.html</link>
-      <pubDate>Thu, 24 Sep 2020 21:39:24 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2020/09/24/mysql-deleting-data.html</guid>
-      <description>&lt;p&gt;Completing the data lifecycle is often harder than originally expected:
-Deleting data can sometimes cost way more than inserting it in the first place.
-MySQL Partitions can offer a way out.
-We have an &lt;a href=&#34;https://blog.koehntopp.info/2020/05/13/deleting-data-from-mysql.html&#34;&gt;earlier post&lt;/a&gt;
-
- on the subject.&lt;/p&gt;
-&lt;h2 id=&#34;a-sample-table-and-a-problem-statement&#34;&gt;
-    &lt;a href=&#34;#a-sample-table-and-a-problem-statement&#34;&gt;
-	A sample table, and a problem statement
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Let&amp;rsquo;s define a kind of log table, to which data is added with an &lt;code&gt;auto_increment&lt;/code&gt; id value and some data.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
-
-&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;time&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;
-&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;random&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;randint&lt;/span&gt;
-&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;multiprocessing&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Process&lt;/span&gt;
-
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;click&lt;/span&gt;
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;MySQLdb&lt;/span&gt;
-&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;MySQLdb.cursors&lt;/span&gt;
-
-
-&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;localhost&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;passwd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;geheim&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;cursorclass&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursors&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DictCursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-&lt;span class=&#34;nd&#34;&gt;@click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;group&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;help&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Load and delete data using partitions&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-    &lt;span class=&#34;k&#34;&gt;pass&lt;/span&gt;
-
-&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;setup_tables&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;sql_setup&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
-        &lt;span class=&#34;s2&#34;&gt;&amp;#34;drop table if exists data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-        &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34; create table data (
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                id integer not null primary key auto_increment,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                d varchar(64) not null,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;                e varchar(64) not null
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        )&amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-        &lt;span class=&#34;s2&#34;&gt;&amp;#34;alter table data partition by range (id) ( partition p1 values less than (10000))&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-        &lt;span class=&#34;s2&#34;&gt;&amp;#34;insert into data (id, d, e) values ( 1, &amp;#39;keks&amp;#39;, &amp;#39;keks&amp;#39; )&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-        &lt;span class=&#34;s2&#34;&gt;&amp;#34;commit&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-    &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
-
-    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sql_setup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OperationalError&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;click&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;echo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;setup_tables: failed &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; with &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-
-&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is our basic Python framework for experimentation, using the &lt;code&gt;click&lt;/code&gt; framework, and a command &lt;code&gt;setup-tables&lt;/code&gt;. This command will run a number of SQL statements to initialize our log table named &lt;code&gt;data&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The log table has three columns: &lt;code&gt;id&lt;/code&gt;, an auto_increment counter, and two columns &lt;code&gt;d&lt;/code&gt; and &lt;code&gt;e&lt;/code&gt;, each containing 64 characters of data. To get things started, we add an initial partition, containing all id-values below 10.000 and an initial row.&lt;/p&gt;
-&lt;p&gt;If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from &lt;a href=&#34;https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html&#34;&gt;ALTER TABLE for UUID&lt;/a&gt;
-
- that the physical order of any InnoDB table is by primary key - our id-counter.&lt;/p&gt;
-&lt;p&gt;Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left-hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffled around in the tree.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/loeschen_einfuegen.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;New data is added to the right-hand side of the B+-Tree, while old data is being deleted at the left-hand side. To keep the tree balanced, data is reshuffled, which is an expensive operation.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Instead, we are defining partitions. In our case, we are using the simplest definition possible: A &lt;code&gt;PARTITION BY RANGE&lt;/code&gt; on the primary key column. We are making bins of 10.000 rows each, because that is convenient for our demonstration here.&lt;/p&gt;
-&lt;h2 id=&#34;three-processes&#34;&gt;
-    &lt;a href=&#34;#three-processes&#34;&gt;
-	Three processes
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;We will be using the Python multiprocessing module to have three processes, an &lt;code&gt;inserter()&lt;/code&gt;, a &lt;code&gt;partitioner()&lt;/code&gt; and a &lt;code&gt;dropper()&lt;/code&gt;. All of them are endless loops.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;The inserter will insert random new data rows into the table as fast as possible.&lt;/li&gt;
-&lt;li&gt;The partitioner will make sure that we always have a sufficient number of empty new partitions for the inserter to continue.&lt;/li&gt;
-&lt;li&gt;The dropper will limit the number of partitions with data by throwing the oldest partition away.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We will have small piece of code that starts our processes:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@sql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;command&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;start_processing&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;proc_partition&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Process&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;partitioner&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;proc_partition&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;proc_drop&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Process&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dropper&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;proc_drop&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;proc_insert&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Process&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;target&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;inserter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;proc_insert&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;the-inserter&#34;&gt;
-    &lt;a href=&#34;#the-inserter&#34;&gt;
-	The Inserter
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The Inserter is an endless loop that generates two random 64 character strings and inserts a new row into the database. Every 10 rows, we commit, every 1000 rows we print a message.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;inserter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;step&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;
-
-    &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;insert into data (id, d, e) values( NULL, &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(d)s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;, &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%(e)s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; )&amp;#34;&lt;/span&gt;
-
-    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-
-    &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-            &lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;([&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;chr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;randint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;97&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;97&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;26&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]),&lt;/span&gt;
-            &lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;([&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;chr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;randint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;97&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;97&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;26&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;range&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)]),&lt;/span&gt;
-        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;step&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-
-        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;counter = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Without the other two threads, the inserter will generate 10.000 rows and then stop, because there is no &lt;code&gt;MAXVALUE&lt;/code&gt; clause.&lt;/p&gt;
-&lt;h2 id=&#34;the-partitioner&#34;&gt;
-    &lt;a href=&#34;#the-partitioner&#34;&gt;
-	The Partitioner
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The Partitioner is an endless loop that runs an &lt;code&gt;ANALYZE TABLE data&lt;/code&gt; command to refresh the statistics, and then queries &lt;code&gt;INFORMATION_SCHEMA.PARTITIONS&lt;/code&gt; for the five partitions with the highest &lt;code&gt;PARTITION_ORDINAL_POSITION&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;If there are fewer than 5 partitions in total, we generate new partitions no matter what.&lt;/p&gt;
-&lt;p&gt;If there are not at least 5 partitions with no rows&#39; int them, we create new partitions.&lt;/p&gt;
-&lt;p&gt;If we did nothing, we wait for 1/10th of a second and then check again.&lt;/p&gt;
-&lt;p&gt;The new partition gets a range expression with a limit 10.000 values higher than the highest one found, and the partition name is derived from the limit by dividing by 10.000.&lt;/p&gt;
-&lt;p&gt;In code:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;create_partition&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next_limit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;alter table data add partition ( partition &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; values less than ( &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;next_limit&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;))&amp;#34;&lt;/span&gt;
-    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;cmd = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will simply format and run an &lt;code&gt;ALTER TABLE&lt;/code&gt; statement to add a new partition to the existing table.&lt;/p&gt;
-&lt;p&gt;And the checking loop:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;partitioner&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-
-    &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-        &lt;span class=&#34;c1&#34;&gt;# force stats refresh&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;analyze table kris.data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-        &lt;span class=&#34;c1&#34;&gt;# find the five highest partitions&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34;select
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_name,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_ordinal_position,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_description,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_rows
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        from
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          information_schema.partitions
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        where
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_schema = &amp;#34;kris&amp;#34; and
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_name = &amp;#34;data&amp;#34;
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        order by
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_ordinal_position desc
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        limit 5
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;next_limit&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;][&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;PARTITION_DESCRIPTION&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10000&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;p&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;next_limit&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
-
-        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;5&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;create &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; reason: not enough partitions&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;create_partition&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next_limit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-            &lt;span class=&#34;k&#34;&gt;continue&lt;/span&gt;
-
-        &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;TABLE_ROWS&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;create &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; reason: not enough empty partitions&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;create_partition&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;next_limit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-            &lt;span class=&#34;k&#34;&gt;continue&lt;/span&gt;
-
-        &lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;0.1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This code is mostly a long &lt;code&gt;SELECT&lt;/code&gt; on the &lt;code&gt;INFORMATION_SCHEMA.PARTITIONS&lt;/code&gt; table, and then two quick checks to see if we need to make more partitions.&lt;/p&gt;
-&lt;h2 id=&#34;the-dropper&#34;&gt;
-    &lt;a href=&#34;#the-dropper&#34;&gt;
-	The Dropper
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The Dropper structurally mirrors the Partitioner: We have a tiny function to create the actual &lt;code&gt;ALTER TABLE data DROP PARTITION&lt;/code&gt; statement:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;drop_partition&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;partition_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;alter table data drop partition &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;partition_name&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;cmd = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we have an endless loop that basically runs a &lt;code&gt;SELECT&lt;/code&gt; on &lt;code&gt;INFORMATION_SCHEMA.PARTITIONS&lt;/code&gt; and checks the number of partitions that have a non-zero number of &lt;code&gt;TABLE_ROWS&lt;/code&gt;. If it is too many, we drop the one with the lowest number (&amp;ldquo;the first one found&amp;rdquo;, using an appropriate sort order in our SQL).&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dropper&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-
-    &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-        &lt;span class=&#34;c1&#34;&gt;# force stats refresh&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;analyze table kris.data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-        &lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34; select
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_name,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_ordinal_position,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_description,
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_rows
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        from
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          information_schema.partitions
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        where
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_schema = &amp;#34;kris&amp;#34; and
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_name = &amp;#34;data&amp;#34; and
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          table_rows &amp;gt; 0
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        order by
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;          partition_ordinal_position asc
-&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;        &amp;#34;&amp;#34;&amp;#34;&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-        &lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;partition_name&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;][&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;PARTITION_NAME&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
-            &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;drop &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;partition_name&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; reason: too many partitions with data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-            &lt;span class=&#34;n&#34;&gt;drop_partition&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;partition_name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-            &lt;span class=&#34;k&#34;&gt;continue&lt;/span&gt;
-
-        &lt;span class=&#34;n&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mf&#34;&gt;0.1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;a-test-run&#34;&gt;
-    &lt;a href=&#34;#a-test-run&#34;&gt;
-	A test run
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In our test run, we see immediately after startup how the five spare partitions are being created.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./partitions.py  setup-tables
-&lt;span class=&#34;gp&#34;&gt;$ &lt;/span&gt;./partitions.py  start-processing
-&lt;span class=&#34;go&#34;&gt;create p2 reason: not enough partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p2 values less than ( 20000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;create p3 reason: not enough partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p3 values less than ( 30000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;create p4 reason: not enough partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p4 values less than ( 40000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;create p5 reason: not enough partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p5 values less than ( 50000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;create p6 reason: not enough empty partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p6 values less than ( 60000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 1000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 2000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 3000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Once we cross the threshold of p1, the number of empty partitions is no longer low enough and another one is being created:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 9000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 10000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;create p7 reason: not enough empty partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p7 values less than ( 70000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 11000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This continues for a while, until we have a sufficient number of data partitions so that we begin dropping, too:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 90000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;create p15 reason: not enough empty partitions
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p15 values less than ( 150000))
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;drop p1 reason: too many partitions with data
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data drop partition p1
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 91000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;counter = 92000
-&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now the system reaches a stable state and will add and drop partitions in sync with the Inserter.&lt;/p&gt;
-&lt;p&gt;From inside SQL we can see the number of rows in the table rise, and then suddenly drop by 10.000 as we drop a partition.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-sqlkris@localhost&#34; data-lang=&#34;sqlkris@localhost&#34;&gt;+----------+
-| count(*) |
-+----------+
-|    89872 |
-+----------+
-1 row in set (0.00 sec)
-
-kris@localhost [kris]&amp;gt; select count(*) from data;
-+----------+
-| count(*) |
-+----------+
-|    90122 |
-+----------+
-1 row in set (0.02 sec)
-
-kris@localhost [kris]&amp;gt; select count(*) from data;
-+----------+
-| count(*) |
-+----------+
-|    80362 |
-+----------+
-1 row in set (0.01 sec)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The complete example is available &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/tree/master/mysql-partitions&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on GitHub.com&lt;/a&gt;
-
-.&lt;/p&gt;
 </description>
     </item>
     

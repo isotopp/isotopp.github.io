@@ -6,7 +6,123 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Feb 2022 15:45:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Feb 2022 13:50:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases: How large is too large?</title>
+      <link>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</link>
+      <pubDate>Wed, 16 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</guid>
+      <description>&lt;p&gt;A database is a special kind of structured, persistent, global variable with concurrent access over the network.&lt;/p&gt;
+&lt;p&gt;You write data to a cell of a row of a table in a schema in the server, and it is being kept around for you, with a lifetime longer than the runtime of your program.
+The database takes care of making sure of ordering access to that data, so there is a clearly defined series of changes to the data – locking, transactions, isolation are things that make databases popular.&lt;/p&gt;
+&lt;p&gt;And so one gets to have a lot of database schemas in server instances, and they grow.
+Sometimes that becomes a problem.&lt;/p&gt;
+&lt;h1 id=&#34;databases-dont-scale-even-when-they-scale&#34;&gt;
+    &lt;a href=&#34;#databases-dont-scale-even-when-they-scale&#34;&gt;
+	Databases don&amp;rsquo;t scale, even when they scale
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;These days, the MySQL server can easily utilize the resources even of very large servers.
+At work, we have taken instances easily up to 400.000 queries per second on AMD EPYC servers with 64 cores and one terabyte of memory, without special tuning.
+With careful tuning, more than a million QPS is achievable.
+MySQL scales extremely well these days.&lt;/p&gt;
+&lt;p&gt;For a long time, MySQL also has been a very low latency/high connection database:
+since it uses a multithreading approach with a pre-generated thread pool, it can handle up to around 10k connections comfortably, and three times more at cost.
+It can handle disconnect and reconnect situations in a way that is more reminiscent of an LDAP server than a database.&lt;/p&gt;
+&lt;p&gt;And it can answer single point primary key lookups from memory – the workload a &lt;code&gt;memcached&lt;/code&gt; handles – at &lt;code&gt;memcached&lt;/code&gt; speeds:
+We see query resolution times including SQL parsing that are as low as 0.12ms (120µs).&lt;/p&gt;
+&lt;h1 id=&#34;what-doesnt-scale-_server-creation-time_&#34;&gt;
+    &lt;a href=&#34;#what-doesnt-scale-_server-creation-time_&#34;&gt;
+	What doesn&amp;rsquo;t scale: &lt;em&gt;server creation time&lt;/em&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL replication hierarchies are designed as shared-nothing architectures.
+Creating a new server means you have to copy the data for the server into place, and then let replication catch up.&lt;/p&gt;
+&lt;p&gt;There are storage trickeries that can be played, but they have long term consequences that need mitigation.
+They also tie their user to very costly and very specific storage architectures and that is not a thing anybody can afford to have as a technical debt item on their sheet.&lt;/p&gt;
+&lt;h1 id=&#34;a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+    &lt;a href=&#34;#a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
+	A Relativity Theory of databases: For data, space is time.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When we create new databases, we copy the data over.
+In the end, the network is very fast:
+At 10  Gbit/s, we are looking at a stream of 1.25 GB/s coming in that we need to be able to persist at the receiving end, and that we need to provide at the sending end.&lt;/p&gt;
+&lt;p&gt;Looking at storage, we can see that in all but one situations, the bottleneck is not the network:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A conventional HDD with rotating rust can serve reliably around 200 MB/s in a linear read or write (&lt;a href=&#34;https://toshiba.semicon-storage.com/ap-en/storage/product/data-center-enterprise/cloud-scale-capacity/articles/mg07acaxxx.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toshiba HDD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;A SSD usually gives us twice this, so we see streams of around 400-500 MB/s (&lt;a href=&#34;https://www.micron.com/-/media/client/global/documents/products/product-flyer/5300_product_brief.pdf?la=en&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron SSD specs&lt;/a&gt;
+
+ provide some reference).&lt;/li&gt;
+&lt;li&gt;Openstack instances are quota&amp;rsquo;ed, and often get something like 400 MB/s quota again, which nicely matches expectations of SSD users.&lt;/li&gt;
+&lt;li&gt;A NVME flash device can provide on the upside of 3000 MB/s (3 GB/s) sustained data rate when enterprise grade hardware is purchased (&lt;a href=&#34;http://brochure.stebis.nl/Micron9300.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron NVME specs&lt;/a&gt;
+
+ provide some reference).
+This is the one single case where a 10 GBit/s network interface actually is becoming a bottleneck, but of course more network is available if you have the coin.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;How long does it take to copy one Terabyte of data, assuming linear streaming access?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;At 200 MB/s, we get 12000 MB/min = ~12 GB/min, or around 85.3 minutes for 1024 GB.&lt;/li&gt;
+&lt;li&gt;At 400 MB/s, that is twice the speed or half the time, 42.6 minutes.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Add time for replication to catch up, and round up to a nice round number for rule of thumb estimates:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;At 400 MB/s, copying one Terabyte of data takes 45 minutes to copy and 15 minutes for replication catchup, for a total of &lt;strong&gt;one hour per Terabyte of data size&lt;/strong&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h1 id=&#34;size-constraints-for-databases&#34;&gt;
+    &lt;a href=&#34;#size-constraints-for-databases&#34;&gt;
+	Size constraints for databases
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In database land, we copy databases all the time:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;To make backups.&lt;/li&gt;
+&lt;li&gt;To make more replicas in order to scale a pool up.&lt;/li&gt;
+&lt;li&gt;To replace replicas that have left the pool to go into maintenance.&lt;/li&gt;
+&lt;li&gt;To create special purpose replicas that may or may not be useful after having served their special purpose.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Each replica we make needs a donor instance, and often a donor instance can donate only to one receiver at a single point in time.&lt;/p&gt;
+&lt;p&gt;All taken together means that asking for more replicas is not instantaneous.
+You will have to wait one hour per TB of data size, and longer if there is need to clone up some donors to be able to parallelize cloning.&lt;/p&gt;
+&lt;p&gt;Here are some good numbers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Typical HPE or Dell blades at work have a single or two internal drives of 1.92 TB (&amp;ldquo;two TB&amp;rdquo;) each.
+If the instances make full use of them, preparing a blade takes slightly under 2h or 4h.&lt;/li&gt;
+&lt;li&gt;In a single workday of 8h, you can probably expect one attempt per day to do &amp;ldquo;a thing&amp;rdquo;  to a database of ~10 TB size.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;From this we get a few very strong recommendations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;200-250 GB&lt;/strong&gt; databases can be replicated in intervals that fit into K8s readiness probes.
+That is why Vitess and also many Postgres based clustering products recommend small instance sizes of 250 GB or less.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;2-4 TB&lt;/strong&gt; data size give you &amp;ldquo;several attempts at maintenance per day&amp;rdquo;, and also fit standard blade on premises or i3.2xl and i3.4xl instances in EC2.
+They are probably the upper end of supportable database size in terms of wait times due to data copies.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;10 TB&lt;/strong&gt; data size is where toil explodes, because they are in the &amp;ldquo;a single attempt per day&amp;rdquo; class.
+If you have databases that are larger than this, but you need to have a long and hard look at you life and architecture choices, and the implications of them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;reactive-autoscaling-is-not-a-thing&#34;&gt;
+    &lt;a href=&#34;#reactive-autoscaling-is-not-a-thing&#34;&gt;
+	Reactive autoscaling is not a thing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It also means that reactive autoscaling of database instances does not work at all:
+By the time you have scaled up, the demand is already handled by existing capacity or you have died.&lt;/p&gt;
+&lt;p&gt;You will need ongoing capacity testing and predictive autoscaling that gives you some headroom  for the unexpected.&lt;/p&gt;
+&lt;p&gt;Using spot instances is also very likely to make you very unhappy or very offline or both.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is a soft 2 TB boundary and a hard 10 TB boundary.
+They are defined by physics, so they are not negotiable and cannot be removed by throwing money at it.&lt;/p&gt;
+&lt;p&gt;When you reach these sizes, talk to your DBA about alternatives.
+Treat the 2TB boundary as a complexity inflection point, and use the remaining time as runway to branch out into alternative solutions.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Revisiting the file server</title>
       <link>https://blog.koehntopp.info/2022/02/06/revisiting-the-file-server.html</link>
@@ -3940,366 +4056,6 @@ This bug is still open in all production Linux kernels.&lt;/p&gt;
 &lt;/h1&gt;
 &lt;p&gt;Thanks, Mark, for you very useful and insightful comments, and for nudging me to go deeper on this.
 And thanks for necro&amp;rsquo;ing Marks articles with your comments, Marko!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW</title>
-      <link>https://blog.koehntopp.info/2021/09/10/create-if-not-exists.html</link>
-      <pubDate>Fri, 10 Sep 2021 20:01:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/10/create-if-not-exists.html</guid>
-      <description>&lt;p&gt;For the MySQL Million Challenge, I was going through the server syntax in order to understand what things can be created in the server.
-And now my OCD triggered.
-DDL is a mess.&lt;/p&gt;
-&lt;h1 id=&#34;creation&#34;&gt;
-    &lt;a href=&#34;#creation&#34;&gt;
-	Creation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to create server objects using the &lt;code&gt;CREATE thing&lt;/code&gt; syntax.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The server gives you that for the following things:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;DATABASE&lt;/li&gt;
-&lt;li&gt;EVENT&lt;/li&gt;
-&lt;li&gt;FUNCTION (and FUNCTION SONAME)&lt;/li&gt;
-&lt;li&gt;INDEX&lt;/li&gt;
-&lt;li&gt;LOGFILE GROUP (NDB only, not going to look at this)&lt;/li&gt;
-&lt;li&gt;PROCEDURE&lt;/li&gt;
-&lt;li&gt;RESOURCE GROUP&lt;/li&gt;
-&lt;li&gt;ROLE&lt;/li&gt;
-&lt;li&gt;SERVER&lt;/li&gt;
-&lt;li&gt;SPATIAL REFERENCE SYSTEM&lt;/li&gt;
-&lt;li&gt;TABLE&lt;/li&gt;
-&lt;li&gt;TABLESPACE&lt;/li&gt;
-&lt;li&gt;TRIGGER&lt;/li&gt;
-&lt;li&gt;USER&lt;/li&gt;
-&lt;li&gt;VIEW&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;safe-creation&#34;&gt;
-    &lt;a href=&#34;#safe-creation&#34;&gt;
-	Safe creation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer I want to be able to script things safely, so I need &lt;code&gt;IF NOT EXISTS&lt;/code&gt; clauses in my &lt;code&gt;CREATE&lt;/code&gt; syntax.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Statements that create things often allow you to specify &lt;code&gt;IF NOT EXISTS&lt;/code&gt; for conditional creation of the thing:
-Creation of the thing will fail if it already exists.
-Using the &lt;code&gt;IF NOT EXISTS&lt;/code&gt; clause the creation is conditional, so if the thing already exists this is not an error.&lt;/p&gt;
-&lt;p&gt;This is important for scripting: If the thing already exists, the script will throw an error and depending on settings will stop.
-It is even more important in replication, because if you replicate the creation statement to a replica, the replication will stop with an error unless it is conditional.&lt;/p&gt;
-&lt;p&gt;Some &lt;code&gt;CREATE&lt;/code&gt; statements replicate, but do not offer conditional syntax.
-They cannot be used safely in replication, and they are cumbersome in scripting.&lt;/p&gt;
-&lt;p&gt;Two &lt;code&gt;CREATE&lt;/code&gt; statements offer deviant safe creation: Instead of &lt;code&gt;CREATE ... IF NOT EXISTS&lt;/code&gt; they offer &lt;code&gt;CREATE OR REPLACE ...&lt;/code&gt;.&lt;/p&gt;
-&lt;h1 id=&#34;multiple-object-syntax&#34;&gt;
-    &lt;a href=&#34;#multiple-object-syntax&#34;&gt;
-	Multiple object syntax
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer I want to be able to chain multiple &lt;code&gt;CREATE&lt;/code&gt; or &lt;code&gt;DROP&lt;/code&gt; actions together in a single statement, so that the things are created (or dropped) together, atomically.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Alternatively, DDL could be made transactional.
-This makes sense even if a rollback is not possible, if they are being executed in a kind of DDL transaction under a lock, so that they appear to happen atomically.&lt;/p&gt;
-&lt;p&gt;Multiple &lt;code&gt;CREATE&lt;/code&gt; syntax does not exist.
-For few objects, a multiple drop syntax does exist, but support is thin.&lt;/p&gt;
-&lt;h1 id=&#34;safe-drop&#34;&gt;
-    &lt;a href=&#34;#safe-drop&#34;&gt;
-	Safe DROP
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to &lt;code&gt;DROP&lt;/code&gt; the things that I created.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Obviously.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to make the &lt;code&gt;DROP&lt;/code&gt; conditional using an &lt;code&gt;IF EXISTS&lt;/code&gt; clause, to be able to script and replicate this operation safely.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Obviously.&lt;/p&gt;
-&lt;p&gt;The support for this is better than for creation, for some reason, and there is no deviant syntax.
-Still, some things cannot be dropped safely.&lt;/p&gt;
-&lt;h1 id=&#34;enumeration-and-definition-display&#34;&gt;
-    &lt;a href=&#34;#enumeration-and-definition-display&#34;&gt;
-	Enumeration and Definition display
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a developer, I want to be able to enumerate all the things of a category.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Logically, an API is incomplete without enumeration.
-I need to be able to see what exists.&lt;/p&gt;
-&lt;p&gt;In MySQL, a lot of things can be listed with &lt;code&gt;SHOW&lt;/code&gt; commands, and all things can be listed by looking into the appropriate system tables.&lt;/p&gt;
-&lt;p&gt;Apparently, a lot of things can not be listed using the &lt;code&gt;SHOW plural&lt;/code&gt; syntax (&lt;code&gt;SHOW TABLES&lt;/code&gt;, &lt;code&gt;SHOW DATABASES&lt;/code&gt;).
-For a few things, a deviant syntax is supported (&lt;code&gt;SHOW PROCEDURE STATUS&lt;/code&gt;) that also shows the definition of the thing.&lt;/p&gt;
-&lt;p&gt;For other things you have to access system tables.
-These system tables seem to be spread around, some are in I_S (Tablespace), others in mysql.* (servers).&lt;/p&gt;
-&lt;p&gt;Generally, MySQL seems to favor the syntax &lt;code&gt;SHOW CREATE thing&lt;/code&gt; to show an SQL statement that would recreate the thing if I dropped it.
-But for some things, this is not implemented, despite the fact that the information for this is available in various system tables.&lt;/p&gt;
-&lt;h1 id=&#34;altering-and-renaming-things&#34;&gt;
-    &lt;a href=&#34;#altering-and-renaming-things&#34;&gt;
-	Altering and renaming things
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to change the definition of a thing after creation.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Most things can be altered after creation.
-For some things, some attributes cannot be altered even if an &lt;code&gt;ALTER&lt;/code&gt; statement exists. Notably, it is impossible to rename a database.&lt;/p&gt;
-&lt;p&gt;Only two things can be renamed, tables and users.
-For other things, renaming is possible using &lt;code&gt;ALTER TABLE RENAME&lt;/code&gt; syntax, but a pure &lt;code&gt;RENAME&lt;/code&gt; does not exist despite the fact that renaming is supported.&lt;/p&gt;
-&lt;p&gt;For roles and users, &lt;code&gt;ALTER thing IF EXISTS&lt;/code&gt; conditional syntax is supported, but for all other things it is not.&lt;/p&gt;
-&lt;h1 id=&#34;replication&#34;&gt;
-    &lt;a href=&#34;#replication&#34;&gt;
-	Replication
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;All thing creations are replicated, except resource groups and servers.
-That even makes sense, which is unusual, given all the other illogical anomalies.&lt;/p&gt;
-&lt;h1 id=&#34;a-table-because-this-is-about-databases&#34;&gt;
-    &lt;a href=&#34;#a-table-because-this-is-about-databases&#34;&gt;
-	A table, because this is about databases
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Command&lt;/th&gt;
-&lt;th&gt;replicates&lt;/th&gt;
-&lt;th&gt;enumerate SHOW&lt;/th&gt;
-&lt;th&gt;CREATE&lt;/th&gt;
-&lt;th&gt;IF   T EXISTS&lt;/th&gt;
-&lt;th&gt;OR REPLACE&lt;/th&gt;
-&lt;th&gt;DROP&lt;/th&gt;
-&lt;th&gt;IF EXISTS&lt;/th&gt;
-&lt;th&gt;MULTI&lt;/th&gt;
-&lt;th&gt;SHOW CREATE&lt;/th&gt;
-&lt;th&gt;ALTER&lt;/th&gt;
-&lt;th&gt;IF EXISTS&lt;/th&gt;
-&lt;th&gt;RENAME&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;DATABASE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;EVENT&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;FUNCTION&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;*1&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;INDEX&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;*2&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*2&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;PROCEDURE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;*3&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RES GROUP&lt;/td&gt;
-&lt;td&gt;*  *&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;ROLE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SERVER&lt;/td&gt;
-&lt;td&gt;*  *&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SRS&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TABLE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TABLESPACE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TRIGGER&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;USER&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;VIEW&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;ul&gt;
-&lt;li&gt;*1: &lt;code&gt;SHOW FUNCTION STATUS&lt;/code&gt; deviant syntax enumerates the function names and definitions.&lt;/li&gt;
-&lt;li&gt;*2: Indexes are not first class citizens, they are part of table definitions.&lt;/li&gt;
-&lt;li&gt;*3: &lt;code&gt;SHOW PROCEDURE STATUS&lt;/code&gt; deviant syntax enumerates the procedure names and definitions.&lt;/li&gt;
-&lt;li&gt;*4: &lt;code&gt;ALTER thing RENAME&lt;/code&gt; syntax exists, but no &lt;code&gt;RENAME&lt;/code&gt; command.&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
