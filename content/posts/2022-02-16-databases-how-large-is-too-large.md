@@ -46,7 +46,7 @@ When we create new databases, we copy the data over.
 In the end, the network is very fast: 
 At 10  Gbit/s, we are looking at a stream of 1.25 GB/s coming in that we need to be able to persist at the receiving end, and that we need to provide at the sending end.
 
-Looking at storage, we can see that in all but one situations, the bottleneck is not the network:
+Looking at storage, we can see that in all but one situation, the bottleneck is not the network:
 
 - A conventional HDD with rotating rust can serve reliably around 200 MB/s in a linear read or write ([Toshiba HDD specs](https://toshiba.semicon-storage.com/ap-en/storage/product/data-center-enterprise/cloud-scale-capacity/articles/mg07acaxxx.html) provide some reference).
 - A SSD usually gives us twice this, so we see streams of around 400-500 MB/s ([Micron SSD specs](https://www.micron.com/-/media/client/global/documents/products/product-flyer/5300_product_brief.pdf?la=en) provide some reference).
