@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL: Python and WHERE ... IN ()' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -165,58 +165,58 @@ a <code>list</code> to an SQL statement with a
 <p>After a quick detour through Java (which we won&rsquo;t discuss any further in this article), we established that this was a Python problem in this particular instance.
 And we touched on several other interesting things on our way.</p>
 <p>But first, the solution:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#! /usr/bin/env python3</span>
-
-<span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">import</span> <span class="nn">MySQLdb</span>
-<span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
-
-<span class="k">class</span> <span class="nc">DebugCursor</span><span class="p">(</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Debug: </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
-
-<span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;secret&#34;</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">cursorclass</span><span class="o">=</span><span class="n">DebugCursor</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-
-<span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Making WHERE IN great again.&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
-    <span class="k">pass</span>
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">make_table</span><span class="p">():</span>
-    <span class="n">sql1</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;drop table if exists insert_test&#34;&#34;&#34;</span>
-    <span class="n">sql2</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;create table insert_test ( id serial, d varchar(200) )&#34;&#34;&#34;</span>
-    <span class="n">sql3</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;insert into insert_test values ( NULL, </span><span class="si">%(value)s</span><span class="s2"> )&#34;&#34;&#34;</span>
-
-    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql1</span><span class="p">)</span>
-    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql2</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span> <span class="s1">&#39;eins&#39;</span><span class="p">,</span> <span class="s1">&#39;zwei&#39;</span><span class="p">,</span> <span class="s1">&#39;drei&#39;</span><span class="p">,</span> <span class="s1">&#39;zw&#34;ei&#39;</span><span class="p">,</span> <span class="s1">&#39;dr\ei&#39;</span> <span class="p">]:</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql3</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;value&#34;</span><span class="p">:</span> <span class="n">i</span><span class="p">})</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">query</span><span class="p">():</span>
-    <span class="n">ary</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;eins&#39;</span><span class="p">,</span> <span class="s1">&#39;zwei&#39;</span><span class="p">,</span> <span class="s1">&#39;drei&#39;</span><span class="p">,</span> <span class="s1">&#39;zw&#34;ei&#39;</span><span class="p">,</span> <span class="s1">&#39;dr\ei&#39;</span> <span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">ary</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-
-    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;select d from insert_test where d in </span><span class="si">%(ary)s</span><span class="s2">&#34;</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;ary&#34;</span><span class="p">:</span> <span class="n">ary</span><span class="p">})</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-
-<span class="n">sql</span><span class="p">()</span>
-</code></pre></div><p>In case you didn&rsquo;t spot it: you can safely generate the <code>WHERE d IN …</code> clause by supplying a string placeholder and then handing it a <code>list</code>.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">click</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">DebugCursor</span><span class="p">(</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Debug: </span><span class="si">{</span><span class="n">q</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;secret&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursorclass</span><span class="o">=</span><span class="n">DebugCursor</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Making WHERE IN great again.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">make_table</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql1</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;drop table if exists insert_test&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql2</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;create table insert_test ( id serial, d varchar(200) )&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql3</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;insert into insert_test values ( NULL, </span><span class="si">%(value)s</span><span class="s2"> )&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span> <span class="s1">&#39;eins&#39;</span><span class="p">,</span> <span class="s1">&#39;zwei&#39;</span><span class="p">,</span> <span class="s1">&#39;drei&#39;</span><span class="p">,</span> <span class="s1">&#39;zw&#34;ei&#39;</span><span class="p">,</span> <span class="s1">&#39;dr\ei&#39;</span> <span class="p">]:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql3</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;value&#34;</span><span class="p">:</span> <span class="n">i</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">query</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">ary</span> <span class="o">=</span> <span class="p">[</span> <span class="s1">&#39;eins&#39;</span><span class="p">,</span> <span class="s1">&#39;zwei&#39;</span><span class="p">,</span> <span class="s1">&#39;drei&#39;</span><span class="p">,</span> <span class="s1">&#39;zw&#34;ei&#39;</span><span class="p">,</span> <span class="s1">&#39;dr\ei&#39;</span> <span class="p">]</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">ary</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;select d from insert_test where d in </span><span class="si">%(ary)s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;ary&#34;</span><span class="p">:</span> <span class="n">ary</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="n">res</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql</span><span class="p">()</span>
+</span></span></code></pre></div><p>In case you didn&rsquo;t spot it: you can safely generate the <code>WHERE d IN …</code> clause by supplying a string placeholder and then handing it a <code>list</code>.
 Do not provide parens, the list will bring its own: It is <code>select d from t where id in %s</code> and <em>not</em> <code>select d from t where id in ( %s )</code>.</p>
 <h1 id="why-is-that-safe">
     <a href="#why-is-that-safe">
@@ -244,27 +244,27 @@ Hence, you install the dependency <code>mysqlclient</code> to get the <code>MySQ
 And <a href="https://github.com/PyMySQL/mysqlclient/blob/143129be8f57d3a0667f01c989b9776bd80c28d3/MySQLdb/cursors.py#L171-L207" target="_blank" rel="noopener"><code>cursor.execute()</code></a>
 
  looks something like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="mi">171</span>     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="o">...</span>
-<span class="mi">190</span>         <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-<span class="mi">191</span>             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-<span class="mi">192</span>                 <span class="n">nargs</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="mi">193</span>                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-<span class="mi">194</span>                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-<span class="mi">195</span>                         <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
-<span class="mi">196</span>                     <span class="n">nargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">literal</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-<span class="mi">197</span>                 <span class="n">args</span> <span class="o">=</span> <span class="n">nargs</span>
-<span class="mi">198</span>             <span class="k">else</span><span class="p">:</span>
-<span class="mi">199</span>                 <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">literal</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
-<span class="mi">200</span>             <span class="k">try</span><span class="p">:</span>
-<span class="mi">201</span>                 <span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="o">%</span> <span class="n">args</span>
-<span class="mi">202</span>             <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
-<span class="mi">203</span>                 <span class="k">raise</span> <span class="n">ProgrammingError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
-<span class="mi">204</span>
-<span class="mi">205</span>         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">))</span>
-<span class="mi">206</span>         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-<span class="mi">207</span>         <span class="k">return</span> <span class="n">res</span>
-</code></pre></div><p>So in line 201, the replacement is a simple old style Python string formatting, <code>query % args</code>.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="mi">171</span>     <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="mi">190</span>         <span class="k">if</span> <span class="n">args</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="mi">191</span>             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl"><span class="mi">192</span>                 <span class="n">nargs</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl"><span class="mi">193</span>                 <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl"><span class="mi">194</span>                     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl"><span class="mi">195</span>                         <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">encoding</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="mi">196</span>                     <span class="n">nargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">literal</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="mi">197</span>                 <span class="n">args</span> <span class="o">=</span> <span class="n">nargs</span>
+</span></span><span class="line"><span class="cl"><span class="mi">198</span>             <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="mi">199</span>                 <span class="n">args</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">literal</span><span class="p">,</span> <span class="n">args</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="mi">200</span>             <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="mi">201</span>                 <span class="n">query</span> <span class="o">=</span> <span class="n">query</span> <span class="o">%</span> <span class="n">args</span>
+</span></span><span class="line"><span class="cl"><span class="mi">202</span>             <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">m</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="mi">203</span>                 <span class="k">raise</span> <span class="n">ProgrammingError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">m</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="mi">204</span>
+</span></span><span class="line"><span class="cl"><span class="mi">205</span>         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="mi">206</span>         <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="mi">207</span>         <span class="k">return</span> <span class="n">res</span>
+</span></span></code></pre></div><p>So in line 201, the replacement is a simple old style Python string formatting, <code>query % args</code>.
 This is then handed to <code>self._query()</code> in line 206.</p>
 <p>Before that, in 190ff, the args are massaged.</p>
 <p>If <code>args</code> is not a <code>dict</code>, we <code>map(db.literal, args)</code>, which happens to be defined in
@@ -294,15 +294,15 @@ which is the appropriate function for this.</p>
 
 
 in the end. And that does the following:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="k">def</span> <span class="nf">_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
-        <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_db</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_do_get_result</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_post_get_result</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_executed</span> <span class="o">=</span> <span class="n">q</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowcount</span>
-</code></pre></div><p>That it, it fetches the existing database connection db, sends off the query and fetches and processes the result (so that you can call <code>cursor.fetchall()</code> or similar on it).
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="k">def</span> <span class="nf">_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_db</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_result</span> <span class="o">=</span> <span class="kc">None</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_do_get_result</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_post_get_result</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="bp">self</span><span class="o">.</span><span class="n">_executed</span> <span class="o">=</span> <span class="n">q</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rowcount</span>
+</span></span></code></pre></div><p>That it, it fetches the existing database connection db, sends off the query and fetches and processes the result (so that you can call <code>cursor.fetchall()</code> or similar on it).
 It also remembers the query string in <code>cursor._executed</code>, but only after the query ran without error.
 And finally, it returns the rowcount.</p>
 <p>We could debug by printing <code>cursor._executed</code>, but only if we don&rsquo;t need to debug and the query actually ran.
@@ -315,25 +315,25 @@ I happen to be partial to <code>DictCursor</code>, so I inherit from that.</p>
 Because I do that before everything else, I get my log sent before stuff catches fire and my code burns to the ground.</p>
 <p>That way I get to see the replaced SQL before it runs, even it if is gibberish.
 So I can actually see that</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;select d from insert_test where d in ( </span><span class="si">%(ary)s</span><span class="s2"> )&#34;</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;ary&#34;</span><span class="p">:</span> <span class="n">ary</span><span class="p">})</span>
-</code></pre></div><p>in which I supply my own parens, turns into</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>python3 prep.py query
-<span class="go">[&#39;eins&#39;, &#39;zwei&#39;, &#39;drei&#39;, &#39;zw&#34;ei&#39;, &#39;dr\\ei&#39;]
-</span><span class="go">Debug: b&#39;select d from insert_test where d in ( (\&#39;eins\&#39;,\&#39;zwei\&#39;,\&#39;drei\&#39;,\&#39;zw\\&#34;ei\&#39;,\&#39;dr\\\\ei\&#39;) )&#39;
-</span><span class="go">Traceback (most recent call last):
-</span><span class="go">  File &#34;prep.py&#34;, line 54, in &lt;module&gt;
-</span></code></pre></div><p>while without those extra parens I get</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>python3 prep.py query
-<span class="go">[&#39;eins&#39;, &#39;zwei&#39;, &#39;drei&#39;, &#39;zw&#34;ei&#39;, &#39;dr\\ei&#39;]
-</span><span class="go">Debug: b&#39;select d from insert_test where d in (\&#39;eins\&#39;,\&#39;zwei\&#39;,\&#39;drei\&#39;,\&#39;zw\\&#34;ei\&#39;,\&#39;dr\\\\ei\&#39;)&#39;
-</span><span class="go">{&#39;d&#39;: &#39;eins&#39;}
-</span><span class="go">{&#39;d&#39;: &#39;zwei&#39;}
-</span><span class="go">{&#39;d&#39;: &#39;drei&#39;}
-</span><span class="go">{&#39;d&#39;: &#39;zw&#34;ei&#39;}
-</span><span class="go">{&#39;d&#39;: &#39;dr\\ei&#39;}
-</span></code></pre></div><p>and so I get to actually see that all is fine and well, and properly escaped.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;select d from insert_test where d in ( </span><span class="si">%(ary)s</span><span class="s2"> )&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;ary&#34;</span><span class="p">:</span> <span class="n">ary</span><span class="p">})</span>
+</span></span></code></pre></div><p>in which I supply my own parens, turns into</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> python3 prep.py query
+</span></span><span class="line"><span class="cl"><span class="go">[&#39;eins&#39;, &#39;zwei&#39;, &#39;drei&#39;, &#39;zw&#34;ei&#39;, &#39;dr\\ei&#39;]
+</span></span></span><span class="line"><span class="cl"><span class="go">Debug: b&#39;select d from insert_test where d in ( (\&#39;eins\&#39;,\&#39;zwei\&#39;,\&#39;drei\&#39;,\&#39;zw\\&#34;ei\&#39;,\&#39;dr\\\\ei\&#39;) )&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">Traceback (most recent call last):
+</span></span></span><span class="line"><span class="cl"><span class="go">  File &#34;prep.py&#34;, line 54, in &lt;module&gt;
+</span></span></span></code></pre></div><p>while without those extra parens I get</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> python3 prep.py query
+</span></span><span class="line"><span class="cl"><span class="go">[&#39;eins&#39;, &#39;zwei&#39;, &#39;drei&#39;, &#39;zw&#34;ei&#39;, &#39;dr\\ei&#39;]
+</span></span></span><span class="line"><span class="cl"><span class="go">Debug: b&#39;select d from insert_test where d in (\&#39;eins\&#39;,\&#39;zwei\&#39;,\&#39;drei\&#39;,\&#39;zw\\&#34;ei\&#39;,\&#39;dr\\\\ei\&#39;)&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">{&#39;d&#39;: &#39;eins&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="go">{&#39;d&#39;: &#39;zwei&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="go">{&#39;d&#39;: &#39;drei&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="go">{&#39;d&#39;: &#39;zw&#34;ei&#39;}
+</span></span></span><span class="line"><span class="cl"><span class="go">{&#39;d&#39;: &#39;dr\\ei&#39;}
+</span></span></span></code></pre></div><p>and so I get to actually see that all is fine and well, and properly escaped.</p>
 
       </div>
     </div>

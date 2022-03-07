@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL: A job queue in Python' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -162,63 +162,63 @@ After processing, the consumers delete the jobs. We need concurrent job generati
     </a>
 </h2>
 <p>Using our usual includes and setup,</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
-<span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">exit</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
-
-<span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">import</span> <span class="nn">MySQLdb</span>
-<span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
-
-
-<span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;127.0.0.1&#34;</span><span class="p">,</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">cursorclass</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">,</span>
-<span class="p">)</span>
-</code></pre></div><h2 id="table-jobs-and-setup">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">sleep</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">exit</span>
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">Process</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">click</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;127.0.0.1&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursorclass</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><h2 id="table-jobs-and-setup">
     <a href="#table-jobs-and-setup">
 	Table <code>jobs</code> and setup
     </a>
 </h2>
 <p>we create a MySQL table <code>jobs</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Generate and consume jobs concurrently&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
-    <span class="k">pass</span>
-
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Recreate jobs table&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">setup_tables</span><span class="p">():</span>
-<span class="n">sql_setup</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&#34;drop table if exists jobs&#34;</span><span class="p">,</span>
-    <span class="s2">&#34;&#34;&#34;create table jobs (
-</span><span class="s2">        id integer not null primary key auto_increment,
-</span><span class="s2">        d varchar(64) not null,
-</span><span class="s2">        e varchar(64) not null,
-</span><span class="s2">        status enum(&#34;unclaimed&#34;, &#34;claimed&#34;, &#34;done&#34;) not null,
-</span><span class="s2">        owner_id integer null,
-</span><span class="s2">        owner_date datetime null,
-</span><span class="s2">        index(d),
-</span><span class="s2">        index(status)
-</span><span class="s2">        )&#34;&#34;&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;commit&#34;</span><span class="p">,</span>
-    <span class="p">]</span>
-
-    <span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">sql_setup</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;setup_tables: failed </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">.&#34;</span><span class="p">)</span>
-
-
-<span class="n">sql</span><span class="p">()</span>
-</code></pre></div><p>In our table, the fields <code>d</code> and <code>e</code> represent the job payload.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Generate and consume jobs concurrently&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Recreate jobs table&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">setup_tables</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl"><span class="n">sql_setup</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;drop table if exists jobs&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34;create table jobs (
+</span></span></span><span class="line"><span class="cl"><span class="s2">        id integer not null primary key auto_increment,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        d varchar(64) not null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        e varchar(64) not null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        status enum(&#34;unclaimed&#34;, &#34;claimed&#34;, &#34;done&#34;) not null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        owner_id integer null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        owner_date datetime null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">        index(d),
+</span></span></span><span class="line"><span class="cl"><span class="s2">        index(status)
+</span></span></span><span class="line"><span class="cl"><span class="s2">        )&#34;&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;commit&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">sql_setup</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;setup_tables: failed </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql</span><span class="p">()</span>
+</span></span></code></pre></div><p>In our table, the fields <code>d</code> and <code>e</code> represent the job payload.
 We will later select jobs for processing based on the contents of the <code>d</code> field, so we create an index on that.</p>
 <p>Each job has a <code>status</code> (<code>unclaimed</code> or <code>claimed</code>, and for debugging <code>done</code> instead of being deleted), an owner and an access date which we update when we change the claim status of the job.
 As we access jobs by status, we also index on <code>status</code>.</p>
@@ -228,20 +228,20 @@ As we access jobs by status, we also index on <code>status</code>.</p>
     </a>
 </h2>
 <p>We generate a set of two generators that concurrently insert jobs into the <code>jobs</code> table, and a set of ten consumers that take jobs out of the <code>jobs</code> table.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Run job creation and consumer jobs&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">start_processing</span><span class="p">():</span>
-    <span class="n">proc_generator</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
-        <span class="n">proc_generator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-
-    <span class="n">proc_consumer</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
-        <span class="n">proc_consumer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</code></pre></div><p>From <code>multiprocessing</code>, we are using <code>Process</code> to handle this.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Run job creation and consumer jobs&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">start_processing</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">proc_generator</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">g</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proc_generator</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">g</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">proc_consumer</span> <span class="o">=</span> <span class="p">[]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">consumer</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,))</span>
+</span></span><span class="line"><span class="cl">        <span class="n">proc_consumer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span></span></code></pre></div><p>From <code>multiprocessing</code>, we are using <code>Process</code> to handle this.
 Each of these processes is getting an identification number as a parameter using the <code>args=</code> named parameter to the constructor.
 We will later use this in the <code>consumer()</code> to track the owner of a claimed job.</p>
 <h2 id="the-generators">
@@ -253,26 +253,26 @@ We will later use this in the <code>consumer()</code> to track the owner of a cl
 <p>We generate random <code>d</code> and <code>e</code> fields, and use auto-incremented numbers to identify the individual jobs.
 The new job has the status of <code>unclaimed</code> and the <code>owner_id</code> and <code>owner_date</code> are <code>NULL</code>.
 For speed, we commit to the jobs table only every tenth job.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">generator_id</span><span class="p">):</span>
-<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">step</span> <span class="o">=</span> <span class="mi">10</span>
-
-    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&#34;insert into jobs (id,d,e,status,owner_id,owner_date) values (NULL,</span><span class="si">%(d)s</span><span class="s2">,</span><span class="si">%(e)s</span><span class="s2">,&#39;unclaimed&#39;,NULL,NULL)&#34;</span>
-
-    <span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&#34;d&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">97</span> <span class="o">+</span> <span class="mi">25</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">)]),</span>
-            <span class="s2">&#34;e&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">97</span> <span class="o">+</span> <span class="mi">25</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">)]),</span>
-        <span class="p">}</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</code></pre></div><h2 id="the-consumers">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">generator_id</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl"><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl"><span class="n">step</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&#34;insert into jobs (id,d,e,status,owner_id,owner_date) values (NULL,</span><span class="si">%(d)s</span><span class="s2">,</span><span class="si">%(e)s</span><span class="s2">,&#39;unclaimed&#39;,NULL,NULL)&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;d&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">97</span> <span class="o">+</span> <span class="mi">25</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">)]),</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;e&#34;</span><span class="p">:</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">97</span> <span class="o">+</span> <span class="mi">25</span><span class="p">))</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">)]),</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span></code></pre></div><h2 id="the-consumers">
     <a href="#the-consumers">
 	The Consumers
     </a>
@@ -285,14 +285,14 @@ For simplicity, we claim rows that start with a random character, for example &l
     </a>
 </h3>
 <p>In SQL, this could be</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">UPDATE</span><span class="w"> </span><span class="n">jobs</span><span class="w"> </span><span class="k">SET</span><span class="w">
-</span><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;claimed&#39;</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">owner_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">owner_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w">
-</span><span class="w"></span><span class="k">WHERE</span><span class="w">
-</span><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;unclaimed&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w">
-</span><span class="w">  </span><span class="n">d</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;a%&#39;</span><span class="w">
-</span></code></pre></div><p>But if we did it like this, we would run into two problems:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">UPDATE</span><span class="w"> </span><span class="n">jobs</span><span class="w"> </span><span class="k">SET</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;claimed&#39;</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">owner_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">owner_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">WHERE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;unclaimed&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">d</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;a%&#39;</span><span class="w">
+</span></span></span></code></pre></div><p>But if we did it like this, we would run into two problems:</p>
 <ul>
 <li>We do not get the claimed records for processing.
 We would need to select them after claiming them (<code>SELECT id, d, e FROM jobs WHERE status = 'claimed' AND owner_id = ?</code>).</li>
@@ -345,19 +345,19 @@ We may want to count and log that, in order to detect if our concurrency in cons
     </a>
 </h4>
 <p>In code:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">find_candidates</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">wanted</span><span class="p">):</span>
-    <span class="n">candidate_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;select id from jobs where d like %(search_string)s and status = %(wanted)s limit 100&#34;</span>
-    <span class="n">search_string</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">97</span> <span class="o">+</span> <span class="mi">25</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;%&#39;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">candidate_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;search_string&#34;</span><span class="p">:</span> <span class="n">search_string</span><span class="p">,</span> <span class="s2">&#34;wanted&#34;</span><span class="p">:</span> <span class="n">wanted</span><span class="p">})</span>
-    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;find_candidates: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="n">candidate_ids</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidate_ids</span><span class="p">]</span>
-</code></pre></div><p>We are using some arbitrary SQL condition to find records.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">find_candidates</span><span class="p">(</span><span class="n">cursor</span><span class="p">,</span> <span class="n">wanted</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">candidate_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;select id from jobs where d like %(search_string)s and status = %(wanted)s limit 100&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">search_string</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="n">randint</span><span class="p">(</span><span class="mi">97</span><span class="p">,</span> <span class="mi">97</span> <span class="o">+</span> <span class="mi">25</span><span class="p">))</span> <span class="o">+</span> <span class="s1">&#39;%&#39;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">candidate_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;search_string&#34;</span><span class="p">:</span> <span class="n">search_string</span><span class="p">,</span> <span class="s2">&#34;wanted&#34;</span><span class="p">:</span> <span class="n">wanted</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;find_candidates: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">candidate_ids</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">candidate_ids</span><span class="p">]</span>
+</span></span></code></pre></div><p>We are using some arbitrary SQL condition to find records.
 In our example, we are using <code>WHERE d LIKE 'a%' AND status = 'unclaimed'</code>, for variable initial letters and for variable status values.
 We are only interested into the primary keys, so we return only these, in a <code>list</code>.</p>
 <h4 id="consuming-jobs">
@@ -366,51 +366,51 @@ We are only interested into the primary keys, so we return only these, in a <cod
     </a>
 </h4>
 <p>The actual <code>consumer()</code> then looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">consumer_id</span><span class="p">):</span>
-    <span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-
-    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="c1"># find potential records to process with the status &#39;unclaimed&#39;</span>
-        <span class="n">candidates</span> <span class="o">=</span> <span class="n">find_candidates</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&#34;unclaimed&#34;</span><span class="p">)</span>
-
-        <span class="c1"># we did not find any</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># this is important, it will drop the persistent read view.</span>
-            <span class="c1"># not doing this means we will never see newly inserted records from the generator</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-            <span class="k">continue</span>
-
-        <span class="c1"># with the list of candidate ids, we select them for update, skipping locked records</span>
-        <span class="n">lock_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;select id, d, e from jobs where status = &#39;unclaimed&#39; and id in %(candidates)s for update skip locked&#34;</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">lock_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;candidates&#34;</span><span class="p">:</span> <span class="n">candidates</span><span class="p">})</span>
-        <span class="n">claimed_records</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>  <span class="c1"># these are the records we want to claim for processing</span>
-
-        <span class="c1"># make us a list of ids of the claimed records</span>
-        <span class="n">claimed_ids</span> <span class="o">=</span> <span class="p">[</span> <span class="n">r</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">claimed_records</span><span class="p">]</span>
-        <span class="n">claimed_ids_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">claimed_ids</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">claimed_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">continue</span>
-
-        <span class="c1"># we claim the records, updating their status and owner</span>
-        <span class="n">claim_cmd</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;update jobs 
-</span><span class="s2">           set status = &#39;claimed&#39;, 
-</span><span class="s2">           owner_date = now(), 
-</span><span class="s2">           owner_id = </span><span class="si">%(consumer_id)s</span><span class="s2">
-</span><span class="s2">        where id in </span><span class="si">%(claimed_ids)s</span><span class="s2">&#34;&#34;&#34;</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">claim_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;claimed_ids&#34;</span><span class="p">:</span> <span class="n">claimed_ids</span><span class="p">,</span> <span class="s2">&#34;consumer_id&#34;</span><span class="p">:</span> <span class="n">consumer_id</span><span class="p">})</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-        <span class="c1"># doit(claimed_records) -- process the records, that takes some time</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">:</span><span class="s2"> </span><span class="si">}</span><span class="s2"> #records = </span><span class="si">{</span><span class="n">claimed_ids_count</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">claimed_ids</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-        <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
-
-        <span class="c1"># after processing we delete them</span>
-        <span class="n">done_cmd</span> <span class="o">=</span> <span class="s2">&#34;delete from jobs where id in </span><span class="si">%(claimed_ids)s</span><span class="s2">&#34;</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">done_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;claimed_ids&#34;</span><span class="p">:</span> <span class="n">claimed_ids</span><span class="p">})</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</code></pre></div><p>That is, we call <code>find_candidates()</code> to generate a list of candidate ids.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">consumer</span><span class="p">(</span><span class="n">consumer_id</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># find potential records to process with the status &#39;unclaimed&#39;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">candidates</span> <span class="o">=</span> <span class="n">find_candidates</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="s2">&#34;unclaimed&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># we did not find any</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># this is important, it will drop the persistent read view.</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># not doing this means we will never see newly inserted records from the generator</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># with the list of candidate ids, we select them for update, skipping locked records</span>
+</span></span><span class="line"><span class="cl">        <span class="n">lock_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;select id, d, e from jobs where status = &#39;unclaimed&#39; and id in %(candidates)s for update skip locked&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">lock_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;candidates&#34;</span><span class="p">:</span> <span class="n">candidates</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="n">claimed_records</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>  <span class="c1"># these are the records we want to claim for processing</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># make us a list of ids of the claimed records</span>
+</span></span><span class="line"><span class="cl">        <span class="n">claimed_ids</span> <span class="o">=</span> <span class="p">[</span> <span class="n">r</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">claimed_records</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">        <span class="n">claimed_ids_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">claimed_ids</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">claimed_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">continue</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># we claim the records, updating their status and owner</span>
+</span></span><span class="line"><span class="cl">        <span class="n">claim_cmd</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;update jobs 
+</span></span></span><span class="line"><span class="cl"><span class="s2">           set status = &#39;claimed&#39;, 
+</span></span></span><span class="line"><span class="cl"><span class="s2">           owner_date = now(), 
+</span></span></span><span class="line"><span class="cl"><span class="s2">           owner_id = </span><span class="si">%(consumer_id)s</span><span class="s2">
+</span></span></span><span class="line"><span class="cl"><span class="s2">        where id in </span><span class="si">%(claimed_ids)s</span><span class="s2">&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">claim_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;claimed_ids&#34;</span><span class="p">:</span> <span class="n">claimed_ids</span><span class="p">,</span> <span class="s2">&#34;consumer_id&#34;</span><span class="p">:</span> <span class="n">consumer_id</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># doit(claimed_records) -- process the records, that takes some time</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;consumer </span><span class="si">{</span><span class="n">consumer_id</span><span class="si">:</span><span class="s2"> </span><span class="si">}</span><span class="s2"> #records = </span><span class="si">{</span><span class="n">claimed_ids_count</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">claimed_ids</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># after processing we delete them</span>
+</span></span><span class="line"><span class="cl">        <span class="n">done_cmd</span> <span class="o">=</span> <span class="s2">&#34;delete from jobs where id in </span><span class="si">%(claimed_ids)s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">done_cmd</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;claimed_ids&#34;</span><span class="p">:</span> <span class="n">claimed_ids</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span></code></pre></div><p>That is, we call <code>find_candidates()</code> to generate a list of candidate ids.
 If we did not find any, we run a <code>db.commit()</code> before we <code>continue</code>.
 This is rather important: We are in a transaction here, and in <code>REPEATABLE READ</code> isolation that means we get a consistent read view.
 If we simply tried again, using only <code>continue</code>, we would stay in the same transaction and would never see the <code>jobs</code> table update.</p>
@@ -436,74 +436,74 @@ This may take time, which we simulate with a tiny wait.</p>
     </a>
 </h2>
 <p>Here is a short test run protocol:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py --help
-</span><span class="go">Usage: mysql-claim-jobs.py [OPTIONS] COMMAND [ARGS]...
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">Generate and consume jobs concurrently
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">Options:
-</span><span class="go">--help  Show this message and exit.
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">Commands:
-</span><span class="go">setup-tables      Recreate jobs table
-</span><span class="go">start-processing  Run job creation and consumer jobs
-</span><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py setup-tables
-</span><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py start-processing
-</span><span class="go">consumer  4 #records = 1 - [1]
-</span><span class="go">consumer  3 #records = 1 - [5]
-</span><span class="go">consumer  8 #records = 1 - [17]
-</span><span class="go">consumer  6 #records = 1 - [13]
-</span><span class="go">consumer  7 #records = 1 - [15]
-</span><span class="go">consumer  10 #records = 1 - [11]
-</span><span class="go">consumer  2 #records = 1 - [12]
-</span><span class="go">consumer  1 #records = 1 - [9]
-</span><span class="go">consumer  9 #records = 1 - [3]
-</span><span class="go">consumer  5 #records = 1 - [7]
-</span><span class="go">consumer  7 #records = 4 - [36, 59, 62, 109]
-</span><span class="go">consumer  9 #records = 5 - [44, 85, 113, 119, 127]
-</span><span class="go">consumer  8 #records = 3 - [72, 79, 126]
-</span><span class="go">consumer  5 #records = 5 - [45, 63, 80, 94, 95]
-</span><span class="go">consumer  10 #records = 1 - [51]
-</span><span class="go">consumer  3 #records = 7 - [2, 14, 22, 53, 68, 120, 140]
-</span><span class="go">consumer  1 #records = 4 - [23, 97, 115, 122]
-</span><span class="go">consumer  2 #records = 6 - [4, 47, 65, 99, 103, 105]
-</span><span class="go">consumer  6 #records = 6 - [26, 32, 43, 77, 83, 86]
-</span><span class="go">consumer  4 #records = 3 - [48, 84, 130]
-</span><span class="go">...
-</span><span class="go">consumer  9 #records = 1 - [12413]
-</span><span class="go">consumer  3 #records = 2 - [12407, 12445]
-</span><span class="go">consumer  7 #records = 2 - [12450, 12459]
-</span><span class="go">consumer  5 #records = 2 - [12446, 12470]
-</span><span class="go">consumer  1 #records = 3 - [12397, 12426, 12441]
-</span><span class="go">consumer  8 #records = 1 - [12458]
-</span><span class="go">consumer  2 #records = 15 - [12282, 12313, 12327, 12350, 12365, 12369, 12385, 12399, 12401,\
-</span><span class="go">  12425, 12435, 12443, 12452, 12453, 12462]
-</span><span class="go">consumer  4 #records = 3 - [12421, 12440, 12466]
-</span><span class="go">^S
-</span><span class="go">consumer  1 #records = 1 - [12515]
-</span><span class="go">counter = 6000                                                                                      
-</span><span class="go">counter = 6000                                                                                      
-</span><span class="go">consumer  5 #records = 30 - [12525, 12532, 12575, 12592, 12673, 12676, 12680, 12714, 12719, 
-</span><span class="go">  12732, 12771, 12804, 12882, 12961, 12977, 13010, 13024, 13060, 13068, 13156, 13204, 13214, 
-</span><span class="go">  13249, 13279, 13280, 13284, 13299, 13307, 13358, 13396]
-</span><span class="go">consumer  10 #records = 31 - [12516, 12531, 12537, 12541, 12623, 12630, 12638, 12742, 12777,
-</span><span class="go">  12791, 12792, 12800, 12810, 12819, 12821, 12981, 12990, 13117, 13119, 13131, 13138, 13161, 
-</span><span class="go">  13180, 13192, 13202, 13259, 13283, 13352, 13367, 13383, 13414]          
-</span></code></pre></div><p>We can see how each consumer grabs a variable number of jobs for processing, sometimes single jobs, sometimes many more.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py --help
+</span></span></span><span class="line"><span class="cl"><span class="go">Usage: mysql-claim-jobs.py [OPTIONS] COMMAND [ARGS]...
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Generate and consume jobs concurrently
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Options:
+</span></span></span><span class="line"><span class="cl"><span class="go">--help  Show this message and exit.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Commands:
+</span></span></span><span class="line"><span class="cl"><span class="go">setup-tables      Recreate jobs table
+</span></span></span><span class="line"><span class="cl"><span class="go">start-processing  Run job creation and consumer jobs
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py setup-tables
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py start-processing
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  4 #records = 1 - [1]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  3 #records = 1 - [5]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  8 #records = 1 - [17]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  6 #records = 1 - [13]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  7 #records = 1 - [15]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  10 #records = 1 - [11]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  2 #records = 1 - [12]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  1 #records = 1 - [9]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  9 #records = 1 - [3]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  5 #records = 1 - [7]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  7 #records = 4 - [36, 59, 62, 109]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  9 #records = 5 - [44, 85, 113, 119, 127]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  8 #records = 3 - [72, 79, 126]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  5 #records = 5 - [45, 63, 80, 94, 95]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  10 #records = 1 - [51]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  3 #records = 7 - [2, 14, 22, 53, 68, 120, 140]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  1 #records = 4 - [23, 97, 115, 122]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  2 #records = 6 - [4, 47, 65, 99, 103, 105]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  6 #records = 6 - [26, 32, 43, 77, 83, 86]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  4 #records = 3 - [48, 84, 130]
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  9 #records = 1 - [12413]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  3 #records = 2 - [12407, 12445]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  7 #records = 2 - [12450, 12459]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  5 #records = 2 - [12446, 12470]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  1 #records = 3 - [12397, 12426, 12441]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  8 #records = 1 - [12458]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  2 #records = 15 - [12282, 12313, 12327, 12350, 12365, 12369, 12385, 12399, 12401,\
+</span></span></span><span class="line"><span class="cl"><span class="go">  12425, 12435, 12443, 12452, 12453, 12462]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  4 #records = 3 - [12421, 12440, 12466]
+</span></span></span><span class="line"><span class="cl"><span class="go">^S
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  1 #records = 1 - [12515]
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 6000                                                                                      
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 6000                                                                                      
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  5 #records = 30 - [12525, 12532, 12575, 12592, 12673, 12676, 12680, 12714, 12719, 
+</span></span></span><span class="line"><span class="cl"><span class="go">  12732, 12771, 12804, 12882, 12961, 12977, 13010, 13024, 13060, 13068, 13156, 13204, 13214, 
+</span></span></span><span class="line"><span class="cl"><span class="go">  13249, 13279, 13280, 13284, 13299, 13307, 13358, 13396]
+</span></span></span><span class="line"><span class="cl"><span class="go">consumer  10 #records = 31 - [12516, 12531, 12537, 12541, 12623, 12630, 12638, 12742, 12777,
+</span></span></span><span class="line"><span class="cl"><span class="go">  12791, 12792, 12800, 12810, 12819, 12821, 12981, 12990, 13117, 13119, 13131, 13138, 13161, 
+</span></span></span><span class="line"><span class="cl"><span class="go">  13180, 13192, 13202, 13259, 13283, 13352, 13367, 13383, 13414]          
+</span></span></span></code></pre></div><p>We can see how each consumer grabs a variable number of jobs for processing, sometimes single jobs, sometimes many more.
 If we let the thing run for some time, we see that the ids increment.
 When we stop the output with Ctrl-S, we also block the consumers.
 On resume, very many jobs are lingering in the queue, and initially the consumers claim a large list of ids on each grab.
 This quickly goes back to normal levels after the number of jobs in the queue goes down to normal levels, too.</p>
 <p>We can check queue length and status in the database:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">kris</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kris</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">jobs</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w">
-</span><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
-</span><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">status</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
-</span><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">unclaimed</span><span class="w"> </span><span class="o">|</span><span class="w">            </span><span class="mi">47</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">claimed</span><span class="w">   </span><span class="o">|</span><span class="w">            </span><span class="mi">23</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
-</span><span class="c1"></span><span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
-</span></code></pre></div><h2 id="summary">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">kris</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kris</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">jobs</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">status</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">unclaimed</span><span class="w"> </span><span class="o">|</span><span class="w">            </span><span class="mi">47</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">claimed</span><span class="w">   </span><span class="o">|</span><span class="w">            </span><span class="mi">23</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><h2 id="summary">
     <a href="#summary">
 	Summary
     </a>
@@ -511,7 +511,7 @@ This quickly goes back to normal levels after the number of jobs in the queue go
 <p>We created a job queue in the database, using a concurrent Python program.
 To select jobs efficiently, we reduce an arbitrary query to a set of candidate primary keys.
 We then use a <code>SELECT ... FROM jobs WHERE id IN ( ... ) FOR UPDATE SKIP LOCKED</code> to create a set of X-locks on the candidate records using <code>FOR UPDATE</code>.
-At the same time, we avoid waiting on other threads' X-locks using the <code>SKIP LOCKED</code> functionality new in MySQL 8.
+At the same time, we avoid waiting on other threads&rsquo; X-locks using the <code>SKIP LOCKED</code> functionality new in MySQL 8.
 We then use the data fetched by the <code>SELECT FOR UPDATE</code> to commit permanent ownership for these records, and also use this data for processing.
 After processing we clean up by deleting the jobs from the table.</p>
 <p>The approach can be scaled further by partitioning the <code>jobs</code> table, if needed.</p>

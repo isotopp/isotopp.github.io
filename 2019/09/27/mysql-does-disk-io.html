@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL Does Disk I/O' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -163,33 +163,33 @@ is likely not going to help you without additional measures.</p>
 <p>In order to better show what is going on, I ran an idle instance
 with <code>innodb_use_native_aio = false</code> for easier tracing, and
 here is is the trace:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lsof -p <span class="m">29169</span>
-<span class="go">…
-</span><span class="go">mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
-</span><span class="go">mysqld  29169 mysql    4uW  REG              253,0 864026624    178570 /var/lib/mysql/kris/t.ibd
-</span><span class="go">…
-</span><span class="go">mysqld  29169 mysql    9uW  REG              253,0 536870912  68238220 /var/lib/mysql/ib_logfile1
-</span><span class="go">mysqld  29169 mysql   10uW  REG              253,0 415236096  68239130 /var/lib/mysql/ibdata1
-</span><span class="go">mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/mysql/ibtmp1
-</span><span class="go">…
-</span></code></pre></div><p>We are using a database <code>kris</code> with a test table <code>t</code>. The file
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lsof -p <span class="m">29169</span>
+</span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    4uW  REG              253,0 864026624    178570 /var/lib/mysql/kris/t.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    9uW  REG              253,0 536870912  68238220 /var/lib/mysql/ib_logfile1
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql   10uW  REG              253,0 415236096  68239130 /var/lib/mysql/ibdata1
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/mysql/ibtmp1
+</span></span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span></code></pre></div><p>We are using a database <code>kris</code> with a test table <code>t</code>. The file
 handles that are relevant for observation are 4 for the ibd
 file, 3 and 9 for the logfiles and 10 for the ibdata1, which
 would also be the location of the doublewrite buffer.</p>
 <p>I am running an <code>insert into t values (NULL, RANDOM_BYTES(255))</code>
 into my test table (which has an <code>id serial</code> and a <code>d varchar(255)</code>).</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29441] recvfrom(39, &#34;\3insert into t values(NULL, rand&#34;..., 46, MSG_DONTWAIT, NULL, NULL) = 46
-</span></code></pre></div><p>This is the SQL command coming in over the socket. And we fetch some
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] recvfrom(39, &#34;\3insert into t values(NULL, rand&#34;..., 46, MSG_DONTWAIT, NULL, NULL) = 46
+</span></span></span></code></pre></div><p>This is the SQL command coming in over the socket. And we fetch some
 randomness:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29441] openat(AT_FDCWD, &#34;/dev/urandom&#34;, O_RDONLY) = 42
-</span><span class="go">[pid 29441] read(42, &#34;\207H\241\254O\317\10\fk\3447\201\277\267\223,Oi\202\272\222\16(\210\333\300&#39;&amp;\302g!&amp;&#34;, 32) = 32
-</span><span class="go">[pid 29441] close(42)                   = 0
-</span></code></pre></div><p>Some action on the metadata, then a log write from the implied
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] openat(AT_FDCWD, &#34;/dev/urandom&#34;, O_RDONLY) = 42
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] read(42, &#34;\207H\241\254O\317\10\fk\3447\201\277\267\223,Oi\202\272\222\16(\210\333\300&#39;&amp;\302g!&amp;&#34;, 32) = 32
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] close(42)                   = 0
+</span></span></span></code></pre></div><p>Some action on the metadata, then a log write from the implied
 commit:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29441] pread64(10, &#34;H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
-</span><span class="go">[pid 29441] pwrite64(3, &#34;\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267&gt;\0\0\r./k&#34;..., 1024, 34426368) = 1024
-</span><span class="go">[pid 29441] fsync(3)                    = 0
-</span></code></pre></div><p>This is the only <code>fsync</code> that contributed to commit-Latency. The write is
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] pread64(10, &#34;H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] pwrite64(3, &#34;\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267&gt;\0\0\r./k&#34;..., 1024, 34426368) = 1024
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] fsync(3)                    = 0
+</span></span></span></code></pre></div><p>This is the only <code>fsync</code> that contributed to commit-Latency. The write is
 now persisted to disk, and can be reconstructed using the unmodified page
 from the tablespace and the change information from the redo-log during
 recovery.</p>
@@ -207,17 +207,17 @@ single sync operation, so we do see a far better page/sync and MB/sync ratio
 then in this test setup.</p>
 <p>Anyway, this is what checkpointing to the the doublewrite buffer, at offset
 1M in the ibdata looks like:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29181] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 32768, 1048576) = 32768
-</span><span class="go">[pid 29181] fsync(10)                   = 0
-</span></code></pre></div><p>Metadata update and write to table:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29179] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
-</span><span class="go">[pid 29179] pwrite64(4, &#34;.KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&amp;\211\216E\277\0\0\0\0\0\0&#34;..., 16384, 421871616) = 16384
-</span><span class="go">[pid 29179] fsync(4)                    = 0
-</span><span class="go">[pid 29179] fsync(10)                   = 0
-</span></code></pre></div><p>And the log entry is done:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29187] pwrite64(3, &#34;\200\201\23E\1\271\0&amp;\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0*\201\20\2\0\201&#34;..., 512, 34426880) = 512
-</span><span class="go">[pid 29187] fsync(3)                    = 0
-</span></code></pre></div><h3 id="why-does-mysql-do-this">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29181] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 32768, 1048576) = 32768
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29181] fsync(10)                   = 0
+</span></span></span></code></pre></div><p>Metadata update and write to table:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29179] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] pwrite64(4, &#34;.KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&amp;\211\216E\277\0\0\0\0\0\0&#34;..., 16384, 421871616) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] fsync(4)                    = 0
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] fsync(10)                   = 0
+</span></span></span></code></pre></div><p>And the log entry is done:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29187] pwrite64(3, &#34;\200\201\23E\1\271\0&amp;\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0*\201\20\2\0\201&#34;..., 512, 34426880) = 512
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29187] fsync(3)                    = 0
+</span></span></span></code></pre></div><h3 id="why-does-mysql-do-this">
     <a href="#why-does-mysql-do-this">
 	Why does MySQL do this?
     </a>

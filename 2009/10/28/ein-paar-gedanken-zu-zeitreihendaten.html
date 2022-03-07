@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Ein paar Gedanken zu Zeitreihendaten' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -168,13 +168,13 @@ MEM-Team bastelt das grad um).</p>
 <p>Beiden ist gemein, daß man Zeitreihendaten von mehreren Meßwerten sammeln
 möchte. Der naive Ansatz ist die Definition einer Tabelle mit einem
 Timestamp und dem Key als Primärschlüssel, etwa</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="k">key</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="n">charset</span><span class="w"> </span><span class="n">latin1</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">value</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="k">key</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="p">);</span><span class="w">
-</span></code></pre></div><h2 id="schlüsselkompression">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">key</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="n">charset</span><span class="w"> </span><span class="n">latin1</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">value</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="k">key</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><h2 id="schlüsselkompression">
     <a href="#schl%c3%bcsselkompression">
 	Schlüsselkompression
     </a>
@@ -184,19 +184,19 @@ kommen - speichert man etwa die Ausgabe von SHOW GLOBAL STATUS im
 Minutenabstand, dann hat man wieder und wieder die langen Namen von MySQL
 Statusvariablen in der Tabelle gespeichert. Das kann man wegnormalisieren,
 indem man definiert</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span><span class="w">  </span><span class="n">key_id</span><span class="w"> </span><span class="nb">smallint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">key_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="n">charset</span><span class="w"> </span><span class="n">latin1</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">key_id</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="p">);</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">key_id</span><span class="w"> </span><span class="nb">smallint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">value</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">key_id</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="p">);</span><span class="w">
-</span></code></pre></div><p>Auf diese Weise speichert man nicht wieder und wieder dieselben Strings in
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">keys</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">key_id</span><span class="w"> </span><span class="nb">smallint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">key_name</span><span class="w"> </span><span class="nb">varchar</span><span class="p">(</span><span class="mi">40</span><span class="p">)</span><span class="w"> </span><span class="n">charset</span><span class="w"> </span><span class="n">latin1</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">key_id</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">key_id</span><span class="w"> </span><span class="nb">smallint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">value</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">key_id</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span></code></pre></div><p>Auf diese Weise speichert man nicht wieder und wieder dieselben Strings in
 der Tabelle ab, sondern hat die relativ langen Strings auf die 2 Byte eines
 SMALLINT ohne Vorzeichen reduziert.</p>
 <p><p class="md__image">
@@ -243,15 +243,15 @@ damit die Platten nicht überlaufen.</p>
 oder dasselbe manuell zu simulieren. Dazu baut man sich eine
 Template-Tabelle, die man dann in bestimmten Intervallen cloned: Pro Stunde,
 Tag, Woche oder Monat wird eine neue Tabelle angefangen.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte_template</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">key_id</span><span class="w"> </span><span class="nb">smallint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="n">value</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">key_id</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="p">);</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte_20091028</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="n">messwerte_template</span><span class="p">;</span><span class="w"> </span><span class="c1">-- usw.
-</span></code></pre></div><p>Das hat den Vorteil, daß man alte Werte nun nicht mit einem &ldquo;DELETE FROM
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte_template</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">ts</span><span class="w"> </span><span class="n">datetime</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">key_id</span><span class="w"> </span><span class="nb">smallint</span><span class="w"> </span><span class="n">unsigned</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="k">null</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">value</span><span class="w"> </span><span class="nb">integer</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="p">(</span><span class="n">ts</span><span class="p">,</span><span class="w"> </span><span class="n">key_id</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">messwerte_20091028</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="n">messwerte_template</span><span class="p">;</span><span class="w"> </span><span class="c1">-- usw.
+</span></span></span></code></pre></div><p>Das hat den Vorteil, daß man alte Werte nun nicht mit einem &ldquo;DELETE FROM
 messwerte WHERE ts &lt; &lsquo;20090928 00:00:00&rsquo;&rdquo; loswerden muß, sondern elegant
 &ldquo;DROP TABLE messwerte_20090928&rdquo; sagen darf. Dafür muß man - so man nicht
 Partitionen verwendet - bei den Queries ein wenig mehr arbeiten, weil man

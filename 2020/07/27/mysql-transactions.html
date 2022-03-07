@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL Transactions - the physical side' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -149,15 +149,15 @@
       <div class='col-lg-8'>
         <p>So you talk to a database, doing transactions. What happens actually, behind the scenes? Let’s have a look.</p>
 <p>There is a test table, and we write data into it inside a transaction:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w">
-</span><span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="p">,</span><span class="w">
-</span><span class="w">  </span><span class="k">data</span><span class="w"> </span><span class="n">varbinary</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w">
-</span><span class="w"></span><span class="p">)</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">WRITE</span><span class="w">
-</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">RANDOM_BYTES</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w">
-</span><span class="w"></span><span class="k">COMMIT</span><span class="w">
-</span></code></pre></div><p>The MySQL test instance we are talking to is running on a Linux machine, and otherwise idle to make observation easier. Also, we configured it with <code>innodb_use_native_aio = false</code> because observing actual physical asynchronous I/O and attributing it to the statement that caused it is really hard.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">id</span><span class="w"> </span><span class="nb">serial</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">data</span><span class="w"> </span><span class="n">varbinary</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">WRITE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">RANDOM_BYTES</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">COMMIT</span><span class="w">
+</span></span></span></code></pre></div><p>The MySQL test instance we are talking to is running on a Linux machine, and otherwise idle to make observation easier. Also, we configured it with <code>innodb_use_native_aio = false</code> because observing actual physical asynchronous I/O and attributing it to the statement that caused it is really hard.</p>
 <p>Setting things up this way, we can use lsof and strace to see things. But before we do this, let’s set some expectations and establish some background knowledge.</p>
 <h2 id="the-logdata-memorystorage-quadrants">
     <a href="#the-logdata-memorystorage-quadrants">
@@ -203,8 +203,8 @@
     </a>
 </h2>
 <p>The next statement then can write data to the database:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">RANDOM_BYTES</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w">
-</span></code></pre></div><p>is such a statement. It writes a <code>NULL</code> to an <code>auto_increment</code> field to get a new counter value, and then generates 255 random bytes of data to be written.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">RANDOM_BYTES</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w">
+</span></span></span></code></pre></div><p>is such a statement. It writes a <code>NULL</code> to an <code>auto_increment</code> field to get a new counter value, and then generates 255 random bytes of data to be written.</p>
 <p>The transaction is being built up in memory, in the top left quadrant: A log buffer is being allocated and filled with data, step by step, until the log buffer overflows or the transaction commits.</p>
 <p>A second thing happens simultaneously: The data being “overwritten” needs to be saved in order to have it around for rollback - this is more true of an <code>UPDATE</code> or <code>DELETE</code> than an <code>INSERT</code> statement, though.</p>
 <p>So the data page where this record is located is loaded from a data file (lower right quadrant) into memory (lower left quadrant), into the InnoDB Buffer Pool. That is an userspace data cache owned by the database process. It is the primary reason for the database process using a lot of memory.</p>
@@ -216,8 +216,8 @@
     </a>
 </h2>
 <p>Finally, we finish the transaction and tell the database this using</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">COMMIT</span><span class="w">
-</span></code></pre></div><p>On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged database from the table space. The Undo-Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">COMMIT</span><span class="w">
+</span></span></span></code></pre></div><p>On commit, the log buffer is being written to disk, as a kind of binary diff to the original unchanged database from the table space. The Undo-Log space could be freed at this point, from the point of view of this transaction, because once committed, it can no longer be changed except by a second transaction.</p>
 <p>There are other connections, and other transactions in the system that could still make use of this data, and they can prevent the Undo-Log entry from being purged. More about that another time, when we look at transactions from a logical point of view and talk about isolation levels.</p>
 <p>When we write the Log Buffer out, we write it to the Redo-Log. The Redo-Log is an on-disk structure, usually taking the form of two files. They are the very first thing a MySQL install creates, so if you install MySQL with the data directory being a new and empty disk, the first two files being created are the two ib_logfile* structures. This ensures they are fixed size, immovable ring buffers that are physically not fragmented. They are linear blocks on disk. Writes to the Redo-Log are fast, sequential writes, even on rotating hard disks.</p>
 <p>After that, we are done - the transaction is committed to stable storage and can no longer be lost. The application can move on.</p>
@@ -251,27 +251,27 @@
     </a>
 </h2>
 <p>Let’s have a quiet instance of a local MySQL with AIO off, as described above, and check the file handles for a later strace:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lsof -p <span class="m">29169</span>
-<span class="go">…
-</span><span class="go">mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
-</span><span class="go">mysqld  29169 mysql    4uW  REG              253,0 864026624    178570 /var/lib/mysql/kris/t.ibd
-</span><span class="go">…
-</span><span class="go">mysqld  29169 mysql    9uW  REG              253,0 536870912  68238220 /var/lib/mysql/ib_logfile1
-</span><span class="go">mysqld  29169 mysql   10uW  REG              253,0 415236096  68239130 /var/lib/mysql/ibdata1
-</span><span class="go">mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/mysql/ibtmp1
-</span><span class="go">…
-</span></code></pre></div><p>We are using a database <code>kris</code> with a test table <code>t</code>. The file handles that are relevant for observation are 4 for the ibd file, 3 and 9 for the logfiles and 10 for the ibdata1, which would also be the location of the Double Write Buffer.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lsof -p <span class="m">29169</span>
+</span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    3uW  REG              253,0 536870912  68238213 /var/lib/mysql/ib_logfile0
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    4uW  REG              253,0 864026624    178570 /var/lib/mysql/kris/t.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql    9uW  REG              253,0 536870912  68238220 /var/lib/mysql/ib_logfile1
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql   10uW  REG              253,0 415236096  68239130 /var/lib/mysql/ibdata1
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqld  29169 mysql   11uW  REG              253,0  12582912  68238214 /var/lib/mysql/ibtmp1
+</span></span></span><span class="line"><span class="cl"><span class="go">…
+</span></span></span></code></pre></div><p>We are using a database <code>kris</code> with a test table <code>t</code>. The file handles that are relevant for observation are 4 for the ibd file, 3 and 9 for the logfiles and 10 for the ibdata1, which would also be the location of the Double Write Buffer.</p>
 <p>We can see the command coming in:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29441] recvfrom(39, &#34;\3insert into t values(NULL, rand&#34;..., 46, MSG_DONTWAIT, NULL, NULL) = 46
-</span></code></pre></div><p>The database now requires some randomness:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29441] openat(AT_FDCWD, &#34;/dev/urandom&#34;, O_RDONLY) = 42
-</span><span class="go">[pid 29441] read(42, &#34;\207H\241\254O\317\10\fk\3447\201\277\267\223,Oi\202\272\222\16(\210\333\300&#39;&amp;\302g!&amp;&#34;, 32) = 32
-</span><span class="go">[pid 29441] close(42)                   = 0
-</span></code></pre></div><p>We observe some action on the table metadata and then the log write from the commit:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29441] pread64(10, &#34;H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
-</span><span class="go">[pid 29441] pwrite64(3, &#34;\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267&gt;\0\0\r./k&#34;..., 1024, 34426368) = 1024
-</span><span class="go">[pid 29441] fsync(3)                    = 0
-</span></code></pre></div><p>This is the only <code>fsync</code> that contributed to commit-Latency. The changed data is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo-log during recovery.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] recvfrom(39, &#34;\3insert into t values(NULL, rand&#34;..., 46, MSG_DONTWAIT, NULL, NULL) = 46
+</span></span></span></code></pre></div><p>The database now requires some randomness:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] openat(AT_FDCWD, &#34;/dev/urandom&#34;, O_RDONLY) = 42
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] read(42, &#34;\207H\241\254O\317\10\fk\3447\201\277\267\223,Oi\202\272\222\16(\210\333\300&#39;&amp;\302g!&amp;&#34;, 32) = 32
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] close(42)                   = 0
+</span></span></span></code></pre></div><p>We observe some action on the table metadata and then the log write from the commit:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29441] pread64(10, &#34;H\252\364\35\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\0\0,\346\365\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] pwrite64(3, &#34;\200\201\23D\2\0\0\30\0\0\38bd\08\0\0\0\1\0!\257\23\267&gt;\0\0\r./k&#34;..., 1024, 34426368) = 1024
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29441] fsync(3)                    = 0
+</span></span></span></code></pre></div><p>This is the only <code>fsync</code> that contributed to commit-Latency. The changed data is now persisted to disk, and can be reconstructed using the unmodified page from the tablespace and the change information from the redo-log during recovery.</p>
 <p>The modified page is still in memory, though, and in order to reclaim redo-log space, needs to be eventually written back in a Checkpoint.</p>
 <p>This happens later, and with many more <code>fsync</code> operations. It does happen in batch, for many commits and multiple pages, normally, but in our easily traceable test setup, it’s looking like a lot of overhead.</p>
 <p>During normal operations, a page is often modified in multiple commits over a short amount of time.
@@ -280,17 +280,17 @@ But in the Buffer Pool, on the file side of things, all these changes are being 
 In fact, while there could be thousands of changes to in-memory pages per second, given a liberal amount of memory checkpoints can be spaced minutes apart.</p>
 <p>Also, during checkpointing, one Double Write Buffer worth of pages gets written out in a single sync operation, so we do see a far better page/sync and MB/sync ratio than in this test setup.</p>
 <p>Anyway, this is what checkpointing to the Double Write Buffer, at offset 1M in the ibdata looks like:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29181] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 32768, 1048576) = 32768
-</span><span class="go">[pid 29181] fsync(10)                   = 0
-</span></code></pre></div><p>And there follows again an update of the metadata, and the write back to the actual tablespace:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29179] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
-</span><span class="go">[pid 29179] pwrite64(4, &#34;.KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&amp;\211\216E\277\0\0\0\0\0\0&#34;..., 16384, 421871616) = 16384
-</span><span class="go">[pid 29179] fsync(4)                    = 0
-</span><span class="go">[pid 29179] fsync(10)                   = 0
-</span></code></pre></div><p>After this, the Redo-Log is no longer needed, and we can take note of this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[pid 29187] pwrite64(3, &#34;\200\201\23E\1\271\0&amp;\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0\*\201\20\2\0\201&#34;..., 512, 34426880) = 512
-</span><span class="go">[pid 29187] fsync(3)                    = 0
-</span></code></pre></div><h2 id="writing-really-a-lot-of-data">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29181] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 32768, 1048576) = 32768
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29181] fsync(10)                   = 0
+</span></span></span></code></pre></div><p>And there follows again an update of the metadata, and the write back to the actual tablespace:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29179] pwrite64(10, &#34;\234\v\217Y\0\0\1\255\0\0\0\0\0\0\0\0\0\0\0\1\2&amp;\211\225\0\2\0\0\0\0\0\0&#34;..., 16384, 7028736) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] pwrite64(4, &#34;.KT\0\0\0d\225\0\0d\224\377\377\377\377\0\0\0\1\2&amp;\211\216E\277\0\0\0\0\0\0&#34;..., 16384, 421871616) = 16384
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] fsync(4)                    = 0
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29179] fsync(10)                   = 0
+</span></span></span></code></pre></div><p>After this, the Redo-Log is no longer needed, and we can take note of this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[pid 29187] pwrite64(3, &#34;\200\201\23E\1\271\0&amp;\0\0\39\22\2\0\201\255\0(\201\20\2\0\201\255\0\*\201\20\2\0\201&#34;..., 512, 34426880) = 512
+</span></span></span><span class="line"><span class="cl"><span class="go">[pid 29187] fsync(3)                    = 0
+</span></span></span></code></pre></div><h2 id="writing-really-a-lot-of-data">
     <a href="#writing-really-a-lot-of-data">
 	Writing really a lot of data
     </a>
@@ -325,10 +325,10 @@ In the past that was hideously slow, these days it is just slow.</p>
 <p>Until you commit, you could roll back. That means the previous version of the row is being held in the Undo-Log. In fact, Undo-Log purge is a simplistic single threaded thing, so what happens in reality is that the system looks at all active transactions in the system and determines the oldest transaction number in the system that is still active.</p>
 <p>It then deletes all Undo-Log even older than this, but no more.</p>
 <p>So if you</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">WRITE</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">RANDOM_BYTES</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w">
-</span></code></pre></div><p>and then go to lunch, purging of the Undo-Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">START</span><span class="w"> </span><span class="k">TRANSACTION</span><span class="w"> </span><span class="k">READ</span><span class="w"> </span><span class="k">WRITE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="p">(</span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">data</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="k">NULL</span><span class="p">,</span><span class="w"> </span><span class="n">RANDOM_BYTES</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span><span class="w">
+</span></span></span></code></pre></div><p>and then go to lunch, purging of the Undo-Log stops until this transaction vanishes by ROLLBACK (or disconnect or timeout) or COMMIT. The database will slow down a lot until it becomes barely usable.</p>
 <p><p class="md__image">
   <img src="/uploads/2020/07/transactions-undo-log.png" alt=""  />
 </p>

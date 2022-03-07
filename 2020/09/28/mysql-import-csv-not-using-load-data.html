@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL: Import CSV, not using LOAD DATA' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -205,66 +205,66 @@
 .</p>
 <p>The main idea is to open a <code>.csv</code> file with <code>csv.reader</code>, and then iterate over the rows. For each row, we execute an <code>INSERT</code> statement, and every few rows we also <code>COMMIT</code>.</p>
 <p>In terms of dependencies, we rely on <code>MySQLdb</code> and <code>csv</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="kn">import</span> <span class="nn">MySQLdb</span>
-<span class="kn">import</span> <span class="nn">csv</span>
-</code></pre></div><p>We need to know the name of a table, and the column names of that table (in the order in which they appear).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">csv</span>
+</span></span></code></pre></div><p>We need to know the name of a table, and the column names of that table (in the order in which they appear).</p>
 <p>We should also make sure we can change the delimiter and quoting character used by the CSV, and make the commit interval variable.</p>
 <p>Finally, we need to be able to connect to the database.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="c1"># table to load into</span>
-<span class="n">table</span> <span class="o">=</span> <span class="s2">&#34;data&#34;</span>
-
-<span class="c1"># column names to load into</span>
-<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&#34;id&#34;</span><span class="p">,</span>
-    <span class="s2">&#34;d&#34;</span><span class="p">,</span>
-    <span class="s2">&#34;e&#34;</span><span class="p">,</span>
-<span class="p">]</span>
-
-<span class="c1"># formatting options</span>
-<span class="n">delimiter</span> <span class="o">=</span> <span class="s2">&#34;,&#34;</span>
-<span class="n">quotechar</span> <span class="o">=</span> <span class="s1">&#39;&#34;&#39;</span>
-
-<span class="c1"># commit every commit_interval lines</span>
-<span class="n">commit_interval</span> <span class="o">=</span> <span class="mi">1000</span>
-
-<span class="c1"># connect to database, set mysql_use_results mode for streaming</span>
-<span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-<span class="p">)</span>
-</code></pre></div><p>From this, we can build a database connection and an <code>INSERT</code> statement, using the table name and column names:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-
-<span class="c1"># build a proper insert command</span>
-<span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;insert into </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2"> ( &#34;</span>
-<span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;, &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
-<span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;) values (&#34;</span>
-<span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;</span><span class="si">%s</span><span class="s2">,&#34;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
-<span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;)&#34;</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;cmd = </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-</code></pre></div><p>The actual code is then rather simple: Open the CSV file, named after the table, and create a <code>csv.reader()</code>. Using this, we iterate over the rows.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="c1"># table to load into</span>
+</span></span><span class="line"><span class="cl"><span class="n">table</span> <span class="o">=</span> <span class="s2">&#34;data&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># column names to load into</span>
+</span></span><span class="line"><span class="cl"><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;id&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;d&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;e&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># formatting options</span>
+</span></span><span class="line"><span class="cl"><span class="n">delimiter</span> <span class="o">=</span> <span class="s2">&#34;,&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">quotechar</span> <span class="o">=</span> <span class="s1">&#39;&#34;&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># commit every commit_interval lines</span>
+</span></span><span class="line"><span class="cl"><span class="n">commit_interval</span> <span class="o">=</span> <span class="mi">1000</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># connect to database, set mysql_use_results mode for streaming</span>
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span></code></pre></div><p>From this, we can build a database connection and an <code>INSERT</code> statement, using the table name and column names:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># build a proper insert command</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&#34;insert into </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2"> ( &#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;, &#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;) values (&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&#34;</span><span class="si">%s</span><span class="s2">,&#34;</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">cmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&#34;)&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;cmd = </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The actual code is then rather simple: Open the CSV file, named after the table, and create a <code>csv.reader()</code>. Using this, we iterate over the rows.</p>
 <p>For each row, we execute the insert statement.</p>
 <p>Every <code>commit_interval</code> rows we commit, and for good measure we also commit after finishing, to make sure any remaining rows also get written out.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.csv&#34;</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
-    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
-
-    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="c1"># insert the rows as we read them</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
-
-        <span class="c1"># ever commit_interval we issue a commit</span>
-        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="o">%</span> <span class="n">commit_interval</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-    <span class="c1"># final commit to the remainder</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</code></pre></div><p>And that it. That&rsquo;s all the code.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.csv&#34;</span><span class="p">,</span> <span class="s2">&#34;r&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">reader</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csvfile</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">quotechar</span><span class="o">=</span><span class="n">quotechar</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># insert the rows as we read them</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">reader</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span> <span class="n">row</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># ever commit_interval we issue a commit</span>
+</span></span><span class="line"><span class="cl">        <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="o">%</span> <span class="n">commit_interval</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="c1"># final commit to the remainder</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span></code></pre></div><p>And that it. That&rsquo;s all the code.</p>
 <ul>
 <li>No <code>FILE</code> privilege,</li>
 <li>No special permissions besides <code>insert_priv</code> into the target table.</li>
@@ -275,50 +275,50 @@
 <p>In any case - this is simpler, more secure and less privileged than any of the broken <code>LOAD DATA</code> variants.</p>
 <p>Don&rsquo;t use them, write a loader program.</p>
 <p>Let&rsquo;s run it. First we generate some data, using the previous example from the partitions tutorial:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py setup-tables
-</span><span class="go">(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py start-processing
-</span><span class="go">create p2 reason: not enough partitions
-</span><span class="go">cmd = alter table data add partition ( partition p2 values less than ( 20000))
-</span><span class="go">create p3 reason: not enough partitions
-</span><span class="go">cmd = alter table data add partition ( partition p3 values less than ( 30000))
-</span><span class="go">create p4 reason: not enough partitions
-</span><span class="go">cmd = alter table data add partition ( partition p4 values less than ( 40000))
-</span><span class="go">create p5 reason: not enough partitions
-</span><span class="go">cmd = alter table data add partition ( partition p5 values less than ( 50000))
-</span><span class="go">create p6 reason: not enough empty partitions
-</span><span class="go">cmd = alter table data add partition ( partition p6 values less than ( 60000))
-</span><span class="go">counter = 1000
-</span><span class="go">counter = 2000
-</span><span class="go">counter = 3000
-</span><span class="go">counter = 4000
-</span><span class="go">^CError in atexit._run_exitfuncs:               
-</span><span class="go">...
-</span></code></pre></div><p>We then dump the data, truncate the table, and reload the data. We count the rows to be sure we get all of them back.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-csv/dump.py
-</span><span class="go">table = data
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;select count(*) from data&#39;
-</span><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
-</span><span class="go">+----------+
-</span><span class="go">| count(*) |
-</span><span class="go">+----------+
-</span><span class="go">|     4511 |
-</span><span class="go">+----------+
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;truncate table data&#39;
-</span><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql-csv/load.py
-</span><span class="go">cmd = insert into data ( id, d, e) values (%s,%s,%s)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;select count(*) from data&#39;
-</span><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
-</span><span class="go">+----------+
-</span><span class="go">| count(*) |
-</span><span class="go">+----------+
-</span><span class="go">|     4511 |
-</span><span class="go">+----------+
-</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py setup-tables
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py start-processing
+</span></span></span><span class="line"><span class="cl"><span class="go">create p2 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p2 values less than ( 20000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p3 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p3 values less than ( 30000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p4 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p4 values less than ( 40000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p5 reason: not enough partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p5 values less than ( 50000))
+</span></span></span><span class="line"><span class="cl"><span class="go">create p6 reason: not enough empty partitions
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = alter table data add partition ( partition p6 values less than ( 60000))
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 1000
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 2000
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 3000
+</span></span></span><span class="line"><span class="cl"><span class="go">counter = 4000
+</span></span></span><span class="line"><span class="cl"><span class="go">^CError in atexit._run_exitfuncs:               
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>We then dump the data, truncate the table, and reload the data. We count the rows to be sure we get all of them back.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(venv) kris@server:~/Python/mysql$ mysql-csv/dump.py
+</span></span></span><span class="line"><span class="cl"><span class="go">table = data
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;select count(*) from data&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| count(*) |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|     4511 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;truncate table data&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql-csv/load.py
+</span></span></span><span class="line"><span class="cl"><span class="go">cmd = insert into data ( id, d, e) values (%s,%s,%s)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &#39;select count(*) from data&#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql: [Warning] Using a password on the command line interface can be insecure.
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| count(*) |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|     4511 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span></code></pre></div>
       </div>
     </div>
 

@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Fixing &#34;ip netns&#34; for docker' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -153,43 +153,43 @@
 <p>Ok, I think I did that, but it did not work. Time to dig into the container network config.</p>
 <p>And while I have a lot of network namespaces, they are unknown to <code>ip netns</code>, as can be seen when asking for a list. When we define a network namespace with <code>ip netns</code>, it will symlink the assigned name from <code>/var/run/netns/&lt;name&gt;</code> to <code>/proc/&lt;pid&gt;/ns/net</code> of the process that leads that namespace.</p>
 <p>So these are our container names, we want them as netns names:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>docker ps --format<span class="o">=</span><span class="s1">&#39;{{.Names}}&#39;</span>
-<span class="go">jitsi-jvb
-</span><span class="go">...
-</span></code></pre></div><p>We can turn them into PIDs:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>docker inspect -f <span class="s1">&#39;{{.State.Pid}}&#39;</span> jitsi-jvb
-<span class="go">3899821
-</span></code></pre></div><p>And with that, we can create a mapping script:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">#</span>! /bin/bash
-<span class="err">
-</span><span class="err"></span><span class="go">names=&#34;$(docker ps --format=&#39;{{.Names}}&#39;)&#34;
-</span><span class="go">for name in $names
-</span><span class="go">do
-</span><span class="go">  pid=&#34;$(docker inspect -f &#39;{{.State.Pid}}&#39; $name)&#34;
-</span><span class="go">  if [ -z &#34;$pid&#34; ]; then echo &#34;Cannot resolve $name&#34;; continue; fi
-</span><span class="go">  echo $pid $name
-</span><span class="go">  ln -sf /proc/$pid/ns/net &#34;/var/run/netns/$name&#34;
-</span><span class="go">done
-</span></code></pre></div><p>Sure enough, I can now <code>ip netns</code> things:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>ip netns list
-<span class="go">influxdb (id: 5)
-</span><span class="go">mosquitto (id: 2)
-</span><span class="go">grafana (id: 0)
-</span><span class="go">z2m (id: 8)
-</span><span class="go">mqttbridge (id: 9)
-</span><span class="go">jitsi-web (id: 3)
-</span><span class="go">jitsi-prosody (id: 1)
-</span><span class="go">jitsi-jvb (id: 4)
-</span><span class="go">jitsi-jicofo (id: 6)
-</span><span class="go"></span><span class="gp"># </span>ip netns <span class="nb">exec</span> jitsi-jvb lsof -i -n -P
-<span class="go">COMMAND     PID   USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
-</span><span class="go">dockerd   16420   root  134u  IPv4 34920699      0t0  UDP 127.0.0.11:45441
-</span><span class="go">dockerd   16420   root  138u  IPv4 34920700      0t0  TCP 127.0.0.11:34251 (LISTEN)
-</span><span class="go">java    3900157 docker  152u  IPv4 34917278      0t0  UDP 172.3.0.5:10000
-</span><span class="go">java    3900157 docker  153u  IPv4 34927830      0t0  TCP 172.3.0.5:59998-&gt;172.3.0.2:5222 (ESTABLISHED)
-</span><span class="go">java    3900157 docker  157u  IPv4 34927885      0t0  UDP *:5000
-</span><span class="go">java    3900157 docker  159u  IPv6 34927887      0t0  UDP *:5000
-</span></code></pre></div><p><a href="https://twitter.com/ascii158/status/1269868957458186240" target="_blank" rel="noopener">@ascii158</a>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> docker ps --format<span class="o">=</span><span class="s1">&#39;{{.Names}}&#39;</span>
+</span></span><span class="line"><span class="cl"><span class="go">jitsi-jvb
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>We can turn them into PIDs:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> docker inspect -f <span class="s1">&#39;{{.State.Pid}}&#39;</span> jitsi-jvb
+</span></span><span class="line"><span class="cl"><span class="go">3899821
+</span></span></span></code></pre></div><p>And with that, we can create a mapping script:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">names=&#34;$(docker ps --format=&#39;{{.Names}}&#39;)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">for name in $names
+</span></span></span><span class="line"><span class="cl"><span class="go">do
+</span></span></span><span class="line"><span class="cl"><span class="go">  pid=&#34;$(docker inspect -f &#39;{{.State.Pid}}&#39; $name)&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">  if [ -z &#34;$pid&#34; ]; then echo &#34;Cannot resolve $name&#34;; continue; fi
+</span></span></span><span class="line"><span class="cl"><span class="go">  echo $pid $name
+</span></span></span><span class="line"><span class="cl"><span class="go">  ln -sf /proc/$pid/ns/net &#34;/var/run/netns/$name&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">done
+</span></span></span></code></pre></div><p>Sure enough, I can now <code>ip netns</code> things:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> ip netns list
+</span></span><span class="line"><span class="cl"><span class="go">influxdb (id: 5)
+</span></span></span><span class="line"><span class="cl"><span class="go">mosquitto (id: 2)
+</span></span></span><span class="line"><span class="cl"><span class="go">grafana (id: 0)
+</span></span></span><span class="line"><span class="cl"><span class="go">z2m (id: 8)
+</span></span></span><span class="line"><span class="cl"><span class="go">mqttbridge (id: 9)
+</span></span></span><span class="line"><span class="cl"><span class="go">jitsi-web (id: 3)
+</span></span></span><span class="line"><span class="cl"><span class="go">jitsi-prosody (id: 1)
+</span></span></span><span class="line"><span class="cl"><span class="go">jitsi-jvb (id: 4)
+</span></span></span><span class="line"><span class="cl"><span class="go">jitsi-jicofo (id: 6)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> ip netns <span class="nb">exec</span> jitsi-jvb lsof -i -n -P
+</span></span><span class="line"><span class="cl"><span class="go">COMMAND     PID   USER   FD   TYPE   DEVICE SIZE/OFF NODE NAME
+</span></span></span><span class="line"><span class="cl"><span class="go">dockerd   16420   root  134u  IPv4 34920699      0t0  UDP 127.0.0.11:45441
+</span></span></span><span class="line"><span class="cl"><span class="go">dockerd   16420   root  138u  IPv4 34920700      0t0  TCP 127.0.0.11:34251 (LISTEN)
+</span></span></span><span class="line"><span class="cl"><span class="go">java    3900157 docker  152u  IPv4 34917278      0t0  UDP 172.3.0.5:10000
+</span></span></span><span class="line"><span class="cl"><span class="go">java    3900157 docker  153u  IPv4 34927830      0t0  TCP 172.3.0.5:59998-&gt;172.3.0.2:5222 (ESTABLISHED)
+</span></span></span><span class="line"><span class="cl"><span class="go">java    3900157 docker  157u  IPv4 34927885      0t0  UDP *:5000
+</span></span></span><span class="line"><span class="cl"><span class="go">java    3900157 docker  159u  IPv6 34927887      0t0  UDP *:5000
+</span></span></span></code></pre></div><p><a href="https://twitter.com/ascii158/status/1269868957458186240" target="_blank" rel="noopener">@ascii158</a>
 
  points me at</p>
 <p><code>console# nsenter -n -t $(docker inspect &lt;containername&gt; -f '{{.State.Pid}}') lsof -i -n -P</code></p>

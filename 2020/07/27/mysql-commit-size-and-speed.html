@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL Commit Size and Speed' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -152,38 +152,38 @@ commit out do disk dominates the execution time of the script. In order to
 show that, I wrote a little Python script.</p>
 <p>The script creates a test table in a database and writes 10.000 rows of test
 data into it, in commit sizes of 1, 2, 4, &hellip;, 1024 rows.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./mysql.py --help
-<span class="go">Usage: mysql.py [OPTIONS] COMMAND [ARGS]...
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">  Test commit sizes.
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">Options:
-</span><span class="go">  --help  Show this message and exit.
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">Commands:
-</span><span class="go">  create    Create the demo table empty.
-</span><span class="go">  drop      Drop the demo table
-</span><span class="go">  fill      Write test records into the demo table.
-</span><span class="go">  truncate  Truncate the demo table.
-</span></code></pre></div><p>There is a small driver script to run the test. The driver creates the
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./mysql.py --help
+</span></span><span class="line"><span class="cl"><span class="go">Usage: mysql.py [OPTIONS] COMMAND [ARGS]...
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">  Test commit sizes.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Options:
+</span></span></span><span class="line"><span class="cl"><span class="go">  --help  Show this message and exit.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Commands:
+</span></span></span><span class="line"><span class="cl"><span class="go">  create    Create the demo table empty.
+</span></span></span><span class="line"><span class="cl"><span class="go">  drop      Drop the demo table
+</span></span></span><span class="line"><span class="cl"><span class="go">  fill      Write test records into the demo table.
+</span></span></span><span class="line"><span class="cl"><span class="go">  truncate  Truncate the demo table.
+</span></span></span></code></pre></div><p>There is a small driver script to run the test. The driver creates the
 table, truncates it and will then run the fill command of the script over
 and over again, with growing commit-sizes. All powers of 2 from 0 to 10 are
 being tried with 10.000 rows of test data.</p>
 <p>The test system has a very old SSD (Crucial M4-CT512M4SSD2) as a data
 directory.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash">$ cat driver.sh
-<span class="c1">#! /bin/bash --</span>
-
-./mysql.py drop
-./mysql.py create
-<span class="k">for</span> i in <span class="o">{</span>0..10<span class="o">}</span>
-<span class="k">do</span>
-        <span class="nv">csize</span><span class="o">=</span><span class="k">$((</span><span class="m">2</span> <span class="o">**</span> <span class="nv">$i</span><span class="k">))</span>
-        ./mysql.py truncate
-        <span class="nb">echo</span> <span class="s2">&#34;./mysql.py fill --size=10000 --commit-size=</span><span class="nv">$csize</span><span class="s2">&#34;</span>
-        <span class="nb">time</span> ./mysql.py fill --size<span class="o">=</span><span class="m">10000</span> --commit-size<span class="o">=</span><span class="nv">$csize</span>
-<span class="k">done</span>
-</code></pre></div><p>The result of the test run is as follows shown, and since at point 10.000
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ cat driver.sh
+</span></span><span class="line"><span class="cl"><span class="c1">#! /bin/bash --</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">./mysql.py drop
+</span></span><span class="line"><span class="cl">./mysql.py create
+</span></span><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>0..10<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">do</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">csize</span><span class="o">=</span><span class="k">$((</span><span class="m">2</span> <span class="o">**</span> <span class="nv">$i</span><span class="k">))</span>
+</span></span><span class="line"><span class="cl">        ./mysql.py truncate
+</span></span><span class="line"><span class="cl">        <span class="nb">echo</span> <span class="s2">&#34;./mysql.py fill --size=10000 --commit-size=</span><span class="nv">$csize</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">time</span> ./mysql.py fill --size<span class="o">=</span><span class="m">10000</span> --commit-size<span class="o">=</span><span class="nv">$csize</span>
+</span></span><span class="line"><span class="cl"><span class="k">done</span>
+</span></span></code></pre></div><p>The result of the test run is as follows shown, and since at point 10.000
 rows were not enough, I later added a second test run with 100.000 rows and
 step sizes of <code>5..14</code> (32 rows to 16384 rows).</p>
 <p><p class="md__image">
@@ -330,131 +330,131 @@ rows/commit to 1024 rows/commit.</p>
 	The script
     </a>
 </h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>cat requirements.txt
-<span class="go">click
-</span><span class="go">mysqlclient
-</span><span class="go"></span><span class="gp">$ </span>python3 -mvenv venv
-<span class="gp">$ </span><span class="nb">source</span> venv/bin/activate
-<span class="go">(venv) $ pip install --upgrade pip
-</span><span class="go">...
-</span><span class="go">(venv) $ pip install wheel
-</span><span class="go">...
-</span><span class="go">(venv) $ pip install -r requirements.txt
-</span><span class="go">...
-</span><span class="go">(venv) $ pip freeze -r requirements.txt &gt; requirements-frozen.txt
-</span></code></pre></div><p>and</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#! /usr/bin/env python3</span>
-
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">string</span>
-
-<span class="kn">import</span> <span class="nn">click</span>
-<span class="kn">import</span> <span class="nn">MySQLdb</span>
-<span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
-
-<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
-
-<span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">cursorclass</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">sql_drop_table</span> <span class="o">=</span> <span class="s2">&#34;drop table </span><span class="si">%s</span><span class="s2">&#34;</span>
-
-<span class="n">sql_create_table</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;create table </span><span class="si">%s</span><span class="s2"> (
-</span><span class="s2">    id serial,
-</span><span class="s2">    data varbinary(255) not null
-</span><span class="s2">)&#34;&#34;&#34;</span>
-
-<span class="n">sql_truncate_table</span> <span class="o">=</span> <span class="s2">&#34;truncate table </span><span class="si">%s</span><span class="s2">&#34;</span>
-
-<span class="n">sql_insert_into</span> <span class="o">=</span> <span class="s1">&#39;insert into </span><span class="si">%s</span><span class="s1"> ( id, data) values ( </span><span class="si">%d</span><span class="s1">, &#34;</span><span class="si">%s</span><span class="s1">&#34; )&#39;</span>
-
-
-<span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-
-
-<span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Test commit sizes.&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
-    <span class="k">pass</span>
-
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to drop&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">drop</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="s2">&#34;&#34;&#34; Drop the demo table &#34;&#34;&#34;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_drop_table</span> <span class="o">%</span> <span class="n">name</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; dropped.&#39;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; did not exist.&#39;</span><span class="p">)</span>
-
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to create&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="s2">&#34;&#34;&#34; Create the demo table empty. &#34;&#34;&#34;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_create_table</span> <span class="o">%</span> <span class="n">name</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; created.&#39;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; did already exist&#39;</span><span class="p">)</span>
-
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to insert into&#34;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--size&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of rows to create in total&#34;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--commit-size&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Commit batch size&#34;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--verbose/--no-verbose&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Log each commit?&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">commit_size</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-    <span class="s2">&#34;&#34;&#34; Write test records into the demo table. &#34;&#34;&#34;</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
-        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
-            <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-        <span class="p">)</span>
-        <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_insert_into</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-
-        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;MySQL Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
-
-        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">commit_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Commit at </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">...&#34;</span><span class="p">)</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-
-<span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to truncate here&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="s2">&#34;&#34;&#34; Truncate the demo table. &#34;&#34;&#34;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_truncate_table</span> <span class="o">%</span> <span class="n">name</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; truncated.&#39;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">MySQL</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; does not exist.&#39;</span><span class="p">)</span>
-
-
-<span class="n">sql</span><span class="p">()</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> cat requirements.txt
+</span></span><span class="line"><span class="cl"><span class="go">click
+</span></span></span><span class="line"><span class="cl"><span class="go">mysqlclient
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">$</span> python3 -mvenv venv
+</span></span><span class="line"><span class="cl"><span class="gp">$</span> <span class="nb">source</span> venv/bin/activate
+</span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip install --upgrade pip
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip install wheel
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip install -r requirements.txt
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">(venv) $ pip freeze -r requirements.txt &gt; requirements-frozen.txt
+</span></span></span></code></pre></div><p>and</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">click</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb.cursors</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursorclass</span><span class="o">=</span><span class="n">MySQLdb</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_drop_table</span> <span class="o">=</span> <span class="s2">&#34;drop table </span><span class="si">%s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_create_table</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;create table </span><span class="si">%s</span><span class="s2"> (
+</span></span></span><span class="line"><span class="cl"><span class="s2">    id serial,
+</span></span></span><span class="line"><span class="cl"><span class="s2">    data varbinary(255) not null
+</span></span></span><span class="line"><span class="cl"><span class="s2">)&#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_truncate_table</span> <span class="o">=</span> <span class="s2">&#34;truncate table </span><span class="si">%s</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql_insert_into</span> <span class="o">=</span> <span class="s1">&#39;insert into </span><span class="si">%s</span><span class="s1"> ( id, data) values ( </span><span class="si">%d</span><span class="s1">, &#34;</span><span class="si">%s</span><span class="s1">&#34; )&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Test commit sizes.&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">sql</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to drop&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">drop</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Drop the demo table &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_drop_table</span> <span class="o">%</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; dropped.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; did not exist.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to create&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Create the demo table empty. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_create_table</span> <span class="o">%</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; created.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; did already exist&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to insert into&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--size&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of rows to create in total&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--commit-size&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Commit batch size&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--verbose/--no-verbose&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Log each commit?&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fill</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">commit_size</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Write test records into the demo table. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">str</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">            <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_uppercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_insert_into</span> <span class="o">%</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;MySQL Error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="n">commit_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Commit at </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">...&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--name&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Table name to truncate here&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">truncate</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="s2">&#34;&#34;&#34; Truncate the demo table. &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="n">sql_truncate_table</span> <span class="o">%</span> <span class="n">name</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; truncated.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="n">MySQL</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Table &#34;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&#34; does not exist.&#39;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">sql</span><span class="p">()</span>
+</span></span></code></pre></div>
       </div>
     </div>
 

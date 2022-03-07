@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Parameterdeklarationen für Webseiten' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -149,155 +149,155 @@
       <div class='col-lg-8'>
         <p>Es ist mal wieder Zeit, sehr alte Hüte rauszukramen. Heute habe ich mir dienstlich eine Datenbank angesehen, die von PHP aus angesprochen wird. Das PHP, das dort verwendet wird, ist sehr loses PHP, also ohne die Verwendung eines großartiges Frameworks geschrieben. Entsprechend bin ich quasi sofort über SQL-Injections und XSS gefallen.</p>
 <p>Denn schon nach kurzem Suchen findet man Code wie den folgenden:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="nv">$theValue</span> <span class="o">=</span> <span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;theValue&#39;</span><span class="p">];</span>
-<span class="o">...</span>
-<span class="k">if</span> <span class="p">(</span><span class="nv">$theValue</span> <span class="o">!=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nv">$where</span> <span class="o">.=</span> <span class="s2">&#34; where theColumn = &#39;</span><span class="si">$theValue</span><span class="s2">&#39;&#34;</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><p>Eigentlich hat der betrachtete Code eine <code>cleanup()</code>-Funktion, die für jeden Wert aufgerufen werden soll, und die nicht nur den Typ des Wertes deklariert, sondern auch das notwendige Escapen der Werte &ldquo;in place&rdquo; vornimmt.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$theValue</span> <span class="o">=</span> <span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;theValue&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="o">...</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">(</span><span class="nv">$theValue</span> <span class="o">!=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$where</span> <span class="o">.=</span> <span class="s2">&#34; where theColumn = &#39;</span><span class="si">$theValue</span><span class="s2">&#39;&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Eigentlich hat der betrachtete Code eine <code>cleanup()</code>-Funktion, die für jeden Wert aufgerufen werden soll, und die nicht nur den Typ des Wertes deklariert, sondern auch das notwendige Escapen der Werte &ldquo;in place&rdquo; vornimmt.</p>
 <p>Das ist aber in mehrfacher Hinsicht unschön.</p>
 <p>Wenn man Code wie</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;theValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">cleanup</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;theValue&#39;</span><span class="p">],</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
-</code></pre></div><p>schreibt, und vergisst diesen Cleanup-Aufruf einzufügen, dann haben wir keinen bemerkbaren Fehler: Der Folgecode, der auf <code>$_REQUEST['theValue']</code> zugreift, bekommt Werte zu sehen und bleibt nicht mit einer Fehlermeldung &ldquo;Keine Inputreinigung vorgenommen!&rdquo; stehen.</p>
-<p>Außerdem sind die angewendeten Typprüfungen nicht flexibel genug und gehen nicht weit genug. &lsquo;text&rsquo; erzeugt im betrachteten Code gerade mal ein <code>mysql_real_escape_string()</code>, aber wendet keine weitergehenden Prüfungen auf den Eingabewert ein. Außerdem werden Eingabewerte, die für die Seite gar nicht da sein dürfen, trotzdem akzeptiert und dann vielleicht ignoriert – vielleicht aber auch nicht.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;theValue&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nx">cleanup</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">[</span><span class="s1">&#39;theValue&#39;</span><span class="p">],</span> <span class="s1">&#39;text&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>schreibt, und vergisst diesen Cleanup-Aufruf einzufügen, dann haben wir keinen bemerkbaren Fehler: Der Folgecode, der auf <code>$_REQUEST['theValue']</code> zugreift, bekommt Werte zu sehen und bleibt nicht mit einer Fehlermeldung &ldquo;Keine Inputreinigung vorgenommen!&rdquo; stehen.</p>
+<p>Außerdem sind die angewendeten Typprüfungen nicht flexibel genug und gehen nicht weit genug. &rsquo;text&rsquo; erzeugt im betrachteten Code gerade mal ein <code>mysql_real_escape_string()</code>, aber wendet keine weitergehenden Prüfungen auf den Eingabewert ein. Außerdem werden Eingabewerte, die für die Seite gar nicht da sein dürfen, trotzdem akzeptiert und dann vielleicht ignoriert – vielleicht aber auch nicht.</p>
 <p>(Das folgende Codebeispiel zum Runterladen: [input_validation.php.txt](/uploads/input_validation.php.txt&quot; title=&ldquo;input_validation.php.txt&rdquo; target=&quot;_blank))</p>
 <p>Kurz gesagt: Was ich möchte ist eigentlich eine Typdeklaration für eine PHP-Seite, die die Eingabeparameter mit Namen und Typprüfungen deklariert.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="nv">$cleaners</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-  <span class="s2">&#34;county&#34;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s2">&#34;check&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;text_regex&#34;</span><span class="p">,</span> <span class="s2">&#34;pattern&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;[a-zA-Z0-9]+&#34;</span> <span class="p">),</span>
-  <span class="s2">&#34;year&#34;</span>   <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s2">&#34;check&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;int_minmax&#34;</span><span class="p">,</span> <span class="s2">&#34;min&#34;</span> <span class="o">=&gt;</span> <span class="mi">1834</span><span class="p">,</span> <span class="s2">&#34;max&#34;</span> <span class="o">=&gt;</span> <span class="mi">1864</span><span class="p">),</span>
-  <span class="s2">&#34;quarter&#34;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s2">&#34;check&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;int_enum&#34;</span><span class="p">,</span> <span class="s2">&#34;values&#34;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="p">)</span>
-<span class="p">);</span>
-</code></pre></div><p>Ich will dann eine Eingabeprüfung, die ein Input-Array durchgeht und die Cleaners der Reihe nach anwendet. Das Resultat ist eine optionale Liste von Fehlern und ein gesäubertes Input-Array <code>$_CLEAN</code>, das vom <code>$_REQUEST</code>-Array verschieden ist.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="c1">// simulated input
-</span><span class="c1"></span><span class="nv">$_REQUEST</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-  <span class="s2">&#34;county&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;someword&#34;</span><span class="p">,</span>
-  <span class="s2">&#34;year&#34;</span> <span class="o">=&gt;</span> <span class="mi">1900</span><span class="p">,</span>
-  <span class="s2">&#34;quarter&#34;</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">,</span>
-  <span class="s2">&#34;bogus&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;value&#34;</span>
-<span class="p">);</span>
-
-<span class="c1">// collect error messages
-</span><span class="c1"></span><span class="nv">$_ERROR</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-
-<span class="c1">// clean it up
-</span><span class="c1"></span><span class="nv">$_CLEAN</span> <span class="o">=</span> <span class="nx">clean</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">,</span> <span class="nv">$_ERROR</span><span class="p">);</span>
-
-<span class="c1">// the cleaned input
-</span><span class="c1"></span><span class="k">echo</span> <span class="s2">&#34;cleaned input</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-<span class="nx">var_dump</span><span class="p">(</span><span class="nv">$_CLEAN</span><span class="p">);</span>
-
-<span class="c1">// the error messages
-</span><span class="c1"></span><span class="k">echo</span> <span class="s2">&#34;collected errors</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-<span class="nx">var_dump</span><span class="p">(</span><span class="nv">$_ERROR</span><span class="p">);</span>
-</code></pre></div><p>Fehlt der <code>clean()</code>-Aufruf am Anfang einer Seite, ist <code>$_CLEAN</code> leer und späterer Code, der <code>$_CLEAN</code> referenziert, kann nicht funktionieren – der Fehler wird sofort bemerkt.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$cleaners</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;county&#34;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s2">&#34;check&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;text_regex&#34;</span><span class="p">,</span> <span class="s2">&#34;pattern&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;[a-zA-Z0-9]+&#34;</span> <span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;year&#34;</span>   <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s2">&#34;check&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;int_minmax&#34;</span><span class="p">,</span> <span class="s2">&#34;min&#34;</span> <span class="o">=&gt;</span> <span class="mi">1834</span><span class="p">,</span> <span class="s2">&#34;max&#34;</span> <span class="o">=&gt;</span> <span class="mi">1864</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;quarter&#34;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span> <span class="s2">&#34;check&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;int_enum&#34;</span><span class="p">,</span> <span class="s2">&#34;values&#34;</span> <span class="o">=&gt;</span> <span class="k">array</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span></code></pre></div><p>Ich will dann eine Eingabeprüfung, die ein Input-Array durchgeht und die Cleaners der Reihe nach anwendet. Das Resultat ist eine optionale Liste von Fehlern und ein gesäubertes Input-Array <code>$_CLEAN</code>, das vom <code>$_REQUEST</code>-Array verschieden ist.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">// simulated input
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$_REQUEST</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;county&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;someword&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;year&#34;</span> <span class="o">=&gt;</span> <span class="mi">1900</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;quarter&#34;</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="s2">&#34;bogus&#34;</span> <span class="o">=&gt;</span> <span class="s2">&#34;value&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// collect error messages
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$_ERROR</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// clean it up
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$_CLEAN</span> <span class="o">=</span> <span class="nx">clean</span><span class="p">(</span><span class="nv">$_REQUEST</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">,</span> <span class="nv">$_ERROR</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// the cleaned input
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">echo</span> <span class="s2">&#34;cleaned input</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nv">$_CLEAN</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// the error messages
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">echo</span> <span class="s2">&#34;collected errors</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nx">var_dump</span><span class="p">(</span><span class="nv">$_ERROR</span><span class="p">);</span>
+</span></span></code></pre></div><p>Fehlt der <code>clean()</code>-Aufruf am Anfang einer Seite, ist <code>$_CLEAN</code> leer und späterer Code, der <code>$_CLEAN</code> referenziert, kann nicht funktionieren – der Fehler wird sofort bemerkt.</p>
 <p><code>$_CLEAN</code> kann nur Werte enthalten, deren Namen als Keys in <code>$cleaners</code> deklariert sind – undeklarierte Eingabewerte existieren nicht mehr in unserem Programm. <code>$_CLEAN</code> kann außerdem nur Werte enthalten, für die die in <code>$cleaners[$k]['check']</code> deklarierten Checkerfunktionen existieren – Deklarationsfehler bei Checkerfunktionen führen zu Programmabbruch und werden so sofort bemerkt. Schließlich kann <code>$_CLEAN</code> nur Werte enthalten, für die die angegebenen Checkerfunktionen erfolgreich waren.</p>
 <p>Eine Checkerfunktion hat den Namen <code>check_...</code> und gibt ein Paar (Wert, Fehlermeldung) zurück. Wenn der Wert <code>NULL</code> ist, ist eine Fehlermeldung vorhanden und kann eingesammelt werden – der Checker ist fehlgeschlagen. In allen anderen Fällen ist der Checker erfolgreich.</p>
 <p>Diese Bedingungen sind schnell runtergeschrieben und sehen in Code dann so aus:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">clean</span><span class="p">(</span><span class="nv">$R</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">,</span> <span class="o">&amp;</span><span class="nv">$E</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// collected results in $C, collect errors in $E (which is optional)
-</span><span class="c1"></span>  <span class="nv">$C</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-
-  <span class="c1">// scan the request variables
-</span><span class="c1"></span>  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$R</span> <span class="k">as</span> <span class="nv">$k</span> <span class="o">=&gt;</span> <span class="nv">$v</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Check for bogus values.
-</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">))</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;*** WARNING: Skipped bogus value </span><span class="si">$k</span><span class="s2"> =&gt; </span><span class="si">$v\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="k">continue</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="c1">// If we make it to here, the value should be imported.
-</span><span class="c1"></span>
-    <span class="c1">// generic cleanup
-</span><span class="c1"></span>    <span class="nv">$v</span> <span class="o">=</span> <span class="nx">get_magic_quotes_gpc</span><span class="p">()</span> <span class="o">?</span> <span class="nx">stripslashes</span><span class="p">(</span><span class="nv">$v</span><span class="p">)</span> <span class="o">:</span> <span class="nv">$v</span><span class="p">;</span>
-    <span class="nv">$v</span> <span class="o">=</span> <span class="nx">function_exists</span><span class="p">(</span><span class="s2">&#34;mysql_real_escape_string&#34;</span><span class="p">)</span> <span class="o">?</span>
-               <span class="nx">mysql_real_escape_string</span><span class="p">(</span><span class="nv">$v</span><span class="p">)</span> <span class="o">:</span> 
-               <span class="nx">mysql_escape_string</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
-    <span class="c1">// The value can be imported only, if the specified cleaner exists.
-</span><span class="c1"></span>    <span class="nv">$checkfun</span> <span class="o">=</span> <span class="s2">&#34;check_&#34;</span> <span class="o">.</span> <span class="nv">$cleaners</span><span class="p">[</span><span class="nv">$k</span><span class="p">][</span><span class="s1">&#39;check&#39;</span><span class="p">];</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">function_exists</span><span class="p">(</span><span class="nv">$checkfun</span><span class="p">))</span> <span class="p">{</span>
-      <span class="c1">// $c will then be the sanitized value
-</span><span class="c1"></span>      <span class="k">list</span><span class="p">(</span><span class="nv">$c</span><span class="p">,</span> <span class="nv">$e</span><span class="p">)</span> <span class="o">=</span> <span class="nv">$checkfun</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">[</span><span class="nv">$k</span><span class="p">]);</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="k">die</span><span class="p">(</span><span class="s2">&#34;*** ERROR: </span><span class="si">$k</span><span class="s2"> =&gt; </span><span class="si">$v</span><span class="s2"> fails &#34;</span><span class="o">.</span>
-        <span class="s2">&#34;because specified checkfun </span><span class="si">$checkfun</span><span class="s2"> does not exist.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
-    <span class="p">}</span>
-    
-    <span class="c1">// The value can be imported only, if the specified cleaner succeeded.
-</span><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$c</span><span class="p">))</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;Import </span><span class="si">$k</span><span class="s2">&#39;s value of </span><span class="si">$v</span><span class="s2"> as </span><span class="si">$c\n</span><span class="s2">&#34;</span><span class="p">;</span> 
-      <span class="nv">$C</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$c</span><span class="p">;</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$e</span><span class="p">))</span> <span class="nv">$E</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$e</span><span class="p">;</span> <span class="c1">// collect error anyway
-</span><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;*** WARNING: Not importing </span><span class="si">$k</span><span class="s2">, &#34;</span><span class="o">.</span>
-        <span class="s2">&#34;because </span><span class="si">$v</span><span class="s2"> failed </span><span class="si">$checkfun</span><span class="s2">().</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="nv">$E</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$e</span><span class="p">;</span> <span class="c1">// collect error
-</span><span class="c1"></span>    <span class="p">}</span>
-  <span class="p">}</span>
-  
-  <span class="k">return</span> <span class="nv">$C</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><p>Jetzt müssen wir nur noch Checkfunktionen schreiben, die die eigentlichen Prüfungen ausführen. In unserem Fall wollen wir noch die folgenden Konventionen gelten lassen:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">clean</span><span class="p">(</span><span class="nv">$R</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">,</span> <span class="o">&amp;</span><span class="nv">$E</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="c1">// collected results in $C, collect errors in $E (which is optional)
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="nv">$C</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="c1">// scan the request variables
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>  <span class="k">foreach</span> <span class="p">(</span><span class="nv">$R</span> <span class="k">as</span> <span class="nv">$k</span> <span class="o">=&gt;</span> <span class="nv">$v</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// Check for bogus values.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;*** WARNING: Skipped bogus value </span><span class="si">$k</span><span class="s2"> =&gt; </span><span class="si">$v\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">continue</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// If we make it to here, the value should be imported.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// generic cleanup
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nv">$v</span> <span class="o">=</span> <span class="nx">get_magic_quotes_gpc</span><span class="p">()</span> <span class="o">?</span> <span class="nx">stripslashes</span><span class="p">(</span><span class="nv">$v</span><span class="p">)</span> <span class="o">:</span> <span class="nv">$v</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$v</span> <span class="o">=</span> <span class="nx">function_exists</span><span class="p">(</span><span class="s2">&#34;mysql_real_escape_string&#34;</span><span class="p">)</span> <span class="o">?</span>
+</span></span><span class="line"><span class="cl">               <span class="nx">mysql_real_escape_string</span><span class="p">(</span><span class="nv">$v</span><span class="p">)</span> <span class="o">:</span> 
+</span></span><span class="line"><span class="cl">               <span class="nx">mysql_escape_string</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="c1">// The value can be imported only, if the specified cleaner exists.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nv">$checkfun</span> <span class="o">=</span> <span class="s2">&#34;check_&#34;</span> <span class="o">.</span> <span class="nv">$cleaners</span><span class="p">[</span><span class="nv">$k</span><span class="p">][</span><span class="s1">&#39;check&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="p">(</span><span class="nx">function_exists</span><span class="p">(</span><span class="nv">$checkfun</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="c1">// $c will then be the sanitized value
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>      <span class="k">list</span><span class="p">(</span><span class="nv">$c</span><span class="p">,</span> <span class="nv">$e</span><span class="p">)</span> <span class="o">=</span> <span class="nv">$checkfun</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$cleaners</span><span class="p">[</span><span class="nv">$k</span><span class="p">]);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">die</span><span class="p">(</span><span class="s2">&#34;*** ERROR: </span><span class="si">$k</span><span class="s2"> =&gt; </span><span class="si">$v</span><span class="s2"> fails &#34;</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;because specified checkfun </span><span class="si">$checkfun</span><span class="s2"> does not exist.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    
+</span></span><span class="line"><span class="cl">    <span class="c1">// The value can be imported only, if the specified cleaner succeeded.
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$c</span><span class="p">))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;Import </span><span class="si">$k</span><span class="s2">&#39;s value of </span><span class="si">$v</span><span class="s2"> as </span><span class="si">$c\n</span><span class="s2">&#34;</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">      <span class="nv">$C</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$c</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">isset</span><span class="p">(</span><span class="nv">$e</span><span class="p">))</span> <span class="nv">$E</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$e</span><span class="p">;</span> <span class="c1">// collect error anyway
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;*** WARNING: Not importing </span><span class="si">$k</span><span class="s2">, &#34;</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;because </span><span class="si">$v</span><span class="s2"> failed </span><span class="si">$checkfun</span><span class="s2">().</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="nv">$E</span><span class="p">[</span><span class="nv">$k</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$e</span><span class="p">;</span> <span class="c1">// collect error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="nv">$C</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Jetzt müssen wir nur noch Checkfunktionen schreiben, die die eigentlichen Prüfungen ausführen. In unserem Fall wollen wir noch die folgenden Konventionen gelten lassen:</p>
 <ul>
 <li>Jede <code>checkfun</code> hat einen Parameter <code>default</code>, der einen von <code>NULL</code> verschiedenen Default-Wert definieren kann. In diesem Fall schlägt der Check nie fehl, sondern returned den spezifizierten Default-Wert. Eine eventuell erzeugte Fehlermeldung wird dennoch eingesammelt, hat dann aber mehr den Character einer Warnung.</li>
 <li>Für jeden Parameter <code>p</code> einer checkfun wollen wir optional auch die Definition eines Fehlermeldungs-Parameters <code>p_err</code> zulassen, mit dem die Fehlermeldung überschrieben werden kann, den die checkfun generiert, wenn der Test für <code>p</code> fehlschlägt. Einige Beispiele werden das klarer machen.</li>
 </ul>
 <p>Hier ist der <code>regexp</code>-Test:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">check_text_regex</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nv">$pattern</span>     <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;pattern&#39;</span><span class="p">];</span>
-  <span class="nv">$pattern_err</span> <span class="o">=</span> <span class="s2">&#34;check_text_regex: &#34;</span><span class="o">.</span>
-                 <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;pattern_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
-                 <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;pattern_err&#39;</span><span class="p">]</span><span class="o">:</span>
-                 <span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> did not match </span><span class="si">$pattern</span><span class="s2">.&#34;</span><span class="p">);</span>
-  <span class="nv">$default</span>     <span class="o">=</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span><span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">:</span><span class="k">NULL</span><span class="p">;</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;In check_text_regex: k=</span><span class="si">$k</span><span class="s2"> v=</span><span class="si">$v</span><span class="s2"> pattern= </span><span class="si">$pattern\n</span><span class="s2">&#34;</span><span class="p">;</span>
-  
-  <span class="k">if</span> <span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/^</span><span class="si">$pattern\</span><span class="s2">$/&#34;</span><span class="p">,</span> <span class="nv">$v</span><span class="p">))</span>
-    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-  <span class="k">else</span>
-    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$pattern_err</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div><p>Der Test prüft, ob der Wert <code>$v</code> dem regulären Ausdruck <code>$par['pattern']</code> genügt. Wenn ja, wird <code>$v</code> ohne Fehlermeldung zurückgegeben. Wenn nein, wird <code>$par['default']</code> zusammen mit der Fehlermeldung <code>$par['pattern_err']</code> zurückgegeben.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">check_text_regex</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$pattern</span>     <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;pattern&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$pattern_err</span> <span class="o">=</span> <span class="s2">&#34;check_text_regex: &#34;</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;pattern_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;pattern_err&#39;</span><span class="p">]</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">                 <span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> did not match </span><span class="si">$pattern</span><span class="s2">.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$default</span>     <span class="o">=</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span><span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">:</span><span class="k">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;In check_text_regex: k=</span><span class="si">$k</span><span class="s2"> v=</span><span class="si">$v</span><span class="s2"> pattern= </span><span class="si">$pattern\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">preg_match</span><span class="p">(</span><span class="s2">&#34;/^</span><span class="si">$pattern\</span><span class="s2">$/&#34;</span><span class="p">,</span> <span class="nv">$v</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">else</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$pattern_err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Der Test prüft, ob der Wert <code>$v</code> dem regulären Ausdruck <code>$par['pattern']</code> genügt. Wenn ja, wird <code>$v</code> ohne Fehlermeldung zurückgegeben. Wenn nein, wird <code>$par['default']</code> zusammen mit der Fehlermeldung <code>$par['pattern_err']</code> zurückgegeben.</p>
 <p>Entsprechend der <code>minmax</code>-Test:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">check_int_minmax</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nv">$min</span>     <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">];</span>
-  <span class="nv">$min_err</span> <span class="o">=</span> <span class="s2">&#34;check_int_minmax: &#34;</span><span class="o">.</span> 
-             <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;min_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
-             <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;min_err&#39;</span><span class="p">]</span><span class="o">:</span><span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> &lt; </span><span class="si">$min</span><span class="s2">.&#34;</span><span class="p">);</span>
-  <span class="nv">$max</span> <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">];</span>
-  <span class="nv">$max_err</span> <span class="o">=</span> <span class="s2">&#34;check_int_minmax: &#34;</span><span class="o">.</span> 
-             <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;max_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
-             <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;max_err&#39;</span><span class="p">]</span><span class="o">:</span><span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> &gt; </span><span class="si">$max</span><span class="s2">.&#34;</span><span class="p">);</span>
-  <span class="nv">$default</span> <span class="o">=</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span><span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">:</span><span class="k">NULL</span><span class="p">;</span>
-  
-  <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;In check_int_minmax: k=</span><span class="si">$k</span><span class="s2"> v=</span><span class="si">$v</span><span class="s2"> min=</span><span class="si">$min</span><span class="s2"> max=</span><span class="si">$max\n</span><span class="s2">&#34;</span><span class="p">;</span>
-  <span class="nv">$v</span> <span class="o">=</span> <span class="nx">intval</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nv">$v</span> <span class="o">&lt;</span> <span class="nv">$min</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$min_err</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nv">$v</span> <span class="o">&gt;</span> <span class="nv">$max</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$max_err</span><span class="p">);</span>
-
-  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div><p>Dieser Test folgt demselben System: Wenn der Wert <code>$v</code> zwischen <code>$min</code> und <code>$max</code> liegt, wird er ohne Fehlermeldung zurückgegeben. Andernfalls wird $default und eine Fehlermeldung erzeugt. Die Fehlermeldungen können dabei als <code>$min_err</code> und <code>$max_err</code> spezifiziert werden, der <code>$default</code> ist <code>NULL</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">check_int_minmax</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$min</span>     <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$min_err</span> <span class="o">=</span> <span class="s2">&#34;check_int_minmax: &#34;</span><span class="o">.</span> 
+</span></span><span class="line"><span class="cl">             <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;min_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
+</span></span><span class="line"><span class="cl">             <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;min_err&#39;</span><span class="p">]</span><span class="o">:</span><span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> &lt; </span><span class="si">$min</span><span class="s2">.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$max</span> <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$max_err</span> <span class="o">=</span> <span class="s2">&#34;check_int_minmax: &#34;</span><span class="o">.</span> 
+</span></span><span class="line"><span class="cl">             <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;max_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
+</span></span><span class="line"><span class="cl">             <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;max_err&#39;</span><span class="p">]</span><span class="o">:</span><span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> &gt; </span><span class="si">$max</span><span class="s2">.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$default</span> <span class="o">=</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span><span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">:</span><span class="k">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;In check_int_minmax: k=</span><span class="si">$k</span><span class="s2"> v=</span><span class="si">$v</span><span class="s2"> min=</span><span class="si">$min</span><span class="s2"> max=</span><span class="si">$max\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$v</span> <span class="o">=</span> <span class="nx">intval</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nv">$v</span> <span class="o">&lt;</span> <span class="nv">$min</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$min_err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nv">$v</span> <span class="o">&gt;</span> <span class="nv">$max</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$max_err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Dieser Test folgt demselben System: Wenn der Wert <code>$v</code> zwischen <code>$min</code> und <code>$max</code> liegt, wird er ohne Fehlermeldung zurückgegeben. Andernfalls wird $default und eine Fehlermeldung erzeugt. Die Fehlermeldungen können dabei als <code>$min_err</code> und <code>$max_err</code> spezifiziert werden, der <code>$default</code> ist <code>NULL</code>.</p>
 <p>Und der <code>int_enum</code>-Test, um das Beispiel vollständig zu machen:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">check_int_enum</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span> <span class="p">{</span>
-  <span class="nv">$values</span>      <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">];</span>
-  <span class="nv">$valuestring</span> <span class="o">=</span> <span class="nx">join</span><span class="p">(</span><span class="s2">&#34;,&#34;</span><span class="p">,</span> <span class="nv">$values</span><span class="p">);</span>
-  <span class="nv">$values_err</span>  <span class="o">=</span> <span class="s2">&#34;check_int_enum: &#34;</span><span class="o">.</span>
-                 <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;values_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
-                 <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;values_err&#39;</span><span class="p">]</span><span class="o">:</span><span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> not in </span><span class="si">$valuestring</span><span class="s2">.&#34;</span><span class="p">);</span>
-  <span class="nv">$default</span>     <span class="o">=</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span><span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">:</span><span class="k">NULL</span><span class="p">;</span>
-  
-  <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;In check_int_enum: k=</span><span class="si">$k</span><span class="s2"> v=</span><span class="si">$v</span><span class="s2"> values=(</span><span class="si">$valuestring</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-  <span class="nv">$v</span> <span class="o">=</span> <span class="nx">intval</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
-  
-  <span class="k">if</span> <span class="p">(</span><span class="nx">array_search</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="nv">$values</span><span class="p">)</span> <span class="o">===</span> <span class="k">false</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$values_err</span><span class="p">);</span>
-
-  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
-  
-<span class="p">}</span>
-</code></pre></div><p>Auch hier werden die Konventionen befolgt: <code>$default</code> und die Fehlermeldung <code>$values_err</code>, wenn der gegebene Wert <code>$v</code> nicht im <code>$values</code>-Array vorkommt, sonst <code>$v</code> und keine Fehlermeldung.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">check_int_enum</span><span class="p">(</span><span class="nv">$k</span><span class="p">,</span> <span class="nv">$v</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$values</span>      <span class="o">=</span> <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;values&#39;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$valuestring</span> <span class="o">=</span> <span class="nx">join</span><span class="p">(</span><span class="s2">&#34;,&#34;</span><span class="p">,</span> <span class="nv">$values</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$values_err</span>  <span class="o">=</span> <span class="s2">&#34;check_int_enum: &#34;</span><span class="o">.</span>
+</span></span><span class="line"><span class="cl">                 <span class="p">(</span><span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;values_err&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span>
+</span></span><span class="line"><span class="cl">                 <span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;values_err&#39;</span><span class="p">]</span><span class="o">:</span><span class="s2">&#34;</span><span class="si">$v</span><span class="s2"> not in </span><span class="si">$valuestring</span><span class="s2">.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$default</span>     <span class="o">=</span> <span class="nx">array_key_exists</span><span class="p">(</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="nv">$par</span><span class="p">)</span><span class="o">?</span><span class="nv">$par</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">]</span><span class="o">:</span><span class="k">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">DEBUG</span><span class="p">)</span> <span class="k">echo</span> <span class="s2">&#34;In check_int_enum: k=</span><span class="si">$k</span><span class="s2"> v=</span><span class="si">$v</span><span class="s2"> values=(</span><span class="si">$valuestring</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="nv">$v</span> <span class="o">=</span> <span class="nx">intval</span><span class="p">(</span><span class="nv">$v</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="nx">array_search</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="nv">$values</span><span class="p">)</span> <span class="o">===</span> <span class="k">false</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$default</span><span class="p">,</span> <span class="nv">$values_err</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="nv">$v</span><span class="p">,</span> <span class="k">NULL</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Auch hier werden die Konventionen befolgt: <code>$default</code> und die Fehlermeldung <code>$values_err</code>, wenn der gegebene Wert <code>$v</code> nicht im <code>$values</code>-Array vorkommt, sonst <code>$v</code> und keine Fehlermeldung.</p>
 <p>Mit diesem Code und ein wenig Suchen und Ersetzen sollte sich jede framework-freie PHP-Seite schnell auf eine harte Deklaration von Eingabeparametern umstellen lassen:</p>
 <ul>
 <li><code>$cleaners</code> definieren</li>

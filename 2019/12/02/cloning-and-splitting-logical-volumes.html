@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Cloning and splitting logical volumes' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -158,12 +158,12 @@ the subdirectories <code>/mysql/schemaname/{data,log,tmp}</code>. The
 entire <code>/mysql/schemname</code> tree is a LVM2 Logical Volume
 <code>mysqlVol</code> on the Volume Group <code>vg00</code>, which is then formatted
 as an XFS filesystem.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>pvcreate /dev/nvme*n1
-<span class="gp"># </span>vgcreate vg00 /dev/nvme*n1
-<span class="gp"># </span>lvcreate -n mysqlVol -L...G vg00
-<span class="gp"># </span>mkfs -t xfs /dev/vg00/mysqlVol
-<span class="gp"># </span>mount -t xfs /dev/vg00/mysqlVol /mysql/schemaname
-</code></pre></div><h2 id="basic-ops">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> pvcreate /dev/nvme*n1
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> vgcreate vg00 /dev/nvme*n1
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvcreate -n mysqlVol -L...G vg00
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> mkfs -t xfs /dev/vg00/mysqlVol
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> mount -t xfs /dev/vg00/mysqlVol /mysql/schemaname
+</span></span></code></pre></div><h2 id="basic-ops">
     <a href="#basic-ops">
 	Basic Ops
     </a>
@@ -227,102 +227,102 @@ to all play drives. We then create a volume group testvg, to
 which we add the initial 3 drives only partitions, sdb1, sdc1
 and sdd1. We then create a simple concatenation of 2G extents
 from sdb1, sdbc1 and sdd1.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span><span class="k">for</span> i in sdb sdc sdd sde sdf sdg
-<span class="gp">&gt; </span><span class="k">do</span>
-<span class="gp">&gt;   </span>sfdisk -d /dev/sda <span class="p">|</span> sfdisk /dev/<span class="nv">$i</span>
-<span class="gp">&gt; </span><span class="k">done</span>
-<span class="go">...
-</span><span class="go"></span><span class="gp"># </span>pvcreate /dev/sd<span class="o">{</span>b,c,d,e,f,g<span class="o">}</span>
-<span class="gp"># </span>vgcreate testvg /dev/sd<span class="o">{</span>b,c,d<span class="o">}</span>
-<span class="gp"># </span>lvcreate -n testlv -L2G testvg
-<span class="gp"># </span>lvextend -L+2G /dev/testvg/testlv /dev/sdc1
-<span class="gp"># </span>lvextend -L+2G /dev/testvg/testlv /dev/sdd1
-</code></pre></div><p>We can now check what we have. We are looking at the <code>lvs</code>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> <span class="k">for</span> i in sdb sdc sdd sde sdf sdg
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span>   sfdisk -d /dev/sda <span class="p">|</span> sfdisk /dev/<span class="nv">$i</span>
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> pvcreate /dev/sd<span class="o">{</span>b,c,d,e,f,g<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> vgcreate testvg /dev/sd<span class="o">{</span>b,c,d<span class="o">}</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvcreate -n testlv -L2G testvg
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvextend -L+2G /dev/testvg/testlv /dev/sdc1
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvextend -L+2G /dev/testvg/testlv /dev/sdd1
+</span></span></code></pre></div><p>We can now check what we have. We are looking at the <code>lvs</code>
 output to see that we have a 6G LV. Then we check the <code>pvs</code>
 output to see that we indeed have sdb1, sdc1 and sdd1 in testvg,
 and that 2G of each drive have been used. We can then finally
 proceed to <code>pvdisplay --map</code> to validate the actual layout.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvs
-<span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span><span class="go">  testlv testvg -wi-a----- 6.00g
-</span><span class="go"></span><span class="gp"># </span>pvs
-<span class="go">  PV         VG     Fmt  Attr PSize   PFree
-</span><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sde1         lvm2 ---  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdf1         lvm2 ---  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdg1         lvm2 ---  &lt;20.00g &lt;20.00g
-</span><span class="go"></span><span class="gp"># </span>pvdisplay --map
-<span class="go">  --- Physical volume ---
-</span><span class="go">  PV Name               /dev/sdb1
-</span><span class="go">  VG Name               testvg
-</span><span class="go">...
-</span><span class="go">  --- Physical Segments ---
-</span><span class="go">  Physical extent 0 to 511:
-</span><span class="go">    Logical volume      /dev/testvg/testlv
-</span><span class="go">    Logical extents     0 to 511
-</span><span class="go">...
-</span><span class="go">  --- Physical volume ---
-</span><span class="go">  PV Name               /dev/sdc1
-</span><span class="go">  VG Name               testvg
-</span><span class="go">...
-</span><span class="go">  --- Physical Segments ---
-</span><span class="go">  Physical extent 0 to 511:
-</span><span class="go">    Logical volume      /dev/testvg/testlv
-</span><span class="go">    Logical extents     512 to 1023
-</span><span class="go">...
-</span><span class="go">  --- Physical volume ---
-</span><span class="go">  PV Name               /dev/sdd1
-</span><span class="go">  VG Name               testvg
-</span><span class="go">...
-</span><span class="go">  --- Physical Segments ---
-</span><span class="go">  Physical extent 0 to 511:
-</span><span class="go">    Logical volume      /dev/testvg/testlv
-</span><span class="go">    Logical extents     1024 to 1535
-</span><span class="go">...
-</span></code></pre></div><p>With this we can introduce the three additional drives, and
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvs
+</span></span><span class="line"><span class="cl"><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv testvg -wi-a----- 6.00g
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> pvs
+</span></span><span class="line"><span class="cl"><span class="go">  PV         VG     Fmt  Attr PSize   PFree
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sde1         lvm2 ---  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdf1         lvm2 ---  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdg1         lvm2 ---  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> pvdisplay --map
+</span></span><span class="line"><span class="cl"><span class="go">  --- Physical volume ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV Name               /dev/sdb1
+</span></span></span><span class="line"><span class="cl"><span class="go">  VG Name               testvg
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical Segments ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 0 to 511:
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical volume      /dev/testvg/testlv
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical extents     0 to 511
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical volume ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV Name               /dev/sdc1
+</span></span></span><span class="line"><span class="cl"><span class="go">  VG Name               testvg
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical Segments ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 0 to 511:
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical volume      /dev/testvg/testlv
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical extents     512 to 1023
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical volume ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV Name               /dev/sdd1
+</span></span></span><span class="line"><span class="cl"><span class="go">  VG Name               testvg
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical Segments ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 0 to 511:
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical volume      /dev/testvg/testlv
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical extents     1024 to 1535
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>With this we can introduce the three additional drives, and
 convert the setup to a mirror:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@ubuntu:~# vgextend testvg /dev/sd{e,f,g}1
-</span><span class="go">  Volume group &#34;testvg&#34; successfully extended
-</span><span class="go">root@ubuntu:~# pvs
-</span><span class="go">  PV         VG     Fmt  Attr PSize   PFree
-</span><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sde1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdf1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdg1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span></code></pre></div><p>and the actual conversion.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@ubuntu:~# vgextend testvg /dev/sd{e,f,g}1
+</span></span></span><span class="line"><span class="cl"><span class="go">  Volume group &#34;testvg&#34; successfully extended
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# pvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV         VG     Fmt  Attr PSize   PFree
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sde1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdf1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdg1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span></code></pre></div><p>and the actual conversion.
 First, using <code>lvs</code> we can watch the progress of the sync:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@ubuntu:~# lvconvert --type raid1 -m1 /dev/testvg/testlv
-</span><span class="go">Are you sure you want to convert linear LV testvg/testlv to raid1 with 2 images enhancing resilience? [y/n]: y
-</span><span class="go">  Logical volume testvg/testlv successfully converted.
-</span><span class="go">root@ubuntu:~# lvs
-</span><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span><span class="go">  testlv testvg rwi-a-r--- 6.00g                                    6.25
-</span><span class="go">root@ubuntu:~# lvs
-</span><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span><span class="go">  testlv testvg rwi-a-r--- 6.00g                                    15.92
-</span><span class="go">root@ubuntu:~# lvs
-</span><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span><span class="go">  testlv testvg rwi-a-r--- 6.00g                                    100.00
-</span></code></pre></div><p>Let&rsquo;s check the disk layout again.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvconvert --type raid1 -m1 /dev/testvg/testlv
+</span></span></span><span class="line"><span class="cl"><span class="go">Are you sure you want to convert linear LV testvg/testlv to raid1 with 2 images enhancing resilience? [y/n]: y
+</span></span></span><span class="line"><span class="cl"><span class="go">  Logical volume testvg/testlv successfully converted.
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv testvg rwi-a-r--- 6.00g                                    6.25
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv testvg rwi-a-r--- 6.00g                                    15.92
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  LV     VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv testvg rwi-a-r--- 6.00g                                    100.00
+</span></span></span></code></pre></div><p>Let&rsquo;s check the disk layout again.</p>
 <p>There are two competing implementations of this, <code>--type mirror</code>
 and <code>--type raid1</code>. The mirror implementation is very extremely
 strongly deprecated, the raid1 implementation is okay, which is
 why we used this one. It uses mdraid code internally, and we can
 show this using <code>lvs -a --segments -o+devices</code></p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvs -a --segments -o+devices
-<span class="go">  LV                VG     Attr       #Str Type   SSize Devices
-</span><span class="go">  testlv            testvg rwi-a-r---    2 raid1  6.00g testlv_rimage_0(0),testlv_rimage_1(0)
-</span><span class="go">  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdb1(0)
-</span><span class="go">  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdc1(0)
-</span><span class="go">  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdd1(0)
-</span><span class="go">  [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sde1(1)
-</span><span class="go">  [testlv_rmeta_0]  testvg ewi-aor---    1 linear 4.00m /dev/sdb1(512)
-</span><span class="go">  [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sde1(0)
-</span></code></pre></div><p>This shows us the visible LV testlv as well as the hidden
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvs -a --segments -o+devices
+</span></span><span class="line"><span class="cl"><span class="go">  LV                VG     Attr       #Str Type   SSize Devices
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv            testvg rwi-a-r---    2 raid1  6.00g testlv_rimage_0(0),testlv_rimage_1(0)
+</span></span></span><span class="line"><span class="cl"><span class="go">  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdb1(0)
+</span></span></span><span class="line"><span class="cl"><span class="go">  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdc1(0)
+</span></span></span><span class="line"><span class="cl"><span class="go">  [testlv_rimage_0] testvg iwi-aor---    1 linear 2.00g /dev/sdd1(0)
+</span></span></span><span class="line"><span class="cl"><span class="go">  [testlv_rimage_1] testvg iwi-aor---    1 linear 6.00g /dev/sde1(1)
+</span></span></span><span class="line"><span class="cl"><span class="go">  [testlv_rmeta_0]  testvg ewi-aor---    1 linear 4.00m /dev/sdb1(512)
+</span></span></span><span class="line"><span class="cl"><span class="go">  [testlv_rmeta_1]  testvg ewi-aor---    1 linear 4.00m /dev/sde1(0)
+</span></span></span></code></pre></div><p>This shows us the visible LV testlv as well as the hidden
 infrastructure that is being created to build it. The left leg
 of the RAID 1 is testlv_rimage_0, spread over 3 physical
 devices.</p>
@@ -334,28 +334,28 @@ array synchonisation.</p>
 <p>Here we see the asymmetric layout again, at the <code>pvs</code> level.
 Note how the allocation of the rmeta sub-LVs creats the &ldquo;.99&rdquo;
 free sizes.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@ubuntu:~# pvs
-</span><span class="go">  PV         VG     Fmt  Attr PSize   PFree
-</span><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g  17.99g
-</span><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sde1  testvg lvm2 a--  &lt;20.00g  13.99g
-</span><span class="go">  /dev/sdf1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdg1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span><span class="go"></span><span class="gp"># </span>pvdisplay --map
-<span class="go">  --- Physical volume ---
-</span><span class="go">  PV Name               /dev/sde1
-</span><span class="go">  VG Name               testvg
-</span><span class="go">...
-</span><span class="go">  --- Physical Segments ---
-</span><span class="go">  Physical extent 0 to 0:
-</span><span class="go">    Logical volume      /dev/testvg/testlv_rmeta_1
-</span><span class="go">    Logical extents     0 to 0
-</span><span class="go">  Physical extent 1 to 1536:
-</span><span class="go">    Logical volume      /dev/testvg/testlv_rimage_1
-</span><span class="go">    Logical extents     0 to 1535
-</span><span class="go">...
-</span></code></pre></div><h2 id="maintaining-the-raid">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@ubuntu:~# pvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV         VG     Fmt  Attr PSize   PFree
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g  17.99g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sde1  testvg lvm2 a--  &lt;20.00g  13.99g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdf1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdg1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> pvdisplay --map
+</span></span><span class="line"><span class="cl"><span class="go">  --- Physical volume ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV Name               /dev/sde1
+</span></span></span><span class="line"><span class="cl"><span class="go">  VG Name               testvg
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical Segments ---
+</span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 0 to 0:
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical volume      /dev/testvg/testlv_rmeta_1
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical extents     0 to 0
+</span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 1 to 1536:
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical volume      /dev/testvg/testlv_rimage_1
+</span></span></span><span class="line"><span class="cl"><span class="go">    Logical extents     0 to 1535
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><h2 id="maintaining-the-raid">
     <a href="#maintaining-the-raid">
 	Maintaining the RAID
     </a>
@@ -365,13 +365,13 @@ md-raid. Among them are also controls that control the sync speed of a
 logical volume. The lvchange command can set these. For demonstration
 purposes we are setting these as low as possible, then force a resync of the
 RAID and check this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvchange /dev/testvg/testlv --minrecoveryrate 1k --maxrecoveryrate 100k
-<span class="go">  Logical volume testvg/testlv changed.
-</span><span class="go"></span><span class="gp"># </span>lvchange --syncaction repair /dev/testvg/testlv
-<span class="gp"># </span>lvs -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
-<span class="go">  LV                VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
-</span><span class="go">  testlv            testvg rwi-a-r--- 6.00g                                    0.19                   1     100          0 repair
-</span></code></pre></div><p>The <code>--syncaction repair</code> forces a RAID recovery, the <code>lvs</code> command shows
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvchange /dev/testvg/testlv --minrecoveryrate 1k --maxrecoveryrate 100k
+</span></span><span class="line"><span class="cl"><span class="go">  Logical volume testvg/testlv changed.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> lvchange --syncaction repair /dev/testvg/testlv
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvs -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
+</span></span><span class="line"><span class="cl"><span class="go">  LV                VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv            testvg rwi-a-r--- 6.00g                                    0.19                   1     100          0 repair
+</span></span></span></code></pre></div><p>The <code>--syncaction repair</code> forces a RAID recovery, the <code>lvs</code> command shows
 the data we need to see to track it.</p>
 <h2 id="splitting-the-raid-and-the-vg">
     <a href="#splitting-the-raid-and-the-vg">
@@ -380,21 +380,21 @@ the data we need to see to track it.</p>
 </h2>
 <p>We can now split the RAID into two unraided LVs with different
 names inside the same VG:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@ubuntu:~# lvconvert --splitmirrors 1 -n splitlv /dev/testvg/testlv
-</span><span class="go">Are you sure you want to split raid1 LV testvg/testlv losing all resilience? [y/n]: y
-</span><span class="go">root@ubuntu:~# lvs
-</span><span class="go">  LV      VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span><span class="go">  splitlv testvg -wi-a----- 6.00g
-</span><span class="go">  testlv  testvg -wi-a----- 6.00g
-</span><span class="go">root@ubuntu:~# pvs
-</span><span class="go">  PV         VG     Fmt  Attr PSize   PFree
-</span><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sde1  testvg lvm2 a--  &lt;20.00g &lt;14.00g
-</span><span class="go">  /dev/sdf1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdg1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
-</span></code></pre></div><p>Since the raid is now split, the rmeta sub-LVs are gone and the
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvconvert --splitmirrors 1 -n splitlv /dev/testvg/testlv
+</span></span></span><span class="line"><span class="cl"><span class="go">Are you sure you want to split raid1 LV testvg/testlv losing all resilience? [y/n]: y
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  LV      VG     Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+</span></span></span><span class="line"><span class="cl"><span class="go">  splitlv testvg -wi-a----- 6.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv  testvg -wi-a----- 6.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# pvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV         VG     Fmt  Attr PSize   PFree
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdb1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdc1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdd1  testvg lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sde1  testvg lvm2 a--  &lt;20.00g &lt;14.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdf1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdg1  testvg lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span></code></pre></div><p>Since the raid is now split, the rmeta sub-LVs are gone and the
 rimage sub-LVs are unwrapped and become the actual LVs (and
 those .99 numbers in the PFree column are nice and round again).</p>
 <p>At this point we can then proceed to split the Volume Group in two,
@@ -407,30 +407,30 @@ LVs. If this is not the case, splitting the data LV would require
 a boot into a rescue image in order to be able to split the data
 LV: It is not possible to offline a boot LV without this.</p>
 <p>The outcome:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@ubuntu:~# vgchange -an testvg
-</span><span class="go">  0 logical volume(s) in volume group &#34;testvg&#34; now active
-</span><span class="go">root@ubuntu:~# vgsplit -n splitlv testvg splitvg
-</span><span class="go">  New volume group &#34;splitvg&#34; successfully split from &#34;testvg&#34;
-</span><span class="go">root@ubuntu:~# lvs
-</span><span class="go">  LV      VG      Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
-</span><span class="go">  splitlv splitvg -wi------- 6.00g
-</span><span class="go">  testlv  testvg  -wi------- 6.00g
-</span><span class="go">root@ubuntu:~# pvs
-</span><span class="go">  PV         VG      Fmt  Attr PSize   PFree
-</span><span class="go">  /dev/sdb1  testvg  lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdc1  testvg  lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sdd1  testvg  lvm2 a--  &lt;20.00g &lt;18.00g
-</span><span class="go">  /dev/sde1  splitvg lvm2 a--  &lt;20.00g &lt;14.00g
-</span><span class="go">  /dev/sdf1  testvg  lvm2 a--  &lt;20.00g &lt;20.00g
-</span><span class="go">  /dev/sdg1  testvg  lvm2 a--  &lt;20.00g &lt;20.00g
-</span></code></pre></div><p>We can see that vgsplit automatically identified the physical
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@ubuntu:~# vgchange -an testvg
+</span></span></span><span class="line"><span class="cl"><span class="go">  0 logical volume(s) in volume group &#34;testvg&#34; now active
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# vgsplit -n splitlv testvg splitvg
+</span></span></span><span class="line"><span class="cl"><span class="go">  New volume group &#34;splitvg&#34; successfully split from &#34;testvg&#34;
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# lvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  LV      VG      Attr       LSize Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+</span></span></span><span class="line"><span class="cl"><span class="go">  splitlv splitvg -wi------- 6.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  testlv  testvg  -wi------- 6.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">root@ubuntu:~# pvs
+</span></span></span><span class="line"><span class="cl"><span class="go">  PV         VG      Fmt  Attr PSize   PFree
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdb1  testvg  lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdc1  testvg  lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdd1  testvg  lvm2 a--  &lt;20.00g &lt;18.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sde1  splitvg lvm2 a--  &lt;20.00g &lt;14.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdf1  testvg  lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  /dev/sdg1  testvg  lvm2 a--  &lt;20.00g &lt;20.00g
+</span></span></span></code></pre></div><p>We can see that vgsplit automatically identified the physical
 drives that make up the splitlv volume, made sure nothing else
 is on these drives and moves them into a new VG splitvg.</p>
 <p>We can now <code>vgexport</code> that thing, eject the drives and move them
 elsewhere. Over there, we can <code>vgimport</code> things and proceed.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@ubuntu:~# vgexport splitvg
-</span><span class="go">  Volume group &#34;splitvg&#34; successfully exported
-</span></code></pre></div><p>It is now safe to pull the drive.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@ubuntu:~# vgexport splitvg
+</span></span></span><span class="line"><span class="cl"><span class="go">  Volume group &#34;splitvg&#34; successfully exported
+</span></span></span></code></pre></div><p>It is now safe to pull the drive.</p>
 
       </div>
     </div>

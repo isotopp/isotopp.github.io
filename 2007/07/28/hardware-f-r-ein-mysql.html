@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Hardware für ein MySQL' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -225,19 +225,19 @@
 <p>Bei einem COMMIT schreibt InnoDB die geänderte 16K Seite nun nicht sofort zurück in den Tablespace, sondern notiert die Änderung erst einmal im Redo-Log und markiert die InnoDB-Seite als Dirty. Später wird die Dirty Page zur Disk gesendet und der entsprechende Redo-Log Pointer kann vorwärts bewegt werden um den Platz im Redo-Log wieder frei zu geben.</p>
 <p>Dadurch, daß alle Änderungen so erst einmal im Redo-Log landen, werden Schreibzugriffe, die eigentlich Random-Writes wären vorübergehend erst einmal als Lineare Writes abgehandelt: Wir hatten weiter oben ja schon etabliert, daß lineare Writes schneller sind. Außerdem spekuliert diese Aktion natürlich darauf, daß eine eben veränderte InnoDB Seite wegen Locality gleich noch einmal geändert wird und wir so Random I/O-Schreibzugriffe einsparen können.</p>
 <p>Wir können Locality abschätzen, indem wir die Größe des Redo-Logs mit der Menge der Pages vergleichen, die dirty sind. In <em>SHOW ENGINE INNODB STATUS\G</em> finden wir:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">---
-</span><span class="go">LOG
-</span><span class="go">---
-</span><span class="go">Log sequence number 0 1994670731
-</span><span class="go">Log flushed up to   0 1994670268
-</span><span class="go">Last checkpoint at  0 1993477319
-</span><span class="go">...
-</span><span class="go">----------------------
-</span><span class="go">BUFFER POOL AND MEMORY
-</span><span class="go">----------------------
-</span><span class="go">...
-</span><span class="go">Modified db pages  278
-</span></code></pre></div><p>Unser Redo-Log hat also bisher Null (0) Umdrehungen gemacht, und der Schreibzeiger steht bei Offset 1994670731, während der hintere Lesezeiger bei Offset 1993477319 steht. Es sind also 1994670731-1993477319 = 1193412 (ca. 1.1M) Redo-Log belegt. Dem stehen 278 16K große Seiten (ca. 4.4M) gegenüber, die als Dirty markiert sind. Wenn es uns gelingt, durch Umstrukturierung dieses Verhältnis zu verbessern, also die Anzahl der Seiten, die als Dirty markiert werden zu verkleinern, dann bekommen wir weniger Random-I/O und eine bessere Schreibleistung.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">---
+</span></span></span><span class="line"><span class="cl"><span class="go">LOG
+</span></span></span><span class="line"><span class="cl"><span class="go">---
+</span></span></span><span class="line"><span class="cl"><span class="go">Log sequence number 0 1994670731
+</span></span></span><span class="line"><span class="cl"><span class="go">Log flushed up to   0 1994670268
+</span></span></span><span class="line"><span class="cl"><span class="go">Last checkpoint at  0 1993477319
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">----------------------
+</span></span></span><span class="line"><span class="cl"><span class="go">BUFFER POOL AND MEMORY
+</span></span></span><span class="line"><span class="cl"><span class="go">----------------------
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">Modified db pages  278
+</span></span></span></code></pre></div><p>Unser Redo-Log hat also bisher Null (0) Umdrehungen gemacht, und der Schreibzeiger steht bei Offset 1994670731, während der hintere Lesezeiger bei Offset 1993477319 steht. Es sind also 1994670731-1993477319 = 1193412 (ca. 1.1M) Redo-Log belegt. Dem stehen 278 16K große Seiten (ca. 4.4M) gegenüber, die als Dirty markiert sind. Wenn es uns gelingt, durch Umstrukturierung dieses Verhältnis zu verbessern, also die Anzahl der Seiten, die als Dirty markiert werden zu verkleinern, dann bekommen wir weniger Random-I/O und eine bessere Schreibleistung.</p>
 <p>MySQL wird die &ldquo;modified db pages&rdquo; dann verzögert und im Batch auf die Platte schreiben, wenn</p>
 <ul>
 <li>das Redo-Log droht, vollzulaufen</li>

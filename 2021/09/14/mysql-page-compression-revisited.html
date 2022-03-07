@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL: Page compression revisited' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -187,60 +187,60 @@ This is called a <em>sparse file</em>, a file with holes in it.</p>
 <p>Reading a sparse file, the non-existent blocks are returned as blocks filled with zeroes.
 On writing, space is allocated for the previously unallocated blocks in the sparse file, but probably not in sequence.
 So on hard disks, a seek occurs that would probably not have occurred, had the file actually been written properly.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">kris</span><span class="err">@</span><span class="nl">server</span><span class="p">:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">sparseme</span><span class="p">.</span><span class="n">c</span>
-
-<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
-</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
-</span><span class="cp"></span>
-<span class="cm">/* 20 GB */</span>
-<span class="cp">#define FAR_OUT ((long) 20*1024*1024*1024)
-</span><span class="cp"></span>
-<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kt">int</span> <span class="n">something</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-        <span class="n">FILE</span> <span class="o">*</span><span class="n">fp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-
-        <span class="cm">/* trunate to 0, or create, position 0 */</span>
-        <span class="n">fp</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&#34;testfile&#34;</span><span class="p">,</span> <span class="s">&#34;w&#34;</span><span class="p">);</span> 
-        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">fp</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Cannot open &#39;testfile&#39;, I die.&#34;</span><span class="p">);</span>
-                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-        <span class="p">}</span>
-        <span class="cm">/* move to far out position */</span>
-        <span class="n">fseek</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">FAR_OUT</span><span class="p">,</span> <span class="n">SEEK_SET</span><span class="p">);</span>
-        <span class="cm">/* write something */</span>
-        <span class="n">fwrite</span><span class="p">(</span><span class="o">&amp;</span><span class="n">something</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">something</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fp</span><span class="p">);</span>
-        <span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
-
-        <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div><p>When looking at this on the disk we can see that in fact only 4 KB of disk space (one block on a modern disk) has been allocated.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris@server:~$ cc -o sparseme sparseme.c
-</span><span class="go">kris@server:~$ ./sparseme
-</span><span class="go">kris@server:~$ ls -lsh testfile
-</span><span class="go">4.0K -rw-rw-r-- 1 kris kris 21G Sep 14 16:37 testfile
-</span><span class="go">kris@server:~$ xfs_bmap -v testfile
-</span><span class="go">testfile:
-</span><span class="go"> EXT: FILE-OFFSET           BLOCK-RANGE          AG AG-OFFSET               TOTAL
-</span><span class="go">   0: [0..41943039]:        hole                                         41943040
-</span><span class="go">   1: [41943040..41943047]: 104705904..104705911  3 (10334064..10334071)        8
-</span></code></pre></div><p>We compile the C-program with <code>cc -o sparseme sparseme.c</code>, then run it as <code>./sparseme</code>.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="n">kris</span><span class="err">@</span><span class="nl">server</span><span class="p">:</span><span class="o">~</span><span class="err">$</span> <span class="n">cat</span> <span class="n">sparseme</span><span class="p">.</span><span class="n">c</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="cm">/* 20 GB */</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define FAR_OUT ((long) 20*1024*1024*1024)
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span>
+</span></span><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="kt">int</span> <span class="n">something</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="n">FILE</span> <span class="o">*</span><span class="n">fp</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="cm">/* trunate to 0, or create, position 0 */</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fp</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">&#34;testfile&#34;</span><span class="p">,</span> <span class="s">&#34;w&#34;</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">fp</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="n">fprintf</span><span class="p">(</span><span class="n">stderr</span><span class="p">,</span> <span class="s">&#34;Cannot open &#39;testfile&#39;, I die.&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">                <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/* move to far out position */</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fseek</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">FAR_OUT</span><span class="p">,</span> <span class="n">SEEK_SET</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="cm">/* write something */</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fwrite</span><span class="p">(</span><span class="o">&amp;</span><span class="n">something</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">something</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">fp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="n">fclose</span><span class="p">(</span><span class="n">fp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>When looking at this on the disk we can see that in fact only 4 KB of disk space (one block on a modern disk) has been allocated.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ cc -o sparseme sparseme.c
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ./sparseme
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -lsh testfile
+</span></span></span><span class="line"><span class="cl"><span class="go">4.0K -rw-rw-r-- 1 kris kris 21G Sep 14 16:37 testfile
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ xfs_bmap -v testfile
+</span></span></span><span class="line"><span class="cl"><span class="go">testfile:
+</span></span></span><span class="line"><span class="cl"><span class="go"> EXT: FILE-OFFSET           BLOCK-RANGE          AG AG-OFFSET               TOTAL
+</span></span></span><span class="line"><span class="cl"><span class="go">   0: [0..41943039]:        hole                                         41943040
+</span></span></span><span class="line"><span class="cl"><span class="go">   1: [41943040..41943047]: 104705904..104705911  3 (10334064..10334071)        8
+</span></span></span></code></pre></div><p>We compile the C-program with <code>cc -o sparseme sparseme.c</code>, then run it as <code>./sparseme</code>.
 We look at the resulting <code>testfile</code> with <code>ls -lsh testfile</code>. The size of the file is shown as 21G, but the allocation (in the leftmost column, we asked for that with the <code>-s</code> flag) is only 4K.</p>
 <p>Using the XFS maintenance program <code>xfs_bmap</code> in verbose mode, we get to see the block map (bmap) of the file, as an extent listing. The program operates with sectors of 512 bytes, the unit that was common for many hard disk before we moved to 4K sectors. We see a large hole from offset 0 to 41943039 (times 512 bytes for sector size, this is 20 GB). Then there are 8 sectors (one 4K disk drive hardware block) mapped to 8 contiguous blocks (actually one hardware block) at 104705904 from the start of the partition.</p>
 <p>We can do the same thing using a <code>dd</code> command without writing a C-program:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris@server:~$ rm testfile testfile2
-</span><span class="go">kris@server:~$ dd if=/dev/zero of=testfile2 bs=1 count=1 seek=21474836480
-</span><span class="go">1+0 records in
-</span><span class="go">1+0 records out
-</span><span class="go">1 byte copied, 0.000227159 s, 4.4 kB/s
-</span><span class="go">kris@server:~$ ls -lsh testfile2
-</span><span class="go">4.0K -rw-rw-r-- 1 kris kris 21G Sep 14 16:47 testfile2
-</span><span class="go">kris@server:~$ xfs_bmap -v testfile2
-</span><span class="go">testfile2:
-</span><span class="go"> EXT: FILE-OFFSET           BLOCK-RANGE          AG AG-OFFSET               TOTAL
-</span><span class="go">   0: [0..41943039]:        hole                                         41943040
-</span><span class="go">   1: [41943040..41943047]: 104705904..104705911  3 (10334064..10334071)        8
-</span></code></pre></div><p>Our <code>of=testfile2</code> generates the outfile, and we write one byte (<code>bs=1</code>) one time (<code>count=1</code>) after seeking to position 20G (<code>seek=...</code>).
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ rm testfile testfile2
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ dd if=/dev/zero of=testfile2 bs=1 count=1 seek=21474836480
+</span></span></span><span class="line"><span class="cl"><span class="go">1+0 records in
+</span></span></span><span class="line"><span class="cl"><span class="go">1+0 records out
+</span></span></span><span class="line"><span class="cl"><span class="go">1 byte copied, 0.000227159 s, 4.4 kB/s
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ ls -lsh testfile2
+</span></span></span><span class="line"><span class="cl"><span class="go">4.0K -rw-rw-r-- 1 kris kris 21G Sep 14 16:47 testfile2
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ xfs_bmap -v testfile2
+</span></span></span><span class="line"><span class="cl"><span class="go">testfile2:
+</span></span></span><span class="line"><span class="cl"><span class="go"> EXT: FILE-OFFSET           BLOCK-RANGE          AG AG-OFFSET               TOTAL
+</span></span></span><span class="line"><span class="cl"><span class="go">   0: [0..41943039]:        hole                                         41943040
+</span></span></span><span class="line"><span class="cl"><span class="go">   1: [41943040..41943047]: 104705904..104705911  3 (10334064..10334071)        8
+</span></span></span></code></pre></div><p>Our <code>of=testfile2</code> generates the outfile, and we write one byte (<code>bs=1</code>) one time (<code>count=1</code>) after seeking to position 20G (<code>seek=...</code>).
 Using <code>ls -lsh</code> and the <code>xfs_bmap</code> output, we can confirm that this is indeed a file with a hole.</p>
 <p>Sparse files are hard to handle:
 When you copy them, the non-existent blocks are read as blocks full of 0-bytes, and written.
@@ -262,46 +262,46 @@ Using the filesystem dependent <code>FALLOC_FL_PUNCH_HOLE</code> flag, extents i
 
  look like on disk, using <code>xfs_bmap</code>.</p>
 <p>The uncompressed table looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris@server:~/sandboxes/msb_8_0_25/data/kris$ xfs_bmap -v keks.ibd
-</span><span class="go">keks.ibd:
-</span><span class="go"> EXT: FILE-OFFSET       BLOCK-RANGE          AG AG-OFFSET             TOTAL
-</span><span class="go">   0: [0..63]:          104752464..104752527  3 (10380624..10380687)     64
-</span><span class="go">   1: [64..159]:        104753560..104753655  3 (10381720..10381815)     96
-</span><span class="go">   2: [160..223]:       104744928..104744991  3 (10373088..10373151)     64
-</span><span class="go">  ...
-</span><span class="go">  18: [327680..450559]: 126091200..126214079  4 (262080..384959)     122880
-</span><span class="go">  19: [450560..516095]: 126404568..126470103  4 (575448..640983)      65536
-</span></code></pre></div><p>We get 20 extents, some of which are smaller than 100 sectors, but some of which are larger than 100k sectors of contiguous space.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~/sandboxes/msb_8_0_25/data/kris$ xfs_bmap -v keks.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">keks.ibd:
+</span></span></span><span class="line"><span class="cl"><span class="go"> EXT: FILE-OFFSET       BLOCK-RANGE          AG AG-OFFSET             TOTAL
+</span></span></span><span class="line"><span class="cl"><span class="go">   0: [0..63]:          104752464..104752527  3 (10380624..10380687)     64
+</span></span></span><span class="line"><span class="cl"><span class="go">   1: [64..159]:        104753560..104753655  3 (10381720..10381815)     96
+</span></span></span><span class="line"><span class="cl"><span class="go">   2: [160..223]:       104744928..104744991  3 (10373088..10373151)     64
+</span></span></span><span class="line"><span class="cl"><span class="go">  ...
+</span></span></span><span class="line"><span class="cl"><span class="go">  18: [327680..450559]: 126091200..126214079  4 (262080..384959)     122880
+</span></span></span><span class="line"><span class="cl"><span class="go">  19: [450560..516095]: 126404568..126470103  4 (575448..640983)      65536
+</span></span></span></code></pre></div><p>We get 20 extents, some of which are smaller than 100 sectors, but some of which are larger than 100k sectors of contiguous space.</p>
 <p>Now the page compressed file:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris@server:~/sandboxes/msb_8_0_25/data/kris$ xfs_bmap -v keks2.ibd
-</span><span class="go">keks2.ibd:
-</span><span class="go"> EXT: FILE-OFFSET       BLOCK-RANGE          AG AG-OFFSET            TOTAL
-</span><span class="go">   0: [0..31]:          104756944..104756975  3 (10385104..10385135)    32
-</span><span class="go">   1: [32..63]:         104757000..104757031  3 (10385160..10385191)    32
-</span><span class="go">   2: [64..71]:         104709000..104709007  3 (10337160..10337167)     8
-</span><span class="go">   3: [72..95]:         hole                                            24
-</span><span class="go">   4: [96..103]:        104709032..104709039  3 (10337192..10337199)     8
-</span><span class="go">   5: [104..127]:       hole                                            24
-</span><span class="go">30886: [494440..494463]: hole                                            24
-</span><span class="go">30887: [494464..494471]: 127160928..127160935  4 (1331808..1331815)       8
-</span><span class="go">30888: [494472..494495]: hole                                            24
-</span><span class="go">30889: [494496..516095]: 127160960..127182559  4 (1331840..1353439)   21600
-</span></code></pre></div><p>We get more than 30k extents here, all of them 8 sectors (4K) of data and 24 sectors (12K) of hole in my very compressible test data.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~/sandboxes/msb_8_0_25/data/kris$ xfs_bmap -v keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">keks2.ibd:
+</span></span></span><span class="line"><span class="cl"><span class="go"> EXT: FILE-OFFSET       BLOCK-RANGE          AG AG-OFFSET            TOTAL
+</span></span></span><span class="line"><span class="cl"><span class="go">   0: [0..31]:          104756944..104756975  3 (10385104..10385135)    32
+</span></span></span><span class="line"><span class="cl"><span class="go">   1: [32..63]:         104757000..104757031  3 (10385160..10385191)    32
+</span></span></span><span class="line"><span class="cl"><span class="go">   2: [64..71]:         104709000..104709007  3 (10337160..10337167)     8
+</span></span></span><span class="line"><span class="cl"><span class="go">   3: [72..95]:         hole                                            24
+</span></span></span><span class="line"><span class="cl"><span class="go">   4: [96..103]:        104709032..104709039  3 (10337192..10337199)     8
+</span></span></span><span class="line"><span class="cl"><span class="go">   5: [104..127]:       hole                                            24
+</span></span></span><span class="line"><span class="cl"><span class="go">30886: [494440..494463]: hole                                            24
+</span></span></span><span class="line"><span class="cl"><span class="go">30887: [494464..494471]: 127160928..127160935  4 (1331808..1331815)       8
+</span></span></span><span class="line"><span class="cl"><span class="go">30888: [494472..494495]: hole                                            24
+</span></span></span><span class="line"><span class="cl"><span class="go">30889: [494496..516095]: 127160960..127182559  4 (1331840..1353439)   21600
+</span></span></span></code></pre></div><p>We get more than 30k extents here, all of them 8 sectors (4K) of data and 24 sectors (12K) of hole in my very compressible test data.
 This is messy.</p>
 <p>Trying to delete these things demonstrates the cost of this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris@server:~$ cp ~/sandboxes/msb_8_0_25/data/kris/keks.ibd .
-</span><span class="go">kris@server:~$ cp --sparse=always ~/sandboxes/msb_8_0_25/data/kris/keks2.ibd .
-</span><span class="go">kris@server:~$ time rm keks.ibd
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">real    0m0.020s
-</span><span class="go">user    0m0.000s
-</span><span class="go">sys     0m0.020s
-</span><span class="go">kris@server:~$ time rm keks2.ibd
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">real    0m0.123s
-</span><span class="go">user    0m0.000s
-</span><span class="go">sys     0m0.109s
-</span></code></pre></div><p>With longer files, we get more holes, more overhead and even longer times.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~$ cp ~/sandboxes/msb_8_0_25/data/kris/keks.ibd .
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ cp --sparse=always ~/sandboxes/msb_8_0_25/data/kris/keks2.ibd .
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ time rm keks.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">real    0m0.020s
+</span></span></span><span class="line"><span class="cl"><span class="go">user    0m0.000s
+</span></span></span><span class="line"><span class="cl"><span class="go">sys     0m0.020s
+</span></span></span><span class="line"><span class="cl"><span class="go">kris@server:~$ time rm keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">real    0m0.123s
+</span></span></span><span class="line"><span class="cl"><span class="go">user    0m0.000s
+</span></span></span><span class="line"><span class="cl"><span class="go">sys     0m0.109s
+</span></span></span></code></pre></div><p>With longer files, we get more holes, more overhead and even longer times.</p>
 <h1 id="file-size-over-time">
     <a href="#file-size-over-time">
 	File Size over Time
@@ -309,34 +309,34 @@ This is messy.</p>
 </h1>
 <p>While running <code>insert into keks2 select * from keks</code>, I was monitoring the size of the new table at the file system level.
 This looks funny, because we can see the file&rsquo;s allocation growing over time, but there are downward spikes in allocation every few seconds.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris@server:~/sandboxes/msb_8_0_25$ while :
-</span><span class="go"></span><span class="gp">&gt; </span><span class="k">do</span>
-<span class="gp">&gt; </span>ls -lsh data/kris/keks2*
-<span class="gp">&gt; </span>sleep <span class="m">1</span>
-<span class="gp">&gt; </span><span class="k">done</span>
-<span class="go">197M -rw-r----- 1 kris kris 524M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">200M -rw-r----- 1 kris kris 532M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">203M -rw-r----- 1 kris kris 540M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">205M -rw-r----- 1 kris kris 548M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">208M -rw-r----- 1 kris kris 556M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">212M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">207M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
-</span><span class="go">209M -rw-r----- 1 kris kris 572M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">212M -rw-r----- 1 kris kris 580M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">216M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">215M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
-</span><span class="go">218M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">212M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
-</span><span class="go">219M -rw-r----- 1 kris kris 604M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">223M -rw-r----- 1 kris kris 612M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">226M -rw-r----- 1 kris kris 620M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">225M -rw-r----- 1 kris kris 624M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
-</span><span class="go">228M -rw-r----- 1 kris kris 632M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">227M -rw-r----- 1 kris kris 636M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">225M -rw-r----- 1 kris kris 640M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
-</span><span class="go">233M -rw-r----- 1 kris kris 652M Sep 14 19:09 data/kris/keks2.ibd
-</span><span class="go">232M -rw-r----- 1 kris kris 656M Sep 14 19:09 data/kris/keks2.ibd
-</span></code></pre></div><p>The size of these downward spikes (several megabytes in some instances) is impressive.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris@server:~/sandboxes/msb_8_0_25$ while :
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">&gt;</span> <span class="k">do</span>
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span> ls -lsh data/kris/keks2*
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span> sleep <span class="m">1</span>
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span> <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="go">197M -rw-r----- 1 kris kris 524M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">200M -rw-r----- 1 kris kris 532M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">203M -rw-r----- 1 kris kris 540M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">205M -rw-r----- 1 kris kris 548M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">208M -rw-r----- 1 kris kris 556M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">212M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">207M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
+</span></span></span><span class="line"><span class="cl"><span class="go">209M -rw-r----- 1 kris kris 572M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">212M -rw-r----- 1 kris kris 580M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">216M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">215M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
+</span></span></span><span class="line"><span class="cl"><span class="go">218M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">212M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
+</span></span></span><span class="line"><span class="cl"><span class="go">219M -rw-r----- 1 kris kris 604M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">223M -rw-r----- 1 kris kris 612M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">226M -rw-r----- 1 kris kris 620M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">225M -rw-r----- 1 kris kris 624M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
+</span></span></span><span class="line"><span class="cl"><span class="go">228M -rw-r----- 1 kris kris 632M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">227M -rw-r----- 1 kris kris 636M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">225M -rw-r----- 1 kris kris 640M Sep 14 19:09 data/kris/keks2.ibd  &lt;---
+</span></span></span><span class="line"><span class="cl"><span class="go">233M -rw-r----- 1 kris kris 652M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span><span class="line"><span class="cl"><span class="go">232M -rw-r----- 1 kris kris 656M Sep 14 19:09 data/kris/keks2.ibd
+</span></span></span></code></pre></div><p>The size of these downward spikes (several megabytes in some instances) is impressive.</p>
 <h1 id="implications-for-mysql">
     <a href="#implications-for-mysql">
 	Implications for MySQL

@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Filling disk space fast' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -155,35 +155,35 @@ up.</p>
 <p>I have been looking into disk copy speeds in order to better understand the
 limits. When creating a partition from NVME devices, the most simple layout
 is a concatenation:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvcreate -n kris -L 10t vg00
-<span class="gp"># </span>dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>data.0 <span class="nv">bs</span><span class="o">=</span>1024k <span class="nv">count</span><span class="o">=</span><span class="m">10240</span>
-</code></pre></div><p>Using a single <code>dd</code> command, I get about 600 MB/sec read or written from it.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvcreate -n kris -L 10t vg00
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>data.0 <span class="nv">bs</span><span class="o">=</span>1024k <span class="nv">count</span><span class="o">=</span><span class="m">10240</span>
+</span></span></code></pre></div><p>Using a single <code>dd</code> command, I get about 600 MB/sec read or written from it.
 For 50TB, this is 87400 seconds, slightly more than one day.</p>
 <p>The key to NVME saturation is parallel access, so lets do this in parallel
 with multiple processes:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>seq <span class="m">1</span> <span class="m">128</span> <span class="p">|</span> parallel dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>data.<span class="o">{}</span> <span class="nv">bs</span><span class="o">=</span>1024k <span class="nv">count</span><span class="o">=</span><span class="m">10240</span>
-</code></pre></div><p>This will run as many processes in parallel as I have CPUs. On the test
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> seq <span class="m">1</span> <span class="m">128</span> <span class="p">|</span> parallel dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>data.<span class="o">{}</span> <span class="nv">bs</span><span class="o">=</span>1024k <span class="nv">count</span><span class="o">=</span><span class="m">10240</span>
+</span></span></code></pre></div><p>This will run as many processes in parallel as I have CPUs. On the test
 machine it will keep 32 processes running at all times, filling the queues
 of the NVME device deeply. It can reach 3250 MB/s, so 50 TB translate into
 16130 seconds, 4.5h.</p>
 <p>Had I created the NVME device as a striped RAID-0, I would have gotten even
 better performance:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvcreate -n kris -L 10t -i12 -I64k vg00
-<span class="gp"># </span>seq <span class="m">1</span> <span class="m">128</span> <span class="p">|</span> parallel dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>data.<span class="o">{}</span> <span class="nv">bs</span><span class="o">=</span>1024k <span class="nv">count</span><span class="o">=</span><span class="m">10240</span>
-</code></pre></div><p>This configuration can reach up to 5.2 GB/s locally, so for 50TB, we get to
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvcreate -n kris -L 10t -i12 -I64k vg00
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> seq <span class="m">1</span> <span class="m">128</span> <span class="p">|</span> parallel dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>data.<span class="o">{}</span> <span class="nv">bs</span><span class="o">=</span>1024k <span class="nv">count</span><span class="o">=</span><span class="m">10240</span>
+</span></span></code></pre></div><p>This configuration can reach up to 5.2 GB/s locally, so for 50TB, we get to
 2.75h disk write time.</p>
 <p>Now, what I actually want is unfortunately something different: A copy of
 the original database image from machine A transferred to machine B. So that
 will translate into something along the lines of</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>mkdir /root/kris
-<span class="gp"># </span><span class="nb">cd</span> !$
-<span class="gp"># </span>fpart -o chunk -n <span class="m">128</span> /mysql/testschema
-<span class="gp"># </span>find . -type f <span class="p">|</span> parallel rsync --files-from<span class="o">={}</span> / kris@B:/mysql/testschema
-</code></pre></div><p>but that is still suffering from all the rsync+ssh overhead. It will give
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> mkdir /root/kris
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> <span class="nb">cd</span> !$
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> fpart -o chunk -n <span class="m">128</span> /mysql/testschema
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> find . -type f <span class="p">|</span> parallel rsync --files-from<span class="o">={}</span> / kris@B:/mysql/testschema
+</span></span></code></pre></div><p>but that is still suffering from all the rsync+ssh overhead. It will give
 you around 2.7 GB/s. Using tar, this becomes</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>find . -type f <span class="p">|</span> 
-<span class="gp">&gt; </span>parallel <span class="s1">&#39;tar cvf - --files-from={} | ssh kkoehntopp@B &#34;tar -C /a -xf -&#34;&#39;</span>
-</code></pre></div><p>which is much faster for a clean, non-incremental copy. But that is still
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> find . -type f <span class="p">|</span> 
+</span></span><span class="line"><span class="cl"><span class="gp">&gt;</span> parallel <span class="s1">&#39;tar cvf - --files-from={} | ssh kkoehntopp@B &#34;tar -C /a -xf -&#34;&#39;</span>
+</span></span></code></pre></div><p>which is much faster for a clean, non-incremental copy. But that is still
 using ssh to encrypt and can become a bottleneck in some use cases.</p>
 <p>You could run <a href="http://moo.nac.uci.edu/~hjm/tnc" target="_blank" rel="noopener">tnc</a>
 

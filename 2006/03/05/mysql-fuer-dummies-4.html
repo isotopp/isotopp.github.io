@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL für Dummies (4)' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -166,13 +166,13 @@ Diese Hälfte halbiert man dann wieder, und so weiter und so weiter.</p>
 Für vier Bücher braucht man eine Operation, um dies auf den Fall mit zwei Büchern zurückzuführen, also zwei Operationen insgesamt.
 Für acht Bücher kann man dies mit einer Operation auf den Fall mit vier Büchern reduzieren.</p>
 <p>Allgemein braucht man für n Bücher dann also log(2,n) Operationen, um ein Buch eines bestimmten Autors zu finden.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">Bücher   Suchoperationen
-</span><span class="go">     2   1 (2^[b]1[/b] = 2)
-</span><span class="go">     4   2 (2^[b]2[/b] = 4)
-</span><span class="go">     8   3 (2^[b]3[/b] = 8)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">     n   e = log(2, n) (2^e = n)
-</span></code></pre></div><p>Aus einer Bibliothek mit 20 Millionen Büchern kann man also mit weniger als 24-25 Operationen die Bücher von Jeremey Zawodny finden, wenn man einen nach Autorennamen sortierten Katalog zur Verfügung hat:
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">Bücher   Suchoperationen
+</span></span></span><span class="line"><span class="cl"><span class="go">     2   1 (2^[b]1[/b] = 2)
+</span></span></span><span class="line"><span class="cl"><span class="go">     4   2 (2^[b]2[/b] = 4)
+</span></span></span><span class="line"><span class="cl"><span class="go">     8   3 (2^[b]3[/b] = 8)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">     n   e = log(2, n) (2^e = n)
+</span></span></span></code></pre></div><p>Aus einer Bibliothek mit 20 Millionen Büchern kann man also mit weniger als 24-25 Operationen die Bücher von Jeremey Zawodny finden, wenn man einen nach Autorennamen sortierten Katalog zur Verfügung hat:
 Man bekommt so eine Liste der Standorte, und muss dann zu den auf den Karten notierten Standorten laufen, um die Bücher tatsächlich abzuholen.</p>
 <pre tabindex="0"><code class="language-consonle" data-lang="consonle">root@localhost [(none)]&gt; select log(20000000)/log(2) as ops;
 +-----------------+
@@ -186,14 +186,14 @@ MySQL stellt mit den Funktionen <code>exp()</code> und <code>log()</code> die Ex
 <p>Tatsächlich befinden sich auf den Karten in einer Bibliothek aber Reiter, sodass man gleich unter &ldquo;Z&rdquo; nachschauen kann, also bei gleich verteilten Autorennamen schon mit dem ersten Schritt nur noch ein Sechsundzwanzigstel aller Bücher durchsuchen muss statt die Hälfte.
 Wäre nun auf allen Z-Karten &ldquo;Za&rdquo;, &ldquo;Zb&rdquo;, und so weiter notiert, würde auch der zweite Schritt nur sechsundzwanzigsteln, und so weiter.
 Man bräuchte dann bei 20 Millionen Büchern nur noch 5-6 Schritte, um alle Bücher von Jeremy Zawodny zu finden.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [(none)]&gt; select log(20000000)/log(26);
-</span><span class="go">+-----------------------+
-</span><span class="go">| log(20000000)/log(26) |
-</span><span class="go">+-----------------------+
-</span><span class="go">|       5.1598357001807 |
-</span><span class="go">+-----------------------+
-</span><span class="go">1 row in set (0.00 sec)
-</span></code></pre></div><p>Nun sind die Namen von Buchautoren aber nicht gleich verteilt.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [(none)]&gt; select log(20000000)/log(26);
+</span></span></span><span class="line"><span class="cl"><span class="go">+-----------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| log(20000000)/log(26) |
+</span></span></span><span class="line"><span class="cl"><span class="go">+-----------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|       5.1598357001807 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+-----------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.00 sec)
+</span></span></span></code></pre></div><p>Nun sind die Namen von Buchautoren aber nicht gleich verteilt.
 Stattdessen könnte man aber auch wie bei einem Lexikon vorgehen und in regelmäßigen Abständen, etwa für jeweils eine Million Autoren, Proben nehmen:
 Band 1 von A-E, Band 2 von F-L und so weiter.
 Innerhalb der Million würde man dann für jeweils einen 100.000er Block vermerken A-Be, Bf-Ca, und so weiter, und auf den weiteren Ebenen genauso.
@@ -213,31 +213,31 @@ Oder würden dies tun, wenn wir die Indexblöcke alle immer ganz voll machen wü
 Stattdessen machen wir die Blöcke nur zu 2/3 voll.
 Dadurch 128teln wir nicht, sondern 84teln nur, aber das macht fast nichts aus.
 20 Millionen Datensätze durchsuchen wir so mit maximal 4 Operationen.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [(none)]&gt; select 128*0.66;
-</span><span class="go">+----------+
-</span><span class="go">| 128*0.66 |
-</span><span class="go">+----------+
-</span><span class="go">|    84.48 |
-</span><span class="go">+----------+
-</span><span class="go">1 row in set (0.00 sec)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [(none)]&gt; select log(20000000)/log(84.48);
-</span><span class="go">+--------------------------+
-</span><span class="go">| log(20000000)/log(84.48) |
-</span><span class="go">+--------------------------+
-</span><span class="go">|          3.7892903582541 |
-</span><span class="go">+--------------------------+
-</span><span class="go">1 row in set (0.00 sec)
-</span></code></pre></div><p>Einen &ldquo;sortierten Autorenkatalog&rdquo; nennt man in einer Datenbank einen &ldquo;Index auf eine Spalte&rdquo;.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [(none)]&gt; select 128*0.66;
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| 128*0.66 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|    84.48 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.00 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [(none)]&gt; select log(20000000)/log(84.48);
+</span></span></span><span class="line"><span class="cl"><span class="go">+--------------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| log(20000000)/log(84.48) |
+</span></span></span><span class="line"><span class="cl"><span class="go">+--------------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|          3.7892903582541 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+--------------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.00 sec)
+</span></span></span></code></pre></div><p>Einen &ldquo;sortierten Autorenkatalog&rdquo; nennt man in einer Datenbank einen &ldquo;Index auf eine Spalte&rdquo;.
 In unserer Beispieltabelle haben wir die Spalten id, d, e und i.
 Wir wollen einen Index auf die Spalte i (INTEGER, 4 Byte) legen, also braucht ein Indexeintrag 8 Byte (4 Byte für den Integer und 4 Byte für den Datenzeiger).
 Für 20 Millionen Einträge rechnen wir also mit einer ca. 230 MB großen MYI-Datei.</p>
 <p>Die Rechnung geht so:
 20 Mio Einträge zu 8 Byte sind 152 MB, aber wir machen die Blöcke nur zu ca. 2/3 voll, also müssen wir das ganze durch 2/3 teilen:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [rootforum]&gt; select 20000000*8/1024/1024/(2/3)\G
-</span><span class="go">20000000*8/1024/1024/(2/3): 228.881836166382
-</span><span class="go">1 row in set (0.00 sec)
-</span></code></pre></div><p>Den Index erzeugen wir mit dem Kommando <code>CREATE INDEX</code>.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [rootforum]&gt; select 20000000*8/1024/1024/(2/3)\G
+</span></span></span><span class="line"><span class="cl"><span class="go">20000000*8/1024/1024/(2/3): 228.881836166382
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.00 sec)
+</span></span></span></code></pre></div><p>Den Index erzeugen wir mit dem Kommando <code>CREATE INDEX</code>.
 Das Kommando geht dann die Spalte i durch, notiert die Werte und für jeden Wert die Datensatznummer, in der der Wert zu finden ist.
 Die Werte müssen sortiert werden, und dazu braucht MySQL Platz.
 Der Puffer für diesen Platz kann online definiert werden, und sollte sehr groß gewählt werden (bei uns: Mindestens 230 MB groß, wie wir eben vorgerechnet haben).
@@ -247,90 +247,89 @@ Wir definieren dann für unsere Verbindung zur Datenbank und nur für diese eine
 Danach setzen wir <code>myisam_sort_buffer_size</code> wieder auf den alten Wert zurück.</p>
 <p>Wir verändern nicht <code>@@global.myisam_sort_buffer_size</code>, weil das ein großes Risiko wäre:
 Jedes <code>CREATE INDEX</code>, <code>ALTER TABLE ... ADD INDEX</code> oder <code>REPAIR TABLE</code> würde dann den großen Puffer verwenden und bis zu 300 MB Speicher verlangen.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [rootforum]&gt; select @@session.myisam_sort_buffer_size;
-</span><span class="go">+-----------------------------------+
-</span><span class="go">| @@session.myisam_sort_buffer_size |
-</span><span class="go">+-----------------------------------+
-</span><span class="go">|                          31457280 |
-</span><span class="go">+-----------------------------------+
-</span><span class="go">1 row in set (0.04 sec)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [rootforum]&gt; set @old_buffer=@@session.myisam_sort_buffer_size;
-</span><span class="go">Query OK, 0 rows affected (0.00 sec)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [rootforum]&gt; set @@session.myisam_sort_buffer_size = 300*1024*1024;
-</span><span class="go">Query OK, 0 rows affected (0.02 sec)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [rootforum]&gt; create index i on t(i);
-</span><span class="go">Query OK, 20000000 rows affected (4 min 33.35 sec)
-</span><span class="go">Records: 20000000  Duplicates: 0  Warnings: 0
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [rootforum]&gt; set @@session.myisam_sort_buffer_size = @old_buffer;
-</span><span class="go">Query OK, 0 rows affected (0.00 sec)
-</span></code></pre></div><p>Da diese Aktion auf meinem Rechner über 4 Minuten dauert, kann ich MySQL beim Erzeugen des Index zusehen:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [(none)]&gt; show processlist\G
-</span><span class="go">     Id: 5
-</span><span class="go">   User: root
-</span><span class="go">   Host: localhost
-</span><span class="go">     db: rootforum
-</span><span class="go">Command: Query
-</span><span class="go">   Time: 48
-</span><span class="go">  State: copy to tmp table
-</span><span class="go">   Info: create index i on t(i)
-</span><span class="go">...
-</span><span class="go"></span><span class="err">
-</span></code></pre></div><p>Das will ich genauer beobachten:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@linux:/var/lib/mysql/data/rootforum # ls -l
-</span><span class="go">total 1493641
-</span><span class="go">-rw-rw----  1 mysql mysql  527958016 Feb 12 17:15 #sql-26a5_5.MYD
-</span><span class="go">-rw-rw----  1 mysql mysql       1024 Feb 12 17:14 #sql-26a5_5.MYI
-</span><span class="go">-rw-rw----  1 mysql mysql       8628 Feb 12 17:14 #sql-26a5_5.frm
-</span><span class="go">drwx------  2 mysql mysql        240 Feb 12 17:14 ./
-</span><span class="go">drwxr-xr-x  6 mysql mysql        440 Feb 12 17:06 ../
-</span><span class="go">-rw-rw----  1 mysql mysql         61 Feb 12 17:01 db.opt
-</span><span class="go">-rw-rw----  1 mysql mysql 1000000000 Feb 12 17:07 t.MYD
-</span><span class="go">-rw-rw----  1 mysql mysql       1024 Feb 12 17:07 t.MYI
-</span><span class="go">-rw-rw----  1 mysql mysql       8628 Feb 12 17:02 t.frm
-</span></code></pre></div><p>Die Prozessgröße ist dabei eher klein:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@linux:/var/lib/mysql/data/rootforum # ps axuwww| grep mysql[d]
-</span><span class="go">mysql     9893  2.2  1.2 351420 13152 pts/1    Sl   15:13   2:41 /usr/local/mysql-max-5.0.18-linux-i686-glibc23/bin/mysqld ...
-</span></code></pre></div><p>Der mysqld hat hier also das Potenzial, bis zu 351420 KB zu belegen, da er aber für diese Übung frisch gestartet wurde, belegt er tatsächlich nur 13152 KB Speicher.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [rootforum]&gt; select @@session.myisam_sort_buffer_size;
+</span></span></span><span class="line"><span class="cl"><span class="go">+-----------------------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| @@session.myisam_sort_buffer_size |
+</span></span></span><span class="line"><span class="cl"><span class="go">+-----------------------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|                          31457280 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+-----------------------------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.04 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [rootforum]&gt; set @old_buffer=@@session.myisam_sort_buffer_size;
+</span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 0 rows affected (0.00 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [rootforum]&gt; set @@session.myisam_sort_buffer_size = 300*1024*1024;
+</span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 0 rows affected (0.02 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [rootforum]&gt; create index i on t(i);
+</span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 20000000 rows affected (4 min 33.35 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go">Records: 20000000  Duplicates: 0  Warnings: 0
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [rootforum]&gt; set @@session.myisam_sort_buffer_size = @old_buffer;
+</span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 0 rows affected (0.00 sec)
+</span></span></span></code></pre></div><p>Da diese Aktion auf meinem Rechner über 4 Minuten dauert, kann ich MySQL beim Erzeugen des Index zusehen:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [(none)]&gt; show processlist\G
+</span></span></span><span class="line"><span class="cl"><span class="go">     Id: 5
+</span></span></span><span class="line"><span class="cl"><span class="go">   User: root
+</span></span></span><span class="line"><span class="cl"><span class="go">   Host: localhost
+</span></span></span><span class="line"><span class="cl"><span class="go">     db: rootforum
+</span></span></span><span class="line"><span class="cl"><span class="go">Command: Query
+</span></span></span><span class="line"><span class="cl"><span class="go">   Time: 48
+</span></span></span><span class="line"><span class="cl"><span class="go">  State: copy to tmp table
+</span></span></span><span class="line"><span class="cl"><span class="go">   Info: create index i on t(i)
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>Das will ich genauer beobachten:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@linux:/var/lib/mysql/data/rootforum # ls -l
+</span></span></span><span class="line"><span class="cl"><span class="go">total 1493641
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql  527958016 Feb 12 17:15 #sql-26a5_5.MYD
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql       1024 Feb 12 17:14 #sql-26a5_5.MYI
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql       8628 Feb 12 17:14 #sql-26a5_5.frm
+</span></span></span><span class="line"><span class="cl"><span class="go">drwx------  2 mysql mysql        240 Feb 12 17:14 ./
+</span></span></span><span class="line"><span class="cl"><span class="go">drwxr-xr-x  6 mysql mysql        440 Feb 12 17:06 ../
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql         61 Feb 12 17:01 db.opt
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql 1000000000 Feb 12 17:07 t.MYD
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql       1024 Feb 12 17:07 t.MYI
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-rw----  1 mysql mysql       8628 Feb 12 17:02 t.frm
+</span></span></span></code></pre></div><p>Die Prozessgröße ist dabei eher klein:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@linux:/var/lib/mysql/data/rootforum # ps axuwww| grep mysql[d]
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql     9893  2.2  1.2 351420 13152 pts/1    Sl   15:13   2:41 /usr/local/mysql-max-5.0.18-linux-i686-glibc23/bin/mysqld ...
+</span></span></span></code></pre></div><p>Der mysqld hat hier also das Potenzial, bis zu 351420 KB zu belegen, da er aber für diese Übung frisch gestartet wurde, belegt er tatsächlich nur 13152 KB Speicher.</p>
 <p>Nach dem Abschluss der Kopieroperation ist die #sql-26a5_5.MYD genauso groß wie die t.MYD, und die eigentliche Sortieroperation kann beginnen.
 Der mysqld wächst um die vereinbarte Puffergröße (genauer: nur um die benötigte Größe und das nur schrittweise).</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [(none)]&gt; show processlist\G
-</span><span class="go">     Id: 5
-</span><span class="go">   User: root
-</span><span class="go">   Host: localhost
-</span><span class="go">     db: rootforum
-</span><span class="go">Command: Query
-</span><span class="go">   Time: 124
-</span><span class="go">  State: Repair by sorting
-</span><span class="go">   Info: create index i on t(i)
-</span></code></pre></div><p>Dies ist die Anzeige von <code>SHOW PROCESSLIST</code>, während sortiert wird und <code>der myisam_sort_buffer_size</code> tatsächlich benutzt wird.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [(none)]&gt; show processlist\G
+</span></span></span><span class="line"><span class="cl"><span class="go">     Id: 5
+</span></span></span><span class="line"><span class="cl"><span class="go">   User: root
+</span></span></span><span class="line"><span class="cl"><span class="go">   Host: localhost
+</span></span></span><span class="line"><span class="cl"><span class="go">     db: rootforum
+</span></span></span><span class="line"><span class="cl"><span class="go">Command: Query
+</span></span></span><span class="line"><span class="cl"><span class="go">   Time: 124
+</span></span></span><span class="line"><span class="cl"><span class="go">  State: Repair by sorting
+</span></span></span><span class="line"><span class="cl"><span class="go">   Info: create index i on t(i)
+</span></span></span></code></pre></div><p>Dies ist die Anzeige von <code>SHOW PROCESSLIST</code>, während sortiert wird und <code>der myisam_sort_buffer_size</code> tatsächlich benutzt wird.
 Sieht man sich den Prozess in der Unix-Prozessliste an, kann man sehen, daß auch Speicher belegt wird:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@linux:/var/lib/mysql/data/rootforum # !ps
-</span><span class="go">ps axuwww| grep mysql[d]
-</span><span class="go">mysql     9893  3.5 27.6 624744 286388 pts/1   Sl   15:13   4:24 /usr/local/mysql-max-5.0.18-linux-i686-glibc23/bin/mysqld ... 
-</span></code></pre></div><p>Und der Gewinn? Operationen wie <code>select * from t where i = 193306751</code> sind jetzt sehr schnell durchzuführen, und zwar unabhängig davon, ob der Wert am Anfang oder am Ende der Tabelle gefunden wird.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">root@localhost [rootforum]&gt; flush query cache;
-</span><span class="go">Query OK, 0 rows affected (0.03 sec)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [rootforum]&gt; select * from t where i = 193306751;
-</span><span class="go">+----+--------------+---------------------------+-----------+
-</span><span class="go">| id | d            | e                         | i         |
-</span><span class="go">+----+--------------+---------------------------+-----------+
-</span><span class="go">|  9 | jilrmbmbujaw | vegmospiyoenpnovopofogiof | 193306751 |
-</span><span class="go">+----+--------------+---------------------------+-----------+
-</span><span class="go">1 row in set (0.00 sec)
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">root@localhost [rootforum]&gt; select * from t where i = 1830603510;
-</span><span class="go">+----------+--------------+---------------------------+------------+
-</span><span class="go">| id       | d            | e                         | i          |
-</span><span class="go">+----------+--------------+---------------------------+------------+
-</span><span class="go">| 19999990 | hctjfsosiobb | zyxhrbyvbtsrnpwjijtgqrfcb | 1830603510 |
-</span><span class="go">+----------+--------------+---------------------------+------------+
-</span><span class="go">1 row in set (0.03 sec)
-</span></code></pre></div><p>(geschrieben für
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@linux:/var/lib/mysql/data/rootforum # !ps
+</span></span></span><span class="line"><span class="cl"><span class="go">ps axuwww| grep mysql[d]
+</span></span></span><span class="line"><span class="cl"><span class="go">mysql     9893  3.5 27.6 624744 286388 pts/1   Sl   15:13   4:24 /usr/local/mysql-max-5.0.18-linux-i686-glibc23/bin/mysqld ... 
+</span></span></span></code></pre></div><p>Und der Gewinn? Operationen wie <code>select * from t where i = 193306751</code> sind jetzt sehr schnell durchzuführen, und zwar unabhängig davon, ob der Wert am Anfang oder am Ende der Tabelle gefunden wird.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [rootforum]&gt; flush query cache;
+</span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 0 rows affected (0.03 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [rootforum]&gt; select * from t where i = 193306751;
+</span></span></span><span class="line"><span class="cl"><span class="go">+----+--------------+---------------------------+-----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| id | d            | e                         | i         |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----+--------------+---------------------------+-----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">|  9 | jilrmbmbujaw | vegmospiyoenpnovopofogiof | 193306751 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----+--------------+---------------------------+-----------+
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.00 sec)
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [rootforum]&gt; select * from t where i = 1830603510;
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+--------------+---------------------------+------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| id       | d            | e                         | i          |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+--------------+---------------------------+------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">| 19999990 | hctjfsosiobb | zyxhrbyvbtsrnpwjijtgqrfcb | 1830603510 |
+</span></span></span><span class="line"><span class="cl"><span class="go">+----------+--------------+---------------------------+------------+
+</span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.03 sec)
+</span></span></span></code></pre></div><p>(geschrieben für
 <a href="http://www.rootforum.de/forum/viewforum.php?f=23" target="_blank" rel="noopener">Rootforum</a>
 
 

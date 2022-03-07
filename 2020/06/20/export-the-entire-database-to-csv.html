@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Export the entire database to CSV' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -155,46 +155,46 @@
 </blockquote>
 <p>It is likely that you have additional requirements on top of this, so it would be best to script this in a way that would allow for customization.</p>
 <p>Try this piece of Python 3.7 (or better) as a starting point. It requires <code>mysqlclient</code> to be installed with pip (preferrably in a venv).</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="ch">#! /usr/bin/env python</span>
-<span class="c1"># -*- coding: utf-8 -*-</span>
-
-<span class="c1"># pip install mysqlclient (https://pypi.org/project/mysqlclient/)</span>
-<span class="kn">import</span> <span class="nn">MySQLdb</span>
-<span class="kn">import</span> <span class="nn">csv</span>
-
-<span class="c1"># connect to database, set mysql_use_results mode for streaming</span>
-<span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
-    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
-    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
-<span class="p">)</span>
-
-<span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
-
-<span class="c1"># Default is db.store_result(), which would buffer the</span>
-<span class="c1"># result set in memory in the client. This won&#39;t work</span>
-<span class="c1"># for a full table download, so we switch to streaming</span>
-<span class="c1"># mode aka db.use_result(). That way we keep at most</span>
-<span class="c1"># one result row in memory at any point in time.</span>
-<span class="n">db</span><span class="o">.</span><span class="n">use_result</span><span class="p">()</span>
-
-<span class="c1"># Get a list of all tables in database</span>
-<span class="n">tables</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-<span class="n">tables</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;show tables&#34;</span><span class="p">)</span>
-
-<span class="c1"># for each table, dump it to csv file</span>
-<span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
-  <span class="n">table</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;table = </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-
-  <span class="n">data</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-  <span class="n">data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;select * from `</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">`&#34;</span><span class="p">)</span>
-
-  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.csv&#34;</span><span class="p">,</span> <span class="s2">&#34;w&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
-    <span class="n">w</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
-    <span class="n">w</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-</code></pre></div><p>Then customize as needed.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># -*- coding: utf-8 -*-</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># pip install mysqlclient (https://pypi.org/project/mysqlclient/)</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">csv</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># connect to database, set mysql_use_results mode for streaming</span>
+</span></span><span class="line"><span class="cl"><span class="n">db_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">user</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">passwd</span><span class="o">=</span><span class="s2">&#34;geheim&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl"><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">db</span> <span class="o">=</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="o">**</span><span class="n">db_config</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Default is db.store_result(), which would buffer the</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># result set in memory in the client. This won&#39;t work</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># for a full table download, so we switch to streaming</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># mode aka db.use_result(). That way we keep at most</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># one result row in memory at any point in time.</span>
+</span></span><span class="line"><span class="cl"><span class="n">db</span><span class="o">.</span><span class="n">use_result</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># Get a list of all tables in database</span>
+</span></span><span class="line"><span class="cl"><span class="n">tables</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="n">tables</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;show tables&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># for each table, dump it to csv file</span>
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">  <span class="n">table</span> <span class="o">=</span> <span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;table = </span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="n">data</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">  <span class="n">data</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;select * from `</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">`&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">table</span><span class="si">}</span><span class="s2">.csv&#34;</span><span class="p">,</span> <span class="s2">&#34;w&#34;</span><span class="p">)</span> <span class="k">as</span> <span class="n">csvfile</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">csvfile</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">w</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</span></span></code></pre></div><p>Then customize as needed.</p>
 <p><em>Note:</em> Using <code>db.use_result()</code> normally is not recommended, because it puts additional burden on the database when handling your result set, and because you cannot jump back and forth in the result set in the client.</p>
 <p>For a <code>mysqldump</code>-like usage as here, the default <code>db.store_result()</code> won&rsquo;t work, though, because it downloads the result set (here: entire tables) into client memory, one at a time, and that won&rsquo;t work. So in this particular case, <code>db.use_result()</code> is mandatory.</p>
 <p>In <code>mysqldump</code>, the option <code>--quick</code> switches to streaming mode, and it is part of the <code>--opt</code> set of recommended options, and they are enabled by default. When using <code>mysqldump --skip-quick</code>, buffered mode is used (and your mysqldump will explode due to memory buffering requirements).</p>

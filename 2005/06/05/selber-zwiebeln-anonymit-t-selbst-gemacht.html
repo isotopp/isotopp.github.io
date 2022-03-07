@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Selber Zwiebeln - Anonymität selbst gemacht' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -177,160 +177,160 @@ auf dem Rechner einzurichten und bandbreitenlimitiert mitlaufen zu lassen.</p>
 <p>Die Installation von libevent und tor folgt dem üblichen Dreiklang von &ldquo;sh
 configure&rdquo;, &ldquo;make&rdquo; und &ldquo;checkinstall&rdquo;. Für die Inbetriebnahme legt man am
 Besten einen User &ldquo;tor&rdquo; an, etwa mit</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>useradd -u <span class="m">520</span> -g <span class="m">520</span> -c <span class="s2">&#34;Tor Anonymous Service&#34;</span> -d /var/lib/tor tor
-<span class="gp"># </span>passwd -l tor
-</code></pre></div><p>Mein tor sucht seine Konfiguration in <code>/usr/local/etc/tor/torrc</code>. Die
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> useradd -u <span class="m">520</span> -g <span class="m">520</span> -c <span class="s2">&#34;Tor Anonymous Service&#34;</span> -d /var/lib/tor tor
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> passwd -l tor
+</span></span></code></pre></div><p>Mein tor sucht seine Konfiguration in <code>/usr/local/etc/tor/torrc</code>. Die
 Konfigurationsdatei habe ich komplett neu geschrieben, statt das
 mitgelieferte Sample zu verwenden, weil ich wissen wollte, welche Optionen
 es überhaupt gibt.</p>
 <p>Das Setup sieht so aus:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">#</span><span class="c1">##</span>
-<span class="gp">#</span><span class="c1">## General Options</span>
-<span class="gp">#</span><span class="c1">##</span>
-<span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">#</span>
-<span class="gp">#</span><span class="c1"># Bei mir läuft tor als User tor in der Gruppe tor, und als dauernd</span>
-<span class="gp">#</span><span class="c1"># laufender Dämon im chroot.</span>
-<span class="gp">#</span><span class="c1">#</span>
-<span class="go">Group tor
-</span><span class="go">User tor
-</span><span class="go">RunAsDaemon 1
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">#</span>
-<span class="gp">#</span><span class="c1"># Netzwerk Ressourcen</span>
-<span class="gp">#</span><span class="c1"># Diese Anweisungen begrenzen die Dauerbandbreite auf</span>
-<span class="gp">#</span><span class="c1"># ca. 50 KB/sec. Das sorgt dafür, daß die Karte nicht</span>
-<span class="gp">#</span><span class="c1"># vollläuft und daß das Kontingent für den Tag nicht</span>
-<span class="gp">#</span><span class="c1"># zu schnell aufgebraucht wird.</span>
-<span class="gp">#</span><span class="c1">#</span>
-<span class="gp">#</span><span class="c1"># Burst Bandwidth kann höher sein, das gibt dem ganzen</span>
-<span class="gp">#</span><span class="c1"># Setup ein wenig Elastizität.</span>
-<span class="gp">#</span><span class="c1">#</span>
-<span class="go">BandwidthRate 50 KB
-</span><span class="go">BandwidthBurst 10 MB
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1"># Statt ein monatliches Trafficlimit festzulegen, habe ich</span>
-<span class="gp">#</span><span class="c1"># ein tägliches Limit definiert. Das sorgt dafür, daß die</span>
-<span class="gp">#</span><span class="c1"># Node den ganzen Monat über nützlich ist und nicht am Anfang</span>
-<span class="gp">#</span><span class="c1"># des Monats auf einmal alle Ressourcen weggelutscht werden</span>
-<span class="gp">#</span><span class="c1"># können.</span>
-<span class="go">AccountingStart day 00:00
-</span><span class="go">AccountingMax 2500 MB
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1"># 900 Filedescriptioren für diese Node.</span>
-<span class="go">MaxConn 900
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Directory Server und Status
-<span class="go">DirFetchPeriod 20 minutes
-</span><span class="go"></span><span class="gp"># </span>DirServer address:port fingerprint
-<span class="go">DirServer 18.244.0.188:9031 FFCB 46DB 1339 DA84 674C 70D7 CB58 6434 C437 0441
-</span><span class="go">DirServer 18.244.0.114:80 719B E45D E224 B607 C537 07D0 E214 3E2D 423E 74CF
-</span><span class="go">DirServer 62.116.124.106:9030 847B 1F85 0344 D787 6491 A548 92F9 0493 4E4E B85D
-</span><span class="go">StatusFetchPeriod 15 minutes
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">#</span>
-<span class="gp">#</span><span class="c1"># Dateien und Verzeichnisse</span>
-<span class="gp">#</span><span class="c1">#</span>
-<span class="err">
-</span><span class="err"></span><span class="gp"># </span>Logging
-<span class="go">SafeLogging 1
-</span><span class="go"></span><span class="gp">#</span>Log debug file /var/log/tor/tor.log
-<span class="gp">#</span>Log info file /var/log/tor/tor.log
-<span class="go">Log notice file /var/log/tor/tor.log
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>PID File
-<span class="go">PIDFile /var/run/tor/tor.pid
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Verzeichnisse
-<span class="go">DataDirectory /var/lib/tor
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
-<span class="gp">#</span><span class="c1">## Client Options</span>
-<span class="gp">#</span><span class="c1">##</span>
-<span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1"># Socks Server von außen erreichbar machen</span>
-<span class="go">SOCKSBindAddress 127.0.0.1:8001
-</span><span class="go">SOCKSBindAddress 81.169.156.174:8001
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Wir reden mit: all of QSC, uns selbst
-<span class="go">SOCKSPolicy accept 212.202.0.0/17
-</span><span class="go">SOCKSPolicy accept 81.169.156.174/32
-</span><span class="go">SOCKSPolicy accept 127.0.0.1/8
-</span><span class="go">SOCKSPolicy reject *:*
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Unverified Nodes sind solche, die nicht im Directory bekannt sind
-<span class="gp"># </span>entry<span class="p">|</span>exit<span class="p">|</span>middle<span class="p">|</span>introduction<span class="p">|</span>rendezvous
-<span class="go">AllowUnverifiedNodes middle,rendezvous
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
-<span class="gp">#</span><span class="c1">## Server Options</span>
-<span class="gp">#</span><span class="c1">##</span>
-<span class="err">
-</span><span class="err"></span><span class="gp"># </span>Port
-<span class="go">ORPort 8000
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Admin-Info
-<span class="go">ContactInfo 1024D/32E7CFC3 2005-02-11 Kristian Koehntopp &lt;kris@koehntopp.de&gt;
-</span><span class="go">MyFamily koehntopp,strato
-</span><span class="go">Nickname koehntopp
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1"># Die Exit Policy legt fest, welche Dienste in welchen Ranges</span>
-<span class="gp">#</span><span class="c1"># von diesem Server angesprochen werden. Wir machen aus Prinzip</span>
-<span class="gp">#</span><span class="c1"># kein Mail (25), aber etwa ssh, imap, irc und natürlich web.</span>
-<span class="gp">#</span><span class="c1">#</span>
-<span class="gp">#</span><span class="c1"># Bekannte Filesharing Ports sind gesperrt.</span>
-<span class="gp"># </span>Exit-Policy <span class="o">(</span>Was kann dieser Server ansprechen?<span class="o">)</span>
-<span class="go">ExitPolicy reject 169.254.0.0/16
-</span><span class="go">ExitPolicy reject 127.0.0.0/8
-</span><span class="go">ExitPolicy reject 192.168.0.0/16
-</span><span class="go">ExitPolicy reject 10.0.0.0/8
-</span><span class="go">ExitPolicy reject 172.16.0.0/12
-</span><span class="go">ExitPolicy accept *:20-22
-</span><span class="go">ExitPolicy accept *:53
-</span><span class="go">ExitPolicy accept *:79-81
-</span><span class="go">ExitPolicy accept *:110
-</span><span class="go">ExitPolicy accept *:143
-</span><span class="go">ExitPolicy accept *:443
-</span><span class="go">ExitPolicy accept *:706
-</span><span class="go">ExitPolicy accept *:873
-</span><span class="go">ExitPolicy accept *:993
-</span><span class="go">ExitPolicy accept *:995
-</span><span class="go">ExitPolicy accept *:6660-6669
-</span><span class="go">ExitPolicy accept *:8008
-</span><span class="go">ExitPolicy accept *:8080
-</span><span class="go">ExitPolicy accept *:8888
-</span><span class="go">ExitPolicy reject *:*
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
-<span class="gp">#</span><span class="c1">## Directory Server</span>
-<span class="gp">#</span><span class="c1">##</span>
-<span class="err">
-</span><span class="err"></span><span class="go">DirPort 8002
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Please coordinate with the other admins at tor-ops@freehaven.net
-<span class="go">AuthoritativeDirectory 0
-</span><span class="go">RunTesting 0
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">DirAllowPrivateAddresses 0
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
-<span class="gp">#</span><span class="c1">## Hidden Service Options</span>
-<span class="gp">#</span><span class="c1">##</span>
-<span class="err">
-</span><span class="err"></span><span class="gp"># </span>not used
-</code></pre></div><p>Jetzt kann ich auf meinem Rechner einen tsocks-Client konfigurieren, um
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">## General Options</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Bei mir läuft tor als User tor in der Gruppe tor, und als dauernd</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># laufender Dämon im chroot.</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="go">Group tor
+</span></span></span><span class="line"><span class="cl"><span class="go">User tor
+</span></span></span><span class="line"><span class="cl"><span class="go">RunAsDaemon 1
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Netzwerk Ressourcen</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Diese Anweisungen begrenzen die Dauerbandbreite auf</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># ca. 50 KB/sec. Das sorgt dafür, daß die Karte nicht</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># vollläuft und daß das Kontingent für den Tag nicht</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># zu schnell aufgebraucht wird.</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Burst Bandwidth kann höher sein, das gibt dem ganzen</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Setup ein wenig Elastizität.</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="go">BandwidthRate 50 KB
+</span></span></span><span class="line"><span class="cl"><span class="go">BandwidthBurst 10 MB
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1"># Statt ein monatliches Trafficlimit festzulegen, habe ich</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># ein tägliches Limit definiert. Das sorgt dafür, daß die</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Node den ganzen Monat über nützlich ist und nicht am Anfang</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># des Monats auf einmal alle Ressourcen weggelutscht werden</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># können.</span>
+</span></span><span class="line"><span class="cl"><span class="go">AccountingStart day 00:00
+</span></span></span><span class="line"><span class="cl"><span class="go">AccountingMax 2500 MB
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1"># 900 Filedescriptioren für diese Node.</span>
+</span></span><span class="line"><span class="cl"><span class="go">MaxConn 900
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Directory Server und Status
+</span></span><span class="line"><span class="cl"><span class="go">DirFetchPeriod 20 minutes
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> DirServer address:port fingerprint
+</span></span><span class="line"><span class="cl"><span class="go">DirServer 18.244.0.188:9031 FFCB 46DB 1339 DA84 674C 70D7 CB58 6434 C437 0441
+</span></span></span><span class="line"><span class="cl"><span class="go">DirServer 18.244.0.114:80 719B E45D E224 B607 C537 07D0 E214 3E2D 423E 74CF
+</span></span></span><span class="line"><span class="cl"><span class="go">DirServer 62.116.124.106:9030 847B 1F85 0344 D787 6491 A548 92F9 0493 4E4E B85D
+</span></span></span><span class="line"><span class="cl"><span class="go">StatusFetchPeriod 15 minutes
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Dateien und Verzeichnisse</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Logging
+</span></span><span class="line"><span class="cl"><span class="go">SafeLogging 1
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span>Log debug file /var/log/tor/tor.log
+</span></span><span class="line"><span class="cl"><span class="gp">#</span>Log info file /var/log/tor/tor.log
+</span></span><span class="line"><span class="cl"><span class="go">Log notice file /var/log/tor/tor.log
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> PID File
+</span></span><span class="line"><span class="cl"><span class="go">PIDFile /var/run/tor/tor.pid
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Verzeichnisse
+</span></span><span class="line"><span class="cl"><span class="go">DataDirectory /var/lib/tor
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">## Client Options</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1"># Socks Server von außen erreichbar machen</span>
+</span></span><span class="line"><span class="cl"><span class="go">SOCKSBindAddress 127.0.0.1:8001
+</span></span></span><span class="line"><span class="cl"><span class="go">SOCKSBindAddress 81.169.156.174:8001
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Wir reden mit: all of QSC, uns selbst
+</span></span><span class="line"><span class="cl"><span class="go">SOCKSPolicy accept 212.202.0.0/17
+</span></span></span><span class="line"><span class="cl"><span class="go">SOCKSPolicy accept 81.169.156.174/32
+</span></span></span><span class="line"><span class="cl"><span class="go">SOCKSPolicy accept 127.0.0.1/8
+</span></span></span><span class="line"><span class="cl"><span class="go">SOCKSPolicy reject *:*
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Unverified Nodes sind solche, die nicht im Directory bekannt sind
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> entry<span class="p">|</span>exit<span class="p">|</span>middle<span class="p">|</span>introduction<span class="p">|</span>rendezvous
+</span></span><span class="line"><span class="cl"><span class="go">AllowUnverifiedNodes middle,rendezvous
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">## Server Options</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Port
+</span></span><span class="line"><span class="cl"><span class="go">ORPort 8000
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Admin-Info
+</span></span><span class="line"><span class="cl"><span class="go">ContactInfo 1024D/32E7CFC3 2005-02-11 Kristian Koehntopp &lt;kris@koehntopp.de&gt;
+</span></span></span><span class="line"><span class="cl"><span class="go">MyFamily koehntopp,strato
+</span></span></span><span class="line"><span class="cl"><span class="go">Nickname koehntopp
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1"># Die Exit Policy legt fest, welche Dienste in welchen Ranges</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># von diesem Server angesprochen werden. Wir machen aus Prinzip</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># kein Mail (25), aber etwa ssh, imap, irc und natürlich web.</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">#</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1"># Bekannte Filesharing Ports sind gesperrt.</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> Exit-Policy <span class="o">(</span>Was kann dieser Server ansprechen?<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="go">ExitPolicy reject 169.254.0.0/16
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy reject 127.0.0.0/8
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy reject 192.168.0.0/16
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy reject 10.0.0.0/8
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy reject 172.16.0.0/12
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:20-22
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:53
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:79-81
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:110
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:143
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:443
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:706
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:873
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:993
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:995
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:6660-6669
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:8008
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:8080
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy accept *:8888
+</span></span></span><span class="line"><span class="cl"><span class="go">ExitPolicy reject *:*
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">## Directory Server</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">DirPort 8002
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Please coordinate with the other admins at tor-ops@freehaven.net
+</span></span><span class="line"><span class="cl"><span class="go">AuthoritativeDirectory 0
+</span></span></span><span class="line"><span class="cl"><span class="go">RunTesting 0
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">DirAllowPrivateAddresses 0
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">## Hidden Service Options</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> not used
+</span></span></code></pre></div><p>Jetzt kann ich auf meinem Rechner einen tsocks-Client konfigurieren, um
 meinen Server anzusprechen. Danach kann ich etwa mit &ldquo;tsocks irssi&rdquo; dann
 anonym ircen&hellip;</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>This is the configuration <span class="k">for</span> libtsocks <span class="o">(</span>transparent socks<span class="o">)</span> <span class="k">for</span> use
-<span class="gp"># </span>with tor, which is providing a socks server on port <span class="m">9050</span> by default.
-<span class="gp">#
-</span><span class="gp"></span><span class="c1"># See tsocks.conf(5) and torify(1) manpages.</span>
-<span class="err">
-</span><span class="err"></span><span class="gp"># </span><span class="nv">server_type</span> <span class="o">=</span> <span class="m">4</span>
-<span class="go">local = 81.169.156.174/255.255.255.255
-</span><span class="go">server = 81.169.156.174
-</span><span class="go">server_port = 8001
-</span></code></pre></div>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> This is the configuration <span class="k">for</span> libtsocks <span class="o">(</span>transparent socks<span class="o">)</span> <span class="k">for</span> use
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> with tor, which is providing a socks server on port <span class="m">9050</span> by default.
+</span></span><span class="line"><span class="cl"><span class="gp">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># See tsocks.conf(5) and torify(1) manpages.</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> <span class="nv">server_type</span> <span class="o">=</span> <span class="m">4</span>
+</span></span><span class="line"><span class="cl"><span class="go">local = 81.169.156.174/255.255.255.255
+</span></span></span><span class="line"><span class="cl"><span class="go">server = 81.169.156.174
+</span></span></span><span class="line"><span class="cl"><span class="go">server_port = 8001
+</span></span></span></code></pre></div>
       </div>
     </div>
 

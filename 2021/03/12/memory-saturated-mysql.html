@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Memory saturated MySQL' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -230,17 +230,17 @@
 <p>It is obvious why we would not want to be OOM killed, but why do we not want to be paged out? Memory access patterns are not efficient disk access patterns, so MySQL gets very slow when it is paged out.</p>
 <p>Memory data representation is also not efficient disk data representation, by the way, and that is why no database ever uses mmap() much, except MongoDB (but that is, some would argue, not a database).</p>
 <p>Now, RES is smaller than VIRT, so we are using even less of the 128 GB we have. Why is that?</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[root@prod-replica mysql]# du -sh .
-</span><span class="go">684G    .
-</span></code></pre></div><p>We do have enough data, so it is not that we would not like to keep more data in memory.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">[root@prod-replica mysql]#</span> du -sh .
+</span></span><span class="line"><span class="cl"><span class="go">684G    .
+</span></span></span></code></pre></div><p>We do have enough data, so it is not that we would not like to keep more data in memory.</p>
 <p>But, the InnoDB Buffer pool size is actually even lower than this.</p>
 <p>From the /etc/my.cnf of the instance above:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">innodb_buffer_pool_size = 64G
-</span><span class="go"></span><span class="gp"># </span>innodb_buffer_pool_size defined from <span class="nv">memorysize</span> <span class="o">=</span> <span class="m">125</span> GB as <span class="m">107</span> GB
-<span class="gp"># </span>innodb_buffer_pool_size_adjustment of -15 GB 
-<span class="gp"># </span>connection <span class="nv">memory</span> <span class="o">=</span> <span class="m">29</span> GB <span class="k">for</span> <span class="nv">max_connections</span> <span class="o">=</span> <span class="m">30000</span>
-<span class="go">innodb_buffer_pool_instances = 16
-</span></code></pre></div><p>As you can see, we <em>would</em> like to see a Buffer Pool of 107 GB for a memory size of 125 GB (what userland sees after the kernel got its share).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">innodb_buffer_pool_size = 64G
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> innodb_buffer_pool_size defined from <span class="nv">memorysize</span> <span class="o">=</span> <span class="m">125</span> GB as <span class="m">107</span> GB
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> innodb_buffer_pool_size_adjustment of -15 GB 
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> connection <span class="nv">memory</span> <span class="o">=</span> <span class="m">29</span> GB <span class="k">for</span> <span class="nv">max_connections</span> <span class="o">=</span> <span class="m">30000</span>
+</span></span><span class="line"><span class="cl"><span class="go">innodb_buffer_pool_instances = 16
+</span></span></span></code></pre></div><p>As you can see, we <em>would</em> like to see a Buffer Pool of 107 GB for a memory size of 125 GB (what userland sees after the kernel got its share).</p>
 <p>But we are configured with a <code>max_connections</code> value of 30000, and each potential connection will eat memory. We need to leave room for that, and this leaves us with 16 Buffer Pool instances of 4 GB, for a total of 64 GB – only half of the total box, and 43 GB less than we would like to use.</p>
 <h2 id="30000-connections-isnt-that-a-bit-much">
     <a href="#30000-connections-isnt-that-a-bit-much">

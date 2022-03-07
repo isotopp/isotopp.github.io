@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL: Provisioning .mylogin.cnf' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -148,10 +148,10 @@
     <div class='row justify-content-center mx-0 mt-5 mb-5'>
       <div class='col-lg-8'>
         <p>MySQL uses connection and config parameters from a number of possible sources. The easiest way to find out where it is looking for config files is to run</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>mysql --help <span class="p">|</span> grep cnf
-<span class="go">                      order of preference, my.cnf, $MYSQL_TCP_PORT,
-</span><span class="go">/etc/my.cnf /etc/mysql/my.cnf /Users/kkoehntopp/homebrew/etc/my.cnf ~/.my.cnf
-</span></code></pre></div><p>As can be seen, my version of the MySQL client checks in this order</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> mysql --help <span class="p">|</span> grep cnf
+</span></span><span class="line"><span class="cl"><span class="go">                      order of preference, my.cnf, $MYSQL_TCP_PORT,
+</span></span></span><span class="line"><span class="cl"><span class="go">/etc/my.cnf /etc/mysql/my.cnf /Users/kkoehntopp/homebrew/etc/my.cnf ~/.my.cnf
+</span></span></span></code></pre></div><p>As can be seen, my version of the MySQL client checks in this order</p>
 <ul>
 <li>/etc/my.cnf</li>
 <li>/etc/mysql/my.cnf</li>
@@ -159,19 +159,19 @@
 <li>~/.my.cnf</li>
 </ul>
 <p>The cnf file is a file in dot-ini syntax, so you have <code>[groups]</code> and each group contains lines with <code>key = value</code> pairs. Which groups are read?</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>mysql --help <span class="p">|</span> grep <span class="s2">&#34;groups are&#34;</span>
-<span class="go">The following groups are read: mysql client
-</span></code></pre></div><p>So in my case, I would create a <code>/Users/kkoehntopp/.my.cnf</code> looking like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[client]
-</span><span class="go">user=kris
-</span><span class="go">password=geheim
-</span><span class="go">host=127.0.0.1
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">[mysql]
-</span><span class="go">database=kris
-</span><span class="go">show-warnings
-</span><span class="go">prompt=\U [\d]&gt;\_
-</span></code></pre></div><p>That is, I put general connection parameters such as the host, user and password into the <code>client</code> group, and program specific parameters such as database, prompt and others into program specific groups such as <code>mysql</code>. That way, the <code>mysqldump</code> and <code>mysql</code> programs will connect automatically, but the <code>mysql</code> options will not interfere with <code>mysqldump</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> mysql --help <span class="p">|</span> grep <span class="s2">&#34;groups are&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="go">The following groups are read: mysql client
+</span></span></span></code></pre></div><p>So in my case, I would create a <code>/Users/kkoehntopp/.my.cnf</code> looking like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[client]
+</span></span></span><span class="line"><span class="cl"><span class="go">user=kris
+</span></span></span><span class="line"><span class="cl"><span class="go">password=geheim
+</span></span></span><span class="line"><span class="cl"><span class="go">host=127.0.0.1
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">[mysql]
+</span></span></span><span class="line"><span class="cl"><span class="go">database=kris
+</span></span></span><span class="line"><span class="cl"><span class="go">show-warnings
+</span></span></span><span class="line"><span class="cl"><span class="go">prompt=\U [\d]&gt;\_
+</span></span></span></code></pre></div><p>That is, I put general connection parameters such as the host, user and password into the <code>client</code> group, and program specific parameters such as database, prompt and others into program specific groups such as <code>mysql</code>. That way, the <code>mysqldump</code> and <code>mysql</code> programs will connect automatically, but the <code>mysql</code> options will not interfere with <code>mysqldump</code>.</p>
 <h2 id="mylogincnf">
     <a href="#mylogincnf">
 	.mylogin.cnf
@@ -179,19 +179,19 @@
 </h2>
 <p>Some time in 2012, the <code>.mylogin.cnf</code> mechanism and the <code>mysql_config_editor</code> program were added. They provide little value in security as we will see, but allow storage of more than one set of credentials: It is now possible to store a number of login paths (credential sets) in a mylogin file, and call the client program with <code>--login-path=...</code>. The client program will then read the mylogin file and use the connection parameters from there.</p>
 <p>mylogin files are being made with the <code>mysql_config_editor</code> program, for example</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>mysql_config_editor <span class="nb">set</span> --login-path<span class="o">=</span><span class="nb">test</span> --user<span class="o">=</span>kris --host<span class="o">=</span>localhost --password
-<span class="go">Enter password: geheim
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">$ </span>mysql_config_editor print --all
-<span class="go">[local]
-</span><span class="go">user = root
-</span><span class="go">password = *****
-</span><span class="go">host = localhost
-</span><span class="go">[test]
-</span><span class="go">user = kris
-</span><span class="go">password = *****
-</span><span class="go">host = localhost
-</span></code></pre></div><p>will create a new mylogin, or amend an existing one, and define a login path named <code>test</code>. It will take the host and the username on the command line, but you cannot specify the password easily - it has to be typed in.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> mysql_config_editor <span class="nb">set</span> --login-path<span class="o">=</span><span class="nb">test</span> --user<span class="o">=</span>kris --host<span class="o">=</span>localhost --password
+</span></span><span class="line"><span class="cl"><span class="go">Enter password: geheim
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">$</span> mysql_config_editor print --all
+</span></span><span class="line"><span class="cl"><span class="go">[local]
+</span></span></span><span class="line"><span class="cl"><span class="go">user = root
+</span></span></span><span class="line"><span class="cl"><span class="go">password = *****
+</span></span></span><span class="line"><span class="cl"><span class="go">host = localhost
+</span></span></span><span class="line"><span class="cl"><span class="go">[test]
+</span></span></span><span class="line"><span class="cl"><span class="go">user = kris
+</span></span></span><span class="line"><span class="cl"><span class="go">password = *****
+</span></span></span><span class="line"><span class="cl"><span class="go">host = localhost
+</span></span></span></code></pre></div><p>will create a new mylogin, or amend an existing one, and define a login path named <code>test</code>. It will take the host and the username on the command line, but you cannot specify the password easily - it has to be typed in.</p>
 <p>This makes provisioning hard - templating this in Ansible is not easy and dancing around with <code>expect</code> and friends is just silly.</p>
 <h2 id="working-around-this">
     <a href="#working-around-this">
@@ -205,26 +205,26 @@
  of mine changes that.</p>
 <p>It can decode and encode mylogin files, opening them up to Ansible templating. Just provision a valid mylogin file in plain text, encode it and delete the plain text original file.</p>
 <p>The sample session looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="o">#</span><span class="w"> </span><span class="n">generate</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">dummy</span><span class="w"> </span><span class="n">file</span><span class="w">
-</span><span class="w"></span><span class="n">mysql_config_editor</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="c1">--login-path=local --user=root --host=localhost --password
-</span><span class="c1"></span><span class="n">Password</span><span class="p">:</span><span class="w"> </span><span class="n">keks</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">decode</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w">
-</span><span class="w"></span><span class="p">.</span><span class="o">/</span><span class="n">mysql_config_coder</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">decode</span><span class="w"> </span><span class="o">~/</span><span class="p">.</span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w">
-</span><span class="w"></span><span class="n">cat</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">changes</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w"> </span><span class="k">and</span><span class="w">
-</span><span class="w"></span><span class="p">.</span><span class="o">/</span><span class="n">mysql_config_coder</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">encode</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w">
-</span><span class="w"></span><span class="n">chmod</span><span class="w"> </span><span class="mi">600</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">original</span><span class="w">
-</span><span class="w"></span><span class="n">MYSQL_TEST_LOGIN_FILE</span><span class="o">=</span><span class="err">$</span><span class="p">(</span><span class="n">pwd</span><span class="p">)</span><span class="o">/</span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w">
-</span><span class="w"></span><span class="n">mysql_config_editor</span><span class="w"> </span><span class="o">-</span><span class="n">v</span><span class="w"> </span><span class="n">print</span><span class="w"> </span><span class="c1">--all
-</span><span class="c1"></span><span class="n">my_print_defaults</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="k">local</span><span class="w">
-</span><span class="w">
-</span><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">Note</span><span class="p">:</span><span class="w"> </span><span class="n">mysql_config_editor</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">print</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="n">five</span><span class="w"> </span><span class="n">stars</span><span class="w">
-</span><span class="w"></span><span class="o">#</span><span class="w">       </span><span class="n">but</span><span class="w"> </span><span class="n">my_print_defaults</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">password</span><span class="p">.</span><span class="w">
-</span></code></pre></div><p>The program depends on <code>click</code> and <code>pycrypto</code>, but really any implementation of <code>aes-128-ebc</code> should be easily usable.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="o">#</span><span class="w"> </span><span class="n">generate</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">dummy</span><span class="w"> </span><span class="n">file</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">mysql_config_editor</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="c1">--login-path=local --user=root --host=localhost --password
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">Password</span><span class="p">:</span><span class="w"> </span><span class="n">keks</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">decode</span><span class="w"> </span><span class="n">this</span><span class="w"> </span><span class="n">file</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">.</span><span class="o">/</span><span class="n">mysql_config_coder</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">decode</span><span class="w"> </span><span class="o">~/</span><span class="p">.</span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">cat</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">make</span><span class="w"> </span><span class="n">changes</span><span class="w"> </span><span class="k">to</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w"> </span><span class="k">and</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">.</span><span class="o">/</span><span class="n">mysql_config_coder</span><span class="p">.</span><span class="n">py</span><span class="w"> </span><span class="n">encode</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="k">out</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">chmod</span><span class="w"> </span><span class="mi">600</span><span class="w"> </span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">test</span><span class="w"> </span><span class="k">with</span><span class="w"> </span><span class="n">original</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">MYSQL_TEST_LOGIN_FILE</span><span class="o">=</span><span class="err">$</span><span class="p">(</span><span class="n">pwd</span><span class="p">)</span><span class="o">/</span><span class="n">mylogin</span><span class="p">.</span><span class="n">cnf</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">mysql_config_editor</span><span class="w"> </span><span class="o">-</span><span class="n">v</span><span class="w"> </span><span class="n">print</span><span class="w"> </span><span class="c1">--all
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="n">my_print_defaults</span><span class="w"> </span><span class="o">-</span><span class="n">s</span><span class="w"> </span><span class="k">local</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">#</span><span class="w"> </span><span class="n">Note</span><span class="p">:</span><span class="w"> </span><span class="n">mysql_config_editor</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">print</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">password</span><span class="p">,</span><span class="w"> </span><span class="n">just</span><span class="w"> </span><span class="n">five</span><span class="w"> </span><span class="n">stars</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">#</span><span class="w">       </span><span class="n">but</span><span class="w"> </span><span class="n">my_print_defaults</span><span class="w"> </span><span class="n">should</span><span class="w"> </span><span class="n">also</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">password</span><span class="p">.</span><span class="w">
+</span></span></span></code></pre></div><p>The program depends on <code>click</code> and <code>pycrypto</code>, but really any implementation of <code>aes-128-ebc</code> should be easily usable.</p>
 
       </div>
     </div>

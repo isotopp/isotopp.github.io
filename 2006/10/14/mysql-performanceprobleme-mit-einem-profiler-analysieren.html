@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL Performanceprobleme mit einem Profiler analysieren' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -151,28 +151,28 @@
 
  ist ein Profiler. Und zwar einer, der die Performance Measurement Instrumentation verwendet, die in moderne CPUs eingebaut ist, wenn diese vorhanden ist. Der Profiler braucht also keine speziell für Profiling compilierten Binaries, sondern zieht sich statische Samples des Programmzählers aus dem laufenden System und analysiert diese: Es findet heraus, welcher Prozeß gerade aktiv ist, welche Bibliothek in diesem Prozeß gerade verwendet wird und wenn Symboltabellen vorhanden sind (Kein &ldquo;strip&rdquo; auf die Bibliothek oder das Programm angewendet), dann weiß Oprofile sogar, welche Funktion oder Methode gerade aktiv ist.</p>
 <p>Das kann man auch auf ein laufendes MySQL anwenden. Dies hier zum Beispiel ist ein mysqld, der mit einem Haufen MyISAM Tabellen arbeitet und nicht zu busy ist. Man kann sehen, daß aus irgendeinem Grund sehr viel Zeit in memcpy verbracht wird:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">CPU: CPU with timer interrupt, speed 0 MHz (estimated)
-</span><span class="go">Profiling through timer interrupt
-</span><span class="go">samples  %        image name               symbol name
-</span><span class="go">197404   22.4460  libc-2.3.4.so            memcpy
-</span><span class="go">165764   18.8484  no-vmlinux               (no symbols)
-</span><span class="go">76051     8.6475  mysqld.debug             _mi_rec_unpack
-</span><span class="go">30059     3.4179  mysqld.debug             Query_cache::insert_into_free_memory_sorted_list(Query_cache_block*, Query_cache_block**)
-</span><span class="go">17468     1.9862  mysqld.debug             get_hash_link
-</span><span class="go">16767     1.9065  mysqld.debug             ha_key_cmp
-</span><span class="go">14106     1.6039  mysqld.debug             MYSQLparse(void*)
-</span></code></pre></div><p>Ein anderes Anwendungsbeispiel verwendet InnoDB mit Transaktionen und einer sehr hohen Load. Hier kann man das Problem sofort erkennen:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">CPU: AMD64 processors, speed 2396.91 MHz (estimated)
-</span><span class="go">Counted CPU_CLK_UNHALTED events (Cycles outside of halt state) 
-</span><span class="go">with a unit mask of 0x00 (No unit mask) count 100000
-</span><span class="go">samples  %        image name               symbol name
-</span><span class="go">1955062  34.3586  /usr/sbin/mysqld         Query_cache::insert_into_free_memory_sorted_list(Query_cache_block*, Query_cache_block**)
-</span><span class="go">192481    3.3827  /usr/sbin/mysqld         my_strnncoll_binary
-</span><span class="go">155920    2.7402  /usr/sbin/mysqld         MYSQLparse(void*)
-</span><span class="go">125545    2.2063  /usr/sbin/mysqld         my_hash_sort_bin
-</span><span class="go">95069     1.6708  /lib64/tls/libc.so.6     memcpy
-</span><span class="go">79791     1.4023  /lib64/tls/libc.so.6     memset
-</span></code></pre></div><p>Offensichtlich ist der Query Cache hier nicht sehr nützlich und tatsächlich: Kaum schaltet man ihn aus, wird der Benchmark 50% schneller.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">CPU: CPU with timer interrupt, speed 0 MHz (estimated)
+</span></span></span><span class="line"><span class="cl"><span class="go">Profiling through timer interrupt
+</span></span></span><span class="line"><span class="cl"><span class="go">samples  %        image name               symbol name
+</span></span></span><span class="line"><span class="cl"><span class="go">197404   22.4460  libc-2.3.4.so            memcpy
+</span></span></span><span class="line"><span class="cl"><span class="go">165764   18.8484  no-vmlinux               (no symbols)
+</span></span></span><span class="line"><span class="cl"><span class="go">76051     8.6475  mysqld.debug             _mi_rec_unpack
+</span></span></span><span class="line"><span class="cl"><span class="go">30059     3.4179  mysqld.debug             Query_cache::insert_into_free_memory_sorted_list(Query_cache_block*, Query_cache_block**)
+</span></span></span><span class="line"><span class="cl"><span class="go">17468     1.9862  mysqld.debug             get_hash_link
+</span></span></span><span class="line"><span class="cl"><span class="go">16767     1.9065  mysqld.debug             ha_key_cmp
+</span></span></span><span class="line"><span class="cl"><span class="go">14106     1.6039  mysqld.debug             MYSQLparse(void*)
+</span></span></span></code></pre></div><p>Ein anderes Anwendungsbeispiel verwendet InnoDB mit Transaktionen und einer sehr hohen Load. Hier kann man das Problem sofort erkennen:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">CPU: AMD64 processors, speed 2396.91 MHz (estimated)
+</span></span></span><span class="line"><span class="cl"><span class="go">Counted CPU_CLK_UNHALTED events (Cycles outside of halt state) 
+</span></span></span><span class="line"><span class="cl"><span class="go">with a unit mask of 0x00 (No unit mask) count 100000
+</span></span></span><span class="line"><span class="cl"><span class="go">samples  %        image name               symbol name
+</span></span></span><span class="line"><span class="cl"><span class="go">1955062  34.3586  /usr/sbin/mysqld         Query_cache::insert_into_free_memory_sorted_list(Query_cache_block*, Query_cache_block**)
+</span></span></span><span class="line"><span class="cl"><span class="go">192481    3.3827  /usr/sbin/mysqld         my_strnncoll_binary
+</span></span></span><span class="line"><span class="cl"><span class="go">155920    2.7402  /usr/sbin/mysqld         MYSQLparse(void*)
+</span></span></span><span class="line"><span class="cl"><span class="go">125545    2.2063  /usr/sbin/mysqld         my_hash_sort_bin
+</span></span></span><span class="line"><span class="cl"><span class="go">95069     1.6708  /lib64/tls/libc.so.6     memcpy
+</span></span></span><span class="line"><span class="cl"><span class="go">79791     1.4023  /lib64/tls/libc.so.6     memset
+</span></span></span></code></pre></div><p>Offensichtlich ist der Query Cache hier nicht sehr nützlich und tatsächlich: Kaum schaltet man ihn aus, wird der Benchmark 50% schneller.</p>
 <p>Hier eine schnelle Kommandoübersicht:</p>
 <ul>
 <li><code>yum install oprofile</code> (oder was immer das aktuelle System gerade als Paketmanager verwendet)</li>

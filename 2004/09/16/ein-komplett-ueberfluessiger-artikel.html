@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Ein komplett überflüssiger Artikel' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -191,24 +191,24 @@
 <p><code>find / \! -type l -perm -4000 -ls &gt; /tmp/suid-files.kris</code> und <code>find / \! -type l -perm -2000 -ls &gt; /tmp/sgid-files.kris</code> sind zwei Listen von Dateien, die intensiver Aufmerksamkeit bedürfen. Betriebssystemhersteller haben die Angewohnheit, selbstgeschriebene privilegierte Programme sehr nachlässig zu schreiben.</p>
 <p>Oft haben diese Programme Optionen, mit denen man eine Ausgabe in eine Datei leiten kann (a la <code>-l &lt;protokolldatei&gt;</code>). Die Chancen sind gut, daß dieses Programm &ldquo;vergißt&rdquo; seine Privilegien aufzugeben, bevor es diese Datei zum Schreiben öffnet. Ein <code>-l /etc/passwd</code> kann dann lustige Effekte erzielen.</p>
 <p>Andere Hersteller erlauben solchen Programmen möglicherweise, Umgebungsvariablen auszuwerten oder Shells zu starten, um kurze Shellfragmente aufzurufen - ein <code>strings</code> auf solche SUID- oder SGID-Binaries ist meistens sehr erhellend. Sieht man in einem SUID-root Binary strings-Output wie</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="cp">#! /bin/sh
-</span><span class="cp"></span><span class="nv">path</span><span class="o">=</span><span class="s2">&#34;`which %s`&#34;</span>
-<span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="nv">$path</span><span class="s2">&#34;</span> <span class="o">]</span>
-<span class="k">then</span>
-  <span class="k">for</span> i in /bin /usr/bin /sbin /usr/bin %s/bin /usr/local/bin
-  <span class="k">do</span>
-    <span class="k">if</span> <span class="o">[</span> -x <span class="s2">&#34;</span><span class="nv">$i</span><span class="s2">/%s&#34;</span> <span class="o">]</span>
-    <span class="k">then</span>
-      <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$i</span><span class="s2">/%s&#34;</span>
-      <span class="nb">exit</span> <span class="m">0</span>
-    <span class="k">fi</span>
-  <span class="k">done</span>
-<span class="k">else</span>
-  <span class="nb">echo</span> <span class="nv">$path</span>
-  <span class="nb">exit</span> <span class="m">0</span>
-<span class="k">fi</span>
-<span class="nb">exit</span> <span class="m">1</span>
-</code></pre></div><p>dann ist es Zeit, den Stahlhelm aufzusetzen und die Gräben zu bemannen. Wen juckt es nicht beim Anblick solcher Zeilen, herauszufinden, woher %s kommt und wie man dort einige Anführungszeichen und Semikoli reinschmuggeln könnte?</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="cp">#! /bin/sh
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="nv">path</span><span class="o">=</span><span class="s2">&#34;`which %s`&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="o">[</span> -z <span class="s2">&#34;</span><span class="nv">$path</span><span class="s2">&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="k">then</span>
+</span></span><span class="line"><span class="cl">  <span class="k">for</span> i in /bin /usr/bin /sbin /usr/bin %s/bin /usr/local/bin
+</span></span><span class="line"><span class="cl">  <span class="k">do</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="o">[</span> -x <span class="s2">&#34;</span><span class="nv">$i</span><span class="s2">/%s&#34;</span> <span class="o">]</span>
+</span></span><span class="line"><span class="cl">    <span class="k">then</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$i</span><span class="s2">/%s&#34;</span>
+</span></span><span class="line"><span class="cl">      <span class="nb">exit</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl">    <span class="k">fi</span>
+</span></span><span class="line"><span class="cl">  <span class="k">done</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">echo</span> <span class="nv">$path</span>
+</span></span><span class="line"><span class="cl">  <span class="nb">exit</span> <span class="m">0</span>
+</span></span><span class="line"><span class="cl"><span class="k">fi</span>
+</span></span><span class="line"><span class="cl"><span class="nb">exit</span> <span class="m">1</span>
+</span></span></code></pre></div><p>dann ist es Zeit, den Stahlhelm aufzusetzen und die Gräben zu bemannen. Wen juckt es nicht beim Anblick solcher Zeilen, herauszufinden, woher %s kommt und wie man dort einige Anführungszeichen und Semikoli reinschmuggeln könnte?</p>
 <p>Aber auch alle Zeilen in der Nähe und Umgebung des Suchstrings PATH sind interessant und können oft zu Hinweisen führen, die lustige Effekte erlauben.</p>
 <p>Namen von externen Programmen, die unser privilegiertes Herstellertool aufruft, sich auch lustig. Wird ein Mailer gestartet? Werden vor dem Starten des Mailers Privilegien gedroppt? Meist nicht. Kann man das Subject der Mail beeinflussen, oder wird der vom Benutzer eingestellte Betreff 1:1 an das <code>mailx -s %s</code> durchgereicht? Dergleichen Spielereien gibt es viele, und alleine der persönliche Grad der Perversion setzt dem interessierten Spielkind hier noch Grenzen.</p>
 <p>Manche Programme mit Privilegien legen auch an einer vorhersagbaren Stelle im Dateisystem Dateien an - <code>/tmp/&lt;name der Logdatei&gt;</code>, <code>$HOME/.&lt;statusdatei&gt;</code> und was dergleichen an Standardstellen mehr existiert. Ein <code>strace -e open</code> als Root auf das zu untersuchende Kommando ist dabei des Admins Freund. Danach sollte man das Programm noch einmal aufrufen, aber als User, und dabei zuvor Symlinks angelegt haben, die von der vorhergesagten Stelle im Dateisystem nach <code>/tmp/gotcha</code> zeigen. Existiert nach dem Aufruf <code>/tmp/gotcha</code> und hat die so erzeugte Datei die Rechte des privilegierten Users, hat das Herstellertool ein Problem. Wie leicht hätte das Symlink nach <code>/etc/shadow</code> zeigen können und beim Aufruf aus Versehen die Paßwortdatenbank wegschießen können?</p>
@@ -222,9 +222,9 @@
 <a href="http://shiflett.org/talks/oscon2004/php-security" target="_blank" rel="noopener">Chris Shiflett in seinen PHP-Security Talks</a>
 
  demonstriert hat. Schon bei oberflächlicher Durchsicht fallen einem Konstrukte entgegen wie</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="nv">$path</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s2">&#34;HTTP_ANWENDUNGSNAME&#34;</span><span class="p">];</span>
-<span class="nv">$cmd</span> <span class="o">=</span> <span class="nx">sprintf</span><span class="p">(</span><span class="s2">&#34;/path/zum/privilegierten/binary/additional/data/</span><span class="si">$path</span><span class="s2">&#34;</span><span class="p">;</span>
-</code></pre></div><p>oder ungeprüfte Übernahme von Daten aus <code>$_GET</code>, <code>$_POST</code>, <code>$_COOKIE</code> oder <code>$_SERVER[&quot;HTTP_*&quot;]</code>-Variablen. Selbst ohne privilegiertes Binary ist diese PHP-Anwendung ein guter Einstieg in das System.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nv">$path</span> <span class="o">=</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s2">&#34;HTTP_ANWENDUNGSNAME&#34;</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$cmd</span> <span class="o">=</span> <span class="nx">sprintf</span><span class="p">(</span><span class="s2">&#34;/path/zum/privilegierten/binary/additional/data/</span><span class="si">$path</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span></code></pre></div><p>oder ungeprüfte Übernahme von Daten aus <code>$_GET</code>, <code>$_POST</code>, <code>$_COOKIE</code> oder <code>$_SERVER[&quot;HTTP_*&quot;]</code>-Variablen. Selbst ohne privilegiertes Binary ist diese PHP-Anwendung ein guter Einstieg in das System.</p>
 <p>Neben WBEM ist auch der Portmapper und die von ihm gestarteten Anwendungen sowie der inetd ein Quell der Freude. Gerade Solaris-Maschinen sind bekannt dafür, daß sie hier einen ganze Strauß unnötiger Dienste starten, von denen mehr als die Hälfte bereits ein- oder mehrmals Anlaß der Vergabe von CAN- oder CVE-Nummern gewesen ist.</p>
 <p>Schließlich ist bei vielen Maschinen nach der Installation auch ein SNMP-Daemon aktiv, und häufiger als nicht redet dieser auf Nachfrage mit jedem und gibt so wertvolle Systeminformation preis. In Zusammenarbeit mit WBEM hat man sogar eine gewisse Chance, daß der SNMP-Daemon nicht nur Read-Aufrufe, sondern auch Writes verarbeitet. Eine saubere Konfiguration, die Prüfung der Security und die Einschränkung auf Adressen aus dem Managementnetz sind hier zentral für das Überlegen der Maschine.</p>
 <p>Ein schnelles Abspulen dieser Dinge auf einer neuen Installation sollte einem erfahrenen Systemadministrator ausreichend Anhaltspunkte geben, um ihn problemlos für einige Tage schlecht schlafen zu lassen.</p>

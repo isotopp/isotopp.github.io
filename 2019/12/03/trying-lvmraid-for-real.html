@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Trying lvmraid for real' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -165,11 +165,11 @@ Micron_9200_MTFDHAL11TATCW
 )
 for 120TB of disk storage.</p>
 <p>The setup was very straight forward:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>pvcreate /dev/nvme*n1
-<span class="gp"># </span>vgcreate vg00 /dev/nvme*n1
-<span class="gp"># </span>lvcreate -n mysqlvol -L60T vg00
-<span class="gp"># </span>lvconvert --type raid1 -m1 /dev/vg00/mysqlVol
-</code></pre></div><p>The objective was to ensure that an existing non-raided volume
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> pvcreate /dev/nvme*n1
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> vgcreate vg00 /dev/nvme*n1
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvcreate -n mysqlvol -L60T vg00
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> lvconvert --type raid1 -m1 /dev/vg00/mysqlVol
+</span></span></code></pre></div><p>The objective was to ensure that an existing non-raided volume
 could be converted into a RAID after the fact. My installation
 is half-sized. The actual production version of this would be on
 a machine with 24 of these drives, 12 of them currently filled
@@ -181,19 +181,19 @@ procedure.</p>
     </a>
 </h2>
 <p>So, this worked:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvs -a -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
-<span class="go">  LV                  VG    Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
-</span><span class="go">  audit               sysvm -wi-ao----    1.95g
-</span><span class="go">  log                 sysvm -wi-ao----   10.00g
-</span><span class="go">  root                sysvm -wi-ao----    9.77g
-</span><span class="go">  swap                sysvm -wi-ao---- 1000.00m
-</span><span class="go">  var                 sysvm -wi-ao----   35.00g
-</span><span class="go">  mysqlVol            vg00  rwi-a-r---   60.00t                                    0.51                                      0 recover
-</span><span class="go">  [mysqlVol_rimage_0] vg00  iwi-aor---   60.00t
-</span><span class="go">  [mysqlVol_rimage_1] vg00  Iwi-aor---   60.00t
-</span><span class="go">  [mysqlVol_rmeta_0]  vg00  ewi-aor---    4.00m
-</span><span class="go">  [mysqlVol_rmeta_1]  vg00  ewi-aor---    4.00m
-</span></code></pre></div><h2 id="performance-metric">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvs -a -o+raid_min_recovery_rate,raid_max_recovery_rate,raid_mismatch_count,raid_sync_action
+</span></span><span class="line"><span class="cl"><span class="go">  LV                  VG    Attr       LSize    Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert MinSync MaxSync Mismatches SyncAction
+</span></span></span><span class="line"><span class="cl"><span class="go">  audit               sysvm -wi-ao----    1.95g
+</span></span></span><span class="line"><span class="cl"><span class="go">  log                 sysvm -wi-ao----   10.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  root                sysvm -wi-ao----    9.77g
+</span></span></span><span class="line"><span class="cl"><span class="go">  swap                sysvm -wi-ao---- 1000.00m
+</span></span></span><span class="line"><span class="cl"><span class="go">  var                 sysvm -wi-ao----   35.00g
+</span></span></span><span class="line"><span class="cl"><span class="go">  mysqlVol            vg00  rwi-a-r---   60.00t                                    0.51                                      0 recover
+</span></span></span><span class="line"><span class="cl"><span class="go">  [mysqlVol_rimage_0] vg00  iwi-aor---   60.00t
+</span></span></span><span class="line"><span class="cl"><span class="go">  [mysqlVol_rimage_1] vg00  Iwi-aor---   60.00t
+</span></span></span><span class="line"><span class="cl"><span class="go">  [mysqlVol_rmeta_0]  vg00  ewi-aor---    4.00m
+</span></span></span><span class="line"><span class="cl"><span class="go">  [mysqlVol_rmeta_1]  vg00  ewi-aor---    4.00m
+</span></span></span></code></pre></div><h2 id="performance-metric">
     <a href="#performance-metric">
 	Performance metric
     </a>
@@ -259,8 +259,8 @@ or many thread to get that.</p>
 <p>Today, I monitored the still syncing array and it has been progressing at
 around 250 MB/s equalling around 1.1% per hours over night, and
 is now at 20-something percent synced.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvchange -maxrecoveryspeed<span class="o">=</span>1000k /dev/vg00/mysqlVol
-</code></pre></div><p>This works, and throttles the sync to just below 1000k per
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvchange -maxrecoveryspeed<span class="o">=</span>1000k /dev/vg00/mysqlVol
+</span></span></code></pre></div><p>This works, and throttles the sync to just below 1000k per
 second. Conversely, setting a recovery speed of 0k falls back to
 the default 250 MB/s.</p>
 <p>But: Setting it to 1000000k ups the speed to around 550 MB/s,
@@ -277,15 +277,15 @@ even makes sense.</p>
 </h2>
 <p>If you try to split the Volume while it is still synching, you
 will find that this is not possible.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>lvconvert --splitmirrors <span class="m">1</span> -n splitlv /dev/vg00/mysqlVol
-<span class="go">  Unable to split vg00/mysqlVol while it is not in-sync.
-</span></code></pre></div><p>Another observationL While lvmraid employs mdraid code, working with
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lvconvert --splitmirrors <span class="m">1</span> -n splitlv /dev/vg00/mysqlVol
+</span></span><span class="line"><span class="cl"><span class="go">  Unable to split vg00/mysqlVol while it is not in-sync.
+</span></span></span></code></pre></div><p>Another observationL While lvmraid employs mdraid code, working with
 devicemapper block devices for the data and external metadata, mdraid does
 not see any of this in /proc;</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp"># </span>cat /proc/mdstat
-<span class="go">Personalities : [raid6] [raid5] [raid4] [raid1]
-</span><span class="go">unused devices: &lt;none&gt;
-</span></code></pre></div><p>You can&rsquo;t use any mdraid tooling to turn knobs inside lvm
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> cat /proc/mdstat
+</span></span><span class="line"><span class="cl"><span class="go">Personalities : [raid6] [raid5] [raid4] [raid1]
+</span></span></span><span class="line"><span class="cl"><span class="go">unused devices: &lt;none&gt;
+</span></span></span></code></pre></div><p>You can&rsquo;t use any mdraid tooling to turn knobs inside lvm
 controlled mdraid code.</p>
 
       </div>

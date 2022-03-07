@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='A blast from the past' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -205,80 +205,80 @@ crashed machines.</p>
 <p>Basically it dumps data from the operating system and the
 various MySQL tables into the directory <code>/var/log/mysql_pl</code>, where
 we have a weekly ring-buffer like directory structure:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[somehierarchy-02 /var/log/mysql_pl]$ ls -F
-</span><span class="go">Fri/  Mon/  README  Sat/  Sun/  Thu/  Tue/  Wed/
-</span></code></pre></div><p>When a box crashes or misbehaves, as long as you have access to
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[somehierarchy-02 /var/log/mysql_pl]$ ls -F
+</span></span></span><span class="line"><span class="cl"><span class="go">Fri/  Mon/  README  Sat/  Sun/  Thu/  Tue/  Wed/
+</span></span></span></code></pre></div><p>When a box crashes or misbehaves, as long as you have access to
 this subtree, you can go there and inspect the files to see what
 the box did just before it crashed. So we go into <code>Mon</code>
 subdirectory for Monday, and look into some files, for example
 the 10:20 recordings:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[somehierarchy-02 ~]# cd /var/log/mysql_pl/Mon
-</span><span class="go">[somehierzrchy-02 Mon]# ls -l 10_20*
-</span><span class="go">-rw-r--r-- 1 root root 19144 Nov 18 10:20 10_20.innodb.xz
-</span><span class="go">-rw-r--r-- 1 root root  5836 Nov 18 10:20 10_20.unix.xz
-</span><span class="go">-rw-r--r-- 1 root root 18368 Nov 18 10:20 10_20.xz
-</span><span class="go">[somehierarchy-02 Mon]# ls -l 10_21.sys*
-</span><span class="go">-rw-r--r-- 1 root root 14590 Nov 18 10:21 10_21.sys.gz
-</span></code></pre></div><p>In the 10_20.xz we find the MySQL processlist and a few other
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[somehierarchy-02 ~]# cd /var/log/mysql_pl/Mon
+</span></span></span><span class="line"><span class="cl"><span class="go">[somehierzrchy-02 Mon]# ls -l 10_20*
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 root root 19144 Nov 18 10:20 10_20.innodb.xz
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 root root  5836 Nov 18 10:20 10_20.unix.xz
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 root root 18368 Nov 18 10:20 10_20.xz
+</span></span></span><span class="line"><span class="cl"><span class="go">[somehierarchy-02 Mon]# ls -l 10_21.sys*
+</span></span></span><span class="line"><span class="cl"><span class="go">-rw-r--r-- 1 root root 14590 Nov 18 10:21 10_21.sys.gz
+</span></span></span></code></pre></div><p>In the 10_20.xz we find the MySQL processlist and a few other
 things, in the 10_20.unix file.xz we find the UNIX processlist,
 system memory and other system stuff, and in the 10_20.innodb
 file there are various InnoDB related table dumps from this
 point in time. There is also a dump of the entire sys set of
 views every 15 minutes, so 10_21.sys.gz has that.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[somehierarchy-02 /var/log/mysql_pl]# head -3 /tmp/x
-</span><span class="go">Id	User	Host	db	Command	Time	State	Info
-</span><span class="go">33	system user		NULL	Connect	1	Waiting for dependent transaction to commit	NULL
-</span><span class="go">34	system user		NULL	Connect	1	System lock	INSERT INTO ...
-</span></code></pre></div><p>Checking the processlist shows many sleeping connections. We
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[somehierarchy-02 /var/log/mysql_pl]# head -3 /tmp/x
+</span></span></span><span class="line"><span class="cl"><span class="go">Id	User	Host	db	Command	Time	State	Info
+</span></span></span><span class="line"><span class="cl"><span class="go">33	system user		NULL	Connect	1	Waiting for dependent transaction to commit	NULL
+</span></span></span><span class="line"><span class="cl"><span class="go">34	system user		NULL	Connect	1	System lock	INSERT INTO ...
+</span></span></span></code></pre></div><p>Checking the processlist shows many sleeping connections. We
 filter these and immediately hit paydirt:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[somehierarchy-02 tmp]# awk -F&#34;\t&#34; &#39;$5 != &#34;Sleep&#34; { print $5, $6 }&#39; x | wc -l
-</span><span class="go">27
-</span><span class="go">[somehierarchy-02 tmp]# awk -F&#34;\t&#34; &#39;$5 != &#34;Sleep&#34; { print $5, $6 }&#39; x
-</span><span class="go">Command Time
-</span><span class="go">Connect 1
-</span><span class="go">Connect 1
-</span><span class="go">Connect 1
-</span><span class="go">Connect 1
-</span><span class="go">Connect 1
-</span><span class="go">Connect 1
-</span><span class="go">Connect 2
-</span><span class="go">Connect 2
-</span><span class="go">Connect 2
-</span><span class="go">Connect 2
-</span><span class="go">Connect 2
-</span><span class="go">Connect 39412
-</span><span class="go">Query 33242
-</span><span class="go">Query 33242
-</span><span class="go">Query 33241
-</span><span class="go">Query 24514
-</span><span class="go">Query 20613
-</span><span class="go">Query 14924
-</span><span class="go">Query 6827
-</span><span class="go">Query 3219
-</span><span class="go">Query 1
-</span><span class="go">Query 1
-</span><span class="go">Query 0
-</span><span class="go">Query 0
-</span><span class="go">Query 0
-</span><span class="go">Query 0
-</span></code></pre></div><p>The &ldquo;Connect&rdquo; only means that these are replication threads.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[somehierarchy-02 tmp]# awk -F&#34;\t&#34; &#39;$5 != &#34;Sleep&#34; { print $5, $6 }&#39; x | wc -l
+</span></span></span><span class="line"><span class="cl"><span class="go">27
+</span></span></span><span class="line"><span class="cl"><span class="go">[somehierarchy-02 tmp]# awk -F&#34;\t&#34; &#39;$5 != &#34;Sleep&#34; { print $5, $6 }&#39; x
+</span></span></span><span class="line"><span class="cl"><span class="go">Command Time
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 2
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 2
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 2
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 2
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 2
+</span></span></span><span class="line"><span class="cl"><span class="go">Connect 39412
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 33242
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 33242
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 33241
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 24514
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 20613
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 14924
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 6827
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 3219
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 1
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 0
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 0
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 0
+</span></span></span><span class="line"><span class="cl"><span class="go">Query 0
+</span></span></span></code></pre></div><p>The &ldquo;Connect&rdquo; only means that these are replication threads.
 Running Queries have &ldquo;Query&rdquo; and here the number is the seconds
 of runtime for this query. There are apparently a number of
 queries with a large runtime: 33242 seconds are 9.25 hours -
 they are running since 1 am.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">[somehierarchy-02 tmp]# awk -F&#34;\t&#34; &#39;($5 == &#34;Query&#34; ) &amp;&amp; ($6 &gt; 10000) { printf &#34;%s %s %s %s\n&#34;, $2, $3, $6, $7 }&#39; x
-</span><span class="go">hadoopuser hadoop-07:62112 33242 Sending data
-</span><span class="go">hadoopuser hadoop-07:62126 33242 Sending data
-</span><span class="go">hadoopuser hadoop-07:62128 33241 Sending data
-</span><span class="go">cronuser cronbox-14:34017 24514 Creating sort index
-</span><span class="go">cronuser cronbox-06:45661 20613 Creating sort index
-</span><span class="go">cronuser cronbox-14:55920 14924 Creating sort index
-</span></code></pre></div><p>At around 1:00am the <code>hadoopuser</code> connected from hadoop-07 to
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">[somehierarchy-02 tmp]# awk -F&#34;\t&#34; &#39;($5 == &#34;Query&#34; ) &amp;&amp; ($6 &gt; 10000) { printf &#34;%s %s %s %s\n&#34;, $2, $3, $6, $7 }&#39; x
+</span></span></span><span class="line"><span class="cl"><span class="go">hadoopuser hadoop-07:62112 33242 Sending data
+</span></span></span><span class="line"><span class="cl"><span class="go">hadoopuser hadoop-07:62126 33242 Sending data
+</span></span></span><span class="line"><span class="cl"><span class="go">hadoopuser hadoop-07:62128 33241 Sending data
+</span></span></span><span class="line"><span class="cl"><span class="go">cronuser cronbox-14:34017 24514 Creating sort index
+</span></span></span><span class="line"><span class="cl"><span class="go">cronuser cronbox-06:45661 20613 Creating sort index
+</span></span></span><span class="line"><span class="cl"><span class="go">cronuser cronbox-14:55920 14924 Creating sort index
+</span></span></span></code></pre></div><p>At around 1:00am the <code>hadoopuser</code> connected from hadoop-07 to
 somehierarchy-02 and started a number of queries:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">SELECT ...
-</span><span class="go">FROM MessageLog
-</span><span class="go">WHERE ( `hotelnumber` &gt;= 986116 ) AND ( `hotelnumber` &lt; 1181338 )
-</span></code></pre></div><p>and similar. They read around 70M rows from MessageLog
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">SELECT ...
+</span></span></span><span class="line"><span class="cl"><span class="go">FROM MessageLog
+</span></span></span><span class="line"><span class="cl"><span class="go">WHERE ( `hotelnumber` &gt;= 986116 ) AND ( `hotelnumber` &lt; 1181338 )
+</span></span></span></code></pre></div><p>and similar. They read around 70M rows from MessageLog
 each, a table that itself has 540M rows. That takes time.</p>
 <p>During that time the &ldquo;select&rdquo; statements maintains a read-only
 transaction to create a stable view of the table it is reading.

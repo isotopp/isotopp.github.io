@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='MySQL: Moving Average' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -162,62 +162,61 @@ In this article, we want to see how we can get daily buckets and moving averages
 </h1>
 <p>We will be working with a data table named <code>data</code>, with three columns: a sensor <code>id</code>, a measurement datetime <code>d</code> and a metric value <code>m</code> that was sampled at that time.
 The table definition looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Create a data table&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">setup_tables</span><span class="p">():</span>
-    <span class="n">sql_setup</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&#34;drop table if exists data&#34;</span><span class="p">,</span>
-        <span class="s2">&#34;&#34;&#34; create table data (
-</span><span class="s2">                id integer not null,
-</span><span class="s2">                d datetime not null,
-</span><span class="s2">                m integer not null,
-</span><span class="s2">                primary key (id, d)
-</span><span class="s2">        )&#34;&#34;&#34;</span><span class="p">,</span>
-    <span class="p">]</span>
-
-    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">sql_setup</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;setup_tables: failed </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">.&#34;</span><span class="p">)</span>
-
-</code></pre></div><p>For one year, each day and for each of our 11 (0-10) sensors, 1001 values will be collected.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Create a data table&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">setup_tables</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql_setup</span> <span class="o">=</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;drop table if exists data&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;&#34;&#34; create table data (
+</span></span></span><span class="line"><span class="cl"><span class="s2">                id integer not null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">                d datetime not null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">                m integer not null,
+</span></span></span><span class="line"><span class="cl"><span class="s2">                primary key (id, d)
+</span></span></span><span class="line"><span class="cl"><span class="s2">        )&#34;&#34;&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">cmd</span> <span class="ow">in</span> <span class="n">sql_setup</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">            <span class="n">c</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">OperationalError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;setup_tables: failed </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">.&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>For one year, each day and for each of our 11 (0-10) sensors, 1001 values will be collected.
 We insert a random time within the day, and a random measured value, an integer between 0 and 1000.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Fill data table with test data&#34;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--start&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Start date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--end&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;End date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
-<span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of values per day&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">fill_table</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
-    <span class="c1"># Get rid of the old data</span>
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;truncate table data&#34;</span><span class="p">)</span>
-    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-
-    <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
-    <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
-    <span class="n">one_day</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="c1"># For one year, for each day:</span>
-    <span class="k">while</span> <span class="n">today</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Date = </span><span class="si">{</span><span class="n">today</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-        <span class="c1"># For each measurement time:</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
-            <span class="c1"># a random sensor id, a random second in the day, and a random metric</span>
-            <span class="nb">id</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
-            <span class="n">d</span> <span class="o">=</span> <span class="n">today</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">86399</span><span class="p">))</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
-            <span class="c1"># are written to the database.</span>
-            <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;insert into data (id, d, m) values (</span><span class="si">%(id)s</span><span class="s2">, </span><span class="si">%(d)s</span><span class="s2">, </span><span class="si">%(m)s</span><span class="s2">)&#34;</span>
-            <span class="c1"># If the (id, time) combination is not unique, we get an error that we pass</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;id&#34;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&#34;d&#34;</span><span class="p">:</span> <span class="n">d</span><span class="p">,</span> <span class="s2">&#34;m&#34;</span><span class="p">:</span> <span class="n">m</span><span class="p">})</span>
-            <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">_exceptions</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="c1"># The Birthday Paradox in Action</span>
-                <span class="c1"># print(e)</span>
-                <span class="k">pass</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-        <span class="c1"># next day.</span>
-        <span class="n">today</span> <span class="o">+=</span> <span class="n">one_day</span>
-</code></pre></div><h1 id="daily-buckets-with-group-by">
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Fill data table with test data&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--start&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Start date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--end&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;End date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of values per day&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fill_table</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># Get rid of the old data</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&#34;truncate table data&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="n">today</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">start</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">end</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">one_day</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="c1"># For one year, for each day:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">while</span> <span class="n">today</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Date = </span><span class="si">{</span><span class="n">today</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># For each measurement time:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">count</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># a random sensor id, a random second in the day, and a random metric</span>
+</span></span><span class="line"><span class="cl">            <span class="nb">id</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="n">d</span> <span class="o">=</span> <span class="n">today</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">86399</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl">            <span class="n">m</span> <span class="o">=</span> <span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># are written to the database.</span>
+</span></span><span class="line"><span class="cl">            <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;insert into data (id, d, m) values (</span><span class="si">%(id)s</span><span class="s2">, </span><span class="si">%(d)s</span><span class="s2">, </span><span class="si">%(m)s</span><span class="s2">)&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="c1"># If the (id, time) combination is not unique, we get an error that we pass</span>
+</span></span><span class="line"><span class="cl">            <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">{</span><span class="s2">&#34;id&#34;</span><span class="p">:</span> <span class="nb">id</span><span class="p">,</span> <span class="s2">&#34;d&#34;</span><span class="p">:</span> <span class="n">d</span><span class="p">,</span> <span class="s2">&#34;m&#34;</span><span class="p">:</span> <span class="n">m</span><span class="p">})</span>
+</span></span><span class="line"><span class="cl">            <span class="k">except</span> <span class="n">MySQLdb</span><span class="o">.</span><span class="n">_exceptions</span><span class="o">.</span><span class="n">IntegrityError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># The Birthday Paradox in Action</span>
+</span></span><span class="line"><span class="cl">                <span class="c1"># print(e)</span>
+</span></span><span class="line"><span class="cl">                <span class="k">pass</span>
+</span></span><span class="line"><span class="cl">        <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># next day.</span>
+</span></span><span class="line"><span class="cl">        <span class="n">today</span> <span class="o">+=</span> <span class="n">one_day</span>
+</span></span></code></pre></div><h1 id="daily-buckets-with-group-by">
     <a href="#daily-buckets-with-group-by">
 	Daily Buckets with GROUP BY
     </a>
@@ -231,24 +230,24 @@ That is, our <code>datetime</code> is turned into a <code>date</code>, the time 
 Two values with the same date, but different times, are considered identical and would land on the same pile.
 Different <code>id</code> values or different metric values <code>m</code> are also not used to select different piles.</p>
 <p>What we do is <code>GROUP BY id, date(d)</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Group by day&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">daily_groups</span><span class="p">():</span>
-    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    select id
-</span><span class="s2">         , date(d) as d
-</span><span class="s2">         , count(m) as cnt
-</span><span class="s2">         , sum(m) as total
-</span><span class="s2">         , sum(m)/count(m) as av 
-</span><span class="s2">      from data 
-</span><span class="s2">    group by id, date(d)
-</span><span class="s2">    order by id, d
-</span><span class="s2">    &#34;&#34;&#34;</span>
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;id: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> date: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;d&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">  -  cnt: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cnt&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">6d</span><span class="si">}</span><span class="s1"> sum: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;total&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1"> average: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;av&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</code></pre></div><p>So two measurements from the same sensor-id and taken on the same date are put onto the same pile.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Group by day&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">daily_groups</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    select id
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , date(d) as d
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , count(m) as cnt
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , sum(m) as total
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , sum(m)/count(m) as av 
+</span></span></span><span class="line"><span class="cl"><span class="s2">      from data 
+</span></span></span><span class="line"><span class="cl"><span class="s2">    group by id, date(d)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    order by id, d
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;id: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> date: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;d&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">  -  cnt: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cnt&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">6d</span><span class="si">}</span><span class="s1"> sum: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;total&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1"> average: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;av&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>So two measurements from the same sensor-id and taken on the same date are put onto the same pile.</p>
 <p>MySQL offers us a number of functions to measure the pile: <a href="https://dev.mysql.com/doc/refman/8.0/en/aggregate-functions.html" target="_blank" rel="noopener">Aggregate Functions</a>
 
 .
@@ -257,20 +256,20 @@ But we can also ask for the values themselves as a comma separated list, using <
 We can also ask for the values to be turned into JSON using <code>JSON_ARRAYAGG()</code> or <code>JSON_OBJECTAGG()</code>.</p>
 <p>In our example above, we ask for the sum and the count and calculate the average ourselves.
 The output looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./rolling-window.py daily-groups <span class="p">|</span> head -5
-<span class="go">id:  0 date: 2020-01-01  -  cnt:     80 sum: 418888 average: 5236.1000
-</span><span class="go">id:  0 date: 2020-01-02  -  cnt:     92 sum: 419129 average: 4555.7500
-</span><span class="go">id:  0 date: 2020-01-03  -  cnt:     94 sum: 417583 average: 4442.3723
-</span><span class="go">id:  0 date: 2020-01-04  -  cnt:     94 sum: 422754 average: 4497.3830
-</span><span class="go">id:  0 date: 2020-01-05  -  cnt:    101 sum: 515639 average: 5105.3366
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp">$ </span>./rolling-window.py daily-groups <span class="p">|</span> head -369 <span class="p">|</span> tail -5
-<span class="go">id:  0 date: 2020-12-30  -  cnt:     95 sum: 513361 average: 5403.8000
-</span><span class="go">id:  0 date: 2020-12-31  -  cnt:     94 sum: 480321 average: 5109.7979
-</span><span class="go">id:  1 date: 2020-01-01  -  cnt:     86 sum: 415058 average: 4826.2558
-</span><span class="go">id:  1 date: 2020-01-02  -  cnt:     93 sum: 443509 average: 4768.9140
-</span><span class="go">id:  1 date: 2020-01-03  -  cnt:     84 sum: 453897 average: 5403.5357
-</span></code></pre></div><p>Since we aggregate and order by id first, we get all values from sensor 0 first, for an entire year.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./rolling-window.py daily-groups <span class="p">|</span> head -5
+</span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01  -  cnt:     80 sum: 418888 average: 5236.1000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-02  -  cnt:     92 sum: 419129 average: 4555.7500
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-03  -  cnt:     94 sum: 417583 average: 4442.3723
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-04  -  cnt:     94 sum: 422754 average: 4497.3830
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-05  -  cnt:    101 sum: 515639 average: 5105.3366
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">$</span> ./rolling-window.py daily-groups <span class="p">|</span> head -369 <span class="p">|</span> tail -5
+</span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-30  -  cnt:     95 sum: 513361 average: 5403.8000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31  -  cnt:     94 sum: 480321 average: 5109.7979
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-01  -  cnt:     86 sum: 415058 average: 4826.2558
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-02  -  cnt:     93 sum: 443509 average: 4768.9140
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-03  -  cnt:     84 sum: 453897 average: 5403.5357
+</span></span></span></code></pre></div><p>Since we aggregate and order by id first, we get all values from sensor 0 first, for an entire year.
 Then the values for sensor id 1 follow, starting again at the beginning of the year.
 Each row of output has values for one day, because we aggregated that way.</p>
 <p>We can see how for each of the 10 sensors, approximately 90 values per day exist, but the actual value varies.
@@ -285,42 +284,42 @@ But they will return all rows instead of making piles.
 So when we define <code>WINDOW w AS ( partition by id, date(d) order by id, d)</code>, we will get our sensors by sensor and by date.
 Each new sensor id, and each new date will restart &ldquo;data collection&rdquo;, that is, our sums or counts will be reset.</p>
 <p>Our code:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Partition by day&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">daily_partitions</span><span class="p">():</span>
-    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    select id
-</span><span class="s2">         , d
-</span><span class="s2">         , count(m) over w as cnt
-</span><span class="s2">         , sum(m) over w as total
-</span><span class="s2">         , sum(m) over w/count(m) over w as av 
-</span><span class="s2">      from data
-</span><span class="s2">  window w as (
-</span><span class="s2">    partition by id, date(d)
-</span><span class="s2">    order by id, d)
-</span><span class="s2">    &#34;&#34;&#34;</span>
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;id: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> date: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;d&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">  -  cnt: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cnt&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">6d</span><span class="si">}</span><span class="s1"> sum: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;total&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1"> average: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;av&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</code></pre></div><p>We can check the sums and counts, and see them be restarted:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./rolling-window.py daily-partitions <span class="p">|</span> less
-<span class="go">id:  0 date: 2020-01-01 00:13:43  -  cnt:      1 sum: 6401 average: 6401.0000
-</span><span class="go">id:  0 date: 2020-01-01 00:14:25  -  cnt:      2 sum: 15746 average: 7873.0000
-</span><span class="go">id:  0 date: 2020-01-01 00:15:33  -  cnt:      3 sum: 19656 average: 6552.0000
-</span><span class="go">...
-</span><span class="go">id:  0 date: 2020-01-01 23:09:13  -  cnt:     79 sum: 411728 average: 5211.7468
-</span><span class="go">id:  0 date: 2020-01-01 23:27:16  -  cnt:     80 sum: 418888 average: 5236.1000
-</span><span class="go">id:  0 date: 2020-01-02 00:14:48  -  cnt:      1 sum: 5834 average: 5834.0000
-</span><span class="go">id:  0 date: 2020-01-02 00:15:21  -  cnt:      2 sum: 10970 average: 5485.0000
-</span><span class="go">...
-</span><span class="go">id:  0 date: 2020-12-31 23:01:21  -  cnt:     92 sum: 475441 average: 5167.8370
-</span><span class="go">id:  0 date: 2020-12-31 23:14:32  -  cnt:     93 sum: 475494 average: 5112.8387
-</span><span class="go">id:  0 date: 2020-12-31 23:25:47  -  cnt:     94 sum: 480321 average: 5109.7979
-</span><span class="go">id:  1 date: 2020-01-01 00:24:46  -  cnt:      1 sum: 7079 average: 7079.0000
-</span><span class="go">id:  1 date: 2020-01-01 00:32:22  -  cnt:      2 sum: 7989 average: 3994.5000
-</span><span class="go">id:  1 date: 2020-01-01 01:01:40  -  cnt:      3 sum: 14551 average: 4850.3333
-</span></code></pre></div><p>We can see how each time the day changes or the id changes the sum and count values start over.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Partition by day&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">daily_partitions</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    select id
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , d
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , count(m) over w as cnt
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , sum(m) over w as total
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , sum(m) over w/count(m) over w as av 
+</span></span></span><span class="line"><span class="cl"><span class="s2">      from data
+</span></span></span><span class="line"><span class="cl"><span class="s2">  window w as (
+</span></span></span><span class="line"><span class="cl"><span class="s2">    partition by id, date(d)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    order by id, d)
+</span></span></span><span class="line"><span class="cl"><span class="s2">    &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;id: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> date: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;d&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">  -  cnt: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cnt&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">6d</span><span class="si">}</span><span class="s1"> sum: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;total&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1"> average: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;av&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>We can check the sums and counts, and see them be restarted:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./rolling-window.py daily-partitions <span class="p">|</span> less
+</span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 00:13:43  -  cnt:      1 sum: 6401 average: 6401.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 00:14:25  -  cnt:      2 sum: 15746 average: 7873.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 00:15:33  -  cnt:      3 sum: 19656 average: 6552.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 23:09:13  -  cnt:     79 sum: 411728 average: 5211.7468
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 23:27:16  -  cnt:     80 sum: 418888 average: 5236.1000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-02 00:14:48  -  cnt:      1 sum: 5834 average: 5834.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-02 00:15:21  -  cnt:      2 sum: 10970 average: 5485.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31 23:01:21  -  cnt:     92 sum: 475441 average: 5167.8370
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31 23:14:32  -  cnt:     93 sum: 475494 average: 5112.8387
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31 23:25:47  -  cnt:     94 sum: 480321 average: 5109.7979
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-01 00:24:46  -  cnt:      1 sum: 7079 average: 7079.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-01 00:32:22  -  cnt:      2 sum: 7989 average: 3994.5000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-01 01:01:40  -  cnt:      3 sum: 14551 average: 4850.3333
+</span></span></span></code></pre></div><p>We can see how each time the day changes or the id changes the sum and count values start over.
 Initially our count is 1, the sum is 6401 and the average is larger than 5000.
 As we proceed through the day, we can see how the average converges against that expected value.</p>
 <p>After <code>2020-01-01 23:27:16</code> at a count of <code>80</code> the new day starts and the counters reset.</p>
@@ -334,64 +333,64 @@ As we proceed through the day, we can see how the average converges against that
 This window is based on either values, or on date values.
 In our case, we want the latter: for each metric date <code>d</code>, we want to do our math on the preceding 24 hours.</p>
 <p>In code:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Sliding window query - 24h&#34;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">daily_window</span><span class="p">():</span>
-    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
-</span><span class="s2">    select id
-</span><span class="s2">         , d
-</span><span class="s2">         , count(m) over w as cnt
-</span><span class="s2">         , sum(m) over w as total
-</span><span class="s2">         , sum(m) over w/count(m) over w as av 
-</span><span class="s2">      from data
-</span><span class="s2">  window w as (order by d range between interval 1 day preceding and current row)
-</span><span class="s2">  &#34;&#34;&#34;</span>
-    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;id: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> date: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;d&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">  -  cnt: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cnt&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">6d</span><span class="si">}</span><span class="s1"> sum: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;total&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1"> average: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;av&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-</code></pre></div><p>The Window clause is <code>WINDOW w AS (order by d range between interval 1 day preceding and current row)</code>.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Sliding window query - 24h&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">daily_window</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
+</span></span></span><span class="line"><span class="cl"><span class="s2">    select id
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , d
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , count(m) over w as cnt
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , sum(m) over w as total
+</span></span></span><span class="line"><span class="cl"><span class="s2">         , sum(m) over w/count(m) over w as av 
+</span></span></span><span class="line"><span class="cl"><span class="s2">      from data
+</span></span></span><span class="line"><span class="cl"><span class="s2">  window w as (order by d range between interval 1 day preceding and current row)
+</span></span></span><span class="line"><span class="cl"><span class="s2">  &#34;&#34;&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;id: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;id&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> date: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;d&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">  -  cnt: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;cnt&#34;</span><span class="p">]</span><span class="si">:</span><span class="s1">6d</span><span class="si">}</span><span class="s1"> sum: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;total&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1"> average: </span><span class="si">{</span><span class="n">row</span><span class="p">[</span><span class="s2">&#34;av&#34;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</span></span></code></pre></div><p>The Window clause is <code>WINDOW w AS (order by d range between interval 1 day preceding and current row)</code>.
 As we can see, the <code>id</code> is out of the picture here:
 We cannot nest window definitions, and that means in this example we count and sum over the previous 24h of <strong>all</strong> sensors, not sensors with the same id as ours.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">id:  6 date: 2020-01-01 00:03:44  -  cnt:      1 sum: 3420 average: 3420.0000
-</span><span class="go">id: 10 date: 2020-01-01 00:07:50  -  cnt:      2 sum: 5359 average: 2679.5000
-</span><span class="go">id:  5 date: 2020-01-01 00:08:35  -  cnt:      3 sum: 12441 average: 4147.0000
-</span><span class="go">...
-</span><span class="go">id:  0 date: 2020-01-04 20:40:46  -  cnt:    998 sum: 4842406 average: 4852.1102
-</span><span class="go">id:  7 date: 2020-01-04 20:41:49  -  cnt:    998 sum: 4842673 average: 4852.3778
-</span><span class="go">id:  8 date: 2020-01-04 20:43:00  -  cnt:    997 sum: 4833426 average: 4847.9699
-</span><span class="go">id:  1 date: 2020-01-04 20:43:05  -  cnt:    998 sum: 4837433 average: 4847.1273
-</span><span class="go">...
-</span><span class="go">id:  7 date: 2020-12-31 23:54:52  -  cnt:   1003 sum: 5089623 average: 5074.3998
-</span><span class="go">id:  8 date: 2020-12-31 23:56:02  -  cnt:   1004 sum: 5092441 average: 5072.1524
-</span><span class="go">id:  8 date: 2020-12-31 23:59:56  -  cnt:   1000 sum: 5059683 average: 5059.6830````
-</span></code></pre></div><p>From the changing <code>id</code> values we can see that all sensors are considered.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">id:  6 date: 2020-01-01 00:03:44  -  cnt:      1 sum: 3420 average: 3420.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id: 10 date: 2020-01-01 00:07:50  -  cnt:      2 sum: 5359 average: 2679.5000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  5 date: 2020-01-01 00:08:35  -  cnt:      3 sum: 12441 average: 4147.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-04 20:40:46  -  cnt:    998 sum: 4842406 average: 4852.1102
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  7 date: 2020-01-04 20:41:49  -  cnt:    998 sum: 4842673 average: 4852.3778
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  8 date: 2020-01-04 20:43:00  -  cnt:    997 sum: 4833426 average: 4847.9699
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  1 date: 2020-01-04 20:43:05  -  cnt:    998 sum: 4837433 average: 4847.1273
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  7 date: 2020-12-31 23:54:52  -  cnt:   1003 sum: 5089623 average: 5074.3998
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  8 date: 2020-12-31 23:56:02  -  cnt:   1004 sum: 5092441 average: 5072.1524
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  8 date: 2020-12-31 23:59:56  -  cnt:   1000 sum: 5059683 average: 5059.6830````
+</span></span></span></code></pre></div><p>From the changing <code>id</code> values we can see that all sensors are considered.
 The count also shows that in the middle of the field around 1000 values are considered - the amount of values in one 24h range.</p>
 <p>An expression such as <code>order by id, d range between interval 1 day preceding and current row</code> is not valid: we get</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">MySQLdb._exceptions.OperationalError: (3587, &#34;Window &#39;w&#39; with RANGE N PRECEDING/FOLLOWING frame requires exactly one ORDER BY expression, of numeric or temporal type&#34;)
-</span></code></pre></div><p>We would have to ask for values from one sensor, specifically:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w">
-</span><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="w">
-</span><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">cnt</span><span class="w">
-</span><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total</span><span class="w">
-</span><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="o">/</span><span class="k">count</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">av</span><span class="w"> 
-</span><span class="w">      </span><span class="k">from</span><span class="w"> </span><span class="k">data</span><span class="w">
-</span><span class="w">      </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
-</span><span class="w">  </span><span class="n">window</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">(</span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="k">between</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">day</span><span class="w"> </span><span class="n">preceding</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">current</span><span class="w"> </span><span class="k">row</span><span class="p">)</span><span class="w">
-</span></code></pre></div><p>and do that for each successive constant <code>id</code> value.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">MySQLdb._exceptions.OperationalError: (3587, &#34;Window &#39;w&#39; with RANGE N PRECEDING/FOLLOWING frame requires exactly one ORDER BY expression, of numeric or temporal type&#34;)
+</span></span></span></code></pre></div><p>We would have to ask for values from one sensor, specifically:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="w">    </span><span class="k">select</span><span class="w"> </span><span class="n">id</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">cnt</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">total</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="p">,</span><span class="w"> </span><span class="k">sum</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="o">/</span><span class="k">count</span><span class="p">(</span><span class="n">m</span><span class="p">)</span><span class="w"> </span><span class="n">over</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">av</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">from</span><span class="w"> </span><span class="k">data</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">      </span><span class="k">where</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">window</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="p">(</span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="n">range</span><span class="w"> </span><span class="k">between</span><span class="w"> </span><span class="nb">interval</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="k">day</span><span class="w"> </span><span class="n">preceding</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="k">current</span><span class="w"> </span><span class="k">row</span><span class="p">)</span><span class="w">
+</span></span></span></code></pre></div><p>and do that for each successive constant <code>id</code> value.
 That is not fast nor elegant.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">id:  0 date: 2020-01-01 00:13:43  -  cnt:      1 sum: 6401 average: 6401.0000
-</span><span class="go">id:  0 date: 2020-01-01 00:14:25  -  cnt:      2 sum: 15746 average: 7873.0000
-</span><span class="go">id:  0 date: 2020-01-01 00:15:33  -  cnt:      3 sum: 19656 average: 6552.0000
-</span><span class="go">...
-</span><span class="go">id:  0 date: 2020-04-01 02:48:29  -  cnt:     99 sum: 463956 average: 4686.4242
-</span><span class="go">id:  0 date: 2020-04-01 03:07:43  -  cnt:    100 sum: 472922 average: 4729.2200
-</span><span class="go">id:  0 date: 2020-04-01 03:15:23  -  cnt:    101 sum: 478127 average: 4733.9307
-</span><span class="go">...
-</span><span class="go">id:  0 date: 2020-12-31 23:01:21  -  cnt:     97 sum: 500889 average: 5163.8041
-</span><span class="go">id:  0 date: 2020-12-31 23:14:32  -  cnt:     96 sum: 487287 average: 5075.9063
-</span><span class="go">id:  0 date: 2020-12-31 23:25:47  -  cnt:     97 sum: 492114 average: 5073.3402
-</span></code></pre></div><p>We would have to wrap all that into a dependent subquery to loop.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 00:13:43  -  cnt:      1 sum: 6401 average: 6401.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 00:14:25  -  cnt:      2 sum: 15746 average: 7873.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-01-01 00:15:33  -  cnt:      3 sum: 19656 average: 6552.0000
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-04-01 02:48:29  -  cnt:     99 sum: 463956 average: 4686.4242
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-04-01 03:07:43  -  cnt:    100 sum: 472922 average: 4729.2200
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-04-01 03:15:23  -  cnt:    101 sum: 478127 average: 4733.9307
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31 23:01:21  -  cnt:     97 sum: 500889 average: 5163.8041
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31 23:14:32  -  cnt:     96 sum: 487287 average: 5075.9063
+</span></span></span><span class="line"><span class="cl"><span class="go">id:  0 date: 2020-12-31 23:25:47  -  cnt:     97 sum: 492114 average: 5073.3402
+</span></span></span></code></pre></div><p>We would have to wrap all that into a dependent subquery to loop.</p>
 
       </div>
     </div>

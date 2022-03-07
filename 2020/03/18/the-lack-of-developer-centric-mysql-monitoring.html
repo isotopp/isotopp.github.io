@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='The lack of developer centric MySQL monitoring - a rant' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -189,11 +189,11 @@
 
  breakdown and the resulting machine gunning.</p>
 <p>In our specific case, the ORM has for each object a list of essential columns and a list of all columns. Code is being written to load objects from the database into the application in single, rather efficient queries. Something like</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-perl" data-lang="perl"><span class="nv">@products</span> <span class="o">=</span> <span class="nv">$bp</span><span class="o">-&gt;</span><span class="n">search</span><span class="p">(</span><span class="n">some</span> <span class="n">query</span> <span class="n">from</span> <span class="n">a</span> <span class="n">condition</span> <span class="n">builder</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">fetch</span><span class="p">();</span>
-<span class="k">foreach</span> <span class="nv">$product</span> <span class="p">(</span><span class="nv">@products</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">do_a_thing</span><span class="p">(</span><span class="nv">$product</span><span class="p">);</span>
-<span class="p">}</span>
-</code></pre></div><p>This will fire a single query for products and then build an array of products in which all the essential columns are loaded as attributes. If you happen to access a non-essential attribute, the <code>id</code> of the object is used to lazy-load the missing attributes at once and completely fleshen the object.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-perl" data-lang="perl"><span class="line"><span class="cl"><span class="nv">@products</span> <span class="o">=</span> <span class="nv">$bp</span><span class="o">-&gt;</span><span class="n">search</span><span class="p">(</span><span class="n">some</span> <span class="n">query</span> <span class="n">from</span> <span class="n">a</span> <span class="n">condition</span> <span class="n">builder</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">fetch</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">foreach</span> <span class="nv">$product</span> <span class="p">(</span><span class="nv">@products</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="n">do_a_thing</span><span class="p">(</span><span class="nv">$product</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>This will fire a single query for products and then build an array of products in which all the essential columns are loaded as attributes. If you happen to access a non-essential attribute, the <code>id</code> of the object is used to lazy-load the missing attributes at once and completely fleshen the object.</p>
 <p>This is a painful feature and leads to a series of individual object retrievals for non-essential data, and because of the way access to non-essential attributes is wrapped and hidden, it usually happens in a way that is transparent (read: magical) to the developer. Or in other words, the developer is not even aware of the fact that they are machine-gunning the server with many trivial, small SQL statements.</p>
 <p>Similar things happen in other environments with <code>has_a</code> and <code>has_many</code> relationship of linked object hierarchies, where traversal of a link can trigger similar machine gun cascades transparently and without awareness for the developer.</p>
 <p>Another common problem that we see quite often is write-spikes and locating their origin. We have self-cooked solutions that either parse the output of the <code>mysqlbinlog</code> command, or <a href="https://github.com/mysql-time-machine/replicator" target="_blank" rel="noopener">login as a fake MySQL replica</a>
@@ -206,7 +206,7 @@
     </a>
 </h2>
 <p>Looking at a number of database monitoring solutions, I see a lot of good stuff - metric collection, query collection per server, query analysis and insight, and alerting.</p>
-<p>Scaling is usually a problem, at least for the target size I need to build for, but that is to be expected. There is not much of a market at the size I need, and any sane product management would target the much larger set of installations that are 100x smaller than the one I care about. So I do not expect these products to work for my needs, but I expect a scaling story (&ldquo;You can split our all-in-one container into individual metrics gathering, persistance and analysis components and you can shard the metrics gathering and persistence components, and run a cluster of analyzers to scale and here is how to unpack our stuff.&quot;).</p>
+<p>Scaling is usually a problem, at least for the target size I need to build for, but that is to be expected. There is not much of a market at the size I need, and any sane product management would target the much larger set of installations that are 100x smaller than the one I care about. So I do not expect these products to work for my needs, but I expect a scaling story (&ldquo;You can split our all-in-one container into individual metrics gathering, persistance and analysis components and you can shard the metrics gathering and persistence components, and run a cluster of analyzers to scale and here is how to unpack our stuff.&rdquo;).</p>
 <p>Cloud-only is often a problem, because my data and my queries are in the majority in SOX, PCI, and PII/GDPR regulated scopes, which means that any test that works with non-synthetic data has is legally as complicated as actual production. That would even be true if my own databases weren&rsquo;t on-prem, but in a cloud. &ldquo;On-premises&rdquo; solutions (solutions that I install within my own administrative domain, even if that domain resides in a public cloud) are much easier to test.</p>
 <p>Developer-centrism and proper workload aggregation is a large deficit. None of the solutions I looked at understands a large scale setup as layed out above. All focus on a single server, and mix operational and developer aspects of conditions on that single server.</p>
 <p>That means, while there may be ways to translate regions and pools into tags by the way of an API, and there may be ways to inform the monitor of fluctuating topologies by the means of the same API or auto-discovery, the actual analysis is usually done per-server and not per-taggroup.</p>

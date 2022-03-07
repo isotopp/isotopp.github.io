@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='PHP: Understanding unserialize()' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -215,13 +215,13 @@ same on all pages, or you invent the
 invoked every time you want to make an instance of an unknown class. The
 function would get the name of the missing class as a parameter, and would
 then be responsible to produce a class definition for that class.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="k">function</span> <span class="nf">__autoload</span><span class="p">(</span><span class="nv">$missing</span><span class="p">)</span> <span class="p">{</span> 
-  <span class="k">echo</span> <span class="s2">&#34;Class </span><span class="si">$missing</span><span class="s2"> is missing.&#34;</span><span class="p">;</span> 
-  <span class="k">include</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">$missing</span><span class="s2">.class.php&#34;</span><span class="p">);</span> 
-<span class="p">}</span> 
-
-<span class="nv">$a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DoesNotExist</span><span class="p">();</span> 
-</code></pre></div><p>This is your classic suicide autoloader: Whenever an undefined class is
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">__autoload</span><span class="p">(</span><span class="nv">$missing</span><span class="p">)</span> <span class="p">{</span> 
+</span></span><span class="line"><span class="cl">  <span class="k">echo</span> <span class="s2">&#34;Class </span><span class="si">$missing</span><span class="s2"> is missing.&#34;</span><span class="p">;</span> 
+</span></span><span class="line"><span class="cl">  <span class="k">include</span><span class="p">(</span><span class="s2">&#34;</span><span class="si">$missing</span><span class="s2">.class.php&#34;</span><span class="p">);</span> 
+</span></span><span class="line"><span class="cl"><span class="p">}</span> 
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DoesNotExist</span><span class="p">();</span> 
+</span></span></code></pre></div><p>This is your classic suicide autoloader: Whenever an undefined class is
 being encountered, <code>__autoload()</code> is being called with that classname. It
 would then try to include a file with that name (and all dots and slashes
 that you manage to falsify into that name) and hope that this would contain
@@ -282,171 +282,171 @@ on said data. That&rsquo;s going to be reasonably safe.</p>
 application or an end user. <code>unserialize()</code> is not an exposable API. Never
 was. Other functions and formats for this exist. Use those. Here is some
 code to try:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="c1">#! /usr/local/bin/php 
-</span><span class="c1"></span><span class="o">&lt;?</span><span class="nx">php</span> 
-  <span class="k">function</span> <span class="nf">show_serialize1</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nv">$a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
-    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
-    <span class="nx">file_put_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">function</span> <span class="nf">show_serialize2</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nv">$a</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;fnorp&#34;</span><span class="p">,</span> <span class="s2">&#34;glorp&#34;</span><span class="p">,</span> <span class="s2">&#34;dorp&#34;</span><span class="p">);</span>
-    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
-    <span class="nx">file_put_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">function</span> <span class="nf">show_serialize3</span><span class="p">()</span> <span class="p">{</span>
-    <span class="k">class</span> <span class="nc">DemoClass</span> <span class="p">{</span>
-      <span class="k">private</span> <span class="nv">$priv</span> <span class="o">=</span> <span class="s1">&#39;priv&#39;</span><span class="p">;</span>
-      <span class="k">protected</span> <span class="nv">$prot</span> <span class="o">=</span> <span class="s1">&#39;prot&#39;</span><span class="p">;</span>
-      <span class="k">public</span> <span class="nv">$pub</span> <span class="o">=</span> <span class="s1">&#39;pub&#39;</span><span class="p">;</span>
-
-      <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">echo</span> <span class="s2">&#34;Constructed.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="p">}</span>
-
-      <span class="k">public</span> <span class="k">function</span> <span class="fm">__sleep</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">echo</span> <span class="s2">&#34;To be serialized</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-        <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;priv&#39;</span><span class="p">,</span> <span class="s1">&#39;prot&#39;</span><span class="p">,</span> <span class="s1">&#39;pub&#39;</span><span class="p">);</span>
-      <span class="p">}</span>
-
-      <span class="k">public</span> <span class="k">function</span> <span class="fm">__wakeup</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">echo</span> <span class="s2">&#34;Just unserialized.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="nv">$a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DemoClass</span><span class="p">();</span>
-    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
-    <span class="nx">file_put_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">function</span> <span class="nf">show_serialize4</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nv">$a</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-    <span class="nv">$a</span><span class="p">[]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-    <span class="nv">$b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-    <span class="nv">$a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
-    <span class="k">echo</span> <span class="s2">&#34;References inside an array work:</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
-
-    <span class="k">echo</span> <span class="s2">&#34;References across unserialize:</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-    <span class="nv">$b</span> <span class="o">=</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">));</span>
-    <span class="k">echo</span> <span class="s2">&#34;b is unserialized a:&#34;</span><span class="p">;</span>
-    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span>
-
-    <span class="k">echo</span> <span class="s2">&#34;Does the ref still work?</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-    <span class="nv">$b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
-    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">function</span> <span class="nf">show_unserialize1</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">);</span>
-    <span class="nv">$x</span> <span class="o">=</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
-    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$x</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">function</span> <span class="nf">define_democlass</span><span class="p">(</span><span class="nv">$class</span> <span class="o">=</span> <span class="s2">&#34;none&#34;</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s2">&#34;We want </span><span class="si">$class</span><span class="s2"> defined.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-
-    <span class="k">class</span> <span class="nc">DemoClass</span> <span class="p">{</span>
-      <span class="k">private</span> <span class="nv">$priv</span> <span class="o">=</span> <span class="s1">&#39;fnorp&#39;</span><span class="p">;</span>
-      <span class="k">protected</span> <span class="nv">$prot</span> <span class="o">=</span> <span class="s1">&#39;glorp&#39;</span><span class="p">;</span>
-      <span class="k">public</span> <span class="nv">$pub</span> <span class="o">=</span> <span class="s1">&#39;dorp&#39;</span><span class="p">;</span>
-
-      <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">echo</span> <span class="s2">&#34;Constructed.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="p">}</span>
-
-      <span class="k">public</span> <span class="k">function</span> <span class="fm">__sleep</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">echo</span> <span class="s2">&#34;To be serialized</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-        <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;priv&#39;</span><span class="p">,</span> <span class="s1">&#39;prot&#39;</span><span class="p">,</span> <span class="s1">&#39;pub&#39;</span><span class="p">);</span>
-      <span class="p">}</span>
-
-      <span class="k">public</span> <span class="k">function</span> <span class="fm">__wakeup</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">echo</span> <span class="s2">&#34;Just unserialized.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-
-  <span class="k">function</span> <span class="nf">show_unserialize2</span><span class="p">()</span> <span class="p">{</span>
-    <span class="nx">spl_autoload_register</span><span class="p">(</span><span class="s1">&#39;define_democlass&#39;</span><span class="p">);</span>
-    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">);</span>
-    <span class="nv">$x</span> <span class="o">=</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
-    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$x</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nx">isset</span><span class="p">(</span><span class="nv">$argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="p">{</span>
-    <span class="k">echo</span> <span class="s2">&#34;Please start with &#39;ser&#39; or &#39;unser&#39;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-    <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-  <span class="p">}</span>
-
-  <span class="k">switch</span><span class="p">(</span><span class="nv">$argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">{</span>
-    <span class="k">case</span> <span class="s2">&#34;ser1&#34;</span><span class="o">:</span>
-      <span class="nx">show_serialize1</span><span class="p">();</span>
-    <span class="k">break</span><span class="p">;</span>
-    <span class="k">case</span> <span class="s2">&#34;ser2&#34;</span><span class="o">:</span>
-      <span class="nx">show_serialize2</span><span class="p">();</span>
-    <span class="k">break</span><span class="p">;</span>
-    <span class="k">case</span> <span class="s2">&#34;ser3&#34;</span><span class="o">:</span>
-      <span class="nx">show_serialize3</span><span class="p">();</span>
-    <span class="k">break</span><span class="p">;</span>
-    <span class="k">case</span> <span class="s2">&#34;ser4&#34;</span><span class="o">:</span>
-      <span class="nx">show_serialize4</span><span class="p">();</span>
-    <span class="k">break</span><span class="p">;</span>
-    <span class="k">case</span> <span class="s2">&#34;unser1&#34;</span><span class="o">:</span>
-      <span class="nx">show_unserialize1</span><span class="p">();</span>
-    <span class="k">break</span><span class="p">;</span>
-    <span class="k">case</span> <span class="s2">&#34;unser2&#34;</span><span class="o">:</span>
-      <span class="nx">show_unserialize2</span><span class="p">();</span>
-    <span class="k">break</span><span class="p">;</span>
-    <span class="k">default</span><span class="o">:</span>
-      <span class="k">echo</span> <span class="s2">&#34;Wot?</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
-      <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
-    <span class="k">break</span><span class="p">;</span>
-  <span class="p">}</span>
-</code></pre></div><p>You can use this to see what serialized data looks like:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./probe.php ser1<span class="p">;</span> cat demo<span class="p">;</span> <span class="nb">echo</span>
-<span class="go">i:1; 
-</span></code></pre></div><p>More complicated stuff such as arrays:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./probe.php ser2<span class="p">;</span> cat demo<span class="p">;</span> <span class="nb">echo</span>
-<span class="go">a:3:{i:0;s:5:&#34;fnorp&#34;;i:1;s:5:&#34;glorp&#34;;i:2;s:4:&#34;dorp&#34;;}
-</span></code></pre></div><p>Also, references half-work, if they are internal:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./probe.php ser4 
-<span class="go">References inside an array work: 
-</span><span class="go">Array ( [0] =&gt; 2 [1] =&gt; 2 ) 
-</span><span class="go">References across unserialize: 
-</span><span class="go">b is unserialized a:Array ( [0] =&gt; 2 [1] =&gt; 2 ) 
-</span><span class="go">Does the ref still work? 
-</span><span class="go">Array ( [0] =&gt; 3 [1] =&gt; 3 ) 
-</span></code></pre></div><p>but serializing a reference $b that points to $a does not work: The value $b
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">#! /usr/local/bin/php 
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">&lt;?</span><span class="nx">php</span> 
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">show_serialize1</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$a</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">file_put_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">show_serialize2</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$a</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;fnorp&#34;</span><span class="p">,</span> <span class="s2">&#34;glorp&#34;</span><span class="p">,</span> <span class="s2">&#34;dorp&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">file_put_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">show_serialize3</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">DemoClass</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">private</span> <span class="nv">$priv</span> <span class="o">=</span> <span class="s1">&#39;priv&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">protected</span> <span class="nv">$prot</span> <span class="o">=</span> <span class="s1">&#39;prot&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="nv">$pub</span> <span class="o">=</span> <span class="s1">&#39;pub&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;Constructed.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="k">function</span> <span class="fm">__sleep</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;To be serialized</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;priv&#39;</span><span class="p">,</span> <span class="s1">&#39;prot&#39;</span><span class="p">,</span> <span class="s1">&#39;pub&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="k">function</span> <span class="fm">__wakeup</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;Just unserialized.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nv">$a</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DemoClass</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">file_put_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">,</span> <span class="nv">$str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">show_serialize4</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$a</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$a</span><span class="p">[]</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$b</span> <span class="o">=</span> <span class="o">&amp;</span><span class="nv">$a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$a</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;References inside an array work:</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$a</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;References across unserialize:</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$b</span> <span class="o">=</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nx">serialize</span><span class="p">(</span><span class="nv">$a</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;b is unserialized a:&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;Does the ref still work?</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$b</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$b</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">show_unserialize1</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$x</span> <span class="o">=</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">define_democlass</span><span class="p">(</span><span class="nv">$class</span> <span class="o">=</span> <span class="s2">&#34;none&#34;</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;We want </span><span class="si">$class</span><span class="s2"> defined.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">class</span> <span class="nc">DemoClass</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">      <span class="k">private</span> <span class="nv">$priv</span> <span class="o">=</span> <span class="s1">&#39;fnorp&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">protected</span> <span class="nv">$prot</span> <span class="o">=</span> <span class="s1">&#39;glorp&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="nv">$pub</span> <span class="o">=</span> <span class="s1">&#39;dorp&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;Constructed.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="k">function</span> <span class="fm">__sleep</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;To be serialized</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">array</span><span class="p">(</span><span class="s1">&#39;priv&#39;</span><span class="p">,</span> <span class="s1">&#39;prot&#39;</span><span class="p">,</span> <span class="s1">&#39;pub&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">      <span class="k">public</span> <span class="k">function</span> <span class="fm">__wakeup</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">echo</span> <span class="s2">&#34;Just unserialized.</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">function</span> <span class="nf">show_unserialize2</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">spl_autoload_register</span><span class="p">(</span><span class="s1">&#39;define_democlass&#39;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$str</span> <span class="o">=</span> <span class="nx">file_get_contents</span><span class="p">(</span><span class="s2">&#34;demo&#34;</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$x</span> <span class="o">=</span> <span class="nx">unserialize</span><span class="p">(</span><span class="nv">$str</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="nx">print_r</span><span class="p">(</span><span class="nv">$x</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">if</span> <span class="p">(</span><span class="o">!</span> <span class="nx">isset</span><span class="p">(</span><span class="nv">$argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;Please start with &#39;ser&#39; or &#39;unser&#39;</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">  <span class="k">switch</span><span class="p">(</span><span class="nv">$argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;ser1&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">show_serialize1</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;ser2&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">show_serialize2</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;ser3&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">show_serialize3</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;ser4&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">show_serialize4</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;unser1&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">show_unserialize1</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">case</span> <span class="s2">&#34;unser2&#34;</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="nx">show_unserialize2</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">default</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">      <span class="k">echo</span> <span class="s2">&#34;Wot?</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">      <span class="k">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="p">}</span>
+</span></span></code></pre></div><p>You can use this to see what serialized data looks like:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./probe.php ser1<span class="p">;</span> cat demo<span class="p">;</span> <span class="nb">echo</span>
+</span></span><span class="line"><span class="cl"><span class="go">i:1; 
+</span></span></span></code></pre></div><p>More complicated stuff such as arrays:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./probe.php ser2<span class="p">;</span> cat demo<span class="p">;</span> <span class="nb">echo</span>
+</span></span><span class="line"><span class="cl"><span class="go">a:3:{i:0;s:5:&#34;fnorp&#34;;i:1;s:5:&#34;glorp&#34;;i:2;s:4:&#34;dorp&#34;;}
+</span></span></span></code></pre></div><p>Also, references half-work, if they are internal:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./probe.php ser4 
+</span></span><span class="line"><span class="cl"><span class="go">References inside an array work: 
+</span></span></span><span class="line"><span class="cl"><span class="go">Array ( [0] =&gt; 2 [1] =&gt; 2 ) 
+</span></span></span><span class="line"><span class="cl"><span class="go">References across unserialize: 
+</span></span></span><span class="line"><span class="cl"><span class="go">b is unserialized a:Array ( [0] =&gt; 2 [1] =&gt; 2 ) 
+</span></span></span><span class="line"><span class="cl"><span class="go">Does the ref still work? 
+</span></span></span><span class="line"><span class="cl"><span class="go">Array ( [0] =&gt; 3 [1] =&gt; 3 ) 
+</span></span></span></code></pre></div><p>but serializing a reference $b that points to $a does not work: The value $b
 is referencing is saved, and the unserialized variable will have a value,
 but will not reference the previous value. There is no error or warning.</p>
 <p>Here is what we do to Objects:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./probe.php ser3<span class="p">;</span> cat demo<span class="p">;</span> <span class="nb">echo</span> 
-<span class="go">Constructed. 
-</span><span class="go">To be serialized 
-</span><span class="go">O:9:&#34;DemoClass&#34;:3:{s:15:&#34;DemoClasspriv&#34;;s:4:&#34;priv&#34;;s:7:&#34;\*prot&#34;;s:4:&#34;prot&#34;;s:3:&#34;pub&#34;;s:3:&#34;pub&#34;;} 
-</span></code></pre></div><p>This shows how the contructor is being executed, how the <code>__sleep()</code>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./probe.php ser3<span class="p">;</span> cat demo<span class="p">;</span> <span class="nb">echo</span> 
+</span></span><span class="line"><span class="cl"><span class="go">Constructed. 
+</span></span></span><span class="line"><span class="cl"><span class="go">To be serialized 
+</span></span></span><span class="line"><span class="cl"><span class="go">O:9:&#34;DemoClass&#34;:3:{s:15:&#34;DemoClasspriv&#34;;s:4:&#34;priv&#34;;s:7:&#34;\*prot&#34;;s:4:&#34;prot&#34;;s:3:&#34;pub&#34;;s:3:&#34;pub&#34;;} 
+</span></span></span></code></pre></div><p>This shows how the contructor is being executed, how the <code>__sleep()</code>
 callback is called and the content of the serialized file with the
 stringified DemoClass instance referencing the class name. If we load this
 without DemoClass being defined, we get</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./probe.php unser1 
-<span class="go">__PHP_Incomplete_Class Object ( 
-</span><span class="go">  [__PHP_Incomplete_Class_Name] =&gt; DemoClass 
-</span><span class="go">  [priv:DemoClass:private] =&gt; priv 
-</span><span class="go">  [prot:protected] =&gt; prot 
-</span><span class="go">  [pub] =&gt; pub 
-</span><span class="go">) 
-</span></code></pre></div><p>We can load DemoClass using an autoloader we define. Then we get</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>./probe.php unser2 
-<span class="go">We want DemoClass defined. 
-</span><span class="go">Just unserialized. 
-</span><span class="go">DemoClass Object ( 
-</span><span class="go">  [priv:DemoClass:private] =&gt; priv 
-</span><span class="go">  [prot:protected] =&gt; prot 
-</span><span class="go">  [pub] =&gt; pub 
-</span><span class="go">) 
-</span></code></pre></div><p>You can see the Autoloader being called, the <code>__wakeup()</code> function running
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./probe.php unser1 
+</span></span><span class="line"><span class="cl"><span class="go">__PHP_Incomplete_Class Object ( 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [__PHP_Incomplete_Class_Name] =&gt; DemoClass 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [priv:DemoClass:private] =&gt; priv 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [prot:protected] =&gt; prot 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [pub] =&gt; pub 
+</span></span></span><span class="line"><span class="cl"><span class="go">) 
+</span></span></span></code></pre></div><p>We can load DemoClass using an autoloader we define. Then we get</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> ./probe.php unser2 
+</span></span><span class="line"><span class="cl"><span class="go">We want DemoClass defined. 
+</span></span></span><span class="line"><span class="cl"><span class="go">Just unserialized. 
+</span></span></span><span class="line"><span class="cl"><span class="go">DemoClass Object ( 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [priv:DemoClass:private] =&gt; priv 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [prot:protected] =&gt; prot 
+</span></span></span><span class="line"><span class="cl"><span class="go">  [pub] =&gt; pub 
+</span></span></span><span class="line"><span class="cl"><span class="go">) 
+</span></span></span></code></pre></div><p>You can see the Autoloader being called, the <code>__wakeup()</code> function running
 (it didn&rsquo;t in the example before!) and then the properly re-instantiated
 object.</p>
 <p>Note that our new version of DemoClass, as defined by the autoloader, does

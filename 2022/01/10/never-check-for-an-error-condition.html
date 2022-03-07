@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Never check for an error condition you don&#39;t know how to handle' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -164,11 +164,11 @@ There are known error conditions in my program that I know they can happen, and 
 <p>If you read that left to right, that&rsquo;s exactly what it means.
 Let&rsquo;s have a look at an example and try to understand what goes on.
 Here is a very simple case: I could try to allocate memory from the operating system and that can fails.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">what_now</span><span class="p">();</span>
-<span class="p">}</span>
-</code></pre></div><p>That is a very typical situation.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">what_now</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>That is a very typical situation.
 For example, why does the library function <code>malloc()</code> not check itself for <code>p == NULL</code>  and handles this case?
 Because it does not, I have to do that every time and must not forget that in a single case.</p>
 <p>Indeed, most programs have a function <code>safe_malloc()</code>, which wraps <code>malloc()</code> and more or less looks like the example above.
@@ -223,29 +223,29 @@ We force developers to think about failing code paths at the wrong point in time
 They really want to write programs that work well.
 But we shouldn&rsquo;t bother them with failure handling right when they are busy with completing the money earning part of the code.</p>
 <p>If we bother devs at the wrong moment in time, we get error handling like this at best:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">exit</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span> <span class="c1">// out of memory error
-</span><span class="c1"></span><span class="p">}</span>
-</code></pre></div><p>Well, at least they checked for an error.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span> <span class="c1">// out of memory error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></div><p>Well, at least they checked for an error.
 Maybe there are even some <code> atexit(3)</code> handlers stacked that will try to clean up, but did you ever see any of those?</p>
 <p>If you see code like this, it is screaming at you &ldquo;Yes, yes, I know, but I am really busy now with other things. Go away!&rdquo;.</p>
 <p>Another common problem is that we need to check for the error at the lowest level, but need more context at the higher levels of our code to handle it properly.
 Sometimes there is not even a contract on how errors are being bubbled up to the next layer without losing information.
 The interiors of the MySQL codebase used to be a prime example of that.
 You could find code that mapped error codes similar to</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">errcode</span> <span class="o">=</span> <span class="n">doSomeThing</span><span class="p">();</span>
-<span class="k">switch</span><span class="p">(</span><span class="n">errcode</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
-  <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
-  <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
-    <span class="k">return</span> <span class="n">E_THIS</span><span class="p">;</span>
-    <span class="k">break</span><span class="p">;</span>
-  <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
-    <span class="k">return</span> <span class="n">E_THAT</span><span class="p">;</span>
-    <span class="k">break</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><p>This is taking detailed internal error codes and flattens them into larger categories, losing detail.
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">errcode</span> <span class="o">=</span> <span class="n">doSomeThing</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">switch</span><span class="p">(</span><span class="n">errcode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">E_THIS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">E_THAT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>This is taking detailed internal error codes and flattens them into larger categories, losing detail.
 Sometimes a higher level handler has more context, but no longer sufficient detail to decide what exactly went wrong at the lower layers.</p>
 <p>The rule</p>
 <h1 id="never-check-for-an-error-condition-you-dont-know-how-to-handle-2">

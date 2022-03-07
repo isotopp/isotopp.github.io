@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='An unexpected pool size increase' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -188,13 +188,13 @@
     </a>
 </h2>
 <p>Humans descend on the problem and look. What are the machines in the pool, currently? Well, if you have the privileges, you can check with our roster tool:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="gp">$ </span>sudo roster-tool list /persistent/pools/example-misc/az-west1-a
-<span class="go">0be2b240a6964a338f0a65f22a2bb09d-example-2016.dc1.prod.example.com
-</span><span class="go">421e3f5c81914082b26f93cd096c4d25-example-8050.dc2.prod.example.com
-</span><span class="go">95624c835c454bbb8ad10a2eb728f66a-example-8051.dc2.prod.example.com
-</span><span class="go">afc7bd521a5c404582645d89598269d3-example-2015.dc1.prod.example.com
-</span><span class="go">e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.example.com
-</span></code></pre></div><p>So let’s have a look at example-8051:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> sudo roster-tool list /persistent/pools/example-misc/az-west1-a
+</span></span><span class="line"><span class="cl"><span class="go">0be2b240a6964a338f0a65f22a2bb09d-example-2016.dc1.prod.example.com
+</span></span></span><span class="line"><span class="cl"><span class="go">421e3f5c81914082b26f93cd096c4d25-example-8050.dc2.prod.example.com
+</span></span></span><span class="line"><span class="cl"><span class="go">95624c835c454bbb8ad10a2eb728f66a-example-8051.dc2.prod.example.com
+</span></span></span><span class="line"><span class="cl"><span class="go">afc7bd521a5c404582645d89598269d3-example-2015.dc1.prod.example.com
+</span></span></span><span class="line"><span class="cl"><span class="go">e5724da64f134c34810f48211f5b777c-example-2014.dc1.prod.example.com
+</span></span></span></code></pre></div><p>So let’s have a look at example-8051:</p>
 <p><p class="md__image">
   <img src="/uploads/2020/10/mysql-load.png" alt=""  />
 </p>
@@ -303,10 +303,10 @@
  to do that in the deep, dark past long before the term “observability” even existed.</p>
 <p>It runs every minute, and collects system hardware stats, MySQL processlist and other data, and stashes them compressed in a ring buffer in <code>/var/log/mysql_pl/&lt;weekday name&gt;</code>.</p>
 <p>In an age of bare-metal machines and all devs having production access you log into a database, cd into that directory and grab a random snapshot from the incident interval:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">/var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz &gt; /tmp/kris
-</span><span class="go">/var/log/mysql_pl/Sun $ vim /tmp/kris
-</span><span class="go">/var/log/mysql_pl/Sun $ awk -F&#39;\t&#39; &#39;($5 != &#34;Sleep&#34;) &amp;&amp; !match($7, /Waiting for/)&#39; /tmp/kris | less
-</span></code></pre></div><p>With a text editor we isolate the processlist recording from 23:48 on 04-Oct. We then use Unix Tooling to look at all non-sleeping connections that are also not idle replication connections.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">/var/log/mysql_pl/Sun $ xzcat 23_48.innodb.xz &gt; /tmp/kris
+</span></span></span><span class="line"><span class="cl"><span class="go">/var/log/mysql_pl/Sun $ vim /tmp/kris
+</span></span></span><span class="line"><span class="cl"><span class="go">/var/log/mysql_pl/Sun $ awk -F&#39;\t&#39; &#39;($5 != &#34;Sleep&#34;) &amp;&amp; !match($7, /Waiting for/)&#39; /tmp/kris | less
+</span></span></span></code></pre></div><p>With a text editor we isolate the processlist recording from 23:48 on 04-Oct. We then use Unix Tooling to look at all non-sleeping connections that are also not idle replication connections.</p>
 <p>This yields indeed two interesting queries: Both show a <code>cronjob=reserve_projectname_upsert_transaction_ids</code> running on <code>cronapp-39.dc2.prod.example.com</code> and on <code>cronapp-02.dc2.prod.example.com</code>, with runtimes of 16220 and 22170 seconds.</p>
 <p>There are indeed two long-running queries, coinciding perfectly with a load increase of 2, and they are easily identifiable cron queries. They run from two different hosts, with the same cron banner.</p>
 <p>I have no idea what that job does, but we are looking at a <code>SELECT</code> statement in <code>REPEATABLE READ</code> isolation that has a run time of multiple hours, and unsurprisingly an Undo-Log escalation. That leads to slow query performance and reduced capacity for all things, including the capacity test, and a changed target size for the pool.</p>

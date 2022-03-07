@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='That&#39;s a lot of databases' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -243,7 +243,7 @@
 </p>
 <p><em>MySQL Orchestrator Replication Overview screen. Each card is a replication hierarchy with a number of instances organized in one of the trees shown above.</em></p>
 <p>So imagine a thing not unlike a K8s controller, exposing an API, storing a desired state for the entire system of hierarchies and instances, and running a reconciliation loop. But it is not talking to a single K8s cluster, but to a number of backend APis, which may be bare metal hardware, Openstack, EC2, RDS, or K8s.</p>
-<p>It understands MySQL and knows things about the application, like a K8s operator. So it knows <em>This is MySQL</em> and <em>This is how we run MySQL around here.</em> It would understand things like Ownership and Tenancy (&ldquo;This team can make API calls affecting these chains.&quot;) and it would not only understand operational things (&ldquo;Make an instance.&rdquo;, &ldquo;Make a datadir&rdquo;, &ldquo;Connect Replication.&quot;), but also things like Grant Management, Backup and Restore Testing, Production Capacity Testing, Replication Catchup Speed testing and Monitoring, Query Workload subsampling and Alerting.</p>
+<p>It understands MySQL and knows things about the application, like a K8s operator. So it knows <em>This is MySQL</em> and <em>This is how we run MySQL around here.</em> It would understand things like Ownership and Tenancy (&ldquo;This team can make API calls affecting these chains.&rdquo;) and it would not only understand operational things (&ldquo;Make an instance.&rdquo;, &ldquo;Make a datadir&rdquo;, &ldquo;Connect Replication.&rdquo;), but also things like Grant Management, Backup and Restore Testing, Production Capacity Testing, Replication Catchup Speed testing and Monitoring, Query Workload subsampling and Alerting.</p>
 <p>I would need to be able to describe a &ldquo;replication chain&rdquo; made from &ldquo;instances&rdquo; in various &ldquo;backend services&rdquo;. Each backend service would need a &ldquo;bootstrap procedure&rdquo; to establish initial presence, and from there clone out instances. Instances then would need to integrate into the chain, catch up, warm caches, register in Zk, and become operational.</p>
 <p>Capacity testing and a predictive scale goal would define the number of instances per backend, so that we are ready for the coming days load, with some margin for failure and Murphy. Backups probably can be made per chain, and not per backend, assuming the bootstrapping works and is tested.</p>
 <p>I would need probably the provisioning/deployment/upgrade and cycling as a procedure per backend, and they likely can be one: MySQL identity is defined by its datadir, and as long as I can keep volumes of datadirs alive independently of the actual database base instance, I should be able to pre-provision fresh instances, detach the volume from an old instance and reattach it to the new instance within a very short time.</p>
@@ -261,7 +261,7 @@
 <p>The Book™ on MySQL currently is a number of half-assed &ldquo;MySQL as a service&rdquo; implementations.</p>
 <p>There is Amazon RDS, which is doing things like it&rsquo;s 2010 – active/passive primary switchover with DRBD, and asynchronous replication for scaleout, limited to a very small number of managed instances, and a rather static hierarchy, without a clear discovery concept. It does interesting things with Grants, Defaults, and a number of other things, and is arguably the most complete service.</p>
 <p>There is a bunch of K8s operators for MySQL, but I consider most of them toys for a multitude of reasons. A K8s operator is a pod that is running a binary that controlls deployments of (persistent) services in K8s, managing instances, data directories (persistent volumes), but all within a single K8s cluster. Of course, that&rsquo;s not resilient and it&rsquo;s also not how you set up MySQL for production – spanning cluster and AZ boundaries is a must.</p>
-<p>Each operator also implements one specific way of running MySQL (&ldquo;Group Replication!&rdquo;, &ldquo;No, traditioanl asynch replication!&quot;) and so on, with very little in the way of policy tuning knobs. So when you look at K8s operators, you are really looking at source code templates to fork and implement your own from that. Not helpful.</p>
+<p>Each operator also implements one specific way of running MySQL (&ldquo;Group Replication!&rdquo;, &ldquo;No, traditioanl asynch replication!&rdquo;) and so on, with very little in the way of policy tuning knobs. So when you look at K8s operators, you are really looking at source code templates to fork and implement your own from that. Not helpful.</p>
 <p>What is missing? Endpoint Discovery, Grant Management and a number of other things are also a must, with K8s even more so than with AWS, because it&rsquo;s more dynamic.</p>
 <p>On top of that, there is all the work that needs to be done for Predictive Scaling, Replication Speed monitoring, Query Monitoring and so on. A lot of that is not well thought out at all, and needs not just engineering, but in part even research.</p>
 <h2 id="tracing-integration">

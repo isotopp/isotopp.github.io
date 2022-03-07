@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Unlimited Mail Addresses' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -156,18 +156,18 @@
     </a>
 </h2>
 <p>I run <code>exim</code> and in my <code>exim.conf</code> I have</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris_virtuserfile:
-</span><span class="go">  driver = redirect
-</span><span class="go">  domains = +kris_domains
-</span><span class="go">  local_part_suffix = +* : -*
-</span><span class="go">  local_part_suffix_optional
-</span><span class="go">  headers_remove = X-local-part-suffix
-</span><span class="go">  headers_add = X-local-part-suffix: ${original_local_part}
-</span><span class="go">  owners = kris
-</span><span class="go">  allow_fail
-</span><span class="go">  allow_defer
-</span><span class="go">  data= ${lookup{$local_part@$domain}dbm*@{/home/kris/Exim/virtusertable.dbm}}
-</span></code></pre></div><p>The important part here is the <code>local_part_suffix = +* : -*</code>. This enables amending the local part of a mail address with an extension. So if <code>kris</code> is a valid local user for delivery, <code>kris-yourbusiness</code> and <code>kris+yourbusiness</code> become valid addresses, too, and will be delivered to the local user <code>kris</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris_virtuserfile:
+</span></span></span><span class="line"><span class="cl"><span class="go">  driver = redirect
+</span></span></span><span class="line"><span class="cl"><span class="go">  domains = +kris_domains
+</span></span></span><span class="line"><span class="cl"><span class="go">  local_part_suffix = +* : -*
+</span></span></span><span class="line"><span class="cl"><span class="go">  local_part_suffix_optional
+</span></span></span><span class="line"><span class="cl"><span class="go">  headers_remove = X-local-part-suffix
+</span></span></span><span class="line"><span class="cl"><span class="go">  headers_add = X-local-part-suffix: ${original_local_part}
+</span></span></span><span class="line"><span class="cl"><span class="go">  owners = kris
+</span></span></span><span class="line"><span class="cl"><span class="go">  allow_fail
+</span></span></span><span class="line"><span class="cl"><span class="go">  allow_defer
+</span></span></span><span class="line"><span class="cl"><span class="go">  data= ${lookup{$local_part@$domain}dbm*@{/home/kris/Exim/virtusertable.dbm}}
+</span></span></span></code></pre></div><p>The important part here is the <code>local_part_suffix = +* : -*</code>. This enables amending the local part of a mail address with an extension. So if <code>kris</code> is a valid local user for delivery, <code>kris-yourbusiness</code> and <code>kris+yourbusiness</code> become valid addresses, too, and will be delivered to the local user <code>kris</code>.</p>
 <p>I define <code>local_part_suffix_optional</code>, because unfortunately for legacy reasons the actual local user must remain reachable for legacy reasons.</p>
 <p>I also define <code>header_remove = X-local-part-suffix</code> to remove this particular X-header from all incoming mail, and then add it back with <code>X-local-part-suffix: ${original_local_part}</code>. This will prevent external mail with a hand-crafted fake <code>X-local-part-suffix</code> header from coming through, and then preserve the original local part for sorting, in exactly this X-header line.</p>
 <p>From this config we get the following behavior: <code>kris-yourbusiness@koehntopp.de</code> is being delivered to the local user <code>kris</code>, and with an <code>X-local-part-suffix: kris-yourbusiness</code> header line added to the mail. Note that we get <code>kris-yourbusiness</code>, and not <code>yourbusiness</code> in this header line.</p>
@@ -177,68 +177,68 @@
     </a>
 </h2>
 <p>Local delivery is controlled by the local user, <code>kris</code>. Kris happens to have defined a <code>.forward</code> such as</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris:~ $ cat .forward
-</span><span class="go">|/usr/bin/procmail
-</span></code></pre></div><p>This will invoke <code>procmail</code> for local delivery. <code>procmail</code> is a rule based local delivery agent with a horrible Syntax.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris:~ $ cat .forward
+</span></span></span><span class="line"><span class="cl"><span class="go">|/usr/bin/procmail
+</span></span></span></code></pre></div><p>This will invoke <code>procmail</code> for local delivery. <code>procmail</code> is a rule based local delivery agent with a horrible Syntax.</p>
 <p>You can define variables, and later refer to them using <code>$</code> as a prefix. Rules start with a <code>:0</code>, and consist of a Regex for header lines, plus a delivery action (usually a folder name for Maildir format, so make sure it ends in a slash).</p>
 <p>The other important but obscure piece of information is that the exit code of <code>procmail</code> defines the delivery success, and controls the mailer behavior. So checking in the obvious place (<code>/usr/include/sysexits.h</code>, of course!) you learn:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="nl">kris</span><span class="p">:</span><span class="o">~</span> <span class="err">$</span> <span class="n">cat</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">sysexits</span><span class="p">.</span><span class="n">h</span>
-<span class="p">...</span>
-<span class="cp">#define EX_NOINPUT      66      </span><span class="cm">/* cannot open input */</span><span class="cp">
-</span><span class="cp">#define EX_NOUSER       67      </span><span class="cm">/* addressee unknown */</span><span class="cp">
-</span><span class="cp">#define EX_NOHOST       68      </span><span class="cm">/* host name unknown */</span><span class="cp">
-</span><span class="cp"></span><span class="p">...</span>
-</code></pre></div><p>We remember that the magical number <code>67</code> as an exit code makes <code>exim</code> bounce mail with <code>user unknown</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="nl">kris</span><span class="p">:</span><span class="o">~</span> <span class="err">$</span> <span class="n">cat</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">sysexits</span><span class="p">.</span><span class="n">h</span>
+</span></span><span class="line"><span class="cl"><span class="p">...</span>
+</span></span><span class="line"><span class="cl"><span class="cp">#define EX_NOINPUT      66      </span><span class="cm">/* cannot open input */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define EX_NOUSER       67      </span><span class="cm">/* addressee unknown */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp">#define EX_NOHOST       68      </span><span class="cm">/* host name unknown */</span><span class="cp">
+</span></span></span><span class="line"><span class="cl"><span class="cp"></span><span class="p">...</span>
+</span></span></code></pre></div><p>We remember that the magical number <code>67</code> as an exit code makes <code>exim</code> bounce mail with <code>user unknown</code>.</p>
 <p>The end result:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="go">kris:~ $ cat .procmailrc
-</span><span class="go">PATH=/bin:/usr/bin:/usr/local/bin
-</span><span class="go">MAILDIR=$HOME/Maildir
-</span><span class="go">LOGFILE=$HOME/Procmail/procmail.log
-</span><span class="go">DEFAULT=$HOME/Maildir/
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">BOUNCE=/dev/null
-</span><span class="go">SPAM=$MAILDIR/.spam
-</span><span class="go">TRASH=$MAILDIR/.system.trash
-</span><span class="go">BOUNCELOG=$MAILDIR/.system.bounces
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Subrule to define a <span class="s2">&#34;user unknown&#34;</span> bounce, as an example.
-<span class="gp"># </span>Subrule, because we also record the bounce in the bouncelog folder.
-<span class="go">:0
-</span><span class="go">* ^X-local-part-suffix: kris-macheist
-</span><span class="go">{
-</span><span class="go">    EXITCODE=67
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="go">    :0 i
-</span><span class="go">    $BOUNCELOG/
-</span><span class="go">}
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>Rule to route mail to the trash folder
-<span class="go">:0
-</span><span class="go">* ^X-local-part-suffix: kris-bitly
-</span><span class="go"></span><span class="gp">$</span>TRASH/
-<span class="err">
-</span><span class="err"></span><span class="gp"># </span>all mail to kris-yourbusiness goes to INBOX/.special.yourbusiness,
-<span class="gp"># </span>which becomes the INBOX.special.yourbusiness folder.
-<span class="gp">#
-</span><span class="gp"></span><span class="c1"># We use sed and tr, this could be more efficient. Basically, we clean</span>
-<span class="gp"># </span>up unwanted characters and transform to lower <span class="k">case</span>.
-<span class="go">:0
-</span><span class="go">* ^X-local-part-suffix:.*kris-\/[^@]+
-</span><span class="go"></span><span class="gp">$</span>MAILDIR/.special.<span class="sb">`</span><span class="nb">echo</span> <span class="nv">$MATCH</span> <span class="p">|</span> sed -e <span class="s1">&#39;s!([^)]*)!!g&#39;</span> -e <span class="s1">&#39;s![^a-zA-Z0-9_-]!_!g&#39;</span> <span class="p">|</span> tr A-Z a-z<span class="sb">`</span>/
-<span class="err">
-</span><span class="err"></span><span class="gp"># </span>Filter through spamc
-<span class="go">:0fw
-</span><span class="go">| /usr/bin/spamc
-</span><span class="go"></span><span class="err">
-</span><span class="err"></span><span class="gp"># </span>If spam detected, deliver to different folders depending on score
-<span class="go">:0
-</span><span class="go">* ^X-Spam-Level:.*\*\*\*\*\*\*\*\*\*\*
-</span><span class="go"></span><span class="gp">$</span>SPAM.sure/
-<span class="err">
-</span><span class="err"></span><span class="go">:0
-</span><span class="go">* ^X-Spam-Level:.*\*\*\*\*\*
-</span><span class="go"></span><span class="gp">$</span>SPAM/
-</code></pre></div><p>Note how we detect the <code>X-local-part-suffic</code> before we run spam detection and sorting. This allows mail to subaddresses to always go through and bypass all spam filtering, so in exchange for having a personally identifyable mail address you get guarantee delivery. Conversely, if you abuse the privilege you are routed to <code>$TRASH/</code>.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">kris:~ $ cat .procmailrc
+</span></span></span><span class="line"><span class="cl"><span class="go">PATH=/bin:/usr/bin:/usr/local/bin
+</span></span></span><span class="line"><span class="cl"><span class="go">MAILDIR=$HOME/Maildir
+</span></span></span><span class="line"><span class="cl"><span class="go">LOGFILE=$HOME/Procmail/procmail.log
+</span></span></span><span class="line"><span class="cl"><span class="go">DEFAULT=$HOME/Maildir/
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">BOUNCE=/dev/null
+</span></span></span><span class="line"><span class="cl"><span class="go">SPAM=$MAILDIR/.spam
+</span></span></span><span class="line"><span class="cl"><span class="go">TRASH=$MAILDIR/.system.trash
+</span></span></span><span class="line"><span class="cl"><span class="go">BOUNCELOG=$MAILDIR/.system.bounces
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Subrule to define a <span class="s2">&#34;user unknown&#34;</span> bounce, as an example.
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> Subrule, because we also record the bounce in the bouncelog folder.
+</span></span><span class="line"><span class="cl"><span class="go">:0
+</span></span></span><span class="line"><span class="cl"><span class="go">* ^X-local-part-suffix: kris-macheist
+</span></span></span><span class="line"><span class="cl"><span class="go">{
+</span></span></span><span class="line"><span class="cl"><span class="go">    EXITCODE=67
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">    :0 i
+</span></span></span><span class="line"><span class="cl"><span class="go">    $BOUNCELOG/
+</span></span></span><span class="line"><span class="cl"><span class="go">}
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Rule to route mail to the trash folder
+</span></span><span class="line"><span class="cl"><span class="go">:0
+</span></span></span><span class="line"><span class="cl"><span class="go">* ^X-local-part-suffix: kris-bitly
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">$</span>TRASH/
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> all mail to kris-yourbusiness goes to INBOX/.special.yourbusiness,
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> which becomes the INBOX.special.yourbusiness folder.
+</span></span><span class="line"><span class="cl"><span class="gp">#</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># We use sed and tr, this could be more efficient. Basically, we clean</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> up unwanted characters and transform to lower <span class="k">case</span>.
+</span></span><span class="line"><span class="cl"><span class="go">:0
+</span></span></span><span class="line"><span class="cl"><span class="go">* ^X-local-part-suffix:.*kris-\/[^@]+
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">$</span>MAILDIR/.special.<span class="sb">`</span><span class="nb">echo</span> <span class="nv">$MATCH</span> <span class="p">|</span> sed -e <span class="s1">&#39;s!([^)]*)!!g&#39;</span> -e <span class="s1">&#39;s![^a-zA-Z0-9_-]!_!g&#39;</span> <span class="p">|</span> tr A-Z a-z<span class="sb">`</span>/
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Filter through spamc
+</span></span><span class="line"><span class="cl"><span class="go">:0fw
+</span></span></span><span class="line"><span class="cl"><span class="go">| /usr/bin/spamc
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> If spam detected, deliver to different folders depending on score
+</span></span><span class="line"><span class="cl"><span class="go">:0
+</span></span></span><span class="line"><span class="cl"><span class="go">* ^X-Spam-Level:.*\*\*\*\*\*\*\*\*\*\*
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">$</span>SPAM.sure/
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">:0
+</span></span></span><span class="line"><span class="cl"><span class="go">* ^X-Spam-Level:.*\*\*\*\*\*
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">$</span>SPAM/
+</span></span></code></pre></div><p>Note how we detect the <code>X-local-part-suffic</code> before we run spam detection and sorting. This allows mail to subaddresses to always go through and bypass all spam filtering, so in exchange for having a personally identifyable mail address you get guarantee delivery. Conversely, if you abuse the privilege you are routed to <code>$TRASH/</code>.</p>
 <h2 id="mail-user-agent">
     <a href="#mail-user-agent">
 	Mail User Agent

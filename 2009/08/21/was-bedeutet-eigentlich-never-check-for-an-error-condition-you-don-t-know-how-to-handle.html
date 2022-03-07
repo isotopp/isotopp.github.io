@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.92.2" />
+<meta name="generator" content="Hugo 0.93.2" />
 <meta property="og:title" content='Was bedeutet eigentlich &#34;Never check for an error condition you don&#39;t know how to handle&#34;' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -158,11 +158,11 @@
 <p>Wenn man den Satz vorwärts von links nach rechts durchdenkt, dann steht da genau das.</p>
 <p>Nehmen wir uns einmal ein Beispiel und versuchen zu verstehen, was da passiert.</p>
 <p>Da ist zum Beispiel ein sehr einfacher Fall - ich könnte versuchen Speicher beim Betriebssystem zu reservieren und das kann fehlschlagen.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">tja_was_dann</span><span class="p">();</span>
-<span class="p">}</span>
-</code></pre></div><p>Das ist so eine typische Situation - wieso zum Beispiel fragt die Bibliotheksfunktion <code>malloc()</code> nicht selbst auf <code>p == NULL</code> ab und fängt diesen Fall ab. Weil sie das nicht tut, muß ich das jedes einzelne Mal selber tun und darf das in keinem einzelnen Fall vergessen.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">tja_was_dann</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Das ist so eine typische Situation - wieso zum Beispiel fragt die Bibliotheksfunktion <code>malloc()</code> nicht selbst auf <code>p == NULL</code> ab und fängt diesen Fall ab. Weil sie das nicht tut, muß ich das jedes einzelne Mal selber tun und darf das in keinem einzelnen Fall vergessen.</p>
 <p>Tatsächlich haben die meisten Programme eine Funktion <code>safe_malloc()</code>, die ein Wrapper für <code>malloc()</code> ist und mehr oder weniger wie oben gezeigt aussieht. Der Punkt ist, daß jedes Programm seine eigene Implementierung von <code>tja_was_dann()</code> mitbringt, denn das genaue Verhalten der Anwendung ist anwendungsspezifisch und kann so nicht von der Bibliothek bereit gestellt werden.</p>
 <p>Man könnte argumentieren, daß <code>malloc()</code> dann intern ein <code>tja_was_dann()</code> aufrufen sollte, für das ein jeder Verwender von <code>malloc()</code> eine Implementierung bereit stellen müßte. Aber das würde wiederum einen bestimmten Modus der Verwendung von <code>malloc()</code> vorschreiben. Die Lösung, daß <code>malloc()</code> den Test nicht macht, sondern den Fehler nur signalisiert, ist hier die flexibelste Lösung - und daher einer Bibliotheksfunktion am angemessensten, weil sie dem Anwender jede Wahl läßt. Sie stellt also  die notwendigen Mechanismen bereit, erzwingt aber keine bestimmte Policy.</p>
 <p><strong>Nebengedanke:</strong> Das ist einer der Hauptunterschiede zwischen einer Bibliothek und einem Framework. Eine Bibliothek stellt Mechanismen bereit, erzwingt aber keine bestimmte Policy, also eine bestimmte Default-Herangehensweise an Probleme. Frameworks dagegen sind mit einem bestimmten Modus im Kopf entwickelt worden und bringen eine Policy mit, die im Kontext des Frameworks als Standardlösung angesehen wird.</p>
@@ -175,7 +175,7 @@
  Queries an
 <a href="http://de.wikipedia.org/wiki/Ruby_on_Rails#Konzept" target="_blank" rel="noopener">Active Record</a>
 
- vorbei schicken?') oder wie frei von Policy ist diese Bibliothek wirklich gestaltet - habe ich nur einen Mechanismus, oder ist er mit einer Intention, einer Policy belastet?</p>
+ vorbei schicken?&rsquo;) oder wie frei von Policy ist diese Bibliothek wirklich gestaltet - habe ich nur einen Mechanismus, oder ist er mit einer Intention, einer Policy belastet?</p>
 <p>Von einer Bibliothek soll also nur ein Mechanismus bereitgestellt werden, und es ist zwingend notwendig, daß sich der Anwendungsentwickler Gedanken darüber macht, wie die Policy zur Fehlerbehandlung aussehen soll und wie sie implementiert werden soll. Das ist eigentlich ein relativ offensichtlicher Punkt, aber einer, der meiner Erfahrung nach beim Lehren von Programmiertechniken nicht ausreichend betont und eingeübt wird. Wäre dem nicht so, hätte wir weniger schlechten Code in vielen Projekten. Und ich will mich hier nicht auf die Tonnen von verseuchtem PHP-MySQL beschränken lassen, in denen Queries an eine Datenbank abgefeuert werden ohne jemals zu prüfen, ob überhaupt ein Resultat produziert wurde - oder in denen, falls dies nicht der Fall ist, vergessen wird, die Fehlermeldung der Datenbank abzuholen.</p>
 <p>Der Punkt ist, daß das Fehlen einer Policy im Code meistens eine Policy in der Anwendung bedingt, oder jedenfalls Mindeststandards in der Anwendung. Einige Programmiersprachen haben einen Namen für so ein informales Konstrukt: Sie nennen es eine Konvention, also einen Vertrag zwischen Bibliotheksentwickler und Anwendungsentwickler, der informal ist und nicht durch die Mechanismen der Programmiersprache erzwungen wird. Diese Konvention ist typischerweise unausgesprochen und nicht Bestandteil der Bibliotheksdokumentation - und das ist der Grund, warum die Konvention unzureichend gelehrt und entsprechend unzureichend umgesetzt wird.</p>
 <p>Aber man kann den Satz</p>
@@ -187,25 +187,25 @@
 <p>Dieses Szenario setzt voraus, daß wir bereits weit vor dem Eintreten des Fehlers allen Speicher reserviert haben, der zur Handhabung des Fehlers notwendig ist. Das ist eine recht komplizierte Situation, und den meisten Anwendungsentwicklern in dem Moment zu kompliziert, in dem sie gezwungen sind darüber nachzudenken. Schließlich wollen sie erst mal den <em>nicht</em> failenden, den funktionalen Path in ihrem Code fertig stellen, bevor sie sich mit failure modes und den Codepaths dort beschäftigen.</p>
 <p><strong>Nebengedanke:</strong> Das ist ein weiterer Hauptgrund für schlechten Code - wir zwingen Entwickler zum falschen Zeitpunkt dazu, sich mit failure modes und failenden Codepaths auseinander zu setzen. Entwickler sind wahrscheinlich bereit, sich auch mit failenden Codepaths zu beschäftigen, denn sie wollen ja ein gut funktionierendes Programm erstellen. Aber wir sollten sie nicht gerade dann mit failenden Pathes belästigen wenn sie im funktionalen Path des Codes am Arbeiten sind, dem Programm also gerade beibringen überhaupt mal was Sinnvolles zu tun.</p>
 <p>Weil wir Entwickler also im falschen Moment mit Failures belästigen bekommen wir Code, bei dem Failure Handling im günstigsten Fall so aussieht:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-<span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">exit</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span> <span class="c1">// out of memory error
-</span><span class="c1"></span><span class="p">}</span>
-</code></pre></div><p>Immerhin ist hier überhaupt auf das Auftreten eines Fehlers geprüft worden. Vielleicht sind auch noch ein paar <code>atexit(3)</code>-Handler gestacked worden, die beim Programmende aufräumen, aber das ist allgemein recht wenig üblich.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span> <span class="c1">// out of memory error
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
+</span></span></code></pre></div><p>Immerhin ist hier überhaupt auf das Auftreten eines Fehlers geprüft worden. Vielleicht sind auch noch ein paar <code>atexit(3)</code>-Handler gestacked worden, die beim Programmende aufräumen, aber das ist allgemein recht wenig üblich.</p>
 <p>Bei dieser Art der Fehlerbehandlung kann man am Code förmlich sehen, wie der Anwendungsentwickler auf das Auftreten des Fehlers geprüft hat, sich aber über das Handling des Fehlers jetzt zu diesem Zeitpunkt genau gar keine Gedanken machen wollte.</p>
 <p>Ein anderes übliches Problem ist, daß auf einer viel zu niedrigen Ebene auf den Fehler geprüft wird. Zudem besteht oftmals keine Übereinkunft in der Anwendung, wie Fehler von einer niederen Abstraktionsebene auf die nächsthöhere Ebene weitergereicht wird, ohne daß Information verloren geht. Die Innereien des Quelltextes von MySQL sind ein ausgezeichnetes Beispiel für solche Scherereien, zum Teil findet man Code wie</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">errcode</span> <span class="o">=</span> <span class="n">doSomeThing</span><span class="p">();</span>
-<span class="k">switch</span><span class="p">(</span><span class="n">errcode</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
-  <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
-  <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
-    <span class="k">return</span> <span class="n">E_DIES</span><span class="p">;</span>
-    <span class="k">break</span><span class="p">;</span>
-  <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
-    <span class="k">return</span> <span class="n">E_DAS</span><span class="p">;</span>
-    <span class="k">break</span><span class="p">;</span>
-<span class="p">}</span>
-</code></pre></div><p>Das heißt detaillierte interne Fehlercodes werden unter Informationsverlust plattgeklopft und ein Handler auf einer höheren Abtraktionsebene mit mehr Kontext hat gar keine Chance mehr festzustellen, was genau denn da unten nun schief gelaufen ist.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">errcode</span> <span class="o">=</span> <span class="n">doSomeThing</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">switch</span><span class="p">(</span><span class="n">errcode</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">3</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">E_DIES</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">4</span><span class="o">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">E_DAS</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="k">break</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span></code></pre></div><p>Das heißt detaillierte interne Fehlercodes werden unter Informationsverlust plattgeklopft und ein Handler auf einer höheren Abtraktionsebene mit mehr Kontext hat gar keine Chance mehr festzustellen, was genau denn da unten nun schief gelaufen ist.</p>
 <p>Die Regel</p>
 <blockquote>
 <p>Never check for an error condition you don&rsquo;t know how to handle.</p>
