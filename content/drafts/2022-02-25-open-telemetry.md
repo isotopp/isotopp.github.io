@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - lang_en
-  title: "Open Telemetry"
+title: "Open Telemetry"
 ---
 
 # Overview
