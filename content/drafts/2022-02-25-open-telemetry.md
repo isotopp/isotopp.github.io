@@ -3,7 +3,7 @@ author: isotopp
 date: "2022-02-25T11:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Open Telemetry"
-published: true
+published: false
 tags:
 - lang_en
 ---
