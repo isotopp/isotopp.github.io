@@ -2,10 +2,10 @@
 author: isotopp
 date: "2022-02-25T11:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
+title: "Open Telemetry"
 published: true
 tags:
 - lang_en
-title: "Open Telemetry"
 ---
 
 # Overview
