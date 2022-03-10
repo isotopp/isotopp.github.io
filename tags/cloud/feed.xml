@@ -6,7 +6,7 @@
     <description>Recent content in cloud on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Mar 2022 17:35:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/cloud/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 10 Mar 2022 15:16:11 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/cloud/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>AMD und 128 cores</title>
       <link>https://blog.koehntopp.info/2021/11/08/amd-und-128-cores.html</link>
@@ -806,6 +806,208 @@ networking, especially 5G, is a power hog. The amount of signal
 processing that goes into 5G and VDSL is amazing. If you want
 low power networking, use fiber, maybe bridge the last 5 meters
 with Wi-Fi.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>What has Kubernetes ever done for us?</title>
+      <link>https://blog.koehntopp.info/2019/04/25/what-has-kubernetes-ever-donefor-us.html</link>
+      <pubDate>Thu, 25 Apr 2019 13:28:48 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2019/04/25/what-has-kubernetes-ever-donefor-us.html</guid>
+      <description>&lt;h1 id=&#34;kubernetes-and-complexity&#34;&gt;
+    &lt;a href=&#34;#kubernetes-and-complexity&#34;&gt;
+	Kubernetes and Complexity**
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;On Twitter, &lt;a href=&#34;https://twitter.com/crcsmnky/status/1120189000474681347&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sandeep&lt;/a&gt;
+
+ remarked:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The complexity and amount of code involved is staggering.
+I&amp;rsquo;m not sure how we can possibly justify the Kubernetes, Istio, Docker, Envoy, Prometheus, Grafana, Jaeger, Kiali, Helm stack.&lt;/p&gt;
+&lt;p&gt;What problem are we solving that were not solving 15 years ago, again?
+How much time and effort are being saved (by organisations smaller than Google)?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;One reply was:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;The amount of code is staggering.
+I&amp;rsquo;m not sure how we can justify the Linux, dpkg, HAProxy, Nagios, Check_MK, puppet, supervisor, apt stack.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Unlike other systems that try to solve similar problems, Kubernetes - at least in the past - has been driven by users that had a problem to solve, and not by gaggle of 400 vendors which think that it improves the flavour when they are pissing into a repo.
+Unlike these other systems, Kubernetes actually works and scales, with no added or proprietary components, if you take the public repo, build and deploy it.
+So that is still a lot of complexity, but at least it accomplishes something.&lt;/p&gt;
+&lt;h1 id=&#34;what-problem-are-we-solving-that-we-were-not-solving-2004&#34;&gt;
+    &lt;a href=&#34;#what-problem-are-we-solving-that-we-were-not-solving-2004&#34;&gt;
+	What problem are we solving that we were not solving 2004?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In 2004, we were running bare metal with maybe puppet, but more likely cfengine or even manual ssh execution running shell scripts out of a NFS file-share.
+And were monitoring with Nagios.&lt;/p&gt;
+&lt;p&gt;The progress is obvious, but let us list it:&lt;/p&gt;
+&lt;p&gt;Today we are living in an age of abundance in the data center.
+In our data centers we have machines with at least 32 threads per machine, many have much higher number.
+Three digit GB of memory are standard.
+IOPS are not a problem with SSD.
+And multi-tiered leaf-and-spine L3 networks create fabrics that can connect any CPU in any machine to any disk in any other machine in the same data center, at nominal media speed and with minuscule latency added from the mesh, as long as we can do cut-through switching.&lt;/p&gt;
+&lt;p&gt;That is, if we planned our data center right, we are having &lt;a href=&#34;https://ai.google/research/pubs/pub41606&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Data Center as a Computer&lt;/a&gt;
+
+.
+A uniform collection of threads with memory, a network as a connecting mesh and sufficient storage in capacity and IOPS somewhere within the same mesh.&lt;/p&gt;
+&lt;p&gt;From this hardware substrate we can build clusters of Kubernetes, K8s.
+The K8s is basically &amp;ldquo;init for a network of machines&amp;rdquo;, a system that accepts declarative instructions of how to mesh a set of images of software into a network and a service.
+It then schedules resources from our substrate, and pushes the images onto that.&lt;/p&gt;
+&lt;p&gt;Because the images are self-contained and immutable, once they complete running, we can remove them from their respective machines and receive the original hosts back in original state.
+Because the images are self-contained and immutable, they can be scheduled on any node that has sufficient free capacity, specifics no longer matter.
+State is isolated and specially managed, K8s provides concepts for that, stateful sets and operators.&lt;/p&gt;
+&lt;p&gt;This allows hardware operators to provide capacity without caring much about the users, the devs and their apps running on the clusters.
+Conversely, it allows devs and apps to work with hardware using an API instead of people and tickets.
+Hardware and Data Center operations become a completely autonomous commodity.&lt;/p&gt;
+&lt;p&gt;Which we call &amp;ldquo;The Cloud&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;For devs and their apps, Istio and Envoy provide an interface to interconnect images to allow them to communicate.
+These systems also provide routing, balancing, authentication, enforce TLS, provide backoff and fault tolerance and collect metrics in a standardised way.
+And in a way that is invisible and inescapable to the people that write the application.&lt;/p&gt;
+&lt;p&gt;All these properties of the communication become an &lt;a href=&#34;https://en.wikipedia.org/wiki/Aspect_%28computer_programming%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Aspect&lt;/a&gt;
+
+, taken out of the codebase, and the scope of the application programmer.
+They just are, whether the developer cares or knows about these things or not.&lt;/p&gt;
+&lt;p&gt;Similarly, Prometheus and the surrounding ideology have a story about what to collect (ie &lt;a href=&#34;https://www.vividcortex.com/blog/monitoring-and-observability-with-use-and-red&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;USE and RED&lt;/a&gt;
+
+, and follow @mipsytipsy on Twitter for a lot of insight).
+We are getting best practice around this, and it is being wrapped into an Aspect again.&lt;/p&gt;
+&lt;p&gt;Look back 15 years - systems like Nagios and Graphite are extremely host centric.
+This does no longer work in the new operational model.
+We do no longer care about hosts at all, we care about capacity (let&amp;rsquo;s have more than we strictly need), and about churn (we have capacity, but there is a high death-and-reprovisioning rate and that is suspect, so we alert).
+Nagios-era systems are not equipped to deal with environments like this at all.&lt;/p&gt;
+&lt;p&gt;Tracing and Debugging are evolving and adapting in a similar way.
+Jaeger, sysdig and similar systems help you to debug problems in collections of microservices that are running in multiple instances across an arbitrary number of hosts somewhere in a much larger cluster of machines.
+They give you capability to follow requests up and down the stack where components are not bound to specific hosts.
+And they give you capability to view the flow of a request through services from a logical point of view without actually accessing individual physical hosts (or caring about these hosts at all.&lt;/p&gt;
+&lt;p&gt;There is any number of benefits from this change, this decoupling of deployments from specific instances of compute:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Immutability makes it possible to reason about production and production state.&lt;/li&gt;
+&lt;li&gt;Workloads can migrate (actually respawn) within a cluster as the need and the load changes.&lt;/li&gt;
+&lt;li&gt;Deployments become a swift automated operational procedure.&lt;/li&gt;
+&lt;li&gt;Interfaces to standard Aspects of operations (deployment, upgrade, monitoring, interconnection, cluster membership, shared state management) become standardised and become interchangeable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We get codified (literally, as code) best practice.&lt;/p&gt;
+&lt;p&gt;So what problem are we solving that we were not solving 15 years ago?
+Well, feel free to place my rant as a soundtrack on top of &lt;a href=&#34;https://www.youtube.com/watch?v=uvPbj9NX0zc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Monty Python&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Yes, there is complexity.
+You need to learn Go, JS and Python as a solid foundation to be able to play.
+You need to understand the distributed computing and security basics necessary in order to play in this arena.
+And that is quite a large piece.
+On the other hand, &amp;ldquo;The amount of code is staggering.
+I&amp;rsquo;m not sure how we can justify the Linux, dpkg, HAProxy, Nagios, Check_MK, puppet, supervisor, apt stack.&amp;quot;« as written elsewhere in this thread.&lt;/p&gt;
+&lt;p&gt;From the K8s setup, you get a much higher average architectural quality by comparison.
+That is in no small part because of the way K8s is opinionated about how to handle and deliver things.
+It is also in the delivery, in the way of Aspects, wrappers around your stuff that provide functionality for operations, in a way that you do not even see when coding your stuff.
+You are getting sane defaults in a way that is mostly agnostic to what you care about.&lt;/p&gt;
+&lt;p&gt;This is an important decoupling in multiple dimensions, making everybody&amp;rsquo;s job easier and enabling them to deliver more and better quality with less work.&lt;/p&gt;
+&lt;p&gt;Yes, this is relatively new, but you can see how good and well-thought-out it is.
+There is a reason the K8s ecosystem owned everybody else in less than 3 years time, and this is why.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Service Mesh</title>
+      <link>https://blog.koehntopp.info/2018/11/28/service-mesh.html</link>
+      <pubDate>Wed, 28 Nov 2018 20:57:34 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/11/28/service-mesh.html</guid>
+      <description>&lt;p&gt;Wenn man was mit Infrastructure As Code macht, also Openstack, AWS, GCS, oder auch Kubernetes, dann hat man meistens eine ganze Flotte von willkürlichen IPs mit komischen Ports, auf denen je eine Instanz desselben Dienstes läuft.
+Das heißt, man braucht einen Load-Balancer, der einem die Requests annimmt und auf die ganzen Endpoints verteilt.&lt;/p&gt;
+&lt;p&gt;Das ist eine Idee, die man mal einen Moment festhalten sollte, während man einen Blick auf Altbekanntes wirft:&lt;/p&gt;
+&lt;h1 id=&#34;sdn-in-openstack&#34;&gt;
+    &lt;a href=&#34;#sdn-in-openstack&#34;&gt;
+	SDN in Openstack
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Denn Openstack zum Beispiel treibt auf den unteren Ebenen des Netzwerks eine Menge Aufwand, um ein Underlay und ein Overlay-Netz zu bauen.
+Und einem Tenant (also einem Openstack-Kunden, mit Benutzern im Kunden) dann die Gelegenheit zu geben, in seinem Tenant eine komplette IP-Infrastruktur aufzubauen, mit virtuellen Bridges, Routern, Subnetzen, Firewalls und Load Balancern.
+Das tut der Kunde, weil er IP basierend Access Control (also Firewalls) aufbauen will, die den Zugang zu den Diensten regeln.&lt;/p&gt;
+&lt;p&gt;Dienste, die sowieso nicht zugänglich sind, weil sie eigentlich nur durch den Load-Balancer erreicht werden können, und deren IP-Nummern auch egal sind, weil sie nur den LB interessieren.&lt;/p&gt;
+&lt;p&gt;Ich weise da deshalb so darauf hin, weil Software Defined Networking zwar eine atemberaubend geile Sache ist.
+Man kann damit endlich alle Netzwerk-Zuckerbäckereien bauen kann, die man schon immer haben wollte, ohne jemals ein Kabel oder ein Chassis in die Hand zu nehmen.
+Aber SDN ist auch etwas, das genau gar nicht skaliert und für das man keine Operations machen kann.&lt;/p&gt;
+&lt;p&gt;Also, ein SDN hat einen Haufen State.
+Es weiß, welche Komponenten des Overlays von welchem Tenant wo physikalisch terminiert werden (&amp;ldquo;welche VM wo liegt und welche virtuellen Komponenten des Overlays vor der VM liegen&amp;rdquo;).
+Und es weiß, was ein virtueller Router, eine virtuelle Firewall oder ein virtuelles NAT mit einem Paket machen müssen, das da durch geht und simuliert das dann, bevor das Paket ausgeliefert wird.&lt;/p&gt;
+&lt;p&gt;State ist aber ein Problem:
+Jedes Mal, wenn eine VM hoch geht oder terminiert wird.
+Schlimmer noch, jedes Mal, wenn eine aktive Netzwerkkomponente oder gar ein ganzes Netz erzeugt oder terminiert wird.
+Immer dann ändert sich die Topologie des Netzes und damit der State, der dem ganzen SDN und allen Komponenten bekannt sein muß.
+Auch die simulierten Aktionen des Overlays ändern sich, und müssen neu berechnet werden.
+Und ein Haufen verteilter Komponenten müssen aktualisiert werden.&lt;/p&gt;
+&lt;p&gt;Wenn also der Cluster größer wird, also mehr Underlay bekommt, dann wird der Kreis der Geräte größer, denen der State bekannt sein muß.
+Damit geht die Convergence Time nach oben, also die Zeit, die es braucht, bis eine Änderung allen Geräten im Overlay und Underlay bekannt ist.&lt;/p&gt;
+&lt;p&gt;Und zugleich sind vermutlich auch mehr Tenants da, die mehr machen müssen.
+Damit geht dann auch die Change Rate nach oben.
+Also die Anzahl der Änderungen im Cluster, die eine neue Konvergenz des Clusters erforderlich machen können.&lt;/p&gt;
+&lt;p&gt;Und irgendwann brennt dann alles nieder.
+Dann sind alle Overlays down, und alle Kunden sind sehr traurig.&lt;/p&gt;
+&lt;p&gt;Dazu kommt dann natürlich noch, das so Hersteller von SDN Software gelegentlich neue Versionen von ihrem Kram releasen, die man dann einspielen muß.&lt;/p&gt;
+&lt;p&gt;Der Hersteller eines SDN ist natürlich sehr verantwortungsvoll und kennt sich mit den Tücken von Operations Teams aus:
+neue Versionen sind immer kompatibel zu vorhergehenden Versionen und man kann von einer alten Version auf eine neue Version so upgraden, daß auch ein Rollback auf die alte Version jederzeit möglich ist.
+Und zwar ohne dass die persistierten Strukturen, die das Overlay beschreiben, verloren gehen oder ungültig werden.
+Dadurch sind Updates eine sichere Sache und risikolos ohne Downtime möglich.&lt;/p&gt;
+&lt;p&gt;Außerdem ist die Erde eine Scheibe.&lt;/p&gt;
+&lt;h1 id=&#34;stattdessen-service-mesh&#34;&gt;
+    &lt;a href=&#34;#stattdessen-service-mesh&#34;&gt;
+	Stattdessen Service Mesh
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Weil das so ist, wie es ist, haben sich einige Leute überlegt:
+wieso überhaupt ein Overlay?
+Am Ende sind doch IP-Nummern egal, und die Discovery der Endpunkte ist komplett nur ein Problem für den Load-Balancer.&lt;/p&gt;
+&lt;p&gt;Warum packt man nicht einfach alle Tenants in ein flaches IP-Netz, nimmt den Kunden die Möglichkeit weg, IP-Nummern und Netzwerktopologien zu bauen und zwingt sie dazu, Services sicher im &amp;ldquo;offenen Netz&amp;rdquo; zu betreiben?&lt;/p&gt;
+&lt;p&gt;Tatsächlich ist das eine berechtigte Frage und eine Antwort ist:&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Weil man dann immer noch einen technisch einheitlichen und zuverlässigen Weg braucht, um Verbindungen und Partner zu identifizieren, und nur zulässige Verbindungen zu erlauben.
+Am Besten auf eine Weise, daß Entwickler das nicht willkürlich falsch machen können&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Im Kubernetes-Umfeld ist so etwas ein Sidecar-Proxy.&lt;/p&gt;
+&lt;p&gt;Ein Sidecar ist ein Prozeß, der mit dem eigentlichen Payload-Prozeß zusammen gestartet wird, und der im selben Pod läuft wie die Payload.
+Das heißt, die Dinger können einander sehen und befummeln, verwenden dieselben Netzwerkinterfaces und IP-Tables Regeln und teilen auch sonst alle Ressourcen - mit Ausnahme des Dateisystem-Images.&lt;/p&gt;
+&lt;p&gt;Die Payload verbindet sich also an localhost, Port irgendwas, und der Sidecar-Proxy ist zuverlässig auf diesem Port und kümmert sich um die Verbindungen, oder andersherum, der Proxy nimmt eingehende Verbindungen an und leitet sie an die Payload weiter.&lt;/p&gt;
+&lt;p&gt;Dadurch kann der Proxy eine ganze Menge Dinge tun - er kann TLS erzwingen und Zertifikate oder JWT Token kontrollieren, er kann Verbindungsdaten sammeln (Timing Histogramme), er kann Retries kontrollieren, wenn ein Dienst nicht in einer bestimmten Zeit reagiert oder er kann Retries und Services komplett kurzschließen, wenn ein optionaler Dienst mal weg ist.&lt;/p&gt;
+&lt;p&gt;Ein solcher Proxy für das Kubernetes Umfeld ist Envoy, und das besondere an Envoy ist, daß seine Konfiguration nicht aus statischen Dateien kommt, sondern auch von einem clusterweit-zentralen Dienst dynamisch generiert werden kann.
+Die Konfiguration kann dann ohne Proxy Neustart im Betrieb geändert werden.&lt;/p&gt;
+&lt;p&gt;Kubernetes verwendet das, um neue Endpunkte in den Load-Balancer zu integrieren, wenn sie verfügbar werden, um in Rollouts Traffic sanft von einer alten auf eine neue Version zu migrieren und um zentral clusterweit einheitlich Metriken über Dienstaufrufe und deren Zeitverhalten zu sammeln und zu loggen.
+Das kann man verwenden, um Request-Kaskaden zu tracen und um Qualitätsüberwachung für seine Dienste zu haben.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://jvns.ca/blog/2018/10/27/envoy-basics/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ein paar Grundlagen über Envoy&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Es stellt sich dann heraus, daß aus einer Reihe von Gründen das besser skaliert und schöner failed als ein SDN, und daß man außerdem eine Technologie verwendet, die von Entwicklern besser verstanden wird und einfacher zu debuggen ist als ein SDN.&lt;/p&gt;
+&lt;p&gt;Es skaliert besser, weil hier State pro Dienst und nicht pro Cluster gehalten werden könnte.
+Und es failed schöner, weil man hier einzelne Envoys unabhängig voneinander verlieren kann, bzw. einzelne Dienste ohne gleich den ganzen Cluster zu droppen.
+Verliert man die Control Plane, also den Dienst, der Envoy steuert, dann ist das loss-of-control, man kann die Envoy Config nicht mehr ändern.
+Es ist nicht loss-of-service, das heißt, das Netz läuft eingefroren weiter - und die Control Plane kann (hoffentlich) rediscovery, d.h. eine neu gestartete Control Plane kann die existierenden Envoy-Nodes und deren Config ohne Betriebsunterbrechung einsammeln, konsolidieren und dann nahtlos den Betrieb aufnehmen.&lt;/p&gt;
+&lt;p&gt;Ich rede hier von Control Planes und eventuell später auch von Service Discovery und anderen Dingen.
+Hier ist noch einmal ein wenig Hintergrund dazu:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.envoyproxy.io/introduction-to-modern-network-load-balancing-and-proxying-a57f6ff80236&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;An Introduction to Modern Network Load Balancing&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Der Artikel erklärt erst mal, was ein Load-Balancer ist, was L4 und L7 Load-Balancing tut und hebt dann insbesondere auf L7 LBs (Proxies) ab, und geht auf zentrale Steuerung mit dynamisch generiert Konfiguration ein.
+Diese zentrale Steuerung mit dynamischer Config-Generierung ist eine Controlplane.
+Generell finden wir in dem Artikel eine schöne Erklärung von Begriffen, und was sie bedeuten und warum man diese Konzepte abgedeckt haben will - Service Discovery ,Health Checking, Load-Balacing, Stickyness von Sessions, TLS Termination, Observability, Security and DoS Mitigation, und schließlich Config and Control Plane.&lt;/p&gt;
+&lt;p&gt;Wenn wir jedoch über Kubernetes reden, dann reden wir in der Regel über L7 Proxies, und wir finden nginx plus, haproxy, linkerd und Envoy.
+Envoy wischt gerade mit dem Rest den Boden auf und der Grund dafür ist die Controlplane - für Envoy gibt es mehrere, und die, die alle haben wollen, ist Istio.&lt;/p&gt;
+&lt;p&gt;Istio macht aus einer Flotte von Payloads mit Envoy Sidecars ein Service Mesh.
+Es generiert aus der State Database von Kubernetes eine Konfiguration für alle diese Envoys, so daß die Payloads auf die richtige Weise miteinander reden dürfen, das immer über TLS tun, mit anderen Dingen nicht reden können und einander finden und all die anderen schönen Dinge tun, die Envoy für jemanden tun kann, wenn man ihn den nur korrekt konfigurierte.&lt;/p&gt;
+&lt;p&gt;Der Artikel
+&lt;a href=&#34;https://blog.envoyproxy.io/service-mesh-data-plane-vs-control-plane-2774e720f7fc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Service Mesh vs. Control Plane&lt;/a&gt;
+
+
+erklärt das in mehr Detail und Tiefe.&lt;/p&gt;
+&lt;p&gt;Und weil das alles so toll und aufregend ist, haben Google, das Kubernetes Projekt, die Cloud Native Computing Foundation (CNCF) und ein paar andere Leute gesagt
+&amp;ldquo;Dann integrieren wir das alles eben&amp;rdquo;,
+und so kommt Kubernetes jetzt mit Istio und Envoy als Service Mesh und flache L3 Netze mit Sidecar L7 Loadbalancers werden der Default - mindestens in GKE, aber vermutlich sowieso bei jedem, der Kubernetes macht.&lt;/p&gt;
+&lt;p&gt;Eric Brewer schreibt darüber in aller Ausführlichkeit in
+&lt;a href=&#34;https://cloud.google.com/blog/products/application-development/kubernetes-users-get-ready-for-the-next-chapter-in-microservices-management&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kubernetes users, get ready for the next chapter in microservices management&lt;/a&gt;
+
+
+Damit werden Istio und Envoy das SDN an Stelle des SDN in normalen K8s Installationen - nicht nur bei Google.&lt;/p&gt;
 </description>
     </item>
     
