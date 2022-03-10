@@ -3,7 +3,7 @@ author: isotopp
 title: "Parallelgesellschaft"
 date: "2018-12-08T13:19:18Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: false
+published: true
 tags:
 - pluspora_import
 - lang_de

@@ -3,7 +3,7 @@ title: "kauth Handlers in MacOS"
 author: isotopp
 date: "2018-12-18T09:06:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: false
+published: true
 tags:
 - pluspora_import
 - lang_de
