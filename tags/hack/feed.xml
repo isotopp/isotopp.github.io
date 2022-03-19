@@ -6,7 +6,390 @@
     <description>Recent content in hack on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 18 Mar 2022 20:25:24 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/hack/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 19 Mar 2022 08:08:16 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/hack/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Arista Type 7 Passwords</title>
+      <link>https://blog.koehntopp.info/2021/11/22/arista-type-7-passwords.html</link>
+      <pubDate>Sun, 21 Nov 2021 17:29:00 +0100</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2021/11/22/arista-type-7-passwords.html</guid>
+      <description>&lt;p&gt;A friend of mine wanted to provision BGP passwords for their Arista switch configuration.&lt;/p&gt;
+&lt;p&gt;So a config stanza such as&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;router bgp 65001
+   router-id 10.1.1.1
+   neighbor mydevices peer-group
+   neighbor mydevices password 7 8kjYaye5DsQh0epELyKNe0oZ3E3zp39X
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;requires generation of the Password (actually &amp;ldquo;supersecretpassword&amp;rdquo;) in an encrypted form.&lt;/p&gt;
+&lt;p&gt;Arista switches can do this using CLI tools, apparently.
+They seem to have an onboard Linux, which seems to provide limited tooling, but is good enough to run a 32-bit Python 3.7.
+Arista provides modules to help with handling their configuration.
+&lt;a href=&#34;https://medium.com/@what_if/encrypting-decrypting-arista-bgp-bmp-ospf-passwords-ff2072460942&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ryan Gelobter&lt;/a&gt;
+
+
+documented these in an article on Medium.&lt;/p&gt;
+&lt;p&gt;Unfortunately, these modules are not well portable.
+They have been implemented in a CPython module for Python 3.7 on i386 (32bit) Linux.
+They also have a lot of dependencies to other shared objects that are not easily available except in the switch environment.&lt;/p&gt;
+&lt;p&gt;So, if you wanted to provision switch configurations,
+you would need to run some code on the switch to generate the passwords the way Ryan Gelobter documents,
+or do the same in a virtual machine with a virtual switch running in it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;switch1# bash python -c &amp;#39;import DesCrypt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;print DesCrypt.encrypt(&amp;#34;BMP1_passwd&amp;#34;, &amp;#34;supersecretpassword&amp;#34;)&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;JieKbldfLyl9IzUBJZRvKIcc1w5wWogI
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Looking at the &lt;code&gt;DesCrypt.py&lt;/code&gt; is not particularly helpful:
+The code in it does little more than&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;_DesCrypt&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;encryptedData&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;_DesCrypt&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cbcEncrypt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and &lt;code&gt;_DesCrypt&lt;/code&gt; is actually &lt;code&gt;_Descrypt.cpython-37m-i386-linux-gnu.so&lt;/code&gt;.
+Well, at least it is only 10 KB in size, so how hard can it be?&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s have a look:&lt;/p&gt;
+&lt;h1 id=&#34;ghidra&#34;&gt;
+    &lt;a href=&#34;#ghidra&#34;&gt;
+	Ghidra
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When we drop the module into Ghidra, we get to see a &lt;code&gt;PyInit__DesCrypt(void)&lt;/code&gt; symbol.
+The code in that function just calls out to &lt;code&gt;PyModuleCreate2(&amp;amp;PyModuleDef, 0x3f5)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Looking at the &lt;code&gt;PyModuleDef&lt;/code&gt; requires &lt;a href=&#34;https://docs.python.org/3/c-api/module.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the documentation&lt;/a&gt;
+
+ to properly understand what is going on.
+We identify two functions, &lt;code&gt;cbcEncrypt&lt;/code&gt; and &lt;code&gt;cbcDecrypt&lt;/code&gt; by their &lt;a href=&#34;https://docs.python.org/3/c-api/structures.html#c.PyMethodDef&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;PyMethodDef&lt;/code&gt;&lt;/a&gt;
+
+ entries.
+Two labels for entry points in a stripped binary identified.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/arista-pymethoddef.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The Python Method Definition Table for the _DesCrypt Module defines two functions, named &lt;code&gt;cbcEncrypt&lt;/code&gt; and &lt;code&gt;cbcDecrypt&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Looking at the &lt;code&gt;cbcEncrypt&lt;/code&gt; function shows us that it has a dependency on &lt;code&gt;cbc_crypt()&lt;/code&gt;,
+and that seems to be a function from &lt;code&gt;libc&lt;/code&gt;, according to &lt;a href=&#34;https://linux.die.net/man/3/cbc_crypt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the manpage&lt;/a&gt;
+
+.
+So it is ancient DES, in CBC mode that is being used.
+We should be able to do this in pure Python without many additional dependencies then.&lt;/p&gt;
+&lt;p&gt;Using Ghidra more, we can decode &lt;code&gt;cbcEncrypt()&lt;/code&gt; and the &lt;code&gt;getHashedKey()&lt;/code&gt; function it calls.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;getHashedKey&lt;/code&gt; generates the key the usual way, by xor-ing the incoming string with itself in an 8 bytes long ring buffer, but the starting value is not all zeroes, but some magic value (&lt;code&gt;238ad5f51ec9a8d5&lt;/code&gt;)&lt;/p&gt;
+&lt;p&gt;Also, &lt;code&gt;cbcEncrypt&lt;/code&gt; pads the data to an even 8 byte boundary as required by DES.
+How much was padded needs to be embedded in the ciphertext.
+There is a selection of standard methods for this, as offered for example by
+&lt;a href=&#34;https://pycryptodome.readthedocs.io/en/latest/src/util/util.html#Crypto.Util.Padding.pad&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Crypto.Util.Padding.pad()&lt;/a&gt;
+
+
+in pycryptodome (&amp;ldquo;pkcs7&amp;rdquo;, &amp;ldquo;iso7816&amp;rdquo; and &amp;ldquo;x923&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cbcEncrypt&lt;/code&gt; uses none of these standard methods, and implements its own method:
+the padding is encoded in the high nibble of a fixed magic int.&lt;/p&gt;
+&lt;p&gt;That magic int is always prepended, even if no padding was necessary:
+We get &lt;code&gt;?ebb884c&lt;/code&gt;, with &lt;code&gt;?&lt;/code&gt; indicating the number of padbytes (&lt;code&gt;0&lt;/code&gt; to &lt;code&gt;7&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/arista-gethashedkey.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Ghidra Output of the getHashedKey() function, with a bit of annotation and typing added to get a better view.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;With this information, we should be able to recreate the function in our own C-code and check if it can recreate the examples Ryan Gelobter provided.&lt;/p&gt;
+&lt;p&gt;Of course, it does not.&lt;/p&gt;
+&lt;h1 id=&#34;debugging-the-original-code&#34;&gt;
+    &lt;a href=&#34;#debugging-the-original-code&#34;&gt;
+	Debugging the original code
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We need to debug, and in order to be able to do that we need to be able to load and isolate &lt;code&gt;getHashedKey()&lt;/code&gt; first.
+The original version, to check what the actual hashed key should look like, and compare the result to our own.&lt;/p&gt;
+&lt;p&gt;That should be easy:
+An example &lt;a href=&#34;https://blog.koehntopp.info/2005/10/08/dynamisch-geladener-code.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;from 2005&lt;/a&gt;
+
+ (german language article) shows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;how to turn a function into a &lt;code&gt;libsomething.a&lt;/code&gt;,&lt;/li&gt;
+&lt;li&gt;then into &lt;code&gt;libsomething.so&lt;/code&gt;, and&lt;/li&gt;
+&lt;li&gt;then how to &lt;code&gt;dlopen()&lt;/code&gt; and &lt;code&gt;dlsym()&lt;/code&gt; that binary to call a single function in it.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That final piece of code will serve us well:
+We want to load the _DesCrypt module and call &lt;code&gt;getHashedKey()&lt;/code&gt; in an isolated context to see what a correct return value looks like.&lt;/p&gt;
+&lt;h1 id=&#34;dependencies&#34;&gt;
+    &lt;a href=&#34;#dependencies&#34;&gt;
+	Dependencies
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Turns out, loading &lt;code&gt;_DesCrypt...so&lt;/code&gt; is not so easy, because of a dependency on &lt;code&gt;libtac.so.0&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ldd _DesCrypt.cpython-37m-i386-linux-gnu.so
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        linux-gate.so.1 (0xf7f7c000)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        libtac.so.0 =&amp;gt; not found
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        libpython3.7m.so.1.0 =&amp;gt; not found
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        libstdc++.so.6 =&amp;gt; /lib32/libstdc++.so.6 (0xf7d81000)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        libm.so.6 =&amp;gt; /lib32/libm.so.6 (0xf7c7d000)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        libgcc_s.so.1 =&amp;gt; /lib32/libgcc_s.so.1 (0xf7c5e000)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        libc.so.6 =&amp;gt; /lib32/libc.so.6 (0xf7a73000)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        /lib/ld-linux.so.2 (0xf7f7e000)```
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So we are missing two libraries:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;libpython3.7m.so.1.0&lt;/code&gt; and&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;libtac.so.0&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The Python bit is fixed by building a Python-3.7 in 32-bit:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; apt install gcc-multilib
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; wget https://www.python.org/ftp/python/3.7.5/Python-3.7.5.tgz
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; tar xzf Python-3.7.5.tgz
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; Python-3.7.5/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ./configure --build&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;i686-pc-linux-gnu &lt;span class=&#34;nv&#34;&gt;CFLAGS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;-m32 &lt;span class=&#34;nv&#34;&gt;CXXFLAGS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;-m32 &lt;span class=&#34;nv&#34;&gt;LDFLAGS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;-m32 --enable-shared
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; make -j6
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A minor roadbump: We need to build for 32-bit, but on a 64-bit machine.
+The compile-flag &lt;code&gt;-m32&lt;/code&gt; does that, but it will fail due to some missing includes until we install &lt;code&gt;gcc-multilib&lt;/code&gt; as shown above.
+We can then download the old version of Python, and build it with the required flags for 32-bit support.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;libtac.so.0&lt;/code&gt; we could copy off the switch.
+If we try, things escalate quickly .
+That is, because that &lt;code&gt;.so&lt;/code&gt; in turn loads even more libraries, most of which we don&amp;rsquo;t have access to.
+And if we had them, they might load even more dependencies.&lt;/p&gt;
+&lt;p&gt;Looking into Ghidra again, we know that the code we are interested in does not really depend on &lt;code&gt;libtac,so.0&lt;/code&gt;.
+&lt;code&gt;cbcEncrypt()&lt;/code&gt; itself does, but only if something goes wrong and an exception is being raised,
+but at this stage of our investigation we only want &lt;code&gt;getHashedKey()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Following the guide from 16 years ago, we can quickly write some code to &lt;code&gt;dlopen()&lt;/code&gt; the library:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-C&#34; data-lang=&#34;C&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;func_t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;mydevices_passwd&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;keylen&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;strlen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;80&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;supersecretpassword&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;func_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;main start&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlopen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LIBNAME&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;RTLD_LAZY&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;dlopen(%s, RTLD_LAZY) failed: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;LIBNAME&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;dlerror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;// find func
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlerror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlsym&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;_Z12getHashedKeyPKciPc&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dlerror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;dlsym(%p, &lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;getHashedKey&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\&amp;#34;&lt;/span&gt;&lt;span class=&#34;s&#34;&gt; failed: %s&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;error_msg&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;gethashedKey %p&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keylen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;dump&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;key&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keylen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;dump&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;80&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;dlclose&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;libhandle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;killing-dependencies&#34;&gt;
+    &lt;a href=&#34;#killing-dependencies&#34;&gt;
+	Killing Dependencies
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;That way we can inspect the output of the function (it overwrites the first 8 bytes of &lt;code&gt;data&lt;/code&gt;) and get a reference key value to debug against.
+Or could, if that would work.
+It does not, because the &lt;code&gt;.so&lt;/code&gt; we open still has listed &lt;code&gt;libtac.so.0&lt;/code&gt; as &lt;code&gt;NEEDED&lt;/code&gt; and we need to fix it.&lt;/p&gt;
+&lt;p&gt;There are many ways to edit ELF binaries, but most are badly maintained.
+An easy way is a web service such as &lt;a href=&#34;https://elfy.io/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;elfy.io&lt;/a&gt;
+
+.
+We upload the library, click &lt;code&gt;Load information&lt;/code&gt; -&amp;gt; &lt;code&gt;Loader directives&lt;/code&gt; and edit the first dependency (&lt;code&gt;libtac.so.0&lt;/code&gt;) (offset 0x270) to point to the second dependency (&lt;code&gt;libpython3.7m.so.1.0&lt;/code&gt; (offset 0x283) instead.
+Downloading the code again, we can rename it to &lt;code&gt;libtest.so&lt;/code&gt; and load it with our test program from above, getting a reference key value.
+So &lt;code&gt;mydevices_passwd&lt;/code&gt; in a non-broken implementation yields the raw key value of &lt;code&gt;4A 0E 5D 1A 70 4F 1F 23&lt;/code&gt; for DES.&lt;/p&gt;
+&lt;p&gt;Having that, debugging can continue.
+It turns out: math is hard and Intel is a little-endian architecture:
+The seed byte sequence &lt;code&gt;D5 A8 ... 8A 23&lt;/code&gt; is of course the long &lt;code&gt;238A…A8D5&lt;/code&gt;.
+I am definitively not doing these things often enough anymore to not make this kind of mistake.&lt;/p&gt;
+&lt;h1 id=&#34;progress&#34;&gt;
+    &lt;a href=&#34;#progress&#34;&gt;
+	Progress!
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Having a working &lt;code&gt;getHashedKey()&lt;/code&gt; we can now look at &lt;code&gt;cbcEncrypt()&lt;/code&gt; and reverse that.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/11/arista-cbcencrypt.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The heart of &lt;code&gt;cbcEncrypt()&lt;/code&gt; fetches two Python &lt;code&gt;bytearray&lt;/code&gt;, &lt;code&gt;key&lt;/code&gt; and &lt;code&gt;data&lt;/code&gt; and works with them. The &lt;code&gt;key&lt;/code&gt; is processed with &lt;code&gt;getHashedKey()&lt;/code&gt;, then &lt;code&gt;cbc_crypt()&lt;/code&gt; is set up and called. The result returned to Python using &lt;code&gt;Py_BuildValue&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The moment we try to build this in C, it proves frustrating again:
+&lt;code&gt;cbc_crypt()&lt;/code&gt; is no longer part of &lt;code&gt;libc&lt;/code&gt;.
+It is outdated, legacy, but unfortunately still in use.
+Not only by Arista, but also other companies and protocols.
+Among them some ancient RPC protocols.
+It has been removed from &lt;code&gt;libc&lt;/code&gt; and moved to &lt;code&gt;libtirpc3&lt;/code&gt;, it seems.
+We need to install &lt;code&gt;libtirpc3&lt;/code&gt;, &lt;code&gt;libtirpc-dev&lt;/code&gt; and &lt;code&gt;libtirpc-common&lt;/code&gt; to be able to build code that calls &lt;code&gt;cbc_crypt()&lt;/code&gt;.
+Even then we seem to be limited to static linking, because for some reason the shared objects do no longer export the symbol.&lt;/p&gt;
+&lt;p&gt;Some more short short hiccups:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The padding value is a nibble, not a byte, and the long it is part of has to be little endian naturally.&lt;/li&gt;
+&lt;li&gt;The padding needs itself to take the 4 bytes added by the padding itself into account.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the end we get code that reproduces the expected result.&lt;/p&gt;
+&lt;h1 id=&#34;in-python&#34;&gt;
+    &lt;a href=&#34;#in-python&#34;&gt;
+	In Python
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If, and that is important, &lt;code&gt;des_parity()&lt;/code&gt; is being called.
+In Python that function is not available, and should not be necessary:
+The legacy DES function in Python&amp;rsquo;s module supposedly ignores DES parity bits automatically.&lt;/p&gt;
+&lt;p&gt;But the Python code produces a different result.
+So what goes on here, and how do we get &lt;code&gt;des_parity()&lt;/code&gt;?&lt;/p&gt;
+&lt;p&gt;Turns out, &lt;code&gt;des_parity()&lt;/code&gt; is really weird code:
+Look at it &lt;a href=&#34;https://github.com/alisw/libtirpc/blob/master/src/des_soft.c#L33-L50&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+It is supposed to make the 8 bytes of the DES code uneven parity by manipulating the low-value bits in the key.
+But the actual code also effectively masks out the high order bit, so we do not get 56 bit of keyspace, but only 48 bit.
+Yay, export crypto?&lt;/p&gt;
+&lt;p&gt;Anyway, this is the code Arista runs for their key obfuscation, so we need to duplicate it to produce correct data.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/isotopp/arista_type_7/blob/main/pypoc.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&lt;/a&gt;
+
+ is a PoC in Python.&lt;/p&gt;
+&lt;p&gt;With the poc provided, it should be possible to&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;arista_descrypt&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cbc_encrypt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cbc_decrypt&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;encrypted&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cbc_encrypt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;mydevices_passwd&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;supersecretpassword&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;encrypted&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and that should be sufficient to build an Ansible module for Arista config provisioning.
+The code uses &lt;code&gt;cryptography&lt;/code&gt; or &lt;code&gt;pycryptodome&lt;/code&gt; automatically, one of the two is installed.
+It is not dependent on the legacy &lt;code&gt;cbc_crypt()&lt;/code&gt; function that formerly was in &lt;code&gt;libc&lt;/code&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Whatabotism</title>
+      <link>https://blog.koehntopp.info/2018/12/19/whatabotism.html</link>
+      <pubDate>Wed, 19 Dec 2018 17:06:42 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2018/12/19/whatabotism.html</guid>
+      <description>&lt;p&gt;Basierend auf einem &lt;a href=&#34;https://twitter.com/isotopp/status/1075020503079886848&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Thread in Twitter&lt;/a&gt;
+
+ und &lt;a href=&#34;https://twitter.com/isotopp/status/1075394005502976001&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;noch einem Thread&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Im November 2012 kam Ingress von Niantic heraus.
+Das ist ein server-basierendes Augmented Reality Game mit GPS-Koordinaten, bei dem man bestimmte Orte aufsuchen muss, um dort Dinge auf dem Mobiltelefon zu tun.
+Im Februar 2013 hatte ich es durchgespielt und begann das Spiel zu automatisieren.
+Ich schrieb Bots.&lt;/p&gt;
+&lt;p&gt;Das taten viele, denn das Spiel wurde von Niantic mehr oder weniger an die gesamte Android Developer Community geseeded.
+Niantic hat dann versucht, Bots zu erkennen und Sicherheitsmaßnahmen in das Spiel einzubauen, die Botting schwieriger machen sollten.
+Ich habe später eine Reihe von Artikel auf Google+ zu diesem Thema geschrieben.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2018/12/whatabotism.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Aber Bots zu erkennen und dann zu bannen ist schwierig.
+Viel schwieriger als gedacht.
+Von meinen 1000 Bot-Instanzen wurden am Ende keine gebannt, aber große Teile der Berliner Ingress Community und der Ingress Community in anderen deutschen Städten wurden als false positives erkannt.&lt;/p&gt;
+&lt;h1 id=&#34;menschen-simulieren&#34;&gt;
+    &lt;a href=&#34;#menschen-simulieren&#34;&gt;
+	Menschen simulieren
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Wie macht man schwer zu erkennende Bots?&lt;/p&gt;
+&lt;p&gt;In Ingress soll man &amp;ndash; ohne Cheaten &amp;ndash; in der realen Welt herumlaufen und in der Nähe von bestimmten Markierungspunkten Aktionen ausführen.
+Meist, um effektiv zu sein, als Gruppe.&lt;/p&gt;
+&lt;p&gt;Also hatten meine Bots ein soziales Netz, mit anderen Bots, die bevorzugt (aber nicht immer) zusammen gespielt haben.&lt;/p&gt;
+&lt;p&gt;Sie hatten keine festen, wiedererkennbaren Routen, sondern Urges:
+Rufe die Google Wetter API auf.
+Schlechtes Wetter?
+Füge eine Starbucks-Pause in die Route ein.&lt;/p&gt;
+&lt;p&gt;Habe Schlafenszeiten, Arbeitszeiten, wähle Spielzeiten entsprechend.
+Plane Routen zwischen Ingress Portalen mit der Google Maps API und Fahrrad als Verkehrsmittel, warte die angegebenen Reisezeiten zwischen Aktionen an unterschiiedlichen Zielkoordinaten.&lt;/p&gt;
+&lt;p&gt;Mache niemals etwas mit maschineller Präzision.
+Jittere Zeiten, Koordinatenangaben, Reaktionszeiten und auch sonst alles.&lt;/p&gt;
+&lt;p&gt;Und dann steuere auf dieser simulierten realweltlichen Person das Spielverhalten, wieder mit Urges, die auf dem In-Game Inventory und Spielstrategien baiseren.
+&amp;ldquo;Verabrede&amp;rdquo; Dich mit anderen Bots und agiere gemeinsam (oder auch nicht).&lt;/p&gt;
+&lt;p&gt;Und wenn reale Spieler irgendwo aktiv sind, dann verlagere die Aktivitäten woanders hin.&lt;/p&gt;
+&lt;p&gt;Das alles erzeugt ein Verhalten, das so normal ist, daß echte Personen öfter gebannt werden als diese Bots.&lt;/p&gt;
+&lt;p&gt;Niantic war für eine gewisse Zeit lang stark interessiert, Bots zu erschweren oder unmöglich zu machen.
+Ein verhaltensbasierter Ansatz hat aber nirgendwohin geführt:
+Die Variation in menschlichem Verhalten ist so groß, daß man mit einer recht simplen Simulation wie oben beschrieben ein Botverhalten hin bekommt, das nicht signifikant aus der Masse der menschlichen Benutzer heraus sticht.&lt;/p&gt;
+&lt;p&gt;Am Ende war es langweilig:
+Das Ziel für mich war Node.js und Javascript zu lernen.
+Dieses Missionsziel wurde erreicht.
+Zugleich hat sich die API des Spiels und das Spiel selbst so oft geändert, daß ich es hätte professionalisieren müssen, um mitzuhalten.
+Daran bestand aber nie Interesse, also habe ich es aufgegeben &amp;ndash; zweimal durchgespielt (einmal in echt und einmal automatisiert) war genug.&lt;/p&gt;
+&lt;p&gt;Also habe ich die &lt;a href=&#34;https://docs.google.com/document/d/1A252cvmjl86n9uZ0tyi2X4ZabxLE4ribJIEBbC8FifQ/edit&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Erkenntnisse in einem Google Dokument&lt;/a&gt;
+
+ aufgeschrieben und publiziert und danach andere Dinge getan.&lt;/p&gt;
+&lt;h1 id=&#34;bot-oder-mensch&#34;&gt;
+    &lt;a href=&#34;#bot-oder-mensch&#34;&gt;
+	Bot oder Mensch?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Da ist eine Lehre drin für Leute, die Twitter-Bots oder andere Social Bots erkennen wollen.&lt;/p&gt;
+&lt;p&gt;Twitter ist nicht Ingress, und Diskussionen sind komplizierter als Burster zu werfen.&lt;/p&gt;
+&lt;p&gt;Aber &amp;ldquo;Markierungspflicht&amp;rdquo; oder &amp;ldquo;statistische Bot-Erkennung&amp;rdquo; sind beides Blödsinn, auf mehr als eine Weise.&lt;/p&gt;
+&lt;p&gt;Du kannst eine privilegierte API haben, die von der offziellen Twitter App genutzt wird,
+und eine zweite API für maschinelle Interaktion auf Twitter.
+Aber natürlich hindert das niemanden daran, die Menschen-API aus dem offiziellen Twitter Binary zu reversen und dann automaitissert zu vverwenden.
+Oder den offiziellen Client zu scripten.&lt;/p&gt;
+&lt;p&gt;Und natürlich ist es am Ende egal, was den Effekt auf soziale Interaktion angeht, ob ein Troll ein Bot oder ein schlecht bezahlter Mindestlöhner in einem Schwellenland ist.&lt;/p&gt;
+&lt;h1 id=&#34;automat-bot-und-trollarmee&#34;&gt;
+    &lt;a href=&#34;#automat-bot-und-trollarmee&#34;&gt;
+	Automat, Bot und Trollarmee
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Man kann das dennoch für die vereinfachte Diskussion differenzieren:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;ein automatisierter Account ist ein Account, der von einer Maschine mit Inhalten befüttert wird.
+Das kann so etwas simples wie ein Retweetbot sein, oder ein Bot, der die aktuelle Uhrzeit twittert,
+oder halt mein Friendsplus.me-Account, der mein Google+ nach Twitter geschoben hat.&lt;/p&gt;
+&lt;p&gt;Ein automatisierter Account hat aber keine algorithmische Reaktionslogik in irgendeiner Form.
+Er generiert oder sucht Content und pushed den dann. Ein Feed.&lt;/p&gt;
+&lt;p&gt;Nichts hält einen Accountbesitzer davon ab, den Feedbetrieb des automatischen Accounts mit manuellen Tweets zu mischen.
+Viele Promis mit gemanagten Twitter-Accounts tun das.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Ein Bot ist ein automatisierter Account, der reaktiv Tweets sucht oder liest, und dann algorithmisch eine Reaktion generiert.
+Oft (aber nicht zwingend) mit dem Ziel als reale Person gesehen zu werden.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Trolle sind genau keine automatisierten Accounts, sondern manuelle Benutzer, die roboterhaft auf Reize aus Twitter oder anderen sozialen Medien reagieren.
+Sie werden oft wie Bots geführt. Die ganze Sendung &lt;a href=&#34;https://www.youtube.com/watch?v=fAYjSLtz6wQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Neo Magazin Royale: Hass im Internet&lt;/a&gt;
+
+ beschäftigt sich damit.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Und das ist genau der Punkt.
+Die politische Diskussion beschäftigt sich mit den äußeren Merkmalen (&amp;ldquo;Syntax&amp;rdquo;), aber eigentlich geht es darum, was passiert:
+organisierte und verdeckte Beeinflussung eines öffentlichen Diskurses - &amp;ldquo;Semantik&amp;rdquo;.
+Die Mittel sind im Grunde Wurst.&lt;/p&gt;
+&lt;p&gt;Nun muß die organisierte Beeinflussung eines öffentlichen Diskurses nicht falsch sein.
+Ich habe das in der Vergangenheit oft getan.
+Um 2000 habe ich de.comp.lang.php manipuliert, 2003 habe ich Heise Foren manipuliert, wann immer web.de erwäht wurde,
+und zusammen mit Freunden haben wir die USENET-Gruppen de.talk.bizarre und de.soc.rollenspiele.misc mit unterschiedlichen Absichten offen oder verdeckt geführt.&lt;/p&gt;
+&lt;p&gt;Der Talk &lt;a href=&#34;https://www.slideshare.net/isotopp/flames-kommunikationszusammenbrche-im-netz&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Flames im Internet (CCCS 2007, Froscon 2014)&lt;/a&gt;
+
+
+(&lt;a href=&#34;https://www.youtube.com/watch?v=FXD3vk9M7SQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Video&lt;/a&gt;
+
+) dokumentiert das.&lt;/p&gt;
+&lt;p&gt;Der Punkt ist mehr, daß verdeckte Beeinflussung des politischen Diskurses ein Problem ist.
+Aber das kann man in Deutschland im politischen Diskurs so nicht sagen.
+Denn dann hat Deutschland mehr als ein Problem.
+Also nicht nur Russen-Nichtbots und die Reconquita Germanica, sondern auch falsche oder fehlende Gesetze zur Regulierung der Bestechlichkeit von Abgeordneten oder Lobbyismuskontrolle.&lt;/p&gt;
+&lt;p&gt;Und das kann ja nun wirklich keiner wollen.
+Es kommt also in Wahrheit darauf an, daß die richtigen Interessengruppen den politischen Diskurs verdeckt beeinflussen können.
+Nur so kommen wir weiter!&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Websense DLP gives instant root</title>
       <link>https://blog.koehntopp.info/2018/06/18/websense-dlp-gives-instant-root.html</link>
