@@ -2,7 +2,7 @@
 author: isotopp
 date: "2022-03-24T08:40Z"
 feature-img: assets/img/background/mysql.jpg
-title: "Truncated incorect DOUBLE value"
+title: "Truncated incorrect DOUBLE value"
 published: true
 tags:
 - mysql
@@ -38,5 +38,5 @@ Rows matched: 1  Changed: 1  Warnings: 0
 ```
 
 Technically, an `and` is possible and legal, if you wanted to produce a `boolean`.
-Most people do no want this at this point in the statement, though.
-The error message is particular unhelpful if you have no access to the literal raw SQL string for whatever reason.
+Most people do not want this at this point in the statement, though.
+The error message is particularly unhelpful if you have no access to the literal raw SQL string for whatever reason.
