@@ -74,7 +74,7 @@ Both implementations behave slightly differently, unfortunately.
 Only the Pure Python implementation can be debugged easily in all circumstances.
 It is therefore important that you specify `use_pure=True` with your connnection `**kwargs`.
 
-The raw SQL statement will be found in the cursors `_executed` member.
+The raw SQL statement will be found in the cursor's `_executed` member.
 If you are using multi-statements (don't!), they will be logged in the `_executed_list`.
 
 We write:
