@@ -47,7 +47,7 @@ Das ist aber im Grunde kein das Spiel verderbendes Problem, sondern eine gute Ge
 Minecraft ist ein Spiel, das für Kinder ab 8 interessant ist.
 Es ist zunächst einmal eine Art virtuelles Lego im Anzug eines Survival- und Crafting-Spieles:
 Die Spieler müssen in einer Welt aus Blöcken erkunden, Ressourcen sammeln, aus den Ressourcen Dinge bauen und dabei die Nacht überleben.
-Das ist nicht unbedingt einfach, denn in der Nacht kommen verschiedenen Monster, gegen die man nur bestehen kann, wenn man tagsüber einen Unterschlupf gebaut und Ausrüstung gewonnen hat.
+Das ist nicht unbedingt einfach, denn in der Nacht kommen verschiedene Monster, gegen die man nur bestehen kann, wenn man tagsüber einen Unterschlupf gebaut und Ausrüstung gewonnen hat.
 
 ![](/uploads/2021/12/minecraft2.jpg)
 *Die Overworld, die normale Welt, hat verschiedene Klimazonen ("Biome"), in denen unterschiedliche Ressourcen zu finden sind.*
@@ -61,7 +61,7 @@ Das ist jedoch im Grunde alles nebensächlich, weil es in der ersten Iteration d
 Wegen der Zielgruppe hat das Spiel (mindestens bis Version 1.14.4) praktisch keine Mindestanforderungen an die Hardware.
 Wortwörtlich jeder abgelegte Kartoffelcomputer kann Minecraft irgendwie ausführen -- Probleme entstehen vermutlich erst, wenn eine IDE (siehe unten) oder ein Videoschnitt-System oder Streaming-Support dazu kommen. 
 Wie dem auch sei:
-Das schließt ein 2009er MacBook pro, einen Raspi 4 und circa jede Intel-Büchse der letzten 10 Jahre ein.
+Das schließt ein 2009er MacBook Pro, einen Raspi 4 und circa jede Intel-Büchse der letzten 10 Jahre ein.
 Weil es Java ist, funktioniert das alles mit demselben Spiel.
 
 Wegen der Modding-Community (dazu unten mehr) gibt es praktisch auch keine Höchstanforderungen an die Hardware:
@@ -103,7 +103,7 @@ Nach einer Weile Spiel wird das Kind weitere Wünsche und Fragen haben, weil das
 Minecraft ist ein kollaboratives Multiplayer-Spiel, das von den Spielern selbst verändert wird, indem diese Mods (Client-Erweiterungen) und Plugins (Server-Erweiterungen) erstellen.
 Das heißt, sehr bald kommen die folgenden Fragen und Probleme:
 
-- Es gibt Streit, weil verschiedene Spielstile und Wünsche sich gegenseitig ausschließen, und weil mitunter Arschlöcher dabei sind. Ein Repertoire von Verhaltensweise zur Konfliktlösung muss eingeübt werden.
+- Es gibt Streit, weil verschiedene Spielstile und Wünsche sich gegenseitig ausschließen, und weil mitunter Arschlöcher dabei sind. Ein Repertoire von Verhaltensweisen zur Konfliktlösung muss eingeübt werden.
 - Es gibt den Wunsch nach einem eigenen Server, der bezahlt und irgendwo installiert werden muss. Der Wunsch nach Taschengeld muss mit konkreten monatlichen Kosten vereinbar gemacht werden.
 - Es gibt den Wunsch, den Client zu modden. Dazu sind besondere Tools auf dem lokalen Rechner notwendig, da weder Client noch Server nativ eine Moddingschnittstelle haben.
 - Es gibt den Wunsch, besondere Spielmomente mit anderen zu Teilen. Die Frage nach Youtube und Twitch (konsumierend und erstellend) kommt auf, und es braucht Regeln (was, ab wann, Stimme, Gesicht zeigen, Namen nennen, und andere Verhaltensregeln).
@@ -205,7 +205,7 @@ Der Minecraft Launcher erlaubt immerhin die Verwaltung mehrerer Versionen, legt 
 Bastelt man intensiver am Client rum, hat man aber schnell das Problem, bestimmte (andere) JDK-Versionen verwenden zu müssen, den Client mit einer Mod-API modifizieren zu müssen oder unterschiedliche Mod-Konfigurationen für verschiedenen Gruppen und Aufgaben zu haben.
 Das Werkzeug der Wahl für die Client-Verwaltung ist [MultiMC](https://multimc.org/#Download).
 
-Es erlaubt es, das Spiel mit einem anderen, moderneren JDK auszuführen, unterschiedliche Spieler-Accounts zu verwalten.
+Es erlaubt es, das Spiel mit einem anderen, moderneren JDK auszuführen und unterschiedliche Spieler-Accounts zu verwalten.
 Es automatisiert auch analog zum Server-Build, den Client automatisiert zu dekompilieren und zu patchen, um ihm eine stabile Mod-API zu verpassen.
 Populär sind Forge und Fabric, die direkt von MultiMC integriert werden.
 Danach kann man den Client dann mit Mods voll laden.
@@ -245,7 +245,7 @@ Falls das Kind selbst Content produziert ist das Risiko den Account zu verlieren
 Daher sollte man den privaten Account und den publizierenden Account des Kindes strikt trennen, sodaß bei einer Sperrung nicht die Kontakte, private Mail und alle Kommunikationsmöglichkeiten mit weg sind.
 Über Chrome Browser [User Profiles](https://www.techsolutions.support.com/how-to/how-to-create-and-switch-profiles-in-chrome-12564) kann man das schnell und bequem umschalten, und das Kind lernt gleich noch OpSec und sich selbst geschickt zu publizieren.
 
-[It's complicated](https://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS), und danah boyd ist immer lesenswert.
+[It's complicated](https://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS), und danach boyd ist immer lesenswert.
 
 ## Selber programmieren
 
