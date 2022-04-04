@@ -6,7 +6,183 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Mar 2022 18:21:47 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 04 Apr 2022 11:24:21 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>DevOps meets Databases</title>
+      <link>https://blog.koehntopp.info/2022/04/04/devops-meets-databases.html</link>
+      <pubDate>Mon, 04 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/04/04/devops-meets-databases.html</guid>
+      <description>&lt;p&gt;On Twitter, &lt;a href=&#34;https://twitter.com/Der_Pesse/status/1510386289924837383&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Samuel Nitsche&lt;/a&gt;
+
+ asked:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Are there &amp;ldquo;IT history nerds&amp;rdquo; on this app? Like people who have the skills/knowledge to tell how some trends/evolutions in IT appeared? I&amp;rsquo;d love to connect!&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Asking about what he wanted to know specifically he said, he&amp;rsquo;s interested in the reasons why DevOps and Agile takeup in DBA circles is so slow and low.
+That forced me to brain dump stuff that has been active in the back of my mind for quite some time now, but that I never collected proper.&lt;/p&gt;
+&lt;p&gt;This is not yet a proper talk, but some kind of collection of material I wrote and some connecting thoughts.&lt;/p&gt;
+&lt;h1 id=&#34;what-is-devops&#34;&gt;
+    &lt;a href=&#34;#what-is-devops&#34;&gt;
+	What is &amp;ldquo;DevOps&amp;rdquo;?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I had a talk on the German UNIX Users Group Spring Talks titled &amp;ldquo;Go Away, or I Will Replace You With a Very Little Shell Script&amp;rdquo; (&amp;ldquo;There is no such thing as a DevOps Team&amp;rdquo;).
+The slides are on &lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Slideshare&lt;/a&gt;
+
+, and I also have a &lt;a href=&#34;https://blog.koehntopp.info/2015/03/27/go-away-or-i-will-replace-you.html&#34;&gt;Blog article&lt;/a&gt;
+
+.
+The talk basically explains what happened in the 10 years after the Dotcom Boom, and how the adoption of &amp;ldquo;scale-out&amp;rdquo; instead of &amp;ldquo;scale-up&amp;rdquo; created the need to Sysadmins to pick up Developer tooling and some developer methods in order to deal with machinery in numbers.&lt;/p&gt;
+&lt;p&gt;While the tooling largely aligned, the outlook on life did not &amp;ndash; developers are looking at new features, basically new best cases.
+But operations people still are judged by resiliency and handling failures, so handling worst cases.
+The gap in mindset between Developers and Operations is hard to bridge, but it can be done with a little tricker.
+In any case, the traditional Sysadmin job died out.&lt;/p&gt;
+&lt;p&gt;Some people ask about the distinction between &amp;ldquo;DevOps vs. SRE&amp;rdquo;, and there is very little &amp;ndash; for some, &amp;ldquo;SRE&amp;rdquo; is the Google employer branding for the &amp;ldquo;DevOps&amp;rdquo; profile.
+Others make vague distinction that riff on the fact that &amp;ldquo;SRE&amp;rdquo; are people that care about worst cases, resiliency and fighting operational toil, and that also care about observability.
+In my experience that is too subtle a distinction to hold up in a hiring interview.&lt;/p&gt;
+&lt;h1 id=&#34;devops-and-databases&#34;&gt;
+    &lt;a href=&#34;#devops-and-databases&#34;&gt;
+	DevOps and Databases
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;With regards to databases, this development did not happen at the same speed.
+There is a number of reasons for it:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;There are usually very few databases compared to frontends, so the need to automate databases is much less pressing for most companies with very few exceptions (Booking.com, Facebook and a few others).
+Only when you have thousands of databases, or when you limit database instance lifetime for whatever reasons you need to properly automate databases.&lt;/li&gt;
+&lt;li&gt;Databases are very stateful systems.
+In fact, dealing with state, with transactions and with persistence is there only purpose in life.
+These things make proper database automation hard, and most existing DevOps tooling unsuitable for the task.
+So you&amp;rsquo;d have to be very specific about tool choice, or invent tooling from scratch.
+Also, existing DBaaS developments are outdated and way behind the time (AWS RDS, I am looking at you!).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;state-everywhere&#34;&gt;
+    &lt;a href=&#34;#state-everywhere&#34;&gt;
+	State everywhere
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The most obvious exposure to state that developers have when dealing with databases is when seeing and handling database connections.
+These are not https/TLS connections, and cannot be sent through regular https proxies such as Envoy.
+Why is that?&lt;/p&gt;
+&lt;p&gt;Databases have a lot of &lt;a href=&#34;https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state.html&#34;&gt;connection scoped state&lt;/a&gt;
+
+.
+The most glaring example of state in a database connection is the transaction:
+If you are in the middle of a transaction and lose the connection to the database, the open transaction is being rolled back.
+Developers need to catch this problem, and go back to the beginning of the transaction, restarting it from the beginning.
+So reconnecting to the database transparently and hiding the disconnect/reconnnect from the application is almost impossible, and developers are hating the database for this (or ignore the problem, producing incorrect code).&lt;/p&gt;
+&lt;p&gt;Developers want a pony, and failing that, at least &lt;a href=&#34;https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html&#34;&gt;a queue with exactly-once semantics&lt;/a&gt;
+
+.
+They can have that, up to a point, but at a terrible cost of one transaction per state change.
+That is a legal wish to have, if you can afford the cost, because it makes development easier and a lot more boring.
+But you need to track this as an absolute scaling limit, and be prepared to handle this as a tech debt item later on, in time.&lt;/p&gt;
+&lt;p&gt;You can, as a company, get away with &amp;ldquo;&lt;a href=&#34;https://www.slideshare.net/isotopp/boring-dot-com-the-virtues-of-boring-technology&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;boring technology&lt;/a&gt;
+
+&amp;rdquo; for a very long time.
+That is good, because it simplifies developer life and allows them to move forward without much technical complexity to take into account.
+Eventually you run out of runway, though, and need to take this on.
+That&amp;rsquo;s usually a painful breakpoint in the company&amp;rsquo;s growth journey.
+It also makes it very hard &lt;a href=&#34;https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html&#34;&gt;to find database SRE people&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h2 id=&#34;automating-databases-is-hard-because-of-inter-node-dependencies&#34;&gt;
+    &lt;a href=&#34;#automating-databases-is-hard-because-of-inter-node-dependencies&#34;&gt;
+	Automating databases is hard, because of inter-node dependencies
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Scaling out databases and automating their operation is a hard task.&lt;/p&gt;
+&lt;p&gt;Not only are connections stateful, things like SQL databases, Zookeepers, etc, Consul (consensus systems, in general), and things that have consensus systems inside are clusters.
+They cannot be handled by tooling that thinks of a deployment as a set of independent boxes without constraints between them.&lt;/p&gt;
+&lt;p&gt;So when you look at puppet, chef, terraform, &amp;ldquo;harness.io&amp;rdquo; or other things, they have no concept of a cluster, of a quorum, or of a replication hierarchy.
+The point being that making changes to such a cluster creates an order to updates as they are applied, and checkpoints that need to be passed for the change to proceed.
+For example, in a replication tree, updates need to be made to the leaf nodes, then their parents and so on, to make sure than a replica is always newer than its primary.
+And updates to such clusters can only be made while maintaining quorum, so after application of each change the update orchestrator needs to check if the node it just worked on came back properly from the upgrade before proceeding with the next node.
+All of the above tools have no concept of such constraints, they are simply unfit to deal with databases that are not a SPOF.&lt;/p&gt;
+&lt;p&gt;Ansible can dig itself out of that hole by the sequential and slow nature of its processing, but is also unaware of the actual topology constraints.
+Only salt and k8s have concepts that can handle clusters or where you can implement what k8s calls an Operator.&lt;/p&gt;
+&lt;h2 id=&#34;automating-database-is-slow-because-data-has-weight&#34;&gt;
+    &lt;a href=&#34;#automating-database-is-slow-because-data-has-weight&#34;&gt;
+	Automating database is slow, because data has weight
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Also, working with databases is always slow, &lt;a href=&#34;https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html&#34;&gt;because data has weight&lt;/a&gt;
+
+. At 400 MB/s, copying 1 TB takes 45 minutes, and replication catchup and cache warmup take another 15 minutes, so we can calculate and communicate &amp;ldquo;1 hour per 1 TB of data size&amp;rdquo;.
+Of course &amp;ldquo;reactive autoscaling&amp;rdquo; is never a thing for persistence systems.
+All changes always need to be planned, and then take time.&lt;/p&gt;
+&lt;h2 id=&#34;automating-databases-is-possible-but-usually-not-done&#34;&gt;
+    &lt;a href=&#34;#automating-databases-is-possible-but-usually-not-done&#34;&gt;
+	Automating databases is possible, but usually not done
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html&#34;&gt;When you have automated databases&lt;/a&gt;
+
+ to a point where&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;instances are made automatically,&lt;/li&gt;
+&lt;li&gt;instances enter their replication hierarchies automatically,&lt;/li&gt;
+&lt;li&gt;replication capacity and catchup speed is monitored and sized automatically,&lt;/li&gt;
+&lt;li&gt;schema changes are handled automatically using OSC,&lt;/li&gt;
+&lt;li&gt;backups with restore tests are done automatically,&lt;/li&gt;
+&lt;li&gt;primary key exhaustion is monitored,&lt;/li&gt;
+&lt;li&gt;and all instances are being remade cyclically within 60 days,&lt;/li&gt;
+&lt;li&gt;instance discovery by applications is handled properly,&lt;/li&gt;
+&lt;li&gt;and secret managent including account and password rotation is automated&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;so that you can upgrade database versions automatically within 60 days or less across a fleet of thousands of database instances, then you are finished.&lt;/p&gt;
+&lt;p&gt;But that requires a unique approach to automation that is not available widely, even in 2022.
+It is certainly not available in AWS RDS, which thinks about singular instances at the level of &amp;ldquo;create an instance and apply a configuration&amp;rdquo;, with basic passive replication management tacked on as an afterthought (and expensive resiliency with DRBD).
+It is ten years old technology and that shows.&lt;/p&gt;
+&lt;h2 id=&#34;observability-is-lacking&#34;&gt;
+    &lt;a href=&#34;#observability-is-lacking&#34;&gt;
+	Observability is lacking
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Also, Devops usually requires good observability:
+stack upwards, in the general direction of the developer, and stack downwards, into the general direction of the hardware.
+MySQL for example, has pretty good aggregate monitoring &amp;ndash; the Telegraf MySQL collector is splendid and rather complete for a general MySQL collector.&lt;/p&gt;
+&lt;p&gt;But the data collection for a singular query is underdeveloped, and gathering the data is slow and painful.
+If you try to collect data about a single SQL query that just ran, &lt;a href=&#34;https://blog.koehntopp.info/2021/09/15/mysql-tracing-a-single-query-with-performanceschema.html&#34;&gt;it takes 10-12 followup queries to P_S&lt;/a&gt;
+
+ to extract data about what this particular query did.
+And you still did not have the plan, or the number of actual pages read for this single query.&lt;/p&gt;
+&lt;p&gt;Conversely, while &lt;code&gt;blktrace&lt;/code&gt; collects all kinds of data about the I/O a system sees, the open source tools to visualize this are underdeveloped.
+It took a commercial company and a commercial tool (&lt;a href=&#34;https://blog.koehntopp.info/2021/02/24/validating-storage.html&#34;&gt;Oakgate Workload Intelligence Analytics&lt;/a&gt;
+
+) to provide tools to parse &lt;code&gt;blktrace&lt;/code&gt; and paint useful images from it.&lt;/p&gt;
+&lt;h1 id=&#34;stateful-is-different-and-the-gap-is-far-from-closing&#34;&gt;
+    &lt;a href=&#34;#stateful-is-different-and-the-gap-is-far-from-closing&#34;&gt;
+	Stateful is different, and the gap is far from closing
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Of course, the YOLO stateless lets-quickly-make-another-instance mindset of DevOps cannot survive in Database Land.
+Nobody in the DevOps crowd understands these things, and that in stateful systems errors and mistakes are not reversible.
+Mistakes are persistent, data that is gone, is gone forever.
+And new instances take an hour per TB.&lt;/p&gt;
+&lt;p&gt;Nothing in the current DevOps propaganda takes any of this into account, hence Samuel&amp;rsquo;s observation is correct.&lt;/p&gt;
+&lt;p&gt;On  the other side, there is little movement in DBA land.
+There is a very complacent DBA crowd, and there are extremely complacent companies.
+Oracle for example never ran their own products at scale, at least MySQL as a company, and later as adivision in Oracle never did.&lt;/p&gt;
+&lt;p&gt;So MySQL always had a bunch of wrong defaults, broken upgrade paths, insecure workflows and so on &amp;ndash; until Oracle Cloud was a thing.
+Suddenly Oracle, at least Blue Oracle, had to actually run operations for their own stuff.
+And that was good: the last 2 years have done more for MySQL Operational Simplicity than all the 20 years before.&lt;/p&gt;
+&lt;p&gt;On the DBA side: most DBA departments positioned themselves as &amp;ldquo;guardians of the data&amp;rdquo; and chokepoints, like old sysadmins did before DevOps.
+They also did not automate database operations properly (&amp;ldquo;as a service&amp;rdquo;).
+So there are few mature operational concepts for databases in the field, and even fewer codebases implementing them.
+Mostly, I believve because there was never sufficient pressure.&lt;/p&gt;
+&lt;p&gt;There is also not a lot of tooling for developers.
+If you look at MySQL blogs, for example the collection at &lt;a href=&#34;https://planet.mysql.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Planet MySQL&lt;/a&gt;
+
+, you will find that they often write about the database from an operational point of view (&amp;ldquo;How to configure mysql&amp;rdquo;, &amp;ldquo;How to make a backup&amp;rdquo;).
+Only rarely, they write from a developer point of view (&amp;ldquo;How can I see my query performance through the ORM&amp;rdquo;, &amp;ldquo;What is the right way to notice a rollback, and restart a transaction in my host language&amp;rdquo;, &amp;ldquo;What is an efficient way to handle RMW-cycles in my host language&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;So there is a big divide between Developers as users of a database, DBAs, and vendors/bloggers/commmunity advocates.
+With this being the case, and not being acknowledged, there is little chance for development.
+Pickup of new strategies, discussion about gaps in tooling and social innovation is slow in such an environment.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Debugging SQL in Python</title>
       <link>https://blog.koehntopp.info/2022/03/24/debugging-sql-in-python.html</link>
@@ -3292,99 +3468,6 @@ Be an engineer.&lt;/p&gt;
 &lt;p&gt;That is not what progress looks like.
 At all.
 Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Our MySQL in 2010, a hiring interview question</title>
-      <link>https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html</link>
-      <pubDate>Mon, 27 Sep 2021 18:52:55 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html</guid>
-      <description>&lt;p&gt;I ranted about hiring interviews, and the canned questions that people have to answer.
-One of the interviews we do is a systems design interview, where we want to see how (senior) people use components and patterns to design a system for reliability and scale-out.&lt;/p&gt;
-&lt;p&gt;A sample question (based on &lt;a href=&#34;https://twitter.com/isotopp/status/1442443978985586691&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a Twitter thread&lt;/a&gt;
-
- in German):&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;It is 2010, and the company has a database structure where a fixed number front end machines form a cell.
-Reads and writes are already split:
-Writes go to the primary of a replication tree, and are being replicated to the read instance of the database in each cell.
-Reads go to the database instance that is a fixed part of the cell.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/09/mysql-2010-1.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Read and write handles are split in the application. Clients write to a primary MySQL database, which then replicates to a database instance that is fixed part of a cell. Clients from a cell read from this fixed replica.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Unfortunately, this is not very effective:
-The data center has 10 cells, but when a cell overloads its database, spare capacity from other cells cannot be utilized.
-Also, the data center is not redundant.&lt;/p&gt;
-&lt;p&gt;We want to:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Load balance database queries.&lt;/li&gt;
-&lt;li&gt;Extend the architecture to more than a single data center (or AZ).&lt;/li&gt;
-&lt;li&gt;Optionally be resilient against the loss of individual databases or a full AZ.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Possible topics or annotations from a candidate:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;What kind of strategies are available for load balancing database connections?
-&lt;ul&gt;
-&lt;li&gt;DNS, Anycast or L2 techniques&lt;/li&gt;
-&lt;li&gt;Proxy (but not a web proxy)&lt;/li&gt;
-&lt;li&gt;Zookeeper or another consensus system with modified clients&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What are the advantages or disadvantages of this?
-&lt;ul&gt;
-&lt;li&gt;L2. Huh. Don&amp;rsquo;t do that.&lt;/li&gt;
-&lt;li&gt;DNS updates are slow and complicated. It can be made to work, but you will always have very little control over what is balanced why and how. DNS is better used for a global load balancing of http requests, and not as a database load balancer.&lt;/li&gt;
-&lt;li&gt;Zookeeper could be used to do this with modified clients, but we would have to discuss how exactly that works. That&amp;rsquo;s an interesting sub-question of its own.&lt;/li&gt;
-&lt;li&gt;MySQL Router or ProxySQL are made for that, but have a lot of interesting sub-questions of their own. See below.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What else may be different when load balancing database connections instead of http?
-&lt;ul&gt;
-&lt;li&gt;web-proxies are not good database proxies. The database protocol is not http, and it is a &lt;a href=&#34;https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state.html&#34;&gt;stateful protocol&lt;/a&gt;
-
-. This requires extra care when load balancing.&lt;/li&gt;
-&lt;li&gt;Database connections can be long-lived. A load balancing action to a different client only ever happens on connect. If you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS&amp;rsquo;ed connections, connection setup cost can be high, so longer lived connections amortize better.&lt;/li&gt;
-&lt;li&gt;Database connections have a highly variable result set size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.&lt;/li&gt;
-&lt;li&gt;Proxies can become bottlenecks. Imagine 50 frontends talking to 10 databases via a single proxy on a typical 2010-box with a single (or two) 1 GBit/s network interface, and results contain BLOBs.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What else there is to know?
-&lt;ul&gt;
-&lt;li&gt;Replication scales only reads. As this is a shared nothing architecture, each instance eventually sees all writes. To scale writes, we have to split or shard the database. That is out of scope for this question.&lt;/li&gt;
-&lt;li&gt;In our specific scenario, the number of writes is not actually a problem. We can assume a few hundred writes per second.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Can we extend that to more than one AZ?
-&lt;ul&gt;
-&lt;li&gt;Yes, we can create an intermediate primary in each AZ, which takes the writes from the origin AZ into each sub-AZ. It then fans out to the local replicas. This saves on long distance data transfer. It also creates mildly interesting problems for measuring replication delay.&lt;/li&gt;
-&lt;li&gt;Because the replication tree is deeper, writes take longer to reach the leaves. Most applications should be able to accommodate that.&lt;/li&gt;
-&lt;li&gt;The alternative would be something with full Two-Phase-Commit, but that would be even slower, and would have scaling limits in the number of systems that participate in the 2PC.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This is usually how far we get in a single interview session, and only with touching only on some of these points.
-To find all is completely unrealistic, even for experienced people.
-We would now reach a point where we discuss failure scenarios.&lt;/p&gt;
-&lt;p&gt;But it would be highly unusual to get this far, and that is not actually the goal in an interview.
-I do in fact hardly care about the solution we end up with.
-My goal is to have a useful discussion about databases, scale-out and resiliency, and about stateful systems and their limits.
-When there are remarks such as &amp;ldquo;Our environment is smaller, but for us &amp;hellip; works&amp;rdquo; or &amp;ldquo;We tried this: &amp;hellip; but observed that often &amp;hellip;&amp;rdquo; that&amp;rsquo;s actual gold in an interview.&lt;/p&gt;
-&lt;p&gt;Even things such as &amp;ldquo;In HTTP one would do &amp;hellip; but I can imagine that with stateful systems that does not work because &amp;hellip;&amp;rdquo; is already gold, because it shows a level of reflection and insight that is rare.&lt;/p&gt;
-&lt;p&gt;The objective is not to reinvent our 2021 setup. The objective is to use this clearly limited setup as a base for a common conversation about database problems.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;Database Reliability Engineer&amp;rdquo; is the hardest position to hire for in my environment, because it is an &lt;a href=&#34;https://clausraasted.medium.com/t-shaped-consultants-are-great-but-heres-why-you-should-consider-being-h-shaped-instead-72fadf097da9&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;H-shaped qualification&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The concept of H-shaped people is a metaphor used in job recruitment to describe the abilities of individuals in (or outside) the workforce. The vertical bars on the letter H represent the depth of related skills and expertise in a single field or discipline, whereas the horizontal bar is the ability to combine those two disciplines to create value in a way that was hitherto unknown.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The objective is to find a person that &amp;ldquo;Understands MySQL&amp;rdquo; and &amp;ldquo;Understands Python or Go&amp;rdquo; (&amp;ldquo;Understands any database&amp;rdquo; and &amp;ldquo;Understands a useful programming language&amp;rdquo;), so that I can throw them at our existing codebase and have them useful within 3-6 months - ugh.&lt;/p&gt;
-&lt;p&gt;If I can find one person per year, I am very lucky.&lt;/p&gt;
 </description>
     </item>
     
