@@ -109,7 +109,7 @@ All changes always need to be planned, and then take time.
 - instances are made automatically,
 - instances enter their replication hierarchies automatically,
 - replication capacity and catchup speed is monitored and sized automatically,
-- schema changes are handled automatically using OSC,
+- schema changes are handled automatically using Online Schema Change tooling,
 - backups with restore tests are done automatically,
 - primary key exhaustion is monitored,
 - and all instances are being remade cyclically within 60 days,
