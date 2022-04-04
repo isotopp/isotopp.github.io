@@ -79,7 +79,7 @@ It also makes it very hard [to find database SRE people]({{< ref "/content/posts
 Scaling out databases and automating their operation is a hard task. 
 
 Not only are connections stateful, 
-But things like SQL databases, consensus systems (such as Zk, etcd, Consul), and things that have consensus systems inside, are clusters. 
+but things like SQL databases, consensus systems (such as Zk, etcd, Consul), and things that have consensus systems inside, are clusters. 
 They cannot be handled by tooling that thinks of a deployment as a set of independent boxes without constraints between them.
 
 So when you look at puppet, chef, terraform, "harness.io" or other things, they have no concept of a cluster, of a quorum, or of a replication hierarchy.
