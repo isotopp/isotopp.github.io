@@ -78,15 +78,15 @@ It also makes it very hard [to find database SRE people]({{< ref "/content/posts
 
 Scaling out databases and automating their operation is a hard task. 
 
-Not only are connections stateful. 
-Things like SQL databases, consensus systems (such as Zk, etcd, Consul), and things that have consensus systems inside, are clusters. 
+Not only are connections stateful, 
+but things like SQL databases, consensus systems (such as Zk, etcd, Consul), and things that have consensus systems inside, are clusters. 
 They cannot be handled by tooling that thinks of a deployment as a set of independent boxes without constraints between them.
 
 So when you look at puppet, chef, terraform, "harness.io" or other things, they have no concept of a cluster, of a quorum, or of a replication hierarchy.
 The point being: making changes to such a cluster creates an order to the updates, as they are applied.
 Also, checkpoints are needed for the change to proceed, to make sure quorum is kept at all times.
 
-For example, in a replication tree, updates need to be made to the leaf nodes, then their parents and so on, to make sure than a replica is always newer than its primary.
+For example, in a replication tree, updates need to be made to the leaf nodes, then their parents and so on, to make sure that a replica is always newer than its primary.
 
 And updates to clusters with quorums can only be made while maintaining quorum.
 So after each application of a change to a cluster node, the update orchestrator needs to check if the node it just worked on came back properly.
@@ -112,9 +112,9 @@ All changes always need to be planned, and then take time.
 - schema changes are handled automatically using Online Schema Change tooling,
 - backups with restore tests are done automatically,
 - primary key exhaustion is monitored,
-- and all instances are being remade cyclically within 60 days,
+- all instances are being remade cyclically within 60 days,
 - instance discovery by applications is handled properly,
-- and secret managent including account and password rotation is automated
+- secret managent including account and password rotation is automated
 
 so that you can upgrade database versions automatically within 60 days or less across a fleet of thousands of database instances, then you are finished.
 
@@ -125,7 +125,7 @@ It is ten years old technology, and that shows.
 ## Observability is lacking
 
 Also, Devops usually requires good observability:
-stack upwards, in the general direction of the developer, and stack downwards, into the general direction of the hardware.
+Stack upwards, in the general direction of the developer, and stack downwards, into the general direction of the hardware.
 MySQL for example, has pretty good aggregate monitoring -- the Telegraf MySQL collector is splendid and rather complete for a general MySQL collector.
 
 But the data collection for a singular query is underdeveloped, and gathering the data is slow and painful.
@@ -146,7 +146,7 @@ Nothing in the current DevOps propaganda takes any of this into account, hence S
 
 On  the other side, there is little movement in DBA land. 
 There is a very complacent DBA crowd, and there are extremely complacent companies.
-Oracle for example never ran their own products at scale, at least MySQL as a company, and later as a division in Oracle, never did it at scal until recently.
+Oracle for example never ran their own products at scale, at least MySQL as a company, and later as a division in Oracle, never did it at scale until recently.
 
 So MySQL always had a bunch of wrong defaults, broken upgrade paths, insecure workflows and so on -- until Oracle Cloud was a thing.
 Suddenly Oracle, at least Blue Oracle, had to actually run operations for their own stuff.
