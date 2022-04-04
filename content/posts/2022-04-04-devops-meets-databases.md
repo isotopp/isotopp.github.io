@@ -83,7 +83,7 @@ Things like SQL databases, consensus systems (such as Zk, etcd, Consul), and thi
 They cannot be handled by tooling that thinks of a deployment as a set of independent boxes without constraints between them.
 
 So when you look at puppet, chef, terraform, "harness.io" or other things, they have no concept of a cluster, of a quorum, or of a replication hierarchy.
-The point bein: making changes to such a cluster creates an order to the updates. as they are applied.
+The point being: making changes to such a cluster creates an order to the updates, as they are applied.
 Also, checkpoints are needed for the change to proceed, to make sure quorum is kept at all times.
 
 For example, in a replication tree, updates need to be made to the leaf nodes, then their parents and so on, to make sure than a replica is always newer than its primary.
@@ -93,7 +93,7 @@ So after each application of a change to a cluster node, the update orchestrator
 Only then it may proceed with the next node.
 None of the tools mentioned above have any concept of such constraints, they are simply unfit to deal with databases that are not a SPOF.
 
-Ansible can dig itself out of that hole by the sequential and slow nature of its processing and delegation, but is still unaware of the actual topology of\ constraints.
+Ansible can dig itself out of that hole by the sequential and slow nature of its processing and delegation, but is still unaware of the actual topology of constraints.
 Only salt and k8s have concepts that can handle clusters or where you can implement what k8s calls an Operator.
 
 ## Automating database is slow, because data has weight
