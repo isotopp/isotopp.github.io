@@ -6,7 +6,173 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 15:08:21 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 05 Apr 2022 09:27:19 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Change Data Capture and the Binlog</title>
+      <link>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</link>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</guid>
+      <description>&lt;p&gt;MySQL uses replication to an ongoing life restore of a primary server to any number of replicas.
+How replication came to be I have discussed previouly &lt;a href=&#34;https://blog.koehntopp.info/2020/11/27/backups-and-replication.html&#34;&gt;in another article&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Modern replication uses row based replication, with a minimal row image and compression. What is that?&lt;/p&gt;
+&lt;h1 id=&#34;decoding-the-binlog&#34;&gt;
+    &lt;a href=&#34;#decoding-the-binlog&#34;&gt;
+	Decoding the Binlog
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is of course no Row Based Replication, because the Binlog can hold only statements.
+The &lt;code&gt;binlog&lt;/code&gt; statement is a workaround for that.
+It has a single string parameter, the pre- and post-change row images.&lt;/p&gt;
+&lt;p&gt;Running &lt;code&gt;mysqlbinlog -vvv&lt;/code&gt; will decode that, and show it as a pseudo SQL statement affecting a single row.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0x0112f9b6         Table_map: &lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;kris&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;.&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;testtable&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt; mapped to number &lt;span class=&#34;m&#34;&gt;92&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0xe3714794         Delete_rows: table id &lt;span class=&#34;m&#34;&gt;92&lt;/span&gt; flags: STMT_END_F
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;BINLOG &amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;AQJLYhOwjSYLWwAAAAAAAAAAAFwAAAAAAAEAEHBheW1lbnRjb21wb25lbnQAFHBheW1lbnRfc2Vz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;c2lvbl9kYXRhAAUI9Q8P9QYEFgCHAAQeAQEAAgEItvkSAQ==
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;AQJLYiCwjSYLLAAAAAAAAAAAAFwAAAAAAAEAAgAFAQDcTtUTAAAAAJRHceM=
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&amp;#39;/*!*/;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## DELETE FROM `kris`.`testtable`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## WHERE&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;##   @1=332746460 /* LONGINT meta=0 nullable=0 is_null=0 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This example from a RBR binlog shows the replication context.
+Note the table map, which translates a table name into an internal table_id, followed by the binlog checksum and log positions.
+Below that, the actual binlog statement, and the pseudo SQL it translates to.&lt;/p&gt;
+&lt;p&gt;The MySQL primary and its replicas have identical metadata, some while some metadata is part of replication (column numbers and data types), other metadata is not part of replication (for example, the column names).&lt;/p&gt;
+&lt;p&gt;Note that even with &lt;code&gt;binlog_format=row&lt;/code&gt; configured, some statements are still being replicated as statements &amp;ndash; notably, all statements that do not change rows are replicated as statements.
+That is for example all DDL: you will see &lt;code&gt;CREATE&lt;/code&gt;, &lt;code&gt;DROP&lt;/code&gt; and &lt;code&gt;ALTER&lt;/code&gt; statements.&lt;/p&gt;
+&lt;h1 id=&#34;how-much-row-is-in-a-rbr-binlog&#34;&gt;
+    &lt;a href=&#34;#how-much-row-is-in-a-rbr-binlog&#34;&gt;
+	How much row is in a RBR binlog?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Originally, the rows in a RBR binlog were full images of the row, once before the change and once after the change.
+This can be a lot of data in a table that has &lt;code&gt;TEXT&lt;/code&gt;, &lt;code&gt;BLOB&lt;/code&gt; or &lt;code&gt;JSON&lt;/code&gt; columns.&lt;/p&gt;
+&lt;p&gt;The pathological case is a table with a primary key, a counter and a large &lt;code&gt;TEXT&lt;/code&gt; column, incrementing the counter.
+In this case, the &lt;code&gt;TEXT&lt;/code&gt; is replicated twice per changed row, unchanged, for an increment of a 4 byte counter.&lt;/p&gt;
+&lt;p&gt;This was relatively quickly fixed by introducing the &lt;code&gt;NOBLOB&lt;/code&gt; and &lt;code&gt;MINIMAL&lt;/code&gt; row image formats.
+&lt;code&gt;NOBLOB&lt;/code&gt; contains all columns before and after the change, except for &lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; columns, unless they changed.
+&lt;code&gt;MINIMAL&lt;/code&gt; logs only the primary key in the pre-image and contains only changed columns in the post-image.&lt;/p&gt;
+&lt;p&gt;This saves a lot of disk space, while still maintaining all information necessary to safely update a replica.&lt;/p&gt;
+&lt;p&gt;Surprisingly, this is already quite efficient: For our workloads at work, RBR already creates smaller binlogs than SBR, even with &lt;code&gt;FULL&lt;/code&gt; format (around 1/2 to 1/3 the size of SBR binlogs).
+&lt;code&gt;MINIMAL&lt;/code&gt; can bring these numbers down even further.&lt;/p&gt;
+&lt;h1 id=&#34;if-rbr-is-so-efficient-why-compression&#34;&gt;
+    &lt;a href=&#34;#if-rbr-is-so-efficient-why-compression&#34;&gt;
+	If RBR is so efficient, why compression?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.&lt;/p&gt;
+&lt;p&gt;That is, because we want to store several days of binlog in order to be able to roll forward from restored backups, and because some replication hierarchies see a lot of churn, a lot of rows changes due to DML.
+That is not unexpected: Online Transaction Processing has a singular purpose in life: to transact.
+So we expect to see a lot of transactions.&lt;/p&gt;
+&lt;p&gt;MySQL compressed binlog events using zstd compression.
+Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.&lt;/p&gt;
+&lt;p&gt;That is slightly less efficient than per-file, but has the advantage that it is easily handled:
+After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.&lt;/p&gt;
+&lt;p&gt;That makes it easy for all binlog consumers to update to the new format with minimal changes:
+Basically you need to add zstd as a dependency, and if you see a compressed event, uncompress it and handle it as before.&lt;/p&gt;
+&lt;h1 id=&#34;cdc-versus-replication&#34;&gt;
+    &lt;a href=&#34;#cdc-versus-replication&#34;&gt;
+	CDC versus replication
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The binlog is a MySQL internal data structure.
+It exists to facilitate replication between instances of MySQL.
+It is useful for other things, but as the binlog evolves, these other things have to track the changes.&lt;/p&gt;
+&lt;p&gt;For example, lot of work is currently being done on CDC with various tools.
+The objective is mainly
+&amp;ldquo;Use replication as a channel to extract database changes in a defined format, and put them on a Kafka bus.
+These change events will then be used to re-create a database image in other formats, for example in Hadoop or elsewhere.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;So, to formulate it somewhat pointedly, at the purely operational level we are busy reinventing replication in JSON or Avro on Kafka.
+To save face: At the data modelling level things are a bit more involved.&lt;/p&gt;
+&lt;p&gt;Unfortunately, this poses several challenges on the source databases:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initial data load does not consume a backup in one of our backup formats, but requires a life database instance, as the data load happens by queries instead of parsing data files.
+&lt;ul&gt;
+&lt;li&gt;As the data load needs to be consistent, mapping to exactly one binlog position, it holds a consistent read view for a long time.
+Holding a consistent read view for a long time slows down MySQL a lot, so this instance becomes unusable for everybody but the data loader.
+Some data loads use multiple instances for speed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The CDC log parsers ask for full binlogs for simpler parsing.
+&lt;ul&gt;
+&lt;li&gt;MySQLs own replication demonstrates that a minimal binlog is sufficient for replication, so it must be sufficient for CDC as well &amp;ndash; but that requires access to the full previous image of the row.
+As CDC does not have access to the full previous row image, it requests full format.
+Fixing that is considerable scope creep:
+instead of reinventing replication you are now reinventing the database.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The CDC log parsers ask for uncompressed binlogs.
+&lt;ul&gt;
+&lt;li&gt;That&amp;rsquo;s fixable relatively easily by learning to parse and use zstd, and doable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;transactionality-and-cdc&#34;&gt;
+    &lt;a href=&#34;#transactionality-and-cdc&#34;&gt;
+	Transactionality and CDC
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL writes a binlog record only on commit.
+So as long as the transaction does not commit successfully, nothing is visible to replicas, and neither to CDC.&lt;/p&gt;
+&lt;p&gt;The data written to the binlog is one or more row changes affected by a set of statements in a transaction.
+It is not geared to business level events of the kind we want to see on our Kafka, but log level table changes on a more of less normalized SQL schema.&lt;/p&gt;
+&lt;h2 id=&#34;outboxes---why-and-how&#34;&gt;
+    &lt;a href=&#34;#outboxes---why-and-how&#34;&gt;
+	Outboxes - why and how?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Also, the data formats written to the binlog change as the schema evolves based on the needs of the team owning that schema.
+This will affect the data CDC seems, and break downstream consumers.&lt;/p&gt;
+&lt;p&gt;One might entertain the idea of not reading data from MySQL binlogs, but implementing CDC at the application level.
+This has a few advantages:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL binlog format may evolve and change, as MySQL evolves and changes.
+For example, a hierarchy may convert to group replication (many do), compression is being introduced, compliance may require encryption or other changes.
+We may not want this tight coupling, but be able to upgrade and change individual instances at will.&lt;/li&gt;
+&lt;li&gt;The schema may evolve depending on the needs of the schema owner, which affects the format of events in the binlog, breaking downstream CDC consumers.
+We may not want this tight coupling, but be able to evolve applications and their schema at will.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But emitting CDC events at the application level introduces great complexity:
+We must make sure that only events that are actually committed are visible on the bus, and that conversely no events are lost.&lt;/p&gt;
+&lt;p&gt;The default workaround at this point in time is the outbox:
+Applications perform their changes to the data as they wish, and in a single transaction also perform a write to a table in a fixed format, the outbox.&lt;/p&gt;
+&lt;p&gt;CDC reads the complete binlog, discards all writes except writes to the outbox, and uses the outbox changes to create a message on the bus.&lt;/p&gt;
+&lt;p&gt;This guarantees a fixed data format, as the format of the outbox table is fixed, while allowing the data owner to change all other tables at will.&lt;/p&gt;
+&lt;p&gt;It guarantees transactionality as well: as the writes to the private tables and to the outbox happen in a single transaction, they will always succeed or fail together.&lt;/p&gt;
+&lt;p&gt;And it is relatively simple to implement.&lt;/p&gt;
+&lt;h2 id=&#34;not-using-outboxes-and-not-using-binlog&#34;&gt;
+    &lt;a href=&#34;#not-using-outboxes-and-not-using-binlog&#34;&gt;
+	Not using Outboxes and not using binlog
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;But Outboxes are still dependent on reading the MySQL binlog format.
+Every time that changes, CDC breaks.
+Or if it needs to change, the change needs to be coordinated between the data owners of a schema and all their consumers and dependencies.&lt;/p&gt;
+&lt;p&gt;The alternative, emitting a CDC event and performing a change to the database, can only work with some kind of commit tracking in the database.&lt;/p&gt;
+&lt;p&gt;This exists, but is a relatively new and untested feature in MySQL:
+&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/session-state-tracking.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Server Tracking of Client Session State&lt;/a&gt;
+
+.
+Not all client libraries have full support for session state tracking, yet.&lt;/p&gt;
+&lt;p&gt;Session State Tracking allows a client to MySQL to know what the MySQL is currently doing:
+for each piece of
+&lt;a href=&#34;2020-07-28-mysql-connection-scoped-state.md&#34;&gt;Connection Scoped State&lt;/a&gt;
+
+
+a tracker exists, so the client has access to the session state on a controlled way and is notified of connection scoped state on the server changes.&lt;/p&gt;
+&lt;p&gt;For the purposes of CDC, the GTID tracker informs the client if a commit to the server succeeded and a global transaction id was assigned.
+So the client has a chance to correlate bus events with database transactions, and make sure both match.&lt;/p&gt;
+&lt;p&gt;While being a much more complicated approach, it has the chance of breaking the dependency of being able to read MySQL binlogs.
+It is still a work in progress, though.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>DevOps meets Databases</title>
       <link>https://blog.koehntopp.info/2022/04/04/devops-meets-databases.html</link>
@@ -3106,38 +3272,6 @@ Das hat sehr, sehr böses Blut gegeben&lt;/p&gt;
 &lt;p&gt;Einige Arbeitgeber insistieren dringend, daß &amp;ldquo;Mitarbeiter wenigstens einen Tag in der Woche im Büro sind&amp;rdquo;, ohne das näher zu begründen.&lt;/p&gt;
 &lt;p&gt;Bohrt man unauffällig und inoffiziell nach, heißt es &amp;ldquo;Wir haben sehr viele Expats, und wenn die statt von hier von ihrem Heimatland aus arbeiten, dann kommen wir von der Unternehmenssteuer her in Teufels Küche.&amp;rdquo;&lt;/p&gt;
 &lt;p&gt;Unter Umständen sollte man hier offener kommunizieren, und dann versuchen, kooperativ Lösungen zu finden, denn unerklärliches blockierendes Verhalten eines Arbeitgebers ist in diesem Zusammenhang nicht produktiv und führt wieder zur Kündigungswelle.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>AMD und 128 cores</title>
-      <link>https://blog.koehntopp.info/2021/11/08/amd-und-128-cores.html</link>
-      <pubDate>Mon, 08 Nov 2021 13:28:27 +0100</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/11/08/amd-und-128-cores.html</guid>
-      <description>&lt;p&gt;Wir sprachen in
-&lt;a href=&#34;https://blog.koehntopp.info/2021/09/30/software-defined-silicon.html&#34;&gt;Software Defined Silicon&lt;/a&gt;
-
-
-darüber, wie die CPU-Bedürfnisse von Hyperscalern und normalen Kunden divergieren.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Hyperscaler haben Interesse an immer größeren CPUs mit immer mehr Kernen, und immer höherer Dichte in ihren Rechenzentren. [&amp;hellip;]&lt;/p&gt;
-&lt;p&gt;Normale Kunden sehen das nicht so: man kann in einer 64C/128T-Core-Single-Socket-Konfiguration mit 2-4 TB RAM unter Umständen den gesamten Serverbedarf einer kleineren Firma in einer einzelnen physikalischen Maschine in VMs unterbringen.
-Das Problem dabei: Explosionsradius, wenn mal etwas ausfällt.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Und das passiert:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.phoronix.com/scan.php?page=news_item&amp;amp;px=AMD-Zen-4-Genoa-Bergamo&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AMD Shares Early Details Of Zen 4 Genoa, Bergamo&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Heute hat AMD einen Ausblick auf die kommenden Zen 4 CPUs geliefert:
-Die normale &amp;ldquo;Genoa&amp;rdquo; wird 96 Cores pro Socket liefern, also 192C/384T in einem 2P-Board.&lt;/p&gt;
-&lt;p&gt;Es wird jedoch von dieser CPU auch eine &amp;ldquo;Bergamo&amp;rdquo;-Variante geben, und das ist eine
-&amp;ldquo;high-core count compute engine designed for cloud-native workloads&amp;rdquo;.
-Das sind dann 256C/512T in einem 2P-Board.&lt;/p&gt;
-&lt;p&gt;Das ist nicht nur zu viel Maschinerie in einer einzelnen Kiste, sondern auch in einem normalen Rechenzentrums-Rack vermutlich nicht mehr so einfach zu kühlen.
-Wenn man sich als Hyperscaler jedoch seine Rechenzentren nach Maß bauen lässt, sollte das alles nicht weiter weh tun.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;Wozu der 4K-Monitor, fragst Du?
-Na, damit die &amp;lsquo;htop&amp;rsquo; Anzeige auf den Bildschirm passt.&amp;rdquo;&lt;/p&gt;
 </description>
     </item>
     

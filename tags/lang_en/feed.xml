@@ -6,7 +6,173 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 04 Apr 2022 15:08:21 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 05 Apr 2022 09:27:19 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Change Data Capture and the Binlog</title>
+      <link>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</link>
+      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</guid>
+      <description>&lt;p&gt;MySQL uses replication to an ongoing life restore of a primary server to any number of replicas.
+How replication came to be I have discussed previouly &lt;a href=&#34;https://blog.koehntopp.info/2020/11/27/backups-and-replication.html&#34;&gt;in another article&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Modern replication uses row based replication, with a minimal row image and compression. What is that?&lt;/p&gt;
+&lt;h1 id=&#34;decoding-the-binlog&#34;&gt;
+    &lt;a href=&#34;#decoding-the-binlog&#34;&gt;
+	Decoding the Binlog
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is of course no Row Based Replication, because the Binlog can hold only statements.
+The &lt;code&gt;binlog&lt;/code&gt; statement is a workaround for that.
+It has a single string parameter, the pre- and post-change row images.&lt;/p&gt;
+&lt;p&gt;Running &lt;code&gt;mysqlbinlog -vvv&lt;/code&gt; will decode that, and show it as a pseudo SQL statement affecting a single row.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0x0112f9b6         Table_map: &lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;kris&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;.&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;testtable&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt; mapped to number &lt;span class=&#34;m&#34;&gt;92&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0xe3714794         Delete_rows: table id &lt;span class=&#34;m&#34;&gt;92&lt;/span&gt; flags: STMT_END_F
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;BINLOG &amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;AQJLYhOwjSYLWwAAAAAAAAAAAFwAAAAAAAEAEHBheW1lbnRjb21wb25lbnQAFHBheW1lbnRfc2Vz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;c2lvbl9kYXRhAAUI9Q8P9QYEFgCHAAQeAQEAAgEItvkSAQ==
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;AQJLYiCwjSYLLAAAAAAAAAAAAFwAAAAAAAEAAgAFAQDcTtUTAAAAAJRHceM=
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&amp;#39;/*!*/;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## DELETE FROM `kris`.`testtable`&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## WHERE&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;##   @1=332746460 /* LONGINT meta=0 nullable=0 is_null=0 */&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This example from a RBR binlog shows the replication context.
+Note the table map, which translates a table name into an internal table_id, followed by the binlog checksum and log positions.
+Below that, the actual binlog statement, and the pseudo SQL it translates to.&lt;/p&gt;
+&lt;p&gt;The MySQL primary and its replicas have identical metadata, some while some metadata is part of replication (column numbers and data types), other metadata is not part of replication (for example, the column names).&lt;/p&gt;
+&lt;p&gt;Note that even with &lt;code&gt;binlog_format=row&lt;/code&gt; configured, some statements are still being replicated as statements &amp;ndash; notably, all statements that do not change rows are replicated as statements.
+That is for example all DDL: you will see &lt;code&gt;CREATE&lt;/code&gt;, &lt;code&gt;DROP&lt;/code&gt; and &lt;code&gt;ALTER&lt;/code&gt; statements.&lt;/p&gt;
+&lt;h1 id=&#34;how-much-row-is-in-a-rbr-binlog&#34;&gt;
+    &lt;a href=&#34;#how-much-row-is-in-a-rbr-binlog&#34;&gt;
+	How much row is in a RBR binlog?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Originally, the rows in a RBR binlog were full images of the row, once before the change and once after the change.
+This can be a lot of data in a table that has &lt;code&gt;TEXT&lt;/code&gt;, &lt;code&gt;BLOB&lt;/code&gt; or &lt;code&gt;JSON&lt;/code&gt; columns.&lt;/p&gt;
+&lt;p&gt;The pathological case is a table with a primary key, a counter and a large &lt;code&gt;TEXT&lt;/code&gt; column, incrementing the counter.
+In this case, the &lt;code&gt;TEXT&lt;/code&gt; is replicated twice per changed row, unchanged, for an increment of a 4 byte counter.&lt;/p&gt;
+&lt;p&gt;This was relatively quickly fixed by introducing the &lt;code&gt;NOBLOB&lt;/code&gt; and &lt;code&gt;MINIMAL&lt;/code&gt; row image formats.
+&lt;code&gt;NOBLOB&lt;/code&gt; contains all columns before and after the change, except for &lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; columns, unless they changed.
+&lt;code&gt;MINIMAL&lt;/code&gt; logs only the primary key in the pre-image and contains only changed columns in the post-image.&lt;/p&gt;
+&lt;p&gt;This saves a lot of disk space, while still maintaining all information necessary to safely update a replica.&lt;/p&gt;
+&lt;p&gt;Surprisingly, this is already quite efficient: For our workloads at work, RBR already creates smaller binlogs than SBR, even with &lt;code&gt;FULL&lt;/code&gt; format (around 1/2 to 1/3 the size of SBR binlogs).
+&lt;code&gt;MINIMAL&lt;/code&gt; can bring these numbers down even further.&lt;/p&gt;
+&lt;h1 id=&#34;if-rbr-is-so-efficient-why-compression&#34;&gt;
+    &lt;a href=&#34;#if-rbr-is-so-efficient-why-compression&#34;&gt;
+	If RBR is so efficient, why compression?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.&lt;/p&gt;
+&lt;p&gt;That is, because we want to store several days of binlog in order to be able to roll forward from restored backups, and because some replication hierarchies see a lot of churn, a lot of rows changes due to DML.
+That is not unexpected: Online Transaction Processing has a singular purpose in life: to transact.
+So we expect to see a lot of transactions.&lt;/p&gt;
+&lt;p&gt;MySQL compressed binlog events using zstd compression.
+Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.&lt;/p&gt;
+&lt;p&gt;That is slightly less efficient than per-file, but has the advantage that it is easily handled:
+After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.&lt;/p&gt;
+&lt;p&gt;That makes it easy for all binlog consumers to update to the new format with minimal changes:
+Basically you need to add zstd as a dependency, and if you see a compressed event, uncompress it and handle it as before.&lt;/p&gt;
+&lt;h1 id=&#34;cdc-versus-replication&#34;&gt;
+    &lt;a href=&#34;#cdc-versus-replication&#34;&gt;
+	CDC versus replication
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The binlog is a MySQL internal data structure.
+It exists to facilitate replication between instances of MySQL.
+It is useful for other things, but as the binlog evolves, these other things have to track the changes.&lt;/p&gt;
+&lt;p&gt;For example, lot of work is currently being done on CDC with various tools.
+The objective is mainly
+&amp;ldquo;Use replication as a channel to extract database changes in a defined format, and put them on a Kafka bus.
+These change events will then be used to re-create a database image in other formats, for example in Hadoop or elsewhere.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;So, to formulate it somewhat pointedly, at the purely operational level we are busy reinventing replication in JSON or Avro on Kafka.
+To save face: At the data modelling level things are a bit more involved.&lt;/p&gt;
+&lt;p&gt;Unfortunately, this poses several challenges on the source databases:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Initial data load does not consume a backup in one of our backup formats, but requires a life database instance, as the data load happens by queries instead of parsing data files.
+&lt;ul&gt;
+&lt;li&gt;As the data load needs to be consistent, mapping to exactly one binlog position, it holds a consistent read view for a long time.
+Holding a consistent read view for a long time slows down MySQL a lot, so this instance becomes unusable for everybody but the data loader.
+Some data loads use multiple instances for speed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The CDC log parsers ask for full binlogs for simpler parsing.
+&lt;ul&gt;
+&lt;li&gt;MySQLs own replication demonstrates that a minimal binlog is sufficient for replication, so it must be sufficient for CDC as well &amp;ndash; but that requires access to the full previous image of the row.
+As CDC does not have access to the full previous row image, it requests full format.
+Fixing that is considerable scope creep:
+instead of reinventing replication you are now reinventing the database.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The CDC log parsers ask for uncompressed binlogs.
+&lt;ul&gt;
+&lt;li&gt;That&amp;rsquo;s fixable relatively easily by learning to parse and use zstd, and doable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;transactionality-and-cdc&#34;&gt;
+    &lt;a href=&#34;#transactionality-and-cdc&#34;&gt;
+	Transactionality and CDC
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL writes a binlog record only on commit.
+So as long as the transaction does not commit successfully, nothing is visible to replicas, and neither to CDC.&lt;/p&gt;
+&lt;p&gt;The data written to the binlog is one or more row changes affected by a set of statements in a transaction.
+It is not geared to business level events of the kind we want to see on our Kafka, but log level table changes on a more of less normalized SQL schema.&lt;/p&gt;
+&lt;h2 id=&#34;outboxes---why-and-how&#34;&gt;
+    &lt;a href=&#34;#outboxes---why-and-how&#34;&gt;
+	Outboxes - why and how?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Also, the data formats written to the binlog change as the schema evolves based on the needs of the team owning that schema.
+This will affect the data CDC seems, and break downstream consumers.&lt;/p&gt;
+&lt;p&gt;One might entertain the idea of not reading data from MySQL binlogs, but implementing CDC at the application level.
+This has a few advantages:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL binlog format may evolve and change, as MySQL evolves and changes.
+For example, a hierarchy may convert to group replication (many do), compression is being introduced, compliance may require encryption or other changes.
+We may not want this tight coupling, but be able to upgrade and change individual instances at will.&lt;/li&gt;
+&lt;li&gt;The schema may evolve depending on the needs of the schema owner, which affects the format of events in the binlog, breaking downstream CDC consumers.
+We may not want this tight coupling, but be able to evolve applications and their schema at will.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But emitting CDC events at the application level introduces great complexity:
+We must make sure that only events that are actually committed are visible on the bus, and that conversely no events are lost.&lt;/p&gt;
+&lt;p&gt;The default workaround at this point in time is the outbox:
+Applications perform their changes to the data as they wish, and in a single transaction also perform a write to a table in a fixed format, the outbox.&lt;/p&gt;
+&lt;p&gt;CDC reads the complete binlog, discards all writes except writes to the outbox, and uses the outbox changes to create a message on the bus.&lt;/p&gt;
+&lt;p&gt;This guarantees a fixed data format, as the format of the outbox table is fixed, while allowing the data owner to change all other tables at will.&lt;/p&gt;
+&lt;p&gt;It guarantees transactionality as well: as the writes to the private tables and to the outbox happen in a single transaction, they will always succeed or fail together.&lt;/p&gt;
+&lt;p&gt;And it is relatively simple to implement.&lt;/p&gt;
+&lt;h2 id=&#34;not-using-outboxes-and-not-using-binlog&#34;&gt;
+    &lt;a href=&#34;#not-using-outboxes-and-not-using-binlog&#34;&gt;
+	Not using Outboxes and not using binlog
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;But Outboxes are still dependent on reading the MySQL binlog format.
+Every time that changes, CDC breaks.
+Or if it needs to change, the change needs to be coordinated between the data owners of a schema and all their consumers and dependencies.&lt;/p&gt;
+&lt;p&gt;The alternative, emitting a CDC event and performing a change to the database, can only work with some kind of commit tracking in the database.&lt;/p&gt;
+&lt;p&gt;This exists, but is a relatively new and untested feature in MySQL:
+&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/session-state-tracking.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Server Tracking of Client Session State&lt;/a&gt;
+
+.
+Not all client libraries have full support for session state tracking, yet.&lt;/p&gt;
+&lt;p&gt;Session State Tracking allows a client to MySQL to know what the MySQL is currently doing:
+for each piece of
+&lt;a href=&#34;2020-07-28-mysql-connection-scoped-state.md&#34;&gt;Connection Scoped State&lt;/a&gt;
+
+
+a tracker exists, so the client has access to the session state on a controlled way and is notified of connection scoped state on the server changes.&lt;/p&gt;
+&lt;p&gt;For the purposes of CDC, the GTID tracker informs the client if a commit to the server succeeded and a global transaction id was assigned.
+So the client has a chance to correlate bus events with database transactions, and make sure both match.&lt;/p&gt;
+&lt;p&gt;While being a much more complicated approach, it has the chance of breaking the dependency of being able to read MySQL binlogs.
+It is still a work in progress, though.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>DevOps meets Databases</title>
       <link>https://blog.koehntopp.info/2022/04/04/devops-meets-databases.html</link>
@@ -3385,95 +3551,6 @@ This assists in reconstruction a &lt;code&gt;.git&lt;/code&gt; directory from fr
 &lt;p&gt;It is followed by the actual file contents, which in this case is a commit, in ASCII.&lt;/p&gt;
 &lt;p&gt;Things in gits object storage can get orphaned or grow without size.
 Maintenance procedures exist that walk the various structures, identify orphaned objects and clean up things.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Empty commits and other wrong tools for the job</title>
-      <link>https://blog.koehntopp.info/2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html</link>
-      <pubDate>Wed, 06 Oct 2021 09:46:10 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/10/06/empty-commits-and-other-wrong-tools-for-the-job.html</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://twitter.com/akrey/status/1445656529877680129&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This&lt;/a&gt;
-
- is how you can make an empty commit:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; git commit --allow-empty -m &lt;span class=&#34;s2&#34;&gt;&amp;#34;Kick it&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This has the disadvantage of also generating a commit message.
-&lt;a href=&#34;https://twitter.com/akrey/status/1445656529877680129&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Another way&lt;/a&gt;
-
- to achieve this seems to be&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; git commit --amend --no-edit &lt;span class=&#34;o&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; git push -f
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;but that will make people hate you in other ways.&lt;/p&gt;
-&lt;p&gt;So lets stop and ask:
-Why would you want to make an empty commit?&lt;/p&gt;
-&lt;p&gt;Most people want this because they attached a server-side action to a commit, a CI/CD activity.&lt;/p&gt;
-&lt;h1 id=&#34;this-is-wrong&#34;&gt;
-    &lt;a href=&#34;#this-is-wrong&#34;&gt;
-	This is wrong
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;This is wrong in the same way &lt;a href=&#34;https://blog.koehntopp.info/2021/01/05/using-python-to-bash.html&#34;&gt;writing Shell Scripts&lt;/a&gt;
-
- is wrong:
-It kind of works, but now you have another, worse problem and still no solution to the original problem.&lt;/p&gt;
-&lt;p&gt;You need to stop and question your life choices, and most importantly, wake up the engineer in you.&lt;/p&gt;
-&lt;h2 id=&#34;but-i-need-to-debug-my-cicd-pipeline&#34;&gt;
-    &lt;a href=&#34;#but-i-need-to-debug-my-cicd-pipeline&#34;&gt;
-	But I need to debug my CI/CD pipeline
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Kick it off using the tooling provided to you.
-Your environment has an API that is specifically built to enable you to do that.
-Use it.&lt;/p&gt;
-&lt;p&gt;In Gitlab:
-&lt;a href=&#34;https://docs.gitlab.com/ee/ci/triggers/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Triggering pipelines through the API &lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;In GitHub:
-&lt;a href=&#34;https://docs.github.com/en/actions/managing-workflow-runs/manually-running-a-workflow#running-a-workflow-using-the-rest-api&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Running a workflow using the REST API&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;This not only works reliably, you can get proper error messages.
-On top of that, you just did &lt;em&gt;not&lt;/em&gt; pee into your commit history.&lt;/p&gt;
-&lt;h2 id=&#34;but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance&#34;&gt;
-    &lt;a href=&#34;#but-i-need-to-redeploy-because-i-need-a-terraform-run-after-i-just-lost-an-instance&#34;&gt;
-	But I need to redeploy, because I need a Terraform run after I just lost an instance
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;This is fractally broken, there is breakage in your breakage.&lt;/p&gt;
-&lt;p&gt;The proper solution is a reconciliation loop of the kind Kubernetes has: Measure the existing state and compare it to the desired state. Then execute the actions necessary to transform the measured state into the desired state, in a loop.&lt;/p&gt;
-&lt;p&gt;So if you are not on K8s, you need to move to K8s or re-invent K8s for your environment, badly.
-Yes, Terraform, Harness and friends have it all wrong.&lt;/p&gt;
-&lt;p&gt;Erecting infrastructure quickly and portably across backends surely is nice, but assumes a properly functioning declarative environment.
-That is an environment where you describe the desired state of the infrastructure and the platform takes care of maintaining that desired state for you.&lt;/p&gt;
-&lt;p&gt;Most platforms do not work that way.
-Some fake it, badly.
-For example, nobody uses AWS autoscalers to autoscale, but they surely are useful to protect your instance count.&lt;/p&gt;
-&lt;h2 id=&#34;the-problem-inside-this-problem&#34;&gt;
-    &lt;a href=&#34;#the-problem-inside-this-problem&#34;&gt;
-	The problem inside this problem
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;And since we are talking about CI/CD pipelines:
-Don&amp;rsquo;t YAML them. Don&amp;rsquo;t JSON them. Don&amp;rsquo;t XML them.&lt;/p&gt;
-&lt;p&gt;All of these things surely are nice to describe static objects that have static properties.
-You can successfully use any of them to express the desired state of a thing in a declarative way.&lt;/p&gt;
-&lt;p&gt;If you see anything that looks like &amp;ldquo;foreach&amp;rdquo;, &amp;ldquo;when&amp;rdquo;, &amp;ldquo;unless&amp;rdquo; or similar, it&amp;rsquo;s procedural.
-These are control structures.
-They are part of programming languages.
-Which any of these three are decidedly not.&lt;/p&gt;
-&lt;p&gt;Programming in any of these three is wrong use of tooling, and you should not do it.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;YAML, JSON and XML are for declarative things.&lt;/li&gt;
-&lt;li&gt;Python, Go and Rust are for procedural things.&lt;/li&gt;
-&lt;li&gt;Bash is for interactive use only.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Use the proper tooling for the job.
-Be an engineer.&lt;/p&gt;
-&lt;p&gt;Otherwise, you&amp;rsquo;ll just get your old bash rsync deployment scripts back, in a harder to debug packaging, and wrapped in conditionals and loops in YAML &amp;ldquo;syntax&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;That is not what progress looks like.
-At all.
-Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
 </description>
     </item>
     

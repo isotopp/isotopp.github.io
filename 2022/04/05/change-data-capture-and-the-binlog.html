@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>Change Data Capture and the Binlog | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+<link rel="canonical" href="https://blog.koehntopp.info">
+
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+
+
+<meta name="generator" content="Hugo 0.96.0" />
+<meta property="og:title" content='Change Data Capture and the Binlog' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+
+
+<meta property="og:locale" content="en_US" />
+
+
+<meta name="description" content='' />
+<meta property="og:description" content='' />
+
+<link rel="canonical" href="https://blog.koehntopp.info" />
+<meta property="og:url" content="https://blog.koehntopp.info" />
+
+
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='0001-01-01T00:00:00Z' />
+
+
+
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content='@isotopp' />
+<meta name="twitter:creator" content='@isotopp' />
+<meta property="twitter:title" content='Change Data Capture and the Binlog' />
+<meta property="twitter:description" content='' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+<script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","description":null,"headline":"Change Data Capture and the Binlog","image":"/assets/img/background/mysql.jpg","name":"Die wunderbare Welt von Isotopp","url":"https://blog.koehntopp.info"}
+</script>
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.910ca92f4c7f18d00dc9bcf6fad097dd4ab9e8dc4143b501235433c4839b894c.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+<div class="page">
+  <article class="change-data-capture-and-the-binlog-page">
+    <div class='row  justify-content-center text-center my-4 mx-0'>
+      <header>
+        <div class='col'>
+          <h1 class="title mb-lg-4 text-white">
+            Change Data Capture and the Binlog
+          </h1>
+          <div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+            <img alt='isotopp image' src='/assets/img/isotopp.jpg' class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+            <a href="https://twitter.com/isotopp" class='text-light text-decoration-none'>
+                Kristian Köhntopp
+            </a>
+
+            
+              <span class='d-none d-lg-inline'>-</span>
+              <div class='d-block d-lg-inline'>April 5, 2022</div>
+            
+
+          </div>
+        </div>
+        
+          <img alt='a featured image' src="/assets/img/background/mysql.jpg">
+        
+      </header>
+    </div>
+
+    <div class='row justify-content-center mx-0 mt-5 mb-5'>
+      <div class='col-lg-8'>
+        <p>MySQL uses replication to an ongoing life restore of a primary server to any number of replicas.
+How replication came to be I have discussed previouly <a href="https://blog.koehntopp.info/2020/11/27/backups-and-replication.html">in another article</a>
+
+.</p>
+<p>Modern replication uses row based replication, with a minimal row image and compression. What is that?</p>
+<h1 id="decoding-the-binlog">
+    <a href="#decoding-the-binlog">
+	Decoding the Binlog
+    </a>
+</h1>
+<p>There is of course no Row Based Replication, because the Binlog can hold only statements.
+The <code>binlog</code> statement is a workaround for that.
+It has a single string parameter, the pre- and post-change row images.</p>
+<p>Running <code>mysqlbinlog -vvv</code> will decode that, and show it as a pseudo SQL statement affecting a single row.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> at <span class="m">1140</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">220404</span> 16:34:41 server id <span class="m">187076016</span>  end_log_pos <span class="m">1140</span> CRC32 0x0112f9b6         Table_map: <span class="sb">`</span>kris<span class="sb">`</span>.<span class="sb">`</span>testtable<span class="sb">`</span> mapped to number <span class="m">92</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span> at <span class="m">1140</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">220404</span> 16:34:41 server id <span class="m">187076016</span>  end_log_pos <span class="m">1140</span> CRC32 0xe3714794         Delete_rows: table id <span class="m">92</span> flags: STMT_END_F
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">BINLOG &#39;
+</span></span></span><span class="line"><span class="cl"><span class="go">AQJLYhOwjSYLWwAAAAAAAAAAAFwAAAAAAAEAEHBheW1lbnRjb21wb25lbnQAFHBheW1lbnRfc2Vz
+</span></span></span><span class="line"><span class="cl"><span class="go">c2lvbl9kYXRhAAUI9Q8P9QYEFgCHAAQeAQEAAgEItvkSAQ==
+</span></span></span><span class="line"><span class="cl"><span class="go">AQJLYiCwjSYLLAAAAAAAAAAAAFwAAAAAAAEAAgAFAQDcTtUTAAAAAJRHceM=
+</span></span></span><span class="line"><span class="cl"><span class="go">&#39;/*!*/;
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span><span class="c1">## DELETE FROM `kris`.`testtable`</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">## WHERE</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="c1">##   @1=332746460 /* LONGINT meta=0 nullable=0 is_null=0 */</span>
+</span></span></code></pre></div><p>This example from a RBR binlog shows the replication context.
+Note the table map, which translates a table name into an internal table_id, followed by the binlog checksum and log positions.
+Below that, the actual binlog statement, and the pseudo SQL it translates to.</p>
+<p>The MySQL primary and its replicas have identical metadata, some while some metadata is part of replication (column numbers and data types), other metadata is not part of replication (for example, the column names).</p>
+<p>Note that even with <code>binlog_format=row</code> configured, some statements are still being replicated as statements &ndash; notably, all statements that do not change rows are replicated as statements.
+That is for example all DDL: you will see <code>CREATE</code>, <code>DROP</code> and <code>ALTER</code> statements.</p>
+<h1 id="how-much-row-is-in-a-rbr-binlog">
+    <a href="#how-much-row-is-in-a-rbr-binlog">
+	How much row is in a RBR binlog?
+    </a>
+</h1>
+<p>Originally, the rows in a RBR binlog were full images of the row, once before the change and once after the change.
+This can be a lot of data in a table that has <code>TEXT</code>, <code>BLOB</code> or <code>JSON</code> columns.</p>
+<p>The pathological case is a table with a primary key, a counter and a large <code>TEXT</code> column, incrementing the counter.
+In this case, the <code>TEXT</code> is replicated twice per changed row, unchanged, for an increment of a 4 byte counter.</p>
+<p>This was relatively quickly fixed by introducing the <code>NOBLOB</code> and <code>MINIMAL</code> row image formats.
+<code>NOBLOB</code> contains all columns before and after the change, except for <code>BLOB</code> and <code>TEXT</code> columns, unless they changed.
+<code>MINIMAL</code> logs only the primary key in the pre-image and contains only changed columns in the post-image.</p>
+<p>This saves a lot of disk space, while still maintaining all information necessary to safely update a replica.</p>
+<p>Surprisingly, this is already quite efficient: For our workloads at work, RBR already creates smaller binlogs than SBR, even with <code>FULL</code> format (around 1/2 to 1/3 the size of SBR binlogs).
+<code>MINIMAL</code> can bring these numbers down even further.</p>
+<h1 id="if-rbr-is-so-efficient-why-compression">
+    <a href="#if-rbr-is-so-efficient-why-compression">
+	If RBR is so efficient, why compression?
+    </a>
+</h1>
+<p>Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.</p>
+<p>That is, because we want to store several days of binlog in order to be able to roll forward from restored backups, and because some replication hierarchies see a lot of churn, a lot of rows changes due to DML.
+That is not unexpected: Online Transaction Processing has a singular purpose in life: to transact.
+So we expect to see a lot of transactions.</p>
+<p>MySQL compressed binlog events using zstd compression.
+Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.</p>
+<p>That is slightly less efficient than per-file, but has the advantage that it is easily handled:
+After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.</p>
+<p>That makes it easy for all binlog consumers to update to the new format with minimal changes:
+Basically you need to add zstd as a dependency, and if you see a compressed event, uncompress it and handle it as before.</p>
+<h1 id="cdc-versus-replication">
+    <a href="#cdc-versus-replication">
+	CDC versus replication
+    </a>
+</h1>
+<p>The binlog is a MySQL internal data structure.
+It exists to facilitate replication between instances of MySQL.
+It is useful for other things, but as the binlog evolves, these other things have to track the changes.</p>
+<p>For example, lot of work is currently being done on CDC with various tools.
+The objective is mainly
+&ldquo;Use replication as a channel to extract database changes in a defined format, and put them on a Kafka bus.
+These change events will then be used to re-create a database image in other formats, for example in Hadoop or elsewhere.&rdquo;</p>
+<p>So, to formulate it somewhat pointedly, at the purely operational level we are busy reinventing replication in JSON or Avro on Kafka.
+To save face: At the data modelling level things are a bit more involved.</p>
+<p>Unfortunately, this poses several challenges on the source databases:</p>
+<ul>
+<li>Initial data load does not consume a backup in one of our backup formats, but requires a life database instance, as the data load happens by queries instead of parsing data files.
+<ul>
+<li>As the data load needs to be consistent, mapping to exactly one binlog position, it holds a consistent read view for a long time.
+Holding a consistent read view for a long time slows down MySQL a lot, so this instance becomes unusable for everybody but the data loader.
+Some data loads use multiple instances for speed.</li>
+</ul>
+</li>
+<li>The CDC log parsers ask for full binlogs for simpler parsing.
+<ul>
+<li>MySQLs own replication demonstrates that a minimal binlog is sufficient for replication, so it must be sufficient for CDC as well &ndash; but that requires access to the full previous image of the row.
+As CDC does not have access to the full previous row image, it requests full format.
+Fixing that is considerable scope creep:
+instead of reinventing replication you are now reinventing the database.</li>
+</ul>
+</li>
+<li>The CDC log parsers ask for uncompressed binlogs.
+<ul>
+<li>That&rsquo;s fixable relatively easily by learning to parse and use zstd, and doable.</li>
+</ul>
+</li>
+</ul>
+<h1 id="transactionality-and-cdc">
+    <a href="#transactionality-and-cdc">
+	Transactionality and CDC
+    </a>
+</h1>
+<p>MySQL writes a binlog record only on commit.
+So as long as the transaction does not commit successfully, nothing is visible to replicas, and neither to CDC.</p>
+<p>The data written to the binlog is one or more row changes affected by a set of statements in a transaction.
+It is not geared to business level events of the kind we want to see on our Kafka, but log level table changes on a more of less normalized SQL schema.</p>
+<h2 id="outboxes---why-and-how">
+    <a href="#outboxes---why-and-how">
+	Outboxes - why and how?
+    </a>
+</h2>
+<p>Also, the data formats written to the binlog change as the schema evolves based on the needs of the team owning that schema.
+This will affect the data CDC seems, and break downstream consumers.</p>
+<p>One might entertain the idea of not reading data from MySQL binlogs, but implementing CDC at the application level.
+This has a few advantages:</p>
+<ul>
+<li>MySQL binlog format may evolve and change, as MySQL evolves and changes.
+For example, a hierarchy may convert to group replication (many do), compression is being introduced, compliance may require encryption or other changes.
+We may not want this tight coupling, but be able to upgrade and change individual instances at will.</li>
+<li>The schema may evolve depending on the needs of the schema owner, which affects the format of events in the binlog, breaking downstream CDC consumers.
+We may not want this tight coupling, but be able to evolve applications and their schema at will.</li>
+</ul>
+<p>But emitting CDC events at the application level introduces great complexity:
+We must make sure that only events that are actually committed are visible on the bus, and that conversely no events are lost.</p>
+<p>The default workaround at this point in time is the outbox:
+Applications perform their changes to the data as they wish, and in a single transaction also perform a write to a table in a fixed format, the outbox.</p>
+<p>CDC reads the complete binlog, discards all writes except writes to the outbox, and uses the outbox changes to create a message on the bus.</p>
+<p>This guarantees a fixed data format, as the format of the outbox table is fixed, while allowing the data owner to change all other tables at will.</p>
+<p>It guarantees transactionality as well: as the writes to the private tables and to the outbox happen in a single transaction, they will always succeed or fail together.</p>
+<p>And it is relatively simple to implement.</p>
+<h2 id="not-using-outboxes-and-not-using-binlog">
+    <a href="#not-using-outboxes-and-not-using-binlog">
+	Not using Outboxes and not using binlog
+    </a>
+</h2>
+<p>But Outboxes are still dependent on reading the MySQL binlog format.
+Every time that changes, CDC breaks.
+Or if it needs to change, the change needs to be coordinated between the data owners of a schema and all their consumers and dependencies.</p>
+<p>The alternative, emitting a CDC event and performing a change to the database, can only work with some kind of commit tracking in the database.</p>
+<p>This exists, but is a relatively new and untested feature in MySQL:
+<a href="https://dev.mysql.com/doc/refman/8.0/en/session-state-tracking.html" target="_blank" rel="noopener">Server Tracking of Client Session State</a>
+
+.
+Not all client libraries have full support for session state tracking, yet.</p>
+<p>Session State Tracking allows a client to MySQL to know what the MySQL is currently doing:
+for each piece of
+<a href="2020-07-28-mysql-connection-scoped-state.md">Connection Scoped State</a>
+
+
+a tracker exists, so the client has access to the session state on a controlled way and is notified of connection scoped state on the server changes.</p>
+<p>For the purposes of CDC, the GTID tracker informs the client if a commit to the server succeeded and a global transaction id was assigned.
+So the client has a chance to correlate bus events with database transactions, and make sure both match.</p>
+<p>While being a much more complicated approach, it has the chance of breaking the dependency of being able to read MySQL binlogs.
+It is still a work in progress, though.</p>
+
+      </div>
+    </div>
+
+    
+    
+    <div class='row justify-content-center mb-3 mx-0'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Share</span>
+        <a href='https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fblog.koehntopp.info%2f2022%2f04%2f05%2fchange-data-capture-and-the-binlog.html' target='_blank' class='text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#facebook'/></svg>
+        </a>
+        <a href='https://twitter.com/intent/tweet?source=https%3a%2f%2fblog.koehntopp.info%2f2022%2f04%2f05%2fchange-data-capture-and-the-binlog.html&text=Change%20Data%20Capture%20and%20the%20Binlog%20%7C%20Die+wunderbare+Welt+von+Isotopp:%20https%3a%2f%2fblog.koehntopp.info%2f2022%2f04%2f05%2fchange-data-capture-and-the-binlog.html' target='_blank' class='text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+        <a href='http://www.reddit.com/submit?url=https%3a%2f%2fblog.koehntopp.info%2f2022%2f04%2f05%2fchange-data-capture-and-the-binlog.html&title=Change%20Data%20Capture%20and%20the%20Binlog' target='_blank' class='text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+        <a href='mailto:?subject=Change%20Data%20Capture%20and%20the%20Binlog&body=https%3a%2f%2fblog.koehntopp.info%2f2022%2f04%2f05%2fchange-data-capture-and-the-binlog.html' target='_blank' class='text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope-fill'/></svg>
+        </a>
+      </div>
+    </div>
+
+    
+    
+    <div class='row justify-content-center py-3 mb-3 mx-0'>
+      <div class='col-lg-8 text-center'>
+        <span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+        
+          <a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+            <svg class="bi" width="1rem" height="1rem" fill="currentColor"><use xlink:href="/bootstrap-icons.svg#tag-fill"></use></svg>
+            database
+          </a>
+        
+          <a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+            <svg class="bi" width="1rem" height="1rem" fill="currentColor"><use xlink:href="/bootstrap-icons.svg#tag-fill"></use></svg>
+            mysql
+          </a>
+        
+          <a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+            <svg class="bi" width="1rem" height="1rem" fill="currentColor"><use xlink:href="/bootstrap-icons.svg#tag-fill"></use></svg>
+            lang_en
+          </a>
+        
+      </div>
+    </div>
+
+    <div class='row justify-content-center mb-5 pt-5 border-top mx-0'>
+      <div class='col-lg-4 text-center text-lg-start'>
+        
+      </div>
+
+      <div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+        
+          <div>
+            <div class='letter-spacing-01 text-uppercase text-secondary'>
+              Previous Post
+            </div>
+            <a class='text-decoration-none' href="https://blog.koehntopp.info/2022/04/04/devops-meets-databases.html">DevOps meets Databases</a>
+          </div>
+        
+      </div>
+    </div>
+
+    
+    </article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff. 
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#rss-fill'/></svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#envelope'/></svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#github'/></svg>
+        </a>
+
+        <a href='https://www.reddit.com/user/isotopp' title='Follow on Reddit' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#reddit'/></svg>
+        </a>
+
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#steam'/></svg>
+        </a>
+
+        <a href='https://twitter.com/isotopp' title='Follow on Twitter' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#twitter'/></svg>
+        </a>
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#youtube'/></svg>
+        </a>
+
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>
