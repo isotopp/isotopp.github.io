@@ -232,7 +232,7 @@
 	Statement and Row Based Replication
     </a>
 </h1>
-<p>MySQL replication logs statements in the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.</p>
+<p>MySQL&rsquo;s replication logs statements to the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.</p>
 <p>MySQL knows this, and for the obvious cases logs additional code that makes them deterministic.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">kris</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kris</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="n">flush</span><span class="w"> </span><span class="nb">binary</span><span class="w"> </span><span class="n">logs</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">Query</span><span class="w"> </span><span class="n">OK</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="n">affected</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">02</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
@@ -306,9 +306,10 @@
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">...</span><span class="w">
 </span></span></span></code></pre></div><p>(You would need to run <code>mysqlbinlog -vvv</code> to have the mysqlbinlog command decode the BASE64 for you).</p>
 <blockquote>
-<p>Row Based Replication wraps the logged row in a special BINLOG statement, because the binlog can hold only statements.</p>
+<p>Row Based Replication logs Row Events. <code>mysqlbinlog</code> presents them as a special <code>BINLOG</code> statement to make it possible to feed the output to another server.</p>
 </blockquote>
-<p>This is interesting, because it tells us: There is no such thing as a Row Based Binary Log at all, the binlog can hold only statements. MySQL worked around this by implementing a BINLOG statement, which takes a single parameter. The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.</p>
+<p>So in order to be able to represent a Row Events as a statement that can be replayed in another server, MySQL implemented a <code>BINLOG</code> statement, which takes a single parameter.
+The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.</p>
 <p>Seeing this, I should be able to take this <code>BINLOG</code> statement and run it on the command line of my client:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">kris</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kris</span><span class="p">]</span><span class="o">&gt;</span><span class="w">   </span><span class="n">BINLOG</span><span class="w"> </span><span class="s1">&#39;
 </span></span></span><span class="line"><span class="cl"><span class="s1">    &#39;</span><span class="o">&gt;</span><span class="w"> </span><span class="n">p8zAXxMBAAAAMAAAAAAAAAAAAOkAAAAAAAEABGtyaXMAAXQAAQUBCAEBAQCZVfvm</span><span class="w">
@@ -316,7 +317,10 @@
 </span></span></span><span class="line"><span class="cl"><span class="s1">    &#39;</span><span class="o">&gt;</span><span class="w"> </span><span class="s1">&#39;/*!*/;
 </span></span></span><span class="line"><span class="cl"><span class="s1">ERROR 1609 (HY000): The BINLOG statement of type `Table_map` was not preceded by a format description BINLOG statement.
 </span></span></span></code></pre></div><p>To make a long story short: If you go back and pick up the preceding <code>BINLOG</code> command earlier in the binlog, and then this one, it actually works.</p>
-<p>Also interesting: In the earliest versions of MySQL with Row Based logs, the <code>BINLOG</code> command lacked all access controls, so by handcrafting the appropriate patches, anybody could change all data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line. This bug is now a long time fixed.</p>
+<p>Also interesting:
+In the earliest versions of MySQL with Row Based logs, the <code>BINLOG</code> command lacked all access controls.
+By handcrafting the appropriate patches, anybody could change any data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line.
+This bug is now a long time fixed.</p>
 <h2 id="row-based-replication-and-filters">
     <a href="#row-based-replication-and-filters">
 	Row Based Replication and Filters

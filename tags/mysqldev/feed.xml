@@ -6,7 +6,7 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 Apr 2022 09:27:19 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Apr 2022 17:56:40 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Debugging SQL in Python</title>
       <link>https://blog.koehntopp.info/2022/03/24/debugging-sql-in-python.html</link>
@@ -3358,7 +3358,7 @@ Binlog woes and Replication Delay&lt;/p&gt;
 	Statement and Row Based Replication
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;MySQL replication logs statements in the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.&lt;/p&gt;
+&lt;p&gt;MySQL&amp;rsquo;s replication logs statements to the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.&lt;/p&gt;
 &lt;p&gt;MySQL knows this, and for the obvious cases logs additional code that makes them deterministic.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flush&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;binary&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;logs&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;02&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -3432,9 +3432,10 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;(You would need to run &lt;code&gt;mysqlbinlog -vvv&lt;/code&gt; to have the mysqlbinlog command decode the BASE64 for you).&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Row Based Replication wraps the logged row in a special BINLOG statement, because the binlog can hold only statements.&lt;/p&gt;
+&lt;p&gt;Row Based Replication logs Row Events. &lt;code&gt;mysqlbinlog&lt;/code&gt; presents them as a special &lt;code&gt;BINLOG&lt;/code&gt; statement to make it possible to feed the output to another server.&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;This is interesting, because it tells us: There is no such thing as a Row Based Binary Log at all, the binlog can hold only statements. MySQL worked around this by implementing a BINLOG statement, which takes a single parameter. The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.&lt;/p&gt;
+&lt;p&gt;So in order to be able to represent a Row Events as a statement that can be replayed in another server, MySQL implemented a &lt;code&gt;BINLOG&lt;/code&gt; statement, which takes a single parameter.
+The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.&lt;/p&gt;
 &lt;p&gt;Seeing this, I should be able to take this &lt;code&gt;BINLOG&lt;/code&gt; statement and run it on the command line of my client:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;BINLOG&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p8zAXxMBAAAAMAAAAAAAAAAAAOkAAAAAAAEABGtyaXMAAXQAAQUBCAEBAQCZVfvm&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -3442,7 +3443,10 @@ Binlog woes and Replication Delay&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s1&#34;&gt;    &amp;#39;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;/*!*/;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s1&#34;&gt;ERROR 1609 (HY000): The BINLOG statement of type `Table_map` was not preceded by a format description BINLOG statement.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To make a long story short: If you go back and pick up the preceding &lt;code&gt;BINLOG&lt;/code&gt; command earlier in the binlog, and then this one, it actually works.&lt;/p&gt;
-&lt;p&gt;Also interesting: In the earliest versions of MySQL with Row Based logs, the &lt;code&gt;BINLOG&lt;/code&gt; command lacked all access controls, so by handcrafting the appropriate patches, anybody could change all data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line. This bug is now a long time fixed.&lt;/p&gt;
+&lt;p&gt;Also interesting:
+In the earliest versions of MySQL with Row Based logs, the &lt;code&gt;BINLOG&lt;/code&gt; command lacked all access controls.
+By handcrafting the appropriate patches, anybody could change any data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line.
+This bug is now a long time fixed.&lt;/p&gt;
 &lt;h2 id=&#34;row-based-replication-and-filters&#34;&gt;
     &lt;a href=&#34;#row-based-replication-and-filters&#34;&gt;
 	Row Based Replication and Filters

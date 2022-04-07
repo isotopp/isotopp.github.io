@@ -6,15 +6,15 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 05 Apr 2022 09:27:19 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 07 Apr 2022 17:56:40 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Change Data Capture and the Binlog</title>
       <link>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</link>
       <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
       
       <guid>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</guid>
-      <description>&lt;p&gt;MySQL uses replication to an ongoing life restore of a primary server to any number of replicas.
-How replication came to be I have discussed previouly &lt;a href=&#34;https://blog.koehntopp.info/2020/11/27/backups-and-replication.html&#34;&gt;in another article&lt;/a&gt;
+      <description>&lt;p&gt;MySQL uses replication to do an ongoing life restore of a primary server to any number of replicas.
+How replication came to be I have discussed previously &lt;a href=&#34;https://blog.koehntopp.info/2020/11/27/backups-and-replication.html&#34;&gt;in another article&lt;/a&gt;
 
 .&lt;/p&gt;
 &lt;p&gt;Modern replication uses row based replication, with a minimal row image and compression. What is that?&lt;/p&gt;
@@ -23,10 +23,10 @@ How replication came to be I have discussed previouly &lt;a href=&#34;https://bl
 	Decoding the Binlog
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;There is of course no Row Based Replication, because the Binlog can hold only statements.
-The &lt;code&gt;binlog&lt;/code&gt; statement is a workaround for that.
+&lt;p&gt;When using Row Based Replication, the Row Change event is represented using the &lt;code&gt;BINLOG&lt;/code&gt; statement in the output of the &lt;code&gt;mysqlbinlog&lt;/code&gt; command.
 It has a single string parameter, the pre- and post-change row images.&lt;/p&gt;
-&lt;p&gt;Running &lt;code&gt;mysqlbinlog -vvv&lt;/code&gt; will decode that, and show it as a pseudo SQL statement affecting a single row.&lt;/p&gt;
+&lt;p&gt;Adding the &lt;code&gt;-v&lt;/code&gt; option multiple times will decode that:  &lt;code&gt;mysqlbinlog -vvv&lt;/code&gt;.
+It shows a pseudo SQL statement affecting a single row.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0x0112f9b6         Table_map: &lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;kris&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;.&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt;testtable&lt;span class=&#34;sb&#34;&gt;`&lt;/span&gt; mapped to number &lt;span class=&#34;m&#34;&gt;92&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
@@ -40,18 +40,19 @@ It has a single string parameter, the pre- and post-change row images.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## DELETE FROM `kris`.`testtable`&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## WHERE&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;##   @1=332746460 /* LONGINT meta=0 nullable=0 is_null=0 */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This example from a RBR binlog shows the replication context.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This example from an RBR binlog shows the replication context.
 Note the table map, which translates a table name into an internal table_id, followed by the binlog checksum and log positions.
-Below that, the actual binlog statement, and the pseudo SQL it translates to.&lt;/p&gt;
-&lt;p&gt;The MySQL primary and its replicas have identical metadata, some while some metadata is part of replication (column numbers and data types), other metadata is not part of replication (for example, the column names).&lt;/p&gt;
+Below that, the actual row change is decoded into a &lt;code&gt;BINLOG&lt;/code&gt; statement, and the pseudo SQL it translates to.&lt;/p&gt;
+&lt;p&gt;The MySQL primary and its replicas have identical metadata.
+While some metadata is part of replication, such as column numbers and data types, other metadata is not part of replication, for example, the column names.&lt;/p&gt;
 &lt;p&gt;Note that even with &lt;code&gt;binlog_format=row&lt;/code&gt; configured, some statements are still being replicated as statements &amp;ndash; notably, all statements that do not change rows are replicated as statements.
 That is for example all DDL: you will see &lt;code&gt;CREATE&lt;/code&gt;, &lt;code&gt;DROP&lt;/code&gt; and &lt;code&gt;ALTER&lt;/code&gt; statements.&lt;/p&gt;
-&lt;h1 id=&#34;how-much-row-is-in-a-rbr-binlog&#34;&gt;
-    &lt;a href=&#34;#how-much-row-is-in-a-rbr-binlog&#34;&gt;
-	How much row is in a RBR binlog?
+&lt;h1 id=&#34;how-much-row-is-in-an-rbr-binlog&#34;&gt;
+    &lt;a href=&#34;#how-much-row-is-in-an-rbr-binlog&#34;&gt;
+	How much row is in an RBR binlog?
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;Originally, the rows in a RBR binlog were full images of the row, once before the change and once after the change.
+&lt;p&gt;Originally, the rows in an RBR binlog were full images of the row, once before the change and once after the change.
 This can be a lot of data in a table that has &lt;code&gt;TEXT&lt;/code&gt;, &lt;code&gt;BLOB&lt;/code&gt; or &lt;code&gt;JSON&lt;/code&gt; columns.&lt;/p&gt;
 &lt;p&gt;The pathological case is a table with a primary key, a counter and a large &lt;code&gt;TEXT&lt;/code&gt; column, incrementing the counter.
 In this case, the &lt;code&gt;TEXT&lt;/code&gt; is replicated twice per changed row, unchanged, for an increment of a 4 byte counter.&lt;/p&gt;
@@ -67,15 +68,17 @@ In this case, the &lt;code&gt;TEXT&lt;/code&gt; is replicated twice per changed 
     &lt;/a&gt;
 &lt;/h1&gt;
 &lt;p&gt;Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.&lt;/p&gt;
-&lt;p&gt;That is, because we want to store several days of binlog in order to be able to roll forward from restored backups, and because some replication hierarchies see a lot of churn, a lot of rows changes due to DML.
+&lt;p&gt;We want to store several days of binlog, in order to be able to roll forward from restored backups.
+But because some replication hierarchies see a lot of churn, we get a lot of rows changes due to all these write operations.
 That is not unexpected: Online Transaction Processing has a singular purpose in life: to transact.
 So we expect to see a lot of transactions.&lt;/p&gt;
-&lt;p&gt;MySQL compressed binlog events using zstd compression.
+&lt;p&gt;Using compression, we use less disk space to store transaction, so we can store more of them in the same amount of disk space.
+MySQL compressed binlog events using zstd compression.
 Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.&lt;/p&gt;
-&lt;p&gt;That is slightly less efficient than per-file, but has the advantage that it is easily handled:
+&lt;p&gt;That is slightly less efficient than per-file, but has the advantage of easy implementation:
 After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.&lt;/p&gt;
 &lt;p&gt;That makes it easy for all binlog consumers to update to the new format with minimal changes:
-Basically you need to add zstd as a dependency, and if you see a compressed event, uncompress it and handle it as before.&lt;/p&gt;
+Basically you need to add zstd as a dependency, and if you see a compressed event, decompress it and handle it as before.&lt;/p&gt;
 &lt;h1 id=&#34;cdc-versus-replication&#34;&gt;
     &lt;a href=&#34;#cdc-versus-replication&#34;&gt;
 	CDC versus replication
@@ -84,7 +87,7 @@ Basically you need to add zstd as a dependency, and if you see a compressed even
 &lt;p&gt;The binlog is a MySQL internal data structure.
 It exists to facilitate replication between instances of MySQL.
 It is useful for other things, but as the binlog evolves, these other things have to track the changes.&lt;/p&gt;
-&lt;p&gt;For example, lot of work is currently being done on CDC with various tools.
+&lt;p&gt;For example, a lot of work is currently being done on CDC with various tools.
 The objective is mainly
 &amp;ldquo;Use replication as a channel to extract database changes in a defined format, and put them on a Kafka bus.
 These change events will then be used to re-create a database image in other formats, for example in Hadoop or elsewhere.&amp;rdquo;&lt;/p&gt;
@@ -101,7 +104,7 @@ Some data loads use multiple instances for speed.&lt;/li&gt;
 &lt;/li&gt;
 &lt;li&gt;The CDC log parsers ask for full binlogs for simpler parsing.
 &lt;ul&gt;
-&lt;li&gt;MySQLs own replication demonstrates that a minimal binlog is sufficient for replication, so it must be sufficient for CDC as well &amp;ndash; but that requires access to the full previous image of the row.
+&lt;li&gt;MySQLs own replication demonstrates that a minimal binlog is sufficient for replication, so it must be sufficient for CDC as well &amp;ndash; but that requires access to the full previous image of the row to fill in the missing data.
 As CDC does not have access to the full previous row image, it requests full format.
 Fixing that is considerable scope creep:
 instead of reinventing replication you are now reinventing the database.&lt;/li&gt;
@@ -119,16 +122,16 @@ instead of reinventing replication you are now reinventing the database.&lt;/li&
     &lt;/a&gt;
 &lt;/h1&gt;
 &lt;p&gt;MySQL writes a binlog record only on commit.
-So as long as the transaction does not commit successfully, nothing is visible to replicas, and neither to CDC.&lt;/p&gt;
-&lt;p&gt;The data written to the binlog is one or more row changes affected by a set of statements in a transaction.
-It is not geared to business level events of the kind we want to see on our Kafka, but log level table changes on a more of less normalized SQL schema.&lt;/p&gt;
+As long as the transaction does not commit successfully, nothing is visible to replicas, and neither to CDC.&lt;/p&gt;
+&lt;p&gt;The data written to the binlog are all the row changes affected by a set of statements in a transaction.
+It is not geared to business level events of the kind we want to see on our Kafka, but logs table level changes to the SQL schema.&lt;/p&gt;
 &lt;h2 id=&#34;outboxes---why-and-how&#34;&gt;
     &lt;a href=&#34;#outboxes---why-and-how&#34;&gt;
 	Outboxes - why and how?
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Also, the data formats written to the binlog change as the schema evolves based on the needs of the team owning that schema.
-This will affect the data CDC seems, and break downstream consumers.&lt;/p&gt;
+&lt;p&gt;The data written to the binlog will reflect changes to the table structure, as the schema evolves based on the needs of the team owning that schema.
+Since the CDC stream sees the same changes, the data format in there will also change, and break downstream consumers.&lt;/p&gt;
 &lt;p&gt;One might entertain the idea of not reading data from MySQL binlogs, but implementing CDC at the application level.
 This has a few advantages:&lt;/p&gt;
 &lt;ul&gt;
@@ -141,7 +144,7 @@ We may not want this tight coupling, but be able to evolve applications and thei
 &lt;p&gt;But emitting CDC events at the application level introduces great complexity:
 We must make sure that only events that are actually committed are visible on the bus, and that conversely no events are lost.&lt;/p&gt;
 &lt;p&gt;The default workaround at this point in time is the outbox:
-Applications perform their changes to the data as they wish, and in a single transaction also perform a write to a table in a fixed format, the outbox.&lt;/p&gt;
+Applications perform their changes to the data as they wish, and in the same transaction also write to a table in a fixed format, the outbox.&lt;/p&gt;
 &lt;p&gt;CDC reads the complete binlog, discards all writes except writes to the outbox, and uses the outbox changes to create a message on the bus.&lt;/p&gt;
 &lt;p&gt;This guarantees a fixed data format, as the format of the outbox table is fixed, while allowing the data owner to change all other tables at will.&lt;/p&gt;
 &lt;p&gt;It guarantees transactionality as well: as the writes to the private tables and to the outbox happen in a single transaction, they will always succeed or fail together.&lt;/p&gt;
@@ -160,14 +163,14 @@ Or if it needs to change, the change needs to be coordinated between the data ow
 
 .
 Not all client libraries have full support for session state tracking, yet.&lt;/p&gt;
-&lt;p&gt;Session State Tracking allows a client to MySQL to know what the MySQL is currently doing:
+&lt;p&gt;Session State Tracking allows a client to MySQL to know what the server is currently doing:
 for each piece of
 &lt;a href=&#34;2020-07-28-mysql-connection-scoped-state.md&#34;&gt;Connection Scoped State&lt;/a&gt;
 
 
-a tracker exists, so the client has access to the session state on a controlled way and is notified of connection scoped state on the server changes.&lt;/p&gt;
+a tracker exists, so the client has access to the session state on a controlled way, and is notified if any state on the server changes.&lt;/p&gt;
 &lt;p&gt;For the purposes of CDC, the GTID tracker informs the client if a commit to the server succeeded and a global transaction id was assigned.
-So the client has a chance to correlate bus events with database transactions, and make sure both match.&lt;/p&gt;
+The client gets a chance to correlate bus events with database transactions, and make sure both match.&lt;/p&gt;
 &lt;p&gt;While being a much more complicated approach, it has the chance of breaking the dependency of being able to read MySQL binlogs.
 It is still a work in progress, though.&lt;/p&gt;
 </description>
