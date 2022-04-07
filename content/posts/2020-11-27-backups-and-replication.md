@@ -93,7 +93,7 @@ This is *Semi-Synchronous Replication*, *SSR*, in MySQL, and it comes with a num
 
 # Statement and Row Based Replication
 
-MySQL replication logs statements in the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.
+MySQL's replication logs statements to the binlog. Unfortunately, not all statements are actually replay-able, because they may not be deterministic.
 
 MySQL knows this, and for the obvious cases logs additional code that makes them deterministic.
 
@@ -183,9 +183,10 @@ p8zAXx4BAAAALAAAAAAAAAAAAOkAAAAAAAEAAgAB/wABJeZMQInpPz9C5to=
 
 (You would need to run `mysqlbinlog -vvv` to have the mysqlbinlog command decode the BASE64 for you).
 
-> Row Based Replication wraps the logged row in a special BINLOG statement, because the binlog can hold only statements.
+> Row Based Replication logs Row Events. `mysqlbinlog` presents them as a special `BINLOG` statement to make it possible to feed the output to another server.
 
-This is interesting, because it tells us: There is no such thing as a Row Based Binary Log at all, the binlog can hold only statements. MySQL worked around this by implementing a BINLOG statement, which takes a single parameter. The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.
+So in order to be able to represent a Row Events as a statement that can be replayed in another server, MySQL implemented a `BINLOG` statement, which takes a single parameter.
+The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.
 
 Seeing this, I should be able to take this `BINLOG` statement and run it on the command line of my client:
 
@@ -199,7 +200,10 @@ ERROR 1609 (HY000): The BINLOG statement of type `Table_map` was not preceded by
 
 To make a long story short: If you go back and pick up the preceding `BINLOG` command earlier in the binlog, and then this one, it actually works.
 
-Also interesting: In the earliest versions of MySQL with Row Based logs, the `BINLOG` command lacked all access controls, so by handcrafting the appropriate patches, anybody could change all data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line. This bug is now a long time fixed.
+Also interesting:
+In the earliest versions of MySQL with Row Based logs, the `BINLOG` command lacked all access controls.
+By handcrafting the appropriate patches, anybody could change any data anywhere with any permissions - MySQL did not anticipate that somebody would take replication-only special commands and run them on a regular command line.
+This bug is now a long time fixed.
 
 ## Row Based Replication and Filters
 
