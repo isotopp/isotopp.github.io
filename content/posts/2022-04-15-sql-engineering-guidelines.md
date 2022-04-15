@@ -16,7 +16,7 @@ This is what the database team fully supports.
 
 Other databases, notably Postgres, are in use mostly because external products we run require them.
 Internal project should use MySQL.
-An external company provides Limited support for running Postgres.
+An external company provides limited support for running Postgres.
 
 The recommended version of MySQL to be used is currently the latest 8.0.
 It has a large number of improvements over the previous version 5.7 in terms of the SQL subset supported, handling of sorts, critical character set support and join strategies.
@@ -208,11 +208,11 @@ The following rules have been proven to be useful guidance in the past:
 ### Keys
 
 - **Every table must have a primary key.**
-    - In MySQL the primary key also defines the physical order of the data on disk:
-      Rows with similar primary key values will usually be stored physically closer together than rows with more dissimilar primary key values.
-      MySQL contains a large number of optimizations to exploit this and make this fast.
-    - Not having a primary key breaks group replication and row based replication.
-      We are using these features, so primary keys are mandatory.
+  - In MySQL the primary key also defines the physical order of the data on disk:
+    Rows with similar primary key values will usually be stored physically closer together than rows with more dissimilar primary key values.
+    MySQL contains a large number of optimizations to exploit this and make this fast.
+  - Not having a primary key breaks group replication and row based replication.
+    We are using these features, so primary keys are mandatory.
 
 - **Primary keys are short:** `integer` (4 byte), `bigint` (8 byte), `VARBINARY(16)` (the output of `UUID_TO_BIN()`, 16 byte).
     - MySQL uses primary keys as row addresses in all secondary keys. The longer the primary key, the more expensive the secondary key.
