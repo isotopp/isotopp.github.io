@@ -234,7 +234,7 @@ That is sufficient even for databases in Kubernetes.</p>
 <p><strong>The DBA Standard SLO supports databases are &lt;2 TB in size</strong>, and fit onto a 1.92 TB sized standard NVME drive, including binlog and overhead.
 They take around 2h to create from a donor instance.</p>
 <p>Databases larger than that require special storage (external persistent volumes), which will have worse latency and cost more.
-It will not be able immediately, and moving existing databases (which are already large) to different storage will take time in accordance with their size. Plan ahead, and plan with a DBA to make this a smooth transition.</p>
+It will not be available immediately, and moving existing databases (which are already large) to different storage will take time in accordance with their size. Plan ahead, and plan with a DBA to make this a smooth transition.</p>
 <p><strong>The instance size limit is approximately 10 TB.</strong> Instances larger than 10 TB will have a creation time so large that operations will have at most one attempt per day to do anything with the instances.
 This produces unsustainable toil for DBA, and drag on your project.</p>
 <p>That is, some time <strong>before hitting the 10 TB barrier your project will have to have an exit plan in place</strong> to avoid hitting this limit.</p>
@@ -260,7 +260,7 @@ This will not hold in the cloud, in virtual environments, and also not in setups
 Will the page render properly with 1-4 milliseconds of query execution time for each query?</p>
 <p><strong>Keep read-replicas of your data close to the application.</strong> Crossing the boundaries between AZs will add another 4-10ms, or more, to each query. If your application is running on-premises, but your database is in the cloud, this is likely much slower than setting up local replicas and extending the replication hierarchy into the local AZ.</p>
 <p>Using certain database ORMs, it can be easy to accidentally create SQL being executed in a loop.
-For each object accessed in a loop, the ORM secretly fires a single primary key lookup in the background to fleshen then object lazily when it is accessed for the first time.
+For each object accessed in a loop, the ORM secretly fires a single primary key lookup in the background to fleshen the object lazily when it is accessed for the first time.
 This is called machine-gunning.</p>
 <p><strong>Avoid machine-gunning</strong>, primary key lookups in a loop. Consider using a <code>SELECT ... FROM table WHERE id IN ( ... around 1000 constants ... )</code> clause.
 If this is driven by another select, consider using a <code>JOIN</code>.</p>
@@ -331,7 +331,7 @@ On Mac and Windows, with case-insensitive filesystems, they will be the same tab
 </ul>
 </li>
 <li><strong>Be consistent with column names.</strong></li>
-<li><strong>Do not use MySQL keywords or reserved words as column names.</strong>*
+<li><strong>Do not use MySQL keywords or reserved words as column names.</strong>
 <ul>
 <li><a href="https://dev.mysql.com/doc/refman/8.0/en/keywords.html" target="_blank" rel="noopener">MySQL 8 list of reserved words</a>
 
@@ -679,7 +679,7 @@ The effect is that Emoji and other letters with 4-byte UTF-8 encodings cannot be
     </a>
 </h3>
 <ul>
-<li><strong>email</strong>* varchar(255) character set utf8mb4</li>
+<li><strong>email</strong> varchar(255) character set utf8mb4</li>
 <li><strong>phone</strong> bigint unsigned (E.164 format)</li>
 <li><strong>ip_address</strong>  varbinary(16), because IPv6 is a thing. Check out <code>INET6_ATON()</code> and virtual indexes on generated columns as a convenience. <code>SELECT ... FROM t WHERE request_ip = INET6_ATON(&quot;141.255.161.178&quot;)</code></li>
 <li><strong>base64</strong>, blob, mediumblob, for <strong>JSON</strong> there is a special new JSON type.</li>
@@ -709,7 +709,7 @@ This is often inconvenient.</li>
 <li>Foreign key constraints require additional lookups and additional locks.
 This can lead to lock escalation and a higher deadlock rate, impacting throughput.</li>
 <li>With foreign key constraints it is possible to create undeletable and unupdatable rows.</li>
-<li>Foreign Key Constraints with <code>ON UPDATE</code> and <code>ON DELETE</code> clauses can cause spooky action at a distance, and can also large bulk deletes and updates that will break replication.</li>
+<li>Foreign Key Constraints with <code>ON UPDATE</code> and <code>ON DELETE</code> clauses can cause spooky action at a distance, and can also cause large bulk deletes and updates that will break replication.</li>
 <li>Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database splits.
 Table changes become extremely toil for everyone involved.</li>
 <li>Because of that we recommend you do not use foreign key constraints.
@@ -792,7 +792,7 @@ You need to find out how your ORM creates RMW transactions.</p>
 .</li>
 <li>Make sure <code>START TRANSACTION</code> syntax is being used, not <code>BEGIN</code> syntax.</li>
 <li><code>COMMIT</code> can fail, you must check success and be prepared to re-run the entire transaction.</li>
-<li>A transaction must not extend across a user interaction. You must not <code>SELECT ... FOR UPDATE</code> and then wait for user input. A transaction must be finished fractions of a second.</li>
+<li>A transaction must not extend across a user interaction. You must not <code>SELECT ... FOR UPDATE</code> and then wait for user input. A transaction must be finished in fractions of a second.</li>
 </ul>
 <h3 id="optimistic-locking">
     <a href="#optimistic-locking">
@@ -837,7 +837,7 @@ You need to find out how your ORM creates RMW transactions.</p>
     </a>
 </h2>
 <ul>
-<li>*<strong>Prefer <code>JOIN</code> over subqueries.</strong> MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it usually still safer to write a <code>JOIN</code> than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.</li>
+<li><strong>Prefer <code>JOIN</code> over subqueries.</strong> MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it is usually still safer to write a <code>JOIN</code> than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.</li>
 <li>This is especially true for subqueries with negations (<code>WHERE NOT EXIST</code>) to find missing values. Use a <code>LEFT JOIN</code> with <code>IS NULL</code> on a right-hand side value to achieve the same result much faster.</li>
 </ul>
 <h2 id="tombstones-is_deleted-flags">
@@ -988,7 +988,7 @@ Refer to <a href="https://www.slideshare.net/isotopp/explaining-explain" target=
 <li>formulate a query with dependent subqueries to use some kind of join</li>
 <li>formulate a query with multiple range clauses in a way that resolves in multiple steps</li>
 </ul>
-<p>DBA can help you with this of problem.</p>
+<p>DBA can help you with this problem.</p>
 <h2 id="mismatching-types">
     <a href="#mismatching-types">
 	Mismatching types
