@@ -99,7 +99,7 @@ That is sufficient even for databases in Kubernetes.
 They take around 2h to create from a donor instance.
 
 Databases larger than that require special storage (external persistent volumes), which will have worse latency and cost more.
-It will not be able immediately, and moving existing databases (which are already large) to different storage will take time in accordance with their size. Plan ahead, and plan with a DBA to make this a smooth transition.
+It will not be available immediately, and moving existing databases (which are already large) to different storage will take time in accordance with their size. Plan ahead, and plan with a DBA to make this a smooth transition.
 
 **The instance size limit is approximately 10 TB.** Instances larger than 10 TB will have a creation time so large that operations will have at most one attempt per day to do anything with the instances.
 This produces unsustainable toil for DBA, and drag on your project.
@@ -130,7 +130,7 @@ Will the page render properly with 1-4 milliseconds of query execution time for 
 **Keep read-replicas of your data close to the application.** Crossing the boundaries between AZs will add another 4-10ms, or more, to each query. If your application is running on-premises, but your database is in the cloud, this is likely much slower than setting up local replicas and extending the replication hierarchy into the local AZ.
 
 Using certain database ORMs, it can be easy to accidentally create SQL being executed in a loop.
-For each object accessed in a loop, the ORM secretly fires a single primary key lookup in the background to fleshen then object lazily when it is accessed for the first time.
+For each object accessed in a loop, the ORM secretly fires a single primary key lookup in the background to fleshen the object lazily when it is accessed for the first time.
 This is called machine-gunning.
 
 **Avoid machine-gunning**, primary key lookups in a loop. Consider using a `SELECT ... FROM table WHERE id IN ( ... around 1000 constants ... )` clause.
@@ -193,7 +193,7 @@ The following rules have been proven to be useful guidance in the past:
       Specifically, in production, on Linux, for older versions of MySQL table names are case-sensitive, so `Sales` and `sales` are different tables.
       On Mac and Windows, with case-insensitive filesystems, they will be the same table.
 - **Be consistent with column names.**
-- **Do not use MySQL keywords or reserved words as column names.***
+- **Do not use MySQL keywords or reserved words as column names.**
     - [MySQL 8 list of reserved words](https://dev.mysql.com/doc/refman/8.0/en/keywords.html) lists keywords, reserved words, new keywords and reserved words - none of them should be used.
     - If you must, quoting table and column names (`` `table_name` ``.`` `column_name` ``) avoids reserved word problems completely.
     - Theoretically, using backticks it is possible to have column names and table names that contain spaces, or even emoji.
@@ -382,7 +382,7 @@ The following rules have been proven to be useful guidance in the past:
 
 ### Common column types that applications use
 
-- **email*** varchar(255) character set utf8mb4
+- **email** varchar(255) character set utf8mb4
 - **phone** bigint unsigned (E.164 format)
 - **ip_address**  varbinary(16), because IPv6 is a thing. Check out `INET6_ATON()` and virtual indexes on generated columns as a convenience. `SELECT ... FROM t WHERE request_ip = INET6_ATON("141.255.161.178")`
 - **base64**, blob, mediumblob, for **JSON** there is a special new JSON type.
@@ -402,7 +402,7 @@ The following rules have been proven to be useful guidance in the past:
     - Foreign key constraints require additional lookups and additional locks.
       This can lead to lock escalation and a higher deadlock rate, impacting throughput.
     - With foreign key constraints it is possible to create undeletable and unupdatable rows.
-    - Foreign Key Constraints with `ON UPDATE` and `ON DELETE` clauses can cause spooky action at a distance, and can also large bulk deletes and updates that will break replication.
+    - Foreign Key Constraints with `ON UPDATE` and `ON DELETE` clauses can cause spooky action at a distance, and can also cause large bulk deletes and updates that will break replication.
     - Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database splits. 
       Table changes become extremely toil for everyone involved.
     - Because of that we recommend you do not use foreign key constraints.
@@ -455,7 +455,7 @@ Some notes:
 - This is discussed at length in [MySQL Transactions (Read-Modify-Write)]({{< ref "/content/posts/2020-07-30-mysql-transactions---writing-data.md" >}}).
 - Make sure `START TRANSACTION` syntax is being used, not `BEGIN` syntax.
 - `COMMIT` can fail, you must check success and be prepared to re-run the entire transaction.
-- A transaction must not extend across a user interaction. You must not `SELECT ... FOR UPDATE` and then wait for user input. A transaction must be finished fractions of a second.
+- A transaction must not extend across a user interaction. You must not `SELECT ... FOR UPDATE` and then wait for user input. A transaction must be finished in fractions of a second.
 
 ### Optimistic locking
 
@@ -485,7 +485,7 @@ Database servers are often more expensive and centralized machines compared to t
 
 ## Subqueries
 
-- ***Prefer `JOIN` over subqueries.** MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it usually still safer to write a `JOIN` than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.
+- **Prefer `JOIN` over subqueries.** MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it is usually still safer to write a `JOIN` than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.
 - This is especially true for subqueries with negations (`WHERE NOT EXIST`) to find missing values. Use a `LEFT JOIN` with `IS NULL` on a right-hand side value to achieve the same result much faster.
 
 ## Tombstones (`is_deleted` flags)
@@ -586,7 +586,7 @@ Most commonly, one of these things needs fixing:
 - formulate a query with dependent subqueries to use some kind of join
 - formulate a query with multiple range clauses in a way that resolves in multiple steps
 
-DBA can help you with this of problem.
+DBA can help you with this problem.
 
 ## Mismatching types
 
