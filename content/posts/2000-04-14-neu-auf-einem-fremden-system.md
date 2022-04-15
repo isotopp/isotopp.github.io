@@ -10,6 +10,8 @@ tags:
 - unix
 - security
 - devops
+- talk
+- publication
 ---
 
 Dies ist eine aktualisierte Version der Schulung „Unix Systemsicherheits“, die ich vor einiger Zeit schon einmal gehalten habe.
