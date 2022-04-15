@@ -223,7 +223,7 @@ Nmap run completed -- 1 IP address (1 host up) scanned in 4 seconds
   - 111/tcp ist weit offen und erlaubt den Angriff auf RPC-Dienste.
   - 515/tcp läuft vollkommen sinnlos.
   - 3306/tcp erlaubt Zugriff auf eine Datenbank.
-  - **119/tcp führt auf eine Bash mit root-Rechten:**
+  - **199/tcp führt auf eine Bash mit root-Rechten:**
   - Die Maschine wurde bereits gehackt und mit einem Rootkit versehen. Für den Administrator sind über die Backdoor eingeloggte Benutzer nicht in der Prozeßliste und der Speicherstatistik zu sehen, der von ihnen verbrauchte Plattenplatz wird versteckt. Die Maschine lauscht auf ihrem Netzwerksegment nach Klartext-Paßworten für andere Maschinen, nur ein Switch hat schlimmeres verhindert.
   - ipchains waren auf der Maschine installiert, aber nicht in Betrieb.
   - 3 Tage nach Neuinstallation wurde die Maschine wieder gehackt (RedHat mit wuftpd 2.6.0 als Einfallstor).
