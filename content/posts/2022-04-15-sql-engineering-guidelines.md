@@ -454,7 +454,7 @@ Some notes:
 
 - This is discussed at length in [MySQL Transactions (Read-Modify-Write)]({{< ref "/content/posts/2020-07-30-mysql-transactions---writing-data.md" >}}).
 - Make sure `START TRANSACTION` syntax is being used, not `BEGIN` syntax.
-- `COMMTI` can fail, you must check success and be prepared to re-run the entire transaction.
+- `COMMIT` can fail, you must check success and be prepared to re-run the entire transaction.
 - A transaction must not extend across a user interaction. You must not `SELECT ... FOR UPDATE` and then wait for user input. A transaction must be finished fractions of a second.
 
 ### Optimistic locking
