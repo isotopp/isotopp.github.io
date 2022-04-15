@@ -6,7 +6,937 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 07 Apr 2022 17:56:40 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 15 Apr 2022 12:52:46 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>SQL Engineering Guidelines</title>
+      <link>https://blog.koehntopp.info/2022/04/15/sql-engineering-guidelines.html</link>
+      <pubDate>Fri, 15 Apr 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/04/15/sql-engineering-guidelines.html</guid>
+      <description>&lt;p&gt;Where I work, the native database is MySQL.
+This is what the database team fully supports.&lt;/p&gt;
+&lt;p&gt;Other databases, notably Postgres, are in use mostly because external products we run require them.
+Internal project should use MySQL.
+An external company provides Limited support for running Postgres.&lt;/p&gt;
+&lt;p&gt;The recommended version of MySQL to be used is currently the latest 8.0.
+It has a large number of improvements over the previous version 5.7 in terms of the SQL subset supported, handling of sorts, critical character set support and join strategies.
+Versions of MySQL older than 5.7 are completely unsupported and contain unfixed critical CVEs.
+They must never be used.&lt;/p&gt;
+&lt;p&gt;Note that &amp;lsquo;fully supports&amp;rsquo; does also include operational aspects of the database:
+Automated handling of grants, automated fail-over, replication tree management, capacity planning, restore testing of automated backups, and integration with compliance tickets.
+Using other SQL products is likely to leave a team with a lot of toil that is taken away by automation had you been choosing MySQL.&lt;/p&gt;
+&lt;h2 id=&#34;overview&#34;&gt;
+    &lt;a href=&#34;#overview&#34;&gt;
+	Overview
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We are using a &amp;lsquo;safe subset&amp;rsquo; of MySQL (&amp;ldquo;Blue MySQL&amp;rdquo;) and not all features of the product.
+That said, we are an enterprise with several hundred use-cases.
+For each of these rules a counterexample project likely exists.&lt;/p&gt;
+&lt;p&gt;The &amp;lsquo;safe subset&amp;rsquo; of MySQL mostly means: We do not store code in the database.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We do not use views.&lt;/li&gt;
+&lt;li&gt;We do not use stored procedures or stored functions.&lt;/li&gt;
+&lt;li&gt;We do not use triggers.&lt;/li&gt;
+&lt;li&gt;We do not use UDFs (&amp;ldquo;user defined functions&amp;rdquo;, &lt;code&gt;.so&lt;/code&gt; files that are loaded into the server proper and can be called as SQL-functions)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We do not run code in the database, because it makes applications very hard to update atomically in a rollout.
+It also makes it hard to see all code that is part of the application in a developers&amp;rsquo; editor, because some of it is in git, and other code is part of the schema.
+Finally, code in the database creates some kind of spooky action at a distance that creates lots of debugging problems.&lt;/p&gt;
+&lt;p&gt;Specifically for MySQL, the MySQL stored procedure language is as beautiful as COBOL, as efficient as PHP 3, and as debuggable as embedded Lua.
+Do not use it.&lt;/p&gt;
+&lt;h2 id=&#34;general&#34;&gt;
+    &lt;a href=&#34;#general&#34;&gt;
+	General
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;SQL systems are stateful systems, so your application can be stateless.
+That means there is state in a lot of unexpected places in SQL, and you have to be aware of it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state.html&#34;&gt;Connection Scoped State&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;COMMIT can fail, and you must be able to retry&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Databases store data for a long time.
+Often longer than the code that created the data lives.
+For example, there are databases in production that have an uninterrupted change history of more than 20 years.
+The data started out in Postgres, was converted and migrated to MySQL 4.0 and then lived through a change of versions up to MySQL 8.0.&lt;/p&gt;
+&lt;p&gt;Database administrators operate with this in mind, and use a lot of defensive operational procedures.
+Get their input and their help when planning changes.&lt;/p&gt;
+&lt;p&gt;All data has a full data lifecycle: It is being created, ingested, stored, changed and updated and ultimately exported to different systems and/or deleted.
+Plan the full data lifecycle, and pay special attention to tables that have time as a component of the primary key or the table name, or otherwise exhibit log nature.
+Every transactional database has a data warehouse inside, and it struggles to get out. Given the same number of customers, articles and transactions each day, will your database grow without bounds and which structures cause that?&lt;/p&gt;
+&lt;p&gt;Database administrators will help you to complete the data lifecycle.&lt;/p&gt;
+&lt;h2 id=&#34;absolute-limits&#34;&gt;
+    &lt;a href=&#34;#absolute-limits&#34;&gt;
+	Absolute Limits
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;MySQL has a number of limits that are part of the codebase.&lt;/strong&gt;
+Specifically, &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-limits.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;InnoDB limits&lt;/a&gt;
+
+ are documented in the manual.
+It is useful to be familiar with at least the information on indexing.&lt;/p&gt;
+&lt;p&gt;On top of that there are other limits that will affect you, based on physics, operations and available hardware.&lt;/p&gt;
+&lt;h3 id=&#34;size&#34;&gt;
+    &lt;a href=&#34;#size&#34;&gt;
+	Size
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Are you running out of disk space? Know what to monitor, and how to handle the situation and &lt;a href=&#34;https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html&#34;&gt;absolute size limits&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Deleting data costs disk space.&lt;/strong&gt;
+MySQL is running in a replication hierarchy, and in order to replicate MySQL stores a pre- and post-change image of each changed row in the binlog.
+This is kept for up to seven days to allow lagging replicas to catch up.
+For deletion, the pre-deletion image of the row is sent to the binlog, in order to allow the replica to find the row to delete it. This consumes disk space, which will be reclaimed only after seven days.&lt;/p&gt;
+&lt;p&gt;A DBA can help you here to reclaim space early.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Size is Time, and Time is Size.&lt;/strong&gt;
+Assuming 400 MB/s copy speed, copying one terabyte of data takes around 45 minutes.
+Adding 15 minutes of replication catchup, you can expect around 1 hour of creation time per terabyte of database size.&lt;/p&gt;
+&lt;p&gt;Databases of around 200-250 GB size have a creation time of around 10-15 minutes per instance.
+That is sufficient even for databases in Kubernetes.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The DBA Standard SLO supports databases are &amp;lt;2 TB in size&lt;/strong&gt;, and fit onto a 1.92 TB sized standard NVME drive, including binlog and overhead.
+They take around 2h to create from a donor instance.&lt;/p&gt;
+&lt;p&gt;Databases larger than that require special storage (external persistent volumes), which will have worse latency and cost more.
+It will not be able immediately, and moving existing databases (which are already large) to different storage will take time in accordance with their size. Plan ahead, and plan with a DBA to make this a smooth transition.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The instance size limit is approximately 10 TB.&lt;/strong&gt; Instances larger than 10 TB will have a creation time so large that operations will have at most one attempt per day to do anything with the instances.
+This produces unsustainable toil for DBA, and drag on your project.&lt;/p&gt;
+&lt;p&gt;That is, some time &lt;strong&gt;before hitting the 10 TB barrier your project will have to have an exit plan in place&lt;/strong&gt; to avoid hitting this limit.&lt;/p&gt;
+&lt;p&gt;The plan can be&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;use Cassandra or another sharded NoSQL storage.&lt;/li&gt;
+&lt;li&gt;use shards in MySQL, doing application level sharding.&lt;/li&gt;
+&lt;li&gt;consider a supported distributed database.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It will involve in all cases moving to a distributed setup that more or less transparently shards.
+It will also involve moving to a setup where &lt;code&gt;JOIN&lt;/code&gt; will be much more costly because of the distributed nature of the database.&lt;/p&gt;
+&lt;p&gt;We do currently have larger databases than 10 TB.
+Contact their owners to understand the nature of their toil problems and why your setup wants to avoid this.&lt;/p&gt;
+&lt;h3 id=&#34;latency&#34;&gt;
+    &lt;a href=&#34;#latency&#34;&gt;
+	Latency
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Write your SQL and your applications SQL execution model with milliseconds of query execution time in mind, even for reads.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Currently, we have on-prem databases with a memory saturated setup, and they expose query latencies for single primary key lookups in memory of 0.15ms.
+This will not hold in the cloud, in virtual environments, and also not in setups that put ProxySQL in-between.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Count the number of queries run to render a page using the available Event Instrumentation.&lt;/strong&gt;
+Will the page render properly with 1-4 milliseconds of query execution time for each query?&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Keep read-replicas of your data close to the application.&lt;/strong&gt; Crossing the boundaries between AZs will add another 4-10ms, or more, to each query. If your application is running on-premises, but your database is in the cloud, this is likely much slower than setting up local replicas and extending the replication hierarchy into the local AZ.&lt;/p&gt;
+&lt;p&gt;Using certain database ORMs, it can be easy to accidentally create SQL being executed in a loop.
+For each object accessed in a loop, the ORM secretly fires a single primary key lookup in the background to fleshen then object lazily when it is accessed for the first time.
+This is called machine-gunning.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Avoid machine-gunning&lt;/strong&gt;, primary key lookups in a loop. Consider using a &lt;code&gt;SELECT ... FROM table WHERE id IN ( ... around 1000 constants ... )&lt;/code&gt; clause.
+If this is driven by another select, consider using a &lt;code&gt;JOIN&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;statement-size&#34;&gt;
+    &lt;a href=&#34;#statement-size&#34;&gt;
+	Statement size
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Objects and statements are limited to &lt;code&gt;max_allowed_packet&lt;/code&gt;, currently 16 MB in size.
+Additionally, certain &lt;code&gt;WHERE id IN (...)&lt;/code&gt; clauses begin to show degraded performance and excessive memory use for a large number of ids in MySQL 8.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Aim for around 1000 values in such clauses.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stay below 16 MB statement size.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;For bulk writes, keep the transaction size to a reasonable 1000 to 10000 rows per commit.&lt;/strong&gt;
+Group replication will be unhappy if you don&amp;rsquo;t.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;many-tables-join&#34;&gt;
+    &lt;a href=&#34;#many-tables-join&#34;&gt;
+	Many-tables &lt;code&gt;JOIN&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Avoid &lt;code&gt;JOIN&lt;/code&gt;-ing more than 10 tables at once.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If the optimizer were to brute-force all possible &lt;code&gt;JOIN&lt;/code&gt; combinations on an &lt;code&gt;n&lt;/code&gt;-way table &lt;code&gt;JOIN&lt;/code&gt;, the number of combinations would be &lt;code&gt;n!&lt;/code&gt; (n-th faculty).
+This becomes an unwieldy number at a value of &lt;code&gt;n=10&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The optimizer will have to apply heuristics around a join-plan depth of 10, and do weird things, including sometimes missing obvious optimizations.&lt;/p&gt;
+&lt;p&gt;This is usually not a problem, but if you are using an ORM and have deep class hierarchies, you may be hitting this limits inadvertently.
+Be aware of your class-subclass relationships and how they are modelled, and what SQL is being generated.&lt;/p&gt;
+&lt;h3 id=&#34;bulk-updates-large-deletes-inserts-updates&#34;&gt;
+    &lt;a href=&#34;#bulk-updates-large-deletes-inserts-updates&#34;&gt;
+	Bulk updates (large deletes, inserts, updates)
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Very large atomic transactions are being executed on the primary, and on commit, enter the binlog. They then go downstream and execute on the replicas of than level, and so on.&lt;/p&gt;
+&lt;p&gt;That means a large change such as &lt;code&gt;DELETE FROM sales WHERE article_id = 17&lt;/code&gt; has the potential to make changes to very many rows. The update can take noticeable time, or depending on the data, even run for minutes or hours. The change can stall replicas, induce replication delay or otherwise impact production.&lt;/p&gt;
+&lt;p&gt;In all our supported languages packages, we have replication aware bulk update functions to handle this:
+They will break up such large changes into manageable chunks, and execute them while monitoring replication lag.
+Be sure to make good use of them, they exist for a reason.&lt;/p&gt;
+&lt;h2 id=&#34;data-types-and-column-definitions&#34;&gt;
+    &lt;a href=&#34;#data-types-and-column-definitions&#34;&gt;
+	Data types and column definitions
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;MySQL supports a wide range of data types.
+They are documented &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/data-types.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in the manual&lt;/a&gt;
+
+.
+Each data type comes with a range and a storage size.
+It is useful to know properties of the most common types.&lt;/p&gt;
+&lt;p&gt;When choosing data types, think big (&amp;ldquo;assume 10x growth&amp;rdquo;).
+Data types can be changed ex-post, but require an &lt;code&gt;ALTER TABLE&lt;/code&gt; command or an online schema change to be run.
+This usually involves a background copy of all data of that table, and can take a lot of time for large tables.&lt;/p&gt;
+&lt;p&gt;Additional information about commonly needed data types can be found in your projects coding guidelines.&lt;/p&gt;
+&lt;p&gt;The following rules have been proven to be useful guidance in the past:&lt;/p&gt;
+&lt;h3 id=&#34;names&#34;&gt;
+    &lt;a href=&#34;#names&#34;&gt;
+	Names
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Names are snake_case.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Do not use uppercase table names or column names.
+We have done that in the past, and there are tables with upper case characters in names.
+Don&amp;rsquo;t.&lt;/li&gt;
+&lt;li&gt;Depending on the version of MySQL and the filesystem in use, table names are case-sensitive or not, because they end up being file names on a case-sensitive file system or not.
+Specifically, in production, on Linux, for older versions of MySQL table names are case-sensitive, so &lt;code&gt;Sales&lt;/code&gt; and &lt;code&gt;sales&lt;/code&gt; are different tables.
+On Mac and Windows, with case-insensitive filesystems, they will be the same table.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Be consistent with column names.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Do not use MySQL keywords or reserved words as column names.&lt;/strong&gt;*
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/keywords.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MySQL 8 list of reserved words&lt;/a&gt;
+
+ lists keywords, reserved words, new keywords and reserved words - none of them should be used.&lt;/li&gt;
+&lt;li&gt;If you must, quoting table and column names (&lt;code&gt;`table_name`&lt;/code&gt;.&lt;code&gt;`column_name`&lt;/code&gt;) avoids reserved word problems completely.&lt;/li&gt;
+&lt;li&gt;Theoretically, using backticks it is possible to have column names and table names that contain spaces, or even emoji.
+Don&amp;rsquo;t even think about that, much less try it.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;normalization&#34;&gt;
+    &lt;a href=&#34;#normalization&#34;&gt;
+	Normalization
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Understand database normal forms and aim for a relaxed third normal form.&lt;/strong&gt;
+Try to &lt;a href=&#34;https://blog.koehntopp.info/2005/09/11/nermalisation.html&#34;&gt;normalize&lt;/a&gt;
+
+ properly until you run into weirdness.
+Only denormalize when you actually experience performance problems.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;keys&#34;&gt;
+    &lt;a href=&#34;#keys&#34;&gt;
+	Keys
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Every table must have a primary key.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In MySQL the primary key also defines the physical order of the data on disk:
+Rows with similar primary key values will usually be stored physically closer together than rows with more dissimilar primary key values.
+MySQL contains a large number of optimizations to exploit this and make this fast.&lt;/li&gt;
+&lt;li&gt;Not having a primary key breaks group replication and row based replication.
+We are using these features, so primary keys are mandatory.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Primary keys are short:&lt;/strong&gt; &lt;code&gt;integer&lt;/code&gt; (4 byte), &lt;code&gt;bigint&lt;/code&gt; (8 byte), &lt;code&gt;VARBINARY(16)&lt;/code&gt; (the output of &lt;code&gt;UUID_TO_BIN()&lt;/code&gt;, 16 byte).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL uses primary keys as row addresses in all secondary keys. The longer the primary key, the more expensive the secondary key.&lt;/li&gt;
+&lt;li&gt;That means &lt;code&gt;INDEX(a)&lt;/code&gt; will actually store &lt;code&gt;INDEX(a,id)&lt;/code&gt; (with &lt;code&gt;id&lt;/code&gt; being the primary key) as a secondary index, and the optimizer knows that, and can use this.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Primary keys determine physical data ordering.&lt;/strong&gt;
+Using the default InnoDB storage engine, the data itself is organized in a B+-tree in the primary key.
+That is, the primary key holds the actual data rows in the leaf-nodes of the primary key.
+That implies the data is physically arranged in primary key order.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This is why mutating a primary key is so expensive.&lt;/li&gt;
+&lt;li&gt;This can be exploited to keep hot rows close together and reduce the working set size of the database.
+InnoDB prefers hot rows to be close together, and has special-case code to make this work.&lt;/li&gt;
+&lt;li&gt;This resonates nicely with &lt;code&gt;auto_increment&lt;/code&gt;: Using this, more recently inserted rows will be more on the &amp;ldquo;right-hand side&amp;rdquo; of the table, and older rows will be more on the &amp;ldquo;left-hand&amp;rdquo; side. Often data hotness coincides with row age, so using &lt;code&gt;auto_increment&lt;/code&gt; the database will automatically exploit this for smaller memory footprint.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Primary keys are immutable.&lt;/strong&gt;
+Changing a primary key physically moves the record around in the data tree that makes up a table.
+This is an extremely expensive operation.
+Never change a primary key value.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Primary key values are not re-usable.&lt;/strong&gt;
+When deleting a record, the primary key that once identified that record can never be re-used.
+It may be still referenced by things outside the database, such as URLs with the &lt;code&gt;id&lt;/code&gt; as a parameter.
+Re-using the primary would potentially link an external thing to a completely unrelated &lt;code&gt;id&lt;/code&gt; value.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;To use a UUID as a primary key, define the column as &lt;code&gt;VARBINARY(16)&lt;/code&gt; and use the &lt;code&gt;UUID_TO_BIN()&lt;/code&gt; function with swap flag set to true.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/miscellaneous-functions.html#function_uuid-to-bin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;UUID_TO_BIN(string_uuid, 1)&lt;/a&gt;
+
+: &amp;ldquo;If swap_flag is 1, the format of the return value differs: The time-low and time-high parts (the first and third groups of hexadecimal digits, respectively) are swapped. This moves the more rapidly varying part to the right and can improve indexing efficiency if the result is stored in an indexed column.&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;From MySQL&amp;rsquo;s point of view, &lt;code&gt;AUTO_INCREMENT&lt;/code&gt; integer primary keys work better than UUID, but a lot of software prefers UUID.
+&lt;ul&gt;
+&lt;li&gt;UUIDs can have advantages for high insert rates, because they can be created independently in different clients in parallel.&lt;/li&gt;
+&lt;li&gt;MySQL stores data physically in primary key order, but the way UUIDs order is not advantageous to that.
+MySQL provides the &lt;code&gt;UUID_TO_BIN(string_uuid, 1)&lt;/code&gt; function to fix this.
+Consider using it, it unlocks many performance advantages. &lt;a href=&#34;https://blog.koehntopp.info/2021/04/06/mysql-and-uuids.html&#34;&gt;UUID discussion&lt;/a&gt;
+
+, &lt;a href=&#34;https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html&#34;&gt;Another UUID discussion&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;The datatype produced by &lt;code&gt;UUID_TO_BIN()&lt;/code&gt; is a &lt;code&gt;VARBINARY(16)&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;When using &lt;code&gt;integer&lt;/code&gt; or &lt;code&gt;bigint&lt;/code&gt; primary keys, consider making it &lt;code&gt;unsigned&lt;/code&gt;.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It will double the key range.&lt;/li&gt;
+&lt;li&gt;If your primary programming language cannot handle &lt;code&gt;unsigned&lt;/code&gt; values, it is okay to use &lt;code&gt;signed&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Remember that Javascript has a 53-bit problem.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;In your table definition, keep the primary key to the left.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This is purely cosmetic, but it will make the life easier for reviewers of your code.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;null-values-and-nullable-columns&#34;&gt;
+    &lt;a href=&#34;#null-values-and-nullable-columns&#34;&gt;
+	NULL values and nullable columns
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Define columns as &lt;code&gt;NOT NULL&lt;/code&gt;.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;If a column is nullable, the NULL value must have exactly one meaning, and it must be documented (e.g. in a COMMENT clause in the CREATE TABLE statement).
+More on &lt;a href=&#34;https://blog.koehntopp.info/2020/08/25/null-is-null.html&#34;&gt;NULL values&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;If you are using &lt;code&gt;LEFT JOIN&lt;/code&gt; or access columns that can be nullable, consider the SQL functions &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html#function_coalesce&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;COALESCE()&lt;/code&gt;&lt;/a&gt;
+
+, &lt;code&gt;IFNULL()&lt;/code&gt; and the comparison operator &lt;code&gt;IS NULL&lt;/code&gt;.
+NULL values do not compare normally, so wrap nullables into one of these functions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;default-values&#34;&gt;
+    &lt;a href=&#34;#default-values&#34;&gt;
+	Default values
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;avoid &lt;code&gt;DEFAULT&lt;/code&gt; values&lt;/strong&gt;, except for natural &amp;ldquo;zero&amp;rdquo; values appropriate for the type.&lt;/li&gt;
+&lt;li&gt;for &lt;code&gt;DEFAULT&lt;/code&gt; date and time values, &lt;strong&gt;see the section on date and time values&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;boolean&#34;&gt;
+    &lt;a href=&#34;#boolean&#34;&gt;
+	Boolean
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Use &lt;code&gt;TINYINT&lt;/code&gt; to store booleans.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL does not have a native boolean type, so we use &lt;code&gt;TINYINT&lt;/code&gt;.
+It uses one byte.&lt;/li&gt;
+&lt;li&gt;Clever hacks exist to exploit nullability (&lt;code&gt;CHAR(0) NULL&lt;/code&gt; columns) or bitfields to store data more densely.
+These usually backfire later in the software development lifecycle.
+Avoid them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;integers&#34;&gt;
+    &lt;a href=&#34;#integers&#34;&gt;
+	Integers
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Always use &lt;code&gt;integer&lt;/code&gt; and &lt;code&gt;bigint&lt;/code&gt;.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL offers several integer data types smaller than the 4-byte &lt;code&gt;integer&lt;/code&gt; and the 8-byte &lt;code&gt;bigint&lt;/code&gt;.
+They have been used in the past, and usually later created an upgrade problem when the data range was exhausted in company growth.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Do not use display widths with integers.&lt;/strong&gt; Use &lt;code&gt;int&lt;/code&gt;, not &lt;code&gt;int(11)&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;fractional-numbers-and-monetary-values&#34;&gt;
+    &lt;a href=&#34;#fractional-numbers-and-monetary-values&#34;&gt;
+	Fractional numbers and monetary values
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Always choose &lt;code&gt;double&lt;/code&gt;. Never use &lt;code&gt;float&lt;/code&gt;.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It is a 32 bit floating point number, and the range and precision is usually too small to be useful.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In the past some projects have stored pricing information as &lt;code&gt;double&lt;/code&gt;.
+This comes with its own set of problems.
+Consider using an appropriately sized &lt;code&gt;DECIMAL(16,4)&lt;/code&gt; variant, but be aware what the systems you depend on and the systems depending on you use.
+Compatibility may be better than correctness.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;For euro-values, use a column name suffix &amp;ldquo;_eur&amp;rdquo;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;char-varchar-and-the-various-text-types&#34;&gt;
+    &lt;a href=&#34;#char-varchar-and-the-various-text-types&#34;&gt;
+	CHAR, VARCHAR and the various TEXT types
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Avoid &lt;code&gt;CHAR&lt;/code&gt;, prefer &lt;code&gt;VARCHAR&lt;/code&gt;.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In very old versions of MySQL the &lt;code&gt;CHAR&lt;/code&gt; type had certain speed advantages.
+None of these are true any more for modern MySQL using InnoDB.
+Do not use fixed width character types anymore.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Consider row width, and slightly prefer &lt;code&gt;VARCHAR&lt;/code&gt; over &lt;code&gt;TEXT&lt;/code&gt; types.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;VARCHAR&lt;/code&gt; are stored inline and contribute to row width, &lt;code&gt;TEXT&lt;/code&gt; types are stored like BLOBs and are stored in a complicated way that can have a lot of overhead.&lt;/li&gt;
+&lt;li&gt;Use &lt;code&gt;VARCHAR&lt;/code&gt; for string-like texts.&lt;/li&gt;
+&lt;li&gt;Use &lt;code&gt;TEXT&lt;/code&gt; where you actually store small &amp;lsquo;files&amp;rsquo; in the database.
+If you do that, see below the notes on &lt;code&gt;BLOB&lt;/code&gt; data.
+They also apply here.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Use the default &lt;code&gt;utf8mb4&lt;/code&gt; charset, it is the utf-8 you want.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;VARCHAR&lt;/code&gt; and the various &lt;code&gt;TEXT&lt;/code&gt; fields have a character set associated to them.
+Always use &lt;code&gt;utf8mb4&lt;/code&gt; as the character set (it should be the default, but check).
+Read up on &lt;a href=&#34;https://blog.koehntopp.info/2022/01/12/utf8mb4.html&#34;&gt;Why utf8mb4?&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Avoid &lt;code&gt;ENUM&lt;/code&gt;, use lookup tables.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL offers an &lt;code&gt;ENUM&lt;/code&gt; data type, and we have used this a lot in the past.
+We found that removing values from an &lt;code&gt;ENUM&lt;/code&gt; is a very costly table change.
+We recommend you use a lookup table.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/09/18/mysql-encoding-fields-for-great-profit.html&#34;&gt;Encoding columns for great profit&lt;/a&gt;
+
+ explains how converting string columns with low cardinality can pay off in shrinking the data size.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;blobs-and-files-in-the-database&#34;&gt;
+    &lt;a href=&#34;#blobs-and-files-in-the-database&#34;&gt;
+	BLOBs and files in the database
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Databases are not good file systems.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;When reading values from disk, they pass on through the file system, the database server, are being converted into the column field data type the server uses internally, pushed again into the kernel into the network layer and then finally sent.
+This involves making around three copies of the data, whereas using &lt;code&gt;sendfile()&lt;/code&gt; or &lt;code&gt;splice()&lt;/code&gt; to send a static file from the filesystem is zero copy.
+Consider not using the database to store files.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;max_allowed_packet is an absolute limit.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;All data MySQL handles must be smaller than the config value &lt;code&gt;max_allowed_packet&lt;/code&gt;, even if the field size allows for more.
+In our systems that limit is 16 MB.&lt;/li&gt;
+&lt;li&gt;There are ways around that, using string manipulation of very large strings.
+This eats an insane amount of memory.
+If you find yourself going down that route, stop and reconsider your design or life choices.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;In MySQL 8, handling &lt;code&gt;TEXT&lt;/code&gt; and &lt;code&gt;BLOB&lt;/code&gt; is less costly, but still worthwhile checking.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In the past, any result set that contained &lt;code&gt;TEXT&lt;/code&gt; or &lt;code&gt;BLOB&lt;/code&gt; types, no matter how small, forced sort operations to spill to disk, making them slow.
+This is no longer the case for the most recent versions of MySQL 8, but it is still useful in many cases to consider a two-step approach:
+&lt;ul&gt;
+&lt;li&gt;Step 1: Run a query to select the primary key values you need in the order you need them.&lt;/li&gt;
+&lt;li&gt;Step 2: Run a second query of the form &lt;code&gt;SELECT id, blobcolumn FROM table WHERE id IN (...)&lt;/code&gt;, with the &lt;code&gt;...&lt;/code&gt; containing a list of up to 1000 literal id values as constants to fetch the blob data.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Using &lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; fields larger than 1 MB can saturate the network using replication and uses a lot of disk space.&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL is using row-based replication, and for each row changed will store a pre-image and post-image of the row on disk, for replication.
+This is kept for up to seven days, to enable lagging replicas to catch up.&lt;/li&gt;
+&lt;li&gt;Each replica is then downloading this information, so for each changed 1MB field, 2 MB are copied to each instance.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;date-and-time-values&#34;&gt;
+    &lt;a href=&#34;#date-and-time-values&#34;&gt;
+	DATE and TIME values
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Be aware of MySQLs awful date and time history.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;The date and time types in MySQL have an awful history because of a number of very bad design decisions in the past.
+Most of that is cleaned up by now, but we still see legacy problems in some places because of old data or old code.
+What are the reasons for the bad things:
+&lt;ul&gt;
+&lt;li&gt;MySQL allowed partial dates, &amp;lsquo;2022-01-00&amp;rsquo; for &amp;ldquo;I do not know the day&amp;rdquo;, or &amp;lsquo;2022-00-00&amp;rsquo; for &amp;ldquo;I have no idea about month and day&amp;rdquo;.
+They are no longer allowed (&lt;code&gt;NO_ZERO_IN_DATE&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;MySQL allowed zero dates (&amp;lsquo;0000-00-00&amp;rsquo;), and conflated them with the &lt;code&gt;NULL&lt;/code&gt; value.
+This is no longer allowed (&lt;code&gt;NO_ZERO_DATES&lt;/code&gt;).&lt;/li&gt;
+&lt;li&gt;MySQL had a magic type &lt;code&gt;TIMESTAMP&lt;/code&gt; that in a magic position behaved magically.
+Specifically, the leftmost &lt;code&gt;TIMESTAMP&lt;/code&gt; column was automatically set to &lt;code&gt;NOW()&lt;/code&gt; when it was not explicitly set to a value, but other columns of a row were changed.
+This was used to implement &lt;code&gt;changed_at&lt;/code&gt; columns.
+Today, you can apply this to any &lt;code&gt;DATETIME&lt;/code&gt; or &lt;code&gt;TIMESTAMP&lt;/code&gt; in any position, using an explicit &lt;code&gt;ON UPDATE CURRENT_TIMESTAMP&lt;/code&gt; clause.
+There are lots of special rules and exceptions that document past behavior and an attempt at compatibility and migration. &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/timestamp-initialization.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The manual on the state of things&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;MySQL &lt;code&gt;DATE&lt;/code&gt;, &lt;code&gt;TIME&lt;/code&gt; and &lt;code&gt;DATETIME&lt;/code&gt; types do not deal with timezones.&lt;code&gt;TIMESTAMP&lt;/code&gt; does.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;But only if the timezone tables in the mysql.* schema are initialized.&lt;/li&gt;
+&lt;li&gt;The current timezone you are in is defined as a default for the server, and can be overridden as a connection property.
+It is likely not a good idea to do that.&lt;/li&gt;
+&lt;li&gt;You can shoot yourself in the foot with timezones, DST boundaries and interval arithmetic. &lt;a href=&#34;https://blog.koehntopp.info/2021/04/02/making-an-unexpected-leap-with-interval-syntax.html&#34;&gt;How that happens&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Prefer &lt;code&gt;DATETIME&lt;/code&gt;, not &lt;code&gt;TIMESTAMP&lt;/code&gt;, unless it&amp;rsquo;s &lt;code&gt;changed_at&lt;/code&gt;.&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;The range of &lt;code&gt;TIMESTAMP&lt;/code&gt; is limited and has a year 2038 problem.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;DATETIME, TIME and TIMESTAMP can have microsecond resolution if desired.&lt;/strong&gt; In MySQL, &lt;code&gt;DATETIME&lt;/code&gt;, &lt;code&gt;TIME&lt;/code&gt;, &lt;code&gt;TIMESTAMP&lt;/code&gt; can have fractional resolutions up to microsecond resolution. To get that, specify a precision such as &lt;code&gt;DATETIME(6)&lt;/code&gt;, &lt;code&gt;TIME(6)&lt;/code&gt; or &lt;code&gt;TIMESTAMP(6)&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Use minimum and maximum values as boundaries in time ranges.&lt;/strong&gt; If you define time ranges, use field names such as &lt;code&gt;valid_from&lt;/code&gt; and &lt;code&gt;valid_until&lt;/code&gt;. If you are using &lt;code&gt;DATETIME&lt;/code&gt; types for that, use &lt;code&gt;1000-01-01 00:00:00&lt;/code&gt; for &amp;ldquo;minus infinity&amp;rdquo; and &lt;code&gt;9999-12-31 23:59:59&lt;/code&gt; for &amp;ldquo;plus infinity&amp;rdquo;, as these are the minimum and maximum values for this type. Do not use &lt;code&gt;NULL&lt;/code&gt; values, as they will not compare.&lt;/li&gt;
+&lt;li&gt;Be aware that the SQL &lt;code&gt;BETWEEN&lt;/code&gt; operator is a closed interval (&lt;code&gt;WHERE id BETWEEN 4 and 7&lt;/code&gt; will return 4, 5, 6 and 7), and you often want half-open interval (&lt;code&gt;WHERE now() &amp;gt;= valid_from AND now() &amp;lt; valid_until&lt;/code&gt;). &lt;strong&gt;Avoid using BETWEEN to avoid ambiguity of the nature of the interval and assumptions on the code readers side.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;json-data-type&#34;&gt;
+    &lt;a href=&#34;#json-data-type&#34;&gt;
+	JSON data type
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL 8 provides JSON functions.
+They are a bit clunky, but work very well.
+When using JSON functions, also learn about generated columns and virtual indexes.
+This is new functionality in MySQL 8, and that means it is less tested than other code.
+&lt;a href=&#34;https://blog.koehntopp.info/2020/09/04/mysql-json-data-type.html&#34;&gt;JSON basics&lt;/a&gt;
+
+, &lt;a href=&#34;https://blog.koehntopp.info/2020/09/07/mysql-generated-columns-and-virtual-indexes.html&#34;&gt;Generated columns and virtual indexes&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;JSON&lt;/code&gt; in MySQL always uses the &lt;code&gt;utf8&lt;/code&gt; character set.
+This is a bug, it should be using &lt;code&gt;utf8mb4&lt;/code&gt;, but currently not fixed.
+The effect is that Emoji and other letters with 4-byte UTF-8 encodings cannot be used there.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;common-column-types-that-applications-use&#34;&gt;
+    &lt;a href=&#34;#common-column-types-that-applications-use&#34;&gt;
+	Common column types that applications use
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;email&lt;/strong&gt;* varchar(255) character set utf8mb4&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;phone&lt;/strong&gt; bigint unsigned (E.164 format)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ip_address&lt;/strong&gt;  varbinary(16), because IPv6 is a thing. Check out &lt;code&gt;INET6_ATON()&lt;/code&gt; and virtual indexes on generated columns as a convenience. &lt;code&gt;SELECT ... FROM t WHERE request_ip = INET6_ATON(&amp;quot;141.255.161.178&amp;quot;)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;base64&lt;/strong&gt;, blob, mediumblob, for &lt;strong&gt;JSON&lt;/strong&gt; there is a special new JSON type.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;language&lt;/strong&gt; char(2) for &lt;a href=&#34;https://www.iso.org/iso-639-language-codes.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ISO-639-1&lt;/a&gt;
+
+ codes, named &lt;code&gt;lang&lt;/code&gt;, &lt;code&gt;language_code&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;country&lt;/strong&gt; char(2) for &lt;a href=&#34;https://www.iso.org/iso-3166-country-codes.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ISO-3166&lt;/a&gt;
+
+ alpha-2 country codes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;IBAN&lt;/strong&gt; varchar(34)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;foreign-key-constraints&#34;&gt;
+    &lt;a href=&#34;#foreign-key-constraints&#34;&gt;
+	Foreign Key Constraints
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Avoid foreign key constraints, unless you are in departments that specifically require you use them.&lt;/strong&gt;
+MySQL allows you to define foreign key constraints.
+They come at a price:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Foreign key constraints can only refer to columns in the same database instance, but our schemas have more data than fits into a single schema, and often requires you work across database instances using multiple handles.&lt;/li&gt;
+&lt;li&gt;Foreign key constraints are always immediate.
+That means they are checked at the end of each statement, not at the end of a transaction (&amp;ldquo;deferred&amp;rdquo;), forcing an order to your SQL statements inside a transaction.
+This is often inconvenient.&lt;/li&gt;
+&lt;li&gt;Foreign key constraints require additional lookups and additional locks.
+This can lead to lock escalation and a higher deadlock rate, impacting throughput.&lt;/li&gt;
+&lt;li&gt;With foreign key constraints it is possible to create undeletable and unupdatable rows.&lt;/li&gt;
+&lt;li&gt;Foreign Key Constraints with &lt;code&gt;ON UPDATE&lt;/code&gt; and &lt;code&gt;ON DELETE&lt;/code&gt; clauses can cause spooky action at a distance, and can also large bulk deletes and updates that will break replication.&lt;/li&gt;
+&lt;li&gt;Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database spliots.
+Table changes become extremely toil for everyone involved.&lt;/li&gt;
+&lt;li&gt;Because of that we recommend you do not use foreign key constraints.
+They usually provide a lot of toil and little benefit.&lt;/li&gt;
+&lt;li&gt;Exceptions exist. Check your departments engineering guides.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/2020/08/03/mysql-foreign-keys-and-foreign-key-constraints.html&#34;&gt;What are Foreign Keys, and Foreign Key Constraints&lt;/a&gt;
+
+, &lt;a href=&#34;https://blog.koehntopp.info/2020/08/03/mysql-foreign-keys-and-foreign-key-constraints.html&#34;&gt;Foreign Key Constraints and Locking&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;transactions&#34;&gt;
+    &lt;a href=&#34;#transactions&#34;&gt;
+	Transactions
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Keep transaction runtime short.&lt;/strong&gt; Long-running transactions will build a large Undo log and slow down the database for everyone.
+A transaction taking fractions of a second is fast, a transaction being kept open for minutes or even hours is not. &lt;a href=&#34;https://blog.koehntopp.info/2019/11/18/a-blast-from-the-past.html&#34;&gt;The effect of long-running transactions on performance&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Keep transaction size in the range of 1000 to 10000 rows for batch loading.&lt;/strong&gt;
+Larger transactions are incompatible with group replication, and also will not provide speedup.
+Smaller transactions cause excessive sync to disk, and are not fast. &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-commit-size-and-speed.html&#34;&gt;Commit size and write speed&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Use the default transaction isolation level REPEATABLE READ.&lt;/strong&gt;
+There were use-cases for READ COMMITTED in the past, but with &lt;a href=&#34;https://dev.mysql.com/blog-archive/mysql-8-0-1-using-skip-locked-and-nowait-to-handle-hot-rows/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;SELECT ... SKIP LOCKED&lt;/code&gt;&lt;/a&gt;
+
+ in MySQL 8 and row based replication, most of these are gone. &lt;a href=&#34;https://blog.koehntopp.info/2020/07/29/mysql-transactions-the-logical-view.html&#34;&gt;What are isolation levels?&lt;/a&gt;
+
+,  &lt;a href=&#34;https://blog.koehntopp.info/2020/07/30/mysql-transactions---writing-data.html&#34;&gt;Proper counters with locking&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;To start a transaction, MySQL offers several semi-equivalent syntax variants: &lt;code&gt;BEGIN&lt;/code&gt;, &lt;code&gt;BEGIN WORK&lt;/code&gt; and &lt;code&gt;START TRANSACTION READ WRITE&lt;/code&gt;. Check what your ORM is using.
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Only &lt;code&gt;START TRANSACTION READ WRITE&lt;/code&gt; should be used.&lt;/strong&gt; It is the only syntax that signals write-intent or read-intent (&lt;code&gt;START TRANSACTION READ ONLY&lt;/code&gt;) in the opening statement, and hence the only statement that load balances properly in ProxySQL.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;ProxySQL will have to assume write-intent in all cases if &lt;code&gt;BEGIN&lt;/code&gt; or &lt;code&gt;BEGIN WORK&lt;/code&gt; are being used. This will run even read-only transactions on the primary, and scale badly, unless two application database handles are being used.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;idempotent-queries&#34;&gt;
+    &lt;a href=&#34;#idempotent-queries&#34;&gt;
+	Idempotent Queries
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Databases have transactions.
+It is not strictly necessary to formulate queries as replayable (idempotent).
+Things that are being wrapped in a transaction will all either execute together or not at all, and once the commit returns successfully the data is guaranteed to be persisted.&lt;/p&gt;
+&lt;p&gt;That said, &lt;strong&gt;it is useful to use replayable forms of write-queries because they are more resilient&lt;/strong&gt; and make certain recovery operations easier.&lt;/p&gt;
+&lt;h3 id=&#34;read-modify-write-counters-and-select--for-update&#34;&gt;
+    &lt;a href=&#34;#read-modify-write-counters-and-select--for-update&#34;&gt;
+	Read-Modify-Write, Counters and &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;A common scenario in transactional databases is making a change to an existing record, for example updating a description, incrementing a counter or changing the state of a work item in a state machine.&lt;/p&gt;
+&lt;p&gt;You can think of that as &amp;ldquo;taking a value temporarily out of the table&amp;rdquo; (like lending a book from a library) by locking it, making the change in the application, and then putting it back by running the actual update.&lt;/p&gt;
+&lt;p&gt;The correct way to do this is to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;start a transaction using &lt;code&gt;START TRANSACTION READ WRITE&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;read the value to be modified by using &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt;, in order to not only select the row in question, but also pre-lock it the way a later write would. &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt; is a read statement, but applies X-locks like an &lt;code&gt;UPDATE&lt;/code&gt;. This is &amp;ldquo;taking the value temporarily out of the table&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;You can now make changes to the record in application memory.&lt;/li&gt;
+&lt;li&gt;Then run &lt;code&gt;UPDATE ... SET ...&lt;/code&gt; to write the change back.&lt;/li&gt;
+&lt;li&gt;On &lt;code&gt;COMMIT&lt;/code&gt; the change will be persisted and the lock will be dropped.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is called a read-modify-write (RMW) transaction, and is the correct way to achieve such multi-statement changes atomically.
+You need to find out how your ORM creates RMW transactions.&lt;/p&gt;
+&lt;p&gt;Some notes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This is discussed at length in &lt;a href=&#34;https://blog.koehntopp.info/2020/07/30/mysql-transactions---writing-data.html&#34;&gt;MySQL Transactions (Read-Modify-Write)&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;li&gt;Make sure &lt;code&gt;START TRANSACTION&lt;/code&gt; syntax is being used, not &lt;code&gt;BEGIN&lt;/code&gt; syntax.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;COMMTI&lt;/code&gt; can fail, you must check success and be prepared to re-run the entire transaction.&lt;/li&gt;
+&lt;li&gt;A transaction must not extend across a user interaction. You must not &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt; and then wait for user input. A transaction must be finished fractions of a second.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;optimistic-locking&#34;&gt;
+    &lt;a href=&#34;#optimistic-locking&#34;&gt;
+	Optimistic locking
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;To ensure record identity across user interaction, optimistic locking is commonly used.&lt;/strong&gt; The problem to solve is: We load a record into the application memory and then let the user perform changes. We need to write the changes back, but the record may have been simultaneously changed by a second connection.&lt;/p&gt;
+&lt;p&gt;We cannot take an X-lock on the record and keep record ownership for a long time across a user interaction, because that will destroy performance in many ways (Imagine a user opening the edit screen and then going on vacation or even just a lunch break).&lt;/p&gt;
+&lt;p&gt;There are two common ways to solve this, which are collectively called &amp;ldquo;optimistic locking&amp;rdquo;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You write back the change in an update where you guard the &lt;code&gt;UPDATE&lt;/code&gt; with the full set of old column values in the update: &lt;code&gt;UPDATE t SET col1=new_value1, col2=new_value2, ... WHERE col1=old_value1, col2=old_value2, ...&lt;/code&gt;. The update will fail and no change any row if any old value has changed since we loaded the original row into the editor presented to the user. It is then possible to present the change to the user and let them resolve the conflict.&lt;/li&gt;
+&lt;li&gt;Similarly, we can have version numbers in each row, and guard the update with the version number. &lt;code&gt;UPDATE t SET col1=changed_value, version=old_version+1 WHERE id=pk_value AND version=old_version&lt;/code&gt;. The update can happen on the combination of &lt;code&gt;id&lt;/code&gt; and &lt;code&gt;version&lt;/code&gt;, and will fail if the version changed while we were waiting for user input.
+&lt;ul&gt;
+&lt;li&gt;It is important for the version number to be &lt;strong&gt;not&lt;/strong&gt; part of the primary key, because otherwise we get versioned entries in our data table. This is usually not a desirable trait in transactional systems (see &lt;em&gt;Tombstones&lt;/em&gt; elsewhere).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;job-queues-and-skip-locked&#34;&gt;
+    &lt;a href=&#34;#job-queues-and-skip-locked&#34;&gt;
+	Job Queues (and SKIP LOCKED)
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;MySQL is not actually a queueing system. &lt;strong&gt;Talk to Kafka about queues and do not use MySQL as one.&lt;/strong&gt; Using MySQL as a queue will deliver &amp;ldquo;exactly once delivery&amp;rdquo; of jobs, at the cost of at least one disk write per enqueue and dequeue, which translates into fantastic monetary values in a cloud environment by the way of very high IOPS values.&lt;/p&gt;
+&lt;p&gt;MySQL has been used as a queue &lt;a href=&#34;https://blog.koehntopp.info/2021/01/28/database-as-a-queue.html&#34;&gt;in some scenarios on bare metal&lt;/a&gt;
+
+, because it is so obvious and convenient. Looking at the cloud, avoid that and use a proper queue service for your problem.&lt;/p&gt;
+&lt;p&gt;If you must use MySQL as a queue, at least &lt;a href=&#34;https://blog.koehntopp.info/2021/07/13/mysql-a-job-queue-in-python.html&#34;&gt;do it right&lt;/a&gt;
+
+, and lock properly using &lt;code&gt;SKIP LOCKED&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;For writing to MySQL and Kafka, consider the Outbox pattern (&lt;a href=&#34;https://developers.redhat.com/articles/2021/09/01/outbox-pattern-apache-kafka-and-debezium&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Outbox pattern&lt;/a&gt;
+
+) and talk to the Kafka team.&lt;/p&gt;
+&lt;h2 id=&#34;sorting&#34;&gt;
+    &lt;a href=&#34;#sorting&#34;&gt;
+	Sorting
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Database servers are often more expensive and centralized machines compared to their clients, and harder to scale. We have found that is it useful to &lt;strong&gt;sort in the client where it makes sense&lt;/strong&gt; instead of using &lt;code&gt;ORDER BY&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;subqueries&#34;&gt;
+    &lt;a href=&#34;#subqueries&#34;&gt;
+	Subqueries
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;*&lt;strong&gt;Prefer &lt;code&gt;JOIN&lt;/code&gt; over subqueries.&lt;/strong&gt; MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it usually still safer to write a &lt;code&gt;JOIN&lt;/code&gt; than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.&lt;/li&gt;
+&lt;li&gt;This is especially true for subqueries with negations (&lt;code&gt;WHERE NOT EXIST&lt;/code&gt;) to find missing values. Use a &lt;code&gt;LEFT JOIN&lt;/code&gt; with &lt;code&gt;IS NULL&lt;/code&gt; on a right-hand side value to achieve the same result much faster.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;tombstones-is_deleted-flags&#34;&gt;
+    &lt;a href=&#34;#tombstones-is_deleted-flags&#34;&gt;
+	Tombstones (&lt;code&gt;is_deleted&lt;/code&gt; flags)
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Avoid Tombstones.&lt;/strong&gt; Tombstones are a per-row flag that marks a row as deleted. All queries to the table need their &lt;code&gt;WHERE&lt;/code&gt;-clause to be amended by a &lt;code&gt;AND is_deleted = 0&lt;/code&gt; term or similar to find only non-deleted rows. Tombstones are usually not a good idea.
+&lt;ul&gt;
+&lt;li&gt;The old data will increase the size of the active transactional table. This will increase the working set of the database, and require a larger instance.&lt;/li&gt;
+&lt;li&gt;The tombstone flag needs to be indexed, or even become part of the primary key, in order to eliminate dead rows quickly.&lt;/li&gt;
+&lt;li&gt;The MTTR of the system after failure is higher because the database is larger, being bloated with dead data.&lt;/li&gt;
+&lt;li&gt;Actually physically deleting the tombstone data is a cumbersome process when done in large batches.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;It is usually preferable to build transactional systems that are small and contain only life data in transactional tables.&lt;/strong&gt; Log data with temporary structure should at least go to other tables with log nature, or even to different machines that are handling the archival log and are not part of the critical, transactional production scope.
+&lt;ul&gt;
+&lt;li&gt;You can write records to the transactional table, and when they retire instead of deleting move them to a log table.&lt;/li&gt;
+&lt;li&gt;You can double write records on creation to the transactional table and the log table, then mirror the entire lifecycle on both tables.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Typical scenarios where Tombstones are deadly:&lt;/strong&gt; A queue-like structure in a table (&amp;ldquo;Picklists&amp;rdquo;, &amp;ldquo;Producer/Consumer Scenarios&amp;rdquo;, &amp;ldquo;State machines in a table&amp;rdquo;)
+&lt;ul&gt;
+&lt;li&gt;It is sometimes okay to keep old inventory records around in a lookup table if there is a chance that items elsewhere still refer to the deactivated inventory.&lt;/li&gt;
+&lt;li&gt;In general, it is often useful in transactional systems to keep the working set aggressively small, and then keep non-critical data in other tables in the same system, or even in dedicated non-transactional systems. How little data do I need in order to be able to take their money successfully?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;partitions&#34;&gt;
+    &lt;a href=&#34;#partitions&#34;&gt;
+	Partitions
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Partitions are a way to split a large table internally into a number of small tables, while still presenting the interface of a single table to the user.
+&lt;strong&gt;They may be useful for tables &amp;gt; 30 GB in size, a quarter of an instance&amp;rsquo;s memory size.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Partitioning always works on the primary key, or the prefix of a compound (multi-column) primary key.
+Internally, MySQL uses (a part of) the primary key to decide into which internal table (partition) to put the row.
+The optimizer may use this to reduce the number of partitions to search when running queries.&lt;/p&gt;
+&lt;p&gt;Also, instead of deleting many rows individually, it may be possible to speed up some deletions by running an &lt;code&gt;ALTER TABLE ... DROP PARTITION ...&lt;/code&gt; to quickly remove data.
+On the other hand, running DDL queries in the normal application workflow likely is going to need a compliance exception.&lt;/p&gt;
+&lt;p&gt;Partitions can work on a &lt;code&gt;RANGE&lt;/code&gt; or &lt;code&gt;LIST&lt;/code&gt; of column values, or on a hash function (&lt;code&gt;KEY&lt;/code&gt; uses a system-supplied hash, &lt;code&gt;HASH&lt;/code&gt; uses a user-supplied function).
+&lt;code&gt;RANGE&lt;/code&gt; and &lt;code&gt;LIST&lt;/code&gt; can speed up queries by enabling the optimizer to eliminate partitions before access. &lt;code&gt;HASH&lt;/code&gt; and &lt;code&gt;KEY&lt;/code&gt; &amp;ldquo;spray&amp;rdquo; data across many partitions, and can make insertion faster and more even.&lt;/p&gt;
+&lt;p&gt;Talk to a DBA about planning proper partitioning, taking your workload and access pattern into account.&lt;/p&gt;
+&lt;h2 id=&#34;using-mysql-in-a-replication-environment&#34;&gt;
+    &lt;a href=&#34;#using-mysql-in-a-replication-environment&#34;&gt;
+	Using MySQL in a replication environment
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Our MySQL is always &lt;a href=&#34;https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html&#34;&gt;in a treelike replication structure&lt;/a&gt;
+
+ to place read copies of the data close to the application. This provides low latency data access.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Writes always go to the root of the replication tree, the current primary.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Your application has access to segregated read and write handles for database access.
+&lt;strong&gt;Make sure you are using the proper handle.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Replication speed is mostly a function of workload.&lt;/strong&gt; DBAs can keep replication running, but they cannot really make a server replicate faster.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Use replication-aware bulk functions.&lt;/strong&gt; Your database access library has functions to prevent overloading a replication hierarchy. Use them, and when they don&amp;rsquo;t work - &lt;strong&gt;don’t get creative, get help&lt;/strong&gt;.&amp;quot;
+&lt;ul&gt;
+&lt;li&gt;DBAs can indeed speed up replication by changing the server configuration to a mode where disk writes are not properly persisted. By writing to disk less the server can replicate faster, at the cost of losing data should there be a fail-over situation while this configuration is active. This is known as &amp;ldquo;YOLO&amp;rdquo;-Mode.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Our MySQL topology is managed by a program called &lt;a href=&#34;https://www.percona.com/blog/2016/03/08/orchestrator-mysql-replication-topology-manager/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Orchestrator&lt;/a&gt;
+
+.
+Orchestrator takes care of Primaries and Intermediate Servers failing, rearranging the surviving members into a valid replication tree.
+It also informs our server discovery mechanisms of the change.
+This means:
+&lt;ul&gt;
+&lt;li&gt;Your application cannot rely on write- and read-handles pointing to static machines, when DNS is used.
+&lt;strong&gt;You must re-resolve hostnames immediately before reconnecting.&lt;/strong&gt;
+You must make sure that your code does not internally cache DNS query results (Java!).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;debugging-performance-problems&#34;&gt;
+    &lt;a href=&#34;#debugging-performance-problems&#34;&gt;
+	Debugging performance problems
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;high-cpu&#34;&gt;
+    &lt;a href=&#34;#high-cpu&#34;&gt;
+	High CPU?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;MySQL typically does not use much CPU.
+Servers with high CPU usage are having one of three problems:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Queries not using indexes, scanning a table completely, in memory.
+&lt;ul&gt;
+&lt;li&gt;Identify the query not using indexes and fix the schema or the query (see below).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Excessive sorting in the server.
+&lt;ul&gt;
+&lt;li&gt;If possible, access the data in index order, or do the sorting in the client where it scales better.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Code in the database is being run (i.e. somebody has been using stored procedures, stored functions or similar)
+&lt;ul&gt;
+&lt;li&gt;Destroy the codebase and start over from scratch.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;finding-problematic-queries-using-vividcortex&#34;&gt;
+    &lt;a href=&#34;#finding-problematic-queries-using-vividcortex&#34;&gt;
+	Finding problematic queries using Vividcortex
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;On many replication hierarchies we have probes running that log query data into &amp;ldquo;Solarwinds DPM&amp;rdquo; (previously known as VividCortex).
+If you do not have access or your replication hierarchy has no probes, contact DBA.&lt;/p&gt;
+&lt;h2 id=&#34;finding-problematic-queries-using-sys&#34;&gt;
+    &lt;a href=&#34;#finding-problematic-queries-using-sys&#34;&gt;
+	Finding problematic queries using &lt;code&gt;sys.*&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;All database servers by default have installed a series of views in &lt;code&gt;sys.*&lt;/code&gt;.
+These read data from &lt;code&gt;performance_schema.*&lt;/code&gt; (P_S for short), which is partially enabled on all machines.&lt;/p&gt;
+&lt;p&gt;P_S is documented in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://dev.mysql.com/doc/refman/8.0/en/performance-schema.html&lt;/a&gt;
+
+.
+It is optimized for logging performance data without impacting performance much.
+It is not optimized for access by humans.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;sys.*&lt;/code&gt; (sys for short) is fixing that, presenting a number of useful views on P_S, for human consumption and reporting.
+sys is documented in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/sys-schema.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://dev.mysql.com/doc/refman/8.0/en/sys-schema.html&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;All views in sys exist in two variants: the regular variant for humans (&lt;code&gt;sys.host_summary_by_file_io&lt;/code&gt;) and the &lt;code&gt;x$&lt;/code&gt; variant presenting unabridged data at full resolution for reporting (&lt;code&gt;sys.x$host_summary_by_file_io&lt;/code&gt;).
+Numbers in the regular variant are shortened and suffixed with units (&amp;ldquo;15m&amp;rdquo;, &amp;ldquo;100k&amp;rdquo;) or transformed into human time scales (runtime &lt;code&gt;01:02:03&lt;/code&gt;). Numbers in &lt;code&gt;x$&lt;/code&gt; views are presented raw.
+It is useful to work interactively with the regular variants and the run the final report on the &lt;code&gt;x$&lt;/code&gt; variant for full data.&lt;/p&gt;
+&lt;p&gt;Note that meaningful performance data can be gathered only on production instances, but you can craft performance insight queries on test instances easily.
+You will then need to run these on production instances to actually get production performance data.&lt;/p&gt;
+&lt;h2 id=&#34;missing-indexes&#34;&gt;
+    &lt;a href=&#34;#missing-indexes&#34;&gt;
+	Missing indexes
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The most common cause for slow query execution is &amp;ldquo;missing indexes&amp;rdquo;.
+Once you have identified queries with slow execution time using Solarwinds DPM or sys, run the &lt;code&gt;explain&lt;/code&gt; command on them to see their execution plan.
+Refer to &lt;a href=&#34;https://www.slideshare.net/isotopp/explaining-explain&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Explaining EXPLAIN: Queries and what happens when you execute them&lt;/a&gt;
+
+ (&lt;a href=&#34;https://www.slideshare.net/isotopp/explain-explain-no-presenter-notes&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;version without presenter nodes&lt;/a&gt;
+
+) to better understand what goes on.&lt;/p&gt;
+&lt;p&gt;Most commonly, one of these things needs fixing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;add missing indexes&lt;/li&gt;
+&lt;li&gt;formulate a query with dependent subqueries to use some kind of join&lt;/li&gt;
+&lt;li&gt;formulate a query with multiple range clauses in a way that resolves in multiple steps&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;DBA can help you with this of problem.&lt;/p&gt;
+&lt;h2 id=&#34;mismatching-types&#34;&gt;
+    &lt;a href=&#34;#mismatching-types&#34;&gt;
+	Mismatching types
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A longstanding problem in MySQL was a type mismatch in a join.
+If you have a query with a &lt;code&gt;a JOIN b ON a.col1 = b.col1&lt;/code&gt;, and the instances of &lt;code&gt;col1&lt;/code&gt; in the two tables have incompatible (different, and not coercible) types, an index cannot be used to resolve the query, even if it exists.
+That is, if &lt;code&gt;col1&lt;/code&gt; is a &lt;code&gt;varchar&lt;/code&gt; in &lt;code&gt;a&lt;/code&gt;, but an &lt;code&gt;int&lt;/code&gt; in &lt;code&gt;b&lt;/code&gt;, the join will be slow.&lt;/p&gt;
+&lt;p&gt;The problem can also often be provoked in a &lt;code&gt;WHERE&lt;/code&gt; clause such as &lt;code&gt;WHERE a.col1 = &amp;quot;value&amp;quot;&lt;/code&gt;, with &lt;code&gt;a.col1&lt;/code&gt;
+being integer, and &lt;code&gt;&amp;quot;value&amp;quot;&lt;/code&gt; written as a string literal due to the quotes.
+Again, an index, even if it exists, won&amp;rsquo;t be used.&lt;/p&gt;
+&lt;h2 id=&#34;bad-paging&#34;&gt;
+    &lt;a href=&#34;#bad-paging&#34;&gt;
+	Bad Paging
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;(based on an idea from Yves Orton)&lt;/p&gt;
+&lt;p&gt;The query &lt;code&gt;SELECT id FROM Whatever LIMIT 10360000,10000&lt;/code&gt; is an example of paging, where a user or a script want to read a large, full result set in chunks of 10k.&lt;/p&gt;
+&lt;p&gt;This is not an efficient practice, as the database has to execute the same query over and over.
+It may be able to apply some mild optimizations for low limit values (at the start of the paging), but eventually it will have to reproduce large parts of the full table, handing out fragments of 10k rows.
+On top of that, MySQL represents result sets internally in a linked list, so &lt;code&gt;LIMIT&lt;/code&gt; clauses with large offset values are very inefficient.&lt;/p&gt;
+&lt;p&gt;We could instead fetch one row more, while reading in table native order.
+This will get of the offset part in the &lt;code&gt;LIMIT&lt;/code&gt; clause.
+It will not have to physically sort, as the table is read in native primary key order.
+And it will only access actual 10k fragments of the table.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Whatever&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;order&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;limit&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10001&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We output 10k values, and take the final value as a new starting point &lt;code&gt;lastid&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Whatever&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lastid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;order&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;limit&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10001&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and so on.&lt;/p&gt;
+&lt;h1 id=&#34;specific-host-languages&#34;&gt;
+    &lt;a href=&#34;#specific-host-languages&#34;&gt;
+	Specific Host languages
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;python&#34;&gt;
+    &lt;a href=&#34;#python&#34;&gt;
+	Python
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;As a developer using Python, I want to be able to hand a &lt;code&gt;list&lt;/code&gt; to SQL with a &lt;code&gt;WHERE id IN (…)&lt;/code&gt; clause, and it should do the right thing.
+This can be done by using a prepared statement like &lt;code&gt;SELECT .... WHERE `foo` IN %s ...&lt;/code&gt; and passing in a &lt;code&gt;list&lt;/code&gt; or a &lt;code&gt;tuple&lt;/code&gt;
+for the placeholder variable.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Full discussion in &lt;a href=&#34;https://blog.koehntopp.info/2021/10/28/python-where-in.html&#34;&gt;Python: WHERE &amp;hellip; IN (&amp;hellip;)&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Important caveats:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;There are no &lt;code&gt;()&lt;/code&gt; in the prepared statement after the &lt;code&gt;IN&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Only &lt;code&gt;list&lt;/code&gt; and &lt;code&gt;tuple&lt;/code&gt; will work, no other iterables&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;As a developer using Python, I want to be able to trace the SQL.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Full discussion in &lt;a href=&#34;https://blog.koehntopp.info/2022/03/24/debugging-sql-in-python.html&#34;&gt;Python: Debug SQL&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;support&#34;&gt;
+    &lt;a href=&#34;#support&#34;&gt;
+	Support
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;host-version-user&#34;&gt;
+    &lt;a href=&#34;#host-version-user&#34;&gt;
+	Host, Version, User
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The DBA will have a much easier time in helping you, if you have the output of the following query ready when you ask them about your SQL performance problem.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@@&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will tell them the actual instance hostname, the precise version string of the database and the username (and by inference, the permissions) you are using to connect.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Debugging SQL in Python</title>
       <link>https://blog.koehntopp.info/2022/03/24/debugging-sql-in-python.html</link>
@@ -3696,186 +4626,6 @@ Observability by shell script on a root shell is a thing we have in abundance, b
  without having a privileged shell on the broken system.&lt;/p&gt;
 &lt;p&gt;So yeah, let’s upgrade.&lt;/p&gt;
 </description>
-    </item>
-    
-    <item>
-      <title>MySQL: Import CSV, not using LOAD DATA</title>
-      <link>https://blog.koehntopp.info/2020/09/28/mysql-import-csv-not-using-load-data.html</link>
-      <pubDate>Mon, 28 Sep 2020 18:00:34 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2020/09/28/mysql-import-csv-not-using-load-data.html</guid>
-      <description>&lt;p&gt;All over the Internet people are having trouble getting &lt;code&gt;LOAD DATA&lt;/code&gt; and &lt;code&gt;LOAD DATA LOCAL&lt;/code&gt; to work. Frankly, do not use them, and especially not the &lt;code&gt;LOCAL&lt;/code&gt; variant. They are insecure, and even if you get them to work, they are limited and unlikely to do what you want. Write a small data load program as shown below.&lt;/p&gt;
-&lt;h2 id=&#34;not-using-load-data-local&#34;&gt;
-    &lt;a href=&#34;#not-using-load-data-local&#34;&gt;
-	Not using LOAD DATA LOCAL
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/load-data-local-security.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The fine manual says&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The LOCAL version of LOAD DATA has two potential security issues:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Because LOAD DATA LOCAL is an SQL statement, parsing occurs on the server side, and transfer of the file from the client host to the server host is initiated by the MySQL server, which tells the client the file named in the statement. In theory, a patched server could tell the client program to transfer a file of the server&amp;rsquo;s choosing rather than the file named in the statement. Such a server could access any file on the client host to which the client user has read access. (A patched server could in fact reply with a file-transfer request to any statement, not just LOAD DATA LOCAL, so a more fundamental issue is that clients should not connect to untrusted servers.)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In a Web environment where the clients are connecting from a Web server, a user could use LOAD DATA LOCAL to read any files that the Web server process has read access to (assuming that a user could run any statement against the SQL server). In this environment, the client with respect to the MySQL server actually is the Web server, not a remote program being run by users who connect to the Web server.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The second issue in reality means that if the web server has a suitable SQL injection vulnerability, the attacker may use that to read any file the web server has access to, bouncing this through the database server.&lt;/p&gt;
-&lt;p&gt;In short, never use (or even enable) &lt;code&gt;LOAD DATA LOCAL&lt;/code&gt;.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;local_infile&lt;/code&gt; is disabled in the server config, and you should keep it that way.&lt;/li&gt;
-&lt;li&gt;client libraries are by default compiled with &lt;code&gt;ENABLED_LOCAL_INFILE&lt;/code&gt; set to off. It can still be enabled using a call to the &lt;code&gt;mysql_options()&lt;/code&gt; C-API, but never do that.&lt;/li&gt;
-&lt;li&gt;8.0.21+ places additional restrictions on this, to prevent you from being stupid (that is, actually enabling this anywhere).&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;not-using-load-data&#34;&gt;
-    &lt;a href=&#34;#not-using-load-data&#34;&gt;
-	Not using LOAD DATA
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The &lt;code&gt;LOAD DATA&lt;/code&gt; variant of the command assumes that you place a file on the database server, into a directory in the file system of the server, and load it from there. In the age of &amp;ldquo;MySQL as a service&amp;rdquo; this is inconvenient to impossible, so forget about this option, too.&lt;/p&gt;
-&lt;p&gt;If you were able to do place files onto the system where your mysqld lives,&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;your user needs to have &lt;code&gt;FILE&lt;/code&gt; as a privilege, a global privilege (&lt;code&gt;GRANT FILE TO ... ON *.*&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;the server variable &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_secure_file_priv&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;secure_file_priv&lt;/code&gt;&lt;/a&gt;
-
- needs to be set to a directory name, and that directory needs to be world-readable. &lt;code&gt;LOAD DATA&lt;/code&gt; and &lt;code&gt;SELECT INTO OUTFILE&lt;/code&gt; work only with filenames below this directory. Setting this variable requires a server restart, this is not a dynamic variable (on purpose).&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Note that the variable can be &lt;code&gt;NULL&lt;/code&gt; (this is secure in the sense that &lt;code&gt;LOAD DATA&lt;/code&gt; is disabled) or empty (this is insecure in that there are no restrictions).&lt;/p&gt;
-&lt;p&gt;There is nothing preventing you from setting the variable to &lt;code&gt;/var/lib/mysql&lt;/code&gt; or other dumb locations which would expose vital system files to load and save operations. Do not do this.&lt;/p&gt;
-&lt;p&gt;Also, a location such as &lt;code&gt;/tmp&lt;/code&gt; or any other world-writeable directory would be dumb: Use a dedicated directory that is writeable by the import user only, and make sure that it is world-readable in order to make the command work.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Better:&lt;/strong&gt; Do not use this command at all (and set &lt;code&gt;secure_file_priv&lt;/code&gt; to NULL).&lt;/p&gt;
-&lt;h2 id=&#34;using-data-dump-and-load-programs-instead&#34;&gt;
-    &lt;a href=&#34;#using-data-dump-and-load-programs-instead&#34;&gt;
-	Using data dump and load programs instead
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;We spoke about dumping a schema into CSV files in &lt;a href=&#34;https://blog.koehntopp.info/2020/06/20/export-the-entire-database-to-csv.html&#34;&gt;Export the entire database to CSV&lt;/a&gt;
-
- already.&lt;/p&gt;
-&lt;p&gt;To complete the discussion we need to provide a way to do the inverse and load data from a CSV file into a table.&lt;/p&gt;
-&lt;p&gt;The full code is in &lt;a href=&#34;https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-csv/load.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;load.py&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;The main idea is to open a &lt;code&gt;.csv&lt;/code&gt; file with &lt;code&gt;csv.reader&lt;/code&gt;, and then iterate over the rows. For each row, we execute an &lt;code&gt;INSERT&lt;/code&gt; statement, and every few rows we also &lt;code&gt;COMMIT&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;In terms of dependencies, we rely on &lt;code&gt;MySQLdb&lt;/code&gt; and &lt;code&gt;csv&lt;/code&gt;:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;MySQLdb&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;csv&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We need to know the name of a table, and the column names of that table (in the order in which they appear).&lt;/p&gt;
-&lt;p&gt;We should also make sure we can change the delimiter and quoting character used by the CSV, and make the commit interval variable.&lt;/p&gt;
-&lt;p&gt;Finally, we need to be able to connect to the database.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# table to load into&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;table&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# column names to load into&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;columns&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# formatting options&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;delimiter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;,&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;quotechar&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#34;&amp;#39;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# commit every commit_interval lines&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;commit_interval&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# connect to database, set mysql_use_results mode for streaming&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;localhost&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;passwd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;geheim&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;From this, we can build a database connection and an &lt;code&gt;INSERT&lt;/code&gt; statement, using the table name and column names:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# build a proper insert command&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;insert into &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt; ( &amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;, &amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;columns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;) values (&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;%s&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;,&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;columns&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[:&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;)&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;cmd = &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The actual code is then rather simple: Open the CSV file, named after the table, and create a &lt;code&gt;csv.reader()&lt;/code&gt;. Using this, we iterate over the rows.&lt;/p&gt;
-&lt;p&gt;For each row, we execute the insert statement.&lt;/p&gt;
-&lt;p&gt;Every &lt;code&gt;commit_interval&lt;/code&gt; rows we commit, and for good measure we also commit after finishing, to make sure any remaining rows also get written out.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;with&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;open&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;.csv&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;r&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;csvfile&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;reader&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;csv&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;reader&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;csvfile&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;delimiter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;delimiter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;quotechar&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;quotechar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# insert the rows as we read them&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;reader&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# ever commit_interval we issue a commit&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;commit_interval&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# final commit to the remainder&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And that it. That&amp;rsquo;s all the code.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;No &lt;code&gt;FILE&lt;/code&gt; privilege,&lt;/li&gt;
-&lt;li&gt;No special permissions besides &lt;code&gt;insert_priv&lt;/code&gt; into the target table.&lt;/li&gt;
-&lt;li&gt;No config in the database.&lt;/li&gt;
-&lt;li&gt;No server restart to set up the permissions.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;And using Python&amp;rsquo;s multiprocessing, you could make it load multiple tables in parallel or chunk a very large table and load that in parallel - assuming you have database hardware that could profit from any of this.&lt;/p&gt;
-&lt;p&gt;In any case - this is simpler, more secure and less privileged than any of the broken &lt;code&gt;LOAD DATA&lt;/code&gt; variants.&lt;/p&gt;
-&lt;p&gt;Don&amp;rsquo;t use them, write a loader program.&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s run it. First we generate some data, using the previous example from the partitions tutorial:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py setup-tables
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql-partitions/partitions.py start-processing
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;create p2 reason: not enough partitions
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p2 values less than ( 20000))
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;create p3 reason: not enough partitions
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p3 values less than ( 30000))
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;create p4 reason: not enough partitions
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p4 values less than ( 40000))
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;create p5 reason: not enough partitions
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p5 values less than ( 50000))
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;create p6 reason: not enough empty partitions
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cmd = alter table data add partition ( partition p6 values less than ( 60000))
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;counter = 1000
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;counter = 2000
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;counter = 3000
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;counter = 4000
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;^CError in atexit._run_exitfuncs:               
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We then dump the data, truncate the table, and reload the data. We count the rows to be sure we get all of them back.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql-csv/dump.py
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;table = data
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &amp;#39;select count(*) from data&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql: [Warning] Using a password on the command line interface can be insecure.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| count(*) |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;|     4511 |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &amp;#39;truncate table data&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql: [Warning] Using a password on the command line interface can be insecure.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql-csv/load.py
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cmd = insert into data ( id, d, e) values (%s,%s,%s)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;(venv) kris@server:~/Python/mysql$ mysql -u kris -pgeheim kris -e &amp;#39;select count(*) from data&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql: [Warning] Using a password on the command line interface can be insecure.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| count(*) |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;|     4511 |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
     </item>
     
   </channel>
