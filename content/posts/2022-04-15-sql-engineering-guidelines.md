@@ -403,7 +403,7 @@ The following rules have been proven to be useful guidance in the past:
       This can lead to lock escalation and a higher deadlock rate, impacting throughput.
     - With foreign key constraints it is possible to create undeletable and unupdatable rows.
     - Foreign Key Constraints with `ON UPDATE` and `ON DELETE` clauses can cause spooky action at a distance, and can also large bulk deletes and updates that will break replication.
-    - Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database spliots. 
+    - Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database splits. 
       Table changes become extremely toil for everyone involved.
     - Because of that we recommend you do not use foreign key constraints.
       They usually provide a lot of toil and little benefit.
@@ -526,7 +526,7 @@ Talk to a DBA about planning proper partitioning, taking your workload and acces
 - Your application has access to segregated read and write handles for database access.
   **Make sure you are using the proper handle.**
 - **Replication speed is mostly a function of workload.** DBAs can keep replication running, but they cannot really make a server replicate faster.
-- **Use replication-aware bulk functions.** Your database access library has functions to prevent overloading a replication hierarchy. Use them, and when they don't work - **don’t get creative, get help**."
+- **Use replication-aware bulk functions.** Your database access library has functions to prevent overloading a replication hierarchy. Use them, and when they don't work - "**don’t get creative, get help**."
     - DBAs can indeed speed up replication by changing the server configuration to a mode where disk writes are not properly persisted. By writing to disk less the server can replicate faster, at the cost of losing data should there be a fail-over situation while this configuration is active. This is known as "YOLO"-Mode.
 - Our MySQL topology is managed by a program called [Orchestrator](https://www.percona.com/blog/2016/03/08/orchestrator-mysql-replication-topology-manager/).
   Orchestrator takes care of Primaries and Intermediate Servers failing, rearranging the surviving members into a valid replication tree.
