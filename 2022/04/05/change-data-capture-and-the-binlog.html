@@ -158,14 +158,16 @@ How replication came to be I have discussed previously <a href="https://blog.koe
     </a>
 </h1>
 <p>When using Row Based Replication, the Row Change event is represented using the <code>BINLOG</code> statement in the output of the <code>mysqlbinlog</code> command.
-It has a single string parameter, the pre- and post-change row images.</p>
+It has a single string parameter, the base64 encoded pre- and post-change row images.</p>
 <p>Adding the <code>-v</code> option multiple times will decode that:  <code>mysqlbinlog -vvv</code>.
 It shows a pseudo SQL statement affecting a single row.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> at <span class="m">1140</span>
-</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">220404</span> 16:34:41 server id <span class="m">187076016</span>  end_log_pos <span class="m">1140</span> CRC32 0x0112f9b6         Table_map: <span class="sb">`</span>kris<span class="sb">`</span>.<span class="sb">`</span>testtable<span class="sb">`</span> mapped to number <span class="m">92</span>
-</span></span><span class="line"><span class="cl"><span class="gp">#</span> at <span class="m">1140</span>
-</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">220404</span> 16:34:41 server id <span class="m">187076016</span>  end_log_pos <span class="m">1140</span> CRC32 0xe3714794         Delete_rows: table id <span class="m">92</span> flags: STMT_END_F
-</span></span><span class="line"><span class="cl"><span class="err">
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">220404</span> 16:34:41 server id <span class="m">187076016</span>  end_log_pos <span class="m">1140</span> CRC32 0x0112f9b6 
+</span></span><span class="line"><span class="cl"><span class="go">         Table_map: `kris`.`testtable` mapped to number 92
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> at <span class="m">1140</span>
+</span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">220404</span> 16:34:41 server id <span class="m">187076016</span>  end_log_pos <span class="m">1140</span> CRC32 0xe3714794
+</span></span><span class="line"><span class="cl"><span class="go">         Delete_rows: table id 92 flags: STMT_END_F
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">BINLOG &#39;
 </span></span></span><span class="line"><span class="cl"><span class="go">AQJLYhOwjSYLWwAAAAAAAAAAAFwAAAAAAAEAEHBheW1lbnRjb21wb25lbnQAFHBheW1lbnRfc2Vz
 </span></span></span><span class="line"><span class="cl"><span class="go">c2lvbl9kYXRhAAUI9Q8P9QYEFgCHAAQeAQEAAgEItvkSAQ==
@@ -203,13 +205,12 @@ In this case, the <code>TEXT</code> is replicated twice per changed row, unchang
 </h1>
 <p>Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.</p>
 <p>We want to store several days of binlog, in order to be able to roll forward from restored backups.
-But because some replication hierarchies see a lot of churn, we get a lot of rows changes due to all these write operations.
-That is not unexpected: Online Transaction Processing has a singular purpose in life: to transact.
-So we expect to see a lot of transactions.</p>
+But because some replication hierarchies see a lot of churn, we get many row changes due to all these write operations.
+We should expect that: Online Transaction Processing has a singular purpose in life &ndash; to transact.</p>
 <p>Using compression, we use less disk space to store transaction, so we can store more of them in the same amount of disk space.
 MySQL compressed binlog events using zstd compression.
 Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.</p>
-<p>That is slightly less efficient than per-file, but has the advantage of easy implementation:
+<p>Per-event compression is slightly less efficient than per-file, but has the advantage of easy implementation:
 After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.</p>
 <p>That makes it easy for all binlog consumers to update to the new format with minimal changes:
 Basically you need to add zstd as a dependency, and if you see a compressed event, decompress it and handle it as before.</p>

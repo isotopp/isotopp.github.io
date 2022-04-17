@@ -150,7 +150,7 @@
         <p>Where I work, the native database is MySQL.
 This is what the database team fully supports.</p>
 <p>Other databases, notably Postgres, are in use mostly because external products we run require them.
-Internal project should use MySQL.
+Internal projects should use MySQL.
 An external company provides limited support for running Postgres.</p>
 <p>The recommended version of MySQL to be used is currently the latest 8.0.
 It has a large number of improvements over the previous version 5.7 in terms of the SQL subset supported, handling of sorts, critical character set support and join strategies.
@@ -286,15 +286,16 @@ Group replication will be unhappy if you don&rsquo;t.</li>
 <p>If the optimizer were to brute-force all possible <code>JOIN</code> combinations on an <code>n</code>-way table <code>JOIN</code>, the number of combinations would be <code>n!</code> (n-th faculty).
 This becomes an unwieldy number at a value of <code>n=10</code>.</p>
 <p>The optimizer will have to apply heuristics around a join-plan depth of 10, and do weird things, including sometimes missing obvious optimizations.</p>
-<p>This is usually not a problem, but if you are using an ORM and have deep class hierarchies, you may be hitting this limits inadvertently.
+<p>This is usually not a problem, but if you are using an ORM and have deep class hierarchies, you may be hitting this limit inadvertently.
 Be aware of your class-subclass relationships and how they are modelled, and what SQL is being generated.</p>
 <h3 id="bulk-updates-large-deletes-inserts-updates">
     <a href="#bulk-updates-large-deletes-inserts-updates">
 	Bulk updates (large deletes, inserts, updates)
     </a>
 </h3>
-<p>Very large atomic transactions are being executed on the primary, and on commit, enter the binlog. They then go downstream and execute on the replicas of than level, and so on.</p>
-<p>That means a large change such as <code>DELETE FROM sales WHERE article_id = 17</code> has the potential to make changes to very many rows. The update can take noticeable time, or depending on the data, even run for minutes or hours. The change can stall replicas, induce replication delay or otherwise impact production.</p>
+<p>Very large atomic transactions are being executed on the primary, and on commit, enter the binlog. They then go downstream and execute on the replicas of that level, and so on.</p>
+<p>As each replica has the same data as the primary, they will all approximately complete the statement at the same time. Your busy query will hog all replicas at the same tier at approximately the same time. You will likely lose capacity at each tier of the replication tree at once when executing such a large transaction.</p>
+<p>A query such as <code>DELETE FROM sales WHERE article_id &lt; 1000000</code> has the potential to make changes to very many rows. The update can take noticeable time, or depending on the data, even run for minutes or hours. The change can stall replicas, induce replication delay or otherwise impact production.</p>
 <p>In all our supported languages packages, we have replication aware bulk update functions to handle this:
 They will break up such large changes into manageable chunks, and execute them while monitoring replication lag.
 Be sure to make good use of them, they exist for a reason.</p>
@@ -335,7 +336,7 @@ On Mac and Windows, with case-insensitive filesystems, they will be the same tab
 <ul>
 <li><a href="https://dev.mysql.com/doc/refman/8.0/en/keywords.html" target="_blank" rel="noopener">MySQL 8 list of reserved words</a>
 
- lists keywords, reserved words, new keywords and reserved words - none of them should be used.</li>
+ lists keywords, reserved words, new keywords and reserved words - none of them should be used, even if some of them technically can be used.</li>
 <li>If you must, quoting table and column names (<code>`table_name`</code>.<code>`column_name`</code>) avoids reserved word problems completely.</li>
 <li>Theoretically, using backticks it is possible to have column names and table names that contain spaces, or even emoji.
 Don&rsquo;t even think about that, much less try it.</li>
@@ -473,7 +474,9 @@ NULL values do not compare normally, so wrap nullables into one of these functio
 <ul>
 <li><strong>Use <code>TINYINT</code> to store booleans.</strong>
 <ul>
-<li>MySQL does not have a native boolean type, so we use <code>TINYINT</code>.
+<li>MySQL <a href="https://dev.mysql.com/doc/refman/8.0/en/other-vendor-data-types.html" target="_blank" rel="noopener">does not have a native boolean type</a>
+
+, so we use <code>TINYINT</code>.
 It uses one byte.</li>
 <li>Clever hacks exist to exploit nullability (<code>CHAR(0) NULL</code> columns) or bitfields to store data more densely.
 These usually backfire later in the software development lifecycle.
@@ -504,7 +507,7 @@ They have been used in the past, and usually later created an upgrade problem wh
 <li>
 <p><strong>Always choose <code>double</code>. Never use <code>float</code>.</strong></p>
 <ul>
-<li>It is a 32 bit floating point number, and the range and precision is usually too small to be useful.</li>
+<li><code>FLOAT</code> is a 32 bit floating point number, and the range and precision is usually too small to be useful.</li>
 </ul>
 </li>
 <li>
@@ -698,7 +701,7 @@ The effect is that Emoji and other letters with 4-byte UTF-8 encodings cannot be
 </h2>
 <ul>
 <li>
-<p><strong>Avoid foreign key constraints, unless you are in departments that specifically require you use them.</strong>
+<p><strong>Avoid foreign key constraints, unless you are in a department that specifically requires you use them.</strong>
 MySQL allows you to define foreign key constraints.
 They come at a price:</p>
 <ul>
@@ -712,6 +715,7 @@ This can lead to lock escalation and a higher deadlock rate, impacting throughpu
 <li>Foreign Key Constraints with <code>ON UPDATE</code> and <code>ON DELETE</code> clauses can cause spooky action at a distance, and can also cause large bulk deletes and updates that will break replication.</li>
 <li>Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database splits.
 Table changes become extremely toil for everyone involved.</li>
+<li>Foreign Key Constraints break Group Replication, which we depend on.</li>
 <li>Because of that we recommend you do not use foreign key constraints.
 They usually provide a lot of toil and little benefit.</li>
 <li>Exceptions exist. Check your departments engineering guides.</li>
@@ -803,7 +807,7 @@ You need to find out how your ORM creates RMW transactions.</p>
 <p>We cannot take an X-lock on the record and keep record ownership for a long time across a user interaction, because that will destroy performance in many ways (Imagine a user opening the edit screen and then going on vacation or even just a lunch break).</p>
 <p>There are two common ways to solve this, which are collectively called &ldquo;optimistic locking&rdquo;:</p>
 <ul>
-<li>You write back the change in an update where you guard the <code>UPDATE</code> with the full set of old column values in the update: <code>UPDATE t SET col1=new_value1, col2=new_value2, ... WHERE col1=old_value1, col2=old_value2, ...</code>. The update will fail and no change any row if any old value has changed since we loaded the original row into the editor presented to the user. It is then possible to present the change to the user and let them resolve the conflict.</li>
+<li>You write back the change in an update where you guard the <code>UPDATE</code> with the full set of old column values in the update: <code>UPDATE t SET col1=new_value1, col2=new_value2, ... WHERE col1=old_value1, col2=old_value2, ...</code>. The update will fail and not change any row, if any old value has changed since we loaded the original row into the editor presented to the user. It is then possible to present the change to the user and let them resolve the conflict.</li>
 <li>Similarly, we can have version numbers in each row, and guard the update with the version number. <code>UPDATE t SET col1=changed_value, version=old_version+1 WHERE id=pk_value AND version=old_version</code>. The update can happen on the combination of <code>id</code> and <code>version</code>, and will fail if the version changed while we were waiting for user input.
 <ul>
 <li>It is important for the version number to be <strong>not</strong> part of the primary key, because otherwise we get versioned entries in our data table. This is usually not a desirable trait in transactional systems (see <em>Tombstones</em> elsewhere).</li>
@@ -837,7 +841,7 @@ You need to find out how your ORM creates RMW transactions.</p>
     </a>
 </h2>
 <ul>
-<li><strong>Prefer <code>JOIN</code> over subqueries.</strong> MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it is usually still safer to write a <code>JOIN</code> than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.</li>
+<li><strong>Prefer <code>JOIN</code> over subqueries.</strong> MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it is usually still safer to write a <code>JOIN</code> than to use the equivalent subquery syntax. If you come from Red Oracle, you have learned things to be the other way around and need to adjust.</li>
 <li>This is especially true for subqueries with negations (<code>WHERE NOT EXIST</code>) to find missing values. Use a <code>LEFT JOIN</code> with <code>IS NULL</code> on a right-hand side value to achieve the same result much faster.</li>
 </ul>
 <h2 id="tombstones-is_deleted-flags">
@@ -856,7 +860,7 @@ You need to find out how your ORM creates RMW transactions.</p>
 </li>
 <li><strong>It is usually preferable to build transactional systems that are small and contain only life data in transactional tables.</strong> Log data with temporary structure should at least go to other tables with log nature, or even to different machines that are handling the archival log and are not part of the critical, transactional production scope.
 <ul>
-<li>You can write records to the transactional table, and when they retire instead of deleting move them to a log table.</li>
+<li>You can write records to the transactional table. When they retire, instead of deleting, move them to a log table.</li>
 <li>You can double write records on creation to the transactional table and the log table, then mirror the entire lifecycle on both tables.</li>
 </ul>
 </li>
