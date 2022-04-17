@@ -14,9 +14,11 @@ tags:
 - publication
 ---
 
-Dies ist eine aktualisierte Version der Schulung „Unix Systemsicherheits“, die ich vor einiger Zeit schon einmal gehalten habe.
+Dies ist eine aktualisierte Version der Schulung „Unix Systemsicherheit“, die ich vor einiger Zeit schon einmal gehalten habe.
 Der Schwerpunkt dieser Schulung hat sich etwas zu den Grundlagen hin verschoben:
-Es geht diesmal weniger um Unix Systemsicherheit als um die typische Situation der Consultants und Bereitschaftler - man kommt an eine neue Maschine und muss sich erst einmal zurechtfinden.
+Es geht diesmal weniger um Unix Systemsicherheit als um die typische Situation der Consultants und Bereitschaften:
+
+Man kommt an eine neue Maschine und muss sich erst einmal zurechtfinden.
 
 # Neu auf einem fremden System
 
@@ -28,18 +30,18 @@ Orientierung:
   - Speichersituation, historische und aktuelle Lastdaten
 - Netzwerk und Netzwerkumfeld der Maschine
 - IP-Adressen, Routing
-  - Welche Name Services in welcher Reihenfolge, welche Server werden verwendet?
+  - Welche Name-Services in welcher Reihenfolge, welche Server werden verwendet?
 - Was läuft, was soll laufen?
   - Was ist installiert?
   - tatsächlich laufende Subsysteme vs. konfigurierte Subsysteme
 
 Wir sind neu auf einem fremden System und loggen uns zum ersten Mal ein.
-Wie können wir uns zurecht finden? Was wollen wir überhaupt wissen?
+Wie können wir uns zurechtfinden? Was wollen wir überhaupt wissen?
 
 Die Maschine selbst ist nach Hardware, Speicher, Platten und Netzwerk zu beurteilen.
 Die Netzwerkumgebung der Maschine ist einzuschätzen.
 Die auf der Maschine installierten Systemdienste sind einzuschätzen und zu beurteilen.
-Es muß ein Soll/Ist-Abgleich stattfinden.
+Es muss ein Soll/Ist-Abgleich stattfinden.
 
 Ausgehend von diesen Daten kann die Arbeit auf der Maschine beginnen:
 
@@ -86,7 +88,7 @@ Der weitaus größte Teil aller Lastprobleme sind Speicherprobleme (zuwenig RAM,
 Zweithäufigstes Problem ist fehlende I/O-Kapazität.
 Fehlende CPU-Kapazität ist fast niemals das Problem.
 
-Erst messen, dann nachdenken, dann handeln.
+Erst messen, dann nachdenken, dann handeln (OODA loop -- Observe, Orient, Decide, Act).
 Optimierungen ohne genaue Messungen und Kenntnis des tatsächlichen Problems sind Verschwendung der durch den Kunden bezahlten Arbeitszeit.
 Punktmessungen können hilfreich sein, aber ein Wochenlastprofil ist sehr viel wertvoller (hier `sar`-Beispiele von `boss` und `prime` bringen).
 

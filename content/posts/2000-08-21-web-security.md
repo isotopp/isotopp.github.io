@@ -121,7 +121,7 @@ Aufräumen und Validierung bringt enorme Kosten!
 
 - Betriebssystem: Der Server bietet Dienste an, die er nicht anbieten muß/sollte.
 - Webserver: Der Server liefert Daten im Web, die dort nicht stehen müssen/sollten.
-- Webanwendung: Der Server glaubt Daten, die nicht aus vertrauens-würdigen Quellen stammen.
+- Webanwendung: Der Server glaubt Daten, die nicht aus vertrauenswürdigen Quellen stammen.
 
 - Server bietet Dienste an:
   - Zugriff auf NFS Fileshares von überall (FH Lüneburg)

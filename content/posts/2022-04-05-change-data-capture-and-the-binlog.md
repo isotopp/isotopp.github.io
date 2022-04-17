@@ -18,16 +18,18 @@ Modern replication uses row based replication, with a minimal row image and comp
 # Decoding the Binlog
 
 When using Row Based Replication, the Row Change event is represented using the `BINLOG` statement in the output of the `mysqlbinlog` command.
-It has a single string parameter, the pre- and post-change row images.
+It has a single string parameter, the base64 encoded pre- and post-change row images.
 
 Adding the `-v` option multiple times will decode that:  `mysqlbinlog -vvv`.
 It shows a pseudo SQL statement affecting a single row.
 
 ```console
 # at 1140
-#220404 16:34:41 server id 187076016  end_log_pos 1140 CRC32 0x0112f9b6         Table_map: `kris`.`testtable` mapped to number 92
+#220404 16:34:41 server id 187076016  end_log_pos 1140 CRC32 0x0112f9b6 
+         Table_map: `kris`.`testtable` mapped to number 92
 # at 1140
-#220404 16:34:41 server id 187076016  end_log_pos 1140 CRC32 0xe3714794         Delete_rows: table id 92 flags: STMT_END_F
+#220404 16:34:41 server id 187076016  end_log_pos 1140 CRC32 0xe3714794
+         Delete_rows: table id 92 flags: STMT_END_F
 
 BINLOG '
 AQJLYhOwjSYLWwAAAAAAAAAAAFwAAAAAAAEAEHBheW1lbnRjb21wb25lbnQAFHBheW1lbnRfc2Vz
@@ -71,15 +73,14 @@ Surprisingly, this is already quite efficient: For our workloads at work, RBR al
 Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.
 
 We want to store several days of binlog, in order to be able to roll forward from restored backups.
-But because some replication hierarchies see a lot of churn, we get a lot of rows changes due to all these write operations.
-That is not unexpected: Online Transaction Processing has a singular purpose in life: to transact.
-So we expect to see a lot of transactions.
+But because some replication hierarchies see a lot of churn, we get many row changes due to all these write operations.
+We should expect that: Online Transaction Processing has a singular purpose in life -- to transact.
 
 Using compression, we use less disk space to store transaction, so we can store more of them in the same amount of disk space.
 MySQL compressed binlog events using zstd compression.
 Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.
 
-That is slightly less efficient than per-file, but has the advantage of easy implementation:
+Per-event compression is slightly less efficient than per-file, but has the advantage of easy implementation:
 After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.
 
 That makes it easy for all binlog consumers to update to the new format with minimal changes:

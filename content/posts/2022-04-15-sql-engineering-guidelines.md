@@ -15,7 +15,7 @@ Where I work, the native database is MySQL.
 This is what the database team fully supports.
 
 Other databases, notably Postgres, are in use mostly because external products we run require them.
-Internal project should use MySQL.
+Internal projects should use MySQL.
 An external company provides limited support for running Postgres.
 
 The recommended version of MySQL to be used is currently the latest 8.0.
@@ -155,14 +155,16 @@ This becomes an unwieldy number at a value of `n=10`.
 
 The optimizer will have to apply heuristics around a join-plan depth of 10, and do weird things, including sometimes missing obvious optimizations.
 
-This is usually not a problem, but if you are using an ORM and have deep class hierarchies, you may be hitting this limits inadvertently.
+This is usually not a problem, but if you are using an ORM and have deep class hierarchies, you may be hitting this limit inadvertently.
 Be aware of your class-subclass relationships and how they are modelled, and what SQL is being generated.
 
 ### Bulk updates (large deletes, inserts, updates)
 
-Very large atomic transactions are being executed on the primary, and on commit, enter the binlog. They then go downstream and execute on the replicas of than level, and so on.
+Very large atomic transactions are being executed on the primary, and on commit, enter the binlog. They then go downstream and execute on the replicas of that level, and so on.
 
-That means a large change such as `DELETE FROM sales WHERE article_id = 17` has the potential to make changes to very many rows. The update can take noticeable time, or depending on the data, even run for minutes or hours. The change can stall replicas, induce replication delay or otherwise impact production.
+As each replica has the same data as the primary, they will all approximately complete the statement at the same time. Your busy query will hog all replicas at the same tier at approximately the same time. You will likely lose capacity at each tier of the replication tree at once when executing such a large transaction.   
+
+A query such as `DELETE FROM sales WHERE article_id < 1000000` has the potential to make changes to very many rows. The update can take noticeable time, or depending on the data, even run for minutes or hours. The change can stall replicas, induce replication delay or otherwise impact production.
 
 In all our supported languages packages, we have replication aware bulk update functions to handle this:
 They will break up such large changes into manageable chunks, and execute them while monitoring replication lag.
@@ -194,7 +196,7 @@ The following rules have been proven to be useful guidance in the past:
       On Mac and Windows, with case-insensitive filesystems, they will be the same table.
 - **Be consistent with column names.**
 - **Do not use MySQL keywords or reserved words as column names.**
-    - [MySQL 8 list of reserved words](https://dev.mysql.com/doc/refman/8.0/en/keywords.html) lists keywords, reserved words, new keywords and reserved words - none of them should be used.
+    - [MySQL 8 list of reserved words](https://dev.mysql.com/doc/refman/8.0/en/keywords.html) lists keywords, reserved words, new keywords and reserved words - none of them should be used, even if some of them technically can be used.
     - If you must, quoting table and column names (`` `table_name` ``.`` `column_name` ``) avoids reserved word problems completely.
     - Theoretically, using backticks it is possible to have column names and table names that contain spaces, or even emoji.
       Don't even think about that, much less try it.
@@ -269,7 +271,7 @@ The following rules have been proven to be useful guidance in the past:
 ### Boolean
 
 - **Use `TINYINT` to store booleans.**
-    - MySQL does not have a native boolean type, so we use `TINYINT`.
+    - MySQL [does not have a native boolean type](https://dev.mysql.com/doc/refman/8.0/en/other-vendor-data-types.html), so we use `TINYINT`.
       It uses one byte.
     - Clever hacks exist to exploit nullability (`CHAR(0) NULL` columns) or bitfields to store data more densely.
       These usually backfire later in the software development lifecycle.
@@ -285,7 +287,7 @@ The following rules have been proven to be useful guidance in the past:
 ### Fractional numbers and monetary values
 
 - **Always choose `double`. Never use `float`.**
-    - It is a 32 bit floating point number, and the range and precision is usually too small to be useful.
+    - `FLOAT` is a 32 bit floating point number, and the range and precision is usually too small to be useful.
 
 - In the past some projects have stored pricing information as `double`.
   This comes with its own set of problems.
@@ -392,7 +394,7 @@ The following rules have been proven to be useful guidance in the past:
 
 ## Foreign Key Constraints
 
-- **Avoid foreign key constraints, unless you are in departments that specifically require you use them.**
+- **Avoid foreign key constraints, unless you are in a department that specifically requires you use them.**
   MySQL allows you to define foreign key constraints.
   They come at a price:
     - Foreign key constraints can only refer to columns in the same database instance, but our schemas have more data than fits into a single schema, and often requires you work across database instances using multiple handles.
@@ -405,6 +407,7 @@ The following rules have been proven to be useful guidance in the past:
     - Foreign Key Constraints with `ON UPDATE` and `ON DELETE` clauses can cause spooky action at a distance, and can also cause large bulk deletes and updates that will break replication.
     - Foreign Key Constraints break all tooling we have for Online Schema Change and for automated database splits. 
       Table changes become extremely toil for everyone involved.
+    - Foreign Key Constraints break Group Replication, which we depend on.
     - Because of that we recommend you do not use foreign key constraints.
       They usually provide a lot of toil and little benefit.
     - Exceptions exist. Check your departments engineering guides.
@@ -465,7 +468,7 @@ We cannot take an X-lock on the record and keep record ownership for a long time
 
 There are two common ways to solve this, which are collectively called "optimistic locking":
 
-- You write back the change in an update where you guard the `UPDATE` with the full set of old column values in the update: `UPDATE t SET col1=new_value1, col2=new_value2, ... WHERE col1=old_value1, col2=old_value2, ...`. The update will fail and no change any row if any old value has changed since we loaded the original row into the editor presented to the user. It is then possible to present the change to the user and let them resolve the conflict.
+- You write back the change in an update where you guard the `UPDATE` with the full set of old column values in the update: `UPDATE t SET col1=new_value1, col2=new_value2, ... WHERE col1=old_value1, col2=old_value2, ...`. The update will fail and not change any row, if any old value has changed since we loaded the original row into the editor presented to the user. It is then possible to present the change to the user and let them resolve the conflict.
 - Similarly, we can have version numbers in each row, and guard the update with the version number. `UPDATE t SET col1=changed_value, version=old_version+1 WHERE id=pk_value AND version=old_version`. The update can happen on the combination of `id` and `version`, and will fail if the version changed while we were waiting for user input.
     - It is important for the version number to be **not** part of the primary key, because otherwise we get versioned entries in our data table. This is usually not a desirable trait in transactional systems (see *Tombstones* elsewhere).
 
@@ -485,7 +488,7 @@ Database servers are often more expensive and centralized machines compared to t
 
 ## Subqueries
 
-- **Prefer `JOIN` over subqueries.** MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it is usually still safer to write a `JOIN` than to use the equivalent subquery syntax. If you come from red Oracle, you have learned things to be the other way around and need to adjust.
+- **Prefer `JOIN` over subqueries.** MySQL 8 is better at optimizing subqueries than older versions of MySQL, but it is usually still safer to write a `JOIN` than to use the equivalent subquery syntax. If you come from Red Oracle, you have learned things to be the other way around and need to adjust.
 - This is especially true for subqueries with negations (`WHERE NOT EXIST`) to find missing values. Use a `LEFT JOIN` with `IS NULL` on a right-hand side value to achieve the same result much faster.
 
 ## Tombstones (`is_deleted` flags)
@@ -496,7 +499,7 @@ Database servers are often more expensive and centralized machines compared to t
     - The MTTR of the system after failure is higher because the database is larger, being bloated with dead data.
     - Actually physically deleting the tombstone data is a cumbersome process when done in large batches.
 - **It is usually preferable to build transactional systems that are small and contain only life data in transactional tables.** Log data with temporary structure should at least go to other tables with log nature, or even to different machines that are handling the archival log and are not part of the critical, transactional production scope.
-    - You can write records to the transactional table, and when they retire instead of deleting move them to a log table.
+    - You can write records to the transactional table. When they retire, instead of deleting, move them to a log table.
     - You can double write records on creation to the transactional table and the log table, then mirror the entire lifecycle on both tables.
 - **Typical scenarios where Tombstones are deadly:** A queue-like structure in a table ("Picklists", "Producer/Consumer Scenarios", "State machines in a table")
     - It is sometimes okay to keep old inventory records around in a lookup table if there is a chance that items elsewhere still refer to the deactivated inventory.
