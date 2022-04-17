@@ -6,7 +6,7 @@
     <description>Recent content in talk on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 17 Apr 2022 12:24:01 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/talk/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 17 Apr 2022 13:25:17 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/talk/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>A Journey to Open Compute</title>
       <link>https://blog.koehntopp.info/2018/02/21/a-journey-to-open-compute.html</link>
@@ -4027,6 +4027,734 @@ Kurzum: Zur nächsten Umdrehung im PCDA.&lt;/p&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>LDAP vs. SQL</title>
+      <link>https://blog.koehntopp.info/2002/01/31/ldap-vs-sql.html</link>
+      <pubDate>Thu, 31 Jan 2002 09:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2002/01/31/ldap-vs-sql.html</guid>
+      <description>&lt;h1 id=&#34;directory-services-vs-relationale-datenbanken&#34;&gt;
+    &lt;a href=&#34;#directory-services-vs-relationale-datenbanken&#34;&gt;
+	Directory Services vs. Relationale Datenbanken
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.001.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Überblick:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Eigenschaften von LDAP&lt;/li&gt;
+&lt;li&gt;Eigenschaften von SQL&lt;/li&gt;
+&lt;li&gt;Anwendungsbereiche von LDAP&lt;/li&gt;
+&lt;li&gt;Anwendungsbereiche von SQL&lt;/li&gt;
+&lt;li&gt;Strukturelle Probleme beim Einsatz von LDAP&lt;/li&gt;
+&lt;li&gt;Warum wird LDAP dennoch verwendet?&lt;/li&gt;
+&lt;li&gt;Gibt es weniger problematische Alternativen?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;ldap-im-schnelldurchlauf&#34;&gt;
+    &lt;a href=&#34;#ldap-im-schnelldurchlauf&#34;&gt;
+	LDAP im Schnelldurchlauf
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.002.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wald von Bäumen aus Knoten&lt;/li&gt;
+&lt;li&gt;Jeder Knoten hat mindestens die Attribute &lt;code&gt;dn&lt;/code&gt;, &lt;code&gt;objectClass&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Attribute sind ein- oder mehrwertig, haben Syntax (Typ)&lt;/li&gt;
+&lt;li&gt;Besonderes mehrwertiges Attribut &lt;code&gt;objectClass&lt;/code&gt; bestimmt, welche Attribute vorhanden sind MÜSSEN und DÜRFEN&lt;/li&gt;
+&lt;li&gt;Einwertiges Attribut &lt;code&gt;dn&lt;/code&gt; enthält den Pfad durch den Baum und ist Schlüssel (PK)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Novell Directory Services, Active Directory und LDAP basieren auf den Ideen von X.500.&lt;/p&gt;
+&lt;p&gt;Das Verzeichnis ist ein Wald von Wald von Knoten, Knoten haben Attribute, mindestens &lt;code&gt;dn&lt;/code&gt; und &lt;code&gt;objectClass&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Die Vereinigungsmenge von &lt;code&gt;objectClasses&lt;/code&gt; definiert, welche Attribute der Knoten haben MUSS und KANN. Dies entspricht NULL/NOT NULL in SQL.&lt;/p&gt;
+&lt;p&gt;Attribute haben eine Syntax (einen Typ). Attribute können einwertig (etwa: &lt;code&gt;dn&lt;/code&gt;) oder mehrwertig (etwa: &lt;code&gt;objectClass&lt;/code&gt;) sein.
+Mehrwertige Attribute sind ein Verstoß gegen die 1NF in SQL und müssen in SQL in externe Tabellen ausgelagert werden.
+Denormalisierungen ziehen idR Anomalien bei INSERT/UPDATE/DELETE nach sich.&lt;/p&gt;
+&lt;p&gt;Der &lt;code&gt;dn&lt;/code&gt; beschreibt den Pfad durch den Baum und ist PK. PKs sollen strukturlos und invariant sein. Daß der &lt;code&gt;dn&lt;/code&gt; nicht strukturlos ist, wird sich als bitteres Problem herausstellen. Daß der &lt;code&gt;dn&lt;/code&gt; Positionsinformation enthält wird ihn nahezu unbrauchbar als PK machen (aber LDAP offeriert keine Alternative).&lt;/p&gt;
+&lt;h1 id=&#34;sql-im-schnelldurchlauf&#34;&gt;
+    &lt;a href=&#34;#sql-im-schnelldurchlauf&#34;&gt;
+	SQL im Schnelldurchlauf
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.003.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Datenbank als Kollektion von Tabellen, Tabellen als Kollektion von Spalten, Spalten haben Typen&lt;/li&gt;
+&lt;li&gt;Spalten sind NULL, NOT NULL. Spalten sind einwertig.&lt;/li&gt;
+&lt;li&gt;Eine Spalte oder Gruppe von Spalten ist der PK.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Spaltendefinitionen mit Typen definieren ein rigides Typschema, das nur durch Nullwerte geringfügig aufgelockert wird.
+Dennoch flexible Struktur, da über Beziehungen zwischen Tabellen variable Verbindungen aufgezogen werden können.
+Schlüssel und Integritätsbedingungen sind frei definierbar und frei wählbar.&lt;/p&gt;
+&lt;p&gt;Umfangreiches Handwerkszeug zur Definition von Datenstrukturen und deren Pflege vorhanden.&lt;/p&gt;
+&lt;h1 id=&#34;sql-operationen&#34;&gt;
+    &lt;a href=&#34;#sql-operationen&#34;&gt;
+	SQL Operationen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.004.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;SQL erlaubt komplexe Operationen auf Tabellen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Selektion (WHERE-Clause) wählt Zeilen&lt;/li&gt;
+&lt;li&gt;Projektion (Spaltenliste) wählt Spalten&lt;/li&gt;
+&lt;li&gt;Aggregation (GROUP BY-Clause) erlaubt Zählungen&lt;/li&gt;
+&lt;li&gt;Join erlaubt Tabellenverknüpfungen&lt;/li&gt;
+&lt;li&gt;Rename erlaubt Self-Joins und damit rekursive Strukturen (Bäume etc)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Das Ergebnis jeder Operation ist wieder eine Tabelle. Mit Subqueries kann die generierte Tabelle weiter verarbeitet werden (Relationen &amp;ldquo;Algebra&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;Diese fünf Operationen erlauben es, den auf viele Tabellen verstreuten (normalisierten) Bestand dynamisch zu rekombinieren. Dabei sind auch Rekombinationen möglich, die ursprünglich nicht antizipiert wurden (Ad-Hoc Queries).
+Ad-Hoc Queries sind ein typisches Phänomen bei der Recherche und der Reportgenerierung.&lt;/p&gt;
+&lt;p&gt;SQL ist mächtig genug, um selbstreferentielle Strukturen definieren zu können.&lt;/p&gt;
+&lt;p&gt;Eine Reihe von Einbaufunktionen entlastet den Client noch weiter und erlaubt es, beträchtliche Teile der Logik im Server ablaufen zu lassen.&lt;/p&gt;
+&lt;p&gt;Minimierung des Netzverkehrs und sinnvolle Aufteilung der Anwendung zwischen Server und Client.&lt;/p&gt;
+&lt;h1 id=&#34;ldap-anwendungen&#34;&gt;
+    &lt;a href=&#34;#ldap-anwendungen&#34;&gt;
+	LDAP Anwendungen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.005.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Authentisierung&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;am OS (PAM)&lt;/li&gt;
+&lt;li&gt;an der Anwendung (mod_auth_ldap etc.)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Konfigurationsdaten&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Netscape Roaming&lt;/li&gt;
+&lt;li&gt;sendmail Aliases etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Verzeichnis (Recherche)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Adreßverzeichnisse&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Characteristika:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;kurze Verbindungen
+&lt;ul&gt;
+&lt;li&gt;connect, query, disconnect&lt;/li&gt;
+&lt;li&gt;connect, disconnect (authentication only)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;triviale Queries
+&lt;ul&gt;
+&lt;li&gt;Existenzanfragen&lt;/li&gt;
+&lt;li&gt;Attributanfragen (dn, attribut) -&amp;gt; (werte)&lt;/li&gt;
+&lt;li&gt;Objektauslesung (dn) -&amp;gt; (attribute, werte)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Sinnvolle Anwendungen von LDAP:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Hit and Run-Anwendungen:
+&lt;ul&gt;
+&lt;li&gt;Anmeldung am OS, am Webserver, am IMAP/POP-Server.&lt;/li&gt;
+&lt;li&gt;Laden von Konfigurationsobjekten aus dem LDAP-Server.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;LDAP ist für Lesen optimiert.&lt;/li&gt;
+&lt;li&gt;LDAP ist für viele Zugriffe pro Sekunde optimiert.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;sql-anwendungen&#34;&gt;
+    &lt;a href=&#34;#sql-anwendungen&#34;&gt;
+	SQL Anwendungen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.006.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Datenspeicher für Anwendungsdaten&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Persistente Daten&lt;/li&gt;
+&lt;li&gt;Normalisierte Daten&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Business Rules&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Integritätsbedingungen&lt;/li&gt;
+&lt;li&gt;Accessfunktionen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Lockingmechanismen&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Zugriff durch mehrere Instanzen derselben Anwendung&lt;/li&gt;
+&lt;li&gt;Zugriff durch verschiedene Anwendungen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Characteristika:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;lange Connects mit vielen Queries&lt;/li&gt;
+&lt;li&gt;langlaufende Queries
+&lt;ul&gt;
+&lt;li&gt;Joins&lt;/li&gt;
+&lt;li&gt;Sortierungen&lt;/li&gt;
+&lt;li&gt;berechnete Werte&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;viele Schreiboperationen
+&lt;ul&gt;
+&lt;li&gt;konkurrente Schreiboperationen -&amp;gt; Locking&lt;/li&gt;
+&lt;li&gt;zusammengesetzte Schreiboperationen -&amp;gt; Transaktionen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Sinnvolle Anwendungen von SQL: Stay and Run-Anwendungen; eine Verbindung, viele Queries. Möglichst viele Daten auf dem Server verwerfen, nur die notwendigen Daten übertragen.&lt;/p&gt;
+&lt;p&gt;Komplexe und konkurrente Updates; Locks; Transaktionen.&lt;/p&gt;
+&lt;p&gt;Business Logic an den persistenten Objekten der Anwendung speichern, Daten werden zwischen verschiedenen Anwendungen shareable.&lt;/p&gt;
+&lt;p&gt;Die Integritäts- und Update-Logik für diese Daten klebt an den Daten, nicht in den verschiedenen Anwendungen.&lt;/p&gt;
+&lt;p&gt;Kein Zugriff, insbesondere kein schreibender Zugriff an dieser Logik vorbei möglich.&lt;/p&gt;
+&lt;h1 id=&#34;relationenmodell-in-verzeichnisdiensten&#34;&gt;
+    &lt;a href=&#34;#relationenmodell-in-verzeichnisdiensten&#34;&gt;
+	Relationenmodell in Verzeichnisdiensten
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.007.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Woher kommen die Daten im Verzeichnis?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Welches ist das führende System?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Wie strukturiere ich den Verzeichnisbaum?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Nebenbedingungen:
+&lt;ul&gt;
+&lt;li&gt;Replikation&lt;/li&gt;
+&lt;li&gt;Naming Attributes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Wie strukturiere ich meine objectClasses?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Welche Art von Anfragen wird erwartet?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Sollte ich nicht doch lieber ein RDBMs nehmen?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Das Hauptproblem besteht oft darin, daß versucht wird, LDAP für mehr als simple Logins einzusetzen.
+Selektion und Projektion sind vorhanden; Aggregation, Join und Rename nicht.
+LDAP-Struktur muss die auftretenden Anfragen antizipieren.&lt;/p&gt;
+&lt;p&gt;PKs sind instabil.
+Nebenbedingungen der Replikation machen stabile PKs oft unmöglich.
+Diese Faktoren bestimmen das Design von LDAP.&lt;/p&gt;
+&lt;p&gt;Lachhafte technische Basis erzeugt eigenartige technische Anforderungen.
+LDAP-Server halten den Datenbestand effektiv im RAM.
+Der Datenbestand kann daher eine vorbestimmte Größe kaum überschreiten.&lt;/p&gt;
+&lt;p&gt;LDAP-Server geben nur partiell relevante technische Daten an: Queries/sec nicht mit SQL vergleichbar.
+Wo ein LDAP 40.000 Queries braucht, kommt SQL mit einem Join hin.&lt;/p&gt;
+&lt;h1 id=&#34;häufige-designprobleme-in-ldap&#34;&gt;
+    &lt;a href=&#34;#h%c3%a4ufige-designprobleme-in-ldap&#34;&gt;
+	Häufige Designprobleme in LDAP
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.008.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP wird als führende Datenbank eingesetzt&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP wird stark beschrieben&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP wird konkurrent beschrieben&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP dynamisch beschrieben&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Es bestehen abzufragende Beziehungen zwischen LDAP-Objekten&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP wird zur Reportgenerierung verwendet&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Der LDAP-Bestand wird hierarchisch strukturiert&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Der LDAP-Bestand muss hierarchisch strukturiert werden&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Setzt man LDAP als Verzeichnisdienst (also als Logindatenbank) ein, kann es funktionieren.
+Jeder andere Ansatz wird sehr, sehr weh tun.&lt;/p&gt;
+&lt;h1 id=&#34;ldap-wird-als-führende-datenbank-eingesetzt&#34;&gt;
+    &lt;a href=&#34;#ldap-wird-als-f%c3%bchrende-datenbank-eingesetzt&#34;&gt;
+	LDAP wird als führende Datenbank eingesetzt
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.009.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;LDAP-Attribute haben eine Syntax (einen Typ)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Typen sind zahlreich und im Standard vordefiniert&lt;/li&gt;
+&lt;li&gt;Typen sind schwer erweiterbar&lt;/li&gt;
+&lt;li&gt;Integritätsbedingungen können nicht definiert werden.&lt;/li&gt;
+&lt;li&gt;iPlanet erlaubt Plugins, die Integrität checken können.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Beziehungen zwischen Objekten sind in LDAP nur schwer darstellbar und instabil.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PK ist immer der &lt;code&gt;dn&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dn&lt;/code&gt;s sind jedoch unter Umständen instabil&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Aliases sind ein optionales Feature von LDAP&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Nur Blattknoten können Aliases sein.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LDAP bietet nicht die adäquaten Mechanismen, um als führende Datenbank eingesetzt werden zu können:
+Intra-Objekt-Integrität nur durch Typen (Syntaxen) gewährleistet, keine Trigger, keine Foreign Keys.
+Inter-Objekt-Integrität nur durch propietäre Plugins (Compilate) gewährleistet, keine Stored Procedures, Trigger, Rules.
+Typensystem nicht durch Definitionen oder Einschränkungen erweiterbar.&lt;/p&gt;
+&lt;p&gt;Keine Joins, Renames, und damit keine Relationen.
+Nachbildung von Joins durch Prejoins (Struktur oder Aliases) oder durch iterative Queries.
+Iterative Queries erzeugen wahnwitzigen Traffic im Netz und auf dem Server.
+Beispiel: Liste von Usern nach Standorten&lt;/p&gt;
+&lt;h1 id=&#34;ldap-wird-stark-beschrieben&#34;&gt;
+    &lt;a href=&#34;#ldap-wird-stark-beschrieben&#34;&gt;
+	LDAP wird stark beschrieben
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.010.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP ist als Protokoll für Leseoperationen optimiert.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Es existiert noch kein standardisiertes Bulk-Update Protokoll.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In OpenLDAP und iPlanet ist der LDAP-Datenspeicher ein Sleepycat DB/3.&lt;/li&gt;
+&lt;li&gt;In einigen LDAP-Servern sind Schreiboperationen ungeschickt implementiert: Flush nach jedem Write.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Replikation zwischen Servern skaliert sich nicht gut bei starken Schreiboperationen.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Nicht standarisiert.&lt;/li&gt;
+&lt;li&gt;Oft als reguläre Schreiboperation eines privilegierten Benutzers implementiert (&amp;ldquo;triviale Implementierung&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;iPlanet kann immerhin out-of-sync Replica automatisch neu aufbauen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In älteren LDAP-Servern flog nach heftigen Updates die Replica weg:
+Jedes Write auf den Server gab ein Write auf der Replication.
+Jedes Write gab ein Flush auf die Platte.&lt;/p&gt;
+&lt;p&gt;LDAP ist zwar standardisiert, aber heterogene Replikation ist dennoch noch immer eine schwarze Kunst.&lt;/p&gt;
+&lt;p&gt;Wenn Replikation über reguläre Writes mit einem speziellen User realisiert ist, skaliert sie sich nicht gut.
+Proprietäre Bulk-Updates skalieren sich gut, erzwingen aber homogene Serverinstallationen.&lt;/p&gt;
+&lt;h1 id=&#34;ldap-wird-konkurrent-beschrieben&#34;&gt;
+    &lt;a href=&#34;#ldap-wird-konkurrent-beschrieben&#34;&gt;
+	LDAP wird konkurrent beschrieben
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.011.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LDAP definiert einzelne add oder modify-Operationen als atomar.&lt;/li&gt;
+&lt;li&gt;LDAP kennt keine Locks und keine Transaktionen&lt;/li&gt;
+&lt;li&gt;Synchronisation und Konsistenz sind damit Sache der Anwendung.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Hierzu ist wenig zu sagen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Ohne Transaktionen kein Undo von mehrteiligen Updates, keine Read-Konsistenz.&lt;/li&gt;
+&lt;li&gt;Ohne Locks ist so etwas auch kaum nachbildbar.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Beispiele:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Vergabe von uids beim Usereintrag durch klassischen read-modify-write-Zyklus:&lt;/li&gt;
+&lt;li&gt;Bestimme höchste belegte UID.&lt;/li&gt;
+&lt;li&gt;Ermittele nächsthöhere UID.&lt;/li&gt;
+&lt;li&gt;Belege diese UID im LDAP.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Da keine Locks vorhanden sind, ist rmw nicht implementierbar (aber UID kann als Attribut UNIQUE gesetzt werden).&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Damit schlägt ein doppelter ADD fehl -&amp;gt; retry (Potential für Livelock)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;ldap-wird-dynamisch-beschreiben&#34;&gt;
+    &lt;a href=&#34;#ldap-wird-dynamisch-beschreiben&#34;&gt;
+	LDAP wird dynamisch beschreiben
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.012.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Viele LDAP-Server speichern die Schema-Definition out-of-band&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Externe Dateien, die per include in die Serverkonfiguration mit eingebunden werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Damit ist eine Änderung des Schemas im Betrieb und durch LDAP unmöglich.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Dies fördert sehr entspannte objectClass-Definitionen (&lt;code&gt;MAY&lt;/code&gt;-Inflation)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Out-of-band Schemadefinition macht Introspektion schwierig&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Welche &lt;code&gt;objectClasses&lt;/code&gt; kennt der Server? Welche Attribute erlauben und definieren sie?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Dynamische Schemadefinition ist nur in esoterischen Anwendungen von Bedeutung.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Entwicklungssysteme&lt;/li&gt;
+&lt;li&gt;Generische Infrasturkturanwendungen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Ähnliche Argumentationen gelten für Introspektion.&lt;/p&gt;
+&lt;h1 id=&#34;beziehungen-zwischen-ldap-objekten&#34;&gt;
+    &lt;a href=&#34;#beziehungen-zwischen-ldap-objekten&#34;&gt;
+	Beziehungen zwischen LDAP-Objekten
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.013.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Der PK in LDAP ist immer der &lt;code&gt;dn&lt;/code&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Der &lt;code&gt;dn&lt;/code&gt; ist nicht opaque, sondern hat Struktur: Pfadinformation.&lt;/li&gt;
+&lt;li&gt;Konsequenz: &lt;code&gt;dn&lt;/code&gt;s sind instabil.
+Verschiebt man ein Objekt im Baum, ändert sich der &lt;code&gt;dn&lt;/code&gt;.
+Damit sind alle Referenzen auf das Objekt ungültig.&lt;/li&gt;
+&lt;li&gt;iPlanet &lt;code&gt;dn&lt;/code&gt; Plugin; cascading Updates&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LDAP kennt keine JOIN-Operation&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Prejoined Structures über Aliases oder andere Referenzen&lt;/li&gt;
+&lt;li&gt;keine dynamisch zusammengesetzten Strukturen.&lt;/li&gt;
+&lt;li&gt;Aliases sind nicht generisch (Leaf-Nodes only).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LDAP kennt kein Join (und kein Rename): Art der antizipierten Anfragen bestimmt die Struktur des Schema.
+Ad-Hoc Anfragen sind prinzipiell nicht oder nur mit gewaltigem Overhead realisierbar.&lt;/p&gt;
+&lt;p&gt;Bei Kenntnis der Struktur ist die Konstruktion einer pathologischen Anfrage eine Fingerübung für den geübten Designer:
+Invertiere die Struktur und konstruiere eine sinnvolle Anfrage auf der invertierten Struktur.&lt;/p&gt;
+&lt;p&gt;Da der &lt;code&gt;dn&lt;/code&gt; nicht opak ist, sind keine stabilen Referenzen implementierbar.
+&lt;code&gt;dn&lt;/code&gt;-Rename Plugin von iPlanet generiert entsprechend gewaltige Serverlast.&lt;/p&gt;
+&lt;h1 id=&#34;ldap-wird-zur-reportgenerierung-verwendet&#34;&gt;
+    &lt;a href=&#34;#ldap-wird-zur-reportgenerierung-verwendet&#34;&gt;
+	LDAP wird zur Reportgenerierung verwendet
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.014.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;LDAP kennt keine Aggregation&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Reports können nur durch Durchlesen des Bestandes erstellt werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LDAP kennt keine serverseitigen Funktionen&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Funktionswerte können nur durch Durchlesen des Bestandes erstellt werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LDAP kennt keinen JOIN&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Reports machen oft Gebrauch von ad-hoc Beziehungen zwischen Teilmengen, aber ohne Join können diese nicht effizient generiert werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Beispiele:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Welche Mitarbeiter haben mehr als einen PC?&lt;/li&gt;
+&lt;li&gt;Welche PC werden von mehr als einem Mitarbeiter verwendet?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Beachte die Invertierung.&lt;/p&gt;
+&lt;p&gt;LDAP hat keine Einbaufunktionen.
+Statistiken scheiden ganz aus.&lt;/p&gt;
+&lt;h1 id=&#34;hierarchische-struktur-im-ldap-i&#34;&gt;
+    &lt;a href=&#34;#hierarchische-struktur-im-ldap-i&#34;&gt;
+	Hierarchische Struktur im LDAP I
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.015.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Der PK in LDAP ist immer der &lt;code&gt;dn&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Der &lt;code&gt;dn&lt;/code&gt; enthält Strukturinformation.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Ändert sich die Position eines Objektes in der Struktur, ändert sich der PK dieses Objektes&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Klassischer Fall von nicht normalisierter Struktur: Daten und Struktur nicht getrennt&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Ein Objekt ist oft Mitglied in verschiedenen Hierarchien&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Mitarbeiter ist einsortiert
+&lt;ul&gt;
+&lt;li&gt;organisatorisch (&amp;ldquo;Abteilung 1.3.2&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;räumlich (&amp;ldquo;Deutschland, SH, Kiel, Hauptstelle&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;projektbezogen (&amp;ldquo;IT Infrastruktur, Netzwerke, UMTS-Pilot&amp;rdquo;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Redundante Datenhaltung durch nicht normalisiertes Datenmodell&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Veränderliche PKs, Datenbankdesigners Alptraum: nicht normalisiert.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Baumstruktur enthält die Daten selbst, keine Referenzen auf die Daten&lt;/li&gt;
+&lt;li&gt;nur ein Baum, nicht mehrere, möglich&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Besser:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;unstrukturierte Menge von Objekten&lt;/li&gt;
+&lt;li&gt;Baumstruktur mit Zeigern in diese Objekte.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;hierarchische-struktur-im-ldap-ii&#34;&gt;
+    &lt;a href=&#34;#hierarchische-struktur-im-ldap-ii&#34;&gt;
+	Hierarchische Struktur im LDAP II
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.016.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;LDAP erlaubt die Partitionierung des Bestandes nur nach Teilbäumen&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Erzwingt die Bildung von Hierarchien im Bestand&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Erzwingt damit instabile &lt;code&gt;dn&lt;/code&gt;s&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Partition: Vollständige Überdeckung durch disjunkte Teilmengen. Definiert Äquivalenzklassen (etwa: gerade, ungerade).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Partition: Wird für Replikation gebraucht&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Triviale Partition: Identität.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP partitioniert nur nach Naming Attributes&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Oracle partitioniert nach beliebigen Prädikaten zur Äquivalenzklassenbildung.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Replikation erzwingt hierarchische Struktur, die Eingang in den &lt;code&gt;dn&lt;/code&gt; findet.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Migriert ein Objekt von einer Partition in eine andere (&amp;ldquo;Standortwechsel&amp;rdquo;), ändert sich zwingend der &lt;code&gt;dn&lt;/code&gt; und damit werden alle Referenzen ungültig.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Großes Dilemma!&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Wir designen: 3-Level-LDAP, wann immer möglich (&lt;code&gt;ou=tablename, o=company, c=de&lt;/code&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;fazit-i&#34;&gt;
+    &lt;a href=&#34;#fazit-i&#34;&gt;
+	Fazit I
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.017.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LDAP ist der Teil von X.500, der &amp;ldquo;brauchbar&amp;rdquo; war.&lt;/li&gt;
+&lt;li&gt;LDAP verwirft elementare Erkenntnisse des relationalen Datenmodells.&lt;/li&gt;
+&lt;li&gt;Damit ist auch der brauchbare Teil von LDAP aus der Sicht des Datenbankdesigners unbrauchbar und gefährlich.&lt;/li&gt;
+&lt;li&gt;Der Einsatz von LDAP als führende Datenbank ist zu vermeiden.&lt;/li&gt;
+&lt;li&gt;LDAP-Bestände sind möglichst als flache Tabellen zu strukturieren.&lt;/li&gt;
+&lt;li&gt;Nichttriviale Dinge sind mit LDAP nicht zu realisieren.&lt;/li&gt;
+&lt;li&gt;Triviale Dinge sind mit LDAP schwierig oder gefährlich.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;LDAP verstößt so ziemlich gegen jeden Grundsatz des relationalen Modells:
+Nicht 3., nicht 2., ja nicht einmal 1. NF
+Daten aus dem LDAP sind damit kaum weiterzuverarbeiten&lt;/p&gt;
+&lt;p&gt;LDAP ist gefährlich, wenn LDAP führendes oder feedendes System ist.
+LDAP ist eine Datensackgasse.&lt;/p&gt;
+&lt;p&gt;Wie kann es sein? Haben die alle in Datenbanken 101 gepennt?&lt;/p&gt;
+&lt;h1 id=&#34;warum-dann-keine-relationalen-systeme&#34;&gt;
+    &lt;a href=&#34;#warum-dann-keine-relationalen-systeme&#34;&gt;
+	Warum dann keine relationalen Systeme?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.018.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Deutschland, 9.00 Uhr:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;150.000 MA loggen sich ein.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Jedes Login ist ein Connect, gefolgt von einem Disconnect.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Jeder Connect erzeugt in Oracle einen fork, einen exec und einen 5 MB schweren Subprozeß, der dann sofort weggeworfen wird.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP als wire-protocol ist genormt.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP als query-language ist unbrauchbar, aber sehr rigide genormt.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LDAP ist auf connect/disconnect optimiert.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Traditionelle RDBMs sind zu heavyweight.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Industriefehlschlag: Kein ausreichend genormtes wire protocol&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ODBC: too little, too late&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Industriefehlschlag: Keine ausreichend leichtwiegigen SQL-Datenbankprodukte.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Aber: MySQL.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;warum-dann-kein-mysql&#34;&gt;
+    &lt;a href=&#34;#warum-dann-kein-mysql&#34;&gt;
+	Warum dann kein MYSQL?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.019.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;MySQL?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Connect/disconnect problemlos&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;read-mostly&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Replikation&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Hat volle SQL-Syntax&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Selektion, Projektion, Aggregation, Join, Rename&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Speichereffizienter als iPlanet oder OpenLDAP&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Als wire protocol nicht genormt&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;aber: Source liegt offen, GPL bzw. LGPL&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In kommerziellen Clients nicht unterstützt.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;aber mod_auth_mysql, PAM usw&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Trivial zu implementieren.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Kein IETF-Prozeß.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;MySQL ist in vielen Fällen gegenüber LDAP eine echte Alternative:
+bessere Performance und Skalierbarkeit.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Leichter in SQL-Feeder integrierbar wegen kongruenter Datenstrukturen.&lt;/li&gt;
+&lt;li&gt;Open Source.&lt;/li&gt;
+&lt;li&gt;Weniger lächerlicher Ressourcenverbrauch.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;und-xml&#34;&gt;
+    &lt;a href=&#34;#und-xml&#34;&gt;
+	Und XML?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2002/01/dir_vs_rel.020.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;LDAP und XML haben strukturell viel gemeinsam&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Rückkehr zu hierarchischen (Datenbank-) Systemen.&lt;/li&gt;
+&lt;li&gt;Liste der Nachteile dieser Systeme in Datenbanken 101 nachlesbar.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Keine führende Datenhaltung in hierarchischen Systemen! Wir haben in den Betrieben für viel Geld diesen Unsinn gerade ausgerottet und nun kommt er mit wieder. Mit Macht!&lt;/p&gt;
+&lt;p&gt;Genau wie LDAP implementiert auch XML ein schwach getyptes hierarchisches Modell zur Datenspeicherung und eine relational unvollständige Abfragesprache (Xpath, Xquery).&lt;/p&gt;
+&lt;p&gt;XML-Speicher müssen genau untersucht werden:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Transportspeicher sind okay (SOAP, WDDX etc)&lt;/li&gt;
+&lt;li&gt;Lagerspeicher sind gefährlich und müssen relational normalisiert werden.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;XML generiert als Bonus gewaltige Speicher- und Parser-Overheads.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Kann ein Binärprotokoll verwendet werden?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;XML und Java gehen gut zusammen:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;groß, teuer, hip, technisch partiell irrsinnig&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     
