@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2002-02-1T09:00:00Z"
+date: "2002-02-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 title: "Enterprise Mail: große Mailsysteme, kleine Schmerzen"
