@@ -150,7 +150,7 @@ Additionally, certain `WHERE id IN (...)` clauses begin to show degraded perform
 
 **Avoid `JOIN`-ing more than 10 tables at once.**
 
-If the optimizer were to brute-force all possible `JOIN` combinations on an `n`-way table `JOIN`, the number of combinations would be `n!` (n-th faculty).
+If the optimizer were to brute-force all possible `JOIN` combinations on an `n`-way table `JOIN`, the number of combinations would be `n!` ([factorial](https://en.wikipedia.org/wiki/Factorial) of n).
 This becomes an unwieldy number at a value of `n=10`.
 
 The optimizer will have to apply heuristics around a join-plan depth of 10, and do weird things, including sometimes missing obvious optimizations.
