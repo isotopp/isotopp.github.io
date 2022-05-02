@@ -36,7 +36,7 @@ In the end, we went with Zonneplan, who did not have any objections to the gener
 
 *Roof steepness, as seen from the south.*
 
-The roof itself is oriented at 155 deg, pointing the root ridge line to south/southeast.
+The roof itself is oriented at 155 deg, pointing the roof ridge line to south/southeast.
 The west side is getting better light, but the first half of the day lights up the eastern roof as well.
 According to [basic astronomy tooling](https://apps.apple.com/us/app/ephemeris-moon-and-sun-seeker/id1488277219), the sun crosses the houses ridge line at 11:45 CEST, and solar noon (sun at 180 deg) is at 13:45.
 
@@ -110,7 +110,7 @@ Reading the counters, I get a good overview of what happens during the day:
 
 ![](/uploads/2022/05/solar-11.png)
 
-*Red line: Power drawn from the grid. Green line: Power sent into the grid. You can see how between 6:00 and 20:00 we are sending power to the grid at almost all times. The "Range" data shows we have drawn 6.25 kWh from the grid over the day, and sent around 30.1 kWh into the grid over the day. *
+*Red line: Power drawn from the grid. Green line: Power sent into the grid. You can see how between 6:00 and 20:00 we are sending power to the grid at almost all times. The "Range" data shows we have drawn 6.25 kWh from the grid over the day, and sent around 30.1 kWh into the grid over the day.*
 
 In the image above, we can see that we sent 30.1 kWh into the grid yesterday.
 The Zonneplan app gives me a total production of 39.42 kWh for that day.
@@ -126,7 +126,7 @@ Great spikes show household appliances doing things: Dishwasher, washing machine
 
 ![](/uploads/2022/05/solar-12.png)
 
-*Up: drawing power from grid. Down: Sending power into the grid. You can see how clouds and internal consumption take our bites of the "perfect" production curve.*
+*Up: drawing power from grid. Down: Sending power into the grid. You can see how clouds and internal consumption take their bites of the "perfect" production curve.*
 
 Looking at the day-curve this way you can see that we would profit from a household battery.
 On this day in April, we could make do with a battery of 5kWh or less, but in darker times a larger battery would be more effective.
@@ -138,17 +138,19 @@ The pack is based on LFP technology, not on Li-Ion.
 
 # Legal and financials
 
-We purchased the entire solution through Zonneplan and 10162 Euro, so around 1100 Euro per 1 kWp.
+We purchased the entire solution through Zonneplan at 10162 Euro, so around 1100 Euro per 1 kWp.
+This could be a noticeably less, if we did not have shade on the west side -- these optimizers are expensive.
+
 Zonneplan not only installed the whole thing, which took less than a day, but also took care of all the planning, and all the paperwork.
-That was very comfortable.
+That was very comfortable, and they handled all the things professionally and competently.
 
 In April, we produced 871.1 kWh, and sent 718 kWh into the grid.
 
-in the Netherlands, power sent into the grid "turns the counter backwards".
+In the Netherlands, power sent into the grid "turns the counter backwards".
 That is, you can treat the network like a battery, 1 kWh sent in is 1 kWh you can get back later for free.
 This is called "[Salderingsregeling voor huishoudens en MKB](https://www.rijksoverheid.nl/onderwerpen/duurzame-energie/zonne-energie)":
 
-> "Households and small businesses are allowed to feed self-generated electricity back into the grid until January 1, 2023. And offset it against their consumption at another time. This is called offsetting.")
+> "Households and small businesses are allowed to feed self-generated electricity back into the grid until January 1, 2023. And offset it against their consumption at another time. This is called offsetting."
 
 This rule was supposed to end at 1. January 2023, but will be prolonged at least one year more, says [Solar Mag](https://solarmagazine.nl/nieuws-zonne-energie/i26235/startdatum-afbouw-salderingsregeling-zonnepanelen-niet-haalbaar-ambtenaren-adviseren-1-jaar-uitstel):
 > Startdatum afbouw salderingsregeling zonnepanelen niet haalbaar, ambtenaren adviseren 1 jaar uitstel
@@ -157,8 +159,10 @@ This rule was supposed to end at 1. January 2023, but will be prolonged at least
 
 Phasing out the salderingsregeling to Zero is supposed to be done in 9% steps, not all at once. 
 So in the first year, 91% of the power would be part of the salderingsregeling, the rest the electricity provider would pay for, and so on.
+
 The law says that the provider must pay "redelijke vergoeding" (a reasonable compensation).
 At this point, a compensation of 80% of what you pay for electricity to them is considered reasonable by the lawmaker.
+
 That would mean, I get paid at least 18.0 ct/kWh when I am paying them 22.5 ct/kWh.
 That's workable.
 
