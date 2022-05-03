@@ -2,7 +2,7 @@
 author: isotopp
 title: "Dein Kind will Minecraft spielen"
 date: 2021-12-20T13:32:00+01:00
-feature-img: assets/img/background/rijksmuseum.jpg
+feature-§img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
 - gaming
@@ -245,7 +245,7 @@ Falls das Kind selbst Content produziert ist das Risiko den Account zu verlieren
 Daher sollte man den privaten Account und den publizierenden Account des Kindes strikt trennen, sodaß bei einer Sperrung nicht die Kontakte, private Mail und alle Kommunikationsmöglichkeiten mit weg sind.
 Über Chrome Browser [User Profiles](https://www.techsolutions.support.com/how-to/how-to-create-and-switch-profiles-in-chrome-12564) kann man das schnell und bequem umschalten, und das Kind lernt gleich noch OpSec und sich selbst geschickt zu publizieren.
 
-[It's complicated](https://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS), und danach boyd ist immer lesenswert.
+[It's complicated](https://www.amazon.de/Its-Complicated-Social-Lives-Networked-ebook/dp/B00HUYT8TS), und danah boyd ist immer lesenswert.
 
 ## Selber programmieren
 
