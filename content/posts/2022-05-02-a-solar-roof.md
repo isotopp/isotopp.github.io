@@ -15,7 +15,7 @@ I live in a house in a rural village somewhere in [Randstad](https://en.wikipedi
 We are paying around 70 Euros per month in electricity, and up to 380 Euro per month in gas.
 We are using the latter for heating and warm water, but we are already cooking with electricity.
 
-The house as a decent energy rating and a heat exchanger in the forced ventilation system.
+The house has a decent energy rating and a heat exchanger in the forced ventilation system.
 That is to keep the warmth in when getting fresh air in.
 
 ![](/uploads/2022/05/solar-01.jpg)
@@ -129,7 +129,7 @@ Great spikes show household appliances doing things: Dishwasher, washing machine
 *Up: drawing power from grid. Down: Sending power into the grid. You can see how clouds and internal consumption take their bites of the "perfect" production curve.*
 
 Looking at the day-curve this way you can see that we would profit from a household battery.
-On this day in April, we could make do with a battery of 5kWh or less, but in darker times a larger battery would be more effective.
+On this day in April, we could maybe do with a battery of 5kWh or less, but in darker times a larger battery would be more effective.
 We could achieve complete autonomy from Equinox to Equinox, and charge the missing energy from the grid during cheap times in the darker half of the year.
 
 The matching piece of equipment would be a Huawei LUNA2000-15-S0 battery pack.
@@ -176,7 +176,7 @@ We will have to eventually change the house heating from a central gas burner to
 They work as heat pumps, and produce between 3 kWh and 5 kWh heat for each 1 kWh they consume.
 This will considerably increase our consumption.
 
-Warming up 1l of water by 1C takes around 1.16 Wh, and the cooking gas we provides around 10 to 12 kWh per cubic metre (1000l).
+Warming up 1l of water by 1C takes around 1.16 Wh, and the cooking gas we use provides around 10 to 12 kWh per cubic metre (1000l).
 So a shower that uses 240l (0.24 cubic metres) of gas consumes around 2.4kWh.
 Similar math can be applied to dishwashers and washing machines ("uses 0.885kWh to heat up 15l of water by 50C"), and to cooking plates.
 
