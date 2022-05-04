@@ -168,7 +168,7 @@ That's workable.
 
 # Outlook
 
-Right now we have solved out electricity problem, and then some.
+Right now we have solved our  electricity problem, and manage to have solid overproduction (at least in the brighter part of the year).
 We are also getting a tiny electric car this year, which will eat into our budget.
 That also means we are not getting a Huawei battery this year.
 
