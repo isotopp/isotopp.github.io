@@ -2,6 +2,7 @@
 author: isotopp
 date: "2021-09-05T15:47:06Z"
 feature-img: assets/img/background/book.jpg
+title: 'Fertig gelesen: UNIX: A History and a Memoir'
 tags:
 - lang_en
 - review
@@ -9,7 +10,6 @@ tags:
 - book
 - c
 - unix
-title: 'Fertig gelesen: UNIX: A History and a Memoir'
 ---
 
 The memoir of Brian Kernighan, and the story of how UNIX came to be and what working at Bell Labs was like at that time:
