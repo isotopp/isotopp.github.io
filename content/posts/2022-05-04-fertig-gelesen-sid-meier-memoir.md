@@ -31,4 +31,4 @@ The book is, as promised, some kind of Memoir and a fun read.
 It also gives some insight into Meiers thought processes and what is important to him in game development.
 An interesting person, producing an interesting and insightful book.
 
-"[Sid Meier's Memoir!", Sid Meier, EUR 8.49 on Kindle
+"[Sid Meier's Memoir!](https://www.amazon.de/-/en/Sid-Meier-ebook/dp/B085845CX9)", Sid Meier, EUR 8.49 on Kindle
