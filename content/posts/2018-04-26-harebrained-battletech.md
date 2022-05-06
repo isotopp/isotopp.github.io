@@ -4,11 +4,11 @@ date: "2018-04-26T14:14:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 status: publish
+title: Harebrained Battletech
 tags:
 - gaming
 - review
 - lang_en
-title: Harebrained Battletech
 ---
 ![](/uploads/2018/04/battletech1.jpg)
 
