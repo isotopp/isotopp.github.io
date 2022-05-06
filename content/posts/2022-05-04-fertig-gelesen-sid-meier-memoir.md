@@ -2,7 +2,7 @@
 author: isotopp
 date: "2022-05-04T07:47:06Z"
 feature-img: assets/img/background/book.jpg
-title: 'Fertig gelesen: Sid Meier's Memoir!'
+title: "Fertig gelesen: Sid Meier's Memoir!"
 tags:
 - lang_en
 - review
