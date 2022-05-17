@@ -22,7 +22,7 @@ Man habe jeweils unterschiedliche "Firmen gegründet" und den Schulkameraden jew
 
 Okay.
 
-Die beste Ehefrau von allen "Oh, Basteln und Handarbeiten!", und setzte sich als mit dem Kind hin, um sich die Modelle anzusehen und zu überlegen, wie man da Dinge verbessern könne.
+Die beste Ehefrau von allen "Oh, Basteln und Handarbeiten!", und setzte sich also mit dem Kind hin, um sich die Modelle anzusehen und zu überlegen, wie man da Dinge verbessern könne.
 Zum Beispiel hatte der Schnuppel "USB Sticks" für sein Telefon entworfen, also Dinge, die man in das Modell stecken kann und die dann da halten können.
 
 Kennt Ihr solche Pop Up Kinderbücher?
@@ -32,7 +32,7 @@ Kennt Ihr solche Pop Up Kinderbücher?
 *[Das Wetter. Pop-Up Buch](https://www.tausendkind.ch/artikel/buch/das-wetter-pop-up-buch_34785275-1)*
 
 So etwas hatten die beiden vor einigen Monaten für einen Klassenkameraden als Geschenkverpackung gebaut.
-Da sollten sich ja leicht Modelle für Handies gestalten lassen und mit einfachen Mechanismen bauen lassen.
+Da sollten sich ja leicht Modelle für Handies gestalten  und mit einfachen Mechanismen bauen lassen.
 
 Aber diese Woche geht es mit der Klasse zum Campen an die See.
 Handies bauen und "verkaufen" ist also nicht.
@@ -44,7 +44,7 @@ Und außerdem ist der Spaß ja im Basteln.
 
 Man kam also auf die Idee, daß man einen Webshop brauche für Mobiltelefone.
 Von dem man PDFs mit Bastelbögen runterladen könne.
-Und Bauanleitungen.
+Und Bauanleitungen als Video.
 Und eine limitierte Anzahl vorgebastelter Geräte.
 
 Und das würde er dann gerne als Projekt präsentieren wollen, mit einem Vortrag mit Video-Unterstützung.
@@ -57,13 +57,15 @@ Wie die Website aussehen soll.
 Wie sein "Ich erkläre mein Produkt und wieso"-Vortragsvideo ablaufen soll.
 
 Und dann haben wir zusammen das ganze Projekt aus dem Boden gestampft.
-Ich habe mit dem Schnuppel einen datenbanklosen Nichtwebshop in Flask gelötet, auf der Basis eines alten Login-Systems, das wir beide einmal zum Flask lernen gebaut haben.
-Der Schnuppel hat ein Design auf meine Skelett-Website gezogen, denn er kann Frontend, ich nicht.
+Ich habe mit dem Schnuppel einen datenbanklosen Nichtwebshop in Flask gelötet.
+Die Grundlage dafür war ein altes Login-System, das wir beide einmal zum Flask lernen gebaut haben.
+Der Schnuppel hat ein Design auf meine Skelett-Website gezogen, denn er kann Frontend -- ich nicht.
 
 Sammy und der Schnuppel haben Videomaterial produziert, und er hat das in affenartiger Geschwindigkeit zu Filmchen verwurstet.
+[Einige Jahre Youtube](https://www.youtube.com/channel/UCrMVxZ3iIowFHUFCRz3QVqA) hinterlassen ihre Spuren am Kind.
 
 Sammy hat mit dem Schnuppel Bastelbögen produziert.
-Die beiden haben Scripte zum "Verkaufen" der ganze Sache in einem Videovortrag geschrieben, gedreht und der Schnuppel hat es dann fertig geschnitten.
+Die beiden haben Scripte zum "Verkaufen" der ganzen Sache in einem Videovortrag geschrieben, Szenen gedreht, und der Schnuppel hat es dann fertig geschnitten.
 
 ![](/uploads/2022/05/snackphone-03.jpg)
 
@@ -71,7 +73,7 @@ Die beiden haben Scripte zum "Verkaufen" der ganze Sache in einem Videovortrag g
 
 Wie bei jedem Life-Gang wird alles in letzter Sekunde fertig, und dann geht es in die Schule.
 Nach der Mittagspause Vortrag und Öffnung des Webshops. 
-Der Vortrag scheint den Verkaufsdaten nach eingermassen funktioniert zu haben.
+Der Vortrag scheint den Verkaufsdaten nach einigermassen funktioniert zu haben.
 
 ![](/uploads/2022/05/snackphone-04.jpg)
 
@@ -81,7 +83,7 @@ An der Schule macht der Laserdrucker Überstunden, und die Kinder basteln.
 ## Kinder und Projekte
 
 Alles in allem haben wir zu Dritt gut drei Tage in das Projekt versenkt.
-Wir scheinen als Team tatsächlich alle notwendigen Fertigkeiten zu haben, um so ein Projekt aus dem Boden zu stampfen.
+Wir haben als Team tatsächlich alle notwendigen Fertigkeiten um so ein Projekt grundlos aus dem Boden zu stampfen.
 
 Dem Kind macht das themenübergreifende Arbeiten einen großen Spaß.
 Er hat bemerkt, daß er in einigen Bereichen (Mitsingen in Aufführungen an der Oper, Videoschnitt, Frontend-Design) erwachsenenwertige Fertigkeiten ausbildet.
@@ -90,3 +92,6 @@ Das macht ihn sehr stolz.
 Wieder ist ein zufällig aufgekommenes Thema zu einem Haken geworden, mit dem man tausend Dinge, Interessen und Challenges anbieten kann.
 Das ist hauptsächlich Sammy zu verdanken, die auf solche Gelegenheiten lauert und dann gnadenlos und komplett maßlos Dinge durchzieht, weil es geht, Spaß macht und auf tausend und eine Weise lehrreich ist.
 Hach.
+
+Zutaten: Papier, Bleistift, Schere, Schneidunterlagge, ein wenig Kleber. Ein Mobiltelefon mit guter Kamera. WebStorm. Ein Laserdrucker. Ein Billig-VPS zum Hosten von Flask-Anwendungen.
+Sehr viel Zeit.
