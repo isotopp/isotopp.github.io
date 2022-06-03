@@ -6,7 +6,151 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Jun 2022 08:02:35 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 03 Jun 2022 09:28:34 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rolling back MySQL versions</title>
+      <link>https://blog.koehntopp.info/2022/06/03/rolling-back.html</link>
+      <pubDate>Fri, 03 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/06/03/rolling-back.html</guid>
+      <description>&lt;p&gt;Where I work, we &lt;a href=&#34;https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html&#34;&gt;manage databases in an automated way&lt;/a&gt;
+
+.
+Not as automated as I wish it to be, but largely without touching boxes.&lt;/p&gt;
+&lt;p&gt;We have been doing so for a long time.&lt;/p&gt;
+&lt;p&gt;Over ten years ago, I set the team the challenge &amp;ldquo;be on an arbitrary version of MySQL within 20 workdays (one calendar month), no matter how many servers we have&amp;rdquo;.
+We are there now, in a way: we are on a 30 day refresh cycle for our bare metal cloud, and we match that cycle for our virtualized fleet.
+It was a long road.&lt;/p&gt;
+&lt;h1 id=&#34;the-51-to-55-disaster&#34;&gt;
+    &lt;a href=&#34;#the-51-to-55-disaster&#34;&gt;
+	The 5.1 to 5.5 disaster
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The worst place we have been in in the past was our transition from MySQL 5.1 to 5.5.&lt;/p&gt;
+&lt;p&gt;Along the way we picked up a mutant Non-GA version of 5.1 for reasons that seemed valid at that time.
+But unfortunately, this version changed the on-disk format to fix a thing.
+That meant we had no binary &amp;ldquo;on-disk&amp;rdquo;, &amp;ldquo;in-place&amp;rdquo; upgrade path for us, for any system that was on this particular strain of 5.1.&lt;/p&gt;
+&lt;h2 id=&#34;in-place-upggrades-are-fast&#34;&gt;
+    &lt;a href=&#34;#in-place-upggrades-are-fast&#34;&gt;
+	In-place upggrades are fast
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Normally, upgrading MySQL is easy:
+You stop the server, push the new RPM, run &lt;code&gt;mysql_upgrade&lt;/code&gt; (now integrated and automatic), and the on-disk format is adjusted.
+Then the server comes up again.
+Takes a minute or two, plus time to reheat the caches.&lt;/p&gt;
+&lt;p&gt;Also, downgrading MySQL is often easy and, important!, possible:
+&lt;strong&gt;In the past the on-disk format only changed between major versions.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In our case, none of these options were open to us:
+A binary transition between our mutant non-GA 5.1 and 5.5 was impossible.
+We had to dump and reload all the data.&lt;/p&gt;
+&lt;p&gt;Back then we already had a three digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).&lt;/p&gt;
+&lt;p&gt;So we would dump the 5.1 database, reload it into a 5.5 instance, recreating all the indexes (which makes it slow), then attach it in replication and wait for it to catch up.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/06/mysql-upgrade.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Converting from 5.1 to 5.5 without interruption, by rebuilding the replication tree under a new intermediate, then beheading the chain. Reimporting a dump into a 5.5 instance is the slowest step, recloning was a nuisance back then &amp;ndash; it is automated these days.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We would then make more replicas under the 5.5 which acts as an intermediate primary, and remove 5.1 replicas to match.
+In the end we would move writes down from the 5.1 primary to the 5.5 intermediate primary, behead the tree and be done.
+That takes around a week per hierarchy, and was not properly automated back then. In fact, the entire experience is part of why we have to much automation.&lt;/p&gt;
+&lt;p&gt;It meant that the transition from 5.1 to 5.5 took us almost two years.&lt;/p&gt;
+&lt;h2 id=&#34;why-the-mutant&#34;&gt;
+    &lt;a href=&#34;#why-the-mutant&#34;&gt;
+	Why the mutant?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We had the 5.1 mutant because of a bug fix that we thought we needed, which led to a change in on-disk format.
+We completely underestimated the impact of a breaking change in on-disk format on our operations, and the amount of toil coming from this.&lt;/p&gt;
+&lt;p&gt;And we paid dearly for us.&lt;/p&gt;
+&lt;h1 id=&#34;mysql-8-and-todays-situation&#34;&gt;
+    &lt;a href=&#34;#mysql-8-and-todays-situation&#34;&gt;
+	MySQL 8 and todays situation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;These days, phase 2 of that conversion would be completely automated:
+If we have a working binary datadir, we can reclone it at scale, limited by the media speed or the cluster quota.
+Still, we need an up to date binary datadir to be able to do that.&lt;/p&gt;
+&lt;p&gt;These days, MySQL 8 broke with the promise of &amp;ldquo;no new features, no new disk formats with a single major version&amp;rdquo;.
+The former is okay, and in fact, welcome.
+It has had some impact on stability, but in general the development process of MySQL and the refactoring of its internals have become good enough to offset that, mostly.
+So, yes, we are okay with the new MySQL 8 development model, and we are in fact making use of new features.&lt;/p&gt;
+&lt;p&gt;The latter is catastrophic, because it leads to either incomplete upgrades for us, or leads us back into a dump-and-reload hell.&lt;/p&gt;
+&lt;p&gt;Let me explain:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In order to roll back, we do need a current binary datadir that is compatible with the version we want to roll back to.&lt;/li&gt;
+&lt;li&gt;Replication has an order, a replica must be newer or equal in version to its source.
+Otherwise it risks that things coming down the replication stream are too new, and cannot be recognized.&lt;/li&gt;
+&lt;li&gt;So in order to have a valid binary datadir &lt;em&gt;and&lt;/em&gt; have a valid replication hierarchy, we cannot behead a primary until we trust that we never want to roll back.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Or, we do behead the chain and promote one of the new version intermediates to writeable true primary.
+In which case we lose rollback capability, and are back to dump and reload.&lt;/p&gt;
+&lt;p&gt;Only we now have more chains, and some databases are truly too large to ever dump and reload.
+I mean, we had a 120 TB MariaDB instance that was converted to Oracle MySQL 5.7 by dump and reload, and that took a machine with AMD EPYC CPU, 1 TB of RAM and multiple months to complete.
+The conversion saga was painful enough to warrant a &lt;a href=&#34;https://twitter.com/_digitalknight/status/1526671502116114435&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Percona Live talk&lt;/a&gt;
+
+ about the entire thing by Simon Mudd and Pep Pla.&lt;/p&gt;
+&lt;h1 id=&#34;sometimes-changes-fail&#34;&gt;
+    &lt;a href=&#34;#sometimes-changes-fail&#34;&gt;
+	Sometimes changes fail
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL 8 gives us a lot of new features, &lt;a href=&#34;https://www.percona.com/blog/quick-peek-at-mysql-8-0-29/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here are some highlights&lt;/a&gt;
+
+.
+They are very welcome, but… untested.&lt;/p&gt;
+&lt;p&gt;They come with breaking changes, &lt;a href=&#34;https://www.percona.com/blog/mysql-8-0-29-and-percona-xtrabackup-incompatibilities/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;disabling our default clone mechanism&lt;/a&gt;
+
+.
+They &lt;a href=&#34;https://forums.mysql.com/read.php?22,704532,704675&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;seem to be unstable&lt;/a&gt;
+
+ for not just us, in one way or the other.&lt;/p&gt;
+&lt;p&gt;Being able to go back one or two major versions (&amp;ldquo;a quarter or half a year&amp;rdquo;) would make this much easier for everyone: Users and Developers, and take a lot of strain of the vendor/customer relationship.&lt;/p&gt;
+&lt;h2 id=&#34;my-default-clone-rant&#34;&gt;
+    &lt;a href=&#34;#my-default-clone-rant&#34;&gt;
+	My default CLONE rant
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Disk format changes also get somehow in the way of other features:&lt;/p&gt;
+&lt;p&gt;Our default clone mechanism is not &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;CLONE&lt;/code&gt;&lt;/a&gt;
+
+.
+That is, because &lt;code&gt;CLONE&lt;/code&gt; requires the same exact version of the database at the donor and receiver instance, which makes it completely useless for upgrades.&lt;/p&gt;
+&lt;p&gt;Clone is dependent on the on-disk format not changing for good reasons.
+The entire point of Clone is to not mess with formats and just shifting data between instances, multithreaded, as fast as possible.&lt;/p&gt;
+&lt;p&gt;By managing on-disk format changes more conservatively, and giving a two-minor-versions window (6 months), Oracle MySQL could rely on Oracle MySQL&amp;rsquo;s on-disk format.
+It could handle &lt;code&gt;CLONE&lt;/code&gt; based upgrades properly, instead of having everybody depend on &lt;code&gt;xtrabackup&lt;/code&gt; catching up.&lt;/p&gt;
+&lt;p&gt;That would be a lot of value added for little effort.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Databases are where the state is kept.
+State has size, and copying state is slow.
+That is why everybody is always very protective of state.
+Do not treat on-disk data the Yolo way that Devops treats stateless instances.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Introducing new features in a major version is okay if you have a mature codebase and development process.&lt;/li&gt;
+&lt;li&gt;Changing persistent state on disk is more complicated than thay, and downgrades need to be possible for two minor versions.
+&lt;ul&gt;
+&lt;li&gt;If you do not allow that, it is painful for everybody.&lt;/li&gt;
+&lt;li&gt;That includes us, because we can test slower, so Oracle MySQL gets less feedback.&lt;/li&gt;
+&lt;li&gt;That includes Oracle MySQL itself, because it makes nifty features such as &lt;code&gt;CLONE&lt;/code&gt; needlessly specific and much less useful.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We will, even with today&amp;rsquo;s the degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.
+&lt;ul&gt;
+&lt;li&gt;Binary in-place upgrade and downgrade paths are completely non-optional.
+We will never have the hell of the 5.1 to 5.5 transition again.
+We simply cannot afford this any more.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
     <item>
       <title>Wie normale Leute eben...</title>
       <link>https://blog.koehntopp.info/2022/05/17/wie-normale-leute-eben.html</link>
@@ -111,10 +255,10 @@ Sehr viel Zeit.&lt;/p&gt;
     
     <item>
       <title>Fertig gelesen: Crafting Interpreters</title>
-      <link>https://blog.koehntopp.info/2022/05/16/crafting-interpreters.html</link>
+      <link>https://blog.koehntopp.info/2022/05/16/fertig-gelesen-crafting-interpreters.html</link>
       <pubDate>Mon, 16 May 2022 07:47:06 +0000</pubDate>
       
-      <guid>https://blog.koehntopp.info/2022/05/16/crafting-interpreters.html</guid>
+      <guid>https://blog.koehntopp.info/2022/05/16/fertig-gelesen-crafting-interpreters.html</guid>
       <description>&lt;p&gt;Robert Nystrom is a language developer who works at Google on the Dart programming language.
 In his book &lt;a href=&#34;https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Crafting Interpreters&lt;/a&gt;
 
@@ -2646,257 +2790,6 @@ After the sync completes, I will &lt;code&gt;lvconvert&lt;/code&gt; two existing
 &lt;/p&gt;
 
 &lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>UTF8MB4</title>
-      <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
-      <pubDate>Mon, 10 Jan 2022 16:28:00 +0100</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</guid>
-      <description>&lt;p&gt;On Twitter, Jan Wildeboer &lt;a href=&#34;https://twitter.com/jwildeboer/status/1481308177727729668&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;linked&lt;/a&gt;
-
- an &lt;a href=&#34;https://adamhooper.medium.com/in-mysql-never-use-utf8-use-utf8mb4-11761243e434&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;article by Adam Hooper&lt;/a&gt;
-
- on MySQL and the weird &lt;code&gt;utf8mb4&lt;/code&gt; character set.&lt;/p&gt;
-&lt;p&gt;The recommendation is correct:&lt;/p&gt;
-&lt;p&gt;In MySQL, use &lt;code&gt;utf8mb4&lt;/code&gt; when you mean to work with &lt;code&gt;utf8&lt;/code&gt; in your programming language.&lt;/p&gt;
-&lt;p&gt;The background and reasoning for this (and why it is wrong) is way more complicated than outlined by Adam Hooper.
-So let&amp;rsquo;s walk through this:&lt;/p&gt;
-&lt;h1 id=&#34;mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp&#34;&gt;
-    &lt;a href=&#34;#mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp&#34;&gt;
-	MySQL &lt;code&gt;utf8&lt;/code&gt; means 3-byte Unicode, and access to only the BMP
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;code&gt;utf8&lt;/code&gt; in MySQL encodes the &lt;a href=&#34;https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode BMP&lt;/a&gt;
-
-.
-The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane.
-It was the only character plane available in Unicode 1.0
-It was thought to be enough for all scripts in the world.
-It wasn&amp;rsquo;t.&lt;/p&gt;
-&lt;p&gt;Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
-Currently, there can be up to 17 Unicode planes, but most of them are unused.&lt;/p&gt;
-&lt;p&gt;Unicode 1.0 is also different in other ways. Vladislav Vaintroub commented to me:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Unicode 1.0 had a &lt;a href=&#34;https://en.wikipedia.org/wiki/Hangul_%28obsolete_Unicode_block%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;different range for Hangul&lt;/a&gt;
-
-.
-Unicode 2.0 fixed that, and remapped Hangul (which is a unique action, and they issued a policy to forbid remapping in the future).&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Making things immutable is important with character sets and sort orders, also for databases, as we will see.
-It is in fact the entire reason for &lt;code&gt;utf8mb4&lt;/code&gt; to exist.&lt;/p&gt;
-&lt;h2 id=&#34;encodings-and-the-65536-character-barrier&#34;&gt;
-    &lt;a href=&#34;#encodings-and-the-65536-character-barrier&#34;&gt;
-	Encodings and the 65536 character barrier
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;There are various ways to encode codepoints of Unicode.&lt;/p&gt;
-&lt;p&gt;Originally, with only the BMP existing, people thought of extending the concept of &amp;ldquo;byte&amp;rdquo; = &amp;ldquo;character&amp;rdquo; to double bytes.
-This is how you get the &lt;code&gt;wchar&lt;/code&gt; and a 16 bit character set, the obsolete ucs-2 encoding.&lt;/p&gt;
-&lt;p&gt;When it became clear that 65536 characters are insufficient to represent all scripts and languages in the world, a larger 31-bit space was introduced and the naive encoding of that, ucs-4.
-This would require 4 bytes per character.&lt;/p&gt;
-&lt;p&gt;Both are incredibly wasteful:&lt;/p&gt;
-&lt;p&gt;Using ucs-2 with western scripts means that every other byte is a null byte, and with ucs-4 for every character there will be 3 null bytes.
-Even with non-western scripts there will be at least one, if not two null bytes per character.&lt;/p&gt;
-&lt;p&gt;Extending Unicode beyond the BMP posed a bit of a problem:
-Windows NT had started to use Unicode as a character set, and ucs-2 as the standard encoding.&lt;/p&gt;
-&lt;p&gt;The solution was the character range 0xD800 to 0xDFFF, which was unassigned to characters, so far:
-2048 (11 bit) of unassigned positions.&lt;/p&gt;
-&lt;p&gt;The resulting encoding takes characters beyond the BMP, with codes greater than 0xFFFF, and subtracts 0x10000.
-This leaves a 20 bit number, which is then split into a high 10 bit part and a low 10 bit part.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;The high ten bits are added to 0xd800 (0xd800-0xdbff).&lt;/li&gt;
-&lt;li&gt;The low then bits are added to 0xdc00 (0xdc00-0xdfff).&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This was called utf-16 encoding, and became the character set of Windows starting with Windows 2000.&lt;/p&gt;
-&lt;p&gt;utf-16 also, for now, limits the number of characters that can be represented in Unicode to 1112064, a number that can be represented in 21 bits.&lt;/p&gt;
-&lt;h2 id=&#34;plan-9-and-utf-8&#34;&gt;
-    &lt;a href=&#34;#plan-9-and-utf-8&#34;&gt;
-	Plan 9 and utf-8
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In the Unix world, the experimental Plan 9 operating system from A&amp;amp;T explored variable length encodings of Unicode:
-utf-8 could represent 31-bit Unicode with encodings between 1 and 6 bytes in length.
-Single byte codes would be compatible with ASCII, so that valid ASCII is also valid utf-8.&lt;/p&gt;
-&lt;p&gt;Because the utf-16 hack had restricted the number of possible Unicode characters effectively from 31 bit to 21 bit, actual utf-8 encodings can only be up to 4 bytes long.
-And because utf-8 is so much denser than other encodings, it is by far the dominant encoding of Unicode.
-Even Microsoft, heavily invested in ucs-2 and utf-16 with Windows, started to support utf-8, beginning with the development of Windows 11 in 2019.&lt;/p&gt;
-&lt;p&gt;In an utf-8 multibyte sequence, the &amp;ldquo;number of 1-bits before the first 0-bit&amp;rdquo; in the first byte of a multibyte character determine the length of the encoding:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Single byte characters are in the range 0x00-0x7f (0 leading 1-bits, single byte), for ASCII compatibility.&lt;/li&gt;
-&lt;li&gt;Multibyte characters start with &lt;code&gt;110xxxxx&lt;/code&gt; for a two byte sequence, &lt;code&gt;1110xxxx&lt;/code&gt; for a three byte sequence and &lt;code&gt;11110xxx&lt;/code&gt; for a four byte sequence.&lt;/li&gt;
-&lt;li&gt;The second, and possible third and fourth byte are all of the form &lt;code&gt;10xxxxxx&lt;/code&gt;, which is otherwise unused, so that these bytes are always identifiable as continuation bytes in a multibyte encoding.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This makes utf-8 restartable:
-If you end up at a byte of the form &lt;code&gt;10xxxxxx&lt;/code&gt;, you know you are in the middle of a multibyte sequence of at most 4 bytes length.
-You can backtrack a few bytes, and check for the clearly recognizable start pattern of a multibyte encoding, or error out with an invalid encoding.&lt;/p&gt;
-&lt;p&gt;We get 128 single byte characters that are identical to ASCII, 1920 two byte characters, and three bytes for the rest of the BMP.
-Four bytes are needed for rare CJK characters, a bunch of math, some dead scripts and
-&lt;a href=&#34;https://blog.koehntopp.info/2017/11/05/unicode-is-over-and-it-dies-over-emoji.html&#34;&gt;a ton of emoji that should not exist in the first place&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;h2 id=&#34;mysql-and-three-byte-utf8&#34;&gt;
-    &lt;a href=&#34;#mysql-and-three-byte-utf8&#34;&gt;
-	MySQL, and three byte &lt;code&gt;utf8&lt;/code&gt;
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;MySQL did support the &amp;ldquo;full full&amp;rdquo; range of 31 bit Unicode in the beginning, with up to 6 bytes being used for a single character.
-That was changed &lt;a href=&#34;https://github.com/mysql/mysql-server/commit/43a506c0ced0e6ea101d3ab8b4b423ce3fa327d0&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in a single byte change commit&lt;/a&gt;
-
- in September 2002.
-&lt;a href=&#34;https://dri.es/the-history-of-mysql-ab&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Back then&lt;/a&gt;
-
- MySQL 3.23 was the active release and InnoDB was not yet enabled by default.&lt;/p&gt;
-&lt;p&gt;Vladislav Vaintroub commented about this:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Anyway MySQL&amp;rsquo;s utf8 was always meant to be castrated utf8, from its invention.&lt;/p&gt;
-&lt;p&gt;It was a little gamble, and hope that supplemental plane won&amp;rsquo;t be used much, thus we could save a couple of bytes in filesort.
-Although already by 2001 (Unicode 3.1) there were characters in supplemental range, they could be seen as &amp;ldquo;rarely used&amp;rdquo; (music notation, old Egyptian, Deseret and what not).
-Thus only few people needed supplemental characters, until everyone&amp;rsquo;s favorite U+1F4A9 PILE OF POO premiered in Unicode 6.0, in 2010, actually a couple of years after, until smartphone made emoji ubiquitous.&lt;/p&gt;
-&lt;p&gt;So that gamble - that supplemental plane remains rarely used, did not work out, but who would know that by 2003.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Vaintroub&amp;rsquo;s comment about sorting refers to a limitation of MySQL that was only removed in MySQL 8.
-More about that below.&lt;/p&gt;
-&lt;h2 id=&#34;character-sets-have-collations&#34;&gt;
-    &lt;a href=&#34;#character-sets-have-collations&#34;&gt;
-	Character sets have collations
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Unicode not only defines character sets, they also define a comparison algorithm for characters.
-This is called UCA, Unicode Comparison Algorithm.
-Like Unicode itself, &lt;a href=&#34;https://unicode.org/Public/UCA/9.0.0/ReadMe.txt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;it is versioned&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Older versions of UCA had issues in various ways:
-&lt;a href=&#34;https://lefred.be/content/mysql-character-sets-unicode-and-uca-compliant-collations/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;lefred&amp;rsquo;s Blog article&lt;/a&gt;
-
- and
-&lt;a href=&#34;https://dev.mysql.com/blog-archive/sushi-beer-an-introduction-of-utf8-support-in-mysql-8-0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Manyi Lu&amp;rsquo;s article&lt;/a&gt;
-
- about the
-&lt;a href=&#34;https://bugs.mysql.com/bug.php?id=76553&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sushi-Beer issue&lt;/a&gt;
-
- explain this in depth.&lt;/p&gt;
-&lt;h2 id=&#34;indexes-are-materialized-collations&#34;&gt;
-    &lt;a href=&#34;#indexes-are-materialized-collations&#34;&gt;
-	Indexes are materialized collations
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Databases have indexes, and these extract values from a column, &lt;strong&gt;sort them&lt;/strong&gt; and store back pointers to the full row with each extracted column value.
-This allows for fast searching.&lt;/p&gt;
-&lt;p&gt;Thus, indexes are materialized collations, and when a collation (or a charset) is changed, all indexes that contain values of that charset are invalid and need to be recreated.&lt;/p&gt;
-&lt;p&gt;In the deep dark past, MySQL made changes and bugfixes to existing collations, which made MySQL upgrades a pain:
-The moment you apply the upgrade, you are forced to drop and recreate the indexes.
-Depending on the amount of data and the size of the index, that requires an extraordinary amount of time and makes updates complicated.&lt;/p&gt;
-&lt;h1 id=&#34;utf8mb4-because-utf8-was-taken&#34;&gt;
-    &lt;a href=&#34;#utf8mb4-because-utf8-was-taken&#34;&gt;
-	&lt;code&gt;utf8mb4&lt;/code&gt;, because &lt;code&gt;utf8&lt;/code&gt; was taken.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;MySQL adopted a policy similar to the Unicode Consortium itself:&lt;/p&gt;
-&lt;p&gt;MySQL never updates existing character sets and collations, not even for bugfixes.&lt;/p&gt;
-&lt;p&gt;And because the name &lt;code&gt;utf8&lt;/code&gt; was taken, a new name was needed:
-&lt;code&gt;utf8mb4&lt;/code&gt; is the version of Unicode utf-8 in MySQL that extends past the BMP, and also uses UCA 9.0 for comparison.&lt;/p&gt;
-&lt;p&gt;Compare to &lt;code&gt;utf8&lt;/code&gt; which encodes only the BMP, and uses an older UCA for comparison.
-So &lt;code&gt;utf8&lt;/code&gt; not only has a smaller character range, it also sorts differently.&lt;/p&gt;
-&lt;p&gt;This makes upgrades mich simpler:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;You install a new version.
-Nothing changes, you are just running new code which hopefully sorts and orders as before.&lt;/li&gt;
-&lt;li&gt;You can create new columns using the new character set and collations, even in existing tables, because in MySQL a charset and collation is a column attribute.
-Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.&lt;/li&gt;
-&lt;li&gt;To complete the upgrade, check all columns, and note which ones need changing.&lt;/li&gt;
-&lt;li&gt;Actually change these columns, table by table, at your own leisure.
-If necessary, use tooling such as Percona Online Table Change (&amp;ldquo;OSC&amp;rdquo;), making the change in the background without service interruption.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;side-note-mysqls-sorting-and-file-formats-are-portable&#34;&gt;
-    &lt;a href=&#34;#side-note-mysqls-sorting-and-file-formats-are-portable&#34;&gt;
-	Side note: MySQL&amp;rsquo;s sorting and file formats are portable
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;MySQL does not use &lt;code&gt;libc&lt;/code&gt; and the character set comparison functions in there for itself.
-It brings its own collations instead.&lt;/p&gt;
-&lt;p&gt;That is also an important fact.
-It means that MySQL does not break when you upgrade the operating system &lt;code&gt;libc&lt;/code&gt; on your machine.&lt;/p&gt;
-&lt;p&gt;If MySQL used &lt;code&gt;libc&lt;/code&gt; fort sorting and comparing, the database could break without any changes to the database whatsoever &amp;ndash; an innocent security update to the operating system &lt;code&gt;libc&lt;/code&gt; (which for some reason also touched &lt;code&gt;libc&lt;/code&gt; sorting and comparison) would break all character indexes in your database.&lt;/p&gt;
-&lt;p&gt;MySQL does not do that.
-It lets you migrate these things in a way that is operationally convenient.&lt;/p&gt;
-&lt;p&gt;It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.&lt;/p&gt;
-&lt;p&gt;Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
-MySQL is MySQL on any platform, and copying files and replication always work across these boundaries.&lt;/p&gt;
-&lt;h1 id=&#34;so-why-the-6-to-3-byte-commit&#34;&gt;
-    &lt;a href=&#34;#so-why-the-6-to-3-byte-commit&#34;&gt;
-	So why the 6-to-3-byte commit?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Not that it matters much: Because Unicode and UCA changes between versions of Unicode, you&amp;rsquo;d still have to use different names for character sets and collations, and migrations to do.&lt;/p&gt;
-&lt;p&gt;But why was it important that &amp;ldquo;we could save a couple of bytes in filesort&amp;rdquo; as Vaintroub puts it?
-Here we go:&lt;/p&gt;
-&lt;h2 id=&#34;sorting-is-important-and-hard-to-scale&#34;&gt;
-    &lt;a href=&#34;#sorting-is-important-and-hard-to-scale&#34;&gt;
-	Sorting is important, and hard to scale
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Not only can databases, tables and individual indexes be very large, they also need to be kept sorted, and sometimes data needs to be re-sorted.
-Databases usually have a large number of strategies for that.&lt;/p&gt;
-&lt;p&gt;Small things are sorted in memory.
-That is, the database creates the full rows of the result table in memory, using all columns.
-It then sorts these rows in memory by shuffling around the full rows.
-That uses up a lot of memory bandwidth, because we copy around full rows, which can be large.&lt;/p&gt;
-&lt;p&gt;Sometimes we do not want to move around full rows, because these rows are large.
-So we only sort the columns specified in the &lt;code&gt;ORDER BY CLAUSE&lt;/code&gt;, which is a tiny subset of the full columns set of each row of the result table, and attach a row pointer to each of these sort rows.&lt;/p&gt;
-&lt;p&gt;In the end we have a tiny in-memory table in sort order, which only holds columns from the &lt;code&gt;ORDER BY&lt;/code&gt;, and each row in it points to the unsorted full rows somewhere else - in memory or on disk.
-We can then output the full rows in sort order, but at the cost of a lot of seeks - possibly on disk.
-That is, because the full rows have not been sorted, so the row pointers from the sorted data to the full rows are a mess.&lt;/p&gt;
-&lt;p&gt;Sometimes we have very many rows.
-So we do as before, but for a subset of all rows - as many as fit into our sort buffer.
-When the sort buffer is full, we write it out to disk.
-Then we continue with the next batch.
-Across all partial results we perform a merge sort.&lt;/p&gt;
-&lt;p&gt;If the things sorted were full rows, we can emit full result rows rather quickly.
-If the things sorted were only &lt;code&gt;ORDER BY&lt;/code&gt; columns or other partial result set rows with row pointers attached, we may have to perform one or multiple seeks in order to get the missing columns from all tables involved.&lt;/p&gt;
-&lt;p&gt;The optimizer has to decide which strategy to use here, based on estimates of the row width, size of the result set (which has not yet been produced, so it&amp;rsquo;s a guess) and the available amount of resources.&lt;/p&gt;
-&lt;h2 id=&#34;and-then-implementation-issues&#34;&gt;
-    &lt;a href=&#34;#and-then-implementation-issues&#34;&gt;
-	And then, implementation issues
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Older versions of MySQL have different storage engines: &lt;code&gt;MYISAM&lt;/code&gt;, &lt;code&gt;INNODB&lt;/code&gt;, &lt;code&gt;MEMORY&lt;/code&gt; and others.
-Modern MySQL has only &lt;code&gt;INNODB&lt;/code&gt;, but for temporary tables has a few tricks ready to make things faster:
-for example, temporary tables can be recreated and do not need to be crash safe, so no redo and undo logging is required.&lt;/p&gt;
-&lt;p&gt;Other storage engines than &lt;code&gt;INNODB&lt;/code&gt; had restrictions.&lt;/p&gt;
-&lt;p&gt;For example, &lt;code&gt;MEMORY&lt;/code&gt; tables could not have variable length columns, there was no &lt;code&gt;VARCHAR&lt;/code&gt;, only &lt;code&gt;CHAR&lt;/code&gt;.
-So when sorting with temporary tables in memory, MySQL created these temp tables as &lt;code&gt;MEMORY&lt;/code&gt; tables, promoting every &lt;code&gt;varchar(255)&lt;/code&gt; to &lt;code&gt;CHAR(255)&lt;/code&gt;.
-A row with a varchar value of &lt;code&gt;hello&lt;/code&gt; suddenly used 255 bytes instead of 6 bytes to represent the string &lt;code&gt;hello&lt;/code&gt; (plus a lot of padding).&lt;/p&gt;
-&lt;p&gt;Of course, with &lt;code&gt;utf8&lt;/code&gt;, a &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; is promoted to a &lt;code&gt;char(255) charset utf8&lt;/code&gt;, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string &lt;code&gt;hello&lt;/code&gt;, and the rest is wasteful padding.
-With 6 bytes, it would be twice that amount of memory.
-So reducing this from 6 to 3 bytes was quite worthwhile.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;MEMORY&lt;/code&gt; tables had a configurable size limit, and if your table exceeded that (which happened rather quickly, given the above restrictions), it was converted to an on-disk temporary table in &lt;code&gt;MYISAM&lt;/code&gt; format: a spill.
-&lt;code&gt;MYISAM&lt;/code&gt; of course had &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; as a native type, and your &lt;code&gt;hello&lt;/code&gt; would again shrink to six bytes.
-Looking at the on disk temporary file, which was rather small, you might wonder what caused the spill.&lt;/p&gt;
-&lt;p&gt;MySQL 8 introduces unlogged &lt;code&gt;INNODB&lt;/code&gt; temporary tables (and a failed experiment involving mmap that you may want to disable).
-So this problem is gone, once and for all:
-&lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem - if you use MySQL 8.&lt;/p&gt;
-&lt;p&gt;This is in fact one of the major reasons to graduate from 5.7 for many people.&lt;/p&gt;
-&lt;h2 id=&#34;tldr&#34;&gt;
-    &lt;a href=&#34;#tldr&#34;&gt;
-	TLDR
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;We learned:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Your programming languages &lt;code&gt;utf8&lt;/code&gt; is called &lt;code&gt;utf8mb4&lt;/code&gt; in MySQL.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;utf8&lt;/code&gt; and &lt;code&gt;utf8mb4&lt;/code&gt; sort differently due to changes in the Unicode Collation Algorithm (UCA).&lt;/li&gt;
-&lt;li&gt;Indexes are physically materialized sort orders of column sets. They can become pretty large.&lt;/li&gt;
-&lt;li&gt;MySQL never changes character sets or collations, even if they are buggy. Instead a new collation with a new name is created.&lt;/li&gt;
-&lt;li&gt;That is, because changing a sort order may require dropping and recreating an index, which is expensive if the index is large.&lt;/li&gt;
-&lt;li&gt;Sorting things can be done in different ways, depending on data set size, column size and other considerations.&lt;/li&gt;
-&lt;li&gt;Implementation details can make sorting even more complicated.&lt;/li&gt;
-&lt;li&gt;MySQL 8 is a worthwhile upgrade.&lt;/li&gt;
-&lt;li&gt;Databases manage state so you don&amp;rsquo;t have to. If you think databases are complicated, consider what you would have to do if the database and your DBA would not be there for you.&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

@@ -6,13 +6,157 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Jun 2022 08:02:36 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 03 Jun 2022 09:28:34 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rolling back MySQL versions</title>
+      <link>https://blog.koehntopp.info/2022/06/03/rolling-back.html</link>
+      <pubDate>Fri, 03 Jun 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/06/03/rolling-back.html</guid>
+      <description>&lt;p&gt;Where I work, we &lt;a href=&#34;https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html&#34;&gt;manage databases in an automated way&lt;/a&gt;
+
+.
+Not as automated as I wish it to be, but largely without touching boxes.&lt;/p&gt;
+&lt;p&gt;We have been doing so for a long time.&lt;/p&gt;
+&lt;p&gt;Over ten years ago, I set the team the challenge &amp;ldquo;be on an arbitrary version of MySQL within 20 workdays (one calendar month), no matter how many servers we have&amp;rdquo;.
+We are there now, in a way: we are on a 30 day refresh cycle for our bare metal cloud, and we match that cycle for our virtualized fleet.
+It was a long road.&lt;/p&gt;
+&lt;h1 id=&#34;the-51-to-55-disaster&#34;&gt;
+    &lt;a href=&#34;#the-51-to-55-disaster&#34;&gt;
+	The 5.1 to 5.5 disaster
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The worst place we have been in in the past was our transition from MySQL 5.1 to 5.5.&lt;/p&gt;
+&lt;p&gt;Along the way we picked up a mutant Non-GA version of 5.1 for reasons that seemed valid at that time.
+But unfortunately, this version changed the on-disk format to fix a thing.
+That meant we had no binary &amp;ldquo;on-disk&amp;rdquo;, &amp;ldquo;in-place&amp;rdquo; upgrade path for us, for any system that was on this particular strain of 5.1.&lt;/p&gt;
+&lt;h2 id=&#34;in-place-upggrades-are-fast&#34;&gt;
+    &lt;a href=&#34;#in-place-upggrades-are-fast&#34;&gt;
+	In-place upggrades are fast
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Normally, upgrading MySQL is easy:
+You stop the server, push the new RPM, run &lt;code&gt;mysql_upgrade&lt;/code&gt; (now integrated and automatic), and the on-disk format is adjusted.
+Then the server comes up again.
+Takes a minute or two, plus time to reheat the caches.&lt;/p&gt;
+&lt;p&gt;Also, downgrading MySQL is often easy and, important!, possible:
+&lt;strong&gt;In the past the on-disk format only changed between major versions.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In our case, none of these options were open to us:
+A binary transition between our mutant non-GA 5.1 and 5.5 was impossible.
+We had to dump and reload all the data.&lt;/p&gt;
+&lt;p&gt;Back then we already had a three digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).&lt;/p&gt;
+&lt;p&gt;So we would dump the 5.1 database, reload it into a 5.5 instance, recreating all the indexes (which makes it slow), then attach it in replication and wait for it to catch up.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/06/mysql-upgrade.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Converting from 5.1 to 5.5 without interruption, by rebuilding the replication tree under a new intermediate, then beheading the chain. Reimporting a dump into a 5.5 instance is the slowest step, recloning was a nuisance back then &amp;ndash; it is automated these days.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;We would then make more replicas under the 5.5 which acts as an intermediate primary, and remove 5.1 replicas to match.
+In the end we would move writes down from the 5.1 primary to the 5.5 intermediate primary, behead the tree and be done.
+That takes around a week per hierarchy, and was not properly automated back then. In fact, the entire experience is part of why we have to much automation.&lt;/p&gt;
+&lt;p&gt;It meant that the transition from 5.1 to 5.5 took us almost two years.&lt;/p&gt;
+&lt;h2 id=&#34;why-the-mutant&#34;&gt;
+    &lt;a href=&#34;#why-the-mutant&#34;&gt;
+	Why the mutant?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We had the 5.1 mutant because of a bug fix that we thought we needed, which led to a change in on-disk format.
+We completely underestimated the impact of a breaking change in on-disk format on our operations, and the amount of toil coming from this.&lt;/p&gt;
+&lt;p&gt;And we paid dearly for us.&lt;/p&gt;
+&lt;h1 id=&#34;mysql-8-and-todays-situation&#34;&gt;
+    &lt;a href=&#34;#mysql-8-and-todays-situation&#34;&gt;
+	MySQL 8 and todays situation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;These days, phase 2 of that conversion would be completely automated:
+If we have a working binary datadir, we can reclone it at scale, limited by the media speed or the cluster quota.
+Still, we need an up to date binary datadir to be able to do that.&lt;/p&gt;
+&lt;p&gt;These days, MySQL 8 broke with the promise of &amp;ldquo;no new features, no new disk formats with a single major version&amp;rdquo;.
+The former is okay, and in fact, welcome.
+It has had some impact on stability, but in general the development process of MySQL and the refactoring of its internals have become good enough to offset that, mostly.
+So, yes, we are okay with the new MySQL 8 development model, and we are in fact making use of new features.&lt;/p&gt;
+&lt;p&gt;The latter is catastrophic, because it leads to either incomplete upgrades for us, or leads us back into a dump-and-reload hell.&lt;/p&gt;
+&lt;p&gt;Let me explain:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In order to roll back, we do need a current binary datadir that is compatible with the version we want to roll back to.&lt;/li&gt;
+&lt;li&gt;Replication has an order, a replica must be newer or equal in version to its source.
+Otherwise it risks that things coming down the replication stream are too new, and cannot be recognized.&lt;/li&gt;
+&lt;li&gt;So in order to have a valid binary datadir &lt;em&gt;and&lt;/em&gt; have a valid replication hierarchy, we cannot behead a primary until we trust that we never want to roll back.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Or, we do behead the chain and promote one of the new version intermediates to writeable true primary.
+In which case we lose rollback capability, and are back to dump and reload.&lt;/p&gt;
+&lt;p&gt;Only we now have more chains, and some databases are truly too large to ever dump and reload.
+I mean, we had a 120 TB MariaDB instance that was converted to Oracle MySQL 5.7 by dump and reload, and that took a machine with AMD EPYC CPU, 1 TB of RAM and multiple months to complete.
+The conversion saga was painful enough to warrant a &lt;a href=&#34;https://twitter.com/_digitalknight/status/1526671502116114435&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Percona Live talk&lt;/a&gt;
+
+ about the entire thing by Simon Mudd and Pep Pla.&lt;/p&gt;
+&lt;h1 id=&#34;sometimes-changes-fail&#34;&gt;
+    &lt;a href=&#34;#sometimes-changes-fail&#34;&gt;
+	Sometimes changes fail
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL 8 gives us a lot of new features, &lt;a href=&#34;https://www.percona.com/blog/quick-peek-at-mysql-8-0-29/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here are some highlights&lt;/a&gt;
+
+.
+They are very welcome, but… untested.&lt;/p&gt;
+&lt;p&gt;They come with breaking changes, &lt;a href=&#34;https://www.percona.com/blog/mysql-8-0-29-and-percona-xtrabackup-incompatibilities/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;disabling our default clone mechanism&lt;/a&gt;
+
+.
+They &lt;a href=&#34;https://forums.mysql.com/read.php?22,704532,704675&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;seem to be unstable&lt;/a&gt;
+
+ for not just us, in one way or the other.&lt;/p&gt;
+&lt;p&gt;Being able to go back one or two major versions (&amp;ldquo;a quarter or half a year&amp;rdquo;) would make this much easier for everyone: Users and Developers, and take a lot of strain of the vendor/customer relationship.&lt;/p&gt;
+&lt;h2 id=&#34;my-default-clone-rant&#34;&gt;
+    &lt;a href=&#34;#my-default-clone-rant&#34;&gt;
+	My default CLONE rant
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Disk format changes also get somehow in the way of other features:&lt;/p&gt;
+&lt;p&gt;Our default clone mechanism is not &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;CLONE&lt;/code&gt;&lt;/a&gt;
+
+.
+That is, because &lt;code&gt;CLONE&lt;/code&gt; requires the same exact version of the database at the donor and receiver instance, which makes it completely useless for upgrades.&lt;/p&gt;
+&lt;p&gt;Clone is dependent on the on-disk format not changing for good reasons.
+The entire point of Clone is to not mess with formats and just shifting data between instances, multithreaded, as fast as possible.&lt;/p&gt;
+&lt;p&gt;By managing on-disk format changes more conservatively, and giving a two-minor-versions window (6 months), Oracle MySQL could rely on Oracle MySQL&amp;rsquo;s on-disk format.
+It could handle &lt;code&gt;CLONE&lt;/code&gt; based upgrades properly, instead of having everybody depend on &lt;code&gt;xtrabackup&lt;/code&gt; catching up.&lt;/p&gt;
+&lt;p&gt;That would be a lot of value added for little effort.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Databases are where the state is kept.
+State has size, and copying state is slow.
+That is why everybody is always very protective of state.
+Do not treat on-disk data the Yolo way that Devops treats stateless instances.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Introducing new features in a major version is okay if you have a mature codebase and development process.&lt;/li&gt;
+&lt;li&gt;Changing persistent state on disk is more complicated than thay, and downgrades need to be possible for two minor versions.
+&lt;ul&gt;
+&lt;li&gt;If you do not allow that, it is painful for everybody.&lt;/li&gt;
+&lt;li&gt;That includes us, because we can test slower, so Oracle MySQL gets less feedback.&lt;/li&gt;
+&lt;li&gt;That includes Oracle MySQL itself, because it makes nifty features such as &lt;code&gt;CLONE&lt;/code&gt; needlessly specific and much less useful.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We will, even with today&amp;rsquo;s the degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.
+&lt;ul&gt;
+&lt;li&gt;Binary in-place upgrade and downgrade paths are completely non-optional.
+We will never have the hell of the 5.1 to 5.5 transition again.
+We simply cannot afford this any more.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
     <item>
       <title>Fertig gelesen: Crafting Interpreters</title>
-      <link>https://blog.koehntopp.info/2022/05/16/crafting-interpreters.html</link>
+      <link>https://blog.koehntopp.info/2022/05/16/fertig-gelesen-crafting-interpreters.html</link>
       <pubDate>Mon, 16 May 2022 07:47:06 +0000</pubDate>
       
-      <guid>https://blog.koehntopp.info/2022/05/16/crafting-interpreters.html</guid>
+      <guid>https://blog.koehntopp.info/2022/05/16/fertig-gelesen-crafting-interpreters.html</guid>
       <description>&lt;p&gt;Robert Nystrom is a language developer who works at Google on the Dart programming language.
 In his book &lt;a href=&#34;https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Crafting Interpreters&lt;/a&gt;
 
@@ -2795,167 +2939,6 @@ So this problem is gone, once and for all:
 &lt;li&gt;MySQL 8 is a worthwhile upgrade.&lt;/li&gt;
 &lt;li&gt;Databases manage state so you don&amp;rsquo;t have to. If you think databases are complicated, consider what you would have to do if the database and your DBA would not be there for you.&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Never check for an error condition you don&#39;t know how to handle</title>
-      <link>https://blog.koehntopp.info/2022/01/10/never-check-for-an-error-condition.html</link>
-      <pubDate>Mon, 10 Jan 2022 07:11:35 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/01/10/never-check-for-an-error-condition.html</guid>
-      <description>&lt;p&gt;This is the english version of an &lt;a href=&#34;https://blog.koehntopp.info/2009/08/21/was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.html&#34;&gt;older text in German&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Computer scientists are weird.
-In their science there are a few rules that sound wrong when you hear them first, but make a lot of sense if you think about them.
-Some of them are making sense even outside of computer science.&lt;/p&gt;
-&lt;p&gt;One of those rules is&lt;/p&gt;
-&lt;h1 id=&#34;never-check-for-an-error-condition-you-dont-know-how-to-handle&#34;&gt;
-    &lt;a href=&#34;#never-check-for-an-error-condition-you-dont-know-how-to-handle&#34;&gt;
-	Never check for an error condition you don&amp;rsquo;t know how to handle.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;When you encounter this the first time that sounds very questionable.
-There are known error conditions in my program that I know they can happen, and I should not check for them?&lt;/p&gt;
-&lt;p&gt;If you read that left to right, that&amp;rsquo;s exactly what it means.
-Let&amp;rsquo;s have a look at an example and try to understand what goes on.
-Here is a very simple case: I could try to allocate memory from the operating system and that can fails.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;malloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;someSize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;what_now&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is a very typical situation.
-For example, why does the library function &lt;code&gt;malloc()&lt;/code&gt; not check itself for &lt;code&gt;p == NULL&lt;/code&gt;  and handles this case?
-Because it does not, I have to do that every time and must not forget that in a single case.&lt;/p&gt;
-&lt;p&gt;Indeed, most programs have a function &lt;code&gt;safe_malloc()&lt;/code&gt;, which wraps &lt;code&gt;malloc()&lt;/code&gt; and more or less looks like the example above.
-The point being that each program has their own implementation of &lt;code&gt; what_now()&lt;/code&gt;, because the desired behavior is specific to the application and cannot be provided by the library.&lt;/p&gt;
-&lt;p&gt;One could argue that &lt;code&gt;malloc()&lt;/code&gt; should internally call a &lt;code&gt;what_now()&lt;/code&gt;, and each library user would have to provide an implementation for that.
-But that would proscribe a certain mode of usage for &lt;code&gt;malloc()&lt;/code&gt;.
-The solution that &lt;code&gt;malloc()&lt;/code&gt; does not do the check, but only signals the error, is the most flexible solution &amp;ndash; and hence suitable for a library function, because it leaves the choice to the user.
-It provides mechanism, but not policy.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Side thought:&lt;/strong&gt; That&amp;rsquo;s one of the main differences between a library and a framework.
-Libraries provide mechanism, but do not enforce a policy.
-They do not proscribe a default way of working with problems.
-Frameworks are opinionated, and have been designed with a specific way of working in mind, and provide policies that are considered default solutions in the context of the framework.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Side side though:&lt;/strong&gt; Kernel, libraries and frameworks are all infrastructure, and as all infrastructure they are being judged by how they fail.
-In this case: What solutions exist to bypass the policy in a framework, if the policy does not fit.
-&amp;ldquo;How can I have queries in &lt;a href=&#34;https://en.wikipedia.org/wiki/Ruby_on_Rails&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RoR&lt;/a&gt;
-
- that bypass &lt;a href=&#34;https://en.wikipedia.org/wiki/Active_record_pattern&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Active Record&lt;/a&gt;
-
-&amp;rdquo; is one example.
-How free of policy is this library?
-Is it just a mechanism or is there an obvious or hidden intention, a policy?&lt;/p&gt;
-&lt;p&gt;A library ideally supplies just a mechanism, but that makes it mandatory for the developer to think about a policy for error handling and how to implement it.
-That&amp;rsquo;s a relatively obvious point, but one that in my experience is not taught sufficiently.
-If it wasn&amp;rsquo;t, we&amp;rsquo;d have less bad code in many projects.
-And I do not want to limit myself to the tons of toxic PHP-MYSQL that fire queries at a database without checking for errors at all.&lt;/p&gt;
-&lt;p&gt;The point is rather that a missing policy for error handling requires that you provide one in the application (or at least some minimal standards in the application).
-Some programming environments have a name for such an informal construct:
-A convention, a contract between library developer and application developer that is informal and not enforced by the mechanisms of the language.
-The convention is also often unspoken, or not made explicit enough in the documentation of the library.
-And hence taught insufficiently, and then implemented insufficiently.&lt;/p&gt;
-&lt;p&gt;But you can take the sentence&lt;/p&gt;
-&lt;h1 id=&#34;never-check-for-an-error-condition-you-dont-know-how-to-handle-1&#34;&gt;
-    &lt;a href=&#34;#never-check-for-an-error-condition-you-dont-know-how-to-handle-1&#34;&gt;
-	Never check for an error condition you don&amp;rsquo;t know how to handle.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;and read it backwards.
-What exactly does it mean to handle an error condition?
-Specifically, if the error happens, what are our options and what is the desired failure mode?
-What is supposed to happen?&lt;/p&gt;
-&lt;p&gt;Going back to the &lt;code&gt;malloc()&lt;/code&gt; above:
-When that happens, the operating system can&amp;rsquo;t or won&amp;rsquo;t give us more memory.
-We don&amp;rsquo;t know why, so we have to assume the worst.
-That is: memory is full, nobody gets any memory any more.
-In fact, there could be another program that permanently allocates more memory.
-So even if we gave memory back to the operating system, we wouldn&amp;rsquo;t get it back when trying to reserve it.&lt;/p&gt;
-&lt;p&gt;So handling this error means that we already have all memory required to recover from the situation before the error happens.
-That&amp;rsquo;s a really complicated situation, and too complicated for most application developers when we force them to think about it.
-At the point in time when this happens they are usually busy with completing the non-failing, actually function path of the application before they are ready to turn to failure modes and their code paths.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Side thought:&lt;/strong&gt; This is another main reason for bad code:
-We force developers to think about failing code paths at the wrong point in time.
-They really want to write programs that work well.
-But we shouldn&amp;rsquo;t bother them with failure handling right when they are busy with completing the money earning part of the code.&lt;/p&gt;
-&lt;p&gt;If we bother devs at the wrong moment in time, we get error handling like this at best:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;((&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;malloc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;someSize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ENOMEM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// out of memory error
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Well, at least they checked for an error.
-Maybe there are even some &lt;code&gt; atexit(3)&lt;/code&gt; handlers stacked that will try to clean up, but did you ever see any of those?&lt;/p&gt;
-&lt;p&gt;If you see code like this, it is screaming at you &amp;ldquo;Yes, yes, I know, but I am really busy now with other things. Go away!&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;Another common problem is that we need to check for the error at the lowest level, but need more context at the higher levels of our code to handle it properly.
-Sometimes there is not even a contract on how errors are being bubbled up to the next layer without losing information.
-The interiors of the MySQL codebase used to be a prime example of that.
-You could find code that mapped error codes similar to&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;errcode&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;doSomeThing&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;switch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;errcode&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;3&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;E_THIS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;E_THAT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;break&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is taking detailed internal error codes and flattens them into larger categories, losing detail.
-Sometimes a higher level handler has more context, but no longer sufficient detail to decide what exactly went wrong at the lower layers.&lt;/p&gt;
-&lt;p&gt;The rule&lt;/p&gt;
-&lt;h1 id=&#34;never-check-for-an-error-condition-you-dont-know-how-to-handle-2&#34;&gt;
-    &lt;a href=&#34;#never-check-for-an-error-condition-you-dont-know-how-to-handle-2&#34;&gt;
-	Never check for an error condition you don&amp;rsquo;t know how to handle.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;means we need to discuss things.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Diagnosis:&lt;/strong&gt; Capture the error. Formulate a test which at some point in the code checks that we have a problem and distinctively signals which error that is.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Policy:&lt;/strong&gt; Determine the desired behavior for handling the error, that is, have a policy that explains how to handle the error.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Context:&lt;/strong&gt; Decide where in the stack the error can be handled best, or if we need to escalate. When we escalate, make sure an escalation is expected at the higher layer and check for their policy. They need to have one. Also make sure the escalation does not lose detail.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;this-is-useful-outside-of-computer-science&#34;&gt;
-    &lt;a href=&#34;#this-is-useful-outside-of-computer-science&#34;&gt;
-	This is useful outside of computer science.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The original trigger to write this article in 2009 was a discussion about a 911-button (110-Taste) in a web browser.
-&amp;ldquo;If you see something, say something&amp;rdquo;: If you find web pages that contain things that may be relevant for law enforcement, have a way to call for help.&lt;/p&gt;
-&lt;p&gt;That&amp;rsquo;s a very german and very 2009 idea, but suppose you want that: Coding that is easy, right? A button in a browser that raises an alarm somewhere should be very few lines of code in an extension.&lt;/p&gt;
-&lt;p&gt;The real problem - and that is not a code problem - is the &lt;code&gt;what_now()&lt;/code&gt;.
-What is supposed to happen with that alarm signal.
-That&amp;rsquo;s a process question, that is &lt;strong&gt;WHO needs to talk WHEN with WHOM about WHAT?&lt;/strong&gt;
-What information needs to be sent when the button is pressed and what reaction is then expected?&lt;/p&gt;
-&lt;p&gt;Do we build a central emergency call center?
-Do we transport location and identity information together with the call, if that is necessary?
-If so, how?&lt;/p&gt;
-&lt;p&gt;What other information is necessary to provide context?
-The current URL?
-The persistent state of the browser, with all bookmarks, the history and so on?
-The volatile state of the browser, eg with all active spywat, but also all legit variables?
-The whole state of the computer, processlist, memory and program information, installed software and so on?&lt;/p&gt;
-&lt;p&gt;How is that call then handled and classified?&lt;/p&gt;
-&lt;p&gt;What are standard reactions to verified and classfied emergency escalations?
-Can the emergency call center take over the computer and extract further information and do a full forensic analysis?
-Can they write and change the state of the machine to help?
-Or can they just call back, and request a read-only screen sharing session to talk the user trough the emergency?&lt;/p&gt;
-&lt;p&gt;What taxonomy of emergencies do we build, and what are the required steps to verify a case?&lt;/p&gt;
-&lt;p&gt;Do we plan for preventatice action, when we register a spike in incidents of a certain type (ie a computer virus outbreak)?
-Do we have a problem management and change managent on top of our incident management that would want to and be able to prevent a large scale situation in the field?
-In the case of an outbreak, for example, by forcing patches on all machines?&lt;/p&gt;
-&lt;p&gt;How do we build the technical and legal framework for this?
-How do we build the organisation for this?
-How to we enforce the technical changes required to be able to do this?
-Do we make the installation of some software mandatory to be able to be on the Internet?
-How do we protect this infrastructure against abuse?&lt;/p&gt;
-&lt;p&gt;The check was easy &amp;ndash; an emergency call button in a browser.&lt;/p&gt;
-&lt;p&gt;The work is in the handling, which can be &amp;ldquo;somewhat involved&amp;rdquo;.
-But these are details that are gracefully elided in the discussion when politicans demand such a button.
-That&amp;rsquo;s providing quite simplicistic discussions:
-Why do we not have such a button in every browser already?&lt;/p&gt;
-&lt;p&gt;Can&amp;rsquo;t be that hard, right?&lt;/p&gt;
 </description>
     </item>
     
