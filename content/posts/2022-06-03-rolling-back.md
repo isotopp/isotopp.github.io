@@ -111,12 +111,15 @@ Disk format changes also get somehow in the way of other features:
 
 Our default clone mechanism is not [`CLONE`](https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html).
 That is, because `CLONE` requires the same exact version of the database at the donor and receiver instance, which makes it completely useless for upgrades.
+MySQL knows how to upgrade in place, so cloning should be able to clone from a compatible, older version of 8.0.
+After pulling down the data it could restart and do an in-place upgrade.
+That would make it work at least for upgrades.
 
-Clone is dependent on the on-disk format not changing for good reasons.
+In any case, Clone is dependent on the on-disk format not changing for good reasons.
 The entire point of Clone is to not mess with formats and just shifting data between instances, multi-threaded, as fast as possible.
 
-By managing on-disk format changes more conservatively, and giving a two-minor-versions window (6 months), Oracle MySQL could rely on Oracle MySQL's on-disk format.
-It could handle `CLONE` based upgrades properly, instead of having everybody depend on `xtrabackup` catching up.
+By managing on-disk format changes more conservatively, and giving a two-minor-versions window (6 months), Oracle MySQL could rely on Oracle MySQL's on-disk format -- even for supported downgrades.
+It could handle `CLONE` based upgrades and downgrades properly, instead of having everybody depend on `xtrabackup` catching up.
 
 That would be a lot of value added for little effort.
 
