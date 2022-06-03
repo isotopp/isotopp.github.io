@@ -16,18 +16,18 @@ Not as automated as I wish it to be, but largely without touching boxes.
 We have been doing so for a long time.
 
 Over ten years ago, I set the team the challenge "be on an arbitrary version of MySQL within 20 workdays (one calendar month), no matter how many servers we have".
-We are there now, in a way: we are on a 30 day refresh cycle for our bare metal cloud, and we match that cycle for our virtualized fleet.
+We are there now, in a way: we are on a 30-day refresh cycle for our bare metal cloud, and we match that cycle for our virtualized fleet.
 It was a long road.
 
 # The 5.1 to 5.5 disaster
 
-The worst place we have been in in the past was our transition from MySQL 5.1 to 5.5. 
+The worst place we have been in the past was our transition from MySQL 5.1 to 5.5. 
 
 Along the way we picked up a mutant Non-GA version of 5.1 for reasons that seemed valid at that time.
 But unfortunately, this version changed the on-disk format to fix a thing.
 That meant we had no binary "on-disk", "in-place" upgrade path for us, for any system that was on this particular strain of 5.1.
 
-## In-place upggrades are fast
+## In-place upgrades are fast
 
 Normally, upgrading MySQL is easy:
 You stop the server, push the new RPM, run `mysql_upgrade` (now integrated and automatic), and the on-disk format is adjusted.
@@ -41,7 +41,7 @@ In our case, none of these options were open to us:
 A binary transition between our mutant non-GA 5.1 and 5.5 was impossible.
 We had to dump and reload all the data.
 
-Back then we already had a three digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).
+Back then we already had a three-digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).
 
 So we would dump the 5.1 database, reload it into a 5.5 instance, recreating all the indexes (which makes it slow), then attach it in replication and wait for it to catch up.
 
@@ -51,7 +51,7 @@ So we would dump the 5.1 database, reload it into a 5.5 instance, recreating all
 
 We would then make more replicas under the 5.5 which acts as an intermediate primary, and remove 5.1 replicas to match.
 In the end we would move writes down from the 5.1 primary to the 5.5 intermediate primary, behead the tree and be done.
-That takes around a week per hierarchy, and was not properly automated back then. In fact, the entire experience is part of why we have to much automation.
+That takes around a week per hierarchy, and was not properly automated back then. In fact, the entire experience is part of why we have so much automation.
 
 It meant that the transition from 5.1 to 5.5 took us almost two years.
 
@@ -62,11 +62,11 @@ We completely underestimated the impact of a breaking change in on-disk format o
 
 And we paid dearly for us.
 
-# MySQL 8 and todays situation
+# MySQL 8 and today's situation
 
 These days, phase 2 of that conversion would be completely automated:
 If we have a working binary datadir, we can reclone it at scale, limited by the media speed or the cluster quota.
-Still, we need an up to date binary datadir to be able to do that.
+Still, we need an up-to-date binary datadir to be able to do that.
 
 These days, MySQL 8 broke with the promise of "no new features, no new disk formats with a single major version".
 The former is okay, and in fact, welcome.
@@ -79,7 +79,7 @@ Let me explain:
 
 - In order to roll back, we do need a current binary datadir that is compatible with the version we want to roll back to.
 - Replication has an order, a replica must be newer or equal in version to its source.
-  Otherwise it risks that things coming down the replication stream are too new, and cannot be recognized.
+  Otherwise, it risks that things coming down the replication stream are too new, and cannot be recognized.
 - So in order to have a valid binary datadir *and* have a valid replication hierarchy, we cannot behead a primary until we trust that we never want to roll back.
 
 Or, we do behead the chain and promote one of the new version intermediates to writeable true primary.
@@ -107,7 +107,7 @@ Our default clone mechanism is not [`CLONE`](https://dev.mysql.com/doc/refman/8.
 That is, because `CLONE` requires the same exact version of the database at the donor and receiver instance, which makes it completely useless for upgrades.
 
 Clone is dependent on the on-disk format not changing for good reasons.
-The entire point of Clone is to not mess with formats and just shifting data between instances, multithreaded, as fast as possible.
+The entire point of Clone is to not mess with formats and just shifting data between instances, multi-threaded, as fast as possible.
 
 By managing on-disk format changes more conservatively, and giving a two-minor-versions window (6 months), Oracle MySQL could rely on Oracle MySQL's on-disk format.
 It could handle `CLONE` based upgrades properly, instead of having everybody depend on `xtrabackup` catching up.
@@ -122,11 +122,11 @@ That is why everybody is always very protective of state.
 Do not treat on-disk data the Yolo way that Devops treats stateless instances.
 
 - Introducing new features in a major version is okay if you have a mature codebase and development process.
-- Changing persistent state on disk is more complicated than thay, and downgrades need to be possible for two minor versions.
+- Changing persistent state on disk is more complicated than that, and downgrades need to be possible for two minor versions.
   - If you do not allow that, it is painful for everybody.
   - That includes us, because we can test slower, so Oracle MySQL gets less feedback.
   - That includes Oracle MySQL itself, because it makes nifty features such as `CLONE` needlessly specific and much less useful.
 - We will, even with today's the degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.
   - Binary in-place upgrade and downgrade paths are completely non-optional. 
     We will never have the hell of the 5.1 to 5.5 transition again.
-    We simply cannot afford this any more.
+    We simply cannot afford this anymore.
