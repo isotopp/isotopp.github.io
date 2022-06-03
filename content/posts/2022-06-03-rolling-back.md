@@ -120,6 +120,16 @@ It could handle `CLONE` based upgrades properly, instead of having everybody dep
 
 That would be a lot of value added for little effort.
 
+## Privileges change, making downgrades harder for some
+
+It is important to be aware that the new dynamic permission system in MySQL 8 makes it easy to add new privileges over time.
+The result is that privileges now change more rapidly.
+
+When you dump and reload (or downgrade a binary datadir), there is no mechanism currently to handle this safely.
+
+For example, 8.0.28 might add `AUDIT_ABORT_EXEMPT`, and downgrading this in any way to 8.0.27 requires some `sed` artistics in the dump or other kludgery, because 8.0.27 won't overlook the privilege names it does not know anything about.
+Clearly, here is a tooling gap.
+
 # TL;DR
 
 Databases are where the state is kept.
