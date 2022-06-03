@@ -87,7 +87,7 @@ In which case we lose rollback capability, and are back to dump and reload.
 
 Only we now have more chains, and some databases are truly too large to ever dump and reload.
 I mean, we had a 120 TB MariaDB instance that was converted to Oracle MySQL 5.7 by dump and reload, and that took a machine with AMD EPYC CPU, 1 TB of RAM and multiple months to complete.
-The conversion saga was painful enough to warrant a [Percona Live talk](https://twitter.com/_digitalknight/status/1526671502116114435) about the entire thing by Simon Mudd and Pep Pla.
+The conversion saga was painful enough to warrant a [Percona Live talk](https://twitter.com/_digitalknight/status/1526671502116114435) about the entire thing by Mohammed Gaafar and Pep Pla.
 
 # Sometimes changes fail
 
