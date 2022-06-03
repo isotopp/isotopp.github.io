@@ -6,9 +6,9 @@
     <description>Recent content in database on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 03 Jun 2022 10:05:03 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 03 Jun 2022 11:51:47 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Rolling back MySQL versions</title>
+      <title>Rolling MySQL back and forward</title>
       <link>https://blog.koehntopp.info/2022/06/03/rolling-back.html</link>
       <pubDate>Fri, 03 Jun 2022 00:00:00 +0000</pubDate>
       
@@ -21,126 +21,159 @@ Not as automated as I wish it to be, but largely without touching boxes.&lt;/p&g
 &lt;p&gt;Over ten years ago, I set the team the challenge &amp;ldquo;be on an arbitrary version of MySQL within 20 workdays (one calendar month), no matter how many servers we have&amp;rdquo;.
 We are there now, in a way: we are on a 30-day refresh cycle for our bare metal cloud, and we match that cycle for our virtualized fleet.
 It was a long road.&lt;/p&gt;
-&lt;h1 id=&#34;the-51-to-55-disaster&#34;&gt;
-    &lt;a href=&#34;#the-51-to-55-disaster&#34;&gt;
-	The 5.1 to 5.5 disaster
+&lt;h1 id=&#34;cloning-upgrading-and-downgrading&#34;&gt;
+    &lt;a href=&#34;#cloning-upgrading-and-downgrading&#34;&gt;
+	Cloning, upgrading and downgrading
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;The worst place we have been in the past was our transition from MySQL 5.1 to 5.5.&lt;/p&gt;
-&lt;p&gt;Along the way we picked up a mutant Non-GA version of 5.1 for reasons that seemed valid at that time.
-But unfortunately, this version changed the on-disk format to fix a thing.
-That meant we had no binary &amp;ldquo;on-disk&amp;rdquo;, &amp;ldquo;in-place&amp;rdquo; upgrade path for us, for any system that was on this particular strain of 5.1.&lt;/p&gt;
-&lt;h2 id=&#34;in-place-upgrades-are-fast&#34;&gt;
-    &lt;a href=&#34;#in-place-upgrades-are-fast&#34;&gt;
-	In-place upgrades are fast
+&lt;p&gt;The three most basic operations we need to solve in order to manage a fleet of instances are:
+creating clones of an existing database instance in a way that they can participate in a replication hierarchy,
+upgrading instances to a new minor or major version,
+and downgrading instances.&lt;/p&gt;
+&lt;h2 id=&#34;cloning&#34;&gt;
+    &lt;a href=&#34;#cloning&#34;&gt;
+	Cloning
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Normally, upgrading MySQL is easy:
-You stop the server, push the new RPM, run &lt;code&gt;mysql_upgrade&lt;/code&gt; (now integrated and automatic), and the on-disk format is adjusted.
-Then the server comes up again.
-Takes a minute or two, plus time to reheat the caches.&lt;/p&gt;
-&lt;p&gt;Also, downgrading MySQL is often easy and, important!, possible:
-&lt;strong&gt;In the past the on-disk format only changed between major versions.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;In our case, none of these options were open to us:
-A binary transition between our mutant non-GA 5.1 and 5.5 was impossible.
-We had to dump and reload all the data.&lt;/p&gt;
-&lt;p&gt;Back then we already had a three-digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).&lt;/p&gt;
-&lt;p&gt;So we would dump the 5.1 database, reload it into a 5.5 instance, recreating all the indexes (which makes it slow), then attach it in replication and wait for it to catch up.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/06/mysql-upgrade.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Converting from 5.1 to 5.5 without interruption, by rebuilding the replication tree under a new intermediate, then beheading the chain. Reimporting a dump into a 5.5 instance is the slowest step, recloning was a nuisance back then &amp;ndash; it is automated these days.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We would then make more replicas under the 5.5 which acts as an intermediate primary, and remove 5.1 replicas to match.
-In the end we would move writes down from the 5.1 primary to the 5.5 intermediate primary, behead the tree and be done.
-That takes around a week per hierarchy, and was not properly automated back then. In fact, the entire experience is part of why we have so much automation.&lt;/p&gt;
-&lt;p&gt;It meant that the transition from 5.1 to 5.5 took us almost two years.&lt;/p&gt;
-&lt;h2 id=&#34;why-the-mutant&#34;&gt;
-    &lt;a href=&#34;#why-the-mutant&#34;&gt;
-	Why the mutant?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;We had the 5.1 mutant because of a bug fix that we thought we needed, which led to a change in on-disk format.
-We completely underestimated the impact of a breaking change in on-disk format on our operations, and the amount of toil coming from this.&lt;/p&gt;
-&lt;p&gt;And we paid dearly for us.&lt;/p&gt;
-&lt;h1 id=&#34;mysql-8-and-todays-situation&#34;&gt;
-    &lt;a href=&#34;#mysql-8-and-todays-situation&#34;&gt;
-	MySQL 8 and today&amp;rsquo;s situation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;These days, phase 2 of that conversion would be completely automated:
-If we have a working binary datadir, we can reclone it at scale, limited by the media speed or the cluster quota.
-Still, we need an up-to-date binary datadir to be able to do that.&lt;/p&gt;
-&lt;p&gt;These days, MySQL 8 broke with the promise of &amp;ldquo;no new features, no new disk formats with a single major version&amp;rdquo;.
-The former is okay, and in fact, welcome.
-It has had some impact on stability, but in general the development process of MySQL and the refactoring of its internals have become good enough to offset that, mostly.
-So, yes, we are okay with the new MySQL 8 development model, and we are in fact making use of new features.&lt;/p&gt;
-&lt;p&gt;The latter is catastrophic, because it leads to either incomplete upgrades for us, or leads us back into a dump-and-reload hell.&lt;/p&gt;
-&lt;p&gt;Let me explain:&lt;/p&gt;
+&lt;p&gt;Our tooling has three ways of cloning databases:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;In order to roll back, we do need a current binary datadir that is compatible with the version we want to roll back to.&lt;/li&gt;
-&lt;li&gt;Replication has an order, a replica must be newer or equal in version to its source.
-Otherwise, it risks that things coming down the replication stream are too new, and cannot be recognized.&lt;/li&gt;
-&lt;li&gt;So in order to have a valid binary datadir &lt;em&gt;and&lt;/em&gt; have a valid replication hierarchy, we cannot behead a primary until we trust that we never want to roll back.&lt;/li&gt;
+&lt;li&gt;Using the high-speed native &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;CLONE&lt;/code&gt;&lt;/a&gt;
+
+ command.&lt;/li&gt;
+&lt;li&gt;Using Percona &lt;code&gt;xtrabackup&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Shutting down an instance and running &lt;code&gt;rsync&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;Or, we do behead the chain and promote one of the new version intermediates to writeable true primary.
-In which case we lose rollback capability, and are back to dump and reload.&lt;/p&gt;
-&lt;p&gt;Only we now have more chains, and some databases are truly too large to ever dump and reload.
-I mean, we had a 120 TB MariaDB instance that was converted to Oracle MySQL 5.7 by dump and reload, and that took a machine with AMD EPYC CPU, 1 TB of RAM and multiple months to complete.
-The conversion saga was painful enough to warrant a &lt;a href=&#34;https://twitter.com/_digitalknight/status/1526671502116114435&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Percona Live talk&lt;/a&gt;
-
- about the entire thing by Mohammed Gaafar and Pep Pla.&lt;/p&gt;
-&lt;h1 id=&#34;sometimes-changes-fail&#34;&gt;
-    &lt;a href=&#34;#sometimes-changes-fail&#34;&gt;
-	Sometimes changes fail
+&lt;p&gt;Using native cloning is by far the fastest and most convenient version, but it also comes with the most restrictions:
+Currently MySQL insists that the donor and the receiving instance be the exact same version.
+This makes &lt;code&gt;CLONE&lt;/code&gt; the preferred method for scaling operations, but useless in upgrade and downgrade processing.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;CLONE&lt;/code&gt; could be much more useful in upgrade contexts:
+MySQL knows how to upgrade a datadir in-place.
+There is even no longer a need to run an external &lt;code&gt;mysql_upgrade&lt;/code&gt; program, the code is now part of the server core.&lt;/p&gt;
+&lt;p&gt;It would be easy to allow cloning from a lower version donor, drop the received data into a local datadir and then restart the server process into an upgrade cycle.
+For forward version movements this would be a big improvement.&lt;/p&gt;
+&lt;p&gt;For us, &lt;code&gt;rsync&lt;/code&gt; is an acceptable workaround to cloning, even if it is somewhat limited in speed.
+That is, because we consider any use of MySQL without a minimum number of replicas broken, and prevent it.
+Even for customers who think they do not need it &amp;ndash; eventually they all do.&lt;/p&gt;
+&lt;p&gt;So we can always stop an instance, and take our time to do things with it after we have copied it.
+It allows us to experiment, give extra capacity or try out new versions safely, even Pre-GA MySQL.&lt;/p&gt;
+&lt;p&gt;Our safe fallback and the best compromise in speed, comfort and safety is, as always, Percona &lt;code&gt;xtrabackup&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;upgrading&#34;&gt;
+    &lt;a href=&#34;#upgrading&#34;&gt;
+	Upgrading
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In the past, MySQL had the rule that there are never on-disk format changes within a single major version.
+That made it easy to move forward and backward between versions within a major release.
+It was also kind of necessary &amp;ndash; the release quality of MySQL back then was not always of the kind where you could upgrade to the most recent version and be certain that it was an improvement.&lt;/p&gt;
+&lt;p&gt;A lot has changed since then, and specifically MySQL 8 has seen fantastic improvements in refactoring of the codebase, in feature planning and in an improved software production process.&lt;/p&gt;
+&lt;p&gt;A bit of these improvements has been traded for evolutionary speed, though:
+With MySQL 8, on-disk format changes within the release series have been explicitly allowed, announced and in fact also happened several times.&lt;/p&gt;
+&lt;p&gt;This became a lot easier since &lt;code&gt;mysql_upgrade&lt;/code&gt; functionality has been integrated into the server, and made automatic.&lt;/p&gt;
+&lt;h2 id=&#34;downgrading&#34;&gt;
+    &lt;a href=&#34;#downgrading&#34;&gt;
+	Downgrading
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Downgrades have never been a great concern for MySQL.&lt;/p&gt;
+&lt;p&gt;In the past that was not an issue, because upgrading between major versions was seen as a major effort and did not happen en-passant and outside a migration project.
+That meant extensive testing, and retaining binary, up-to-date data directories of the replication hierarchy in question.
+In case a downgrade was necessary, one would reclone the old version and inject it into the replication tree, reaping instances running the new version to balance.&lt;/p&gt;
+&lt;p&gt;All this assumes that you did not yet upgrade the primary, which in any seamless migration always is the last step.&lt;/p&gt;
+&lt;h1 id=&#34;mysql-8-complicates-this-a-bit&#34;&gt;
+    &lt;a href=&#34;#mysql-8-complicates-this-a-bit&#34;&gt;
+	MySQL 8 complicates this a bit
     &lt;/a&gt;
 &lt;/h1&gt;
-&lt;p&gt;MySQL 8 gives us a lot of new features, &lt;a href=&#34;https://www.percona.com/blog/quick-peek-at-mysql-8-0-29/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here are some highlights&lt;/a&gt;
+&lt;p&gt;With MySQL 8, this becomes a bit more complicated, or more common.&lt;/p&gt;
+&lt;p&gt;While MySQL 8 gives us very welcome new features, (&lt;a href=&#34;https://www.percona.com/blog/quick-peek-at-mysql-8-0-29/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here are some highlights&lt;/a&gt;
 
-.
-They are very welcome, but… untested.&lt;/p&gt;
-&lt;p&gt;They come with breaking changes, &lt;a href=&#34;https://www.percona.com/blog/mysql-8-0-29-and-percona-xtrabackup-incompatibilities/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;disabling our default clone mechanism&lt;/a&gt;
-
-.
-They &lt;a href=&#34;https://forums.mysql.com/read.php?22,704532,704675&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;seem to be unstable&lt;/a&gt;
-
- for not just us, in one way or the other.
-There are other examples:&lt;/p&gt;
+), they are sometimes a bit… undertested.&lt;/p&gt;
+&lt;p&gt;Some examples:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;in the JAMF database, tables without primary key, virtual columns and broken utf16 combine in an unholy and explosive way that requires going back from 8.0.28 to 8.0.27.&lt;/li&gt;
+&lt;li&gt;Our &lt;a href=&#34;https://www.percona.com/blog/mysql-8-0-29-and-percona-xtrabackup-incompatibilities/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;default clone mechanism&lt;/a&gt;
+
+ does not work yet with 8.0.29. In our case, it affects several thousand instances that fall back to &lt;code&gt;rsync&lt;/code&gt; cloning, because &lt;code&gt;CLONE&lt;/code&gt;&amp;rsquo;s strict version requirements render it useless, too.&lt;/li&gt;
+&lt;li&gt;Some people experience &lt;a href=&#34;https://forums.mysql.com/read.php?22,704532,704675&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;corruption with the new improved instance schema change&lt;/a&gt;
+
+ in 8.0.29 and need to consider downgrading to 8.0.28.&lt;/li&gt;
+&lt;li&gt;We had an instance the JAMF database, tables without primary key, virtual columns and broken utf16 combine in an unholy and explosive way that required us going back from 8.0.28 to 8.0.27.&lt;/li&gt;
 &lt;li&gt;And there are some problems with Spatial Indexes not being used in 8.0.29 that can make it necessary to downgrade to 8.0.28 from 8.0.29.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;All of these involve at one or two major versions to fix.
 Being able to go back &amp;ldquo;a quarter or half a year&amp;rdquo; would make this much easier for everyone:
 Users and Developers, and take a lot of strain of the vendor/customer relationship.&lt;/p&gt;
-&lt;h2 id=&#34;my-default-clone-rant&#34;&gt;
-    &lt;a href=&#34;#my-default-clone-rant&#34;&gt;
-	My default CLONE rant
+&lt;h2 id=&#34;clone-would-profit-too&#34;&gt;
+    &lt;a href=&#34;#clone-would-profit-too&#34;&gt;
+	&lt;code&gt;CLONE&lt;/code&gt; would profit, too
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Disk format changes also get somehow in the way of other features:&lt;/p&gt;
-&lt;p&gt;Our default clone mechanism is not &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;CLONE&lt;/code&gt;&lt;/a&gt;
-
-.
-That is, because &lt;code&gt;CLONE&lt;/code&gt; requires the same exact version of the database at the donor and receiver instance, which makes it completely useless for upgrades.
-MySQL knows how to upgrade in place, so cloning should be able to clone from a compatible, older version of 8.0.
-After pulling down the data it could restart and do an in-place upgrade.
-That would make it work at least for upgrades.&lt;/p&gt;
-&lt;p&gt;In any case, Clone is dependent on the on-disk format not changing for good reasons.
-The entire point of Clone is to not mess with formats and just shifting data between instances, multi-threaded, as fast as possible.&lt;/p&gt;
-&lt;p&gt;By managing on-disk format changes more conservatively, and giving a two-minor-versions window (6 months), Oracle MySQL could rely on Oracle MySQL&amp;rsquo;s on-disk format &amp;ndash; even for supported downgrades.
-It could handle &lt;code&gt;CLONE&lt;/code&gt; based upgrades and downgrades properly, instead of having everybody depend on &lt;code&gt;xtrabackup&lt;/code&gt; catching up.&lt;/p&gt;
+&lt;p&gt;As discussed above, &lt;code&gt;CLONE&lt;/code&gt; has extremely strict version requirements between donor and destination.&lt;/p&gt;
+&lt;p&gt;The upgrade path is fixable relatively trivial, as shown above, by falling into a server restart with upgrading.
+A guaranteed two-minor-version downgradability (6 months window) could enable &lt;code&gt;CLONE&lt;/code&gt; to also handle downgrades, at speed.
+It would make version movements up and down a lot less risky.&lt;/p&gt;
 &lt;p&gt;That would be a lot of value added for little effort.&lt;/p&gt;
-&lt;h2 id=&#34;privileges-change-making-downgrades-harder-for-some&#34;&gt;
-    &lt;a href=&#34;#privileges-change-making-downgrades-harder-for-some&#34;&gt;
-	Privileges change, making downgrades harder for some
+&lt;h1 id=&#34;dump-and-restore-are-not-an-option&#34;&gt;
+    &lt;a href=&#34;#dump-and-restore-are-not-an-option&#34;&gt;
+	Dump and Restore are not an option
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The default way to upgrade and downgrade a database is to dump and restore.
+For Postgres for many years this was the recommended way to jump to the next version: &lt;code&gt;pg_dump&lt;/code&gt; and be done with it.&lt;/p&gt;
+&lt;p&gt;Obviously that works only for toy deployments, because it does not scale.
+Dumping throws away the indexes, and importing the dump involves reading the data, scanning and sorting it, and then rebuilding the index structures again.&lt;/p&gt;
+&lt;p&gt;We have been there, in the past.&lt;/p&gt;
+&lt;h2 id=&#34;the-51-to-55-disaster&#34;&gt;
+    &lt;a href=&#34;#the-51-to-55-disaster&#34;&gt;
+	The 5.1 to 5.5 disaster
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;It is important to be aware that the new dynamic permission system in MySQL 8 makes it easy to add new privileges over time.
+&lt;p&gt;For our upgrade from MySQL 5.1 to 5.5, our starting point was a non-GA version of MySQL 5.1 that included a bugfix we considered critical.
+For this version, no binary, in-place upgrade path to 5.5 existed.&lt;/p&gt;
+&lt;p&gt;That meant, our upgrade to 5.5 consisted in dumping each replication hierarchy and importing the dump into 5.5.
+The 5.5 instance would then be connected to the replication tree, and had opportunity to catch up.
+We would make it an intermediate primary eating 5.1 binlog, and emitting 5.5 binlog to further 5.5 instances we cloned out of the initial one.
+At the same time we would reap production 5.1 instances to match the growth of the 5.5 population.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/06/mysql-upgrade.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Eventually we would move writes down from the 5.1 primary, promoting the 5.5 intermediate primary to try primary, &amp;ldquo;beheading&amp;rdquo; the replication hierarchy.
+Back then we already had a three-digit number of MySQL replication hierarchies, and even back then a replication hierarchy typically had a disk footprint of 1-2 TB (ie 2-4h at 200 MB/s).&lt;/p&gt;
+&lt;p&gt;All this takes around a week per hierarchy, and was not properly automated back then.
+It meant that the transition from 5.1 to 5.5 took us almost two years.
+In fact, the entire 5.1 upgrade experience is part of why we have so much automation.&lt;/p&gt;
+&lt;h2 id=&#34;mysql-8-makes-this-easier&#34;&gt;
+    &lt;a href=&#34;#mysql-8-makes-this-easier&#34;&gt;
+	MySQL 8 makes this easier
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Things are marginally better in MySQL 8 these days:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You can &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-redo-log.html#innodb-disable-redo-logging&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;turn off redo logging&lt;/a&gt;
+
+ while doing bulk loading or importing (8.0.21 or better).&lt;/li&gt;
+&lt;li&gt;You can do &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/online-ddl-parallel-thread-configuration.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;parallel index creation&lt;/a&gt;
+
+, so that is faster, if you have the CPU and memory to burn (8.0.27 or better) and your tables are within the constraints given.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On the other hand, data grew.
+Sometimes imports can become multi-month projects:
+We had a 120 TB MariaDB instance that was converted to Oracle MySQL 5.7 by dump and reload.
+This took a machine with AMD EPYC CPU, 1 TB of RAM, and multiple months to complete.
+The conversion saga was painful enough to warrant a &lt;a href=&#34;https://twitter.com/_digitalknight/status/1526671502116114435&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Percona Live talk&lt;/a&gt;
+
+ about the entire thing by Mohammed Gaafar and Pep Pla.&lt;/p&gt;
+&lt;h2 id=&#34;mysql-8-makes-it-worse&#34;&gt;
+    &lt;a href=&#34;#mysql-8-makes-it-worse&#34;&gt;
+	MySQL 8 makes it worse
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;While MySQL makes &amp;ldquo;downgrades by reading a dump&amp;rdquo; somewhat better, at the some time there are aspects that make it worse.
+The new dynamic permission system in MySQL 8 makes it easy to add new privileges over time.
 The result is that privileges now change more rapidly.&lt;/p&gt;
 &lt;p&gt;When you dump and reload (or downgrade a binary datadir), there is no mechanism currently to handle this safely.&lt;/p&gt;
-&lt;p&gt;For example, 8.0.28 might add &lt;code&gt;AUDIT_ABORT_EXEMPT&lt;/code&gt;, and downgrading this in any way to 8.0.27 requires some &lt;code&gt;sed&lt;/code&gt; artistics in the dump or other kludgery, because 8.0.27 won&amp;rsquo;t overlook the privilege names it does not know anything about.
+&lt;p&gt;For example, 8.0.28 might add &lt;code&gt;AUDIT_ABORT_EXEMPT&lt;/code&gt;, and downgrading this in any way to 8.0.27 requires some &lt;code&gt;sed&lt;/code&gt; artistics in the dump or other kludgery: 8.0.27 won&amp;rsquo;t overlook the privilege names it does not know anything about.
 Clearly, here is a tooling gap.&lt;/p&gt;
 &lt;h1 id=&#34;tldr&#34;&gt;
     &lt;a href=&#34;#tldr&#34;&gt;
@@ -153,21 +186,23 @@ That is why everybody is always very protective of state.
 Do not treat on-disk data the Yolo way that Devops treats stateless instances.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Introducing new features in a major version is okay if you have a mature codebase and development process.&lt;/li&gt;
-&lt;li&gt;Changing persistent state on disk is more complicated than that, and downgrades need to be possible for two minor versions.
+&lt;li&gt;Changing persistent state on disk is more complicated than that.
 &lt;ul&gt;
-&lt;li&gt;If you do not allow that, it is painful for everybody.&lt;/li&gt;
+&lt;li&gt;Upgrades should always be binary and in-place.&lt;/li&gt;
+&lt;li&gt;Downgrades should be possible binary and in-place at least for 2 minor version (6 months)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;If you do not allow that, it is painful for everybody.
+&lt;ul&gt;
 &lt;li&gt;That includes us, because we can test slower, so Oracle MySQL gets less feedback.&lt;/li&gt;
 &lt;li&gt;That includes Oracle MySQL itself, because it makes nifty features such as &lt;code&gt;CLONE&lt;/code&gt; needlessly specific and much less useful.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;We will, even with today&amp;rsquo;s the degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.
-&lt;ul&gt;
-&lt;li&gt;Binary in-place upgrade and downgrade paths are completely non-optional.
+&lt;li&gt;We will, even with today&amp;rsquo;s the degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Binary in-place upgrade and downgrade paths are completely non-optional.
 We will never have the hell of the 5.1 to 5.5 transition again.
-We simply cannot afford this anymore.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
+We simply cannot afford this anymore.&lt;/p&gt;
 </description>
     </item>
     
