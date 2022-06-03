@@ -96,8 +96,14 @@ They are very welcome, but… untested.
 
 They come with breaking changes, [disabling our default clone mechanism](https://www.percona.com/blog/mysql-8-0-29-and-percona-xtrabackup-incompatibilities/).
 They [seem to be unstable](https://forums.mysql.com/read.php?22,704532,704675) for not just us, in one way or the other.
+There are other examples:
+- in the JAMF database, tables without primary key, virtual columns and broken utf16 combine in an unholy and explosive way that require going back from 8.0.28 to 8.0.27.
+- And there are some problems with Spatial Indexes not being used in 8.0.29 that can make it necessary to downgrade to 8.0.28 from 8.0.29. 
 
-Being able to go back one or two major versions ("a quarter or half a year") would make this much easier for everyone: Users and Developers, and take a lot of strain of the vendor/customer relationship.
+All of these involve at one or two major versions to fix. 
+Being able to go back "a quarter or half a year" would make this much easier for everyone:
+Users and Developers, and take a lot of strain of the vendor/customer relationship.
+
 
 ## My default CLONE rant
 
