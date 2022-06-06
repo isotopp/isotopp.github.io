@@ -148,7 +148,7 @@ The conversion saga was painful enough to warrant a [Percona Live talk](https://
 
 ## MySQL 8 makes it worse
 
-While MySQL makes "downgrades by reading a dump" somewhat better, at the some time there are aspects that make it worse.
+While MySQL makes "downgrades by reading a dump" somewhat better, at the same time there are aspects that make it worse.
 The new dynamic permission system in MySQL 8 makes it easy to add new privileges over time.
 The result is that privileges now change more rapidly.
 
@@ -171,7 +171,7 @@ Do not treat on-disk data the Yolo way that Devops treats stateless instances.
 - If you do not allow that, it is painful for everybody.
   - That includes us, because we can test slower, so Oracle MySQL gets less feedback.
   - That includes Oracle MySQL itself, because it makes nifty features such as `CLONE` needlessly specific and much less useful.
-- We will, even with today's the degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.
+- We will, even with today's degree of automation, never be able to upgrade by dump and restore, just because reindexing is very, very expensive. It is just too much data.
 
 Binary in-place upgrade and downgrade paths are completely non-optional. 
 We will never have the hell of the 5.1 to 5.5 transition again.
