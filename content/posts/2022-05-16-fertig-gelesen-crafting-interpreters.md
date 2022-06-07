@@ -23,7 +23,7 @@ First with a tree walker execution algorithm, not unlike PHP 3 or early Ruby.
 Then, again, with a bytecode executor written in C.
 
 The book starts out by defining an intentionally very basic, but complete programming language, and then chapter by chapter builds the infrastructure to scan, parse and execute the code.
-All explainations are very practical and on the code, but a lot of boxes, asides and cross-references make the theory behind all this discoverable, while at the same time keeping it out of the way.
+All explanations are very practical and on the code, but a lot of boxes, asides and cross-references make the theory behind all this discoverable, while at the same time keeping it out of the way.
 One of the nicest and most practical introductions to programming language interpretation and compilation that I have seen.
 
 "[Crafting Interpreters](https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL)", Robert Nystrom, EUR 25.84

@@ -28,6 +28,6 @@ Sonos decided to split universes instead of dumbing down old devices to remote-c
 
 Sonos always was known for long-term support of their devices, and Sonos was always known for making things simple and just work. They completely failed at any of these, their core values, with their S2 migration.
 
-And that is not even looking at the completely botched communication around this entire thing, with the explaination-less announcement of the trade-in program, and the completely messed up bricking-program.
+And that is not even looking at the completely botched communication around this entire thing, with the explanation-less announcement of the trade-in program, and the completely messed up bricking-program.
 
 The wife decided that we are too invested into this stuff to get rid of it short term, but put a purchase moratorium on new Sonos stuff into place. "And", she said, "even if they get out of that, say, mid-2021, it's still IKEA only. At least that keeps the financial risk under control." Yup, downgraded from prime tier to consumer tier and a one year term on the bench.

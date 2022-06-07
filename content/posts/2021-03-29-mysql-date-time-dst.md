@@ -65,7 +65,7 @@ In our math, we have two expressions mixing MySQL Timestamp data types with UNIX
 
 So in the expression `UNIX_TIMESTAMP("2021-03-26 03:07:00" + INTERVAL 2 year) ` the part `"2021-03-26 03:07:00"` is a string, which is converted to a MySQL Timestamp type.
 
-This MySQL Timestamp type is then used in an interval arithmethic expression to yield another MySQL Timestamp type.
+This MySQL Timestamp type is then used in an interval arithmetic expression to yield another MySQL Timestamp type.
 
 This resulting MySQL Timestamp type is then fed into the UNIX_TIMESTAMP function, and produces an integer.
 
@@ -177,7 +177,7 @@ mysql> select from_unixtime(unix_timestamp("2021-03-28 00:07:00")) as t;
 1 row in set (0.00 sec)
 ```
 
-Thsi will also yield the correct result for the type-mixed difference I showed above:
+This will also yield the correct result for the type-mixed difference I showed above:
 
 ```sql
 mysql> select
@@ -298,6 +298,6 @@ t: 745
 # TL;DR
 
 - The lack of warning and error is now a MySQL Service Request.
-- The original problem comes up because of the mixing of Unix Timestamp Arithmethic and MySQL Interval Arithmethic.
+- The original problem comes up because of the mixing of Unix Timestamp Arithmetic and MySQL Interval Arithmetic.
 - There are ways to do it pure play either way, and they both result in the right result.
 - There is `DATEDIFF()`, `TIMEDIFF()`, and `TIMESTAMPDIFF()`, and they are weird, and inconsistent and you really, really want to read the [Date and Time Functions](https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html) page, very carefully.

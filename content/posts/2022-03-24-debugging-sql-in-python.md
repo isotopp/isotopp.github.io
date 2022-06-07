@@ -23,7 +23,7 @@ The `_query(self, q)` method itself updates an `_executed` member of the cursor 
 But it does so only after having sent the query.
 On error, an exception is raised and `_executed` is not updated ([source](https://github.com/PyMySQL/mysqlclient/blob/6ebc1a1972dee69fb54b56867fc795ee220b5d79/MySQLdb/cursors.py#L316)).
 
-To always get access to the actual query string, define a class `DebugCursor`, and specify it with your connnection `**kwargs`. In `DebugCursor`, do the needful.
+To always get access to the actual query string, define a class `DebugCursor`, and specify it with your connection `**kwargs`. In `DebugCursor`, do the needful.
 
 ```python
 #! /usr/bin/env python3
@@ -72,7 +72,7 @@ If you are using Oracle MySQL Connnector/Python to connect to the database, the 
 
 Both implementations behave slightly differently, unfortunately.
 Only the Pure Python implementation can be debugged easily in all circumstances.
-It is therefore important that you specify `use_pure=True` with your connnection `**kwargs`.
+It is therefore important that you specify `use_pure=True` with your connection `**kwargs`.
 
 The raw SQL statement will be found in the cursor's `_executed` member.
 If you are using multi-statements (don't!), they will be logged in the `_executed_list`.

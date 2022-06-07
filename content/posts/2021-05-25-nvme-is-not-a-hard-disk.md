@@ -50,7 +50,7 @@ Now, if you switch from local storage to distributed storage, you very often get
 
 So imagine [a lot of MySQL databases]({{< ref "/content/posts/2021-03-24-a-lot-of-mysql.md" >}}), for example on Openstack. The volumes of each replication chain are tagged with the replication chain name, like `chain=<x>`. If we could tell the storage to place all volumes with identical `chain` tag values on different physical drives, ideally on different storage nodes in different racks, storing data with `n=1` would be just fine.
 
-Cassandra, Elastic and Kafka could work with the same mechanism, because they, too, have native solutions to provide redunancy on JBODs at the application level.
+Cassandra, Elastic and Kafka could work with the same mechanism, because they, too, have native solutions to provide redundancy on JBODs at the application level.
 
 But this kind of distributed storage does not exist, and that leads to triplicate storage when it is not needed.
 

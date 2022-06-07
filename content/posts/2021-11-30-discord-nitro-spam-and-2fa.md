@@ -15,7 +15,7 @@ He had 2FA (Google Authenticator) on the account.
 That fact alone made this a recoverable failure.
 
 My son is playing minecraft, has a friend list of around 100 fellow players, and is member of around 40 Discords.
-He also connected his Discord to Spotify, YouTube and other servies, and he authorized around 12 application services, mostly Discord/Minecraft bot services.
+He also connected his Discord to Spotify, YouTube and other services, and he authorized around 12 application services, mostly Discord/Minecraft bot services.
 It is pretty safe to say that his Discord account is very valuable to him, and plays a central part in his pandemic coping.
 
 The spam was sending messages to all his friends, and a few Discords, impersonating him.

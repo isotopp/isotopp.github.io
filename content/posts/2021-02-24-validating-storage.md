@@ -138,7 +138,7 @@ All my test scenarios are using the same schema: `randwrite` of said 16 KB block
 
 ## Collecting test data
 
-I am running all of that with an ugly ad-hoc driver script that runs each test case recording the fio output, the iostat output during the run and running the test unter a `blktrace -d /dev/$device -D . -a issue -a complete`.
+I am running all of that with an ugly ad-hoc driver script that runs each test case recording the fio output, the iostat output during the run and running the test under a `blktrace -d /dev/$device -D . -a issue -a complete`.
 
 The blktrace can later be fed to [Oakgate Workload Intelligence](https://www.oakgatetech.com/applications/analytics). This is an analyzer that feeds on blktrace and other input and plots device behavior over time, generates histograms and generally gives insight into storage behavior. The system can also use recorded workloads from real world applications and replay them for synthetic benchmarks to be run on new storage systems.
 

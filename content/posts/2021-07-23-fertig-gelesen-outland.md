@@ -18,7 +18,7 @@ It is a "[Sliders](https://en.wikipedia.org/wiki/Sliders)" storyline, much like 
 
 *[Outland](https://www.amazon.de/Outland-Dennis-Taylor-ebook/dp/B07TP6TKP1), Dennis E. Taylor*
 
-Dennis E. Taylor is a computer programmer writing Scifi, and had problems finding a publishher for his debut novel, "Outland", in 2015, so he self-published.
+Dennis E. Taylor is a computer programmer writing Scifi, and had problems finding a publisher for his debut novel, "Outland", in 2015, so he self-published.
 The story was intended as the introduction to a series of books, "World Lines".
 The original novel was withdrawn in 2018, extensively reworked, and re-publshed in 2019 as a standalone book, which is the version linked in this article.
 

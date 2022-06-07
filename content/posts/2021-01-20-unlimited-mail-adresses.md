@@ -115,7 +115,7 @@ $SPAM.sure/
 $SPAM/
 ```
 
-Note how we detect the `X-local-part-suffic` before we run spam detection and sorting. This allows mail to subaddresses to always go through and bypass all spam filtering, so in exchange for having a personally identifyable mail address you get guarantee delivery. Conversely, if you abuse the privilege you are routed to `$TRASH/`.
+Note how we detect the `X-local-part-suffic` before we run spam detection and sorting. This allows mail to subaddresses to always go through and bypass all spam filtering, so in exchange for having a personally identifiable mail address you get guarantee delivery. Conversely, if you abuse the privilege you are routed to `$TRASH/`.
 
 ## Mail User Agent
 
