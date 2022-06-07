@@ -52,7 +52,7 @@ compresscmd= bzip2 -9f
 
 That is, the `DEFAULT` section defines
 
-- logdir: a direcory where to put the logfiles. 
+- logdir: a directory where to put the logfiles. 
 - pidfile: It also needs a filename (as an absolute pathname) for a pidfile, which is being used to prevent concurrent execution.
 - compresscmd: And finally, the logfiles can be compressed, and the compress command needs to be specified. The compress command needs to be given in a way that existing compressed files are overwritten, that is why in the example the `-f` option is given.
 

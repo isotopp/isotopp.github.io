@@ -118,7 +118,7 @@ The Book™ on MySQL currently is a number of half-assed "MySQL as a service" im
 
 There is Amazon RDS, which is doing things like it's 2010 – active/passive primary switchover with DRBD, and asynchronous replication for scaleout, limited to a very small number of managed instances, and a rather static hierarchy, without a clear discovery concept. It does interesting things with Grants, Defaults, and a number of other things, and is arguably the most complete service.
 
-There is a bunch of K8s operators for MySQL, but I consider most of them toys for a multitude of reasons. A K8s operator is a pod that is running a binary that controlls deployments of (persistent) services in K8s, managing instances, data directories (persistent volumes), but all within a single K8s cluster. Of course, that's not resilient and it's also not how you set up MySQL for production – spanning cluster and AZ boundaries is a must.
+There is a bunch of K8s operators for MySQL, but I consider most of them toys for a multitude of reasons. A K8s operator is a pod that is running a binary that controls deployments of (persistent) services in K8s, managing instances, data directories (persistent volumes), but all within a single K8s cluster. Of course, that's not resilient and it's also not how you set up MySQL for production – spanning cluster and AZ boundaries is a must.
 
 Each operator also implements one specific way of running MySQL ("Group Replication!", "No, traditioanl asynch replication!") and so on, with very little in the way of policy tuning knobs. So when you look at K8s operators, you are really looking at source code templates to fork and implement your own from that. Not helpful.
 

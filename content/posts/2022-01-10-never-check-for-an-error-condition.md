@@ -166,7 +166,7 @@ How is that call then handled and classified?
 What are standard reactions to verified and classfied emergency escalations?
 Can the emergency call center take over the computer and extract further information and do a full forensic analysis?
 Can they write and change the state of the machine to help?
-Or can they just call back, and request a read-only screen sharing session to talk the user trough the emergency?
+Or can they just call back, and request a read-only screen sharing session to talk the user through the emergency?
 
 What taxonomy of emergencies do we build, and what are the required steps to verify a case?
 
@@ -183,7 +183,7 @@ How do we protect this infrastructure against abuse?
 The check was easy -- an emergency call button in a browser.  
 
 The work is in the handling, which can be "somewhat involved".
-But these are details that are gracefully elided in the discussion when politicans demand such a button.
+But these are details that are gracefully elided in the discussion when politicians demand such a button.
 That's providing quite simplicistic discussions:
 Why do we not have such a button in every browser already?
 

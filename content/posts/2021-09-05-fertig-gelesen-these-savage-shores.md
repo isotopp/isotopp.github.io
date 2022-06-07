@@ -18,7 +18,7 @@ Together with artist Sumit Kumar he wrote a simple story: English Vampires vs. I
 *[These Savage Shores](https://www.amazon.de/These-Savage-Shores-English-Ram-ebook/dp/B07YYNFP38), Ram V & Sumit Kumar*
 
 The 1760'ies.
-An english vampire puts his peers at risk by not having his desires unter control, and is exiled to Calicut, India.
+An english vampire puts his peers at risk by not having his desires under control, and is exiled to Calicut, India.
 He soon finds out that even older and fiercer beings rule the night: Rakshasa, the Vampire equivalent of Indian Myth.
 
 Bishan, a Raskshasa, kills the vampire, drawing the english vampires out for revenge.
