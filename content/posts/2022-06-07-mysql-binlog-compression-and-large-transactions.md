@@ -12,7 +12,7 @@ tags:
 
 ([Twitter thread](https://twitter.com/isotopp/status/1532752730229559300), reproduction in english, and update)
 
-On Friday, 2022-07-03, 14:42, we lost a replication hierarchy, on the primary, all replicas down.
+On Friday, 2022-06-03, 14:42, we lost a replication hierarchy, on the primary, all replicas down.
 At 16:30 the escalation hits my desk, because this one is special.
 
 # Replication stops, and wants more `max_allowed_packet`
