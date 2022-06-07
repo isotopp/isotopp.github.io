@@ -48,7 +48,8 @@ Then replication died.
 So this machine is running with compressed binlogs enabled.
 It was processing a large `INSERT INTO t SELECT * FROM s` statement to copy rows.
 We see `70 077 831` (70M) Undo Log entries.
-The transaction compressed data, then commits, then the server dies.
+The transaction compressed data, then commits, then the replication stops on all replicas, in an unrecoverable way. 
+At least the primary is still happy, if unaware of the problem. 
 The binlog file is 2GB larger than it should be.
 
 The immediate theory:
