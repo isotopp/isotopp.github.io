@@ -47,7 +47,7 @@ Frame geometry matters.
 A bike frame needs to be fitted to your body, and then adjusted properly.
 Do not buy a bike from a catalog, nor without a test drive of at least an hour.
 There is no such thing as [an average human](https://www.thestar.com/news/insight/2016/01/16/when-us-air-force-discovered-the-flaw-of-averages.html), and because of that we have learned to build things adjustable.
-So get them fittet, properly adjusted and then try them out properly and listn to your body.
+So get them fitted, properly adjusted and then try them out properly and listen to your body.
 This is not just about bikes, also keyboards, monitors and everything else that is close to the body need to be handled alike.
 
 The Gazelle is made from standard parts, Bosch Motor, Magura brakes, Shimano gearbox, and so on.
