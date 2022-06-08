@@ -14,9 +14,9 @@ I [have been asked](https://twitter.com/isotopp/status/1534158787891843073) what
 
 ![](/uploads/2022/06/grenoble.jpg)
 
-*Gazelle Grenoble 2017, with vaudoe Aquaback plus.*
+*Gazelle Grenoble 2017, with vaude Aquaback plus.*
 
-I am over 50 years old, over 200cm tall and weigh more than 120 kilo before I dresss.
+I am over 50 years old, over 200cm tall and weigh more than 120 kilo before I dress.
 Back when we still had an office, that was a 22km trip, each direction.
 
 I need an upright sitting position, a soft and comfortable seat.
@@ -25,7 +25,7 @@ I need to be able to get useful service on the bike, because at my age I prefer 
 
 I did try the Cruiser HS by R+M, and that was a completely nifty bike.
 But it does use an insurance plate and a helmet, and I wanted something that could be ridden casually.
-And without the HS (which causes the inconvenience) the price for R+M was no longer justifyable.
+And without the HS (which causes the inconvenience) the price for R+M was no longer justifiable.
 So I looked around at other solutions, and this was a good match.
 
 My wife now has the 2020 model of the same type, with a step-through frame.
@@ -40,14 +40,14 @@ It is also handy, if you want to charge it, and there is no outside charger in t
 When removed, the battery system in my bike keeps the contacts protected and dry.
 
 In the newer bikes, the battery is integrated part of the frame, and in Gazelle's case goes out up.
-This leaves the frame upen and rain can enter.
+This leaves the frame open and rain can enter.
 Gazelle is not stupid, the contacts are at the top and somewhat protected, but you still have water inside the frame.
 
 Frame geometry matters.
 A bike frame needs to be fitted to your body, and then adjusted properly.
 Do not buy a bike from a catalog, nor without a test drive of at least an hour.
 There is no such thing as [an average human](https://www.thestar.com/news/insight/2016/01/16/when-us-air-force-discovered-the-flaw-of-averages.html), and because of that we have learned to build things adjustable.
-So get them fittet, properly adjusted and then try them out properly and listn to your body.
+So get them fitted, properly adjusted and then try them out properly and listen to your body.
 This is not just about bikes, also keyboards, monitors and everything else that is close to the body need to be handled alike.
 
 The Gazelle is made from standard parts, Bosch Motor, Magura brakes, Shimano gearbox, and so on.
