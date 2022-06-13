@@ -22,7 +22,7 @@ Replication stops with
 ```console
 Got fatal error 1236 from master when reading data from binary log: 'log event entry exceeded max_allowed_packet; Increase max_allowed_packet on master; the first event '' at 4, the last event read from '../log/binlog.002558' at 19959785, the last byte read from '../log/binlog.002558' at 19959804
 ```
-Trying to run `mysqldump -vvv ...` on the broken binlog fails and produces no output useful for diagnostics.
+Trying to run `mysqlbinlog -vvv ...` on the broken binlog fails and produces no output useful for diagnostics.
 
 # Using the flight recorder
 
