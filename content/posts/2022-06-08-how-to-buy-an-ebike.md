@@ -14,7 +14,7 @@ I [have been asked](https://twitter.com/isotopp/status/1534158787891843073) what
 
 ![](/uploads/2022/06/grenoble.jpg)
 
-*Gazelle Grenoble 2017, with vaudoe Aquaback plus.*
+*Gazelle Grenoble 2017, with vaude Aquaback plus.*
 
 I am over 50 years old, over 200cm tall and weigh more than 120 kilo before I dresss.
 Back when we still had an office, that was a 22km trip, each direction.
