@@ -147,7 +147,7 @@
 
     <div class='row justify-content-center mx-0 mt-5 mb-5'>
       <div class='col-lg-8'>
-        <p>MySQL 8.0.29 adds <code>ALGOITHM=INSTANT</code> as a way to <code>ALTER TABLE</code> commands with less wait.
+        <p>MySQL 8.0.29 adds <code>ALGORITHM=INSTANT</code> as a way to run <code>ALTER TABLE</code> commands with less wait.
 The documentation can be found in <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html" target="_blank" rel="noopener">Online DDL Operators</a>
 
  and instant column operations can be found <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html#online-ddl-column-operations" target="_blank" rel="noopener">here</a>
@@ -204,13 +204,13 @@ Also, MySQL uses replication a lot.
 In fact, I am of the persuasion that any MySQL installation that does not have at least one replica is broken.</p>
 <p>So can we use this to break replication?</p>
 <p>The manual suggests that <code>OPTIMIZE TABLE</code> can be used to reset the counter.
-The manual also says on <a href="https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html" target="_blank" rel="noopener">OPTIMIZE</a>
+The manual knows the following things about <a href="https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html" target="_blank" rel="noopener">OPTIMIZE</a>
 
 :</p>
 <ol>
 <li>There is a syntax <code>OPTIMIZE LOCAL TABLE</code>.
 »By default, the server writes <code>OPTIMIZE TABLE</code> statements to the binary log so that they replicate to replicas.
-To suppress logging, specify the optional <code>NO_WRITE_TO_BINLOG</code> keyword or its alias <code>LOCAL</code>.</li>
+To suppress logging, specify the optional <code>NO_WRITE_TO_BINLOG</code> keyword or its alias <code>LOCAL</code>.«</li>
 <li>This is not privileged: »This statement requires <code>SELECT</code> and <code>INSERT</code> privileges for the table.«</li>
 </ol>
 <p>We now do this: With <code>dbdeployer</code> we <code>dbdeployer deploy replication 8.0.29</code>.</p>
@@ -229,7 +229,7 @@ To suppress logging, specify the optional <code>NO_WRITE_TO_BINLOG</code> keywor
 This can be done by the <code>kris</code> user, or any other user having <code>INSERT</code> and <code>SELECT</code> privilege.
 It is not necessary to have <code>ALTER</code> privilege, as long as you know that somebody else is doing instant alter table commands on the table.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="k">optimize</span><span class="w"> </span><span class="n">local</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">t</span><span class="p">;</span><span class="w">
-</span></span></span></code></pre></div><p>Finally, continue to add and drop the column <code>t.i</code>.
+</span></span></span></code></pre></div><p>Finally, continue to add and drop the column <code>t.i</code> as before.
 Check the TRV value on the primary and a replica.
 Note how the TRV value on the primary is lower than on the replica.</p>
 <p>When the TRV value reaches 64 on the replica, replication will stop with error 4080.

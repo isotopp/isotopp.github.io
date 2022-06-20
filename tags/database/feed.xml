@@ -6,14 +6,14 @@
     <description>Recent content in database on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Jun 2022 14:27:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Jun 2022 15:07:57 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Breaking replication with ALGORITHM = INSTANT</title>
       <link>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</link>
       <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
       
       <guid>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</guid>
-      <description>&lt;p&gt;MySQL 8.0.29 adds &lt;code&gt;ALGOITHM=INSTANT&lt;/code&gt; as a way to &lt;code&gt;ALTER TABLE&lt;/code&gt; commands with less wait.
+      <description>&lt;p&gt;MySQL 8.0.29 adds &lt;code&gt;ALGORITHM=INSTANT&lt;/code&gt; as a way to run &lt;code&gt;ALTER TABLE&lt;/code&gt; commands with less wait.
 The documentation can be found in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Online DDL Operators&lt;/a&gt;
 
  and instant column operations can be found &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html#online-ddl-column-operations&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
@@ -70,13 +70,13 @@ Also, MySQL uses replication a lot.
 In fact, I am of the persuasion that any MySQL installation that does not have at least one replica is broken.&lt;/p&gt;
 &lt;p&gt;So can we use this to break replication?&lt;/p&gt;
 &lt;p&gt;The manual suggests that &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; can be used to reset the counter.
-The manual also says on &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OPTIMIZE&lt;/a&gt;
+The manual knows the following things about &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OPTIMIZE&lt;/a&gt;
 
 :&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;There is a syntax &lt;code&gt;OPTIMIZE LOCAL TABLE&lt;/code&gt;.
 »By default, the server writes &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; statements to the binary log so that they replicate to replicas.
-To suppress logging, specify the optional &lt;code&gt;NO_WRITE_TO_BINLOG&lt;/code&gt; keyword or its alias &lt;code&gt;LOCAL&lt;/code&gt;.&lt;/li&gt;
+To suppress logging, specify the optional &lt;code&gt;NO_WRITE_TO_BINLOG&lt;/code&gt; keyword or its alias &lt;code&gt;LOCAL&lt;/code&gt;.«&lt;/li&gt;
 &lt;li&gt;This is not privileged: »This statement requires &lt;code&gt;SELECT&lt;/code&gt; and &lt;code&gt;INSERT&lt;/code&gt; privileges for the table.«&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;We now do this: With &lt;code&gt;dbdeployer&lt;/code&gt; we &lt;code&gt;dbdeployer deploy replication 8.0.29&lt;/code&gt;.&lt;/p&gt;
@@ -95,7 +95,7 @@ To suppress logging, specify the optional &lt;code&gt;NO_WRITE_TO_BINLOG&lt;/cod
 This can be done by the &lt;code&gt;kris&lt;/code&gt; user, or any other user having &lt;code&gt;INSERT&lt;/code&gt; and &lt;code&gt;SELECT&lt;/code&gt; privilege.
 It is not necessary to have &lt;code&gt;ALTER&lt;/code&gt; privilege, as long as you know that somebody else is doing instant alter table commands on the table.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;optimize&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;local&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, continue to add and drop the column &lt;code&gt;t.i&lt;/code&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, continue to add and drop the column &lt;code&gt;t.i&lt;/code&gt; as before.
 Check the TRV value on the primary and a replica.
 Note how the TRV value on the primary is lower than on the replica.&lt;/p&gt;
 &lt;p&gt;When the TRV value reaches 64 on the replica, replication will stop with error 4080.
