@@ -10,7 +10,7 @@ tags:
 - lang_en
 ---
 
-MySQL 8.0.29 adds `ALGOITHM=INSTANT` as a way to `ALTER TABLE` commands with less wait.
+MySQL 8.0.29 adds `ALGORITHM=INSTANT` as a way to run `ALTER TABLE` commands with less wait.
 The documentation can be found in [Online DDL Operators](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html) and instant column operations can be found [here](https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html#online-ddl-column-operations).
 
 Example Syntax looks like this:
@@ -67,11 +67,11 @@ In fact, I am of the persuasion that any MySQL installation that does not have a
 So can we use this to break replication?
 
 The manual suggests that `OPTIMIZE TABLE` can be used to reset the counter.
-The manual also says on [OPTIMIZE](https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html):
+The manual knows the following things about [OPTIMIZE](https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html):
 
 1. There is a syntax `OPTIMIZE LOCAL TABLE`.
    »By default, the server writes `OPTIMIZE TABLE` statements to the binary log so that they replicate to replicas.
-   To suppress logging, specify the optional `NO_WRITE_TO_BINLOG` keyword or its alias `LOCAL`.
+   To suppress logging, specify the optional `NO_WRITE_TO_BINLOG` keyword or its alias `LOCAL`.«
 2. This is not privileged: »This statement requires `SELECT` and `INSERT` privileges for the table.«
 
 We now do this: With `dbdeployer` we `dbdeployer deploy replication 8.0.29`.
@@ -103,7 +103,7 @@ It is not necessary to have `ALTER` privilege, as long as you know that somebody
 optimize local table t;
 ```
 
-Finally, continue to add and drop the column `t.i`. 
+Finally, continue to add and drop the column `t.i` as before. 
 Check the TRV value on the primary and a replica.
 Note how the TRV value on the primary is lower than on the replica.
 
