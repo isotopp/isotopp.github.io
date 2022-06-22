@@ -92,7 +92,7 @@ alter table t add column i integer, algorithm=instant;
 select name, total_row_versions from information_schema.innodb_tables where name like "kris/%";
 
 alter table t drop column i, algorithm=instant;
-select name, total_row_versions from information_schema.innodb_tables where name like "kris/%";```
+select name, total_row_versions from information_schema.innodb_tables where name like "kris/%";
 ```
 
 Now inject the `OPTIMIZE LOCAL TABLE` command to plant the bomb.
