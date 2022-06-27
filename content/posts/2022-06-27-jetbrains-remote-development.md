@@ -57,6 +57,10 @@ Sometimes that needs to be done more than once.
 Well, yes.
 Facinatingly, the remote session stays if you kill the local client, and on reconnect will be still there, blinking cursor and everything, just where you left it.
 
-All in all, I think this is going to change the way it work.
+All in all, I think this is going to change the way it work. At least when the remaining problems are fixed.
+
+![](/uploads/2022/06/jetbrains-gateway2.png)
+
+*Connecting to the Blog.*
 
 *Disclaimer:* I am a paying customer of Jetbrains, and have the private user all-in subscription, paid for myself.
