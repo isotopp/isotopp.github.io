@@ -148,14 +148,14 @@ Ihr hättet Linus sein können.
 
 ![](/uploads/linus.gif)
 
-Leute haben also Linus Zeugs genommen und damit gespielt, und es dabei besser hin gefummelt und - das ist der Trick - Linus ihr verbessertes Zeug zurück gegeben.
+Leute haben also Linus Zeugs genommen und damit gespielt, und es dabei besser hin gefummelt und - das ist der Trick - Linus ihr verbessertes Zeug zurückgegeben.
 Linus hat das also zusammengesetzt und wieder zurück ins Netz gekippt.
 
 Eigentlich hat er also gar nicht viel gemacht.
 
 Der entscheidende Punkt hier ist: Er hat es getan.
 Linus hat mit seinem Tun die Welt verändert.
-Also nicht bloß ein bischen, sondern so richtig fundamental.
+Also nicht bloß ein bisschen, sondern so richtig fundamental.
 Leute schreiben da Bücher drüber.
 Bill Gates paßt seine Geschäftsstrategie an.
 Linus hat Macht.
@@ -165,7 +165,7 @@ Ein Informatikstudent aus Finnland, hier gleich um die Ecke.
 Okay, Linus war nicht alleine.
 CREDITS in meinem Kernel listet alleine so an die 500 Leute, und das sind nur die, die es bis in diese Datei geschafft haben und das ist nur der Kernel.
 
-Und das mit dem Zurück geben und neu veröffentlichen ist auch nicht seine Idee.
+Und das mit dem Zurückgeben und neu veröffentlichen ist auch nicht seine Idee.
 Diese Idee hatte ein anderer Held, Richard Stallman.
 
 ![](/uploads/richard_stallman.jpg)
@@ -173,7 +173,7 @@ Diese Idee hatte ein anderer Held, Richard Stallman.
 Stallman, ein weiterer Informatikstudent, wenn auch von weiter weg, ist also hingegangen und hatte dasselbe gemacht wie Linus, nur viel früher:
 Er hat Zeugs geschrieben, in seinem Fall ein Haufen ziemlich coole Editing Macros, "emacs", für einen Editor, und die ins Netz gekippt und gesagt: Hier ist mein Zeug und ich habe es ins Netz gekippt, jetzt könnt ihr spielen.
 
-Leute haben also Richards Zeug genommen und damit gespielt, und es dabei besser hin gefummelt und ein kommerzielles Produkt draus gemacht und - das ist der Fehler - Richard ihr verbessertes Zeug nicht zurück gegeben sondern gesagt: Ellabätsch, angeschissen, Du hast Zeug ins Netz gekippt und ich mach eine Firma draus.
+Leute haben also Richards Zeug genommen und damit gespielt, und es dabei besser hin gefummelt und ein kommerzielles Produkt draus gemacht und - das ist der Fehler - Richard ihr verbessertes Zeug nicht zurückgegeben sondern gesagt: Ellabätsch, angeschissen, Du hast Zeug ins Netz gekippt und ich mach eine Firma draus.
 
 Da war Richard natürlich sauer und hat sich überlegt, wie er die Welt verändern kann, oder gar das Universum als solches, um es für uns alle in einen besseren Ort zu verwandeln. Richard hat sich also hingesetzt und mal aufgeschrieben wie es sein soll, damit das mit dem "ins Netz kippen und spielen" besser funktioniert.
 
