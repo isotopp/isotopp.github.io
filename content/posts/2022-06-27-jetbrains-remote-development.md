@@ -63,4 +63,7 @@ All in all, I think this is going to change the way it work. At least when the r
 
 *Connecting to the Blog.*
 
+Apparently there is a blog article from [December 2021](https://blog.jetbrains.com/blog/2021/12/03/dive-into-jetbrains-gateway/) which describes how it works in more detail.
+With the upcoming "Fleet", it seems that they will be going all-in on the split between IDE backend and frontend.
+
 *Disclaimer:* I am a paying customer of Jetbrains, and have the private user all-in subscription, paid for myself.
