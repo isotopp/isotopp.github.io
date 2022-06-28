@@ -12,7 +12,7 @@ tags:
 ---
 
 I live in a house in a rural village somewhere in [Randstad](https://en.wikipedia.org/wiki/Randstad).
-We are paying around 70 Euros per month in electricity, and up to 380 Euro per month in gas.
+We are paying around 70 Euro per month in electricity, and up to 380 Euro per month in gas.
 We are using the latter for heating and warm water, but we are already cooking with electricity.
 
 The house has a decent energy rating and a heat exchanger in the forced ventilation system.

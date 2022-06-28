@@ -76,9 +76,9 @@ They also have time limits, an attention budget.
 Both are convertible, but that is media dependent.
 
 Assuming a useful lifetime of 60 years for media consumption, during that time I could read for example one book per week, for a total of 40 books per year.
-In a total lifetime, that are 2400 books, at - say - 30 Euros each.
+In a total lifetime, that are 2400 books, at - say - 30 Euro each.
 
-With AAA games, one can do around 4-6 of them per year, 240-300 in a lifetime, at a value of around 60 Euros each.
+With AAA games, one can do around 4-6 of them per year, 240-300 in a lifetime, at a value of around 60 Euro each.
 
 That's a total lifetime value of around 70k Euro in books, or 20k Euro in games per person.
 
