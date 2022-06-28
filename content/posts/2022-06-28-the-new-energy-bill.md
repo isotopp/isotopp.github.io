@@ -15,7 +15,35 @@ We got our solar roof around 1st of April.
 I am describing our setup [here]({{< ref "/content/posts/2022-05-02-a-solar-roof.md" >}}).
 Today we got the bill for Summer 2021 to Summer 2022.
 
-It looks like this:
+# What I measured
+
+I installed a P1 interface on my electricity counter late in April, so my data does not cover all of the lifetime of the Solar Roof.
+Starting the graph at 01-Apr-2022, I get this:
+
+![](/uploads/2022/06/bill-in-and-out.png)
+
+*At this resolution, not very helpful.*
+
+What is visible is the fact that we do not have a battery, and therefore each day we produce energy, but also consume energy from the grid.
+What is not visible is the relation.
+
+![](/uploads/2022/06/bill-counter.png)
+
+Looking at the absolute counter values is more helpful.
+The total production is on the right hand side, the consumption on the left hand side, and the important number is the Range value below the graph.
+
+We produced 1.66 MWh during the range between 01-Apr and now. We consumed 279 kWh in that interval.
+That leaves us with slightly under 1.5 MWh pushed to the grid.
+
+![](/uploads/2022/06/bill-gas-meter.png)
+
+*Heating consumed around 10 m^3 in one evening, otherwise we use gas for warm water. Not a lot.*
+
+We consumed 28.7 m^3 (around 287 kWh) of gas since the begin of metering.
+This includes one day of runaway heating worth around 10 m^w, and the rest is warm water.
+Warm water is not the cost driver, heating with gas is.
+
+But let's look at the financials:
 We get back 561 Euro, because we paid 2297 Euro in 12 monthly installments, and used 1735 Euro worth of power and gas.
 Mostly gas, but more on that further down.
 
