@@ -1,0 +1,79 @@
+---
+author: isotopp
+date: "2022-06-28T12:42Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+title: "The new energy bill"
+published: true
+tags:
+- lang_en
+- netherlands
+- energy
+- climate
+---
+
+We got our solar roof around 1st of April.
+I am describing our setup [here]({{< ref "/content/posts/2022-05-02-a-solar-roof.md" >}}).
+Today we got the bill for Summer 2021 to Summer 2022.
+
+It looks like this:
+We get back 561 Euro, because we paid 2297 Euro in 12 monthly installments, and used 1735 Euro worth of power and gas.
+Mostly gas, but more on that further down.
+
+Our monthly installment two years ago was 192 Euro, last year 202 Euro, and this year it will be 213 Euro.
+Of these 213 Euro, 199 Euro will be for gas.
+
+So already, without knowing details, we have our mission.
+
+# Get off Gas, now!
+
+This is our electricity intake for the last 5 years:
+
+![](/uploads/2022/06/bill-electricity.png)
+
+*Down to 2.052 MW/a from 4.850 MW/a.*
+
+Active since April 2022, the solar array has fed back sufficient electricity to compensate for more than half our consumption.
+Do I believe in overprovisioning?
+Well, yes, kind of.
+The array has been built with future use-cases in mind.
+
+In any case, in the last 12 months we used 3881 kWh, and pushed 1834 kWh back to the grid for the set consumption you see in the bill.
+
+![](/uploads/2022/06/bill-gas.png)
+
+*Down to 1251 m^3 of gas.*
+
+Out gas consumption also fell, but that is mostly due to a mild winter and not heating much.
+
+# Doing the math
+
+We are paying around 22 ct per kWh of electricity, and while there is a bit of fixed cost, it hardly matters – 22.5 ct per kWh all in.
+
+Gas costs around 108 ct per m^3, which is an energy equivalent of 10-12 kWh warmth depending on the type of gas.
+Fixed cost here is substantial, and we end up at 132 ct per m^3 overall cost (1349.88 Euro for 1251 m^3, and 274.58 Euro of fixed cost).
+
+| *Heating*      | Electricity |     Heat Pump |       Gas |
+|:---------------|------------:|--------------:|----------:|
+| Heat generated |      10 kWh |        10 kWh |    10 kWh |
+| Energy used    |      10 kWh |       2-3 kWh |       1^3 |
+| Cost per unit  |  0.225 Euro |    0.225 Euro | 1.32 Euro |
+| Total cost     |   2.25 Euro | 0.5-0.75 Euro | 1.32 Euro |
+
+So to create 10 kWh of warmth from a heat pump, you have to expend 2-3 kWh of electricity, coming in at 50 ct to 75 ct per m^3 gas-equivalent of heating.
+That would be around 1.75 to 2.5 times cheaper than heating with gas.
+
+A heat exchanger can be a air-water-air system, so a heat exchanger that uses energy from outside air to heat water that is fed into the existing heating.
+This will work to around -10 C to -20 C outside temperatur, but for temperatures below zero, it will become successively inefficient.
+
+If your area permits it, you can take energy not from outside air, but from the water or earth below the house.
+This is virtually always frost-free and hence relatively efficient.
+So if you have a houseboat or are allowed to install an earth circuit, this can be a completely painless solution.
+
+Existing radiators driven by heat exchangers almost always need adjustment or exchange, because the water-in temperature of the system is substantially lower than a preexisting gas burner.
+So somebody with actual clue will have to do the math and adjustment during installation, and some people will have to either change radiators, or install active venting (fans, basically) that push air through the radiators as a leisurely pace.
+
+If you need air condition anyway, because for example there is a roof room that needs active cooling in summer, you can make sure that you get an airco unit that can operate in reverse mode.
+Most of the units that support it are as efficient as heat exchangers, and heat air directly.
+Here the work factor is comparable to normal heat exchangers.
+
+Either system will get you off gas, or (with the airco) work in parallel to an existing gas or oil heating – which is nice in case you do not trust the new system and need backup.
