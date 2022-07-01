@@ -6,7 +6,109 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 29 Jun 2022 10:28:30 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 01 Jul 2022 12:57:26 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>I have met the enemy, and they are us</title>
+      <link>https://blog.koehntopp.info/2022/07/01/i-have-met-the-enemy-and-they-are-us.html</link>
+      <pubDate>Fri, 01 Jul 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/07/01/i-have-met-the-enemy-and-they-are-us.html</guid>
+      <description>&lt;p&gt;Another Friday, another replication hierarchy lost.&lt;/p&gt;
+&lt;h1 id=&#34;the-error-from-june-july-edition&#34;&gt;
+    &lt;a href=&#34;#the-error-from-june-july-edition&#34;&gt;
+	The error from June, July edition?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The errors reported look awfully familiar: Binlog position is supposedly 4, and the error message has text about &amp;ldquo;max_allowed_packet&amp;rdquo;.
+Could it be another instance of &lt;a href=&#34;https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions.html&#34;&gt;this bug&lt;/a&gt;
+
+ from early last month?&lt;/p&gt;
+&lt;p&gt;Indeed, one symptom was &amp;ldquo;a large binlog, larger than max_binlog_size&amp;rdquo;.
+We check.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rw-r----- 1 mysql mysql 1073794077 Jul  1 06:39 binlog.000914
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rw-r----- 1 mysql mysql 1073869075 Jul  1 07:09 binlog.000915
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rw-r----- 1 mysql mysql 1073741881 Jul  1 09:28 binlog.000916
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rw-r----- 1 mysql mysql 2038358667 Jul  1 11:21 binlog.000917
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Log ends at 11:21, at twice the expected size.
+Meh.&lt;/p&gt;
+&lt;h1 id=&#34;to-the-flight-recorder&#34;&gt;
+    &lt;a href=&#34;#to-the-flight-recorder&#34;&gt;
+	To the flight recorder
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Let&amp;rsquo;s check the &lt;a href=&#34;https://blog.koehntopp.info/2021/04/22/a-mysql-flight-recorder.html&#34;&gt;flight recorder&lt;/a&gt;
+
+, again:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /var/log/mysql_pl/Fri
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; i in 1&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;012&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;_??.innodb.xz&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;do&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;  
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   xz -dc &lt;span class=&#34;nv&#34;&gt;$i&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;     perl -ne &lt;span class=&#34;s1&#34;&gt;&amp;#39;/(undo log entries) ([0-9]+)/ &amp;amp;&amp;amp; $2 &amp;gt; 1000 &amp;amp;&amp;amp; print &amp;#34;$2\n&amp;#34;;&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; less
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;11_20.innodb.xz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2895
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;11_21.innodb.xz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2895
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;11_22.innodb.xz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;11_23.innodb.xz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;dba-meet-dba&#34;&gt;
+    &lt;a href=&#34;#dba-meet-dba&#34;&gt;
+	DBA, meet DBA
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;So what is it this time?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; xz -dc 11_21.innodb.xz&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; less
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;623 lock struct(s), heap size 73848, 3548 row lock(s), undo log entries 2895
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;MySQL thread id 186615979, OS thread handle 140545428498176, query id 2978139105 localhost root Waiting for semi-sync ACK
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;INSERT LOW_PRIORITY IGNORE INTO `schema`.`_table_new` (`id`, ...`) 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  SELECT `id`, ... FROM `schema`.`table` LOCK IN SHARE MODE /*pt-online-schema-change 63828 copy table*/
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is an &lt;code&gt;INSERT ... SELECT ...&lt;/code&gt;, generated from Percona Online Schema Change.
+The transaction has some 2895 rows open, so in order for this to be a problem the average row length must be very large.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s check:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@instance-1009 [schema]&amp;gt; show table status like &amp;#39;table&amp;#39;\G
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;*************************** 1. row ***************************
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           Name: table
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         Engine: InnoDB
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        Version: 10
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     Row_format: Dynamic
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           Rows: 2437
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; Avg_row_length: 3350975    &amp;lt;-- average!
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    Data_length: 8166326272 &amp;lt;-- 8-ish GB used
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Max_data_length: 0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   Index_length: 3194880    &amp;lt;-- almost no secondary index
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;      Data_free: 57958989824 &amp;lt;- also spiky usage, 53 GB free space
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; Auto_increment: 546211
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    Create_time: 2020-12-08 02:25:41
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    Update_time: 2022-07-01 10:11:12
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     Check_time: NULL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;      Collation: latin1_swedish_ci
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;       Checksum: NULL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; Create_options: row_format=DYNAMIC
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;        Comment:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1 row in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ok, so we have 3.3 MB row size, on the average (peak blob size is 6.7 MB or so).
+Checking the schema shows us two &lt;code&gt;MEDIUMTEXT&lt;/code&gt; columns.&lt;/p&gt;
+&lt;h1 id=&#34;analysis&#34;&gt;
+    &lt;a href=&#34;#analysis&#34;&gt;
+	Analysis
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The mitigation from &lt;a href=&#34;https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions.html&#34;&gt;last month&lt;/a&gt;
+
+ had not been implemented, yet.
+It has now been escalated.&lt;/p&gt;
+&lt;p&gt;The event triggering the outage was a transaction larger than 1 GB, as before, in the face of binlog compression.
+The program triggering the large transaction was a DBA maintenance job running Percona Online Schema Change.&lt;/p&gt;
+&lt;p&gt;Percona Online Schema Change has no logic to prevent large transactions from occuring.
+It should maybe check average row size, or check largest row size in the table, and cut smaller pieces so that the &lt;code&gt;INSERT ... SELECT&lt;/code&gt; it generates always stays below 1G.&lt;/p&gt;
+&lt;p&gt;Or it should accept that the &lt;code&gt;INSERT ... SELECT&lt;/code&gt; may fail, if &lt;code&gt;max_binlog_cache_size&lt;/code&gt; has been set, and retry with smaller steps then.
+The second idea would be better, I believe.&lt;/p&gt;
+&lt;p&gt;Again, the flight recorder has been invaluable in nailing down the root cause.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Breaking replication with ALGORITHM = INSTANT</title>
       <link>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</link>
@@ -4672,54 +4774,6 @@ That even makes sense, which is unusual, given all the other illogical anomalies
 &lt;li&gt;*3: &lt;code&gt;SHOW PROCEDURE STATUS&lt;/code&gt; deviant syntax enumerates the procedure names and definitions.&lt;/li&gt;
 &lt;li&gt;*4: &lt;code&gt;ALTER thing RENAME&lt;/code&gt; syntax exists, but no &lt;code&gt;RENAME&lt;/code&gt; command.&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: The Million Challenge</title>
-      <link>https://blog.koehntopp.info/2021/09/10/mysql-million-challenge.html</link>
-      <pubDate>Fri, 10 Sep 2021 16:01:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/10/mysql-million-challenge.html</guid>
-      <description>&lt;p&gt;A long-standing idea that I have is to test the servers limits:
-How does it fail and break if there are very many of a thing?
-Previously that was too easy, because many structures were constructed in a way that it was obvious they would not scale.
-But with MySQL 8 many things were overhauled, so let&amp;rsquo;s see what we can make many of and see how the server fares.&lt;/p&gt;
-&lt;h1 id=&#34;the-million-challenge&#34;&gt;
-    &lt;a href=&#34;#the-million-challenge&#34;&gt;
-	The Million Challenge
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Database servers are programs that are built to handle a lot of data. A million rows in a table are not a problem, and searching one in a million rows neither, because the server has structures that make this fast.&lt;/p&gt;
-&lt;p&gt;But is the database server using these structures internally in an efficient way and can it handle a lot of tables, schemas, views, users, grants, roles and so on?&lt;/p&gt;
-&lt;p&gt;What can we try?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Make a million tables and see how performance degrades or not.
-&lt;ul&gt;
-&lt;li&gt;Will this work better if we use general tablespaces instead of file-per-table?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Make a million views, all pointing to the same table.&lt;/li&gt;
-&lt;li&gt;Nest views, one million deep.&lt;/li&gt;
-&lt;li&gt;Make a million stored procedures.
-&lt;ul&gt;
-&lt;li&gt;Make a million stored procedures, calling each other in a chain.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Make a many triggers? Is that even possible?&lt;/li&gt;
-&lt;li&gt;Make a million users.
-&lt;ul&gt;
-&lt;li&gt;Make a million grants. This one is dear to my heart - we have this at work in one environment, and it broke the server in an exciting and hard to fix way. &lt;code&gt;GRANT&lt;/code&gt; statements in the processlist and &lt;code&gt;SHOW PROCESSLIST&lt;/code&gt; running concurrently raced badly.&lt;/li&gt;
-&lt;li&gt;Make a million concurrent connections. Well, no, but I have seen 60.000 already, and it was not pretty. This failed in interesting ways, because monitoring was joining against &lt;code&gt;P_S.THREADS&lt;/code&gt; and fell over badly.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Make a million users, using roles.
-&lt;ul&gt;
-&lt;li&gt;Make a million roles.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Any other ideas that fit the general theme?&lt;/p&gt;
 </description>
     </item>
     
