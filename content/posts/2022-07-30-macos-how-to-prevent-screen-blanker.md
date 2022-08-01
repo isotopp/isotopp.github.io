@@ -12,13 +12,13 @@ tags:
 ---
 
 When running Keynote, MacOS prevents the screen blanker from kicking in.
-I needed a similar thing in one of my Python applications, so I needed to findhow it does that.
+I needed a similar thing in one of my Python applications, so I needed to find out how it does that.
 
 It turns out, there is an API for that: 
 [`beginActivity:withOptions:`](https://developer.apple.com/documentation/foundation/nsprocessinfo/1415995-beginactivitywithoptions),
 which returns an Object token `activity`.
 Calling [`endActivity`](https://developer.apple.com/documentation/foundation/nsprocessinfo/1411321-endactivity) 
-with that Token ends the activity and resumes the screen blanker countdown.
+with that Token ends the activity, and resumes the screen blanker countdown.
 
 There is a list of activity options,
 [`NSActivityOptions`](https://developer.apple.com/documentation/foundation/nsactivityoptions).
