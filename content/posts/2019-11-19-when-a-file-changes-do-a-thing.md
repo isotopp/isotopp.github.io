@@ -54,7 +54,7 @@ Python seems to come with a bunch of modules and interfaces in
 various states of disrepair,
 [inotify-tools](https://github.com/rvoicilas/inotify-tools), the
 very tiny wrapper [inotify_simple](https://pypi.org/project/inotify_simple/)
-(the simple here refers to the fact that it is a very thing
+(the simple here refers to the fact that it is a tiny
 wrapper around the C library, not simple to use), the more
 convenient [inotify](https://pypi.org/project/inotify/) and the
 high level wrapper
