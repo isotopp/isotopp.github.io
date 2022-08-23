@@ -359,6 +359,47 @@ Simply go back to the source and fix that instead.</p>
  controls this.</p>
 <p>When set to <code>off</code>, invisible columns are also no longer shown there.
 That should be even less necessary, and only very broken ORMs should need this.</p>
+<h1 id="good-primary-keys">
+    <a href="#good-primary-keys">
+	Good primary keys
+    </a>
+</h1>
+<p>You should never need any of this.
+You should define an explicit primary key for all your tables.
+If they are missing and you control application source and schema, you can fix this at the source instead of using this kludge.
+Good back and fix things properly instead.</p>
+<blockquote>
+<p>Every Table in MySQL Always Must Have a Primary Key
+When you are creating or altering a table in MySQL, make sure you have a primary key defined.
+We also advise you to never change a primary key value once it is set, and to never re-use a primary key value once a record is deleted.
+We advise you to keep the primary key short, below 16 or 32 bytes in size.</p>
+</blockquote>
+<p>See the
+<a href="https://blog.koehntopp.info/2022/04/15/sql-engineering-guidelines.html">SQL Engineering Guide</a>
+
+
+for a discussion of this topic.</p>
+<ul>
+<li>A good primary key is short, less than 32 bytes.</li>
+<li>A good primary key is immutable and never re-used.</li>
+<li>A good primary key is an <code>auto_increment</code> value, or a UUIDv1 that is stored in a <code>BINARY(16)</code> that is being accessed with <code>UUID_TO_BIN(...,1)</code> (the swap flag is set to true).
+<ul>
+<li>A Java generated UUIDv4 is a random number and has horrible performance properties for InnoDB.</li>
+<li>The topic of UUID is covered at length in <a href="https://blog.koehntopp.info/2021/04/06/mysql-and-uuids.html">MySQL and UUIDs</a>
+
+  and in <a href="https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html">ALTER TABLE for UUID</a>
+
+.</li>
+</ul>
+</li>
+<li><code>auto_increment</code> is not slow. MySQL keeps an <code>auto_increment</code> counter per table, and assigns values to each thread that inserts data in batches to limit contention on the counter. This is automatic and highly efficient.
+<ul>
+<li>That has the side-effect that there may be gaps in the <code>auto_increment</code> sequence, and values are not always assigned in a strict temporal order. The manual <a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html" target="_blank" rel="noopener">has a discussion</a>
+
+ of this.</li>
+</ul>
+</li>
+</ul>
 <h1 id="tldr">
     <a href="#tldr">
 	TL;DR

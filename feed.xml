@@ -6,7 +6,7 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Aug 2022 09:02:50 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Aug 2022 09:24:50 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: GIPK (InnoDB and Primary Keys)</title>
       <link>https://blog.koehntopp.info/2022/08/23/mysql-gipk.html</link>
@@ -225,6 +225,47 @@ Simply go back to the source and fix that instead.&lt;/p&gt;
  controls this.&lt;/p&gt;
 &lt;p&gt;When set to &lt;code&gt;off&lt;/code&gt;, invisible columns are also no longer shown there.
 That should be even less necessary, and only very broken ORMs should need this.&lt;/p&gt;
+&lt;h1 id=&#34;good-primary-keys&#34;&gt;
+    &lt;a href=&#34;#good-primary-keys&#34;&gt;
+	Good primary keys
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;You should never need any of this.
+You should define an explicit primary key for all your tables.
+If they are missing and you control application source and schema, you can fix this at the source instead of using this kludge.
+Good back and fix things properly instead.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Every Table in MySQL Always Must Have a Primary Key
+When you are creating or altering a table in MySQL, make sure you have a primary key defined.
+We also advise you to never change a primary key value once it is set, and to never re-use a primary key value once a record is deleted.
+We advise you to keep the primary key short, below 16 or 32 bytes in size.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;See the
+&lt;a href=&#34;https://blog.koehntopp.info/2022/04/15/sql-engineering-guidelines.html&#34;&gt;SQL Engineering Guide&lt;/a&gt;
+
+
+for a discussion of this topic.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A good primary key is short, less than 32 bytes.&lt;/li&gt;
+&lt;li&gt;A good primary key is immutable and never re-used.&lt;/li&gt;
+&lt;li&gt;A good primary key is an &lt;code&gt;auto_increment&lt;/code&gt; value, or a UUIDv1 that is stored in a &lt;code&gt;BINARY(16)&lt;/code&gt; that is being accessed with &lt;code&gt;UUID_TO_BIN(...,1)&lt;/code&gt; (the swap flag is set to true).
+&lt;ul&gt;
+&lt;li&gt;A Java generated UUIDv4 is a random number and has horrible performance properties for InnoDB.&lt;/li&gt;
+&lt;li&gt;The topic of UUID is covered at length in &lt;a href=&#34;https://blog.koehntopp.info/2021/04/06/mysql-and-uuids.html&#34;&gt;MySQL and UUIDs&lt;/a&gt;
+
+  and in &lt;a href=&#34;https://blog.koehntopp.info/2020/09/22/alter-table-for-uuid.html&#34;&gt;ALTER TABLE for UUID&lt;/a&gt;
+
+.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;auto_increment&lt;/code&gt; is not slow. MySQL keeps an &lt;code&gt;auto_increment&lt;/code&gt; counter per table, and assigns values to each thread that inserts data in batches to limit contention on the counter. This is automatic and highly efficient.
+&lt;ul&gt;
+&lt;li&gt;That has the side-effect that there may be gaps in the &lt;code&gt;auto_increment&lt;/code&gt; sequence, and values are not always assigned in a strict temporal order. The manual &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;has a discussion&lt;/a&gt;
+
+ of this.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h1 id=&#34;tldr&#34;&gt;
     &lt;a href=&#34;#tldr&#34;&gt;
 	TL;DR
