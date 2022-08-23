@@ -239,6 +239,30 @@ The self-documentingly named variable [show_gipk_in_create_table_and_information
 When set to `off`, invisible columns are also no longer shown there.
 That should be even less necessary, and only very broken ORMs should need this.
 
+# Good primary keys
+
+You should never need any of this.
+You should define an explicit primary key for all your tables.
+If they are missing and you control application source and schema, you can fix this at the source instead of using this kludge.
+Good back and fix things properly instead.
+
+> Every Table in MySQL Always Must Have a Primary Key
+> When you are creating or altering a table in MySQL, make sure you have a primary key defined.
+> We also advise you to never change a primary key value once it is set, and to never re-use a primary key value once a record is deleted.
+> We advise you to keep the primary key short, below 16 or 32 bytes in size.
+
+See the 
+[SQL Engineering Guide]({{< ref "/content/posts/2022-04-15-sql-engineering-guidelines.md" >}})
+for a discussion of this topic.
+
+- A good primary key is short, less than 32 bytes.
+- A good primary key is immutable and never re-used.
+- A good primary key is an `auto_increment` value, or a UUIDv1 that is stored in a `BINARY(16)` that is being accessed with `UUID_TO_BIN(...,1)` (the swap flag is set to true).
+  - A Java generated UUIDv4 is a random number and has horrible performance properties for InnoDB.
+  - The topic of UUID is covered at length in [MySQL and UUIDs]({{< ref "/content/posts/2021-04-06-mysql-and-uuids.md" >}})  and in [ALTER TABLE for UUID]({{< ref "/content/posts/2020-09-22-alter-table-for-uuid.md" >}}).
+- `auto_increment` is not slow. MySQL keeps an `auto_increment` counter per table, and assigns values to each thread that inserts data in batches to limit contention on the counter. This is automatic and highly efficient.
+  - That has the side-effect that there may be gaps in the `auto_increment` sequence, and values are not always assigned in a strict temporal order. The manual [has a discussion](https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html) of this.
+
 # TL;DR
 
 MySQL 8.0.30 adds GIPK, generated invisible primary keys.
