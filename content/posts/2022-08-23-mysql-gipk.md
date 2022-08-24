@@ -143,7 +143,7 @@ That is of course a fix for broken designs.
 You should never need this for your own schemas.
 Simply go back to the source and fix that instead.
 
-But if you happen to run JAMF or other software that you do not control and that insists on PK-less tables, you can now have to autofixed.
+But if you happen to run JAMF or other software that you do not control and that insists on PK-less tables, you can now have it autofixed.
 
 When you set [sql_generate_invisible_primary_key](https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_sql_generate_invisible_primary_key), and try to create a table without a primary key, a `my_row_id bigint unsigned not null auto_increment invisible` primary key is added for you to the table.
 
@@ -244,7 +244,7 @@ That should be even less necessary, and only very broken ORMs should need this.
 You should never need any of this.
 You should define an explicit primary key for all your tables.
 If they are missing and you control application source and schema, you can fix this at the source instead of using this kludge.
-Good back and fix things properly instead.
+Go back and fix things properly instead.
 
 > Every Table in MySQL Always Must Have a Primary Key
 > When you are creating or altering a table in MySQL, make sure you have a primary key defined.
