@@ -133,7 +133,7 @@ They are a data warehouse inside your transactional system that struggles to get
 So you either ETL these records into a data warehouse in a regular export.
 Or you forego this entirely, put a change even onto a Kafka bus or a syslog, and let another component that is not serving user facing transactional traffic pick it up and aggregate it.
 
-Again, everybody has these tables, and everybody eventually needs to come clean about them, or die from bloat.
+Again, everybody has these tables, and everybody eventually needs to come clean about them, or die from bloat. (looking at you OpenStack)
 
 # The nodes table
 
