@@ -317,7 +317,7 @@ select sum(bin_length) from nodes where node_type=1 and repo='docker';
 ```
 
 using an index on repo, the database will go into the secondary index and select all rows with `repo="docker"`. 
-It needs to winnow this list down to values that are also have `node_type=1`, manually, because the index chosen as per `EXPLAIN` does not have this information.
+It needs to window this list down to values that are also have `node_type=1`, manually, because the index chosen as per `EXPLAIN` does not have this information.
 
 It will find the primary key of each row in the index, and then go to the primary key. 
 Here it will select all rows found, to get the value for `bin_length`.
@@ -341,7 +341,7 @@ or the equivalent
 ALTER TABLE nodes ADD INDEX (repo, node_type, bin_length)
 ```
 
-Either will satisfy the (commtative) `AND` condition from our sum query. But we also have the folder query to consider, which is also slow:
+Either will satisfy the (commutative) `AND` condition from our sum query. But we also have the folder query to consider, which is also slow:
 
 ```sql
 SELECT repo
