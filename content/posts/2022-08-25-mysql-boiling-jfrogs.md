@@ -420,7 +420,7 @@ mysql> select sum(bin_length) from nodes where node_type=1 and repo='docker';
 1 row in set (9.03 sec)
 ```
 
-This technique of using covering indexes I have learned from an Ex-MySQL colleagie, [Domas Mituzas](https://twitter.com/mituzas), who used it excessively to make Wikipedia fast while working as a Wikimedia DBA.
+This technique of using covering indexes I have learned from an Ex-MySQL colleague, [Domas Mituzas](https://twitter.com/mituzas), who used it excessively to make Wikipedia fast while working as a Wikimedia DBA.
 Thanks, Domas.
 
 # Other observations
