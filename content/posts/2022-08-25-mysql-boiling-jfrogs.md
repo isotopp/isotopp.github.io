@@ -317,7 +317,7 @@ select sum(bin_length) from nodes where node_type=1 and repo='docker';
 ```
 
 using an index on repo, the database will go into the secondary index and select all rows with `repo="docker"`. 
-It needs to window this list down to values that are also have `node_type=1`, manually, because the index chosen as per `EXPLAIN` does not have this information.
+It needs to narrow this list down to values that are also have `node_type=1`, manually, because the index chosen as per `EXPLAIN` does not have this information.
 
 It will find the primary key of each row in the index, and then go to the primary key. 
 Here it will select all rows found, to get the value for `bin_length`.
