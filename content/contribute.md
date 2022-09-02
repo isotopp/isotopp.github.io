@@ -1,6 +1,7 @@
 ---
 title: Contribute
 url: contribute
+author: isotopp
 ---
 
 This blog is on github as https://github.com/isotopp/isotopp.github.io/. 

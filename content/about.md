@@ -1,6 +1,7 @@
 ---
 title: About
 url: about
+author: isotopp
 ---
 
 This is an attempt to revive the blog with Hugo.
