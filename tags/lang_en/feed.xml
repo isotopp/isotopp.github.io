@@ -6,7 +6,117 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Sep 2022 11:30:15 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 Sep 2022 13:16:02 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: YOLO mode</title>
+      <link>https://blog.koehntopp.info/2022/09/02/mysql-yolo-mode.html</link>
+      <pubDate>Fri, 02 Sep 2022 12:13:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/09/02/mysql-yolo-mode.html</guid>
+      <description>&lt;p&gt;OH:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;And now let&amp;rsquo;s quickly push 2 billion rows into this database VM.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;That is best done in YOLO mode.
+This is a mode of operation for a database that minimizes disk writes in favor of batched bulk writes.&lt;/p&gt;
+&lt;p&gt;It is not ACID, so if anything goes wrong during the load, the instance is lost.
+That is why it is called YOLO mode.&lt;/p&gt;
+&lt;p&gt;You are supposed to do this on a spare replica and not the production primary.
+If you are not having at least one more replica than needed in your MySQL deployment, I consider your setup defective.&lt;/p&gt;
+&lt;h1 id=&#34;disable-flush-on-commit&#34;&gt;
+    &lt;a href=&#34;#disable-flush-on-commit&#34;&gt;
+	Disable flush on Commit
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set global innodb_flush_log_at_trx_commit = 2;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This config variable&lt;/a&gt;
+
+ gives up ACID commits:
+On COMMIT, data is written to the file system buffer cache, but an &lt;em&gt;fdatasync(2)&lt;/em&gt; is not enforced.
+Instead, data is synced once per second.&lt;/p&gt;
+&lt;h1 id=&#34;disable-the-doublewrite-buffer&#34;&gt;
+    &lt;a href=&#34;#disable-the-doublewrite-buffer&#34;&gt;
+	Disable the Doublewrite Buffer
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set global innodb_doublewrite = OFF;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_doublewrite&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This config variable&lt;/a&gt;
+
+ disables the InnoDB DoubleWrite Buffer.
+This buffer stores a temporary copy of the full page, which consists of multiple disk blocks.&lt;/p&gt;
+&lt;p&gt;It can be permanently turned off on file systems that never overwrite data and do not do in-plance updates (btrfs, ZFS), but not on traditional filesystems (XFS, ext4).
+It can be permanently turned off on systems where the page size is equal to the guaranteed atomic write block size of the hardware (ie 4 KB page size and Enterprise drives that guarantee atomic block writes of 4 KB blocks, even on power loss).
+That is, normal setups need this enabled all of the time, or risk torn pages (partially new and partially old pages) on power loss during page write.&lt;/p&gt;
+&lt;h1 id=&#34;unlogged-instance&#34;&gt;
+    &lt;a href=&#34;#unlogged-instance&#34;&gt;
+	Unlogged instance
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Users of Oracle MYSQL 8.0.21 or newer can have &amp;ldquo;redo log turned off&amp;rdquo; and &amp;ldquo;doublewrite buffer turned off&amp;rdquo; with a &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-redo-log.html#innodb-disable-redo-logging&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;single command&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;alter instance disable innodb redo_log;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This replaces the preceding two config changes:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The redo log will never be written in the first place, so the flush log setting is pointless.&lt;/li&gt;
+&lt;li&gt;The doublewrite buffer is not written.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;turn-off-the-binlog&#34;&gt;
+    &lt;a href=&#34;#turn-off-the-binlog&#34;&gt;
+	Turn off the Binlog
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL will still write a binlog.
+Especially, MySQL 8 always has the binlog on by default.
+You may want to turn it off per session:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set sql_log_bin = off;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This will kill another source of disk writes and potential disk syncs during the load.&lt;/p&gt;
+&lt;h1 id=&#34;delay-secondary-index-generation&#34;&gt;
+    &lt;a href=&#34;#delay-secondary-index-generation&#34;&gt;
+	&amp;ldquo;Delay secondary index generation&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;mysqldump&lt;/code&gt; will still generate a statement that tries to disable secondary index generation:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;alter table t disable keys;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This command is accepted, but it only works in MyISAM, which nobody should use any more in 2022.
+You can&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set autocommit = 0;
+set unique_checks = 0;
+set foreign_key_checks = 0;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;to YOLO the loading of InnoDB tables, but very large transactions can have their own challenges in MySQL.
+So best you commit every 1.000 to 10.000 rows loaded.
+Make sure no transaction is ever larger than 1 GB, it will break compressed binlogs, if enabled.
+When using group replication, transaction sizes need to be controlled even tighter.&lt;/p&gt;
+&lt;h1 id=&#34;the-meaning-of-yolo&#34;&gt;
+    &lt;a href=&#34;#the-meaning-of-yolo&#34;&gt;
+	The meaning of YOLO
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This is called YOLO mode for a reason.
+Undo all these things after the load completes.
+Then check that they are undone.&lt;/p&gt;
+&lt;p&gt;Only do this on scratch instances, which you can afford to lose.&lt;/p&gt;
+&lt;p&gt;That means, this should be a replica that you disconnect for a data load, and that on success you can use as a source for &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CLONE&lt;/a&gt;
+
+.
+On failure, you must be able to afford scrapping it.&lt;/p&gt;
+&lt;p&gt;If you are running MySQL and are ever short on replicas you are holding it wrong.
+Don&amp;rsquo;t complain to me, fix your process.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Boiling JFrogs</title>
       <link>https://blog.koehntopp.info/2022/08/25/mysql-boiling-jfrogs.html</link>
@@ -1980,204 +2090,6 @@ It starts at Zeroes and Ones, and takes the reader on a tour, explaining how we 
 &lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/W-Daniel-Hillis-ebook/dp/B06XC774TQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Pattern on the Stone: The Simple Ideas that Make Computers Work&lt;/a&gt;
 
 &amp;rdquo;, W. Daniel Hillis, EUR 9.99 on Kindle&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>A solar roof</title>
-      <link>https://blog.koehntopp.info/2022/05/02/a-solar-roof.html</link>
-      <pubDate>Mon, 02 May 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/05/02/a-solar-roof.html</guid>
-      <description>&lt;p&gt;I live in a house in a rural village somewhere in &lt;a href=&#34;https://en.wikipedia.org/wiki/Randstad&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Randstad&lt;/a&gt;
-
-.
-We are paying around 70 Euro per month in electricity, and up to 380 Euro per month in gas.
-We are using the latter for heating and warm water, but we are already cooking with electricity.&lt;/p&gt;
-&lt;p&gt;The house has a decent energy rating and a heat exchanger in the forced ventilation system.
-That is to keep the warmth in when getting fresh air in.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-01.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Energy cost of 2021. Electricity remains largely unchanged in 2022, but gas cost rose a lot.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We are using a lot of electricity for a 3-person household &amp;ndash; 5500 kWh, a lot of which can be attributed to &amp;ldquo;always on&amp;rdquo; electronics at home.
-In particular, one file server consumes around 100W, which accumulates to not quite 1 MWh per year.
-Outsourcing that to a cloud service would be too slow, and a lot more expensive, though.&lt;/p&gt;
-&lt;h1 id=&#34;the-situation-and-the-configuration&#34;&gt;
-    &lt;a href=&#34;#the-situation-and-the-configuration&#34;&gt;
-	The situation and the configuration
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The house has a rather steep roof.
-One solar installation service, recommended to us via a colleague, declined to make an offer for installation because they were not equipped to handle the roof steepness.
-In the end, we went with Zonneplan, who did not have any objections to the general situation at all, and were able to handle it.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-03.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Roof steepness, as seen from the south.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The roof itself is oriented at 155 deg, pointing the roof ridge line to south/southeast.
-The west side is getting better light, but the first half of the day lights up the eastern roof as well.
-According to &lt;a href=&#34;https://apps.apple.com/us/app/ephemeris-moon-and-sun-seeker/id1488277219&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;basic astronomy tooling&lt;/a&gt;
-
-, the sun crosses the houses ridge line at 11:45 CEST, and solar noon (sun at 180 deg) is at 13:45.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-04.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Ridge line of the house, and the solar panel configuration.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We opted for a solution that places 9 panels on the eastern roof, and 16 on the western side.
-The east side of the house got a 3x3 configuration, the west side a 4x4.
-The lower two rows on the western side can get shadow from the neighbor and from the house wings (see the shadow on the image above), so they need &amp;ldquo;optimizers&amp;rdquo; to handle shade.
-This is what it looks like on the west side:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-05.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Panels on the west side of the roof.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The installed panel type has a size of 1.75m x 1.03m, and a Wp rating of 370W, so we get 200W/qm as expected from current tech.
-This is good for 3330Wp on the eastern side and 5920Wp on the western side, for a theoretical total of 9250Wp.
-In practice the configuration will never reach that level of output, because both sides of the roof cannot receive direct lighting at the same time.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-06.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The type sticker of one of the panels.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The inverter is a three-phase Huawei SUN2000-10KTL.
-It weighs 16kg and measures 52.5cm x 47.0cm x 16.6 cm, is rated IP65 and could in theory work from -25 to +60 degC.
-It still likes to sit inside, dry and warm.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-07.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Huawei SUN 2000 inverter.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The device makes no perceptible sound, even under load.
-When producing 4500 Watt, it gets a bit warm, but not so much that it will feel painful to the touch.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-08.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;FLIR image of the inverter while transforming 4500W from the roof.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Installing the solar panels on the roof catches energy that otherwise has been hitting the roof and reaching the rooms inside.
-The rooms directly under the roof are now about 1.5C cooler, a great improvement.&lt;/p&gt;
-&lt;p&gt;The panels themselves, even when in full sunlight, do not get particularly warm.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-09.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;FLIR images of the solar panels while in full sunlight.&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;production-and-consumption&#34;&gt;
-    &lt;a href=&#34;#production-and-consumption&#34;&gt;
-	Production and consumption
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Here is a spotless day in April, still on MET, and hardly any clouds.
-We have sunrise at 6:40, around 7:00 we see a sharp rise of energy produced on the eastern panels.
-This peaks around 9:00 at ~2300W, then falls off a bit until around 11:30 the western panels start to kick in.
-From here on the production switches over from eastside to westside, for a peak of 5300W around 16:00.
-Sunset is at 20:40, and indeed we get at least a bit of energy almost to the end, though the decline is rather steep starting at 19:40 or so.&lt;/p&gt;
-&lt;p&gt;Total production is 44.5 kWh over the day.
-Around 10 kWh can be attributed to the modules on the eastern side, and their power comes in early when we need it for breakfast.
-They help a great deal to even out production over the day.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-10.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The inverter has a GSM module and feeds into the systems of Zonneplan.
-That also means I get no direct access to the Modbus in the Inverter without interfering with their warranty.&lt;/p&gt;
-&lt;p&gt;I can access the electricity counter of our house, though, through the Dutch P1 interface.
-This is done, for example, with a &lt;a href=&#34;https://www.zuidwijk.com/product/p1-reader-ethernet/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;P1 reader ethernet&lt;/a&gt;
-
- by Marcel Zuidwijk, connecting the P1 interface from the counter to a free power on the DSL modem.
-The data is put onto the &lt;a href=&#34;https://blog.koehntopp.info/2020/11/15/my-home-sensor-network.html&#34;&gt;house MQTT bus&lt;/a&gt;
-
-, using &lt;a href=&#34;https://github.com/Lalufu/p1-mqtt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;software&lt;/a&gt;
-
- written by a friend and colleague.&lt;/p&gt;
-&lt;p&gt;Reading the counters, I get a good overview of what happens during the day:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-11.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Red line: Power drawn from the grid. Green line: Power sent into the grid. You can see how between 6:00 and 20:00 we are sending power to the grid at almost all times. The &amp;ldquo;Range&amp;rdquo; data shows we have drawn 6.25 kWh from the grid over the day, and sent around 30.1 kWh into the grid over the day.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;In the image above, we can see that we sent 30.1 kWh into the grid yesterday.
-The Zonneplan app gives me a total production of 39.42 kWh for that day.
-We also took 6.25 kWh from the grid on top of that.&lt;/p&gt;
-&lt;p&gt;That gives us a usage of (6.25 kWh + 39.42 kWh - 30.1 kWh =) 15.57 kWh for the day.
-Out of this, we covered (39.42 kWh - 30.1 kWh =) 9.32 kWh internally.
-We pushed a net surplus of (30.1 kWh - 6.25kWh = ) 23.85 kWh into the grid.&lt;/p&gt;
-&lt;p&gt;Using the current counters, I can get a more detailed graph over the day.
-You can see a base load in the house of around 300W &amp;ndash; around 100W can be attributed to one server, the rest is various other electronics that is always on.
-Great spikes show household appliances doing things: Dishwasher, washing machine, espresso maker, microwave, cooking plates and ovens all draw around 2kW to 3kW, mostly to heat up water.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/solar-12.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Up: drawing power from grid. Down: Sending power into the grid. You can see how clouds and internal consumption take their bites of the &amp;ldquo;perfect&amp;rdquo; production curve.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Looking at the day-curve this way you can see that we would profit from a household battery.
-On this day in April, we could maybe do with a battery of 5kWh or less, but in darker times a larger battery would be more effective.
-We could achieve complete autonomy from Equinox to Equinox, and charge the missing energy from the grid during cheap times in the darker half of the year.&lt;/p&gt;
-&lt;p&gt;The matching piece of equipment would be a Huawei LUNA2000-15-S0 battery pack.
-It is a 15 kWh piece of equipment that is 137cm high, 67cm wide and 14cm deep, coming in at 164kg and around 7200 Euro plus shipping.
-The pack is based on LFP technology, not on Li-Ion.&lt;/p&gt;
-&lt;h1 id=&#34;legal-and-financials&#34;&gt;
-    &lt;a href=&#34;#legal-and-financials&#34;&gt;
-	Legal and financials
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;We purchased the entire solution through Zonneplan at 10162 Euro, so around 1100 Euro per 1 kWp.
-This could be a noticeably less, if we did not have shade on the west side &amp;ndash; these optimizers are expensive.&lt;/p&gt;
-&lt;p&gt;Zonneplan not only installed the whole thing, which took less than a day, but also took care of all the planning, and all the paperwork.
-That was very comfortable, and they handled all the things professionally and competently.&lt;/p&gt;
-&lt;p&gt;In April, we produced 871.1 kWh, and sent 718 kWh into the grid.&lt;/p&gt;
-&lt;p&gt;In the Netherlands, power sent into the grid &amp;ldquo;turns the counter backwards&amp;rdquo;.
-That is, you can treat the network like a battery, 1 kWh sent in is 1 kWh you can get back later for free.
-This is called &amp;ldquo;&lt;a href=&#34;https://www.rijksoverheid.nl/onderwerpen/duurzame-energie/zonne-energie&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Salderingsregeling voor huishoudens en MKB&lt;/a&gt;
-
-&amp;rdquo;:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&amp;ldquo;Households and small businesses are allowed to feed self-generated electricity back into the grid until January 1, 2023. And offset it against their consumption at another time. This is called offsetting.&amp;rdquo;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;This rule was supposed to end at 1. January 2023, but will be prolonged at least one year more, says &lt;a href=&#34;https://solarmagazine.nl/nieuws-zonne-energie/i26235/startdatum-afbouw-salderingsregeling-zonnepanelen-niet-haalbaar-ambtenaren-adviseren-1-jaar-uitstel&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Solar Mag&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Startdatum afbouw salderingsregeling zonnepanelen niet haalbaar, ambtenaren adviseren 1 jaar uitstel&lt;/p&gt;
-&lt;p&gt;Start date for phasing out solar panel feed-in scheme not feasible, officials advise 1 year postponement&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Phasing out the salderingsregeling to Zero is supposed to be done in 9% steps, not all at once.
-So in the first year, 91% of the power would be part of the salderingsregeling, the rest the electricity provider would pay for, and so on.&lt;/p&gt;
-&lt;p&gt;The law says that the provider must pay &amp;ldquo;redelijke vergoeding&amp;rdquo; (a reasonable compensation).
-At this point, a compensation of 80% of what you pay for electricity to them is considered reasonable by the lawmaker.&lt;/p&gt;
-&lt;p&gt;That would mean, I get paid at least 18.0 ct/kWh when I am paying them 22.5 ct/kWh.
-That&amp;rsquo;s workable.&lt;/p&gt;
-&lt;h1 id=&#34;outlook&#34;&gt;
-    &lt;a href=&#34;#outlook&#34;&gt;
-	Outlook
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Right now we have solved our  electricity problem, and manage to have solid overproduction (at least in the brighter part of the year).
-We are also getting a tiny electric car this year, which will eat into our budget.
-That also means we are not getting a Huawei battery this year.&lt;/p&gt;
-&lt;p&gt;We will have to eventually change the house heating from a central gas burner to a different system, likely air conditioners/heat exchangers that use electricity to warm up and cool air directly.
-They work as heat pumps, and produce between 3 kWh and 5 kWh heat for each 1 kWh they consume.
-This will considerably increase our consumption.&lt;/p&gt;
-&lt;p&gt;Warming up 1l of water by 1C takes around 1.16 Wh, and the cooking gas we use provides around 10 to 12 kWh per cubic metre (1000l).
-So a shower that uses 240l (0.24 cubic metres) of gas consumes around 2.4kWh.
-Similar math can be applied to dishwashers and washing machines (&amp;ldquo;uses 0.885kWh to heat up 15l of water by 50C&amp;rdquo;), and to cooking plates.&lt;/p&gt;
-&lt;p&gt;We will be using a &lt;em&gt;lot&lt;/em&gt; more electricity if we are going to eliminate cooking gas completely in this household.&lt;/p&gt;
 </description>
     </item>
     

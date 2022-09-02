@@ -6,7 +6,117 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Sep 2022 11:30:15 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 02 Sep 2022 13:16:02 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: YOLO mode</title>
+      <link>https://blog.koehntopp.info/2022/09/02/mysql-yolo-mode.html</link>
+      <pubDate>Fri, 02 Sep 2022 12:13:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/09/02/mysql-yolo-mode.html</guid>
+      <description>&lt;p&gt;OH:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;And now let&amp;rsquo;s quickly push 2 billion rows into this database VM.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;That is best done in YOLO mode.
+This is a mode of operation for a database that minimizes disk writes in favor of batched bulk writes.&lt;/p&gt;
+&lt;p&gt;It is not ACID, so if anything goes wrong during the load, the instance is lost.
+That is why it is called YOLO mode.&lt;/p&gt;
+&lt;p&gt;You are supposed to do this on a spare replica and not the production primary.
+If you are not having at least one more replica than needed in your MySQL deployment, I consider your setup defective.&lt;/p&gt;
+&lt;h1 id=&#34;disable-flush-on-commit&#34;&gt;
+    &lt;a href=&#34;#disable-flush-on-commit&#34;&gt;
+	Disable flush on Commit
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set global innodb_flush_log_at_trx_commit = 2;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This config variable&lt;/a&gt;
+
+ gives up ACID commits:
+On COMMIT, data is written to the file system buffer cache, but an &lt;em&gt;fdatasync(2)&lt;/em&gt; is not enforced.
+Instead, data is synced once per second.&lt;/p&gt;
+&lt;h1 id=&#34;disable-the-doublewrite-buffer&#34;&gt;
+    &lt;a href=&#34;#disable-the-doublewrite-buffer&#34;&gt;
+	Disable the Doublewrite Buffer
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set global innodb_doublewrite = OFF;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_doublewrite&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This config variable&lt;/a&gt;
+
+ disables the InnoDB DoubleWrite Buffer.
+This buffer stores a temporary copy of the full page, which consists of multiple disk blocks.&lt;/p&gt;
+&lt;p&gt;It can be permanently turned off on file systems that never overwrite data and do not do in-plance updates (btrfs, ZFS), but not on traditional filesystems (XFS, ext4).
+It can be permanently turned off on systems where the page size is equal to the guaranteed atomic write block size of the hardware (ie 4 KB page size and Enterprise drives that guarantee atomic block writes of 4 KB blocks, even on power loss).
+That is, normal setups need this enabled all of the time, or risk torn pages (partially new and partially old pages) on power loss during page write.&lt;/p&gt;
+&lt;h1 id=&#34;unlogged-instance&#34;&gt;
+    &lt;a href=&#34;#unlogged-instance&#34;&gt;
+	Unlogged instance
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Users of Oracle MYSQL 8.0.21 or newer can have &amp;ldquo;redo log turned off&amp;rdquo; and &amp;ldquo;doublewrite buffer turned off&amp;rdquo; with a &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-redo-log.html#innodb-disable-redo-logging&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;single command&lt;/a&gt;
+
+:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;alter instance disable innodb redo_log;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This replaces the preceding two config changes:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;The redo log will never be written in the first place, so the flush log setting is pointless.&lt;/li&gt;
+&lt;li&gt;The doublewrite buffer is not written.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;turn-off-the-binlog&#34;&gt;
+    &lt;a href=&#34;#turn-off-the-binlog&#34;&gt;
+	Turn off the Binlog
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL will still write a binlog.
+Especially, MySQL 8 always has the binlog on by default.
+You may want to turn it off per session:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set sql_log_bin = off;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This will kill another source of disk writes and potential disk syncs during the load.&lt;/p&gt;
+&lt;h1 id=&#34;delay-secondary-index-generation&#34;&gt;
+    &lt;a href=&#34;#delay-secondary-index-generation&#34;&gt;
+	&amp;ldquo;Delay secondary index generation&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;mysqldump&lt;/code&gt; will still generate a statement that tries to disable secondary index generation:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;alter table t disable keys;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;This command is accepted, but it only works in MyISAM, which nobody should use any more in 2022.
+You can&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;set autocommit = 0;
+set unique_checks = 0;
+set foreign_key_checks = 0;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;to YOLO the loading of InnoDB tables, but very large transactions can have their own challenges in MySQL.
+So best you commit every 1.000 to 10.000 rows loaded.
+Make sure no transaction is ever larger than 1 GB, it will break compressed binlogs, if enabled.
+When using group replication, transaction sizes need to be controlled even tighter.&lt;/p&gt;
+&lt;h1 id=&#34;the-meaning-of-yolo&#34;&gt;
+    &lt;a href=&#34;#the-meaning-of-yolo&#34;&gt;
+	The meaning of YOLO
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This is called YOLO mode for a reason.
+Undo all these things after the load completes.
+Then check that they are undone.&lt;/p&gt;
+&lt;p&gt;Only do this on scratch instances, which you can afford to lose.&lt;/p&gt;
+&lt;p&gt;That means, this should be a replica that you disconnect for a data load, and that on success you can use as a source for &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/clone-plugin.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CLONE&lt;/a&gt;
+
+.
+On failure, you must be able to afford scrapping it.&lt;/p&gt;
+&lt;p&gt;If you are running MySQL and are ever short on replicas you are holding it wrong.
+Don&amp;rsquo;t complain to me, fix your process.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Boiling JFrogs</title>
       <link>https://blog.koehntopp.info/2022/08/25/mysql-boiling-jfrogs.html</link>
@@ -2073,39 +2183,6 @@ Action, Dad joke puns and an improbable premise delivered masterfully, with the 
 &lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/John-Scalzi-ebook/dp/B09DD2DK5Z&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Kaiju Preservation Society&lt;/a&gt;
 
 &amp;rdquo;, John Scalzi, EUR 8.99 on Kindle&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Fertig gelesen: Sid Meier&#39;s Memoir!</title>
-      <link>https://blog.koehntopp.info/2022/05/04/fertig-gelesen-sid-meier-memoir.html</link>
-      <pubDate>Wed, 04 May 2022 07:47:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/05/04/fertig-gelesen-sid-meier-memoir.html</guid>
-      <description>&lt;p&gt;The subtitle of &amp;ldquo;Sid Meier&amp;rsquo;s Memoir!&amp;rdquo; is &amp;ldquo;A Life in Computer Games&amp;rdquo;.
-And that is exactly what we get:
-Sid Meier lists, chronologically and very systematically, all the games he has been working on during his lifetime.
-And tells us what happened to him, the game and the game development process while he worked on it.
-Somehow that becomes a Memoir, even if some things are only implied or appear out of order.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/memoir.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://www.amazon.de/-/en/Sid-Meier-ebook/dp/B085845CX9&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sid Meier&amp;rsquo;s Memoir!&lt;/a&gt;
-
-, Sid Meier&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Born in 1954, Sid Meier is a prolific writer of computer games.
-Together with Bill Stealey, he funded Microprose in 1982, and write a number of flight simulators - among them Solo Flight and F-15 Strike Eagle.
-Growing tired of flight sim, he eventually &amp;ldquo;invents&amp;rdquo; the turn based strategy category of games by writing Pirates and Civilization.&lt;/p&gt;
-&lt;p&gt;Leaving MicroProse after it merged with Spectrum, he funded Firaxis, and was able to pick up the Civilization trademark and some co-developers dissatisfied with MicroProse.
-They were able to continue Civilization and turn it into what is has become today.&lt;/p&gt;
-&lt;p&gt;The book is, as promised, some kind of Memoir and a fun read.
-It also gives some insight into Meiers thought processes and what is important to him in game development.
-An interesting person, producing an interesting and insightful book.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/Sid-Meier-ebook/dp/B085845CX9&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sid Meier&amp;rsquo;s Memoir!&lt;/a&gt;
-
-&amp;rdquo;, Sid Meier, EUR 8.49 on Kindle&lt;/p&gt;
 </description>
     </item>
     
