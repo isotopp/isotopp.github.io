@@ -6,7 +6,140 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 02 Sep 2022 20:58:39 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 08 Sep 2022 13:03:53 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Straight lines</title>
+      <link>https://blog.koehntopp.info/2022/09/08/mysql-straight-lines.html</link>
+      <pubDate>Thu, 08 Sep 2022 12:13:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/09/08/mysql-straight-lines.html</guid>
+      <description>&lt;p&gt;A database is showing replication delay, as all the rest of the hierarchy that resides in Openstack.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Shortly before 21:30 the database begins to lag, until around 23:45, when it starts to catch up, slowly. After 00:30, we gain delay again, plateau and then around 01:45, we catch up.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The database is moving deep into replication delay sometimes.
+It does not do that on bare metal.&lt;/p&gt;
+&lt;h1 id=&#34;ground-truth&#34;&gt;
+    &lt;a href=&#34;#ground-truth&#34;&gt;
+	Ground Truth
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The VM is a nice hardware blade simulation, 16C/32T, 128 GB of memory.&lt;/p&gt;
+&lt;p&gt;The data is on persistent volume backed by Ceph.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; df -Th /mysql/&amp;lt;hierarchyname&amp;gt;/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Filesystem                Type  Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/dev/mapper/vg00-mysqlVol xfs   1.8T  1.1T  766G  58% /mysql/&amp;lt;hierarchyname&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; vgs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  VG    #PV #LV #SN Attr   VSize VFree
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  sysvm   1   8   0 wz--n- 1.75t 121.27g
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; du -sh /mysql/&amp;lt;hierarchyname&amp;gt;/*
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;0       /mysql/&amp;lt;hierarchyname&amp;gt;/coredumps
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1017G   /mysql/&amp;lt;hierarchyname&amp;gt;/data
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;24G     /mysql/&amp;lt;hierarchyname&amp;gt;/log
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;0       /mysql/&amp;lt;hierarchyname&amp;gt;/tmp
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This database does not fit into the buffer pools:
+The working set is too large.
+We see read traffic in a warmed up database, at a rate of several dozen MB/s.&lt;/p&gt;
+&lt;p&gt;Checking in on &lt;code&gt;information_schema.tables&lt;/code&gt;, the two largest tables of this database are around 200 GB in size, each.
+They seem to be accessed in full, there is little or no exploitable locality of reference.
+So in order to quench these reads, we would need to supply three times the memory, 384 GB.
+Since we can&amp;rsquo;t, we need to handle the I/O instead.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s have a look at the I/O:
+When you run iostat, use &lt;code&gt;iostat -x -k 10&lt;/code&gt;, and discard the first output.
+It contains the data collected since system boo, a very large average interval.
+We want a clean 10s sample instead.&lt;/p&gt;
+&lt;p&gt;The paste:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Device            r/s     w/s     rMB/s     wMB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sdc           4302.00  348.00     67.22      1.22     0.00     0.00   0.00   0.00    1.24    1.91   6.00    16.00     3.58   0.21  99.70
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sdb              0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sda              0.00    4.00      0.00      0.02     0.00     0.00   0.00   0.00    0.00    2.50   0.01     0.00     4.00   2.75   1.10
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;loop0            0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;dm-0          4304.00  347.00     67.25      1.21     0.00     0.00   0.00   0.00    1.24    1.93   6.02    16.00     3.58   0.21  99.70
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see the busy drive being sdc, the persistent volume.
+We see increased service times (&lt;code&gt;r_await&lt;/code&gt;, unit ms), and queues (&lt;code&gt;aqu-sz&lt;/code&gt;, unit is &amp;ldquo;average number of requests in  queue, during the observation interval, 10s).&lt;/p&gt;
+&lt;p&gt;We also see around 4300 read requests/s and 67 MB/s read traffic.&lt;/p&gt;
+&lt;h1 id=&#34;i-know-that-smell&#34;&gt;
+    &lt;a href=&#34;#i-know-that-smell&#34;&gt;
+	I know that smell
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Some previous experience in other projects suggests that a crucial piece of information may be missing.
+This replication chain is no longer on bare metal, but is running on Openstack.
+All traffic to disk in Openstack is quota-ed.&lt;/p&gt;
+&lt;p&gt;Any I/O problem on Openstack is undebuggable, unless you know the Quota affecting you.
+Indeed:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; openstack volume qos show &amp;lt;uuid&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| Field        | Value                                              |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| associations | standard-iops                                      |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| consumer     | front-end                                          |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| id           | &amp;lt;uuid&amp;gt;                                             |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| name         | 200MB/s-3000iops                                   |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| properties   | total_bytes_sec=&amp;#39;209715200&amp;#39;, total_iops_sec=&amp;#39;3000&amp;#39; |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
+Above we see ok bandwidth 67 MB/s, but the IOPS hit the roof.&lt;/p&gt;
+&lt;p&gt;When we zoom in on a phase of replication delay in the Single Instance Info Panelof our grafana, we get to the bottom of that straight away.&lt;/p&gt;
+&lt;p&gt;Replication delay interval:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;At the same time:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-02.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;When we have replication delay, we see a straight line in the sum of dm-reads for 70-ish MB/s.
+This is well below quota.&lt;/p&gt;
+&lt;p&gt;Looking at the IOPS:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-03.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;This is the sum of all dm-Reads, and we only are interested in the reads for our device, but the straight line and the line (4000 read/s vs. a Quota of 3000 IOPS) suggest that we run into resource depletion in the IOPS dept here.&lt;/p&gt;
+&lt;p&gt;Is that bad?&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-04.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The observed statement latency for the production user goes up from a minimum 348 ms to a max of 37100 ms (37.1s).
+That is approximately 100x worse than normal.&lt;/p&gt;
+&lt;p&gt;The observed statement latency is also thresing rapidly up and down, system performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.&lt;/p&gt;
+&lt;p&gt;This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:&lt;/p&gt;
+&lt;p&gt;Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
+The system stops, because a database without I/O is doing nothing.
+It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
+Then the the cycle repeats.&lt;/p&gt;
+&lt;p&gt;All expectations the user may have are broken and the system may as well be offline.
+Also, the variance is performance may create input signal spikes in other systems, affecting their performance if there is resonance.&lt;/p&gt;
+&lt;p&gt;Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream from the affected system.
+With proper metrics and knowledge of the Quota it is plain obvious.&lt;/p&gt;
+&lt;h1 id=&#34;be-wary-of-straight-lines-in-performance-graphs&#34;&gt;
+    &lt;a href=&#34;#be-wary-of-straight-lines-in-performance-graphs&#34;&gt;
+	Be wary of straight lines in performance graphs
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Load is spiky, straight lines do not exist&lt;/p&gt;
+&lt;p&gt;This is a general truth for our systems:
+In general our load is spiky.
+It has peaks and valleys, and there are no plateaus or straight lines (outside of Kafka and other Queues and the systems fed by them).&lt;/p&gt;
+&lt;p&gt;That is, if you see a straight line, I see a resource being exhausted and limiting system performance.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In this case, the exhausted resource is IOPS quota.&lt;/p&gt;
+&lt;p&gt;In other cases in the past, a straight line in dirty buffer pool pages graph was signaling exhaustion of the redo log space, or similar performance choke points.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: YOLO mode</title>
       <link>https://blog.koehntopp.info/2022/09/02/mysql-yolo-mode.html</link>
@@ -4350,99 +4483,6 @@ So I can actually see that&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;d&amp;#39;: &amp;#39;zw&amp;#34;ei&amp;#39;}
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;d&amp;#39;: &amp;#39;dr\\ei&amp;#39;}
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and so I get to actually see that all is fine and well, and properly escaped.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Our MySQL in 2010, a hiring interview question</title>
-      <link>https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html</link>
-      <pubDate>Mon, 27 Sep 2021 18:52:55 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html</guid>
-      <description>&lt;p&gt;I ranted about hiring interviews, and the canned questions that people have to answer.
-One of the interviews we do is a systems design interview, where we want to see how (senior) people use components and patterns to design a system for reliability and scale-out.&lt;/p&gt;
-&lt;p&gt;A sample question (based on &lt;a href=&#34;https://twitter.com/isotopp/status/1442443978985586691&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a Twitter thread&lt;/a&gt;
-
- in German):&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;It is 2010, and the company has a database structure where a fixed number front end machines form a cell.
-Reads and writes are already split:
-Writes go to the primary of a replication tree, and are being replicated to the read instance of the database in each cell.
-Reads go to the database instance that is a fixed part of the cell.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/09/mysql-2010-1.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Read and write handles are split in the application. Clients write to a primary MySQL database, which then replicates to a database instance that is fixed part of a cell. Clients from a cell read from this fixed replica.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Unfortunately, this is not very effective:
-The data center has 10 cells, but when a cell overloads its database, spare capacity from other cells cannot be utilized.
-Also, the data center is not redundant.&lt;/p&gt;
-&lt;p&gt;We want to:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Load balance database queries.&lt;/li&gt;
-&lt;li&gt;Extend the architecture to more than a single data center (or AZ).&lt;/li&gt;
-&lt;li&gt;Optionally be resilient against the loss of individual databases or a full AZ.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Possible topics or annotations from a candidate:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;What kind of strategies are available for load balancing database connections?
-&lt;ul&gt;
-&lt;li&gt;DNS, Anycast or L2 techniques&lt;/li&gt;
-&lt;li&gt;Proxy (but not a web proxy)&lt;/li&gt;
-&lt;li&gt;Zookeeper or another consensus system with modified clients&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What are the advantages or disadvantages of this?
-&lt;ul&gt;
-&lt;li&gt;L2. Huh. Don&amp;rsquo;t do that.&lt;/li&gt;
-&lt;li&gt;DNS updates are slow and complicated. It can be made to work, but you will always have very little control over what is balanced why and how. DNS is better used for a global load balancing of http requests, and not as a database load balancer.&lt;/li&gt;
-&lt;li&gt;Zookeeper could be used to do this with modified clients, but we would have to discuss how exactly that works. That&amp;rsquo;s an interesting sub-question of its own.&lt;/li&gt;
-&lt;li&gt;MySQL Router or ProxySQL are made for that, but have a lot of interesting sub-questions of their own. See below.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What else may be different when load balancing database connections instead of http?
-&lt;ul&gt;
-&lt;li&gt;web-proxies are not good database proxies. The database protocol is not http, and it is a &lt;a href=&#34;https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state.html&#34;&gt;stateful protocol&lt;/a&gt;
-
-. This requires extra care when load balancing.&lt;/li&gt;
-&lt;li&gt;Database connections can be long-lived. A load balancing action to a different client only ever happens on connect. If you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS&amp;rsquo;ed connections, connection setup cost can be high, so longer lived connections amortize better.&lt;/li&gt;
-&lt;li&gt;Database connections have a highly variable result set size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.&lt;/li&gt;
-&lt;li&gt;Proxies can become bottlenecks. Imagine 50 frontends talking to 10 databases via a single proxy on a typical 2010-box with a single (or two) 1 GBit/s network interface, and results contain BLOBs.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What else there is to know?
-&lt;ul&gt;
-&lt;li&gt;Replication scales only reads. As this is a shared nothing architecture, each instance eventually sees all writes. To scale writes, we have to split or shard the database. That is out of scope for this question.&lt;/li&gt;
-&lt;li&gt;In our specific scenario, the number of writes is not actually a problem. We can assume a few hundred writes per second.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Can we extend that to more than one AZ?
-&lt;ul&gt;
-&lt;li&gt;Yes, we can create an intermediate primary in each AZ, which takes the writes from the origin AZ into each sub-AZ. It then fans out to the local replicas. This saves on long distance data transfer. It also creates mildly interesting problems for measuring replication delay.&lt;/li&gt;
-&lt;li&gt;Because the replication tree is deeper, writes take longer to reach the leaves. Most applications should be able to accommodate that.&lt;/li&gt;
-&lt;li&gt;The alternative would be something with full Two-Phase-Commit, but that would be even slower, and would have scaling limits in the number of systems that participate in the 2PC.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This is usually how far we get in a single interview session, and only with touching only on some of these points.
-To find all is completely unrealistic, even for experienced people.
-We would now reach a point where we discuss failure scenarios.&lt;/p&gt;
-&lt;p&gt;But it would be highly unusual to get this far, and that is not actually the goal in an interview.
-I do in fact hardly care about the solution we end up with.
-My goal is to have a useful discussion about databases, scale-out and resiliency, and about stateful systems and their limits.
-When there are remarks such as &amp;ldquo;Our environment is smaller, but for us &amp;hellip; works&amp;rdquo; or &amp;ldquo;We tried this: &amp;hellip; but observed that often &amp;hellip;&amp;rdquo; that&amp;rsquo;s actual gold in an interview.&lt;/p&gt;
-&lt;p&gt;Even things such as &amp;ldquo;In HTTP one would do &amp;hellip; but I can imagine that with stateful systems that does not work because &amp;hellip;&amp;rdquo; is already gold, because it shows a level of reflection and insight that is rare.&lt;/p&gt;
-&lt;p&gt;The objective is not to reinvent our 2021 setup. The objective is to use this clearly limited setup as a base for a common conversation about database problems.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;Database Reliability Engineer&amp;rdquo; is the hardest position to hire for in my environment, because it is an &lt;a href=&#34;https://clausraasted.medium.com/t-shaped-consultants-are-great-but-heres-why-you-should-consider-being-h-shaped-instead-72fadf097da9&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;H-shaped qualification&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The concept of H-shaped people is a metaphor used in job recruitment to describe the abilities of individuals in (or outside) the workforce. The vertical bars on the letter H represent the depth of related skills and expertise in a single field or discipline, whereas the horizontal bar is the ability to combine those two disciplines to create value in a way that was hitherto unknown.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The objective is to find a person that &amp;ldquo;Understands MySQL&amp;rdquo; and &amp;ldquo;Understands Python or Go&amp;rdquo; (&amp;ldquo;Understands any database&amp;rdquo; and &amp;ldquo;Understands a useful programming language&amp;rdquo;), so that I can throw them at our existing codebase and have them useful within 3-6 months - ugh.&lt;/p&gt;
-&lt;p&gt;If I can find one person per year, I am very lucky.&lt;/p&gt;
 </description>
     </item>
     
