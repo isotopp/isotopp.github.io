@@ -8,7 +8,7 @@ tags:
 - mysql
 ---
 
-A database is showing replication delay, as all the rest of the hierarchy that resides in Openstack.
+A database is showing replication delay, and so are all the other instances of the same replication hierarchy, all of which reside in Openstack.
 
 ![](/uploads/2022/09/straight-01.png)
 
@@ -48,7 +48,7 @@ Since we can't, we need to handle the I/O instead.
 
 Let's have a look at the I/O:
 When you run iostat, use `iostat -x -k 10`, and discard the first output.
-It contains the data collected since system boo, a very large average interval.
+It contains the data collected since system boot, a very large average interval.
 We want a clean 10s sample instead.
 
 The paste:
@@ -63,7 +63,7 @@ dm-0          4304.00  347.00     67.25      1.21     0.00     0.00   0.00   0.0
 ```
 
 We see the busy drive being sdc, the persistent volume.
-We see increased service times (`r_await`, unit ms), and queues (`aqu-sz`, unit is "average number of requests in  queue, during the observation interval, 10s). 
+We see increased service times (`r_await`, unit ms), and queues (`aqu-sz`, unit is "average number of requests in  queue, during the observation interval", which is 10s). 
 
 We also see around 4300 read requests/s and 67 MB/s read traffic.
 
@@ -90,7 +90,7 @@ Indeed:
 ```
 
 We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
-Above we see ok bandwidth 67 MB/s, but the IOPS hit the roof.
+Measured in the system we see an ok bandwidth of 67 MB/s, but the IOPS hit the roof.
 
 When we zoom in on a phase of replication delay in the Single Instance Info Panelof our grafana, we get to the bottom of that straight away.
 
@@ -109,7 +109,10 @@ Looking at the IOPS:
 
 ![](/uploads/2022/09/straight-03.png)
 
-This is the sum of all dm-Reads, and we only are interested in the reads for our device, but the straight line and the line (4000 read/s vs. a Quota of 3000 IOPS) suggest that we run into resource depletion in the IOPS dept here.
+This is the sum of all dm-Reads, and we only are interested in the reads for our device.
+But we do see a straight line, and taht suggests some kind of limit or resource exhaustion.
+Also, the line is at around 4000 read/s vs. a Quota of 3000 IOPS.
+Together that suggest we run into resource depletion in the IOPS dept here.
 
 Is that bad?
 
@@ -118,7 +121,8 @@ Is that bad?
 The observed statement latency for the production user goes up from a minimum 348 ms to a max of 37100 ms (37.1s).
 That is approximately 100x worse than normal.
 
-The observed statement latency is also thresing rapidly up and down, system performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.
+The observed statement latency is also jumping rapidly up and down.
+System performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.
 
 This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:
 
@@ -127,8 +131,10 @@ The system stops, because a database without I/O is doing nothing.
 It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
 Then the the cycle repeats.
 
-All expectations the user may have are broken and the system may as well be offline.
-Also, the variance is performance may create input signal spikes in other systems, affecting their performance if there is resonance.
+Maybe it is less noisy if the quota is applied with `consumer=backend`.
+
+All expectations the user may have on performance are broken and the system may as well be offline.
+Also, the variance in performance may create input signal spikes dependent systems, affecting their performance if there is resonance.
 
 Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream from the affected system.
 With proper metrics and knowledge of the Quota it is plain obvious.
