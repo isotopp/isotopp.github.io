@@ -147,7 +147,7 @@
 
     <div class='row justify-content-center mx-0 mt-5 mb-5'>
       <div class='col-lg-8'>
-        <p>A database is showing replication delay, as all the rest of the hierarchy that resides in Openstack.</p>
+        <p>A database is showing replication delay, and so are all the other instances of the same replication hierarchy, all of which reside in Openstack.</p>
 <p><p class="md__image">
   <img src="/uploads/2022/09/straight-01.png" alt=""  />
 </p>
@@ -183,7 +183,7 @@ So in order to quench these reads, we would need to supply three times the memor
 Since we can&rsquo;t, we need to handle the I/O instead.</p>
 <p>Let&rsquo;s have a look at the I/O:
 When you run iostat, use <code>iostat -x -k 10</code>, and discard the first output.
-It contains the data collected since system boo, a very large average interval.
+It contains the data collected since system boot, a very large average interval.
 We want a clean 10s sample instead.</p>
 <p>The paste:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">Device            r/s     w/s     rMB/s     wMB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
@@ -193,7 +193,7 @@ We want a clean 10s sample instead.</p>
 </span></span></span><span class="line"><span class="cl"><span class="go">loop0            0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
 </span></span></span><span class="line"><span class="cl"><span class="go">dm-0          4304.00  347.00     67.25      1.21     0.00     0.00   0.00   0.00    1.24    1.93   6.02    16.00     3.58   0.21  99.70
 </span></span></span></code></pre></div><p>We see the busy drive being sdc, the persistent volume.
-We see increased service times (<code>r_await</code>, unit ms), and queues (<code>aqu-sz</code>, unit is &ldquo;average number of requests in  queue, during the observation interval, 10s).</p>
+We see increased service times (<code>r_await</code>, unit ms), and queues (<code>aqu-sz</code>, unit is &ldquo;average number of requests in  queue, during the observation interval&rdquo;, which is 10s).</p>
 <p>We also see around 4300 read requests/s and 67 MB/s read traffic.</p>
 <h1 id="i-know-that-smell">
     <a href="#i-know-that-smell">
@@ -216,7 +216,7 @@ Indeed:</p>
 </span></span></span><span class="line"><span class="cl"><span class="go">| properties   | total_bytes_sec=&#39;209715200&#39;, total_iops_sec=&#39;3000&#39; |
 </span></span></span><span class="line"><span class="cl"><span class="go">+--------------+----------------------------------------------------+
 </span></span></span></code></pre></div><p>We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
-Above we see ok bandwidth 67 MB/s, but the IOPS hit the roof.</p>
+Measured in the system we see an ok bandwidth of 67 MB/s, but the IOPS hit the roof.</p>
 <p>When we zoom in on a phase of replication delay in the Single Instance Info Panelof our grafana, we get to the bottom of that straight away.</p>
 <p>Replication delay interval:</p>
 <p><p class="md__image">
@@ -238,7 +238,10 @@ This is well below quota.</p>
 </p>
 
 </p>
-<p>This is the sum of all dm-Reads, and we only are interested in the reads for our device, but the straight line and the line (4000 read/s vs. a Quota of 3000 IOPS) suggest that we run into resource depletion in the IOPS dept here.</p>
+<p>This is the sum of all dm-Reads, and we only are interested in the reads for our device.
+But we do see a straight line, and taht suggests some kind of limit or resource exhaustion.
+Also, the line is at around 4000 read/s vs. a Quota of 3000 IOPS.
+Together that suggest we run into resource depletion in the IOPS dept here.</p>
 <p>Is that bad?</p>
 <p><p class="md__image">
   <img src="/uploads/2022/09/straight-04.png" alt=""  />
@@ -247,14 +250,16 @@ This is well below quota.</p>
 </p>
 <p>The observed statement latency for the production user goes up from a minimum 348 ms to a max of 37100 ms (37.1s).
 That is approximately 100x worse than normal.</p>
-<p>The observed statement latency is also thresing rapidly up and down, system performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.</p>
+<p>The observed statement latency is also jumping rapidly up and down.
+System performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.</p>
 <p>This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:</p>
 <p>Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
 The system stops, because a database without I/O is doing nothing.
 It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
 Then the the cycle repeats.</p>
-<p>All expectations the user may have are broken and the system may as well be offline.
-Also, the variance is performance may create input signal spikes in other systems, affecting their performance if there is resonance.</p>
+<p>Maybe it is less noisy if the quota is applied with <code>consumer=backend</code>.</p>
+<p>All expectations the user may have on performance are broken and the system may as well be offline.
+Also, the variance in performance may create input signal spikes dependent systems, affecting their performance if there is resonance.</p>
 <p>Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream from the affected system.
 With proper metrics and knowledge of the Quota it is plain obvious.</p>
 <h1 id="be-wary-of-straight-lines-in-performance-graphs">
