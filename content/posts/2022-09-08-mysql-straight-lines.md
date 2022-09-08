@@ -110,8 +110,8 @@ Looking at the IOPS:
 ![](/uploads/2022/09/straight-03.png)
 
 This is the sum of all dm-Reads, and we only are interested in the reads for our device.
-But we do see a straight line, and taht suggests some kind of limit or resource exhaustion.
-Also, the line is at around 4000 read/s vs. a Quota of 3000 IOPS.
+But we do see a straight line, and that suggests some kind of limit or resource exhaustion.
+Also, the line is at around 4000 read/s versus a Quota of 3000 IOPS.
 Together that suggest we run into resource depletion in the IOPS dept here.
 
 Is that bad?
@@ -126,10 +126,10 @@ System performance is not only bad, but also wildly unpredictable, with high fre
 
 This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:
 
-Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
-The system stops, because a database without I/O is doing nothing.
-It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
-Then the the cycle repeats.
+> Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
+> The system stops, because a database without I/O is doing nothing.
+> It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
+> Then the the cycle repeats.
 
 Maybe it is less noisy if the quota is applied with `consumer=backend`.
 
