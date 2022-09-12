@@ -126,10 +126,10 @@ System performance is not only bad, but also wildly unpredictable, with high fre
 
 This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:
 
-> Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
-> The system stops, because a database without I/O is doing nothing.
-> It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
-> Then the the cycle repeats.
+Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
+The system stops, because a database without I/O is doing nothing.
+It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
+Then the cycle repeats.
 
 Maybe it is less noisy if the quota is applied with `consumer=backend`.
 
