@@ -6,7 +6,7 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 23 Sep 2022 12:54:02 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 23 Sep 2022 13:36:47 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: Sometimes it is not the database</title>
       <link>https://blog.koehntopp.info/2022/09/19/sometimes-it-is-not-the-database.html</link>
@@ -316,6 +316,178 @@ We have other instances of simple queries that sometimes take 14s to run, 1000x 
 Average query latencies, and even the P90 look good, but the P99 and the P99.9 go to hell.&lt;/p&gt;
 &lt;p&gt;The box is removed from the pool and a replacement has been scheduled.
 The broken box will get a DCOE ticket.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>MySQL: Artifactory Conclusion</title>
+      <link>https://blog.koehntopp.info/2022/09/14/artifactory-conclusion.html</link>
+      <pubDate>Mon, 19 Sep 2022 12:13:00 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/09/14/artifactory-conclusion.html</guid>
+      <description>&lt;p&gt;Two weeks ago I was being drawn into the debug of artdb, the Replication hierarchy used by our Artifactory instance.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;h2 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Artifactory overloaded the database.
+This was incident-handled by optimizing a number of slow queries using some covering index trickery, and by upgrading the hardware substantially.&lt;/p&gt;
+&lt;p&gt;Using the runway we bought, we found and partially fixed the following problems:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; A number of very expensive reporting queries were sped up 16x to 20x using covering indexes, from 180s runtime to 8s-12s runtime.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; We optimized our database and data size by completing the data lifecycle for several repo types, deleting old images.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; Hardware upgrade lowered load even more, and sped up the queries even more.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; Further investigation identified the a synchronisation cron job which overloaded the database in 40m intervals. The cron job was throttled and is now on a backlog for refactoring.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; The long running queries were identified in the Artifactory source code, which allowed us and jFrog support to identify that a) the Artifactory internal cache for these queries was bypassed and b) this happens when certain JMX monitoring options are enabled, per application host hitting the database instance. The monitoring was temporarily disabled.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; For each image download, Artifactory writes statistics updates, which can lead to lock contention on hot images. We identified a configuration that could turn this off, and later found that these updates can be happening batched in the background.&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Unfixed:&lt;/em&gt; Artifactory does not understand the concept of Replicas and database scale-out at all, it can only database scale-up, and that has absolute limits.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The database workload for Artifactory is now well below critical levels and has on the current, upgraded hardware runway for estimated 4x growth.
+Beyond that, vertical scaling is going to be hard without changes to the architecture of Artifactory.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Artifactory is a third party piece of software that stores binary objects in one of several BLOB storages and serves them up to people who need binaries in whatever way.&lt;/p&gt;
+&lt;p&gt;There are several choices of BLOB storages for it, we are using S3.&lt;/p&gt;
+&lt;p&gt;There are several choices of data delivery formats for Artifactory, we are using many of them, with &amp;ldquo;Docker Repository&amp;rdquo; and &amp;ldquo;Maven Repository&amp;rdquo; being the most prominent use-cases.&lt;/p&gt;
+&lt;p&gt;Artifactory is using a database as a metadata storage, and again, there are several possible choices.
+We are using MySQL.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-01.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Binary Delivery Formats and Protocols supported by Artifactory (&lt;a href=&#34;https://jfrog.com/artifactory/%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://jfrog.com/artifactory/)&lt;/a&gt;
+
+.&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&#34;overloaded-database&#34;&gt;
+    &lt;a href=&#34;#overloaded-database&#34;&gt;
+	Overloaded Database
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The original complaint was &amp;ldquo;Artifactory is down&amp;rdquo; and &amp;ldquo;The database is overloaded&amp;rdquo;.
+Investigation of that shows that this was very much true:&lt;/p&gt;
+&lt;p&gt;The primary of the replication hierarchy was a blade from 2017 with 12C/24T, and was showing load spiking into the 40-ies.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-02.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;For a CPU-saturated MySQL on a 12C/24T, anything over 18-20 is probably not very stable and certainly not fun.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;I was looking at the load of the full replication hierarchy and found out multiple things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Artifactory does not understand the concepts of replication, multiple database handles or scale-out at the database level.
+It only talks to the primary database, and can only scale vertically.&lt;/li&gt;
+&lt;li&gt;The Artifactory database is seeing a very large query load (&amp;gt; 20.000 QPS), which is comprised of a large number of reads and underneath still 1000s of writes per second.
+Some of the reads are long running queries, with runtimes in the 180s.&lt;/li&gt;
+&lt;li&gt;The long running queries have been sped up from 180s to 9s by applying covering indexes and some index order juggling.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Read &lt;a href=&#34;https://blog.koehntopp.info/2022/08/25/mysql-boiling-jfrogs.html&#34;&gt;Boiling JFrogs&lt;/a&gt;
+
+ for the full and detailed writeup of this phase.&lt;/p&gt;
+&lt;h1 id=&#34;buying-runway&#34;&gt;
+    &lt;a href=&#34;#buying-runway&#34;&gt;
+	Buying Runway
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Solving the long runners, we found several other issues at the database level.
+But first we threw more cores into the fire and scaled Artifactory vertically to buy more runway:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-03.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The Blade 7 hardware type uses 2x $400 CPUs for 16C/32T. Blade 2A.1 hardware uses 2x $2100 CPUs for 32C/64T. At the same load, these more expensive CPUs are also clocked around 1 GHz faster.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Since we had this long running scan queries on memory-resident data, we were using a lot of CPU.
+Even after the optimization, these were scans, but on less and better organized data with one level of indirection removed from each data access – so 16x to 20x faster.&lt;/p&gt;
+&lt;p&gt;Still, we had a base load of 12 on the Blade 7 with only 12C/24T.
+Moving to the better equipped, but more expensive Blade 2A.1, we have 32C/64T, and at the same load, we gain around 1 GHz is clock speed.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-04.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;At a load of 12 on a Dual-4110, we have 6 cores busy per socket, running at 2400 MHz.
+At a load of 12 on a Dual-6130, we have 6 cores outof many more busy, so we have budget for 3400 MHz clock, 1 GHz faster. The work completes faster, we have less concurrency and the load drops to 8, 4 cores per socket, and 3500 MHz until things stabilize.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Modern CPUs do not have the Power Budget and Thermal Budget to run all their cores at maximum clock speed all of the time.
+The higher the load, the lower they need to clock in order to not melt or starve themselves of power.
+Fortunately, being a web shop, we do not exercise the FPU a lot outside of the ML department, so &amp;ldquo;Normal&amp;rdquo; is the line that applies here.&lt;/p&gt;
+&lt;p&gt;Running the same workload on a higher level CPU keeps a lesser percentage of cores busy, which can then be clocked higher.
+The workload is completed faster, and the level of concurrency is lower – you will actually see a lower Linux load on the box.&lt;/p&gt;
+&lt;p&gt;That is also what happened in our case, we speed up the clock by slightly less than 1/3, and we get a load that is roughly 1/3 lower.
+The replacement box, running the optimized queries, is humming along at a load of 5-10ish, which is okay for a machine of that class and size:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-05.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Replacement machine is good for a load of ~40, but is running at 10 or less, so we are good. Further optimizations after 10-Sep show even more improvement, read on.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This stabilized things in a way that allowed further experimentation and exposed other problems that previously were invisible in all the fire and smoke.&lt;/p&gt;
+&lt;h1 id=&#34;a-40-minute-pattern&#34;&gt;
+    &lt;a href=&#34;#a-40-minute-pattern&#34;&gt;
+	A 40 Minute Pattern
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Looking at the various indicators reported by the database monitoring, we see a pronounced pattern that shows a 40 minute interval.
+Something is pushing load into the database in waves, but we do not know what it is:
+It is using the normal Artifactory production user and coming from one (but only one) of the Artifactory application boxes.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-06.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We see access patterns repeating at 40 minute intervals, and pushing various statistics up. The data indicates a read and write load (read heavy), from one Artifactory application machine.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Finding the culprit took us quite some effort, because various other things interfered (among them Puppet re-enabling itself and undoing debug config changes).
+In the end it turned out, it was us, all along.&lt;/p&gt;
+&lt;p&gt;Specifically: There is a cron job which reads data from service directory and from Artifactory, compares the two and then generates access permissions and other configuration in the Artifactory database for the application.
+This enables you to access the artifacts you depend on, based on what is declared in SD.&lt;/p&gt;
+&lt;p&gt;Throttling this cron job immediately brought relief and relaxed the load even further, but slowed down the import of changes from SD into Artifactory.&lt;/p&gt;
+&lt;p&gt;Lessons learned:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Always use distinct users for distinct applications (one per application, per cron job and so on).
+Even if these have the same rights and access the same tables, it will make identifying the software component that is responsible for a thing much easier.&lt;/li&gt;
+&lt;li&gt;While Artifactory cannot understand Replicas and only ever works with the primary database, our own components around this are not limited by that restriction.
+This script could read from any replica and then write back only the necessary changes.&lt;/li&gt;
+&lt;li&gt;This script is surely generating a lot of load for what it does, and needs some love and refactoring.
+It is now on somebody&amp;rsquo;s backlog.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;bad-queries-from-nowhere&#34;&gt;
+    &lt;a href=&#34;#bad-queries-from-nowhere&#34;&gt;
+	Bad Queries from Nowhere?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The bad queries we optimized in Part 1 are still there and looking at what they actually do, they do not look particularly useful.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-07.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Multiple instances of a reporting query running in parallel. Even optimized they seem to be wasteful. We want to know where they come from.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Looking at the queries themselves, we see this SQL:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SUM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bin_length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;nodes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;node_type&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;repo&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;lt;reponame&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a reporting query that calculates the cumulative size of all things in one repo in our Artifactory.
+Now that it is fast we can see, it arrives in 15s intervals, and from each of our Artifactory application instances.&lt;/p&gt;
+&lt;p&gt;This suggests that the query string is being generated from the actual Artifactory binary.&lt;/p&gt;
+&lt;p&gt;We can in fact download the Artifactory Java sourcecode and throw it into IntelliJ, and then hunt for this.
+We even find something, because the query string is thankfully embedded literally in a DAO class, and not generated.&lt;/p&gt;
+&lt;p&gt;To make a long search and a number of support conversations short:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;These queries can&amp;rsquo;t be fast, but they can be faster than originally thought, thanks to covering indexes.&lt;/li&gt;
+&lt;li&gt;Because of that, there is a cache in Artifactory for this.&lt;/li&gt;
+&lt;li&gt;Clearly, as shown by the recurring 15s appearance of the queries, the cache does not work.&lt;/li&gt;
+&lt;li&gt;Turns out, it does work for Artifactory work, but if you turn on JMX monitoring, the JMX will circumvent the cache and get you fresh values at high cost, for each Artifactory application instance, from the only database that we have, at the Prometheus scraping interval of 15s.&lt;/li&gt;
+&lt;li&gt;Turning off monitoring for this component removed this source of workload.&lt;/li&gt;
+&lt;li&gt;This is undocumented in Artifactory, and was also not immediately obvious to their support.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The query shown above is just one instance of multiple queries with similar characteristics and cost.
+To properly estimate the impact, multiply the effect by 3-4, and then by the number of application instances connected to the database.&lt;/p&gt;
+&lt;h1 id=&#34;so-are-we-good-now&#34;&gt;
+    &lt;a href=&#34;#so-are-we-good-now&#34;&gt;
+	So are we good now?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;From the database point of view, this is as good as it gets.
+The database is not currently a stability item or scalability limit, the current config could even be scaled back to a 16C/32T Blade 7 with 2x $400 of CPU.&lt;/p&gt;
 </description>
     </item>
     
@@ -2534,41 +2706,6 @@ One of the nicest and most practical introductions to programming language inter
 &lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/Robert-Nystrom-ebook/dp/B09YLQSGKL&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Crafting Interpreters&lt;/a&gt;
 
 &amp;rdquo;, Robert Nystrom, EUR 25.84&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Fertig gelesen: Fietsparkeren bij Stations</title>
-      <link>https://blog.koehntopp.info/2022/05/07/fertig-gelesen-fietsparkeren-bij-stations.html</link>
-      <pubDate>Sat, 07 May 2022 07:47:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/05/07/fertig-gelesen-fietsparkeren-bij-stations.html</guid>
-      <description>&lt;p&gt;The Netherlands realized around 2000 that they have a problem with bike parking around train stations, and with parking around stations in general.
-A program was set up to fix that, assuming things would be done with in ten years.
-The program was a great success, and people taking the bike to use the train, and to use a bike after they arrived at their destination by train increased greatly.
-This created more needs, and so the program is, changed, still active today.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/fietspark1.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://www.amazon.de/-/en/Folkert-Piersma/dp/9068688286&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fietsparkeren bij Stations&lt;/a&gt;
-
-, Folkert Piersma and Wout Ritzema&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The book talks, in one chapter each, about analyzing customer needs, the history of the program, guidelines and goals, the plannning process, typical bike parking facilities, architecture and design, investment costs, facility operations, technical resources, innovative solutions and finally an outlook.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/fietspark2.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The effect of all this can be seen around about any dutch train stations:
-Not only is the sea of bikes around the train stations gone despite more people arriving by bike at the train than ever before,  also the quality of the area around the train stations improved.
-The dark and seedy underpasses and the general feeling of insecurity around many train stations areas in other cities is not present here.&lt;/p&gt;
-&lt;p&gt;The book explains how all of this is not an accidental outcome, but the result of a process that has been run for two decades with clear goals, working evaluation and continous improvement.
-A must read for anybody interested in infrastructure at all.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/Folkert-Piersma/dp/9068688286&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fietsparkeren bij Stations&lt;/a&gt;
-
-&amp;rdquo;, Folkert Piersma and Wout Ritzema, EUR 29.40 Hardcover&lt;/p&gt;
 </description>
     </item>
     
