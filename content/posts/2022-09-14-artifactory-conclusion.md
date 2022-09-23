@@ -162,4 +162,4 @@ To properly estimate the impact, multiply the effect by 3-4, and then by the num
 # So are we good now?
 
 From the database point of view, this is as good as it gets.
-The database is not currently a stability item or scalability limit, the current config could even be scaled back to a 16C/32T Blade 7 with 2x $400 of CPU.
+The database is not currently a stability item or scalability limit, the current config could even be scaled back to a cheap standard Blade.
