@@ -20,10 +20,10 @@ Two weeks ago I was being drawn into the debug of artdb, the Replication hierarc
 > - *Fixed:* A number of very expensive reporting queries were sped up 16x to 20x using covering indexes, from 180s runtime to 8s-12s runtime.
 > - *Fixed:* We optimized our database and data size by completing the data lifecycle for several repo types, deleting old images.
 > - *Fixed:* Hardware upgrade lowered load even more, and sped up the queries even more.
-> - *Fixed:* Further investigation identified the a synchronisation cron job which overloaded the database in 40m intervals. The cron job was throttled and is now on a backlog for refactoring.
+> - *Fixed:* Further investigation identified a synchronisation cron job which overloaded the database in 40m intervals. The cron job was throttled and is now on a backlog for refactoring.
 > - *Fixed:* The long running queries were identified in the Artifactory source code, which allowed us and jFrog support to identify that a) the Artifactory internal cache for these queries was bypassed and b) this happens when certain JMX monitoring options are enabled, per application host hitting the database instance. The monitoring was temporarily disabled.
 > - *Fixed:* For each image download, Artifactory writes statistics updates, which can lead to lock contention on hot images. We identified a configuration that could turn this off, and later found that these updates can be happening batched in the background.
-> - *Unfixed:* Artifactory does not understand the concept of Replicas and database scale-out at all, it can only database scale-up, and that has absolute limits.
+> - *Unfixed:* Artifactory does not understand the concept of Replicas and database scale-out at all, it can only do database scale-up, and that has absolute limits.
 >
 > The database workload for Artifactory is now well below critical levels and has on the current, upgraded hardware runway for estimated 4x growth.
 > Beyond that, vertical scaling is going to be hard without changes to the architecture of Artifactory.
@@ -80,7 +80,7 @@ Moving to the better equipped, but more expensive Blade 2A.1, we have 32C/64T, a
 ![](/uploads/2022/09/artifactory-04.png)
 
 *At a load of 12 on a Dual-4110, we have 6 cores busy per socket, running at 2400 MHz.
-At a load of 12 on a Dual-6130, we have 6 cores outof many more busy, so we have budget for 3400 MHz clock, 1 GHz faster. The work completes faster, we have less concurrency and the load drops to 8, 4 cores per socket, and 3500 MHz until things stabilize.*
+At a load of 12 on a Dual-6130, we have 6 cores out of many more busy, so we have budget for 3400 MHz clock, 1 GHz faster. The work completes faster, we have less concurrency and the load drops to 8, 4 cores per socket, and 3500 MHz until things stabilize.*
 
 Modern CPUs do not have the Power Budget and Thermal Budget to run all their cores at maximum clock speed all of the time. 
 The higher the load, the lower they need to clock in order to not melt or starve themselves of power.
