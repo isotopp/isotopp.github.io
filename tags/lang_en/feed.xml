@@ -6,7 +6,148 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 24 Sep 2022 11:49:23 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 26 Sep 2022 14:06:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Data for Testing</title>
+      <link>https://blog.koehntopp.info/2022/09/26/mysql-data-for-testing.html</link>
+      <pubDate>Mon, 26 Sep 2022 12:13:14 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/09/26/mysql-data-for-testing.html</guid>
+      <description>&lt;p&gt;Where I work, there is an ongoing discussion about test data generation.
+At the moment we do not replace or change any production data for use in the test environments, and we don&amp;rsquo;t generate test data.&lt;/p&gt;
+&lt;p&gt;That is safe and legal, because production data is tokenized.
+That is, PII and PCI data is being replaced by placeholder tokens which can be used by applications to access the actual protected data through specially protected access services.
+Only a very limited circle of people is dealing with data in behind the protected services.&lt;/p&gt;
+&lt;p&gt;Using production data in test databases is also fast, because we copy data in parallel, at line speed, or we make redirect-on-write (&amp;ldquo;copy-on-write&amp;rdquo; in the age of SSD) writeable snapshots available.&lt;/p&gt;
+&lt;p&gt;Assume for a moment we want to change that and&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;mask data from production when we copy it to test databases&lt;/li&gt;
+&lt;li&gt;reduce the amount of data used in test databases, while maintaining referential integrity&lt;/li&gt;
+&lt;li&gt;generate test data sets of any size instead of using production data, keeping referential integrity and also some baseline statistical properties&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;masking-data&#34;&gt;
+    &lt;a href=&#34;#masking-data&#34;&gt;
+	Masking Data
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Assume we make a copy of a production database into a test setup.
+We then prepare that copy by changing every data item we want to mask, for example by replacing it with &lt;code&gt;sha(&amp;quot;secret&amp;quot; + original value)&lt;/code&gt;, or some other replacement token.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;concat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Kristian Köhntopp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------------------------------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;concat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Kristian Köhntopp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------------------------------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;9697&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c8770a3def7475069f3be8b6f2a8e4c7ebf4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------------------------------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Why are we using a hash function or some moral equivalent for this?
+We want to keep referential integrity, of course.
+So each occurence of &lt;code&gt;Kristian Köhntopp&lt;/code&gt; will be replaced by &lt;code&gt;9697c8770a3def7475069f3be8b6f2a8e4c7ebf4&lt;/code&gt;, a predictable and stable value, instead of a random number &lt;code&gt;17&lt;/code&gt; on the first occurence, and another random number, &lt;code&gt;25342&lt;/code&gt;, on the next.&lt;/p&gt;
+&lt;p&gt;In terms of database work, it means that after copying the data, we are running an &lt;code&gt;update&lt;/code&gt; on every row, creating a binlog entry for each change.
+If the column we change is indexed, the indexes that contain the column need to be updated.
+If the column we change is a primary key, the physical location of the record in the table also changes, because InnoDB clusters data on primary key.&lt;/p&gt;
+&lt;p&gt;In short, while copying data is fast, masking data has a much, much higher cost and can nowhere run at line speed, on any hardware.&lt;/p&gt;
+&lt;h1 id=&#34;reducing-the-amount-of-data&#34;&gt;
+    &lt;a href=&#34;#reducing-the-amount-of-data&#34;&gt;
+	Reducing the amount of data
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Early in the company history, around 15 years ago, a colleague worked on creating smaller test databases by selecting a subset of production data, while keeping referential integrity intact.
+He failed.&lt;/p&gt;
+&lt;p&gt;Many others tried later, we have had projects trying this around every 3 to 5 years.
+They also failed.&lt;/p&gt;
+&lt;p&gt;Each attempt always selects either an empty database or all of the data from production.&lt;/p&gt;
+&lt;p&gt;Why is that?&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s try a simple model:
+We have users, we have hotels, and they are in a n:m relationship, the stay.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/test-data-01.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Kris&amp;rdquo; stays in a Hotel, the &amp;ldquo;Casa&amp;rdquo;.
+We select Kris into the test data set from production, and also the &amp;ldquo;Casa&amp;rdquo;.
+Other people stayed at the Casa, so they also are imported into the test set, but they also stayed at other hotels, so these hotels are also imported, and so forth, back between two tables.
+After 3 reflections, 6 transitions, we have selected the entire production database into the test set.&lt;/p&gt;
+&lt;p&gt;Our production data is interconnected, and retaining referential integrity of the production data will mean that selecting one will ultimately select all.&lt;/p&gt;
+&lt;p&gt;Limiting the timeframe can help:
+we select only data from the past week or something.
+But that has other implications, for example on the data distribution.
+Also, our production data is heavily skewed in time when it comes to operations on availability – a lot of bookings happen in the last week.&lt;/p&gt;
+&lt;h1 id=&#34;generating-test-data&#34;&gt;
+    &lt;a href=&#34;#generating-test-data&#34;&gt;
+	Generating test data
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Generating garbage data is fast, but still slower than making a copy.
+That is because copying data from a production machine can copy binary files with prebuilt existing indexes, whereas generating garbage data is equivalent to importing a &lt;code&gt;mysqldump&lt;/code&gt;.
+The data needs to be parsed, and worse, all indexes need to be built.&lt;/p&gt;
+&lt;p&gt;While we can copy data at hundreds of MB per second, up into the GB/s range, importing data happens at single digit MB/s up to low tens of MB/s.
+A lot depends on the availability of RAM, and on the speed of the disk, also on the number of indexes and if the input data is sorted by primary key.&lt;/p&gt;
+&lt;p&gt;Generating non-garbage data is also hard, and slow.&lt;/p&gt;
+&lt;p&gt;You need to have the list of referential integrity constraints either define or inferred from a schema.
+At work, our schema is large, much larger than a single database or service – users in the user service (test user service, with test user data) need to be referenced in the reservations service (test reservations service with test bookings), referring to hotels in the test availability and test hotel store.&lt;/p&gt;
+&lt;p&gt;That means either creating and maintaining a consistent second universe, or creating this, across services, from scratch, for each test.
+One is a drag on productivity (maintaining consistent universes is a lot of work), the other is slow.&lt;/p&gt;
+&lt;p&gt;Consistency is not the only requirement, though.
+Consistency is fine if you want to test validation code (but my test names are not utf8, they are from the hex digit subset of ASCII!).&lt;/p&gt;
+&lt;p&gt;But if you want to talk performance, additional requirements appear:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Data size&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;If your production data is 2 TB in size, but your test set is 200 GB, it is not linearly 10x faster.
+The relationship is non-linear: On a given piece of hardware, production data may be IO-limited because the working set does not fit into memory, whereas the test data can fit WSS into memory.
+Production data will produce disk reads proportionally to the load, test data will run from memory and after warmup has no read I/O – a completely different performance model applies.
+Performance tests on the test data have zero predictive value for production performance.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Data Distribution.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Production data and production data access is subject to data access patterns that are largely unknown and undocumented, and are also changing.
+Some users are whales that travel 100x more than norms.
+Other users are frequent travellers, and travel 10x more than norms.
+Some amount of users are one-offs and appear only once in the data set.
+What is the relation between these sets, and what is the effect they have on data access?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For example:&lt;/p&gt;
+&lt;h2 id=&#34;a-database-benchmark-i-lost&#34;&gt;
+    &lt;a href=&#34;#a-database-benchmark-i-lost&#34;&gt;
+	A database benchmark I lost
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The german computer magazine c&amp;rsquo;t in 2006 had an application benchmark described in web request accesses to a DVD rental store.
+The contestants were supposed to write a DVD rental store using any technology they wished, defined in the required output and the URL request they would be exposed to in testing.
+MySQL, for which I worked as a consultant, wanted to participate, and for that I put the templates provided into a web shop using MySQL, and tuned shop and database accordingly.&lt;/p&gt;
+&lt;p&gt;I got nowhere the top 10.&lt;/p&gt;
+&lt;p&gt;That is because I used a real web shop with real assumptions about user behavior, including caches and stuff.&lt;/p&gt;
+&lt;p&gt;The test data used was generated, and the requests were equally distributed:
+Each DVD in the simulated DVD store was equally likely to be rented and each user rented the same amount of DVDs.
+Any cache you put into the store would overflow, and go into threshing, or would have to have sufficient memory to keep the entire store in cache.&lt;/p&gt;
+&lt;p&gt;Real DVD rental stores have a top 100 of popular titles, and a long tail. Caching helps.
+In the test, caching destroyed performance.&lt;/p&gt;
+&lt;h2 id=&#34;another-database-benchmark-i-lost&#34;&gt;
+    &lt;a href=&#34;#another-database-benchmark-i-lost&#34;&gt;
+	Another database benchmark I lost
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Another german computer magazine had another database benchmark, which basically hammered the system under test with a very high load.
+Unfortunately, here the load was not evenly distributed, but a few keys were being exercised very often, whereas a lot of keys were never requested.
+Effectively the load generator has a large number of threads, and each thread was exercising &amp;ldquo;their&amp;rdquo; key in the database &amp;ndash; thread 1 to id 1 in the table, and so on.&lt;/p&gt;
+&lt;p&gt;This exercised a certain number of hot keys, and waited very fast on a few locks, but did not actually simulate accurately any throughput limits.
+If you exercised the system with more production-like load, it would have had around 100x more total throughput.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Producing masked or simulated data for testing is around 100x more expensive computationally than copying production data.
+If production data is already tokenized, the win is also questionable, compared to the effort spent.&lt;/p&gt;
+&lt;p&gt;Producing valid test data is computationally expensive, especially in a microservices architecture in which referential integrity is to be maintained across service boundaries.&lt;/p&gt;
+&lt;p&gt;Valid test data is not necessarily useful in testing, especially when it comes to performance testing.
+Performance testing is specifically also dependent on data access patterns, working set sizes and arrival rate distributions that affect locking times.&lt;/p&gt;
+&lt;p&gt;In the end, the actual test environment is always production, and in my personal professional experience there is a lot more value in making testing in production safe than in producing accurate testing environments.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Sometimes it is not the database</title>
       <link>https://blog.koehntopp.info/2022/09/19/sometimes-it-is-not-the-database.html</link>
@@ -2587,38 +2728,6 @@ A must read for anybody interested in infrastructure at all.&lt;/p&gt;
 &lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/Folkert-Piersma/dp/9068688286&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fietsparkeren bij Stations&lt;/a&gt;
 
 &amp;rdquo;, Folkert Piersma and Wout Ritzema, EUR 29.40 Hardcover&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Fertig gelesen: Pale Rider</title>
-      <link>https://blog.koehntopp.info/2022/05/06/fertig-gelesen-pale-rider.html</link>
-      <pubDate>Fri, 06 May 2022 07:47:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/05/06/fertig-gelesen-pale-rider.html</guid>
-      <description>&lt;p&gt;A book from 2017, about the Spanish Flu, which in the wake of the first world war turned into a global pandemic, killing between 50 and 100 million people on all continents.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/05/pale-rider.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://www.amazon.de/-/en/Laura-Spinney-ebook/dp/B01GH07CG6&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pale Rider&lt;/a&gt;
-
-, Laura Spinney&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Spinney describes the situation in the world in 1918, and how the Spanish Flu came into the world, and was experienced by people in various parts of the world.
-The flu returned in several waves, some of which behaved unlike normal flu seasons and also had weirdly shaped killing patterns in the population.&lt;/p&gt;
-&lt;p&gt;She also describes reactions of the population to pandemic fighting measures &amp;ndash; and we know them all from personal experience by now.
-There have been people protecting mask mandates, self-isolation and social distancing on purpose, &amp;ldquo;mah freedums&amp;rdquo; criers and so on, just like with Covid.&lt;/p&gt;
-&lt;p&gt;In parts 5 and 6, she looks at the flu from a modern perspective:
-We now know about viruses, and specific the influenza A virus and its variants.
-We understand its genetics and which parts of the virus are relevant for infection of humans, and they mutate.
-We catalogue them &amp;ndash; the spanish flu was H1N1.
-Spinney then looks at SARS, MERS and bird flu, and other viruses, and how they ramp up for another pandemic, strangely prescient of the Covid pandemic of 2020.
-Also addresses, again spot on, anti-science propaganda and ossified politics unable to integrate new findings into existing rule frameworks.&lt;/p&gt;
-&lt;p&gt;An enlightening and at the same time very frustrating read, written and published 3 years before Covid.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/-/en/Laura-Spinney-ebook/dp/B01GH07CG6&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pale Rider&lt;/a&gt;
-
-&amp;rdquo;, Laura Spinney, EUR 9.49 on Kindle&lt;/p&gt;
 </description>
     </item>
     
