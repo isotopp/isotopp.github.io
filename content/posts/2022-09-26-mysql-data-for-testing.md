@@ -89,7 +89,7 @@ A lot depends on the availability of RAM, and on the speed of the disk, also on 
 
 Generating non-garbage data is also hard, and slow.
 
-You need to have the list of referential integrity constraints either define or inferred from a schema. 
+You need to have the list of referential integrity constraints either defined or inferred from a schema.
 At work, our schema is large, much larger than a single database or service – users in the user service (test user service, with test user data) need to be referenced in the reservations service (test reservations service with test bookings), referring to hotels in the test availability and test hotel store.
 
 That means either creating and maintaining a consistent second universe, or creating this, across services, from scratch, for each test.
