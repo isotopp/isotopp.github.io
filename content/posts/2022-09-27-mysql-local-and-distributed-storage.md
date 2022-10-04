@@ -93,7 +93,7 @@ But: In such a lookup, each disk read is completely dependent on the outcome of 
 The reads are all serialized by disk accesses.
 
 That, again, underlines the importance of memory in database operation. 
-"Buy more memory, the invest into more memory" is an extremely sensible piece of advice.
+"Buy more memory, then invest into more memory" is an extremely sensible piece of advice.
 
 Now, we actually do not just read data from a single table. 
 Often we join two tables. 
@@ -145,7 +145,7 @@ This works well. How well?
 We observe read and write latencies on a µs scale, that is 10^-6, millionth seconds.i
 2000 µs are 2ms.
 
- Read latencies are layered curtains with peaks at 0.2 ms, 0.26 ms, 0.33 ms, 0.45 ms and 0.58 ms.
+Read latencies are layered curtains with peaks at 0.2 ms, 0.26 ms, 0.33 ms, 0.45 ms and 0.58 ms.
 We could draw a large gauss curve over the entire thing, peaking at 0.33 ms.
 
 Write latencies are... nonexistent?
@@ -166,7 +166,7 @@ It is not redundant at the machine level – we are using other, database level 
 Using replication, we make copies of the data on this machine on other machines and in other data centers. 
 This allows us to utilize redundancy for capacity, but also for availability.
 
-It does so at a cost that also allows us to completely eliminate additional cache layers such as memcached – also eliminating the entire class of cache incoherency bugs that came with memcached usage, until 2012, where removed memcached.
+It does so at a cost that also allows us to completely eliminate additional cache layers such as memcached – also eliminating the entire class of cache incoherency bugs that came with memcached usage, until 2012, when we removed memcached.
 
 # Changing the Equation
 
