@@ -93,7 +93,7 @@ But: In such a lookup, each disk read is completely dependent on the outcome of 
 The reads are all serialized by disk accesses.
 
 That, again, underlines the importance of memory in database operation. 
-"Buy more memory, the invest into more memory" is an extremely sensible piece of advice.
+"Buy more memory, then invest into more memory" is an extremely sensible piece of advice.
 
 Now, we actually do not just read data from a single table. 
 Often we join two tables. 
@@ -202,7 +202,7 @@ We could, in increasing order of engineering and monetary cost
 - add connections and query the database with multiple parallel tasks, trying to engineer our workload to be more parallel shaped
 
 For this hierarchy under test, the second thing happened: 
-we scaled up the number of instances in order to deal with the query load under worsened read latency). 
+we scaled up the number of instances in order to deal with the query load under worsened read latency.
 And we should try the first thing: 
 use instances with more memory to make the disk accesses go away.
 
@@ -219,7 +219,7 @@ The 0.9 ms is actually the base of a curve that goes from 0.6 ms to 1.6 ms on th
 
 Writes queue nicely, and the storage here is performing extremely well under parallel load in benchmarks. 
 So many parallel writes should work well: 
-Each write takes 0.9-ish ms, but you can many of them in flight at the same time.
+Each write takes 0.9-ish ms, but you can do many of them in flight at the same time.
 
 Unfortunately, transactional workloads do not have that shape. 
 [Parallel replication]({{< ref "/content/posts/2021-11-08-mysql-parallel-replication.md" >}}) is subject to a number of constraints regarding reordering, and also subject to limitations that result from implementation details.
