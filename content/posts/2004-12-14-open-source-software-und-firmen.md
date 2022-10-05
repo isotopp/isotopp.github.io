@@ -33,7 +33,7 @@ Jetzt hat man effektiv einen hausinternen Fork eines Open-Source-Projektes am Ha
 Das Open-Source-Projekt entwickelt sich weiter, und baut weitere, neue Features ein.
 Will man jetzt im Hause diese neuen Features im hausinternen Projekt nutzen, hat man ein riesiges Upgrade-Problem am Hals.
 Denn alle lokalen Änderungen müssen aus der alten Codebasis in die neue portiert werden.
-Dort werden integriert und getestet - um dann beim nächsten Upgrade wieder denselben Aufwand zu verursachen.
+Dort werden sie integriert und getestet - um dann beim nächsten Upgrade wieder denselben Aufwand zu verursachen.
 
 ## So eingesetzt ist Open Source letztendlich zwangsläufig unrentabel.
 
@@ -53,7 +53,7 @@ Allen allgemeingültigen Code entwickeln wir auf Kosten des Hauses so weit, daß
 Dadurch sind wir die Verantwortung für diesen Code los und können Weiterentwicklungen an diesem Code aus der offiziellen Codebasis ohne Änderung im Hause nutzen.
 
 Alle geschäftsspezifische Logik entwickeln wir im Hause so weit, daß wir allgemeingültige Plugin-Schnittstellen oder andere Isolationsmechanismen in die Software einbauen oder einbauen lassen.
-wir realisieren dann unsere geschäftsspezifische Logik grundsätzlich so, daß wir die offizielle Codebasis nicht patchen, sondern lediglich Plugins für sie schreiben. 
+Wir realisieren dann unsere geschäftsspezifische Logik grundsätzlich so, daß wir die offizielle Codebasis nicht patchen, sondern lediglich Plugins für sie schreiben.
 
 So halten wir die Trennlinie zwischen offiziellem und firmeneigenem Code sauber aufrecht, und verbauen uns nicht die Möglichkeit, offiziellen Code jederzeit in die Produktion im Hause integrieren zu können.
 Andererseits stellen wir so sicher, daß geschäftsspezifische Logik nicht aus Versehen veröffentlicht wird.
