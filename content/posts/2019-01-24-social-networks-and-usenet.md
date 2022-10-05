@@ -7,7 +7,7 @@ published: true
 tags:
 - pluspora_import
 - lang_de
-- social netwworking
+- social networking
 - usenet
 ---
 
