@@ -39,7 +39,7 @@ Remember: Not all conflict is drama, in fact, most is not.
 
 # Understanding conflict
 
-So when go for meetings, prepare an Agenda.
+So when you go for meetings, prepare an Agenda.
 If you are invited to a meeting without an Agenda, decline it.
 
 What is a good Agenda?
@@ -149,7 +149,7 @@ Making agreements on how we work together on a common thing (and building infras
 
 And we have meeting agendas to collect agreement, and to sharpen disagreement, we have interactive meetings to find and ultimately document conflict resolutions, and we then put these back into the deliverable.
 
-This is the heart of asynchronus distributed collaboration.
+This is the heart of asynchronous distributed collaboration.
 
 So if somebody asks you:
 "What did your org learn to do differently in the last 3 years?"
