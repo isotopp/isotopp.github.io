@@ -33,4 +33,4 @@ Es ist absolut unmöglich, mit Computern zu arbeiten und mit den Arbeiten und
 den Ideen von Dennis Ritchie nicht an jedem einzelnen Tag in direkten
 Kontakt zu kommen.
 
-Dennis Ritchie starb am 9. Oktober 2011. Seine Arbeit ist unsterblich.
+Dennis Ritchie starb am 12. Oktober 2011. Seine Arbeit ist unsterblich.
