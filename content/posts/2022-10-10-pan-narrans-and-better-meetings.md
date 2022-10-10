@@ -13,7 +13,7 @@ If you go for better meetings, you will also have fewer of them.
 
 [![](/uploads/2022/10/pan-narrans-01.png)](https://www.goodreads.com/quotes/362504-the-anthropologists-got-it-wrong-when-they-named-our-species)
 
-*The anthropologists got it wrong when they named our species Homo sapiens ('wise man'). In any case it's an arrogant and bigheaded thing to say, wisdom being one of our least evident features. In reality, we are Pan narrans, the storytelling chimpanzee.”*
+*“The anthropologists got it wrong when they named our species Homo sapiens ('wise man'). In any case it's an arrogant and bigheaded thing to say, wisdom being one of our least evident features. In reality, we are Pan narrans, the storytelling chimpanzee.”*
 
 Going for a written culture helps, going for storytelling will help even more.
 
@@ -33,7 +33,7 @@ If they are not about conflict, they are not worth your time.
 
 It does not have to be conflict about the people in the meeting.
 The meeting does not have to resolve the conflict (but should progress it somewhow).
-But in every meeting there is some kind of conflict in the background
+But in every meeting there is some kind of conflict in the background.
 
 Remember: Not all conflict is drama, in fact, most is not.
 
