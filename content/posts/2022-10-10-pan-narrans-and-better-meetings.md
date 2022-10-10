@@ -156,3 +156,11 @@ So if somebody asks you:
 and the answer is unlike the above:
 
 What did you do instead? How did your org evolve?
+
+# Addenda
+
+This started out as a Twitter thread.
+There have been reactions.
+
+- Florian Haas pointed to a [really good writeup](https://xahteiwi.eu/resources/presentations/devopsdays-berlin-2022/) about writing of his.
+- He also mentions: "Re project kickoffs, never do them without preparing a 5-paragraph brief. Better still, circulate it ahead of the kickoff."
