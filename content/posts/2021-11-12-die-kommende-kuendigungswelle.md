@@ -5,7 +5,7 @@ date: 2021-11-07T11:28:27+01:00
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
-- blog
+- remote first
 - politik
 - work
 ---

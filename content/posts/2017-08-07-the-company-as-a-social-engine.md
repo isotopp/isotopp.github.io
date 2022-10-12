@@ -7,6 +7,7 @@ status: publish
 tags:
 - work
 - lang_en
+- remote first
 title: The company as a social engine
 ---
 So why is everything so complicated? At work, I mean. 

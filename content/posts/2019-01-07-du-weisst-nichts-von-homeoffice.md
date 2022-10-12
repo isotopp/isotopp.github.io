@@ -6,20 +6,21 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - pluspora_import
+- remote first
 - lang_de
 - work
 ---
 
 In [Recht auf Homeoffice](https://www.golem.de/news/spd-arbeitsministerium-will-recht-auf-homeoffice-per-gesetz-1901-138520.html) schreibt Golem:
 
-> Das SPD-geführte Bundesarbeitsministerium plant ein gesetzlich verankertes Recht auf\ Home Office.
+> Das SPD-geführte Bundesarbeitsministerium plant ein gesetzlich verankertes Recht auf Home Office.
 
 Und alle brüllen "Jaaaa!".
-Ich glaube, den meisten ist gar nicht klar, auf was sie sich da einlassen und wie sich eine Home Office First-Firma anfühlt.
+Ich glaube, den meisten ist gar nicht klar, auf was sie sich da einlassen und wie sich eine Remote First-Firma anfühlt.
 Wie dem auch sei:
 Die Firma, in der Ihr gerade arbeitet, kann so mit Home Office vermutlich nicht gut funktionieren.
 
-Ich habe von 2005 bis 2008 für MySQL AB gearbeitet, und das war eine Firma, die Home Office First war.
+Ich habe von 2005 bis 2008 für MySQL AB gearbeitet, und das war eine Firma, die Remote First war.
 Das war eine sehr andere Arbeitsumgebung als die, die ihr in Eurem Job vermutlich habt.
 Wir waren circa 500 Mitarbeiter in drei Dutzend Ländern überall auf der Erde.
 Es gab einen Firmensitz in Kalifornien und einen irgendwo in Skandinavien, aber dort war nie jemand (im Büro in Kalifornien waren ein paar Leute mehr, weil die dort den Börsengang der Firma vorbereitet haben).
@@ -50,4 +51,4 @@ Zentral in MySQL waren übrigens die verschiedenen All Hands und Department Meet
 Zweimal im Jahr hat sich gesamte Firma an einem Ort getroffen (meistens ein Fünf Sterne Hotel in einem gut erreichbaren Land mit entspannter Visa-Situation, in der Nachsaison), und zweimal im Jahr haben sich gesamte Abteilungen getroffen.
 Auf diesen Events (jeweils drei bis fünf Tage) haben wir uns kennengelernt, ein Netzwerk aufgebaut, zusammen Kurzprojekte ("Hackathon") durchgezogen und natürlich auch gefeiert.
 Zusammen mit anderen Treffen hatte man so in etwa alle zwei Monate ein Gruppen-, Abteilungs-, oder Firmentreffen.
-Alles in allem nicht wirklich eine Verbesserung der finanziellen und der CO-Bilanz, aber notwendig um eine funktionierende Gruppe zu schaffen.
+Alles in allem nicht wirklich eine Verbesserung der finanziellen und der CO2-Bilanz, aber notwendig um eine funktionierende Gruppe zu schaffen.
