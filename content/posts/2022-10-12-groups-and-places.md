@@ -23,7 +23,7 @@ The first chat network I have been using was IRC -- Internet Relay Chat.
 This has been in the late 80ies or early 90ies, so today I have had an interactive online presence on the upside of 25 years or so.
 
 Later I got to use IQC, Jabber, Skype, Hangouts, Facebook Messenger, WhatsApp, Slack and RocketChat, among many others.
-I also got exposed to a number of collaborative document processing systems with chatlike properties:
+I also got exposed to a number of collaborative document processing systems with chat-like properties:
 the now defunct Google Wave (alias Apache Wave, now also mostly defunct), and its heir Google Docs, and a bunch of newer collaborative brainstorming tools from the School of Miro.
 
 All these applications and chat systems are different, but they can be evaluated along a number of dimensions to understand chat systems better.
@@ -64,7 +64,7 @@ Having Places instead of Groups is crucial for any communication system.
 It gives you the capability to write instructions that send people somewhere, and enables people to find and go somewhere, gives them agency.
 
 Facebooks Messenger and Facebook at Work's greatest flaw is their Messenger, which does not have this feature.
-It relies on Groups, and tries to mitigate that by coupling groups to Facebook "Groups" (discussion boards), autoinviting people into the Facebook Group associated chat group.
+It relies on Groups, and tries to mitigate that by coupling groups to Facebook "Groups" (discussion boards), auto-inviting people into the Facebook Group associated chat group.
 This combines worst practices of several systems into one.
 
 Places can be persistent, they can exist without anyone being in them.
@@ -77,8 +77,8 @@ Working asynchronously means that you will not be present in a chat at all times
 This is a feature: It allows you to focus, and think straight, cutting deeply into problems.
 It also allows you to be in another timezone than your communication partners and still contribute meaningfully to a collaborative effort.
 
-It poses the problem of your communication partners not knowing your current comms status, and availability.
-If they are blocked, they might need you and it would help them to have some expectation of your response times, availability and context.
+It poses the problem of your communication partners not knowing your current communication status, and availability.
+If they are blocked, they might need you, and it would help them to have some expectation of your response times, availability and context.
 
 All modern chat systems have a presence mechanism, a semi-automatic status tagline, and the more thoughtfully engineered ones also know your timezone and show it to your peers.
 
@@ -97,7 +97,7 @@ That is of course a nuisance, and so people have been using programs such as scr
 IRC's mechanism for presence (here: attention) is somewhat hidden -- the `/away` command. 
 But not only is the mechanism hidden (it is another command that needs to be learned and used), but the status is somewhat hidden as well.
 You can't see if somebody is `/away` unless you look at them with a `/whois`.
-Or you learn about the fact that they are `/away` only after the fact, when you say something to them and get an autoresponse with their `/away` message.
+Or you learn about the fact that they are `/away` only after the fact, when you say something to them and get an auto-response with their `/away` message.
 
 Some people do not like this, and so they use another mechanism and change their nicknames when they are not there -- "Isotopp" becomes "Isotopp|AFK" or similar.
 This is less structured than `/away`, and so some people suffix their names, some prefix them and others completely change their nicknames - "Isotopp" becomes "Awaytopp".
@@ -122,16 +122,16 @@ This often clashes with old standards, badly designed security mechanisms and ot
 One extreme point for synchronisation is the Discord chat system, where not only history and messages are kept in sync across all clients, but even preferences are unified:
 Setting the desktop client to dark mode will also set dark mode on the cellphone application, and vice versa.
 
-Anther, opposite extreme point is Jabber, which has no common rule for disposition of messages, and by default will send messages only to one client, using either a preference system, the last active client, or "all known clients to the server at the point in time the message was sent". A lot depends on server and clients used here, creating an unreliable and hard to control user experience.
+Another, opposite extreme point is Jabber, which has no common rule for disposition of messages, and by default will send messages only to one client, using either a preference system, the last active client, or "all known clients to the server at the point in time the message was sent". A lot depends on server and clients used here, creating an unreliable and hard to control user experience.
 
 # Deliverables - File and Image Sharing
 
 In a corporate context, we use the communication mechanism as a vehicle to create and share documents, and have a discussion about the documents we work on collaboratively.
 Mail was doing this in the past, with Quotes and with Attachments, but that is a very cumbersome, lossy and hard to discover mechanism.
-Most companies have moved the collab process off mail, to a large extent, and towards chat and collaborative document systems such as Google Docs.
+Most companies have moved the collaboration process off mail, to a large extent, and towards chat and collaborative document systems such as Google Docs.
 
 Google had taken this one step further with structured chat.
-The pioneer application for that has been the short lived Google Wave:
+The pioneer application for that has been the short-lived Google Wave:
 Wave allowed a group of people to create things in a kind of chat bubble, only that this bubble could not just hold a line of text, but also other media including rich documents, images, bots or other things that interfaced with the Wave API.
 Other users could comment on an item in a hierarchic comments-on-comment tree like in a discussion system, or directly edit the original item, incorporating their changes. 
 
@@ -142,7 +142,7 @@ This allowed users to view the end result of a Wave, or review the process of bu
 
 *Google Wave being used to collaboratively work on a shared document. The Wave contains the final document, but also the process that led to the end result.*
 
-In a way, Wave could have been an salvation from the hell of corporate email:
+In a way, Wave could have been a salvation from the hell of corporate email:
 Waves produce results, documents or agreements.
 They also record the history of how that result had been reached, and they allow people joining the process late to catch up and review what has happened before on their own terms.
 No more full quotes, 13 levels deep, and no more dozens of copies of the same Word file, all slightly different, and with diverging side remarks from people somewhere in the organisation, which never made it back into the main document.
@@ -150,20 +150,20 @@ No more full quotes, 13 levels deep, and no more dozens of copies of the same Wo
 Wave failed, though, and for multiple reasons. 
 
 One of the bigger reasons is that Wave was all mechanism and no purpose -- it could to many things, and offered all of them without stating what Wave itself or the various functions are there for.
-One could use Wave to manage a world building and game session in a role playing game, as well as replace corporate email, or use it as a rather clunky and overengineered word processor.
+One could use Wave to manage a world building and game session in a role playing game, as well as replace corporate email, or use it as a rather clunky and over-engineered word processor.
 So Wave needed explanation and contextualisation - and above all, a purpose, but none was given.
 Wave died, because it confused users.
 
 ![](/uploads/2022/10/groups-places-08.jpg)
 
-*A collaboratively edited document. Multiple watchers are shown as icons at the top of the screen. A chat window is open. Cursors and collaborators edits would be visible simultaneously editing the document in many places while it has been initally created.*
+*A collaboratively edited document. Multiple watchers are shown as icons at the top of the screen. A chat window is open. Cursors and collaborators edits would be visible simultaneously editing the document in many places while it has been initially created.*
 
 Wave's legacy lives on, though.
 Much of the functionality of Wave is present in Google Docs, including the side chat, collaborative editing, history recording and replay and many other functions.
 Unlike Wave, Google's shared document editing puts the purpose first, and the collaboration in the background.
 This is matching people's expectations much better, and is less overwhelming.
 It does to have to be taught, or manually given purpose.
-Instead the purpose is built in, and immediately obvious.
+Instead, the purpose is built in, and immediately obvious.
 
 Modern chat systems are kind of the opposite:
 They put their purpose (communication) first, and the documents ride in the back.
@@ -184,21 +184,21 @@ They might as well not exist.
 
 At the place I work at, we were lucky.
 By the time Covid pushed people to work from home, we already had replaced mail almost completely.
-I was down from thousands of mail messages per day on almost one hundred mailing lists to less than a dozen messages, and no mailing lists at all any more.
+I was down from thousands of mail messages per day on almost one hundred mailing lists to less than a dozen messages, and no mailing lists at all anymore.
 
 We have moved to **Facebook at Work** for non-realtime group communication.
 Teams were using their Facebook groups to communicate announcements and progress to other teams, and have discussions with them.
 
 Internally and for support we moved to **Slack**.
-This was pushed with considerable force from below, after corporate initially being very fond of Facebook messager, mostly because it was free and included in Facebook at work.
+This was pushed with considerable force from below, after corporate initially being very fond of Facebook messenger, mostly because it was free and included in Facebook at work.
 
-Unfortunately FB messager is utterly broken in many ways, and unsuited for any structured work communication without basically rewriting it from scratch.
+Unfortunately FB messenger is utterly broken in many ways, and unsuited for any structured work communication without basically rewriting it from scratch.
 There are many facets to its fractal brokenness:
 
 - It has groups, but no places.
 - Groups have limited attendance, and the limit is too small (the old `#live` Jabber channel was mandatory for all people pushing deployments, and could not be reproduced in FB Messenger).
-- It ate data. Mentioning a filename `main.pl` would inescapably turn this into a polish hostname [main.pl](https://main.pl). More often than not, Messenger would detect a mailware phishing attempt and prevent you from sending the message.
-- It ate data. Mentioning an URL with array parameters ("https://example.com/bla?a=1^a=2^a=3") would make it parse the URL, representing the keys in a hash, and dropping the repeated keys, breaking the URL.
+- It ate data. Mentioning a filename `main.pl` would inescapably turn this into a polish hostname [main.pl](https://main.pl). More often than not, Messenger would detect a malware phishing attempt and prevent you from sending the message.
+- It ate data. Mentioning URLs with array parameters ("https://example.com/bla?a=1&a=2&a=3") would make it parse the URL, representing the keys in a hash, and dropping the repeated keys, breaking the URL.
 - It could not handle files, code formatting and many other things well.
 - It could not do threads, which are a necessity in high volume support channels.
 
@@ -206,7 +206,7 @@ In the end, corp was forced to also purchase Slack on top of FB at Work, to prev
 
 We had been using **Google Drive and Google Office**, as well, across the company, and the collaborative features in it were well understood and used.
 
-The heterogenity of all of this posed to be not a problem, somewhat surprisingly.
+The heterogeneity of all of this posed to be not a problem, somewhat surprisingly.
 In fact, in many cases, the mix-and-match approach enabled us to be flexible, and work around many tools limitations, and also to expand and integrate other things easily.
 Other applications (e.g. Miro, but also many others) have since been added for many users, who have other, more specialized needs and requirements.
 
@@ -216,13 +216,13 @@ During Covid, Zoom became popular, and offered a richer and much better set of c
 The key learnings are:
 
 - We already had tooling for Remote First, but had hardly any need to use them properly.
-- We were hardly using Email with all its glorious brokenness any more.
+- We were hardly using Email with all its glorious brokenness anymore.
 - By happy accident, the core tools (FB at Work, Slack) had Places, not Groups, as a core metaphor, and people structured their work around these places.
 - Collaborative document editing and a rich, structured chat complement each other well. But since Facebook and Google both are unable to make such a thing, we have yet another vendor integrated. This turned out to be an actual advantage.
 
 Our key deficits have not been discussed at length here, but are related:
 
 - Google Office documents have very bad discoverability and Google Office has no places.
-- Corollary: A process is needed and needs to manually executed to move content from the collaborative phase to the publication phase, elsewhere.
+- Corollary: A process is needed and needs to be manually executed to move content from the collaborative phase to the publication phase, elsewhere.
   - By public decree in our place this is going to be Confluence, which has problems of its own, and also poses a document conversion problem (from Google to Confluence internal format, keeping structure).
 - Code Collaboration is not part of other collaboration at all, and lives in a third, and entirely disconnected space.
