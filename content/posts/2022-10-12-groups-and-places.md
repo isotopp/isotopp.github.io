@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Groups and Places"
-date: 2022-10-12 12:13:14Z
+date: 2022-10-12 06:07:08Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
