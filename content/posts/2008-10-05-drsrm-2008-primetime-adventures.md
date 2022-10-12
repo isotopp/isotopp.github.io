@@ -19,7 +19,7 @@ Das Genre habe ich gewählt, weil PtA bestimmte Schwächen beim Spielstart hat: 
 
 Plot spielt in PtA nur eine untergeordnete Rolle. Es ist Fluff, Hintergrund vor dem die Charactere agieren oder Auslöser für eine Krise, aber nie die Ursache für eine solche. Spielern, insbesondere PtA-unerfahrenen Spielern, ist dies mitunter schwer zu vermitteln und so kommt es am Start einer neuen PtA-Runde oft zu recht langen Verhandlungen darüber, was man spielen wolle und was genau dort passieren soll. Erst im Laufe einer Session zeigt sich dann, daß das mehr oder weniger irrelevant ist.
 
-Durch die Vorgabe von "Shadowrun" und "über 30" ("für Erwachsene, variante dreckig und gemein") wollte ich das abkürzen: Einmal ist das Universum dem erwarteten Con-Publikum wohlbekannt und zum anderen stehen so die [Genrekonventionen und Erwartungen]({{< ref "/content/posts/2005-07-06-regeln-vs-genrekonventionen.md" >}}) schon fest.
+Durch die Vorgabe von "Shadowrun" und "über 30" ("für Erwachsene, Variante dreckig und gemein") wollte ich das abkürzen: Einmal ist das Universum dem erwarteten Con-Publikum wohlbekannt und zum anderen stehen so die [Genrekonventionen und Erwartungen]({{< ref "/content/posts/2005-07-06-regeln-vs-genrekonventionen.md" >}}) schon fest.
 
 Die unausweichliche Startdiskussion stellte also zwei bis drei mögliche Szenarien ins den Raum:
 
@@ -71,7 +71,7 @@ Die angegebenen Zahlen zeigen dabei die Screen Presence einer Figur in dieser Fo
   Ausspielen als passend melodramatisch. Susanns Mutter wird durch Rocks
   Einsatz klar, daß Rock nicht gefährlich für sie und ihre Tochter und trotz
   seiner Veränderung ein guter Vater für seine Tochter ist. Damit löst sich
-  dann aus Rocks Issue episodengerecht auf - sein Leben hat jetzt einen
+  dann auch Rocks Issue episodengerecht auf - sein Leben hat jetzt einen
   Sinn, der über seine Rolle hinausgeht.
 6. Auch die folgende Episode, "Shadow", haben wir dann ausgespielt. Dies ist
   eine Folge für Kate (3), Squeek (2) und Tie (2). Kate und die beiden
@@ -91,7 +91,7 @@ Die angegebenen Zahlen zeigen dabei die Screen Presence einer Figur in dieser Fo
   Logistics verrät oder ob er loyal zur Gruppe ist. Rock (2) hat einen
   Verdacht, aber er ist zu spät. Oder doch nicht?
 
-9. In "Countdown to Zero" (Face (2) und Rock (2)) werden dann die die
+9. In "Countdown to Zero" (Face (2) und Rock (2)) werden dann die
   Ereignisse geschildert, die zum Erwachen und der Amnesie der Gruppe im
   Piloten führen.
 
