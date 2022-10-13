@@ -44,14 +44,14 @@ It is then visible to all members of the group.
 The problem with groups is that they are almost impossible to find.
 They are invitation only.
 A member of the group must have knowledge of you looking for the group, and then invite you to it.
-In some messengers this will also form a new group, destroying the messaging history of the older group, in order to protect the privacy of the conversation hapenning before the new member joined.
+In some messengers this will also form a new group, destroying the messaging history of the older group, in order to protect the privacy of the conversation happening before the new member joined.
 
 ![](/uploads/2022/10/groups-places-03.jpg)
 
 *The Discord chat system allows you to form small scale groups with fixed membership, even without having a "Discord Server".*
 
 A better system uses Places (often called Rooms or Channels) instead of Groups.
-A place is discoverable, you can "find" it, "go" to it, and "join" without being explicitly invited (permissioning and moderation systems often exist).
+A place is discoverable, you can "find" it, "go" to it, and "join" without being explicitly invited (permission and moderation systems often exist).
 
 Since Places tend to proliferate, mechanism to group, order, tag and search them often exist.
 In Discord, for example, Channels can be grouped into Categories, which are then grouped into "Servers", the server having an owner, and often a purpose.
@@ -68,14 +68,14 @@ It relies on Groups, and tries to mitigate that by coupling groups to Facebook "
 This combines worst practices of several systems into one.
 
 Places can be persistent, they can exist without anyone being in them.
-Places can also have one or multiple owners, which is the root of that Places' permissioning system and the source of all moderator power for that Place.
+Places can also have one or multiple owners, which is the root of that Places' permission system and the source of all moderator power for that Place.
 
 # Presence
 
 Working asynchronously means that you will not be present in a chat at all times.
 
 This is a feature: It allows you to focus, and think straight, cutting deeply into problems.
-It also allows you to be in another timezone that your communication partners and still contribute meaningfully to a collaborative effort.
+It also allows you to be in another timezone than your communication partners and still contribute meaningfully to a collaborative effort.
 
 It poses the problem of your communication partners not knowing your current comms status, and availability.
 If they are blocked, they might need you and it would help them to have some expectation of your response times, availability and context.
@@ -89,12 +89,12 @@ All modern chat systems have a presence mechanism, a semi-automatic status tagli
 Presence management in chat system often goes hand in hand with logging.
 Messages sent to you in your absence are logged, and shown to you on reconnect.
 
-This is all a giant step forward from IRC, which did not manage presence well, and also did now allow sending of messages to disconnected users.
+This is all a giant step forward from IRC, which did not manage presence well, and also did not allow sending messages to disconnected users.
 
 In IRC, being offline means not being present: people fall off the channel and what is being said with them being not there is lost to them.
-That is of course a nuisance, and so people have been using programs such as screen to run an IRC client even when they have disconnected from their computer.
+That is of course a nuisance, and so people have been using programs such as screen to run an IRC client even when they have been disconnected from their computer.
 
-IRC's mechamism for presence (here: attention) is somewhat hidden -- the `/away` command. 
+IRC's mechanism for presence (here: attention) is somewhat hidden -- the `/away` command. 
 But not only is the mechanism hidden (it is another command that needs to be learned and used), but the status is somewhat hidden as well.
 You can't see if somebody is `/away` unless you look at them with a `/whois`.
 Or you learn about the fact that they are `/away` only after the fact, when you say something to them and get an autoresponse with their `/away` message.
@@ -126,7 +126,7 @@ Anther, opposite extreme point is Jabber, which has no common rule for dispositi
 
 # Deliverables - File and Image Sharing
 
-In a corporate context, we use the communication mechanism as a vehicle to create and share documents, and have a discusson about the documents we work on collaboratively.
+In a corporate context, we use the communication mechanism as a vehicle to create and share documents, and have a discussion about the documents we work on collaboratively.
 Mail was doing this in the past, with Quotes and with Attachments, but that is a very cumbersome, lossy and hard to discover mechanism.
 Most companies have moved the collab process off mail, to a large extent, and towards chat and collaborative document systems such as Google Docs.
 
@@ -136,7 +136,7 @@ Wave allowed a group of people to create things in a kind of chat bubble, only t
 Other users could comment on an item in a hierarchic comments-on-comment tree like in a discussion system, or directly edit the original item, incorporating their changes. 
 
 Changes were recorded and were undoable and replayable.
-This allowed users to view the end result of a wave, or review the process of building that result after the fact.
+This allowed users to view the end result of a Wave, or review the process of building that result after the fact.
 
 ![](/uploads/2022/10/groups-places-07.jpg)
 
@@ -167,7 +167,7 @@ Instead the purpose is built in, and immediately obvious.
 
 Modern chat systems are kind of the opposite:
 They put their purpose (communication) first, and the documents ride in the back.
-This happens either through URLs or throup file transfer.
+This happens either through URLs or through file transfer.
 
 All modern chat systems have a working file transfer, which is also aware of media types.
 That means, not only can you drag and drop files into a 1:1 chat or a channel, but also images or animations, as well as audio files.
@@ -196,13 +196,13 @@ Unfortunately FB messager is utterly broken in many ways, and unsuited for any s
 There are many facets to its fractal brokenness:
 
 - It has groups, but no places.
-- Groups have limited attendance, and the limit is too small (the old `#live` Jabber channel was mandatory for all people pushing deployments, and could not be reproduced in FB Messenger)
-- It ate data. Mentioning a filename `main.pl` would inescapably turn this into a polish hostname [main.pl](https://main.pl). More often than not, Messenger would detect a mailware phising attempt and prevent you from sending the message.
+- Groups have limited attendance, and the limit is too small (the old `#live` Jabber channel was mandatory for all people pushing deployments, and could not be reproduced in FB Messenger).
+- It ate data. Mentioning a filename `main.pl` would inescapably turn this into a polish hostname [main.pl](https://main.pl). More often than not, Messenger would detect a mailware phishing attempt and prevent you from sending the message.
 - It ate data. Mentioning an URL with array parameters ("https://example.com/bla?a=1^a=2^a=3") would make it parse the URL, representing the keys in a hash, and dropping the repeated keys, breaking the URL.
 - It could not handle files, code formatting and many other things well.
 - It could not do threads, which are a necessity in high volume support channels.
 
-In the end, corp was forced to also purchase Slack on to of FB at Work, to prevent a more or less open revolt.
+In the end, corp was forced to also purchase Slack on top of FB at Work, to prevent a more or less open revolt.
 
 We had been using **Google Drive and Google Office**, as well, across the company, and the collaborative features in it were well understood and used.
 
@@ -218,11 +218,11 @@ The key learnings are:
 - We already had tooling for Remote First, but had hardly any need to use them properly.
 - We were hardly using Email with all its glorious brokenness any more.
 - By happy accident, the core tools (FB at Work, Slack) had Places, not Groups, as a core metaphor, and people structured their work around these places.
-- Collaborative document editing and a rich, structured chat complement each other well. But since Facebook and Google both are unable to make such a thing, we have yet another vendor integrated. This turned out to be actually an advantage.
+- Collaborative document editing and a rich, structured chat complement each other well. But since Facebook and Google both are unable to make such a thing, we have yet another vendor integrated. This turned out to be an actual advantage.
 
 Our key deficits have not been discussed at length here, but are related:
 
 - Google Office documents have very bad discoverability and Google Office has no places.
-- Corrollary: A process is needed and needs to manually executed to move content from the collaborative phase to the publication phase, elsewhere.
+- Corollary: A process is needed and needs to manually executed to move content from the collaborative phase to the publication phase, elsewhere.
   - By public decree in our place this is going to be Confluence, which has problems of its own, and also poses a document conversion problem (from Google to Confluence internal format, keeping structure).
 - Code Collaboration is not part of other collaboration at all, and lives in a third, and entirely disconnected space.
