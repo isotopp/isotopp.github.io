@@ -154,7 +154,7 @@ One could use Wave to manage a world building and game session in a role playing
 So Wave needed explanation and contextualisation - and above all, a purpose, but none was given.
 Wave died, because it confused users.
 
-i![](/uploads/2022/10/groups-places-08.jpg)
+![](/uploads/2022/10/groups-places-08.jpg)
 
 *A collaboratively edited document. Multiple watchers are shown as icons at the top of the screen. A chat window is open. Cursors and collaborators edits would be visible simultaneously editing the document in many places while it has been initally created.*
 
@@ -167,7 +167,7 @@ Instead the purpose is built in, and immediately obvious.
 
 Modern chat systems are kind of the opposite:
 They put their purpose (communication) first, and the documents ride in the back.
-This happens either through URLs or throup file transfer.
+This happens either through URLs or through file transfer.
 
 All modern chat systems have a working file transfer, which is also aware of media types.
 That means, not only can you drag and drop files into a 1:1 chat or a channel, but also images or animations, as well as audio files.
@@ -197,7 +197,7 @@ There are many facets to its fractal brokenness:
 
 - It has groups, but no places.
 - Groups have limited attendance, and the limit is too small (the old `#live` Jabber channel was mandatory for all people pushing deployments, and could not be reproduced in FB Messenger)
-- It ate data. Mentioning a filename `main.pl` would inescapably turn this into a polish hostname [main.pl](https://main.pl). More often than not, Messenger would detect a mailware phising attempt and prevent you from sending the message.
+- It ate data. Mentioning a filename `main.pl` would inescapably turn this into a polish hostname [main.pl](https://main.pl). More often than not, Messenger would detect a malware phising attempt and prevent you from sending the message.
 - It ate data. Mentioning an URL with array parameters ("https://example.com/bla?a=1^a=2^a=3") would make it parse the URL, representing the keys in a hash, and dropping the repeated keys, breaking the URL.
 - It could not handle files, code formatting and many other things well.
 - It could not do threads, which are a necessity in high volume support channels.
@@ -223,6 +223,6 @@ The key learnings are:
 Our key deficits have not been discussed at length here, but are related:
 
 - Google Office documents have very bad discoverability and Google Office has no places.
-- Corrollary: A process is needed and needs to manually executed to move content from the collaborative phase to the publication phase, elsewhere.
+- Corrollary: A process is needed and needs to be manually executed to move content from the collaborative phase to the publication phase, elsewhere.
   - By public decree in our place this is going to be Confluence, which has problems of its own, and also poses a document conversion problem (from Google to Confluence internal format, keeping structure).
 - Code Collaboration is not part of other collaboration at all, and lives in a third, and entirely disconnected space.
