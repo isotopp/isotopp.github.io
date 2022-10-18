@@ -5,6 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 tags:
 - mysql
+- remote first
 - work
 - lang_de
 title: Erfahrungen mit Nonoffice
