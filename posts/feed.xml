@@ -6,7 +6,148 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 13 Oct 2022 09:10:34 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 18 Oct 2022 14:42:02 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Software Supply Chain Issues</title>
+      <link>https://blog.koehntopp.info/2022/10/18/software-supply-chain-issues.html</link>
+      <pubDate>Tue, 18 Oct 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/10/18/software-supply-chain-issues.html</guid>
+      <description>&lt;p&gt;The GitHub Security Lab has a long hard look at &amp;ldquo;Apache Commons Text&amp;rdquo; in March this year.
+That resulted in &lt;a href=&#34;https://securitylab.github.com/advisories/GHSL-2022-018_Apache_Commons_Text/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CVE-2022-42889&lt;/a&gt;
+
+.
+The exploit goes like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;StringSubstitutor&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;interpolator&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;StringSubstitutor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;createInterpolator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;interpolator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;replace&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;${script:javascript:java.lang.Runtime.getRuntime().exec(&amp;#39;touch /tmp/foo&amp;#39;)}&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;System&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;println&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Next to &lt;code&gt;${script:...}&lt;/code&gt; there are apparently also a &lt;code&gt;${url:...}&lt;/code&gt; and `${dns} as other unsuitable substitutions, and they nest.&lt;/p&gt;
+&lt;p&gt;This was fixed in October 2022, after being reminded by GHSL in May and August.&lt;/p&gt;
+&lt;p&gt;It was introduced in October 2018, in Version 1.5, and only discovered in March this year.&lt;/p&gt;
+&lt;h1 id=&#34;whats-wrong-with-this&#34;&gt;
+    &lt;a href=&#34;#whats-wrong-with-this&#34;&gt;
+	What&amp;rsquo;s wrong with this?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The security impact of this new feature is obvious, when discussed.
+Yet, it was integrated in October 2018, and that apparently did not raise any red flags in a security or merge review.
+Also, none of the users of the library found anything weird.&lt;/p&gt;
+&lt;p&gt;The package has &lt;a href=&#34;https://commons.apache.org/proper/commons-text/userguide.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;documentation&lt;/a&gt;
+
+.
+String substitution is described in the manpage for that class, &lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/StringSubstitutor.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StringSubstituror&lt;/a&gt;
+
+.
+The &amp;ldquo;fix&amp;rdquo; for the CVS was to disable some substitutors.
+This is described in &lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StringLookupFactory&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;It took almost 3.5 years for somebody to look at this and find that to be a security risk.&lt;/p&gt;
+&lt;p&gt;After reporting the risk, it took Apache 2 reminders and way more than the standard 90 days to react and publish a mitigation.&lt;/p&gt;
+&lt;p&gt;This means&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;nonfunctional feature and security impact review for code merges.&lt;/li&gt;
+&lt;li&gt;slow reaction to security issues (CVSS 3.x score: 9.8)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Clearly, the security process of the Apache organisation has huge room for improvement.&lt;/p&gt;
+&lt;h1 id=&#34;is-that-a-good-mitigation&#34;&gt;
+    &lt;a href=&#34;#is-that-a-good-mitigation&#34;&gt;
+	Is that a good mitigation?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;You decide. Among the interpolations that are still enabled by default are&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html#fileStringLookup--&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;fileStringLookup&lt;/a&gt;
+
+, which replaces the &lt;code&gt;${file:UTF-8:/filename}&lt;/code&gt; with the content of a file.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html#propertiesStringLookup--&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;propertiesStringLookup&lt;/a&gt;
+
+, which replaces a value for a key in a properties file.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html#environmentVariableStringLookup--&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;environmentVariableStringLookup&lt;/a&gt;
+
+, which replaces &lt;code&gt;${env:USER}&lt;/code&gt; with the content of an environment variable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All have the potential, if controlled by an attacker, to read and leak data, and maybe secrets.
+That is not remote code execution, but probably still arbitrary file read and secrets leak.&lt;/p&gt;
+&lt;p&gt;Such a string interpolation under control of a user is risky at best, but the default configuration is still far from secure, even if the fix improves things.&lt;/p&gt;
+&lt;h1 id=&#34;not-the-first-time&#34;&gt;
+    &lt;a href=&#34;#not-the-first-time&#34;&gt;
+	Not the first time
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This situation seems to be a repeat of the &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2021-44228&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;log4j exploit&lt;/a&gt;
+
+ from the year before.
+In the log4j case, the initial find was presented on a conference and dismissed as unimportant.
+It only escalated after the exploit was used in the wild against Minecraft servers and their associated Discords, and then it quickly escalated to the full scope we observed last year.&lt;/p&gt;
+&lt;p&gt;Handling this was imperfect as well, with a series of fixes trying to mitigate the problem, and failing to do so in the first round.&lt;/p&gt;
+&lt;p&gt;So both projects/packages&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;accepted contribution of text interpolation without understanding the implications that thing would have&lt;/li&gt;
+&lt;li&gt;bungled the security response process, in various ways (slow response, or no response at all)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This points to non-functional processes inside the collection of Apache projects.
+They are either not executed, or they are not effective, when executed.
+The meta-question is if the collection of Apache projecs are aware of that, and how they are trying to address this?&lt;/p&gt;
+&lt;h1 id=&#34;are-there-more-packages-that-have-this-issue&#34;&gt;
+    &lt;a href=&#34;#are-there-more-packages-that-have-this-issue&#34;&gt;
+	Are there more packages that have this issue?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;As a developer or organisation that makes software, you sometimes take on external dependencies.
+You are still being asked to be able to answer questions about the whole product, so you need a way to form an opinion about the state of the dependencies and their dependencies.&lt;/p&gt;
+&lt;p&gt;That starts with an inventory, and some useful scoping.
+And the mostly liveness, quality and maturity of processes.&lt;/p&gt;
+&lt;h2 id=&#34;one-evaluation-approach&#34;&gt;
+    &lt;a href=&#34;#one-evaluation-approach&#34;&gt;
+	One evaluation approach
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One quick evaluation approach is documented &lt;a href=&#34;https://askcloudarchitech.com/posts/tutorials/open-source-security-dependency-review/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+I&amp;rsquo;d reorder things a bit.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;ldquo;Is it necessary&amp;rdquo;-Phase: Do we need that dependency?&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is it popular&amp;rdquo;-Phase: Who else is using this?&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is it maintained&amp;rdquo;-Phase: Do we see commits? Do we understand the code and the commits?&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is Security considered&amp;rdquo;-Phase: Check their security response process and the execution&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is it supported&amp;rdquo;-Phase: Go check out their presence on various media.
+How do you reach them?
+Are they approachable or more on the Hugo/Cyrus spectrum of interaction?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;another-evaluation-approach&#34;&gt;
+    &lt;a href=&#34;#another-evaluation-approach&#34;&gt;
+	Another evaluation approach
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Another approach is documented &lt;a href=&#34;https://opensource.com/life/14/1/evaluate-sustainability-open-source-project&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;It is similar, and asks you to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;check contributions, and contributors. Read a bit of code.&lt;/li&gt;
+&lt;li&gt;Look at the release history. Are the regular releases? A schedule?&lt;/li&gt;
+&lt;li&gt;The user community. Are they talking to people? How?&lt;/li&gt;
+&lt;li&gt;Longevity.&lt;/li&gt;
+&lt;li&gt;The general ecosystem.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I&amp;rsquo;d add some kind of metric around process execution.
+Check merge reviews, execution of security process and again, approachability and response times.&lt;/p&gt;
+&lt;h2 id=&#34;another-commercial-approach&#34;&gt;
+    &lt;a href=&#34;#another-commercial-approach&#34;&gt;
+	Another, commercial approach
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Some vendors are starting to approach this, for example &lt;a href=&#34;https://socket.dev/npm/package/@webassemblyjs/ast/overview/1.11.1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;All in all, this seems to be a largely unsolved problem.
+Criteria are uneven across various attempts, projects and ecosystems.
+Some languages or projects seem to have problems even with creating an inventory of dependencies.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Groups and Places</title>
       <link>https://blog.koehntopp.info/2022/10/12/groups-and-places.html</link>
@@ -2963,77 +3104,6 @@ Radically less car, so exactly the right amount of car.&lt;/p&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>How to buy an e-Bike</title>
-      <link>https://blog.koehntopp.info/2022/06/08/how-to-buy-an-ebike.html</link>
-      <pubDate>Wed, 08 Jun 2022 04:47:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/06/08/how-to-buy-an-ebike.html</guid>
-      <description>&lt;p&gt;I &lt;a href=&#34;https://twitter.com/isotopp/status/1534158787891843073&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;have been asked&lt;/a&gt;
-
- what kind of bike I ride and how to choose one.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/06/grenoble.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Gazelle Grenoble 2017, with vaude Aquaback plus.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;I am over 50 years old, over 200cm tall and weigh more than 120 kilo before I dresss.
-Back when we still had an office, that was a 22km trip, each direction.&lt;/p&gt;
-&lt;p&gt;I need an upright sitting position, a soft and comfortable seat.
-I need to be able to carry luggage, and a return-home guarantee.
-I need to be able to get useful service on the bike, because at my age I prefer to use money instead of time to keep the bike running.&lt;/p&gt;
-&lt;p&gt;I did try the Cruiser HS by R+M, and that was a completely nifty bike.
-But it does use an insurance plate and a helmet, and I wanted something that could be ridden casually.
-And without the HS (which causes the inconvenience) the price for R+M was no longer justifyable.
-So I looked around at other solutions, and this was a good match.&lt;/p&gt;
-&lt;p&gt;My wife now has the 2020 model of the same type, with a step-through frame.
-That bike also has fixed lighting, so it can no longer lose adjustment, a better motor, a larger battery and a stepless gearbox.&lt;/p&gt;
-&lt;p&gt;The step-though frame has a different geometry than the one I use, and it would have it even at the same frame height:
-It is built for people with longer legs and shorter torso, so even adjusted correctly it feels wrong when I sit on it.&lt;/p&gt;
-&lt;p&gt;I also like my (older) battery system.
-The battery is easily removable, which is important if you want to keep it warm in weather with temperatures below 3C - batteries age faster and permanently lose capacity if you freeze them.
-It is also handy, if you want to charge it, and there is no outside charger in the bike parking lot.
-When removed, the battery system in my bike keeps the contacts protected and dry.&lt;/p&gt;
-&lt;p&gt;In the newer bikes, the battery is integrated part of the frame, and in Gazelle&amp;rsquo;s case goes out up.
-This leaves the frame upen and rain can enter.
-Gazelle is not stupid, the contacts are at the top and somewhat protected, but you still have water inside the frame.&lt;/p&gt;
-&lt;p&gt;Frame geometry matters.
-A bike frame needs to be fitted to your body, and then adjusted properly.
-Do not buy a bike from a catalog, nor without a test drive of at least an hour.
-There is no such thing as &lt;a href=&#34;https://www.thestar.com/news/insight/2016/01/16/when-us-air-force-discovered-the-flaw-of-averages.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;an average human&lt;/a&gt;
-
-, and because of that we have learned to build things adjustable.
-So get them fitted, properly adjusted and then try them out properly and listen to your body.
-This is not just about bikes, also keyboards, monitors and everything else that is close to the body need to be handled alike.&lt;/p&gt;
-&lt;p&gt;The Gazelle is made from standard parts, Bosch Motor, Magura brakes, Shimano gearbox, and so on.
-That makes replacement, adjustment and service easy:
-Any bike shop has these, and will be able to service them properly.&lt;/p&gt;
-&lt;p&gt;Also, the bike is entirely unconnected &amp;ndash; it will work with the cellphone at home, stolen or empty and still take you home.&lt;/p&gt;
-&lt;p&gt;I mention this, because I am living in Hipster Ground Zero, and a lot of people look at VanMoof:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/06/vanmoof.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Awesome design, seriously bad ergonomic choices and a lot of quality issues.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;This is a company that has a turnover of 100M, and operates at a spectacular loss.
-They are making a bike from first principle and custom parts.
-Standard parts will not fit, and only their service center can fix these bikes.
-They also have quality issues for their self-made parts.&lt;/p&gt;
-&lt;p&gt;Apple can pull this deep supply chain stunt off, but they are of course a 100B company with a lot of manufacturing expertise, and frankly an entirely different pricing model.&lt;/p&gt;
-&lt;p&gt;VanMoof also comes in a one-size-fits-nobody frame which seriously limits how it can be adjusted.
-The handlebar, too, can only be adjusted within close limits, and needs special tools to do so.
-The light is part of the frame, and permanently maladjusted: it produces glare instead of lighting the path.&lt;/p&gt;
-&lt;p&gt;Their bikes have a hub motor in the wrong wheel (the front wheel, which you use for steering), with no torque sensor.
-So driving is janky at best, outright dangerous in critical conditions.&lt;/p&gt;
-&lt;p&gt;The battery is not removable and will freeze to death, unless you can take it into a shed, cellar or your appartment.
-Which is also necessary to charge it.&lt;/p&gt;
-&lt;p&gt;But yes, it looks cool.
-Basically, this is a cinetic sculpture and  not actually a vehicle.&lt;/p&gt;
 </description>
     </item>
     

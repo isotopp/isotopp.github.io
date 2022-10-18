@@ -6,7 +6,148 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 13 Oct 2022 09:10:34 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 18 Oct 2022 14:42:02 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Software Supply Chain Issues</title>
+      <link>https://blog.koehntopp.info/2022/10/18/software-supply-chain-issues.html</link>
+      <pubDate>Tue, 18 Oct 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/10/18/software-supply-chain-issues.html</guid>
+      <description>&lt;p&gt;The GitHub Security Lab has a long hard look at &amp;ldquo;Apache Commons Text&amp;rdquo; in March this year.
+That resulted in &lt;a href=&#34;https://securitylab.github.com/advisories/GHSL-2022-018_Apache_Commons_Text/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CVE-2022-42889&lt;/a&gt;
+
+.
+The exploit goes like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-java&#34; data-lang=&#34;java&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kd&#34;&gt;final&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;StringSubstitutor&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;interpolator&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;StringSubstitutor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;createInterpolator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;String&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;out&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;interpolator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;replace&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;${script:javascript:java.lang.Runtime.getRuntime().exec(&amp;#39;touch /tmp/foo&amp;#39;)}&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;System&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;na&#34;&gt;println&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;out&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Next to &lt;code&gt;${script:...}&lt;/code&gt; there are apparently also a &lt;code&gt;${url:...}&lt;/code&gt; and `${dns} as other unsuitable substitutions, and they nest.&lt;/p&gt;
+&lt;p&gt;This was fixed in October 2022, after being reminded by GHSL in May and August.&lt;/p&gt;
+&lt;p&gt;It was introduced in October 2018, in Version 1.5, and only discovered in March this year.&lt;/p&gt;
+&lt;h1 id=&#34;whats-wrong-with-this&#34;&gt;
+    &lt;a href=&#34;#whats-wrong-with-this&#34;&gt;
+	What&amp;rsquo;s wrong with this?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The security impact of this new feature is obvious, when discussed.
+Yet, it was integrated in October 2018, and that apparently did not raise any red flags in a security or merge review.
+Also, none of the users of the library found anything weird.&lt;/p&gt;
+&lt;p&gt;The package has &lt;a href=&#34;https://commons.apache.org/proper/commons-text/userguide.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;documentation&lt;/a&gt;
+
+.
+String substitution is described in the manpage for that class, &lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/StringSubstitutor.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StringSubstituror&lt;/a&gt;
+
+.
+The &amp;ldquo;fix&amp;rdquo; for the CVS was to disable some substitutors.
+This is described in &lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StringLookupFactory&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;It took almost 3.5 years for somebody to look at this and find that to be a security risk.&lt;/p&gt;
+&lt;p&gt;After reporting the risk, it took Apache 2 reminders and way more than the standard 90 days to react and publish a mitigation.&lt;/p&gt;
+&lt;p&gt;This means&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;nonfunctional feature and security impact review for code merges.&lt;/li&gt;
+&lt;li&gt;slow reaction to security issues (CVSS 3.x score: 9.8)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Clearly, the security process of the Apache organisation has huge room for improvement.&lt;/p&gt;
+&lt;h1 id=&#34;is-that-a-good-mitigation&#34;&gt;
+    &lt;a href=&#34;#is-that-a-good-mitigation&#34;&gt;
+	Is that a good mitigation?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;You decide. Among the interpolations that are still enabled by default are&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html#fileStringLookup--&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;fileStringLookup&lt;/a&gt;
+
+, which replaces the &lt;code&gt;${file:UTF-8:/filename}&lt;/code&gt; with the content of a file.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html#propertiesStringLookup--&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;propertiesStringLookup&lt;/a&gt;
+
+, which replaces a value for a key in a properties file.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://commons.apache.org/proper/commons-text/apidocs/org/apache/commons/text/lookup/StringLookupFactory.html#environmentVariableStringLookup--&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;environmentVariableStringLookup&lt;/a&gt;
+
+, which replaces &lt;code&gt;${env:USER}&lt;/code&gt; with the content of an environment variable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All have the potential, if controlled by an attacker, to read and leak data, and maybe secrets.
+That is not remote code execution, but probably still arbitrary file read and secrets leak.&lt;/p&gt;
+&lt;p&gt;Such a string interpolation under control of a user is risky at best, but the default configuration is still far from secure, even if the fix improves things.&lt;/p&gt;
+&lt;h1 id=&#34;not-the-first-time&#34;&gt;
+    &lt;a href=&#34;#not-the-first-time&#34;&gt;
+	Not the first time
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This situation seems to be a repeat of the &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2021-44228&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;log4j exploit&lt;/a&gt;
+
+ from the year before.
+In the log4j case, the initial find was presented on a conference and dismissed as unimportant.
+It only escalated after the exploit was used in the wild against Minecraft servers and their associated Discords, and then it quickly escalated to the full scope we observed last year.&lt;/p&gt;
+&lt;p&gt;Handling this was imperfect as well, with a series of fixes trying to mitigate the problem, and failing to do so in the first round.&lt;/p&gt;
+&lt;p&gt;So both projects/packages&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;accepted contribution of text interpolation without understanding the implications that thing would have&lt;/li&gt;
+&lt;li&gt;bungled the security response process, in various ways (slow response, or no response at all)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This points to non-functional processes inside the collection of Apache projects.
+They are either not executed, or they are not effective, when executed.
+The meta-question is if the collection of Apache projecs are aware of that, and how they are trying to address this?&lt;/p&gt;
+&lt;h1 id=&#34;are-there-more-packages-that-have-this-issue&#34;&gt;
+    &lt;a href=&#34;#are-there-more-packages-that-have-this-issue&#34;&gt;
+	Are there more packages that have this issue?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;As a developer or organisation that makes software, you sometimes take on external dependencies.
+You are still being asked to be able to answer questions about the whole product, so you need a way to form an opinion about the state of the dependencies and their dependencies.&lt;/p&gt;
+&lt;p&gt;That starts with an inventory, and some useful scoping.
+And the mostly liveness, quality and maturity of processes.&lt;/p&gt;
+&lt;h2 id=&#34;one-evaluation-approach&#34;&gt;
+    &lt;a href=&#34;#one-evaluation-approach&#34;&gt;
+	One evaluation approach
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One quick evaluation approach is documented &lt;a href=&#34;https://askcloudarchitech.com/posts/tutorials/open-source-security-dependency-review/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+I&amp;rsquo;d reorder things a bit.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&amp;ldquo;Is it necessary&amp;rdquo;-Phase: Do we need that dependency?&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is it popular&amp;rdquo;-Phase: Who else is using this?&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is it maintained&amp;rdquo;-Phase: Do we see commits? Do we understand the code and the commits?&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is Security considered&amp;rdquo;-Phase: Check their security response process and the execution&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;Is it supported&amp;rdquo;-Phase: Go check out their presence on various media.
+How do you reach them?
+Are they approachable or more on the Hugo/Cyrus spectrum of interaction?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;another-evaluation-approach&#34;&gt;
+    &lt;a href=&#34;#another-evaluation-approach&#34;&gt;
+	Another evaluation approach
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Another approach is documented &lt;a href=&#34;https://opensource.com/life/14/1/evaluate-sustainability-open-source-project&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;It is similar, and asks you to&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;check contributions, and contributors. Read a bit of code.&lt;/li&gt;
+&lt;li&gt;Look at the release history. Are the regular releases? A schedule?&lt;/li&gt;
+&lt;li&gt;The user community. Are they talking to people? How?&lt;/li&gt;
+&lt;li&gt;Longevity.&lt;/li&gt;
+&lt;li&gt;The general ecosystem.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I&amp;rsquo;d add some kind of metric around process execution.
+Check merge reviews, execution of security process and again, approachability and response times.&lt;/p&gt;
+&lt;h2 id=&#34;another-commercial-approach&#34;&gt;
+    &lt;a href=&#34;#another-commercial-approach&#34;&gt;
+	Another, commercial approach
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Some vendors are starting to approach this, for example &lt;a href=&#34;https://socket.dev/npm/package/@webassemblyjs/ast/overview/1.11.1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;All in all, this seems to be a largely unsolved problem.
+Criteria are uneven across various attempts, projects and ecosystems.
+Some languages or projects seem to have problems even with creating an inventory of dependencies.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Groups and Places</title>
       <link>https://blog.koehntopp.info/2022/10/12/groups-and-places.html</link>
@@ -2982,96 +3123,6 @@ So driving is janky at best, outright dangerous in critical conditions.&lt;/p&gt
 Which is also necessary to charge it.&lt;/p&gt;
 &lt;p&gt;But yes, it looks cool.
 Basically, this is a cinetic sculpture and  not actually a vehicle.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Binlog Compression and Large Transactions</title>
-      <link>https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions.html</link>
-      <pubDate>Tue, 07 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/06/07/mysql-binlog-compression-and-large-transactions.html</guid>
-      <description>&lt;p&gt;(&lt;a href=&#34;https://twitter.com/isotopp/status/1532752730229559300&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Twitter thread&lt;/a&gt;
-
-, reproduction in english, and update)&lt;/p&gt;
-&lt;p&gt;On Friday, 2022-06-03, 14:42, we lost a replication hierarchy, on the primary, all replicas down.
-At 16:30 the escalation hits my desk, because this one is special.&lt;/p&gt;
-&lt;h1 id=&#34;replication-stops-and-wants-more-max_allowed_packet&#34;&gt;
-    &lt;a href=&#34;#replication-stops-and-wants-more-max_allowed_packet&#34;&gt;
-	Replication stops, and wants more &lt;code&gt;max_allowed_packet&lt;/code&gt;
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;There is a sequence of binlogs, each 1 GB in size, as configured, except for the broken one, which is 3 GB.
-Replication stops with&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Got fatal error 1236 from master when reading data from binary log: &amp;#39;log event entry exceeded max_allowed_packet; Increase max_allowed_packet on master; the first event &amp;#39;&amp;#39; at 4, the last event read from &amp;#39;../log/binlog.002558&amp;#39; at 19959785, the last byte read from &amp;#39;../log/binlog.002558&amp;#39; at 19959804
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Trying to run &lt;code&gt;mysqldump -vvv ...&lt;/code&gt; on the broken binlog fails and produces no output useful for diagnostics.&lt;/p&gt;
-&lt;h1 id=&#34;using-the-flight-recorder&#34;&gt;
-    &lt;a href=&#34;#using-the-flight-recorder&#34;&gt;
-	Using the flight recorder
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;We do know the statement failed at 14:42 and we run a copy of &lt;a href=&#34;https://blog.koehntopp.info/2021/04/22/a-mysql-flight-recorder.html&#34;&gt;MySQL Flight Recorder&lt;/a&gt;
-
- on every box, even this one.&lt;/p&gt;
-&lt;p&gt;Among the many things the flight recorder records is the processlist and also the output of &lt;code&gt;SHOW ENGINE INNODB STATUS&lt;/code&gt;.
-Indeed we find a long running transaction.
-At 14:41, we see &lt;code&gt;Compressing transaction changes&lt;/code&gt;.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;---TRANSACTION 6702541326, ACTIVE (PREPARED) 7419 sec
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql tables in use 2, locked 2
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2185611 lock struct(s), heap size 232317048, 73307452 row lock(s), undo log entries 70077831
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;MySQL thread id 1532688506, OS thread handle 139765193623296, query id 22431944402 SOME_SERVERNAME 10.10.10.10 SOE_USERNAME Compressing transaction changes.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;INSERT IGNORE INTO target_table  SELECT * FROM source_table
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And at 14:42 the same thing is visible with &lt;code&gt;waiting for handler commit&lt;/code&gt;.
-Then replication died.&lt;/p&gt;
-&lt;h1 id=&#34;what-happened&#34;&gt;
-    &lt;a href=&#34;#what-happened&#34;&gt;
-	What happened
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;So this machine is running with compressed binlogs enabled.
-It was processing a large &lt;code&gt;INSERT INTO t SELECT * FROM s&lt;/code&gt; statement to copy rows.
-We see &lt;code&gt;70 077 831&lt;/code&gt; (70M) Undo Log entries.
-The transaction compressed data, then commits, then the replication stops on all replicas, in an unrecoverable way.
-At least the primary is still happy, if unaware of the problem.
-The binlog file is 2GB larger than it should be.&lt;/p&gt;
-&lt;p&gt;The immediate theory:
-Somebody wrote a small statement that produces a very large transaction.
-Binlog compression works with compression on a per-event basis, and we do get a very large row change event.
-But the zstd compression in MySQL cannot handle events this large.
-The size of the binlog suggests a signed 4 byte integer overflow.&lt;/p&gt;
-&lt;p&gt;Being unable to see the binlog, and getting some garbage error message make this very hard to debug.
-Our solution is to reclone the entire hierarchy (which is nasty, because it is a set of machines &amp;gt;10TB each).&lt;/p&gt;
-&lt;p&gt;Later investigation confirms that there is a binlog compression transaction size limit, but it is apparently even 1 GB, not 2 GB.
-This is not too bad a restriction. You probably do not want transactions that large anyway:
-They would break group replication, they would take ages to roll back, and they would create a lot of other problems as well.&lt;/p&gt;
-&lt;h1 id=&#34;problems-and-solutions&#34;&gt;
-    &lt;a href=&#34;#problems-and-solutions&#34;&gt;
-	Problems and Solutions
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;So we learn:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Avoid large transactions. &lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-commit-size-and-speed.html&#34;&gt;1000 to 10.000 rows&lt;/a&gt;
-
- are probably something you should aim for.&lt;/li&gt;
-&lt;li&gt;Configure &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/replication-options-binary-log.html#sysvar_max_binlog_cache_size&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;max_binlog_cache_size&lt;/a&gt;
-
- to under 1 GB. The server will then reject the large transaction instead of committing it to the binlog. This will prevent breaking the replication hierarchy.
-&lt;ul&gt;
-&lt;li&gt;Maybe similar or a small multiple of &lt;code&gt;max_allowed_packet&lt;/code&gt;?&lt;/li&gt;
-&lt;li&gt;The default is wrong: &lt;code&gt;18446744073709547520&lt;/code&gt;, and the manual itself recommends 4 GB, but the product does not set the default to this.
-Given that binlog compression can&amp;rsquo;t do more than 1 GB, that should probably the default.
-MySQL should come with sensible defaults.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;mysqlbinlog -vvv ...&lt;/code&gt; is not helpful, as it cannot parse this binlog, and the error message given is useless.
-The program should give a proper diagnostic message.&lt;/li&gt;
-&lt;li&gt;The server cannot handle this, and the error message shown above about &lt;code&gt;max_allowed_packet&lt;/code&gt; is misdirecting.
-The server should give proper diagnostic messages.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Once you experience this error, it is rather hard to fix:
-Recloning does it, but that takes long.
-Setting the &lt;code&gt;max_binlog_cache_size&lt;/code&gt; prevents the situation.&lt;/p&gt;
 </description>
     </item>
     
