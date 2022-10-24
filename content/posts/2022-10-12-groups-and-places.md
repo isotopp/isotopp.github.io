@@ -22,7 +22,7 @@ Let's have a chat about chats, and what properties they have.
 The first chat network I have been using was IRC -- Internet Relay Chat.
 This has been in the late 80ies or early 90ies, so today I have had an interactive online presence on the upside of 25 years or so.
 
-Later I got to use IQC, Jabber, Skype, Hangouts, Facebook Messenger, WhatsApp, Slack and RocketChat, among many others.
+Later I got to use ICQ, Jabber, Skype, Hangouts, Facebook Messenger, WhatsApp, Slack and RocketChat, among many others.
 I also got exposed to a number of collaborative document processing systems with chat-like properties:
 the now defunct Google Wave (alias Apache Wave, now also mostly defunct), and its heir Google Docs, and a bunch of newer collaborative brainstorming tools from the School of Miro.
 
@@ -162,7 +162,7 @@ Wave's legacy lives on, though.
 Much of the functionality of Wave is present in Google Docs, including the side chat, collaborative editing, history recording and replay and many other functions.
 Unlike Wave, Google's shared document editing puts the purpose first, and the collaboration in the background.
 This is matching people's expectations much better, and is less overwhelming.
-It does to have to be taught, or manually given purpose.
+It does not have to be taught, or manually given purpose.
 Instead, the purpose is built in, and immediately obvious.
 
 Modern chat systems are kind of the opposite:
