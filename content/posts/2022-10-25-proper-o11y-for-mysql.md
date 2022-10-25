@@ -138,3 +138,24 @@ So here I am, with my limited C++, and a 100 GB build partition, trying to build
 Once I have that, I can try to build a Pusher that takes data from that pool, trying to ship that to my coprocess, which then takes this and transforms it into whatever Honeycomb wants, injecting Spans into their system.
 
 Then I will finally be able to debug SQL properly, and in a single place with the code that made that SQL in the first place.
+
+# Other Systems
+
+My colleague Willian Stewart pointed me at Vitess, which [already does that for the "above MySQL"](https://vitess.io/docs/16.0/user-guides/configuration-advanced/tracing/#instrumenting-queries) part of Vitess:
+
+![](/uploads/2022/10/proper-o11y-03.png)
+
+*The call tree of a Query to Vitess as it is being handled inside of Vitess, as seen by Jaeger.*
+
+Vitess requires you to generate a piece of JSON that contains the necessary IDs to build a call tree:
+
+```json
+{"uber-trace-id":"{trace-id}:{span-id}:{parent-span-id}:{flags}"}
+```
+
+All items of a single trace have the same `trace-id`. 
+Each span has their own `span-id` and also states what the `parent-span-id` is.
+Additional `flags` control the annotations generated ("what gets traced").
+
+To protect the data against accidental interpretation and munging, Vitess wants you to base64 encode the thing and then put it into a `/*VT_SPAN_CONTEXT=...*/` pseudo-comment as part of the query to be traced.
+
