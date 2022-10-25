@@ -6,7 +6,135 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 24 Oct 2022 09:19:47 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 25 Oct 2022 14:28:06 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Proper O11y for MySQL</title>
+      <link>https://blog.koehntopp.info/2022/10/25/proper-o11y-for-mysql.html</link>
+      <pubDate>Tue, 18 Oct 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/10/25/proper-o11y-for-mysql.html</guid>
+      <description>&lt;p&gt;Three years ago, I learned that due to SREcon, Charity Majors was in Amsterdam.
+I set up a meeting between Benjamin Tyler, Yves Orton and a few more colleagues of mine, and her.
+That is, because apparently in a case of co-evolution, our company internal &amp;ldquo;Events&amp;rdquo; system and Honeycombs observability tooling, modelled after experiencing Fabooks &amp;ldquo;Scuba&amp;rdquo; seemed to be doing a lot of the same things.&lt;/p&gt;
+&lt;p&gt;These days, we are using Honeycomb a lot to record events, and debug code running in distributed systems.
+But one type of system does not fit into this very well:
+Databases of all kinds.
+And I don&amp;rsquo;t understand why, because it would be perfect.&lt;/p&gt;
+&lt;p&gt;About one year ago, I wrote an article about &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2021/09/15/mysql-tracing-a-single-query-with-performanceschema.html&#34;&gt;Tracing a single query with PERFORMANCE_SCHEMA&lt;/a&gt;
+
+&amp;rdquo;.
+Why would I want to trace a single query like that?&lt;/p&gt;
+&lt;p&gt;I want to get data about query execution out of MySQL, at scale, and push this into Honeycomb.&lt;/p&gt;
+&lt;h1 id=&#34;honeycomb-spans-traces-and-tags&#34;&gt;
+    &lt;a href=&#34;#honeycomb-spans-traces-and-tags&#34;&gt;
+	Honeycomb, Spans, Traces and Tags
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Honeycomb is a tool that ingests &amp;ldquo;Spans&amp;rdquo;, time intervals, that can be annotated with arbitrary key-value pairs.
+Spans do not only have a start and stop time, but also maintain relationships between Callers and Callees as a Tree Structure.
+A root Span and its children form an execution trace (&amp;ldquo;a trace&amp;rdquo;) of a single call or entity of work in a distributed system.&lt;/p&gt;
+&lt;p&gt;A lot of Honeycomb assumes that the values are numbers, but it doesn&amp;rsquo;t have to stop here (and other tooling can read Spans and work with non-numeric data, too).&lt;/p&gt;
+&lt;p&gt;Spans nest, and you could look at the execution of your program as an arrow of time on which the spans are arranged.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/10/proper-o11y-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A root span at the application level is started in &lt;code&gt;buildAvailabilityQuery()&lt;/code&gt;. This called into &lt;code&gt;sqlORM()&lt;/code&gt;, which in turned called &lt;code&gt;runSQL()&lt;/code&gt; several times. All this is recorded from the application and the application code. We&amp;rsquo;d want to see MySQL execution data in there, as subspans of &lt;code&gt;runSQL()&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;For each span then any number of KV-pairs are recorded, so you could record call parameters, results, or intermediate state.&lt;/p&gt;
+&lt;p&gt;Honeycomb allows you to aggregate such data on the fly, in almost real time, so you can ask &amp;ldquo;how many SQL queries is each action running, as a histo&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;You could also ask &amp;ldquo;What is the aggregated SQL time of each action&amp;rdquo;, over time. You&amp;rsquo;d see that at a certain point in time this time changed in the P95 and above.
+With their &amp;ldquo;Bubble up&amp;rdquo; functionality you&amp;rsquo;d mark the time interval and the aggregate interval (&amp;quot;&amp;gt; 1.5ms execution time&amp;quot;).
+Honeycomb would take the marked set vs. the base set (before, and faster), and highlight you all KV pairs that are different.&lt;/p&gt;
+&lt;p&gt;You might see that all slow samples have a specific commit tag associated with them, or you might see that all slow samples have a specific host machine tag or AZ tag associated with them.&lt;/p&gt;
+&lt;p&gt;Without prior knowledge you&amp;rsquo;d see what the root cause for the slowness is.&lt;/p&gt;
+&lt;h1 id=&#34;application-level-instrumentation&#34;&gt;
+    &lt;a href=&#34;#application-level-instrumentation&#34;&gt;
+	Application level instrumentation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Database instrumentation right now does not provide good data that can go into systems such as Honeycomb.&lt;/p&gt;
+&lt;p&gt;With application code, this is all easy.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;beeline&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;traced&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;external_api_request&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;external_api_request&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;request_params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# adding fields here will add it to the active span wrapping&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# this function&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add_context_field&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;response_time&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response_time&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# ...&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;traced&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;main&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add_context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;({&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;request_params&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;request_params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;c1&#34;&gt;# calling this function will create a new span, under the &amp;#34;main&amp;#34; span&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;error&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;external_api_request&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;request_params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;c1&#34;&gt;# add more context once we have results&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add_context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;({&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;result_count&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;error&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;error&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# This will create a span - or if no trace is in progress, will also&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# start a trace&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Do not forget to close the beeline to ensure all spans get sent&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# before the application ends!&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;close&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Example from the &lt;a href=&#34;https://docs.honeycomb.io/getting-data-in/beeline/python/#using-a-decorator&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Honeycomb Documentation&lt;/a&gt;
+
+, showing how to instrument Python code.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Even if you know nothing about Python or Honeycomb, you can understand this.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;@beeline.traced()&lt;/code&gt; decorator wraps the function after it into the tracing harness, creating a span and maintaining the caller/callee relationships.
+The &lt;code&gt;beeline.add_context()&lt;/code&gt; calls add KV-pairs to the tracing span.&lt;/p&gt;
+&lt;h1 id=&#34;what-database-integration-can-look-like&#34;&gt;
+    &lt;a href=&#34;#what-database-integration-can-look-like&#34;&gt;
+	What database integration can look like
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/10/proper-o11y-02.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;What we want from a Query: The SQL_TEXT, and the Query Plan that actually ran for that Query. We would also want a list of Page#&amp;rsquo;s requested and Page#&amp;rsquo;s read from disk. Optionally, we would want subspans for each lock and wait, with annotations.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Why?&lt;/p&gt;
+&lt;p&gt;We get a Span for each SQL statement, maintaining the Caller/Callee Relationship with the code that sent us the query.
+Thus, we see the SQL exectution in the context of the ORM that generated the SQL, in the context of the Application Code that called into the ORM.&lt;/p&gt;
+&lt;p&gt;Even ungreppable, generated SQL becomes attributable to the location in the source it is coming from from.
+We get to see the ORM&amp;rsquo;s work in the context of the application that used it and the SQL it generated. With timings.
+Attribution was previously hard to do, but this way it is trivial, because the call tree relationship is explicitly maintained.&lt;/p&gt;
+&lt;p&gt;We also get to see if somebody is running &amp;ldquo;SELECT in a loop&amp;rdquo; instead of using a JOIN (&amp;ldquo;machine gunning pattern&amp;rdquo;).
+Machine gunning was previously very hard to even detect, and even harder to attribute. Now it is trivial.&lt;/p&gt;
+&lt;p&gt;We get to see the Query plan that ran, in the context of the application code (two spans up) that asked for data, with timings.
+We get to attribute SQL runtime, and result processing time in the application, easily, because we get to see if the database SQL runtime span fills all of the SQL query processing span, or if there is additional time that is only visible in the application. This could only be result processing that was not marked up properly.&lt;/p&gt;
+&lt;p&gt;We get do see pages requested from disk (before hitting the cache) and actual IO generated (cache misses) for each query.
+That allows us to see understand for queries that have a good plan, but are slow, why this is.
+With optional locking and wait information, we&amp;rsquo;d see more of that, for cases where this is not caused by IO but contention.&lt;/p&gt;
+&lt;p&gt;And, as a side benefit, a page# stream before and after the cache also allows us to determine the working set size of the database (for one query, for a subset of queries or for all queries), and to calculate ideal cache and instance sizes.
+This makes instance type selection a guided, non-empirical process, but that is another article.&lt;/p&gt;
+&lt;h1 id=&#34;conclusion&#34;&gt;
+    &lt;a href=&#34;#conclusion&#34;&gt;
+	Conclusion
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;None of that exists, but I don&amp;rsquo;t know why.
+Database tracing is completely ignoring modern observability integration, and things such as PMM or VividCortex are distinct from Honeycomb like systems
+Attribution of SQL (when generated) is a &lt;em&gt;mess&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Information about the plan of queries that ran is not retained well in MySQL.
+IO traces around the buffer pool are not even instrumented. They can be done. I routinely do them on production systems &lt;a href=&#34;https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html&#34;&gt;at the file system level with blktrace&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;And exfil of that data through &lt;code&gt;P_S&lt;/code&gt; is just painful.
+One would want an in-server ring buffer and a Pusher thread that sends this data in a non-blocking way (using localhost UDP?) to a listener, that transforms this into whatever O11y system you&amp;rsquo;d be using.&lt;/p&gt;
+&lt;p&gt;So here I am, with my limited C++, and a 100 GB build partition, trying to build a P_S table that is mostly a stream of BLOBs, into which I try to collect the data I need in a non-crashing way.
+Once I have that, I can try to build a Pusher that takes data from that pool, trying to ship that to my coprocess, which then takes this and transforms it into whatever Honeycomb wants, injecting Spans into their system.&lt;/p&gt;
+&lt;p&gt;Then I will finally be able to debug SQL properly, and in a single place with the code that made that SQL in the first place.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Local and distributed storage</title>
       <link>https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html</link>
@@ -3966,257 +4094,6 @@ By the time you have scaled up, the demand is already handled by existing capaci
 They are defined by physics, so they are not negotiable and cannot be removed by throwing money at it.&lt;/p&gt;
 &lt;p&gt;When you reach these sizes, talk to your DBA about alternatives.
 Treat the 2TB boundary as a complexity inflection point, and use the remaining time as runway to branch out into alternative solutions.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>UTF8MB4</title>
-      <link>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</link>
-      <pubDate>Mon, 10 Jan 2022 16:28:00 +0100</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/01/12/utf8mb4.html</guid>
-      <description>&lt;p&gt;On Twitter, Jan Wildeboer &lt;a href=&#34;https://twitter.com/jwildeboer/status/1481308177727729668&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;linked&lt;/a&gt;
-
- an &lt;a href=&#34;https://adamhooper.medium.com/in-mysql-never-use-utf8-use-utf8mb4-11761243e434&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;article by Adam Hooper&lt;/a&gt;
-
- on MySQL and the weird &lt;code&gt;utf8mb4&lt;/code&gt; character set.&lt;/p&gt;
-&lt;p&gt;The recommendation is correct:&lt;/p&gt;
-&lt;p&gt;In MySQL, use &lt;code&gt;utf8mb4&lt;/code&gt; when you mean to work with &lt;code&gt;utf8&lt;/code&gt; in your programming language.&lt;/p&gt;
-&lt;p&gt;The background and reasoning for this (and why it is wrong) is way more complicated than outlined by Adam Hooper.
-So let&amp;rsquo;s walk through this:&lt;/p&gt;
-&lt;h1 id=&#34;mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp&#34;&gt;
-    &lt;a href=&#34;#mysql-utf8-means-3-byte-unicode-and-access-to-only-the-bmp&#34;&gt;
-	MySQL &lt;code&gt;utf8&lt;/code&gt; means 3-byte Unicode, and access to only the BMP
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;code&gt;utf8&lt;/code&gt; in MySQL encodes the &lt;a href=&#34;https://en.wikipedia.org/wiki/Plane_%28Unicode%29#Basic_Multilingual_Plane&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Unicode BMP&lt;/a&gt;
-
-.
-The Unicode Basic Multilingual Plane, or BMP, is the original 65536 character plane.
-It was the only character plane available in Unicode 1.0
-It was thought to be enough for all scripts in the world.
-It wasn&amp;rsquo;t.&lt;/p&gt;
-&lt;p&gt;Unicode was extended, as early as with the 2.0 release, to have more characters than that, in more code planes.
-Currently, there can be up to 17 Unicode planes, but most of them are unused.&lt;/p&gt;
-&lt;p&gt;Unicode 1.0 is also different in other ways. Vladislav Vaintroub commented to me:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Unicode 1.0 had a &lt;a href=&#34;https://en.wikipedia.org/wiki/Hangul_%28obsolete_Unicode_block%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;different range for Hangul&lt;/a&gt;
-
-.
-Unicode 2.0 fixed that, and remapped Hangul (which is a unique action, and they issued a policy to forbid remapping in the future).&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Making things immutable is important with character sets and sort orders, also for databases, as we will see.
-It is in fact the entire reason for &lt;code&gt;utf8mb4&lt;/code&gt; to exist.&lt;/p&gt;
-&lt;h2 id=&#34;encodings-and-the-65536-character-barrier&#34;&gt;
-    &lt;a href=&#34;#encodings-and-the-65536-character-barrier&#34;&gt;
-	Encodings and the 65536 character barrier
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;There are various ways to encode codepoints of Unicode.&lt;/p&gt;
-&lt;p&gt;Originally, with only the BMP existing, people thought of extending the concept of &amp;ldquo;byte&amp;rdquo; = &amp;ldquo;character&amp;rdquo; to double bytes.
-This is how you get the &lt;code&gt;wchar&lt;/code&gt; and a 16 bit character set, the obsolete ucs-2 encoding.&lt;/p&gt;
-&lt;p&gt;When it became clear that 65536 characters are insufficient to represent all scripts and languages in the world, a larger 31-bit space was introduced and the naive encoding of that, ucs-4.
-This would require 4 bytes per character.&lt;/p&gt;
-&lt;p&gt;Both are incredibly wasteful:&lt;/p&gt;
-&lt;p&gt;Using ucs-2 with western scripts means that every other byte is a null byte, and with ucs-4 for every character there will be 3 null bytes.
-Even with non-western scripts there will be at least one, if not two null bytes per character.&lt;/p&gt;
-&lt;p&gt;Extending Unicode beyond the BMP posed a bit of a problem:
-Windows NT had started to use Unicode as a character set, and ucs-2 as the standard encoding.&lt;/p&gt;
-&lt;p&gt;The solution was the character range 0xD800 to 0xDFFF, which was unassigned to characters, so far:
-2048 (11 bit) of unassigned positions.&lt;/p&gt;
-&lt;p&gt;The resulting encoding takes characters beyond the BMP, with codes greater than 0xFFFF, and subtracts 0x10000.
-This leaves a 20 bit number, which is then split into a high 10 bit part and a low 10 bit part.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;The high ten bits are added to 0xd800 (0xd800-0xdbff).&lt;/li&gt;
-&lt;li&gt;The low then bits are added to 0xdc00 (0xdc00-0xdfff).&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This was called utf-16 encoding, and became the character set of Windows starting with Windows 2000.&lt;/p&gt;
-&lt;p&gt;utf-16 also, for now, limits the number of characters that can be represented in Unicode to 1112064, a number that can be represented in 21 bits.&lt;/p&gt;
-&lt;h2 id=&#34;plan-9-and-utf-8&#34;&gt;
-    &lt;a href=&#34;#plan-9-and-utf-8&#34;&gt;
-	Plan 9 and utf-8
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In the Unix world, the experimental Plan 9 operating system from A&amp;amp;T explored variable length encodings of Unicode:
-utf-8 could represent 31-bit Unicode with encodings between 1 and 6 bytes in length.
-Single byte codes would be compatible with ASCII, so that valid ASCII is also valid utf-8.&lt;/p&gt;
-&lt;p&gt;Because the utf-16 hack had restricted the number of possible Unicode characters effectively from 31 bit to 21 bit, actual utf-8 encodings can only be up to 4 bytes long.
-And because utf-8 is so much denser than other encodings, it is by far the dominant encoding of Unicode.
-Even Microsoft, heavily invested in ucs-2 and utf-16 with Windows, started to support utf-8, beginning with the development of Windows 11 in 2019.&lt;/p&gt;
-&lt;p&gt;In an utf-8 multibyte sequence, the &amp;ldquo;number of 1-bits before the first 0-bit&amp;rdquo; in the first byte of a multibyte character determine the length of the encoding:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Single byte characters are in the range 0x00-0x7f (0 leading 1-bits, single byte), for ASCII compatibility.&lt;/li&gt;
-&lt;li&gt;Multibyte characters start with &lt;code&gt;110xxxxx&lt;/code&gt; for a two byte sequence, &lt;code&gt;1110xxxx&lt;/code&gt; for a three byte sequence and &lt;code&gt;11110xxx&lt;/code&gt; for a four byte sequence.&lt;/li&gt;
-&lt;li&gt;The second, and possible third and fourth byte are all of the form &lt;code&gt;10xxxxxx&lt;/code&gt;, which is otherwise unused, so that these bytes are always identifiable as continuation bytes in a multibyte encoding.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This makes utf-8 restartable:
-If you end up at a byte of the form &lt;code&gt;10xxxxxx&lt;/code&gt;, you know you are in the middle of a multibyte sequence of at most 4 bytes length.
-You can backtrack a few bytes, and check for the clearly recognizable start pattern of a multibyte encoding, or error out with an invalid encoding.&lt;/p&gt;
-&lt;p&gt;We get 128 single byte characters that are identical to ASCII, 1920 two byte characters, and three bytes for the rest of the BMP.
-Four bytes are needed for rare CJK characters, a bunch of math, some dead scripts and
-&lt;a href=&#34;https://blog.koehntopp.info/2017/11/05/unicode-is-over-and-it-dies-over-emoji.html&#34;&gt;a ton of emoji that should not exist in the first place&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;h2 id=&#34;mysql-and-three-byte-utf8&#34;&gt;
-    &lt;a href=&#34;#mysql-and-three-byte-utf8&#34;&gt;
-	MySQL, and three byte &lt;code&gt;utf8&lt;/code&gt;
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;MySQL did support the &amp;ldquo;full full&amp;rdquo; range of 31 bit Unicode in the beginning, with up to 6 bytes being used for a single character.
-That was changed &lt;a href=&#34;https://github.com/mysql/mysql-server/commit/43a506c0ced0e6ea101d3ab8b4b423ce3fa327d0&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in a single byte change commit&lt;/a&gt;
-
- in September 2002.
-&lt;a href=&#34;https://dri.es/the-history-of-mysql-ab&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Back then&lt;/a&gt;
-
- MySQL 3.23 was the active release and InnoDB was not yet enabled by default.&lt;/p&gt;
-&lt;p&gt;Vladislav Vaintroub commented about this:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Anyway MySQL&amp;rsquo;s utf8 was always meant to be castrated utf8, from its invention.&lt;/p&gt;
-&lt;p&gt;It was a little gamble, and hope that supplemental plane won&amp;rsquo;t be used much, thus we could save a couple of bytes in filesort.
-Although already by 2001 (Unicode 3.1) there were characters in supplemental range, they could be seen as &amp;ldquo;rarely used&amp;rdquo; (music notation, old Egyptian, Deseret and what not).
-Thus only few people needed supplemental characters, until everyone&amp;rsquo;s favorite U+1F4A9 PILE OF POO premiered in Unicode 6.0, in 2010, actually a couple of years after, until smartphone made emoji ubiquitous.&lt;/p&gt;
-&lt;p&gt;So that gamble - that supplemental plane remains rarely used, did not work out, but who would know that by 2003.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Vaintroub&amp;rsquo;s comment about sorting refers to a limitation of MySQL that was only removed in MySQL 8.
-More about that below.&lt;/p&gt;
-&lt;h2 id=&#34;character-sets-have-collations&#34;&gt;
-    &lt;a href=&#34;#character-sets-have-collations&#34;&gt;
-	Character sets have collations
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Unicode not only defines character sets, they also define a comparison algorithm for characters.
-This is called UCA, Unicode Comparison Algorithm.
-Like Unicode itself, &lt;a href=&#34;https://unicode.org/Public/UCA/9.0.0/ReadMe.txt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;it is versioned&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Older versions of UCA had issues in various ways:
-&lt;a href=&#34;https://lefred.be/content/mysql-character-sets-unicode-and-uca-compliant-collations/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;lefred&amp;rsquo;s Blog article&lt;/a&gt;
-
- and
-&lt;a href=&#34;https://dev.mysql.com/blog-archive/sushi-beer-an-introduction-of-utf8-support-in-mysql-8-0/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Manyi Lu&amp;rsquo;s article&lt;/a&gt;
-
- about the
-&lt;a href=&#34;https://bugs.mysql.com/bug.php?id=76553&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sushi-Beer issue&lt;/a&gt;
-
- explain this in depth.&lt;/p&gt;
-&lt;h2 id=&#34;indexes-are-materialized-collations&#34;&gt;
-    &lt;a href=&#34;#indexes-are-materialized-collations&#34;&gt;
-	Indexes are materialized collations
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Databases have indexes, and these extract values from a column, &lt;strong&gt;sort them&lt;/strong&gt; and store back pointers to the full row with each extracted column value.
-This allows for fast searching.&lt;/p&gt;
-&lt;p&gt;Thus, indexes are materialized collations, and when a collation (or a charset) is changed, all indexes that contain values of that charset are invalid and need to be recreated.&lt;/p&gt;
-&lt;p&gt;In the deep dark past, MySQL made changes and bugfixes to existing collations, which made MySQL upgrades a pain:
-The moment you apply the upgrade, you are forced to drop and recreate the indexes.
-Depending on the amount of data and the size of the index, that requires an extraordinary amount of time and makes updates complicated.&lt;/p&gt;
-&lt;h1 id=&#34;utf8mb4-because-utf8-was-taken&#34;&gt;
-    &lt;a href=&#34;#utf8mb4-because-utf8-was-taken&#34;&gt;
-	&lt;code&gt;utf8mb4&lt;/code&gt;, because &lt;code&gt;utf8&lt;/code&gt; was taken.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;MySQL adopted a policy similar to the Unicode Consortium itself:&lt;/p&gt;
-&lt;p&gt;MySQL never updates existing character sets and collations, not even for bugfixes.&lt;/p&gt;
-&lt;p&gt;And because the name &lt;code&gt;utf8&lt;/code&gt; was taken, a new name was needed:
-&lt;code&gt;utf8mb4&lt;/code&gt; is the version of Unicode utf-8 in MySQL that extends past the BMP, and also uses UCA 9.0 for comparison.&lt;/p&gt;
-&lt;p&gt;Compare to &lt;code&gt;utf8&lt;/code&gt; which encodes only the BMP, and uses an older UCA for comparison.
-So &lt;code&gt;utf8&lt;/code&gt; not only has a smaller character range, it also sorts differently.&lt;/p&gt;
-&lt;p&gt;This makes upgrades mich simpler:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;You install a new version.
-Nothing changes, you are just running new code which hopefully sorts and orders as before.&lt;/li&gt;
-&lt;li&gt;You can create new columns using the new character set and collations, even in existing tables, because in MySQL a charset and collation is a column attribute.
-Tables, databases and servers just provide defaults that are inherited at the time of subordinate object creation.&lt;/li&gt;
-&lt;li&gt;To complete the upgrade, check all columns, and note which ones need changing.&lt;/li&gt;
-&lt;li&gt;Actually change these columns, table by table, at your own leisure.
-If necessary, use tooling such as Percona Online Table Change (&amp;ldquo;OSC&amp;rdquo;), making the change in the background without service interruption.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;side-note-mysqls-sorting-and-file-formats-are-portable&#34;&gt;
-    &lt;a href=&#34;#side-note-mysqls-sorting-and-file-formats-are-portable&#34;&gt;
-	Side note: MySQL&amp;rsquo;s sorting and file formats are portable
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;MySQL does not use &lt;code&gt;libc&lt;/code&gt; and the character set comparison functions in there for itself.
-It brings its own collations instead.&lt;/p&gt;
-&lt;p&gt;That is also an important fact.
-It means that MySQL does not break when you upgrade the operating system &lt;code&gt;libc&lt;/code&gt; on your machine.&lt;/p&gt;
-&lt;p&gt;If MySQL used &lt;code&gt;libc&lt;/code&gt; fort sorting and comparing, the database could break without any changes to the database whatsoever &amp;ndash; an innocent security update to the operating system &lt;code&gt;libc&lt;/code&gt; (which for some reason also touched &lt;code&gt;libc&lt;/code&gt; sorting and comparison) would break all character indexes in your database.&lt;/p&gt;
-&lt;p&gt;MySQL does not do that.
-It lets you migrate these things in a way that is operationally convenient.&lt;/p&gt;
-&lt;p&gt;It also means that MySQL versions sort the same between Linux, FreeBSD, Solaris and even Windows.&lt;/p&gt;
-&lt;p&gt;Just like the on disk format is compatible across all platforms, so is character handling and time zone handling.
-MySQL is MySQL on any platform, and copying files and replication always work across these boundaries.&lt;/p&gt;
-&lt;h1 id=&#34;so-why-the-6-to-3-byte-commit&#34;&gt;
-    &lt;a href=&#34;#so-why-the-6-to-3-byte-commit&#34;&gt;
-	So why the 6-to-3-byte commit?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Not that it matters much: Because Unicode and UCA changes between versions of Unicode, you&amp;rsquo;d still have to use different names for character sets and collations, and migrations to do.&lt;/p&gt;
-&lt;p&gt;But why was it important that &amp;ldquo;we could save a couple of bytes in filesort&amp;rdquo; as Vaintroub puts it?
-Here we go:&lt;/p&gt;
-&lt;h2 id=&#34;sorting-is-important-and-hard-to-scale&#34;&gt;
-    &lt;a href=&#34;#sorting-is-important-and-hard-to-scale&#34;&gt;
-	Sorting is important, and hard to scale
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Not only can databases, tables and individual indexes be very large, they also need to be kept sorted, and sometimes data needs to be re-sorted.
-Databases usually have a large number of strategies for that.&lt;/p&gt;
-&lt;p&gt;Small things are sorted in memory.
-That is, the database creates the full rows of the result table in memory, using all columns.
-It then sorts these rows in memory by shuffling around the full rows.
-That uses up a lot of memory bandwidth, because we copy around full rows, which can be large.&lt;/p&gt;
-&lt;p&gt;Sometimes we do not want to move around full rows, because these rows are large.
-So we only sort the columns specified in the &lt;code&gt;ORDER BY CLAUSE&lt;/code&gt;, which is a tiny subset of the full columns set of each row of the result table, and attach a row pointer to each of these sort rows.&lt;/p&gt;
-&lt;p&gt;In the end we have a tiny in-memory table in sort order, which only holds columns from the &lt;code&gt;ORDER BY&lt;/code&gt;, and each row in it points to the unsorted full rows somewhere else - in memory or on disk.
-We can then output the full rows in sort order, but at the cost of a lot of seeks - possibly on disk.
-That is, because the full rows have not been sorted, so the row pointers from the sorted data to the full rows are a mess.&lt;/p&gt;
-&lt;p&gt;Sometimes we have very many rows.
-So we do as before, but for a subset of all rows - as many as fit into our sort buffer.
-When the sort buffer is full, we write it out to disk.
-Then we continue with the next batch.
-Across all partial results we perform a merge sort.&lt;/p&gt;
-&lt;p&gt;If the things sorted were full rows, we can emit full result rows rather quickly.
-If the things sorted were only &lt;code&gt;ORDER BY&lt;/code&gt; columns or other partial result set rows with row pointers attached, we may have to perform one or multiple seeks in order to get the missing columns from all tables involved.&lt;/p&gt;
-&lt;p&gt;The optimizer has to decide which strategy to use here, based on estimates of the row width, size of the result set (which has not yet been produced, so it&amp;rsquo;s a guess) and the available amount of resources.&lt;/p&gt;
-&lt;h2 id=&#34;and-then-implementation-issues&#34;&gt;
-    &lt;a href=&#34;#and-then-implementation-issues&#34;&gt;
-	And then, implementation issues
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Older versions of MySQL have different storage engines: &lt;code&gt;MYISAM&lt;/code&gt;, &lt;code&gt;INNODB&lt;/code&gt;, &lt;code&gt;MEMORY&lt;/code&gt; and others.
-Modern MySQL has only &lt;code&gt;INNODB&lt;/code&gt;, but for temporary tables has a few tricks ready to make things faster:
-for example, temporary tables can be recreated and do not need to be crash safe, so no redo and undo logging is required.&lt;/p&gt;
-&lt;p&gt;Other storage engines than &lt;code&gt;INNODB&lt;/code&gt; had restrictions.&lt;/p&gt;
-&lt;p&gt;For example, &lt;code&gt;MEMORY&lt;/code&gt; tables could not have variable length columns, there was no &lt;code&gt;VARCHAR&lt;/code&gt;, only &lt;code&gt;CHAR&lt;/code&gt;.
-So when sorting with temporary tables in memory, MySQL created these temp tables as &lt;code&gt;MEMORY&lt;/code&gt; tables, promoting every &lt;code&gt;varchar(255)&lt;/code&gt; to &lt;code&gt;CHAR(255)&lt;/code&gt;.
-A row with a varchar value of &lt;code&gt;hello&lt;/code&gt; suddenly used 255 bytes instead of 6 bytes to represent the string &lt;code&gt;hello&lt;/code&gt; (plus a lot of padding).&lt;/p&gt;
-&lt;p&gt;Of course, with &lt;code&gt;utf8&lt;/code&gt;, a &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; is promoted to a &lt;code&gt;char(255) charset utf8&lt;/code&gt;, which instead allocates 765 bytes of memory, out of which the first five bytes contain the string &lt;code&gt;hello&lt;/code&gt;, and the rest is wasteful padding.
-With 6 bytes, it would be twice that amount of memory.
-So reducing this from 6 to 3 bytes was quite worthwhile.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;MEMORY&lt;/code&gt; tables had a configurable size limit, and if your table exceeded that (which happened rather quickly, given the above restrictions), it was converted to an on-disk temporary table in &lt;code&gt;MYISAM&lt;/code&gt; format: a spill.
-&lt;code&gt;MYISAM&lt;/code&gt; of course had &lt;code&gt;varchar(255) charset utf8&lt;/code&gt; as a native type, and your &lt;code&gt;hello&lt;/code&gt; would again shrink to six bytes.
-Looking at the on disk temporary file, which was rather small, you might wonder what caused the spill.&lt;/p&gt;
-&lt;p&gt;MySQL 8 introduces unlogged &lt;code&gt;INNODB&lt;/code&gt; temporary tables (and a failed experiment involving mmap that you may want to disable).
-So this problem is gone, once and for all:
-&lt;code&gt;varchar&lt;/code&gt; is &lt;code&gt;varchar&lt;/code&gt; at all times, and representing Unicode variants in temporary tables is no longer a problem - if you use MySQL 8.&lt;/p&gt;
-&lt;p&gt;This is in fact one of the major reasons to graduate from 5.7 for many people.&lt;/p&gt;
-&lt;h2 id=&#34;tldr&#34;&gt;
-    &lt;a href=&#34;#tldr&#34;&gt;
-	TLDR
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;We learned:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Your programming languages &lt;code&gt;utf8&lt;/code&gt; is called &lt;code&gt;utf8mb4&lt;/code&gt; in MySQL.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;utf8&lt;/code&gt; and &lt;code&gt;utf8mb4&lt;/code&gt; sort differently due to changes in the Unicode Collation Algorithm (UCA).&lt;/li&gt;
-&lt;li&gt;Indexes are physically materialized sort orders of column sets. They can become pretty large.&lt;/li&gt;
-&lt;li&gt;MySQL never changes character sets or collations, even if they are buggy. Instead a new collation with a new name is created.&lt;/li&gt;
-&lt;li&gt;That is, because changing a sort order may require dropping and recreating an index, which is expensive if the index is large.&lt;/li&gt;
-&lt;li&gt;Sorting things can be done in different ways, depending on data set size, column size and other considerations.&lt;/li&gt;
-&lt;li&gt;Implementation details can make sorting even more complicated.&lt;/li&gt;
-&lt;li&gt;MySQL 8 is a worthwhile upgrade.&lt;/li&gt;
-&lt;li&gt;Databases manage state so you don&amp;rsquo;t have to. If you think databases are complicated, consider what you would have to do if the database and your DBA would not be there for you.&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
