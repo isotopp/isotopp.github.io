@@ -36,7 +36,7 @@ Spans nest, and you could look at the execution of your program as an arrow of t
 
 ![](/uploads/2022/10/proper-o11y-01.png)
 
-*A root span at the application level is started in `buildAvailabilityQuery()`. This called into `sqlORM()`, which in turned called `runSQL()` several times. All this is recorded from the application and the application code. We'd want to see MySQL execution data in there, as subspans of `runSQL()`.*
+*A root span at the application level is started in `buildAvailabilityQuery()`. This called into `sqlORM()`, which in turn called `runSQL()` several times. All this is recorded from the application and the application code. We'd want to see MySQL execution data in there, as subspans of `runSQL()`.*
 
 For each span then any number of KV-pairs are recorded, so you could record call parameters, results, or intermediate state.  
 
@@ -105,7 +105,7 @@ Why?
 We get a Span for each SQL statement, maintaining the Caller/Callee Relationship with the code that sent us the query.
 Thus, we see the SQL exectution in the context of the ORM that generated the SQL, in the context of the Application Code that called into the ORM.
 
-Even ungreppable, generated SQL becomes attributable to the location in the source it is coming from from.
+Even ungreppable, generated SQL becomes attributable to the location in the source it is coming from.
 We get to see the ORM's work in the context of the application that used it and the SQL it generated. With timings.
 Attribution was previously hard to do, but this way it is trivial, because the call tree relationship is explicitly maintained.
 
@@ -115,8 +115,8 @@ Machine gunning was previously very hard to even detect, and even harder to attr
 We get to see the Query plan that ran, in the context of the application code (two spans up) that asked for data, with timings.
 We get to attribute SQL runtime, and result processing time in the application, easily, because we get to see if the database SQL runtime span fills all of the SQL query processing span, or if there is additional time that is only visible in the application. This could only be result processing that was not marked up properly.
 
-We get do see pages requested from disk (before hitting the cache) and actual IO generated (cache misses) for each query.
-That allows us to see understand for queries that have a good plan, but are slow, why this is.
+We get to see pages requested from disk (before hitting the cache) and actual IO generated (cache misses) for each query.
+That allows us to see queries that have a good plan, but are slow, and understand why this is.
 With optional locking and wait information, we'd see more of that, for cases where this is not caused by IO but contention.
 
 And, as a side benefit, a page# stream before and after the cache also allows us to determine the working set size of the database (for one query, for a subset of queries or for all queries), and to calculate ideal cache and instance sizes.
@@ -125,7 +125,7 @@ This makes instance type selection a guided, non-empirical process, but that is 
 # Conclusion
 
 None of that exists, but I don't know why.
-Database tracing is completely ignoring modern observability integration, and things such as PMM or VividCortex are distinct from Honeycomb like systems
+Database tracing is completely ignoring modern observability integration, and things such as PMM or VividCortex are distinct from Honeycomb like systems.
 Attribution of SQL (when generated) is a *mess*.
 
 Information about the plan of queries that ran is not retained well in MySQL.
