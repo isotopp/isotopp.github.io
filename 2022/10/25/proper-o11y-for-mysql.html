@@ -266,6 +266,26 @@ One would want an in-server ring buffer and a Pusher thread that sends this data
 <p>So here I am, with my limited C++, and a 100 GB build partition, trying to build a P_S table that is mostly a stream of BLOBs, into which I try to collect the data I need in a non-crashing way.
 Once I have that, I can try to build a Pusher that takes data from that pool, trying to ship that to my coprocess, which then takes this and transforms it into whatever Honeycomb wants, injecting Spans into their system.</p>
 <p>Then I will finally be able to debug SQL properly, and in a single place with the code that made that SQL in the first place.</p>
+<h1 id="other-systems">
+    <a href="#other-systems">
+	Other Systems
+    </a>
+</h1>
+<p>My colleague Willian Stewart pointed me at Vitess, which <a href="https://vitess.io/docs/16.0/user-guides/configuration-advanced/tracing/#instrumenting-queries" target="_blank" rel="noopener">already does that for the &ldquo;above MySQL&rdquo;</a>
+
+ part of Vitess:</p>
+<p><p class="md__image">
+  <img src="/uploads/2022/10/proper-o11y-03.png" alt=""  />
+</p>
+
+</p>
+<p><em>The call tree of a Query to Vitess as it is being handled inside of Vitess, as seen by Jaeger.</em></p>
+<p>Vitess requires you to generate a piece of JSON that contains the necessary IDs to build a call tree:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span><span class="nt">&#34;uber-trace-id&#34;</span><span class="p">:</span><span class="s2">&#34;{trace-id}:{span-id}:{parent-span-id}:{flags}&#34;</span><span class="p">}</span>
+</span></span></code></pre></div><p>All items of a single trace have the same <code>trace-id</code>.
+Each span has their own <code>span-id</code> and also states what the <code>parent-span-id</code> is.
+Additional <code>flags</code> control the annotations generated (&ldquo;what gets traced&rdquo;).</p>
+<p>To protect the data against accidental interpretation and munging, Vitess wants you to base64 encode the thing and then put it into a <code>/*VT_SPAN_CONTEXT=...*/</code> pseudo-comment as part of the query to be traced.</p>
 
       </div>
     </div>

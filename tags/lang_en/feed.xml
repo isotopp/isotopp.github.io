@@ -6,7 +6,7 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 25 Oct 2022 14:28:06 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 25 Oct 2022 14:43:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Proper O11y for MySQL</title>
       <link>https://blog.koehntopp.info/2022/10/25/proper-o11y-for-mysql.html</link>
@@ -132,6 +132,26 @@ One would want an in-server ring buffer and a Pusher thread that sends this data
 &lt;p&gt;So here I am, with my limited C++, and a 100 GB build partition, trying to build a P_S table that is mostly a stream of BLOBs, into which I try to collect the data I need in a non-crashing way.
 Once I have that, I can try to build a Pusher that takes data from that pool, trying to ship that to my coprocess, which then takes this and transforms it into whatever Honeycomb wants, injecting Spans into their system.&lt;/p&gt;
 &lt;p&gt;Then I will finally be able to debug SQL properly, and in a single place with the code that made that SQL in the first place.&lt;/p&gt;
+&lt;h1 id=&#34;other-systems&#34;&gt;
+    &lt;a href=&#34;#other-systems&#34;&gt;
+	Other Systems
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;My colleague Willian Stewart pointed me at Vitess, which &lt;a href=&#34;https://vitess.io/docs/16.0/user-guides/configuration-advanced/tracing/#instrumenting-queries&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;already does that for the &amp;ldquo;above MySQL&amp;rdquo;&lt;/a&gt;
+
+ part of Vitess:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/10/proper-o11y-03.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The call tree of a Query to Vitess as it is being handled inside of Vitess, as seen by Jaeger.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Vitess requires you to generate a piece of JSON that contains the necessary IDs to build a call tree:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#34;uber-trace-id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{trace-id}:{span-id}:{parent-span-id}:{flags}&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;All items of a single trace have the same &lt;code&gt;trace-id&lt;/code&gt;.
+Each span has their own &lt;code&gt;span-id&lt;/code&gt; and also states what the &lt;code&gt;parent-span-id&lt;/code&gt; is.
+Additional &lt;code&gt;flags&lt;/code&gt; control the annotations generated (&amp;ldquo;what gets traced&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;To protect the data against accidental interpretation and munging, Vitess wants you to base64 encode the thing and then put it into a &lt;code&gt;/*VT_SPAN_CONTEXT=...*/&lt;/code&gt; pseudo-comment as part of the query to be traced.&lt;/p&gt;
 </description>
     </item>
     
