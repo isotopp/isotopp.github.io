@@ -140,8 +140,7 @@ den Projekten Mini- und Megapanzer mitgearbeitet hatte.
 
 ### Anfang 2010:
 
-[Grundrechtsfusion und ein Grundrecht auf Netzneutralität](http://blog.koehntopp.de/archives/2763-Grundrechtsfusion-und-ein-Grundrecht-auf-Netzneutralitaet.html) - 
-ein weiterer Artikel von mir, der recht weite Kreise gezogen hat. 
+[Grundrechtsfusion und ein Grundrecht auf Netzneutralität]({{< ref "/content/posts/2010-02-23-grundrechtsfusion-und-ein-grundrecht-auf-netzneutralit-t.md" >}}) - ein weiterer Artikel von mir, der recht weite Kreise gezogen hat. 
 
 > Wir haben nun einen offenen gesellschaftlichen Konflikt um die Ausübung
 > unserer Meinungs- und Informationsfreiheit im Internet. Der Konflikt

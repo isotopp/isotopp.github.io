@@ -11,10 +11,9 @@ title: The Interview in the Enterprise
 ---
 
 See also 
-[an earlier article](http://blog.koehntopp.info/index.php/919-hello-i-am-interviewing-people/)
-in the blog, and 
-[Why I Don't Talk to Google Recruiters](http://www.yegor256.com/2017/02/21/say-no-to-google-recruiters.html)
-mentioned in the comments. Where I work we have regular round tables, in
+[Why I Don't Talk to Google Recruiters](http://www.yegor256.com/2017/02/21/say-no-to-google-recruiters.html).
+
+Where I work we have regular round tables, in
 which you can talk and ask questions to middle management from other
 departments than your own. I had the opportunity to talk to a person who
 manages development priorities and staffs teams, and who of course has some

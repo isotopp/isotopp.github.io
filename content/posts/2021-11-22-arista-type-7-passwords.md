@@ -105,7 +105,9 @@ We need to debug, and in order to be able to do that we need to be able to load 
 The original version, to check what the actual hashed key should look like, and compare the result to our own.
 
 That should be easy: 
-An example [from 2005](https://blog.koehntopp.info/2005/10/08/dynamisch-geladener-code.html) (german language article) shows
+An example 
+[from 2005]({{< ref "/content/posts/2005-10-08-dynamisch-geladener-code.md" >}})
+(german language article) shows
 
 - how to turn a function into a `libsomething.a`, 
 - then into `libsomething.so`, and 

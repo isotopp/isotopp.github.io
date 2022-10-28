@@ -34,9 +34,9 @@ gemacht hat, und Andreas Eschbach diskutiert dort auch mit.
 
 Das wäre nicht weiter interessant, denn diese Richtung der Diskussion geht,
 wie wir in 
-[Nicht das Urheberrecht ist das Kernthema](http://blog.koehntopp.de/archives/3154-Nicht-Urheberrecht-ist-das-Kernthema.html)
+[Nicht das Urheberrecht ist das Kernthema]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 und dem 
-[Nachtrag](http://blog.koehntopp.de/archives/3157-Nachtrag-Nicht-das-Urheberrecht-ist-das-Kernthema.html)
+[Nachtrag]({{< ref "/content/posts/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}})
 dazu etabliert haben, vollkommen am Kern des Problems vorbei.  Der
 "Blechpirat" Karsten greift das auf: 
 
@@ -106,7 +106,7 @@ das so:
 > Urheberschaft teilweise ein schwer feststellbares Konzept.
 > 
 > Zu 3: Besonders ausgeprägt im Bereich der Programmentwicklung, teilweise aber auch bei der Texterstellung - kollaborative Systeme dienen dazu, kleinste Beiträge von Einzelpersonen zu einem Gesamtwerk zu aggregieren. Fast alle moderne Werkentstehung arbeitet auf diese Weise, und wo das gelingt, haben Einzelpersonen kaum noch eine Chance.  Dazu kann ich auf
-> Anfrage mehr schreiben ([Der Nachtrag](http://blog.koehntopp.de/archives/3157-Nachtrag-Nicht-das-Urheberrecht-ist-das-Kernthema.html)
+> Anfrage mehr schreiben ([Nachtrag]({{< ref "/content/posts/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}}))
 > redet da schon teilweise drüber).
 > 
 > Über das Urheberrecht zu diskutieren geht am Kern des Problems vorbei.  Das

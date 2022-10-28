@@ -29,7 +29,9 @@ The limitation is here that InnoDB allocates data in chunks (of 64 pages of 16 K
 
 In any case in InnoDB, the physical record position is a function of the primary key. Changing a PK the way described will physically move the record from "right" in the B+ tree to the left, inducing a lot of rebalancing operations, page splits and merges. Ultimately actually deleting always from the left and appending always on the right is producing the worst physical page structure InnoDB could have: Permanent page merges on the left, permanent page splits at the right and a permanent maximal rebalancing of the entire tree.
 
-This is an abysmally slow data structure. I wrote about it in german language in [Ein paar Gedanken zu Zeitreihendaten](http://blog.koehntopp.info/2009/10/28/ein-paar-gedanken-zu-zeitreihendaten.html) in 2009, where I have been discussing the way Nagios NDO Schema abuses the database on the Open Source Monitoring Conference in Nürnberg.
+This is an abysmally slow data structure. I wrote about it in german language in
+[Ein paar Gedanken zu Zeitreihendaten]({{< ref "/content/posts/2009-10-28-ein-paar-gedanken-zu-zeitreihendaten.md" >}})
+in 2009, where I have been discussing the way Nagios NDO Schema abuses the database on the Open Source Monitoring Conference in Nürnberg.
 
 ## Foreign Key complications
 

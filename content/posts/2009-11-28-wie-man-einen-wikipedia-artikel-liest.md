@@ -325,9 +325,7 @@ nur auf die englische Wikipedia anwendbar zu sein.
 
 Dieser Artikel wurde am 29. November 2009 überarbeitet, um Leserkommentare zu berücksichtigen.
 
-- Frank Schubert und
-- Helge(http://blog.koehntopp.de/archives/2695-Wie-man-einen-Wikipedia-Artikel...-liest.html#c23422)
-  verweisen mich auf Wikibu.ch
+- Frank Schubert und Helge verweisen mich auf Wikibu.ch
 - Jens Kubieziel verweist auf das Wikidashboard.
 - Oneiros verweist auf das Pyrospirit Metadata Gadget.
 - Anonymous bat mich, die Verweise auf das kaputte Diskussionssystem von Mediawiki aus
