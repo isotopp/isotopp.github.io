@@ -10,7 +10,7 @@ tags:
 title: Wenn Wikipedia einmal funktioniert... Tagebuch eines Selbstversuches
 ---
 Während ich mir in 
-[Communitygift]({{< ref "/content/posts/2009-11-11-communitygift.md" }})
+[Communitygift]({{< ref "/content/posts/2009-11-11-communitygift.md" >}})
 einmal angesehen habe, warum Wikipedia nicht funktioniert, wenn sie nicht
 funktioniert, findet man bei Helge Städtler einen wunderbaren Beitrag mit
 dem Titel
