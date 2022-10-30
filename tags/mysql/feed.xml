@@ -6,7 +6,7 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 28 Oct 2022 13:42:22 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 30 Oct 2022 13:58:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Proper O11y for MySQL</title>
       <link>https://blog.koehntopp.info/2022/10/25/proper-o11y-for-mysql.html</link>
@@ -40,7 +40,7 @@ A root Span and its children form an execution trace (&amp;ldquo;a trace&amp;rdq
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;&lt;em&gt;A root span at the application level is started in &lt;code&gt;buildAvailabilityQuery()&lt;/code&gt;. This called into &lt;code&gt;sqlORM()&lt;/code&gt;, which in turned called &lt;code&gt;runSQL()&lt;/code&gt; several times. All this is recorded from the application and the application code. We&amp;rsquo;d want to see MySQL execution data in there, as subspans of &lt;code&gt;runSQL()&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A root span at the application level is started in &lt;code&gt;buildAvailabilityQuery()&lt;/code&gt;. This called into &lt;code&gt;sqlORM()&lt;/code&gt;, which in turn called &lt;code&gt;runSQL()&lt;/code&gt; several times. All this is recorded from the application and the application code. We&amp;rsquo;d want to see MySQL execution data in there, as subspans of &lt;code&gt;runSQL()&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
 &lt;p&gt;For each span then any number of KV-pairs are recorded, so you could record call parameters, results, or intermediate state.&lt;/p&gt;
 &lt;p&gt;Honeycomb allows you to aggregate such data on the fly, in almost real time, so you can ask &amp;ldquo;how many SQL queries is each action running, as a histo&amp;rdquo;.&lt;/p&gt;
 &lt;p&gt;You could also ask &amp;ldquo;What is the aggregated SQL time of each action&amp;rdquo;, over time. You&amp;rsquo;d see that at a certain point in time this time changed in the P95 and above.
@@ -103,15 +103,15 @@ The &lt;code&gt;beeline.add_context()&lt;/code&gt; calls add KV-pairs to the tra
 &lt;p&gt;Why?&lt;/p&gt;
 &lt;p&gt;We get a Span for each SQL statement, maintaining the Caller/Callee Relationship with the code that sent us the query.
 Thus, we see the SQL exectution in the context of the ORM that generated the SQL, in the context of the Application Code that called into the ORM.&lt;/p&gt;
-&lt;p&gt;Even ungreppable, generated SQL becomes attributable to the location in the source it is coming from from.
+&lt;p&gt;Even ungreppable, generated SQL becomes attributable to the location in the source it is coming from.
 We get to see the ORM&amp;rsquo;s work in the context of the application that used it and the SQL it generated. With timings.
 Attribution was previously hard to do, but this way it is trivial, because the call tree relationship is explicitly maintained.&lt;/p&gt;
 &lt;p&gt;We also get to see if somebody is running &amp;ldquo;SELECT in a loop&amp;rdquo; instead of using a JOIN (&amp;ldquo;machine gunning pattern&amp;rdquo;).
 Machine gunning was previously very hard to even detect, and even harder to attribute. Now it is trivial.&lt;/p&gt;
 &lt;p&gt;We get to see the Query plan that ran, in the context of the application code (two spans up) that asked for data, with timings.
 We get to attribute SQL runtime, and result processing time in the application, easily, because we get to see if the database SQL runtime span fills all of the SQL query processing span, or if there is additional time that is only visible in the application. This could only be result processing that was not marked up properly.&lt;/p&gt;
-&lt;p&gt;We get do see pages requested from disk (before hitting the cache) and actual IO generated (cache misses) for each query.
-That allows us to see understand for queries that have a good plan, but are slow, why this is.
+&lt;p&gt;We get to see pages requested from disk (before hitting the cache) and actual IO generated (cache misses) for each query.
+That allows us to see queries that have a good plan, but are slow, and understand why this is.
 With optional locking and wait information, we&amp;rsquo;d see more of that, for cases where this is not caused by IO but contention.&lt;/p&gt;
 &lt;p&gt;And, as a side benefit, a page# stream before and after the cache also allows us to determine the working set size of the database (for one query, for a subset of queries or for all queries), and to calculate ideal cache and instance sizes.
 This makes instance type selection a guided, non-empirical process, but that is another article.&lt;/p&gt;
@@ -121,7 +121,7 @@ This makes instance type selection a guided, non-empirical process, but that is 
     &lt;/a&gt;
 &lt;/h1&gt;
 &lt;p&gt;None of that exists, but I don&amp;rsquo;t know why.
-Database tracing is completely ignoring modern observability integration, and things such as PMM or VividCortex are distinct from Honeycomb like systems
+Database tracing is completely ignoring modern observability integration, and things such as PMM or VividCortex are distinct from Honeycomb like systems.
 Attribution of SQL (when generated) is a &lt;em&gt;mess&lt;/em&gt;.&lt;/p&gt;
 &lt;p&gt;Information about the plan of queries that ran is not retained well in MySQL.
 IO traces around the buffer pool are not even instrumented. They can be done. I routinely do them on production systems &lt;a href=&#34;https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html&#34;&gt;at the file system level with blktrace&lt;/a&gt;
