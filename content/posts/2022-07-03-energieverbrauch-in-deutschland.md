@@ -21,7 +21,7 @@ Schaut man sich zum Beispiel diese Grafik (oder die Tabelle, auf der sie basiert
 
 Wie man sieht, ist der Primärenergieverbrauch von Deutschland seit 1990 fast konstant geblieben.
 Wikipedia schreibt im Detail: "Zwischen 1990 und 2011 nahm das reale Bruttoinlandprodukt um 34 % zu, der Energieverbrauch nahm jedoch um 9 % ab."
-Rechnet man um, sind es bummelt 14000 Petajoule, was circa 4000 TWh entspricht.
+Rechnet man um, sind es bummelig 14000 Petajoule, was circa 4000 TWh entspricht.
 
 Private Haushalte nutzen [laut Umweltbundesamt](https://www.umweltbundesamt.de/daten/private-haushalte-konsum/wohnen/energieverbrauch-privater-haushalte#hochster-anteil-am-energieverbrauch-zum-heizen) circa 650 TWh, und davon sind etwa 450 TWh Heizenergie.
 
