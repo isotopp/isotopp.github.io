@@ -11,14 +11,16 @@ tags:
 
 Where I work, we run bare-metal databases on non-redundant local storage.
 That is, a database is a very cheap frontend blade server.
-It has 2 CPUs worth $400, with 8 cores/16 threads each.
+It has 2 CPUs, with 8 cores/16 threads each.
 It contains 128 GB of memory, 2 or 4 TB of local NVME and it has a 10 GBit/s network interface.
 It costs around 120 to 150 Euro per month to run for 5 years, including purchase price and all datacenter costs.
+
 It AWS terms, it is comparable to a EC2 m5.8xl, or better an i3.4xl, but with more CPU.
 
 Data is stored on a local disk, preferably NVME, sometimes SSD, because we still have old hardware.
 
 The local disk provides unmatched low latency, at incredibly low overhead (1 TB of data uses 1 TB of physical disk space) and at unmatched power consumption (a NVME drives adds about 10W to an already existing machine).
+
 The [purchase cost of a NVME drive](https://blocksandfiles.com/2020/08/24/10x-enterprise-ssd-price-premium-over-nearline-disk-drives/) can be as low as 150-200 Euro/TB for Enterprise grade hardware.
 
 # Is it not risky to run on non-redundant storage?
