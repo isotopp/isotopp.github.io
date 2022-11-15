@@ -6,7 +6,132 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 15 Nov 2022 09:44:43 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 15 Nov 2022 10:02:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases on un-RAID-ed storage?</title>
+      <link>https://blog.koehntopp.info/2022/11/09/databases-on-unraided-storage.html</link>
+      <pubDate>Wed, 09 Nov 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/11/09/databases-on-unraided-storage.html</guid>
+      <description>&lt;p&gt;Where I work, we run bare-metal databases on non-redundant local storage.
+That is, a database is a very cheap frontend blade server.
+It has 2 CPUs worth $400, with 8 cores/16 threads each.
+It contains 128 GB of memory, 2 or 4 TB of local NVME and it has a 10 GBit/s network interface.
+It costs around 120 to 150 Euro per month to run for 5 years, including purchase price and all datacenter costs.
+It AWS terms, it is comparable to a EC2 m5.8xl, or better an i3.4xl, but with more CPU.&lt;/p&gt;
+&lt;p&gt;Data is stored on a local disk, preferably NVME, sometimes SSD, because we still have old hardware.&lt;/p&gt;
+&lt;p&gt;The local disk provides unmatched low latency, at incredibly low overhead (1 TB of data uses 1 TB of physical disk space) and at unmatched power consumption (a NVME drives adds about 10W to an already existing machine).
+The &lt;a href=&#34;https://blocksandfiles.com/2020/08/24/10x-enterprise-ssd-price-premium-over-nearline-disk-drives/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;purchase cost of a NVME drive&lt;/a&gt;
+
+ can be as low as 150-200 Euro/TB for Enterprise grade hardware.&lt;/p&gt;
+&lt;h1 id=&#34;is-it-not-risky-to-run-on-non-redundant-storage&#34;&gt;
+    &lt;a href=&#34;#is-it-not-risky-to-run-on-non-redundant-storage&#34;&gt;
+	Is it not risky to run on non-redundant storage?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;At work, we need to run our databases in replication hierarchies, to provide the required read capacity and to provide read capacity close (in the same AZ) to the clients.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/unraided-01.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Our database replication happens in trees, which extend across multiple AZs and backing-technologies. (bare-metal, Openstack, &amp;hellip;).
+They are marked in different colors.
+Writes go to the root of the tree on the left.
+They then replicate within fractions of a second down to the leaves at the right.
+Each replica provides a full copy of the data in a shared-nothing architecture, for read-scaleout.
+Applications find read-copies of the data close by, in the AZ they run in, and at the required capacity.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The image is a screenshot from Orchestrator, a tool that manages MySQL replication hierarchies.
+This is showing one particular hierarchy, but they all have this shape.&lt;/p&gt;
+&lt;p&gt;We are using MySQL replication for read-scaleout (and for a few other things, such as backups, as clone sources to make more replicas, for data import to Hadoop, and so on).
+Using &amp;ldquo;Global Transaction ID based replication&amp;rdquo; (GTID) and Orchestrator, we are leveraging the redundancy required for read-scaleout also to provide high-availability.&lt;/p&gt;
+&lt;h1 id=&#34;so-how-do-we-survive&#34;&gt;
+    &lt;a href=&#34;#so-how-do-we-survive&#34;&gt;
+	So how do we survive?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If a Primary dies, we detect that.
+We then automatically promote any Intermediate Replica to a new Primary, rearranging the replication hierarchy as we go.
+In the end, all Replicas now ultimately dangle from the newly promoted Primary.&lt;/p&gt;
+&lt;p&gt;The GTID-based way of using read-scaleout capacity for high-availability has many advantages.
+Not only do we get to use local storage, we can also use throwaway frontend blades instead of much more expensive special database hardware as we did in the olden times.&lt;/p&gt;
+&lt;p&gt;We also get intermediate replicas promoted to primaries, which means that these machines have already warmed up caches and are useful immediately after promotion, at normal speed.&lt;/p&gt;
+&lt;p&gt;Compare that to the situation of old (many years ago):&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Now cheaper:&lt;/strong&gt; We needed to have special database machines with special hardware. So we needed to provision machines from a much smaller hardware pool, instead of living inside the big frontend hardware pond.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Now more redunancy:&lt;/strong&gt; We failed over between a single active-passive database pair, instead of being able to promote any replica that has a binlog to a new primary as we do now.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Now faster:&lt;/strong&gt; Also, the previously passive database had an ice-cold cache. Warming up to minimum speed took around 5 minutes, warming up to normal performance took around 20 minutes. That meant, during a switchover database performance was severely impeded for at minimum 5 minutes, and somewhat impeded for 20 minutes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;More flexible every day:&lt;/strong&gt; We were unable to fail between arbitrary machines, and unable to rearrange the replication tree freely, because without GTID-based replication such a thing is doable only manually, and a high risk operation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That last thing is important: ability to freely rearrange the replication tree  allows us to speed up many daily operations that otherwise would be subject to many more constraints.
+Among them are fast version upgrades, moving capacity between pools and many other daily operations that allow us to provide &amp;ldquo;just one more replica than you need&amp;rdquo; in time and without much toil.&lt;/p&gt;
+&lt;h1 id=&#34;distributed-storage&#34;&gt;
+    &lt;a href=&#34;#distributed-storage&#34;&gt;
+	Distributed Storage
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Local Disk has limits.
+Mostly, size limits: Our servers come with 2 TB or 4 TB of space.
+Larger hardware exists, but in limited numbers and it is spoken for by other teams.&lt;/p&gt;
+&lt;p&gt;A larger database is often stored on distributed storage.
+That is, it resides on a Filer, and is attached usually with iSCSI (&amp;ldquo;SCSI protocol over TCP/IP over an Ethernet wire&amp;rdquo;), or sometimes NVME-over-Fabric/TCP (that is, the NVME PCI bus protocol over TCP/IP over an Ethernet wire).&lt;/p&gt;
+&lt;p&gt;Because volumes of distributed storage are made by a Filer by combining large disks to even larger volumes, they can be of almost arbitrary size.
+So if you need more than can be provided by a Blade with local storage, you need to move to iSCSI storage.&lt;/p&gt;
+&lt;p&gt;This is much like going from an i3 instance with local storage to a m5 instance with EBS, in flexibility, but also in cost: You now need to pay for the Blade and for the storage, in the same way you pay for the instance and the EBS.&lt;/p&gt;
+&lt;h2 id=&#34;different-latency&#34;&gt;
+    &lt;a href=&#34;#different-latency&#34;&gt;
+	Different Latency
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You are likely also taking a latency hit: While you can hit a local storage at 1/20,000 s access time, with distributed storage there is one or more network hops involved, and worse, a lot of software and storage redundancy overhead at the destination.&lt;/p&gt;
+&lt;p&gt;You can expect more of 1/2,000 s access time than 1/20,000 s, so you are roughly one order of magnitude slower.
+How much exactly depends a lot on the Filer implementation you are on.&lt;/p&gt;
+&lt;h2 id=&#34;more-variance&#34;&gt;
+    &lt;a href=&#34;#more-variance&#34;&gt;
+	More Variance
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You may also take a jitter hit: The latency of distributed storage is often not only higher, but also more variable.
+If you are not pushing the limits of what is possible, that is often not an issue, but for some latency-sensitive applications it may well be.&lt;/p&gt;
+&lt;h2 id=&#34;filer-storage-overhead&#34;&gt;
+    &lt;a href=&#34;#filer-storage-overhead&#34;&gt;
+	Filer Storage Overhead
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Distributed storage also comes with some overhead in the sense that there is storage duplication at the filer end: 1 TB of database will never be 1 TB of disk space, but always more.&lt;/p&gt;
+&lt;p&gt;How much exactly very much depends on the Filer implementation, and on how much additional latency from software trickery you can tolerate.
+For example, most filers will store data in some kind of RAID, so there will be an overhead of 3x (everything is stored three times in HDFS and Ceph by default), of 2x (a simple RAID-1) or of 1.something (a RAID-5/6/x or Hadoop Erasure Coding).&lt;/p&gt;
+&lt;p&gt;Some Filers will, at the cost of additional latency, also offer data compression, or data deduplication.&lt;/p&gt;
+&lt;p&gt;Filers are, in essence, just computers with very many hard disks and very good Ethernet interfaces.&lt;/p&gt;
+&lt;p&gt;So you need to add the run-cost of these computers to the run-cost of the drives, amortized over the number of drives per Filer-computer: A Filer with 24 drives per computer has less overhead than a Filer with only 4 drives per computer.&lt;/p&gt;
+&lt;h2 id=&#34;volume-lifetime-volume-mobility-snapshots&#34;&gt;
+    &lt;a href=&#34;#volume-lifetime-volume-mobility-snapshots&#34;&gt;
+	Volume Lifetime, Volume Mobility, Snapshots
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A Filer on the other hand offers a number of advantages over Local Storage that are mostly interesting if the amount of data is so large that it takes very long to copy:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A volume on a Filer is mobile.
+It can be detached from an instance and attached to another instance.
+This allows for upgrades of a compute unit (larger, new OS, software upgrade) without having need to copy around the data.
+At sizes over 10 TB such a copy operation can take hours or days, but with volume detach/attach no copy is necessary.&lt;/li&gt;
+&lt;li&gt;A volume on a Filer has a lifetime independent of the instance/the compute.
+This allows not only for the above mentioned upgrades, but also for filer-side operations, such as making a snapshot or a copy of the volume at the filer-side.
+This is usually much faster than loading the data off the volume, over the network, and pushing it over the network again to another machine.
+-i Filer-side operations include snapshotting and cloning, which can be combined in interesting ways to make data available for backups and new instances with a lot less wait than a full copy would take (or allows to make a full copy in the background while the snapshot is already being used).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We run our databases on local storage, because it is faster, has more consistent performance, uses less power, is cheaper, and is generally leveraging the flexibility of the large, cheap frontend pool to our advantage.&lt;/p&gt;
+&lt;p&gt;This is safe, because together with Oracle MySQL we developed GTID-based replication, which together with Orchestrator gives us complete flexibility and control over the replication topology, enabling warm and fast switchovers.
+This is around 20x faster than active/passive replication pairs we used before, and reduced a lot of daily operational toil for the DBA team.&lt;/p&gt;
+&lt;p&gt;We recommend the use of distributed storage for large database sizes, but latency considerations apply.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Bandwidth, IOPS and Latency</title>
       <link>https://blog.koehntopp.info/2022/11/07/bandwidth-iops-and-latency.html</link>
@@ -3269,102 +3394,6 @@ Facinatingly, the remote session stays if you kill the local client, and on reco
  which describes how it works in more detail.
 With the upcoming &amp;ldquo;Fleet&amp;rdquo;, it seems that they will be going all-in on the split between IDE backend and frontend.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Disclaimer:&lt;/em&gt; I am a paying customer of Jetbrains, and have the private user all-in subscription, paid for myself.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Breaking replication with ALGORITHM = INSTANT</title>
-      <link>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</link>
-      <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</guid>
-      <description>&lt;p&gt;MySQL 8.0.29 adds &lt;code&gt;ALGORITHM=INSTANT&lt;/code&gt; as a way to run &lt;code&gt;ALTER TABLE&lt;/code&gt; commands with less wait.
-The documentation can be found in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Online DDL Operators&lt;/a&gt;
-
- and instant column operations can be found &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html#online-ddl-column-operations&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Example Syntax looks like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;use&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;algorithm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;07&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Records&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Duplicates&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Warnings&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;limited-total_row_versions&#34;&gt;
-    &lt;a href=&#34;#limited-total_row_versions&#34;&gt;
-	Limited TOTAL_ROW_VERSIONS
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The manual&lt;/a&gt;
-
- explains a new concept:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A new row version is created after each &lt;code&gt;ALTER TABLE ... ALGORITHM=INSTANT&lt;/code&gt; operation that adds one or more columns, drops one or more columns, or adds and drops one or more columns in the same operation.
-The &lt;code&gt;INFORMATION_SCHEMA.INNODB_TABLES.TOTAL_ROW_VERSIONS&lt;/code&gt; column tracks the number of row versions for a table.
-The value is incremented each time a column is instantly added or dropped.
-The initial value is 0.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total_row_versions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_tables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris/%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;--------+--------------------+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;NAME&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TOTAL_ROW_VERSIONS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+--------+--------------------+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+--------+--------------------+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So there is a concept called &lt;code&gt;TOTAL_ROW_VERSIONS&lt;/code&gt;.
-This is a version counter for instant alter table, and it is incremented each time a change to a table&amp;rsquo;s schema is being made.&lt;/p&gt;
-&lt;p&gt;The manual continues with a warning:
-The TRV counter has a limit of 64.
-Commands are rejected when the counter is reaching the limit.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;When a table with instantly added or dropped columns is rebuilt by table-rebuilding &lt;code&gt;ALTER TABLE&lt;/code&gt; or &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; operation, the &lt;code&gt;TOTAL_ROW_VERSIONS&lt;/code&gt; value is reset to 0.
-The maximum number of row versions permitted is 64, as each row version requires additional space for table metadata.
-When the row version limit is reached, &lt;code&gt;ADD COLUMN&lt;/code&gt; and &lt;code&gt;DROP COLUMN&lt;/code&gt; operations using &lt;code&gt;ALGORITHM=INSTANT&lt;/code&gt; are rejected with an error message that recommends rebuilding the table using the &lt;code&gt;COPY&lt;/code&gt; or &lt;code&gt;INPLACE&lt;/code&gt; algorithm.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;ERROR 4080 (HY000): Maximum row versions reached for table test/t1. No more columns can be added or dropped instantly. Please use COPY/INPLACE.&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&#34;the-obvious-breakage&#34;&gt;
-    &lt;a href=&#34;#the-obvious-breakage&#34;&gt;
-	The obvious breakage
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;So a command is rejected, when TRV reaches 64.
-Also, MySQL uses replication a lot.
-In fact, I am of the persuasion that any MySQL installation that does not have at least one replica is broken.&lt;/p&gt;
-&lt;p&gt;So can we use this to break replication?&lt;/p&gt;
-&lt;p&gt;The manual suggests that &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; can be used to reset the counter.
-The manual knows the following things about &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OPTIMIZE&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;There is a syntax &lt;code&gt;OPTIMIZE LOCAL TABLE&lt;/code&gt;.
-»By default, the server writes &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; statements to the binary log so that they replicate to replicas.
-To suppress logging, specify the optional &lt;code&gt;NO_WRITE_TO_BINLOG&lt;/code&gt; keyword or its alias &lt;code&gt;LOCAL&lt;/code&gt;.«&lt;/li&gt;
-&lt;li&gt;This is not privileged: »This statement requires &lt;code&gt;SELECT&lt;/code&gt; and &lt;code&gt;INSERT&lt;/code&gt; privileges for the table.«&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;We now do this: With &lt;code&gt;dbdeployer&lt;/code&gt; we &lt;code&gt;dbdeployer deploy replication 8.0.29&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;On the primary: &lt;code&gt;./m -u root&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;%&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;identified&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;grant&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;all&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;to&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;database&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Continue as &lt;code&gt;kris&lt;/code&gt; on the primary: &lt;code&gt;./m -u kris -psecret kris&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;algorithm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total_row_versions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_tables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris/%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;drop&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;algorithm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total_row_versions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_tables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris/%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now inject the &lt;code&gt;OPTIMIZE LOCAL TABLE&lt;/code&gt; command to plant the bomb.
-This can be done by the &lt;code&gt;kris&lt;/code&gt; user, or any other user having &lt;code&gt;INSERT&lt;/code&gt; and &lt;code&gt;SELECT&lt;/code&gt; privilege.
-It is not necessary to have &lt;code&gt;ALTER&lt;/code&gt; privilege, as long as you know that somebody else is doing instant alter table commands on the table.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;optimize&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;local&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, continue to add and drop the column &lt;code&gt;t.i&lt;/code&gt; as before.
-Check the TRV value on the primary and a replica.
-Note how the TRV value on the primary is lower than on the replica.&lt;/p&gt;
-&lt;p&gt;When the TRV value reaches 64 on the replica, replication will stop with error 4080.
-The replica is unable to execute the alter table command, while the primary was able to run it.&lt;/p&gt;
 </description>
     </item>
     

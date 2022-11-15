@@ -6,7 +6,132 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 15 Nov 2022 09:44:43 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 15 Nov 2022 10:02:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Databases on un-RAID-ed storage?</title>
+      <link>https://blog.koehntopp.info/2022/11/09/databases-on-unraided-storage.html</link>
+      <pubDate>Wed, 09 Nov 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/11/09/databases-on-unraided-storage.html</guid>
+      <description>&lt;p&gt;Where I work, we run bare-metal databases on non-redundant local storage.
+That is, a database is a very cheap frontend blade server.
+It has 2 CPUs worth $400, with 8 cores/16 threads each.
+It contains 128 GB of memory, 2 or 4 TB of local NVME and it has a 10 GBit/s network interface.
+It costs around 120 to 150 Euro per month to run for 5 years, including purchase price and all datacenter costs.
+It AWS terms, it is comparable to a EC2 m5.8xl, or better an i3.4xl, but with more CPU.&lt;/p&gt;
+&lt;p&gt;Data is stored on a local disk, preferably NVME, sometimes SSD, because we still have old hardware.&lt;/p&gt;
+&lt;p&gt;The local disk provides unmatched low latency, at incredibly low overhead (1 TB of data uses 1 TB of physical disk space) and at unmatched power consumption (a NVME drives adds about 10W to an already existing machine).
+The &lt;a href=&#34;https://blocksandfiles.com/2020/08/24/10x-enterprise-ssd-price-premium-over-nearline-disk-drives/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;purchase cost of a NVME drive&lt;/a&gt;
+
+ can be as low as 150-200 Euro/TB for Enterprise grade hardware.&lt;/p&gt;
+&lt;h1 id=&#34;is-it-not-risky-to-run-on-non-redundant-storage&#34;&gt;
+    &lt;a href=&#34;#is-it-not-risky-to-run-on-non-redundant-storage&#34;&gt;
+	Is it not risky to run on non-redundant storage?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;At work, we need to run our databases in replication hierarchies, to provide the required read capacity and to provide read capacity close (in the same AZ) to the clients.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/unraided-01.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Our database replication happens in trees, which extend across multiple AZs and backing-technologies. (bare-metal, Openstack, &amp;hellip;).
+They are marked in different colors.
+Writes go to the root of the tree on the left.
+They then replicate within fractions of a second down to the leaves at the right.
+Each replica provides a full copy of the data in a shared-nothing architecture, for read-scaleout.
+Applications find read-copies of the data close by, in the AZ they run in, and at the required capacity.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;The image is a screenshot from Orchestrator, a tool that manages MySQL replication hierarchies.
+This is showing one particular hierarchy, but they all have this shape.&lt;/p&gt;
+&lt;p&gt;We are using MySQL replication for read-scaleout (and for a few other things, such as backups, as clone sources to make more replicas, for data import to Hadoop, and so on).
+Using &amp;ldquo;Global Transaction ID based replication&amp;rdquo; (GTID) and Orchestrator, we are leveraging the redundancy required for read-scaleout also to provide high-availability.&lt;/p&gt;
+&lt;h1 id=&#34;so-how-do-we-survive&#34;&gt;
+    &lt;a href=&#34;#so-how-do-we-survive&#34;&gt;
+	So how do we survive?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If a Primary dies, we detect that.
+We then automatically promote any Intermediate Replica to a new Primary, rearranging the replication hierarchy as we go.
+In the end, all Replicas now ultimately dangle from the newly promoted Primary.&lt;/p&gt;
+&lt;p&gt;The GTID-based way of using read-scaleout capacity for high-availability has many advantages.
+Not only do we get to use local storage, we can also use throwaway frontend blades instead of much more expensive special database hardware as we did in the olden times.&lt;/p&gt;
+&lt;p&gt;We also get intermediate replicas promoted to primaries, which means that these machines have already warmed up caches and are useful immediately after promotion, at normal speed.&lt;/p&gt;
+&lt;p&gt;Compare that to the situation of old (many years ago):&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Now cheaper:&lt;/strong&gt; We needed to have special database machines with special hardware. So we needed to provision machines from a much smaller hardware pool, instead of living inside the big frontend hardware pond.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Now more redunancy:&lt;/strong&gt; We failed over between a single active-passive database pair, instead of being able to promote any replica that has a binlog to a new primary as we do now.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Now faster:&lt;/strong&gt; Also, the previously passive database had an ice-cold cache. Warming up to minimum speed took around 5 minutes, warming up to normal performance took around 20 minutes. That meant, during a switchover database performance was severely impeded for at minimum 5 minutes, and somewhat impeded for 20 minutes.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;More flexible every day:&lt;/strong&gt; We were unable to fail between arbitrary machines, and unable to rearrange the replication tree freely, because without GTID-based replication such a thing is doable only manually, and a high risk operation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;That last thing is important: ability to freely rearrange the replication tree  allows us to speed up many daily operations that otherwise would be subject to many more constraints.
+Among them are fast version upgrades, moving capacity between pools and many other daily operations that allow us to provide &amp;ldquo;just one more replica than you need&amp;rdquo; in time and without much toil.&lt;/p&gt;
+&lt;h1 id=&#34;distributed-storage&#34;&gt;
+    &lt;a href=&#34;#distributed-storage&#34;&gt;
+	Distributed Storage
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Local Disk has limits.
+Mostly, size limits: Our servers come with 2 TB or 4 TB of space.
+Larger hardware exists, but in limited numbers and it is spoken for by other teams.&lt;/p&gt;
+&lt;p&gt;A larger database is often stored on distributed storage.
+That is, it resides on a Filer, and is attached usually with iSCSI (&amp;ldquo;SCSI protocol over TCP/IP over an Ethernet wire&amp;rdquo;), or sometimes NVME-over-Fabric/TCP (that is, the NVME PCI bus protocol over TCP/IP over an Ethernet wire).&lt;/p&gt;
+&lt;p&gt;Because volumes of distributed storage are made by a Filer by combining large disks to even larger volumes, they can be of almost arbitrary size.
+So if you need more than can be provided by a Blade with local storage, you need to move to iSCSI storage.&lt;/p&gt;
+&lt;p&gt;This is much like going from an i3 instance with local storage to a m5 instance with EBS, in flexibility, but also in cost: You now need to pay for the Blade and for the storage, in the same way you pay for the instance and the EBS.&lt;/p&gt;
+&lt;h2 id=&#34;different-latency&#34;&gt;
+    &lt;a href=&#34;#different-latency&#34;&gt;
+	Different Latency
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You are likely also taking a latency hit: While you can hit a local storage at 1/20,000 s access time, with distributed storage there is one or more network hops involved, and worse, a lot of software and storage redundancy overhead at the destination.&lt;/p&gt;
+&lt;p&gt;You can expect more of 1/2,000 s access time than 1/20,000 s, so you are roughly one order of magnitude slower.
+How much exactly depends a lot on the Filer implementation you are on.&lt;/p&gt;
+&lt;h2 id=&#34;more-variance&#34;&gt;
+    &lt;a href=&#34;#more-variance&#34;&gt;
+	More Variance
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You may also take a jitter hit: The latency of distributed storage is often not only higher, but also more variable.
+If you are not pushing the limits of what is possible, that is often not an issue, but for some latency-sensitive applications it may well be.&lt;/p&gt;
+&lt;h2 id=&#34;filer-storage-overhead&#34;&gt;
+    &lt;a href=&#34;#filer-storage-overhead&#34;&gt;
+	Filer Storage Overhead
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Distributed storage also comes with some overhead in the sense that there is storage duplication at the filer end: 1 TB of database will never be 1 TB of disk space, but always more.&lt;/p&gt;
+&lt;p&gt;How much exactly very much depends on the Filer implementation, and on how much additional latency from software trickery you can tolerate.
+For example, most filers will store data in some kind of RAID, so there will be an overhead of 3x (everything is stored three times in HDFS and Ceph by default), of 2x (a simple RAID-1) or of 1.something (a RAID-5/6/x or Hadoop Erasure Coding).&lt;/p&gt;
+&lt;p&gt;Some Filers will, at the cost of additional latency, also offer data compression, or data deduplication.&lt;/p&gt;
+&lt;p&gt;Filers are, in essence, just computers with very many hard disks and very good Ethernet interfaces.&lt;/p&gt;
+&lt;p&gt;So you need to add the run-cost of these computers to the run-cost of the drives, amortized over the number of drives per Filer-computer: A Filer with 24 drives per computer has less overhead than a Filer with only 4 drives per computer.&lt;/p&gt;
+&lt;h2 id=&#34;volume-lifetime-volume-mobility-snapshots&#34;&gt;
+    &lt;a href=&#34;#volume-lifetime-volume-mobility-snapshots&#34;&gt;
+	Volume Lifetime, Volume Mobility, Snapshots
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A Filer on the other hand offers a number of advantages over Local Storage that are mostly interesting if the amount of data is so large that it takes very long to copy:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A volume on a Filer is mobile.
+It can be detached from an instance and attached to another instance.
+This allows for upgrades of a compute unit (larger, new OS, software upgrade) without having need to copy around the data.
+At sizes over 10 TB such a copy operation can take hours or days, but with volume detach/attach no copy is necessary.&lt;/li&gt;
+&lt;li&gt;A volume on a Filer has a lifetime independent of the instance/the compute.
+This allows not only for the above mentioned upgrades, but also for filer-side operations, such as making a snapshot or a copy of the volume at the filer-side.
+This is usually much faster than loading the data off the volume, over the network, and pushing it over the network again to another machine.
+-i Filer-side operations include snapshotting and cloning, which can be combined in interesting ways to make data available for backups and new instances with a lot less wait than a full copy would take (or allows to make a full copy in the background while the snapshot is already being used).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We run our databases on local storage, because it is faster, has more consistent performance, uses less power, is cheaper, and is generally leveraging the flexibility of the large, cheap frontend pool to our advantage.&lt;/p&gt;
+&lt;p&gt;This is safe, because together with Oracle MySQL we developed GTID-based replication, which together with Orchestrator gives us complete flexibility and control over the replication topology, enabling warm and fast switchovers.
+This is around 20x faster than active/passive replication pairs we used before, and reduced a lot of daily operational toil for the DBA team.&lt;/p&gt;
+&lt;p&gt;We recommend the use of distributed storage for large database sizes, but latency considerations apply.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Bandwidth, IOPS and Latency</title>
       <link>https://blog.koehntopp.info/2022/11/07/bandwidth-iops-and-latency.html</link>
@@ -4769,366 +4894,6 @@ This bug is still open in all production Linux kernels.&lt;/p&gt;
 &lt;/h1&gt;
 &lt;p&gt;Thanks, Mark, for you very useful and insightful comments, and for nudging me to go deeper on this.
 And thanks for necro&amp;rsquo;ing Marks articles with your comments, Marko!&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: CREATE IF NOT EXISTS TABLE, but CREATE OR REPLACE VIEW</title>
-      <link>https://blog.koehntopp.info/2021/09/10/create-if-not-exists.html</link>
-      <pubDate>Fri, 10 Sep 2021 20:01:06 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/10/create-if-not-exists.html</guid>
-      <description>&lt;p&gt;For the MySQL Million Challenge, I was going through the server syntax in order to understand what things can be created in the server.
-And now my OCD triggered.
-DDL is a mess.&lt;/p&gt;
-&lt;h1 id=&#34;creation&#34;&gt;
-    &lt;a href=&#34;#creation&#34;&gt;
-	Creation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to create server objects using the &lt;code&gt;CREATE thing&lt;/code&gt; syntax.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The server gives you that for the following things:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;DATABASE&lt;/li&gt;
-&lt;li&gt;EVENT&lt;/li&gt;
-&lt;li&gt;FUNCTION (and FUNCTION SONAME)&lt;/li&gt;
-&lt;li&gt;INDEX&lt;/li&gt;
-&lt;li&gt;LOGFILE GROUP (NDB only, not going to look at this)&lt;/li&gt;
-&lt;li&gt;PROCEDURE&lt;/li&gt;
-&lt;li&gt;RESOURCE GROUP&lt;/li&gt;
-&lt;li&gt;ROLE&lt;/li&gt;
-&lt;li&gt;SERVER&lt;/li&gt;
-&lt;li&gt;SPATIAL REFERENCE SYSTEM&lt;/li&gt;
-&lt;li&gt;TABLE&lt;/li&gt;
-&lt;li&gt;TABLESPACE&lt;/li&gt;
-&lt;li&gt;TRIGGER&lt;/li&gt;
-&lt;li&gt;USER&lt;/li&gt;
-&lt;li&gt;VIEW&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;safe-creation&#34;&gt;
-    &lt;a href=&#34;#safe-creation&#34;&gt;
-	Safe creation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer I want to be able to script things safely, so I need &lt;code&gt;IF NOT EXISTS&lt;/code&gt; clauses in my &lt;code&gt;CREATE&lt;/code&gt; syntax.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Statements that create things often allow you to specify &lt;code&gt;IF NOT EXISTS&lt;/code&gt; for conditional creation of the thing:
-Creation of the thing will fail if it already exists.
-Using the &lt;code&gt;IF NOT EXISTS&lt;/code&gt; clause the creation is conditional, so if the thing already exists this is not an error.&lt;/p&gt;
-&lt;p&gt;This is important for scripting: If the thing already exists, the script will throw an error and depending on settings will stop.
-It is even more important in replication, because if you replicate the creation statement to a replica, the replication will stop with an error unless it is conditional.&lt;/p&gt;
-&lt;p&gt;Some &lt;code&gt;CREATE&lt;/code&gt; statements replicate, but do not offer conditional syntax.
-They cannot be used safely in replication, and they are cumbersome in scripting.&lt;/p&gt;
-&lt;p&gt;Two &lt;code&gt;CREATE&lt;/code&gt; statements offer deviant safe creation: Instead of &lt;code&gt;CREATE ... IF NOT EXISTS&lt;/code&gt; they offer &lt;code&gt;CREATE OR REPLACE ...&lt;/code&gt;.&lt;/p&gt;
-&lt;h1 id=&#34;multiple-object-syntax&#34;&gt;
-    &lt;a href=&#34;#multiple-object-syntax&#34;&gt;
-	Multiple object syntax
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer I want to be able to chain multiple &lt;code&gt;CREATE&lt;/code&gt; or &lt;code&gt;DROP&lt;/code&gt; actions together in a single statement, so that the things are created (or dropped) together, atomically.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Alternatively, DDL could be made transactional.
-This makes sense even if a rollback is not possible, if they are being executed in a kind of DDL transaction under a lock, so that they appear to happen atomically.&lt;/p&gt;
-&lt;p&gt;Multiple &lt;code&gt;CREATE&lt;/code&gt; syntax does not exist.
-For few objects, a multiple drop syntax does exist, but support is thin.&lt;/p&gt;
-&lt;h1 id=&#34;safe-drop&#34;&gt;
-    &lt;a href=&#34;#safe-drop&#34;&gt;
-	Safe DROP
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to &lt;code&gt;DROP&lt;/code&gt; the things that I created.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Obviously.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to make the &lt;code&gt;DROP&lt;/code&gt; conditional using an &lt;code&gt;IF EXISTS&lt;/code&gt; clause, to be able to script and replicate this operation safely.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Obviously.&lt;/p&gt;
-&lt;p&gt;The support for this is better than for creation, for some reason, and there is no deviant syntax.
-Still, some things cannot be dropped safely.&lt;/p&gt;
-&lt;h1 id=&#34;enumeration-and-definition-display&#34;&gt;
-    &lt;a href=&#34;#enumeration-and-definition-display&#34;&gt;
-	Enumeration and Definition display
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a developer, I want to be able to enumerate all the things of a category.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Logically, an API is incomplete without enumeration.
-I need to be able to see what exists.&lt;/p&gt;
-&lt;p&gt;In MySQL, a lot of things can be listed with &lt;code&gt;SHOW&lt;/code&gt; commands, and all things can be listed by looking into the appropriate system tables.&lt;/p&gt;
-&lt;p&gt;Apparently, a lot of things can not be listed using the &lt;code&gt;SHOW plural&lt;/code&gt; syntax (&lt;code&gt;SHOW TABLES&lt;/code&gt;, &lt;code&gt;SHOW DATABASES&lt;/code&gt;).
-For a few things, a deviant syntax is supported (&lt;code&gt;SHOW PROCEDURE STATUS&lt;/code&gt;) that also shows the definition of the thing.&lt;/p&gt;
-&lt;p&gt;For other things you have to access system tables.
-These system tables seem to be spread around, some are in I_S (Tablespace), others in mysql.* (servers).&lt;/p&gt;
-&lt;p&gt;Generally, MySQL seems to favor the syntax &lt;code&gt;SHOW CREATE thing&lt;/code&gt; to show an SQL statement that would recreate the thing if I dropped it.
-But for some things, this is not implemented, despite the fact that the information for this is available in various system tables.&lt;/p&gt;
-&lt;h1 id=&#34;altering-and-renaming-things&#34;&gt;
-    &lt;a href=&#34;#altering-and-renaming-things&#34;&gt;
-	Altering and renaming things
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;As a database developer, I want to be able to change the definition of a thing after creation.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Most things can be altered after creation.
-For some things, some attributes cannot be altered even if an &lt;code&gt;ALTER&lt;/code&gt; statement exists. Notably, it is impossible to rename a database.&lt;/p&gt;
-&lt;p&gt;Only two things can be renamed, tables and users.
-For other things, renaming is possible using &lt;code&gt;ALTER TABLE RENAME&lt;/code&gt; syntax, but a pure &lt;code&gt;RENAME&lt;/code&gt; does not exist despite the fact that renaming is supported.&lt;/p&gt;
-&lt;p&gt;For roles and users, &lt;code&gt;ALTER thing IF EXISTS&lt;/code&gt; conditional syntax is supported, but for all other things it is not.&lt;/p&gt;
-&lt;h1 id=&#34;replication&#34;&gt;
-    &lt;a href=&#34;#replication&#34;&gt;
-	Replication
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;All thing creations are replicated, except resource groups and servers.
-That even makes sense, which is unusual, given all the other illogical anomalies.&lt;/p&gt;
-&lt;h1 id=&#34;a-table-because-this-is-about-databases&#34;&gt;
-    &lt;a href=&#34;#a-table-because-this-is-about-databases&#34;&gt;
-	A table, because this is about databases
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Command&lt;/th&gt;
-&lt;th&gt;replicates&lt;/th&gt;
-&lt;th&gt;enumerate SHOW&lt;/th&gt;
-&lt;th&gt;CREATE&lt;/th&gt;
-&lt;th&gt;IF   T EXISTS&lt;/th&gt;
-&lt;th&gt;OR REPLACE&lt;/th&gt;
-&lt;th&gt;DROP&lt;/th&gt;
-&lt;th&gt;IF EXISTS&lt;/th&gt;
-&lt;th&gt;MULTI&lt;/th&gt;
-&lt;th&gt;SHOW CREATE&lt;/th&gt;
-&lt;th&gt;ALTER&lt;/th&gt;
-&lt;th&gt;IF EXISTS&lt;/th&gt;
-&lt;th&gt;RENAME&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;DATABASE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;EVENT&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;FUNCTION&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;*1&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;INDEX&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;*2&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*2&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;PROCEDURE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;*3&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;RES GROUP&lt;/td&gt;
-&lt;td&gt;*  *&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;ROLE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SERVER&lt;/td&gt;
-&lt;td&gt;*  *&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;SRS&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TABLE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TABLESPACE&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;*4&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;TRIGGER&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;USER&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;VIEW&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;td&gt;YES&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;ul&gt;
-&lt;li&gt;*1: &lt;code&gt;SHOW FUNCTION STATUS&lt;/code&gt; deviant syntax enumerates the function names and definitions.&lt;/li&gt;
-&lt;li&gt;*2: Indexes are not first class citizens, they are part of table definitions.&lt;/li&gt;
-&lt;li&gt;*3: &lt;code&gt;SHOW PROCEDURE STATUS&lt;/code&gt; deviant syntax enumerates the procedure names and definitions.&lt;/li&gt;
-&lt;li&gt;*4: &lt;code&gt;ALTER thing RENAME&lt;/code&gt; syntax exists, but no &lt;code&gt;RENAME&lt;/code&gt; command.&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
