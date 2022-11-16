@@ -6,7 +6,167 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 16 Nov 2022 16:08:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Nov 2022 17:28:26 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Of Stars and Snowflakes</title>
+      <link>https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html</link>
+      <pubDate>Wed, 16 Nov 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html</guid>
+      <description>&lt;h1 id=&#34;a-sample-system&#34;&gt;
+    &lt;a href=&#34;#a-sample-system&#34;&gt;
+	A sample system
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When you have an Online Transactional Database, you have at some point in time to record transactions.
+That means you get a table with time dimension in your OLTP system.
+Consider for example a system that records Reservations.
+Users exist and can reserve Things to use, for a day.&lt;/p&gt;
+&lt;p&gt;You probably get a structure such as this:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/snowflake-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;In an OLTP database, a reservation is a &lt;code&gt;(resid, userid, thingid, date)&lt;/code&gt;. It references the &lt;code&gt;user&lt;/code&gt; data by &lt;code&gt;userid&lt;/code&gt;, and the &lt;code&gt;thing&lt;/code&gt; data by &lt;code&gt;thingid&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This assumes we have unique complete representations of a &lt;code&gt;user&lt;/code&gt; and a &lt;code&gt;thing&lt;/code&gt;, and we always want to reference the most current version of each of them.
+It also assumes that the &lt;code&gt;reservation&lt;/code&gt; is transient. Maybe we add additional fields, or pointers to other tables to track state changes:
+A user can show up and get their thing, then work with it.
+When they give it back, we record the fact, and make sure the thing is checked to be okay after use.&lt;/p&gt;
+&lt;h2 id=&#34;fixed-sized-oltp-systems&#34;&gt;
+    &lt;a href=&#34;#fixed-sized-oltp-systems&#34;&gt;
+	Fixed sized OLTP systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Finally, the transaction is closed, and in an OLTP system we are then well advised to forget about it.
+To model that, we should add for example a state field that tracks this, and maybe fields to link to complaints or damages, if applicable.&lt;/p&gt;
+&lt;p&gt;That is, we want the OLTP system to be largely fixed in size, given unchanging outside parameters.
+Or in other words, for the same number of things and users, we want the size of the OLTP system to be largely constant over time.&lt;/p&gt;
+&lt;p&gt;If we did not forget about Reservations after their completion, we would have a table with a time dimension, but with an incomplete data lifecycle management.
+The &lt;code&gt;reservation&lt;/code&gt; table would grow over time, without an upper bound, eventually becoming the largest object in our system.
+Most of the transactions recorded would be in the past, done and dead.&lt;/p&gt;
+&lt;p&gt;This will make our customer facing system large, slow, hard to back up and hard to change.
+Most people do not want that, but they also want records of transactions past.
+So instead of deleting old &lt;code&gt;reservation&lt;/code&gt; entries, they &lt;strong&gt;Extract&lt;/strong&gt; them, and push them elsewhere.&lt;/p&gt;
+&lt;p&gt;This keeps the customer facing system nice and clean, and pushes data to another system, with different performance and availability requirements, and different data structures.&lt;/p&gt;
+&lt;h2 id=&#34;changing-values&#34;&gt;
+    &lt;a href=&#34;#changing-values&#34;&gt;
+	Changing values
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Most OLTP systems that make sales are well advised to keep current values of the data, if at all possible.
+It is cheap and easy to ask for the price of a product in a table with exactly one entry per product, the current price:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- CREATE TABLE product (
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   product_id SERIAL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   name VARCHAR(255),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   price DECIMAL(12,4)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- )
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;price&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If we recorded the price of a product together with a validity interval instead, then all queries become complicated to write,
+and expensive to execute:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- CREATE TABLE product (
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   product_id SERIAL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   name VARCHAR(255),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   price DECIMAL(12,4),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   valid_from DATE NULL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   valid_until DATE NULL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   INDEX (product_id, valid_until)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;price&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AND&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;valid_until&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;IS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So if that kind of design can be avoided for the business transactional part of the system, we should not model it.&lt;/p&gt;
+&lt;p&gt;That kind of query is almost always needed for the backend, analytical part of the system, but that is another place, and it should not part of the OLTP system.&lt;/p&gt;
+&lt;h2 id=&#34;separate-systems&#34;&gt;
+    &lt;a href=&#34;#separate-systems&#34;&gt;
+	Separate systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In an OLTP system, we have data in 3NF or something close to it.
+We have a large number of queries, short running transactions and a lot of data changes.
+We have a large number of concurrent users, making these changes.
+We want to design the system so that the working set of it fits into memory, that is, we do see almost no disk reads, and the number of disk reads is independent of the number of users or the load of the systems.
+We cannot avoid the writes, because that&amp;rsquo;s what transactions are.&lt;/p&gt;
+&lt;p&gt;We design the system so that it contains only current data.
+The size of the system is stable over time.
+There are no tables that grow over time, without an upper bound.
+Instead, the system size is a function of the number of entities modelled in each of its entity-representation tables, and by the number of open business transactions in flight.&lt;/p&gt;
+&lt;p&gt;In an analytics systems, we have data in fact tables, which have time as a component of the primary key or are even partitioned by time.
+We have few, long-running queries, that are often scans that aggregate over a fact table or parts of it.
+We do not have many data changes, and the data changes we see are usually imports, appends to the fact tables.&lt;/p&gt;
+&lt;h1 id=&#34;etl---extract-transform-load&#34;&gt;
+    &lt;a href=&#34;#etl---extract-transform-load&#34;&gt;
+	ETL - Extract, Transform, Load
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Sometimes data imports are multistage, because the imported data is not in its final form and needs to be cleaned up.&lt;/p&gt;
+&lt;p&gt;Data gets from the OLTP system to the analytics system, undergoing a distinct three phased process, ETL &amp;ndash; extract, transform, load:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The data is extracted from the OLTP system. It is in 3NF, and contains many id&amp;rsquo;s representing functionally dependent values in their respective tables.&lt;/li&gt;
+&lt;li&gt;The data is transformed, resolving the IDs into the functionally dependent value literals.&lt;/li&gt;
+&lt;li&gt;The data is loaded into the analytics system. Often this involves cleanup steps, bringing the data into the form it needs in the analytics system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;an-etl-example&#34;&gt;
+    &lt;a href=&#34;#an-etl-example&#34;&gt;
+	An ETL example
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&#34;https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse.html&#34;&gt;My Private Data Warehouse&lt;/a&gt;
+
+ we have an example of such a process, using my bank account statements from a German Sparkasse.&lt;/p&gt;
+&lt;p&gt;Data arrives from a Sparkasse system in CSV format.
+In a first step we load the data into a loader table, &lt;code&gt;transactions&lt;/code&gt; table.
+Data is then copied from the loader table into a cleanup table, &lt;code&gt;b&lt;/code&gt;, and undergoes a number of changes as part of the cleanup process.
+Afterwards it could be copied over into a fact table, extending an existing, ever-growing collection of account transactions.&lt;/p&gt;
+&lt;p&gt;This example is also showing data crossing administrative domain boundaries:
+The Sparkasse is running my account, and it does so in whatever form they want or need.
+They export data in a documented format, our software contract, but it is not the format I need.&lt;/p&gt;
+&lt;p&gt;The Extract process is downloading that data from the Sparkasse and shipping it to my system.&lt;/p&gt;
+&lt;p&gt;The Transform process has, in part already happened &amp;ndash; there are no IDs for me to resolve.&lt;/p&gt;
+&lt;p&gt;The Load is multistage, I load the data basically as text, and then apply a number of cleanup transformations to it.&lt;/p&gt;
+&lt;h2 id=&#34;the-star-and-the-snowflake&#34;&gt;
+    &lt;a href=&#34;#the-star-and-the-snowflake&#34;&gt;
+	The Star and the Snowflake
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order to do actual analytics with it, I need to turn this into collectible, aggregate-able dimensions.
+That is, I define categories such as &lt;code&gt;moneysinks&lt;/code&gt; and map each remote account name to a category &amp;ndash; basically bins for the aggregation.
+I am assigning each transaction to such a category, and then aggregate daily, weekly or monthly spend per category &amp;ndash; this is a report.&lt;/p&gt;
+&lt;p&gt;While the normal form of an OLTP database is the 3NF or something close to it, analytics databases are made up from fact tables.
+Facts have a date as part of the primary key or are even partitioned by date.
+For each &lt;code&gt;(id, date)&lt;/code&gt; pair we record certain attribute values, and store them literally and denormalized.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Around&amp;rdquo; each fact table we often have stored, pre-aggregated values, for example &amp;ldquo;daily spend by category&amp;rdquo;, &amp;ldquo;daily spend by spender&amp;rdquo; and so on.
+Each of these aggregations is called a dimension, and because they group themselves around the fact of which they are aggregates, we call this a Star.&lt;/p&gt;
+&lt;p&gt;The Star Schema is the simple normal form for analytics databases.
+They are not in 3NF, because 3NF stores the &lt;em&gt;current&lt;/em&gt; value of an attribute of an entity, and we reference the only copy of that by id.
+Instead, we store the literal value of an attribute for a given date as a fact about the thing we are recording, so that we can observe how that value changes over time.&lt;/p&gt;
+&lt;p&gt;Sometimes, the literal values are rather long strings, and they are repeating quite often.
+We then, as part of the data load, also perform a string compression with a lookup table.
+In &lt;a href=&#34;https://blog.koehntopp.info/2020/09/18/mysql-encoding-fields-for-great-profit.html&#34;&gt;Encoding fields for great profit&lt;/a&gt;
+
+ I am giving an example of how that works.&lt;/p&gt;
+&lt;p&gt;Sometimes we aggregate along more than one dimension.
+If, for example, in our reservations fact table we would record the country of origin for each user, and the color of each thing, we could aggregate &amp;ldquo;daily reservations per country and color&amp;rdquo; to identify conceivable national color preferences.
+Two-dimensional aggregates can be thought of as specializations of single dimensions, and the resulting pattern looks like a Snowflake, the other, slightly more complicated normal form for analytics databases.&lt;/p&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We try to keep our OLTP systems in 3NF.
+We also try to keep only current data in them, and we expire business transactions that are no longer active from them.
+This keeps them small and fast, allowing us to run from memory.&lt;/p&gt;
+&lt;p&gt;If we want to record a transactional history, we do that elsewhere, in an analytics system.
+Data in analytics system is collected in tables with a time dimension in the primary key, the fact tables, and groups of aggregates around them, forming a Star or Snowflake.&lt;/p&gt;
+&lt;p&gt;Data flows from the OLTP system to the Analytics system in an ETL workflow.
+This workflow collects data from the OLTP system (extract), resolves the IDs into the functionally dependent values, and retains the literal values of interest (transform).
+That data is then loaded into the analytics system, cleaned up, categorized and pre-aggregated (load).
+Old, retired transactions can then be removed from the OLTP system, keeping it lean and mean.&lt;/p&gt;
+&lt;p&gt;ETL processes can be batched, once per day, hour or even minute.
+This is classic offline analytics with data warehouses.&lt;/p&gt;
+&lt;p&gt;Or they can be realtime, where a reader tails the log of the database and puts the data onto an event bus such as Kafka or SNS.
+On the consuming side the data is still being processed, either classically, or with realtime aggregator that executes sliding window queries.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Databases on un-RAID-ed storage?</title>
       <link>https://blog.koehntopp.info/2022/11/09/databases-on-unraided-storage.html</link>
@@ -4212,127 +4372,6 @@ If you look at MySQL blogs, for example the collection at &lt;a href=&#34;https:
 &lt;p&gt;There is a big divide between Developers as users of a database, DBAs, and vendors/bloggers/community advocates.
 With this being the case, and not being acknowledged, there is little chance for development.
 Pickup of new strategies, discussion about gaps in tooling and social innovation is slow in such an environment.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Debugging SQL in Python</title>
-      <link>https://blog.koehntopp.info/2022/03/24/debugging-sql-in-python.html</link>
-      <pubDate>Thu, 24 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/03/24/debugging-sql-in-python.html</guid>
-      <description>&lt;p&gt;When using MySQL with Python, you may want to use the &lt;code&gt;mysqlclient&lt;/code&gt; library, which is what most people do and which will work just fine.
-Or you are using the official MySQL 8 Connector/Python package, which will behave slightly differently, but maybe supports the unique MySQL 8 feature already that is not in &lt;code&gt;mysqlclient&lt;/code&gt;, yet.&lt;/p&gt;
-&lt;p&gt;Your SQL may be hand-writtten, or it may be generated using SQL Alchemy, Django or some other package.
-If the latter is the case, it may be useful to be able to see the actual SQL string that has been sent to the database in order to facilitate interactive debugging.&lt;/p&gt;
-&lt;h1 id=&#34;using-mysqlclient&#34;&gt;
-    &lt;a href=&#34;#using-mysqlclient&#34;&gt;
-	Using mysqlclient
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;If you are using &lt;code&gt;mysqlclient&lt;/code&gt; with Python, the class internally sends the SQL to the server in a method &lt;code&gt;_query(self, q)&lt;/code&gt; in the Cursor class (&lt;a href=&#34;https://github.com/PyMySQL/mysqlclient/blob/6ebc1a1972dee69fb54b56867fc795ee220b5d79/MySQLdb/cursors.py#L206&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;source&lt;/a&gt;
-
-).&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;_query(self, q)&lt;/code&gt; method itself updates an &lt;code&gt;_executed&lt;/code&gt; member of the cursor to store the literal query string sent to the server.
-But it does so only after having sent the query.
-On error, an exception is raised and &lt;code&gt;_executed&lt;/code&gt; is not updated (&lt;a href=&#34;https://github.com/PyMySQL/mysqlclient/blob/6ebc1a1972dee69fb54b56867fc795ee220b5d79/MySQLdb/cursors.py#L316&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;source&lt;/a&gt;
-
-).&lt;/p&gt;
-&lt;p&gt;To always get access to the actual query string, define a class &lt;code&gt;DebugCursor&lt;/code&gt;, and specify it with your connection &lt;code&gt;**kwargs&lt;/code&gt;. In &lt;code&gt;DebugCursor&lt;/code&gt;, do the needful.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;MySQLdb&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;MySQLdb.cursors&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;DebugCursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursors&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DictCursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;q&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Debug: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;q&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;super&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;_query&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;q&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;localhost&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;passwd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;cursorclass&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;DebugCursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;# referenced class must be defined before&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;MySQLdb&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;select d from testtable where id = 3&amp;#34;&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;())&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In our class &lt;code&gt;DebugCursor&lt;/code&gt;, we inherit from our cursor of choice.
-We override &lt;code&gt;_query(self, q)&lt;/code&gt;, printing the query string &lt;code&gt;q&lt;/code&gt;, and then calling the parent class implementation.&lt;/p&gt;
-&lt;p&gt;The output:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; python3 probe.py
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Debug: b&amp;#39;select d from testtable where id = 3&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;({&amp;#39;d&amp;#39;: &amp;#39;drei&amp;#39;},)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can use this to trace-log all literal SQL before it is being executed, even if the query string is invalid or contains syntax errors.&lt;/p&gt;
-&lt;h1 id=&#34;using-mysql-connectorpython&#34;&gt;
-    &lt;a href=&#34;#using-mysql-connectorpython&#34;&gt;
-	Using MySQL Connector/Python
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;If you are using Oracle MySQL Connnector/Python to connect to the database, the implementation can internally use Cython or a Pure Python implementation of the protocol.&lt;/p&gt;
-&lt;p&gt;Both implementations behave slightly differently, unfortunately.
-Only the Pure Python implementation can be debugged easily in all circumstances.
-It is therefore important that you specify &lt;code&gt;use_pure=True&lt;/code&gt; with your connection &lt;code&gt;**kwargs&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The raw SQL statement will be found in the cursor&amp;rsquo;s &lt;code&gt;_executed&lt;/code&gt; member.
-If you are using multi-statements (don&amp;rsquo;t!), they will be logged in the &lt;code&gt;_executed_list&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;We write:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;mysql.connector&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;mysql.connector.errors&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;passwd&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;geheim&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;use_pure&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connect&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db_config&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;=== Valid SQL: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;select d from testtable where id = 3&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Debug: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;_executed&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fetchall&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;())&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;=== Invalid SQL: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;syntaxerror d from testtable where id = 3&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;execute&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;connector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;errors&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ProgrammingError&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Debug: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;_executed&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Error: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output looks like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; python3 probe.py
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;=== Valid SQL:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Debug: b&amp;#39;select d from testtable where id = 3&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;[(&amp;#39;drei&amp;#39;,)]
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;=== Invalid SQL:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Debug: b&amp;#39;syntaxerror d from testtable where id = 3&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Error: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#39;syntaxerror d from testtable where id = 3&amp;#39; at line 1
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Again, we can use this to trace raw SQL and identify actual generated SQL syntax much easier.
-This will allow us to pick up the literal SQL string, and debug interactively.&lt;/p&gt;
-&lt;p&gt;The same program, when run without &lt;code&gt;use_pure=True&lt;/code&gt;, will not update &lt;code&gt;c._executed&lt;/code&gt; properly if the SQL is malformed.
-It will produce the following output, which is worthless for debugging:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; python3 probe.py
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;=== Valid SQL:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Debug: b&amp;#39;select d from testtable where id = 3&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;[(&amp;#39;drei&amp;#39;,)]
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;=== Invalid SQL:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Debug: b&amp;#39;select d from testtable where id = 3&amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Error: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near &amp;#39;syntaxerror d from testtable where id = 3&amp;#39; at line 1
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note how &lt;code&gt;c._executed&lt;/code&gt; still holds the previous statement and not the statement that actually errored.&lt;/p&gt;
 </description>
     </item>
     

@@ -6,7 +6,167 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 16 Nov 2022 16:08:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Nov 2022 17:28:26 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Of Stars and Snowflakes</title>
+      <link>https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html</link>
+      <pubDate>Wed, 16 Nov 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html</guid>
+      <description>&lt;h1 id=&#34;a-sample-system&#34;&gt;
+    &lt;a href=&#34;#a-sample-system&#34;&gt;
+	A sample system
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When you have an Online Transactional Database, you have at some point in time to record transactions.
+That means you get a table with time dimension in your OLTP system.
+Consider for example a system that records Reservations.
+Users exist and can reserve Things to use, for a day.&lt;/p&gt;
+&lt;p&gt;You probably get a structure such as this:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/snowflake-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;In an OLTP database, a reservation is a &lt;code&gt;(resid, userid, thingid, date)&lt;/code&gt;. It references the &lt;code&gt;user&lt;/code&gt; data by &lt;code&gt;userid&lt;/code&gt;, and the &lt;code&gt;thing&lt;/code&gt; data by &lt;code&gt;thingid&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This assumes we have unique complete representations of a &lt;code&gt;user&lt;/code&gt; and a &lt;code&gt;thing&lt;/code&gt;, and we always want to reference the most current version of each of them.
+It also assumes that the &lt;code&gt;reservation&lt;/code&gt; is transient. Maybe we add additional fields, or pointers to other tables to track state changes:
+A user can show up and get their thing, then work with it.
+When they give it back, we record the fact, and make sure the thing is checked to be okay after use.&lt;/p&gt;
+&lt;h2 id=&#34;fixed-sized-oltp-systems&#34;&gt;
+    &lt;a href=&#34;#fixed-sized-oltp-systems&#34;&gt;
+	Fixed sized OLTP systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Finally, the transaction is closed, and in an OLTP system we are then well advised to forget about it.
+To model that, we should add for example a state field that tracks this, and maybe fields to link to complaints or damages, if applicable.&lt;/p&gt;
+&lt;p&gt;That is, we want the OLTP system to be largely fixed in size, given unchanging outside parameters.
+Or in other words, for the same number of things and users, we want the size of the OLTP system to be largely constant over time.&lt;/p&gt;
+&lt;p&gt;If we did not forget about Reservations after their completion, we would have a table with a time dimension, but with an incomplete data lifecycle management.
+The &lt;code&gt;reservation&lt;/code&gt; table would grow over time, without an upper bound, eventually becoming the largest object in our system.
+Most of the transactions recorded would be in the past, done and dead.&lt;/p&gt;
+&lt;p&gt;This will make our customer facing system large, slow, hard to back up and hard to change.
+Most people do not want that, but they also want records of transactions past.
+So instead of deleting old &lt;code&gt;reservation&lt;/code&gt; entries, they &lt;strong&gt;Extract&lt;/strong&gt; them, and push them elsewhere.&lt;/p&gt;
+&lt;p&gt;This keeps the customer facing system nice and clean, and pushes data to another system, with different performance and availability requirements, and different data structures.&lt;/p&gt;
+&lt;h2 id=&#34;changing-values&#34;&gt;
+    &lt;a href=&#34;#changing-values&#34;&gt;
+	Changing values
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Most OLTP systems that make sales are well advised to keep current values of the data, if at all possible.
+It is cheap and easy to ask for the price of a product in a table with exactly one entry per product, the current price:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- CREATE TABLE product (
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   product_id SERIAL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   name VARCHAR(255),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   price DECIMAL(12,4)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- )
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;price&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If we recorded the price of a product together with a validity interval instead, then all queries become complicated to write,
+and expensive to execute:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- CREATE TABLE product (
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   product_id SERIAL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   name VARCHAR(255),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   price DECIMAL(12,4),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   valid_from DATE NULL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   valid_until DATE NULL,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--   INDEX (product_id, valid_until)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;price&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;product_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;17&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;AND&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;valid_until&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;IS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So if that kind of design can be avoided for the business transactional part of the system, we should not model it.&lt;/p&gt;
+&lt;p&gt;That kind of query is almost always needed for the backend, analytical part of the system, but that is another place, and it should not part of the OLTP system.&lt;/p&gt;
+&lt;h2 id=&#34;separate-systems&#34;&gt;
+    &lt;a href=&#34;#separate-systems&#34;&gt;
+	Separate systems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In an OLTP system, we have data in 3NF or something close to it.
+We have a large number of queries, short running transactions and a lot of data changes.
+We have a large number of concurrent users, making these changes.
+We want to design the system so that the working set of it fits into memory, that is, we do see almost no disk reads, and the number of disk reads is independent of the number of users or the load of the systems.
+We cannot avoid the writes, because that&amp;rsquo;s what transactions are.&lt;/p&gt;
+&lt;p&gt;We design the system so that it contains only current data.
+The size of the system is stable over time.
+There are no tables that grow over time, without an upper bound.
+Instead, the system size is a function of the number of entities modelled in each of its entity-representation tables, and by the number of open business transactions in flight.&lt;/p&gt;
+&lt;p&gt;In an analytics systems, we have data in fact tables, which have time as a component of the primary key or are even partitioned by time.
+We have few, long-running queries, that are often scans that aggregate over a fact table or parts of it.
+We do not have many data changes, and the data changes we see are usually imports, appends to the fact tables.&lt;/p&gt;
+&lt;h1 id=&#34;etl---extract-transform-load&#34;&gt;
+    &lt;a href=&#34;#etl---extract-transform-load&#34;&gt;
+	ETL - Extract, Transform, Load
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Sometimes data imports are multistage, because the imported data is not in its final form and needs to be cleaned up.&lt;/p&gt;
+&lt;p&gt;Data gets from the OLTP system to the analytics system, undergoing a distinct three phased process, ETL &amp;ndash; extract, transform, load:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The data is extracted from the OLTP system. It is in 3NF, and contains many id&amp;rsquo;s representing functionally dependent values in their respective tables.&lt;/li&gt;
+&lt;li&gt;The data is transformed, resolving the IDs into the functionally dependent value literals.&lt;/li&gt;
+&lt;li&gt;The data is loaded into the analytics system. Often this involves cleanup steps, bringing the data into the form it needs in the analytics system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;an-etl-example&#34;&gt;
+    &lt;a href=&#34;#an-etl-example&#34;&gt;
+	An ETL example
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In &lt;a href=&#34;https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse.html&#34;&gt;My Private Data Warehouse&lt;/a&gt;
+
+ we have an example of such a process, using my bank account statements from a German Sparkasse.&lt;/p&gt;
+&lt;p&gt;Data arrives from a Sparkasse system in CSV format.
+In a first step we load the data into a loader table, &lt;code&gt;transactions&lt;/code&gt; table.
+Data is then copied from the loader table into a cleanup table, &lt;code&gt;b&lt;/code&gt;, and undergoes a number of changes as part of the cleanup process.
+Afterwards it could be copied over into a fact table, extending an existing, ever-growing collection of account transactions.&lt;/p&gt;
+&lt;p&gt;This example is also showing data crossing administrative domain boundaries:
+The Sparkasse is running my account, and it does so in whatever form they want or need.
+They export data in a documented format, our software contract, but it is not the format I need.&lt;/p&gt;
+&lt;p&gt;The Extract process is downloading that data from the Sparkasse and shipping it to my system.&lt;/p&gt;
+&lt;p&gt;The Transform process has, in part already happened &amp;ndash; there are no IDs for me to resolve.&lt;/p&gt;
+&lt;p&gt;The Load is multistage, I load the data basically as text, and then apply a number of cleanup transformations to it.&lt;/p&gt;
+&lt;h2 id=&#34;the-star-and-the-snowflake&#34;&gt;
+    &lt;a href=&#34;#the-star-and-the-snowflake&#34;&gt;
+	The Star and the Snowflake
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order to do actual analytics with it, I need to turn this into collectible, aggregate-able dimensions.
+That is, I define categories such as &lt;code&gt;moneysinks&lt;/code&gt; and map each remote account name to a category &amp;ndash; basically bins for the aggregation.
+I am assigning each transaction to such a category, and then aggregate daily, weekly or monthly spend per category &amp;ndash; this is a report.&lt;/p&gt;
+&lt;p&gt;While the normal form of an OLTP database is the 3NF or something close to it, analytics databases are made up from fact tables.
+Facts have a date as part of the primary key or are even partitioned by date.
+For each &lt;code&gt;(id, date)&lt;/code&gt; pair we record certain attribute values, and store them literally and denormalized.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Around&amp;rdquo; each fact table we often have stored, pre-aggregated values, for example &amp;ldquo;daily spend by category&amp;rdquo;, &amp;ldquo;daily spend by spender&amp;rdquo; and so on.
+Each of these aggregations is called a dimension, and because they group themselves around the fact of which they are aggregates, we call this a Star.&lt;/p&gt;
+&lt;p&gt;The Star Schema is the simple normal form for analytics databases.
+They are not in 3NF, because 3NF stores the &lt;em&gt;current&lt;/em&gt; value of an attribute of an entity, and we reference the only copy of that by id.
+Instead, we store the literal value of an attribute for a given date as a fact about the thing we are recording, so that we can observe how that value changes over time.&lt;/p&gt;
+&lt;p&gt;Sometimes, the literal values are rather long strings, and they are repeating quite often.
+We then, as part of the data load, also perform a string compression with a lookup table.
+In &lt;a href=&#34;https://blog.koehntopp.info/2020/09/18/mysql-encoding-fields-for-great-profit.html&#34;&gt;Encoding fields for great profit&lt;/a&gt;
+
+ I am giving an example of how that works.&lt;/p&gt;
+&lt;p&gt;Sometimes we aggregate along more than one dimension.
+If, for example, in our reservations fact table we would record the country of origin for each user, and the color of each thing, we could aggregate &amp;ldquo;daily reservations per country and color&amp;rdquo; to identify conceivable national color preferences.
+Two-dimensional aggregates can be thought of as specializations of single dimensions, and the resulting pattern looks like a Snowflake, the other, slightly more complicated normal form for analytics databases.&lt;/p&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We try to keep our OLTP systems in 3NF.
+We also try to keep only current data in them, and we expire business transactions that are no longer active from them.
+This keeps them small and fast, allowing us to run from memory.&lt;/p&gt;
+&lt;p&gt;If we want to record a transactional history, we do that elsewhere, in an analytics system.
+Data in analytics system is collected in tables with a time dimension in the primary key, the fact tables, and groups of aggregates around them, forming a Star or Snowflake.&lt;/p&gt;
+&lt;p&gt;Data flows from the OLTP system to the Analytics system in an ETL workflow.
+This workflow collects data from the OLTP system (extract), resolves the IDs into the functionally dependent values, and retains the literal values of interest (transform).
+That data is then loaded into the analytics system, cleaned up, categorized and pre-aggregated (load).
+Old, retired transactions can then be removed from the OLTP system, keeping it lean and mean.&lt;/p&gt;
+&lt;p&gt;ETL processes can be batched, once per day, hour or even minute.
+This is classic offline analytics with data warehouses.&lt;/p&gt;
+&lt;p&gt;Or they can be realtime, where a reader tails the log of the database and puts the data onto an event bus such as Kafka or SNS.
+On the consuming side the data is still being processed, either classically, or with realtime aggregator that executes sliding window queries.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Databases on un-RAID-ed storage?</title>
       <link>https://blog.koehntopp.info/2022/11/09/databases-on-unraided-storage.html</link>
@@ -4656,244 +4816,6 @@ At least filters exist and are on by default, so that I do not have to hear my m
 That is good.&lt;/p&gt;
 &lt;p&gt;I could really use a single large JSON blob containing the entire package with performance data for a query, at once - one query to trace one query.
 That is, the information from transaction, statement, stages, waits, the execution plan and the memory consumption for a given transaction or statement, in one go.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Page compression revisited</title>
-      <link>https://blog.koehntopp.info/2021/09/14/mysql-page-compression-revisited.html</link>
-      <pubDate>Tue, 14 Sep 2021 16:03:47 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/14/mysql-page-compression-revisited.html</guid>
-      <description>&lt;p&gt;Like I said, I never had much reason to use table compression, and only recently looked into the topic.
-MySQL Page Compression looks a lot easier at the database end of things, but relies on hole punching support in the file system.
-Let&amp;rsquo;s have a look at what that means.&lt;/p&gt;
-&lt;h1 id=&#34;files-inodes-and-arrays-of-blocks&#34;&gt;
-    &lt;a href=&#34;#files-inodes-and-arrays-of-blocks&#34;&gt;
-	Files, Inodes and Arrays of Blocks
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The original Unix filesystem saw the disk as a sea of blocks, which were represented in a free map as an array of bits.
-Files have numbers, which are an index into an array of so-called inode structures.
-Inodes store the files metadata and contain an array of block numbers, which make up the actual file.
-The array is folded multiple times, to optimize for the more common case of small files:
-The first few block numbers were stored in the inode, followed by a pointer to a block containing file block numbers, then a pointer to a block containing pointers to blocks of file block numbers and so on.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/09/filestructure.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The block list inside an array is folded multiple times, to optimize for the more common case of small files.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;These structures make up the so-called lower filesystem, which deals with organizing blocks into numbered files efficiently.
-On top of that resides the upper filesystem, which is concerned with managing names of files, and organizing them into directories.
-In our instance the upper filesystem is of no interest, so we are ignoring it completely:
-To us files are sequences of blocks, organized in inodes.&lt;/p&gt;
-&lt;p&gt;While the folded block array of the original file system served us for many decades, more modern file systems try to shrink these block lists by storing extents.
-An extent is a pair (start, length) that describes a  contiguous sequence of blocks.
-On a mostly empty disk, most files can probably be arranged in such runs of contiguous blocks, so this is a more efficient way to store things.
-Also, free lists can in many cases be stored more efficiently as extents.&lt;/p&gt;
-&lt;p&gt;The XFS filesystem is getting a lot of mileage of such extents, and one major a difference between the Linux ext3 and ext4 is the use of extents instead of block lists and bitmaps in many places.&lt;/p&gt;
-&lt;h1 id=&#34;sparse-files&#34;&gt;
-    &lt;a href=&#34;#sparse-files&#34;&gt;
-	Sparse Files
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Unix always allowed you to seek past the end of a file and write data.
-The following example program creates a file named &lt;code&gt;testfile&lt;/code&gt; by opening a new file of length 0, seeking to the position 20 GB and writing an integer at that position.
-The resulting file is 20 GB in length, but only occupies a minuscule amount of disk space.
-This is called a &lt;em&gt;sparse file&lt;/em&gt;, a file with holes in it.&lt;/p&gt;
-&lt;p&gt;Reading a sparse file, the non-existent blocks are returned as blocks filled with zeroes.
-On writing, space is allocated for the previously unallocated blocks in the sparse file, but probably not in sequence.
-So on hard disks, a seek occurs that would probably not have occurred, had the file actually been written properly.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;nl&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cat&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sparseme&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* 20 GB */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define FAR_OUT ((long) 20*1024*1024*1024)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;something&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;FILE&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;cm&#34;&gt;/* trunate to 0, or create, position 0 */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;fp&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fopen&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;testfile&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;w&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;fprintf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stderr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;Cannot open &amp;#39;testfile&amp;#39;, I die.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;cm&#34;&gt;/* move to far out position */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;fseek&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;FAR_OUT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;SEEK_SET&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;cm&#34;&gt;/* write something */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;fwrite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;something&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;sizeof&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;something&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;fclose&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fp&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When looking at this on the disk we can see that in fact only 4 KB of disk space (one block on a modern disk) has been allocated.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ cc -o sparseme sparseme.c
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ ./sparseme
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ ls -lsh testfile
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;4.0K -rw-rw-r-- 1 kris kris 21G Sep 14 16:37 testfile
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ xfs_bmap -v testfile
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;testfile:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; EXT: FILE-OFFSET           BLOCK-RANGE          AG AG-OFFSET               TOTAL
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   0: [0..41943039]:        hole                                         41943040
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   1: [41943040..41943047]: 104705904..104705911  3 (10334064..10334071)        8
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We compile the C-program with &lt;code&gt;cc -o sparseme sparseme.c&lt;/code&gt;, then run it as &lt;code&gt;./sparseme&lt;/code&gt;.
-We look at the resulting &lt;code&gt;testfile&lt;/code&gt; with &lt;code&gt;ls -lsh testfile&lt;/code&gt;. The size of the file is shown as 21G, but the allocation (in the leftmost column, we asked for that with the &lt;code&gt;-s&lt;/code&gt; flag) is only 4K.&lt;/p&gt;
-&lt;p&gt;Using the XFS maintenance program &lt;code&gt;xfs_bmap&lt;/code&gt; in verbose mode, we get to see the block map (bmap) of the file, as an extent listing. The program operates with sectors of 512 bytes, the unit that was common for many hard disk before we moved to 4K sectors. We see a large hole from offset 0 to 41943039 (times 512 bytes for sector size, this is 20 GB). Then there are 8 sectors (one 4K disk drive hardware block) mapped to 8 contiguous blocks (actually one hardware block) at 104705904 from the start of the partition.&lt;/p&gt;
-&lt;p&gt;We can do the same thing using a &lt;code&gt;dd&lt;/code&gt; command without writing a C-program:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ rm testfile testfile2
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ dd if=/dev/zero of=testfile2 bs=1 count=1 seek=21474836480
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1+0 records in
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1+0 records out
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1 byte copied, 0.000227159 s, 4.4 kB/s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ ls -lsh testfile2
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;4.0K -rw-rw-r-- 1 kris kris 21G Sep 14 16:47 testfile2
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ xfs_bmap -v testfile2
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;testfile2:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; EXT: FILE-OFFSET           BLOCK-RANGE          AG AG-OFFSET               TOTAL
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   0: [0..41943039]:        hole                                         41943040
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   1: [41943040..41943047]: 104705904..104705911  3 (10334064..10334071)        8
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Our &lt;code&gt;of=testfile2&lt;/code&gt; generates the outfile, and we write one byte (&lt;code&gt;bs=1&lt;/code&gt;) one time (&lt;code&gt;count=1&lt;/code&gt;) after seeking to position 20G (&lt;code&gt;seek=...&lt;/code&gt;).
-Using &lt;code&gt;ls -lsh&lt;/code&gt; and the &lt;code&gt;xfs_bmap&lt;/code&gt; output, we can confirm that this is indeed a file with a hole.&lt;/p&gt;
-&lt;p&gt;Sparse files are hard to handle:
-When you copy them, the non-existent blocks are read as blocks full of 0-bytes, and written.
-The target file will therefore actually allocate all the space the source file only claims to be large.&lt;/p&gt;
-&lt;p&gt;This is a problem with &lt;code&gt;core&lt;/code&gt; files in many Unix system, because they are being dumped as sparse files, mapping the actual process address space to file offsets, and leaving unallocated space in the address space at least in part as holes in the file.
-Until you naively copy that file, that is.&lt;/p&gt;
-&lt;p&gt;The GNU &lt;code&gt;cp&lt;/code&gt; program has a &lt;code&gt;--sparse&lt;/code&gt; option that tries to handle this, and &lt;code&gt;rsync&lt;/code&gt; also has special options that make it sparse file aware.&lt;/p&gt;
-&lt;h1 id=&#34;hole-punching&#34;&gt;
-    &lt;a href=&#34;#hole-punching&#34;&gt;
-	Hole Punching
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Some filesystems allow you to punch holes into files, using the &lt;a href=&#34;https://lwn.net/Articles/415889/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;fallocate(2)&lt;/code&gt;&lt;/a&gt;
-
- system call.
-This system call can be used to assign blocks to a file, making sure it is not a sparse file, without actually having to write all those bytes and a few other things.
-Using the filesystem dependent &lt;code&gt;FALLOC_FL_PUNCH_HOLE&lt;/code&gt; flag, extents in the file can be marked as &amp;lsquo;unused&amp;rsquo; and be given back to the filesystem.&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s look what our tables from the &lt;a href=&#34;https://blog.koehntopp.info/2021/09/09/mysql-two-kinds-of-compression.html&#34;&gt;previous article&lt;/a&gt;
-
- look like on disk, using &lt;code&gt;xfs_bmap&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The uncompressed table looks like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~/sandboxes/msb_8_0_25/data/kris$ xfs_bmap -v keks.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;keks.ibd:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; EXT: FILE-OFFSET       BLOCK-RANGE          AG AG-OFFSET             TOTAL
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   0: [0..63]:          104752464..104752527  3 (10380624..10380687)     64
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   1: [64..159]:        104753560..104753655  3 (10381720..10381815)     96
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   2: [160..223]:       104744928..104744991  3 (10373088..10373151)     64
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  ...
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  18: [327680..450559]: 126091200..126214079  4 (262080..384959)     122880
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  19: [450560..516095]: 126404568..126470103  4 (575448..640983)      65536
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We get 20 extents, some of which are smaller than 100 sectors, but some of which are larger than 100k sectors of contiguous space.&lt;/p&gt;
-&lt;p&gt;Now the page compressed file:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~/sandboxes/msb_8_0_25/data/kris$ xfs_bmap -v keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;keks2.ibd:
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; EXT: FILE-OFFSET       BLOCK-RANGE          AG AG-OFFSET            TOTAL
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   0: [0..31]:          104756944..104756975  3 (10385104..10385135)    32
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   1: [32..63]:         104757000..104757031  3 (10385160..10385191)    32
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   2: [64..71]:         104709000..104709007  3 (10337160..10337167)     8
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   3: [72..95]:         hole                                            24
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   4: [96..103]:        104709032..104709039  3 (10337192..10337199)     8
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   5: [104..127]:       hole                                            24
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;30886: [494440..494463]: hole                                            24
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;30887: [494464..494471]: 127160928..127160935  4 (1331808..1331815)       8
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;30888: [494472..494495]: hole                                            24
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;30889: [494496..516095]: 127160960..127182559  4 (1331840..1353439)   21600
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We get more than 30k extents here, all of them 8 sectors (4K) of data and 24 sectors (12K) of hole in my very compressible test data.
-This is messy.&lt;/p&gt;
-&lt;p&gt;Trying to delete these things demonstrates the cost of this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ cp ~/sandboxes/msb_8_0_25/data/kris/keks.ibd .
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ cp --sparse=always ~/sandboxes/msb_8_0_25/data/kris/keks2.ibd .
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ time rm keks.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;real    0m0.020s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;user    0m0.000s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sys     0m0.020s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~$ time rm keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;real    0m0.123s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;user    0m0.000s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sys     0m0.109s
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With longer files, we get more holes, more overhead and even longer times.&lt;/p&gt;
-&lt;h1 id=&#34;file-size-over-time&#34;&gt;
-    &lt;a href=&#34;#file-size-over-time&#34;&gt;
-	File Size over Time
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;While running &lt;code&gt;insert into keks2 select * from keks&lt;/code&gt;, I was monitoring the size of the new table at the file system level.
-This looks funny, because we can see the file&amp;rsquo;s allocation growing over time, but there are downward spikes in allocation every few seconds.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@server:~/sandboxes/msb_8_0_25$ while :
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; ls -lsh data/kris/keks2*
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; sleep &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;197M -rw-r----- 1 kris kris 524M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;200M -rw-r----- 1 kris kris 532M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;203M -rw-r----- 1 kris kris 540M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;205M -rw-r----- 1 kris kris 548M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;208M -rw-r----- 1 kris kris 556M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;212M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;207M -rw-r----- 1 kris kris 564M Sep 14 19:09 data/kris/keks2.ibd  &amp;lt;---
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;209M -rw-r----- 1 kris kris 572M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;212M -rw-r----- 1 kris kris 580M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;216M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;215M -rw-r----- 1 kris kris 588M Sep 14 19:09 data/kris/keks2.ibd  &amp;lt;---
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;218M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;212M -rw-r----- 1 kris kris 592M Sep 14 19:09 data/kris/keks2.ibd  &amp;lt;---
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;219M -rw-r----- 1 kris kris 604M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;223M -rw-r----- 1 kris kris 612M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;226M -rw-r----- 1 kris kris 620M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;225M -rw-r----- 1 kris kris 624M Sep 14 19:09 data/kris/keks2.ibd  &amp;lt;---
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;228M -rw-r----- 1 kris kris 632M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;227M -rw-r----- 1 kris kris 636M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;225M -rw-r----- 1 kris kris 640M Sep 14 19:09 data/kris/keks2.ibd  &amp;lt;---
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;233M -rw-r----- 1 kris kris 652M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;232M -rw-r----- 1 kris kris 656M Sep 14 19:09 data/kris/keks2.ibd
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The size of these downward spikes (several megabytes in some instances) is impressive.&lt;/p&gt;
-&lt;h1 id=&#34;implications-for-mysql&#34;&gt;
-    &lt;a href=&#34;#implications-for-mysql&#34;&gt;
-	Implications for MySQL
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Page Compression was introduced to MySQL in 2015, and Mark Callaghan has been experimenting from early on.
-He has a series of blog articles on this:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://smalldatum.blogspot.com/2015/10/wanted-file-system-on-which-innodb.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Wanted Wanted: a file system on which InnoDB transparent page compression works&lt;/a&gt;
-
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;and earlier&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;http://smalldatum.blogspot.com/2015/08/first-day-with-innodb-transparent-page.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First day with InnoDB transparent page compression&lt;/a&gt;
-
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://smalldatum.blogspot.com/2015/09/second-day-with-innodb-transparent-page.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Second day with InnoDB transparent page compression&lt;/a&gt;
-
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://smalldatum.blogspot.com/2015/09/third-day-with-innodb-transparent-page.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Third day with InnoDB transparent page compression&lt;/a&gt;
-
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;and being Mark, he also has a series of bugs open on this.
-The links are in the articles.&lt;/p&gt;
-&lt;p&gt;The &amp;ldquo;Wanted&amp;rdquo; article from the list above contains a number of very recent, very relevant comments by Marko Mäkelä, and a link to &lt;a href=&#34;https://lwn.net/Articles/864363&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LWN: Hole-punching races against page-cache filling&lt;/a&gt;
-
-, from July 29, 2021.
-This bug is still open in all production Linux kernels.&lt;/p&gt;
-&lt;p&gt;This seems to make using Page Compression a risky and expensive thing. Mark&amp;rsquo;s estimate in private communication was approximately &amp;ldquo;a thing such as RocksDB which never overwrites data has an inherent advantage  over anything that does in-place updates when it comes to compression&amp;rdquo; (my summary of his words), and I think he&amp;rsquo;s correct.&lt;/p&gt;
-&lt;p&gt;Seems I accidentally did a few things right when I never even tried to use compressed tables in InnoDB.&lt;/p&gt;
-&lt;h1 id=&#34;thanks&#34;&gt;
-    &lt;a href=&#34;#thanks&#34;&gt;
-	Thanks
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Thanks, Mark, for you very useful and insightful comments, and for nudging me to go deeper on this.
-And thanks for necro&amp;rsquo;ing Marks articles with your comments, Marko!&lt;/p&gt;
 </description>
     </item>
     
