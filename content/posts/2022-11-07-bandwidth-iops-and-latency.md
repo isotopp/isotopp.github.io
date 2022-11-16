@@ -54,9 +54,9 @@ Benchmarking tools will give you a completion time histogram (or clat histo) for
 
 *fio Benchmark clat histogram from [Adventures in Storageland]({{< ref "/content/posts/2019-06-13-adventures-in-storageland.md" >}}).*
 
-Here we see a Benchmark result from a typical database blase in use at work, a Dell M630 with a PERC controller and a 1.92TB SSD.
+Here we see a Benchmark result from a typical database blade in use at work, a Dell M630 with a PERC controller and a 1.92TB SSD.
 
-You can see that the units here a µs, Microseconds (1/1,000,000, a millionth of a second).
+You can see that the units here are µs, Microseconds (1/1,000,000, a millionth of a second).
 The 99.5th percentile of all clats is 99µs (100µs are 0.1ms).
 For the 99.9th percentile, the clat jumps to more than twice that, 0.235ms, and for the 99.95th it's again the double of that, 0.433ms.
 After than, we get the really bad outliers.
@@ -177,7 +177,7 @@ When we want to understand how a storage behaves with MySQL, we run a "16 KB ran
 We then seek the inflection point, at which percentile does the clat suddenly increase a lot.
 
 We can see the "normal clat", and with the inverse get the minimum guaranteed transactional rate, "commit/s".
-And we see if there is a sharp inflection point (the the Dell Perc clat histogram above), that is, we see if can expect consistent write performance or variable write performance.
+And we see if there is a sharp inflection point (the Dell Perc clat histogram above), that is, we see if we can expect consistent write performance or variable write performance.
 
 Ideally, we get a minimal clat that is highly stable until we reach saturation.
 
