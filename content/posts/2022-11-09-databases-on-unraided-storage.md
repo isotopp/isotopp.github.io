@@ -108,12 +108,12 @@ A Filer on the other hand offers a number of advantages over Local Storage that 
 
 - A volume on a Filer is mobile.
   It can be detached from an instance and attached to another instance.
-  This allows for upgrades of a compute unit (larger, new OS, software upgrade) without having need to copy around the data.
+  This allows for upgrades of a compute unit (larger, new OS, software upgrade) without having a need to copy around the data.
   At sizes over 10 TB such a copy operation can take hours or days, but with volume detach/attach no copy is necessary.
 - A volume on a Filer has a lifetime independent of the instance/the compute.
   This allows not only for the above mentioned upgrades, but also for filer-side operations, such as making a snapshot or a copy of the volume at the filer-side.
   This is usually much faster than loading the data off the volume, over the network, and pushing it over the network again to another machine.
--i Filer-side operations include snapshotting and cloning, which can be combined in interesting ways to make data available for backups and new instances with a lot less wait than a full copy would take (or allows to make a full copy in the background while the snapshot is already being used).
+- Filer-side operations include snapshotting and cloning, which can be combined in interesting ways to make data available for backups and new instances with a lot less wait than a full copy would take (or allows to make a full copy in the background while the snapshot is already being used).
 
 # Summary
 
