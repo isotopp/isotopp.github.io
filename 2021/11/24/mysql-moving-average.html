@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.107.0">
 <meta property="og:title" content='MySQL: Moving Average' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -162,7 +162,7 @@ In this article, we want to see how we can get daily buckets and moving averages
 </h1>
 <p>We will be working with a data table named <code>data</code>, with three columns: a sensor <code>id</code>, a measurement datetime <code>d</code> and a metric value <code>m</code> that was sampled at that time.
 The table definition looks like this:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Create a data table&#34;</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Create a data table&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">setup_tables</span><span class="p">():</span>
 </span></span><span class="line"><span class="cl">    <span class="n">sql_setup</span> <span class="o">=</span> <span class="p">[</span>
 </span></span><span class="line"><span class="cl">        <span class="s2">&#34;drop table if exists data&#34;</span><span class="p">,</span>
@@ -182,10 +182,10 @@ The table definition looks like this:</p>
 </span></span><span class="line"><span class="cl">            <span class="n">click</span><span class="o">.</span><span class="n">echo</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;setup_tables: failed </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> with </span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">.&#34;</span><span class="p">)</span>
 </span></span></code></pre></div><p>For one year, each day and for each of our 11 (0-10) sensors, 1001 values will be collected.
 We insert a random time within the day, and a random measured value, an integer between 0 and 1000.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Fill data table with test data&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--start&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Start date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--end&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;End date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="nd">@click</span><span class="o">.</span><span class="n">option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of values per day&#34;</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Fill data table with test data&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--start&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Start date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--end&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;End date and time yyyy-mm-dd hh:mm:ss&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nd">@click.option</span><span class="p">(</span><span class="s2">&#34;--count&#34;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&#34;Number of values per day&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fill_table</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&#34;2020-12-31 23:59:59&#34;</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">1000</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="c1"># Get rid of the old data</span>
 </span></span><span class="line"><span class="cl">    <span class="n">cursor</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
@@ -230,7 +230,7 @@ That is, our <code>datetime</code> is turned into a <code>date</code>, the time 
 Two values with the same date, but different times, are considered identical and would land on the same pile.
 Different <code>id</code> values or different metric values <code>m</code> are also not used to select different piles.</p>
 <p>What we do is <code>GROUP BY id, date(d)</code>:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Group by day&#34;</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Group by day&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">daily_groups</span><span class="p">():</span>
 </span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
 </span></span></span><span class="line"><span class="cl"><span class="s2">    select id
@@ -284,7 +284,7 @@ But they will return all rows instead of making piles.
 So when we define <code>WINDOW w AS ( partition by id, date(d) order by id, d)</code>, we will get our sensors by sensor and by date.
 Each new sensor id, and each new date will restart &ldquo;data collection&rdquo;, that is, our sums or counts will be reset.</p>
 <p>Our code:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Partition by day&#34;</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Partition by day&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">daily_partitions</span><span class="p">():</span>
 </span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
 </span></span></span><span class="line"><span class="cl"><span class="s2">    select id
@@ -333,7 +333,7 @@ As we proceed through the day, we can see how the average converges against that
 This window is based on either values, or on date values.
 In our case, we want the latter: for each metric date <code>d</code>, we want to do our math on the preceding 24 hours.</p>
 <p>In code:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Sliding window query - 24h&#34;</span><span class="p">)</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="nd">@sql.command</span><span class="p">(</span><span class="n">help</span><span class="o">=</span><span class="s2">&#34;Sliding window query - 24h&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">daily_window</span><span class="p">():</span>
 </span></span><span class="line"><span class="cl">    <span class="n">sql</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;
 </span></span></span><span class="line"><span class="cl"><span class="s2">    select id

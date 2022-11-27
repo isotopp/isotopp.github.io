@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.107.0">
 <meta property="og:title" content='Was bedeutet eigentlich &#34;Never check for an error condition you don&#39;t know how to handle&#34;' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -159,8 +159,8 @@
 <p>Nehmen wir uns einmal ein Beispiel und versuchen zu verstehen, was da passiert.</p>
 <p>Da ist zum Beispiel ein sehr einfacher Fall - ich könnte versuchen Speicher beim Betriebssystem zu reservieren und das kann fehlschlagen.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">tja_was_dann</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="nf">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">tja_was_dann</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>Das ist so eine typische Situation - wieso zum Beispiel fragt die Bibliotheksfunktion <code>malloc()</code> nicht selbst auf <code>p == NULL</code> ab und fängt diesen Fall ab. Weil sie das nicht tut, muß ich das jedes einzelne Mal selber tun und darf das in keinem einzelnen Fall vergessen.</p>
 <p>Tatsächlich haben die meisten Programme eine Funktion <code>safe_malloc()</code>, die ein Wrapper für <code>malloc()</code> ist und mehr oder weniger wie oben gezeigt aussieht. Der Punkt ist, daß jedes Programm seine eigene Implementierung von <code>tja_was_dann()</code> mitbringt, denn das genaue Verhalten der Anwendung ist anwendungsspezifisch und kann so nicht von der Bibliothek bereit gestellt werden.</p>
@@ -188,13 +188,13 @@
 <p><strong>Nebengedanke:</strong> Das ist ein weiterer Hauptgrund für schlechten Code - wir zwingen Entwickler zum falschen Zeitpunkt dazu, sich mit failure modes und failenden Codepaths auseinander zu setzen. Entwickler sind wahrscheinlich bereit, sich auch mit failenden Codepaths zu beschäftigen, denn sie wollen ja ein gut funktionierendes Programm erstellen. Aber wir sollten sie nicht gerade dann mit failenden Pathes belästigen wenn sie im funktionalen Path des Codes am Arbeiten sind, dem Programm also gerade beibringen überhaupt mal was Sinnvolles zu tun.</p>
 <p>Weil wir Entwickler also im falschen Moment mit Failures belästigen bekommen wir Code, bei dem Failure Handling im günstigsten Fall so aussieht:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">char</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span> <span class="c1">// out of memory error
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="p">((</span><span class="n">p</span> <span class="o">=</span> <span class="nf">malloc</span><span class="p">(</span><span class="n">someSize</span><span class="p">))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nf">exit</span><span class="p">(</span><span class="n">ENOMEM</span><span class="p">);</span> <span class="c1">// out of memory error
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
 </span></span></code></pre></div><p>Immerhin ist hier überhaupt auf das Auftreten eines Fehlers geprüft worden. Vielleicht sind auch noch ein paar <code>atexit(3)</code>-Handler gestacked worden, die beim Programmende aufräumen, aber das ist allgemein recht wenig üblich.</p>
 <p>Bei dieser Art der Fehlerbehandlung kann man am Code förmlich sehen, wie der Anwendungsentwickler auf das Auftreten des Fehlers geprüft hat, sich aber über das Handling des Fehlers jetzt zu diesem Zeitpunkt genau gar keine Gedanken machen wollte.</p>
 <p>Ein anderes übliches Problem ist, daß auf einer viel zu niedrigen Ebene auf den Fehler geprüft wird. Zudem besteht oftmals keine Übereinkunft in der Anwendung, wie Fehler von einer niederen Abstraktionsebene auf die nächsthöhere Ebene weitergereicht wird, ohne daß Information verloren geht. Die Innereien des Quelltextes von MySQL sind ein ausgezeichnetes Beispiel für solche Scherereien, zum Teil findet man Code wie</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">errcode</span> <span class="o">=</span> <span class="n">doSomeThing</span><span class="p">();</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="kt">int</span> <span class="n">errcode</span> <span class="o">=</span> <span class="nf">doSomeThing</span><span class="p">();</span>
 </span></span><span class="line"><span class="cl"><span class="k">switch</span><span class="p">(</span><span class="n">errcode</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>
 </span></span><span class="line"><span class="cl">  <span class="k">case</span> <span class="mi">2</span><span class="o">:</span>

@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.106.0">
+<meta name="generator" content="Hugo 0.107.0">
 <meta property="og:title" content='But is it atomic?' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -210,32 +210,32 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/*
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * write system call 
 </span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
-</span></span><span class="line"><span class="cl"><span class="n">write</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="nf">write</span><span class="p">()</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span> 
-</span></span><span class="line"><span class="cl">  <span class="n">rdwr</span><span class="p">(</span><span class="n">FWRITE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="nf">rdwr</span><span class="p">(</span><span class="n">FWRITE</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
 </span></span></code></pre></div><p>You are looking very old K&amp;R style C code here, which predates even ANSI-C and function prototypes, by the way.</p>
 <p>So <code>rdwr()</code> a few lines down the function calls <code>plock()</code>, for as long as we are not dealing with a device special file (Here is where the Ingres “use raw devices” idea comes into play), then does the I/O and finally calls prele().</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">		<span class="k">if</span><span class="p">((</span><span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_mode</span><span class="o">&amp;</span><span class="p">(</span><span class="n">IFCHR</span><span class="o">&amp;</span><span class="n">IFBLK</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">			<span class="n">plock</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">plock</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="n">mode</span> <span class="o">==</span> <span class="n">FREAD</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">			<span class="n">readi</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">readi</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">else</span>
 </span></span><span class="line"><span class="cl">			<span class="nf">writei</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">((</span><span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_mode</span><span class="o">&amp;</span><span class="p">(</span><span class="n">IFCHR</span><span class="o">&amp;</span><span class="n">IFBLK</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">			<span class="n">prele</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">prele</span><span class="p">(</span><span class="n">ip</span><span class="p">);</span>
 </span></span></code></pre></div><p><code>plock()</code> is what locks the actual inode and the origin of the observed behavior. It is is a misnomer, it’s not a pipe lock, it’s an inode lock.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl"><span class="cm">/*
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * Lock a pipe.
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * If its already locked,
 </span></span></span><span class="line"><span class="cl"><span class="cm"> * set the WANT bit and sleep.
 </span></span></span><span class="line"><span class="cl"><span class="cm"> */</span>
-</span></span><span class="line"><span class="cl"><span class="n">plock</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="nf">plock</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl"><span class="k">register</span> <span class="k">struct</span> <span class="n">inode</span> <span class="o">*</span><span class="n">ip</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">{</span>
 </span></span><span class="line"><span class="cl">	<span class="k">while</span><span class="p">(</span><span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_flag</span><span class="o">&amp;</span><span class="n">ILOCK</span><span class="p">)</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_flag</span> <span class="o">|=</span> <span class="n">IWANT</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">		<span class="n">sleep</span><span class="p">((</span><span class="n">caddr_t</span><span class="p">)</span><span class="n">ip</span><span class="p">,</span> <span class="n">PINOD</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">sleep</span><span class="p">((</span><span class="kt">caddr_t</span><span class="p">)</span><span class="n">ip</span><span class="p">,</span> <span class="n">PINOD</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">	<span class="p">}</span>
 </span></span><span class="line"><span class="cl">	<span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_flag</span> <span class="o">|=</span> <span class="n">ILOCK</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl"><span class="p">}</span>
@@ -245,20 +245,20 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="line"><span class="cl">	<span class="k">do</span> <span class="p">{</span>
 </span></span><span class="line"><span class="cl">		<span class="n">bn</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">u_offset</span> <span class="o">&gt;&gt;</span> <span class="n">BSHIFT</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">		<span class="n">on</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">u_offset</span> <span class="o">&amp;</span> <span class="n">BMASK</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">		<span class="n">n</span> <span class="o">=</span> <span class="n">min</span><span class="p">((</span><span class="kt">unsigned</span><span class="p">)(</span><span class="n">BSIZE</span><span class="o">-</span><span class="n">on</span><span class="p">),</span> <span class="n">u</span><span class="p">.</span><span class="n">u_count</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="n">n</span> <span class="o">=</span> <span class="nf">min</span><span class="p">((</span><span class="kt">unsigned</span><span class="p">)(</span><span class="n">BSIZE</span><span class="o">-</span><span class="n">on</span><span class="p">),</span> <span class="n">u</span><span class="p">.</span><span class="n">u_count</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span> <span class="p">(</span><span class="n">type</span><span class="o">!=</span><span class="n">IFBLK</span> <span class="o">&amp;&amp;</span> <span class="n">type</span><span class="o">!=</span><span class="n">IFMPB</span><span class="p">)</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">			<span class="n">bn</span> <span class="o">=</span> <span class="n">bmap</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">bn</span><span class="p">,</span> <span class="n">B_WRITE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">bn</span> <span class="o">=</span> <span class="nf">bmap</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">bn</span><span class="p">,</span> <span class="n">B_WRITE</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">			<span class="k">if</span><span class="p">((</span><span class="kt">long</span><span class="p">)</span><span class="n">bn</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">				<span class="k">return</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">			<span class="n">dev</span> <span class="o">=</span> <span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_dev</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">		<span class="p">}</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="n">BSIZE</span><span class="p">)</span> 
-</span></span><span class="line"><span class="cl">			<span class="n">bp</span> <span class="o">=</span> <span class="n">getblk</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">bn</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">bp</span> <span class="o">=</span> <span class="nf">getblk</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">bn</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">else</span>
-</span></span><span class="line"><span class="cl">			<span class="n">bp</span> <span class="o">=</span> <span class="n">bread</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">bn</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">		<span class="n">iomove</span><span class="p">(</span><span class="n">bp</span><span class="o">-&gt;</span><span class="n">b_un</span><span class="p">.</span><span class="n">b_addr</span><span class="o">+</span><span class="n">on</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">B_WRITE</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="n">bp</span> <span class="o">=</span> <span class="nf">bread</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">bn</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">		<span class="nf">iomove</span><span class="p">(</span><span class="n">bp</span><span class="o">-&gt;</span><span class="n">b_un</span><span class="p">.</span><span class="n">b_addr</span><span class="o">+</span><span class="n">on</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">B_WRITE</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="n">u_error</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">			<span class="n">brelse</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">			<span class="nf">brelse</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">else</span>
 </span></span><span class="line"><span class="cl">			<span class="nf">bdwrite</span><span class="p">(</span><span class="n">bp</span><span class="p">);</span>
 </span></span><span class="line"><span class="cl">		<span class="k">if</span><span class="p">(</span><span class="n">u</span><span class="p">.</span><span class="n">u_offset</span> <span class="o">&gt;</span> <span class="n">ip</span><span class="o">-&gt;</span><span class="n">i_size</span> <span class="o">&amp;&amp;</span>
