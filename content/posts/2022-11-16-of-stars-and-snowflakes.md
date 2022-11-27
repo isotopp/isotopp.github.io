@@ -7,11 +7,12 @@ tags:
 - lang_en
 - mysql
 - mysqldev
+- data warehouse
 ---
 
 # A sample system
 
-When you have an Online Transactional Database, you have at some point in time to record transactions.
+When you have an Online Transactional Database, you have to record transactions at some point in time.
 That means you get a table with time dimension in your OLTP system.
 Consider for example a system that records Reservations.
 Users exist and can reserve Things to use, for a day.
@@ -83,27 +84,34 @@ That kind of query is almost always needed for the backend, analytical part of t
 In an OLTP system, we have data in 3NF or something close to it.
 We have a large number of queries, short running transactions and a lot of data changes.
 We have a large number of concurrent users, making these changes.
-We want to design the system so that the working set of it fits into memory, that is, we do see almost no disk reads, and the number of disk reads is independent of the number of users or the load of the systems.
+We want to design the system so that the working set of it fits into memory
+If we manage to do that, we do see almost no disk reads, and the number of disk reads is independent of the number of users, or the load of the systems.
 We cannot avoid the writes, because that's what transactions are.
 
 We design the system so that it contains only current data.
 The size of the system is stable over time. 
 There are no tables that grow over time, without an upper bound.
-Instead, the system size is a function of the number of entities modelled in each of its entity-representation tables, and by the number of open business transactions in flight.
+Instead, the system size is a function of the number of entities modelled in each of its entity-representation tables, and by the number of in-flight business transactions.
 
-In an analytics systems, we have data in fact tables, which have time as a component of the primary key or are even partitioned by time.
-We have few, long-running queries, that are often scans that aggregate over a fact table or parts of it.
-We do not have many data changes, and the data changes we see are usually imports, appends to the fact tables.
+In an analytics systems, we have data in "fact" tables.
+These are tables that have "time" as a component of the primary key, or are even partitioned by time.
+
+We have few, long-running queries, that are often scans.
+They aggregate over a fact table or parts of it.
+We do not have many data changes.
+The data changes we see are often imports, which append data to the fact tables.
 
 # ETL - Extract, Transform, Load
 
 Sometimes data imports are multistage, because the imported data is not in its final form and needs to be cleaned up.
 
-Data gets from the OLTP system to the analytics system, undergoing a distinct three phased process, ETL -- extract, transform, load:
+Data gets from the OLTP system to the analytics system, undergoing a distinct three phased process.
+The process is named after the phased, "ETL" -- extract, transform, load:
 
 - The data is extracted from the OLTP system. It is in 3NF, and contains many id's representing functionally dependent values in their respective tables.
 - The data is transformed, resolving the IDs into the functionally dependent value literals.
-- The data is loaded into the analytics system. Often this involves cleanup steps, bringing the data into the form it needs in the analytics system.
+- The data is loaded into the analytics system. 
+  Often this involves cleanup steps, bringing the data into the form it needs be for the analytics system.
 
 ## An ETL example
 
