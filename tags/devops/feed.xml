@@ -6,7 +6,121 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 27 Nov 2022 23:09:30 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 28 Nov 2022 19:50:56 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Systemd Service and stdio</title>
+      <link>https://blog.koehntopp.info/2022/11/28/systemd-service-and-stdio.html</link>
+      <pubDate>Sun, 27 Nov 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/11/28/systemd-service-and-stdio.html</guid>
+      <description>&lt;p&gt;After yesterday&amp;rsquo;s article, Arne Blankerts pointed me at
+&lt;a href=&#34;https://edit.thephp.cc/s/3MqWPLAJW#&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a note&lt;/a&gt;
+
+
+showing how to install a program using stdio with systemd.&lt;/p&gt;
+&lt;h1 id=&#34;code-and-unit-files&#34;&gt;
+    &lt;a href=&#34;#code-and-unit-files&#34;&gt;
+	Code and Unit files
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;vm&#34;&gt;__name__&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;__main__&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;kc&#34;&gt;True&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;line&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;input&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;strip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;print&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;ECHO: &lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;line&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;line&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;QUIT&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The Socket Unit:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; systemctl --user cat kris2.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; /home/kris/.config/systemd/user/kris2.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;[Unit]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Description=My second service
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;PartOf=kris2.service
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[Socket]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;ListenStream=127.0.0.1:12346
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Accept=Yes
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[Install]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;WantedBy=sockets.target
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And the Service Unit, which has to be a template:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; systemctl --user cat kris2@.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; /home/kris/.config/systemd/user/kris2@.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;[Unit]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Description=My second Service
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;After=network.target kris2.socket
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Requires=kris2.socket
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[Service]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Type=simple
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;ExecStart=/usr/bin/python3 %h/Python/systemd-socketserver/echoserver.py
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;TimeoutStopSec=5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;StandardInput=socket
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;StandardOutput=socket
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;StandardError=journal
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;[Install]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;WantedBy=default.target
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;a-template-unit&#34;&gt;
+    &lt;a href=&#34;#a-template-unit&#34;&gt;
+	A template Unit
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;A systemd template starts a new instance of the service for each incoming connection, because nothing in the code of the service is aware of being a network service.
+Instead &lt;code&gt;stdin&lt;/code&gt; and &lt;code&gt;stdout&lt;/code&gt; are connected to the network by systemd, and &lt;code&gt;stderr&lt;/code&gt; is being directed to &lt;code&gt;journald&lt;/code&gt;.
+The actual service just performs normal stdio.&lt;/p&gt;
+&lt;p&gt;Since connections are being accepted by systemd, and then fed into the service using normal stdio, a new instance of the service has to be started for each connection.
+This is done with a service template, &amp;ldquo;&lt;code&gt;kris2.@service&lt;/code&gt;&amp;rdquo;.&lt;/p&gt;
+&lt;h1 id=&#34;running-stuff&#34;&gt;
+    &lt;a href=&#34;#running-stuff&#34;&gt;
+	Running stuff
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We can enable and start the socket:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; systemctl --user &lt;span class=&#34;nb&#34;&gt;enable&lt;/span&gt; kris2.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Created symlink /home/kris/.config/systemd/user/sockets.target.wants/kris2.socket → /home/kris/.config/systemd/user/kris2.socket.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; systemctl --user start kris2.socket
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; lsof -i -n -P
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;COMMAND    PID USER   FD   TYPE     DEVICE SIZE/OFF NODE NAME
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;systemd 327983 kris   28u  IPv4 2520788109      0t0  TCP 127.0.0.1:12346 (LISTEN)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Since the service is a template, it cannot be started.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; systemctl --user &lt;span class=&#34;nb&#34;&gt;enable&lt;/span&gt; kris2@.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Failed to enable unit: File default.target: Identifier removed
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That is also not necessary, because systemd will do that for us on connect:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; telnet localhost &lt;span class=&#34;m&#34;&gt;12346&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Trying 127.0.0.1...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Connected to localhost.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Escape character is &amp;#39;^]&amp;#39;.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;I am a test.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;ECHO: I am a test.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;QUIT
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;ECHO: QUIT
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Connection closed by foreign host.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;While connected, we can see the user systemd instance hanging off the PID 1 systemd, and the family of user-services hanging off the user systemd instance.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;systemd(1)─┬─ModemManager(2480)─┬─{ModemManager}(2565)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           …
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           ├─systemd(327983)─┬─(sd-pam)(327984)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           │                 ├─pipewire(327990)───{pipewire}(328047)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           │                 ├─pipewire-media-(327991)───{pipewire-media-}(3280+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           │                 └─python3(3315905)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;           …
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Using template systemd services, and redirecting &lt;code&gt;stdin&lt;/code&gt; and &lt;code&gt;stdout&lt;/code&gt;, we can create systemd Units that work with programs that are not aware of the fact that they are running connected to the network.
+This simplifies the code for a service considerably, and also makes it much easier to test the service.&lt;/p&gt;
+&lt;p&gt;Template Units themselves cannot be enabled or started, which is initially unexpected, but makes a lot of sense once you stop to think about it.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Systemd Service and Socket Activation</title>
       <link>https://blog.koehntopp.info/2022/11/27/systemd-service-and-socket-activation.html</link>
