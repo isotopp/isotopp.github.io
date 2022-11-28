@@ -126,6 +126,29 @@ systemd(1)─┬─ModemManager(2480)─┬─{ModemManager}(2565)
            …
 ```
 
+# Multiple ports
+
+We can now modify the socket Unit to provide more than one port.
+
+```console
+$ systemctl --user cat kris2.socket
+# /home/kris/.config/systemd/user/kris2.socket
+[Unit]
+Description=My second service
+PartOf=kris2.service
+
+[Socket]
+ListenStream=127.0.0.1:12346
+ListenStream=127.0.0.1:12347
+Accept=Yes
+
+[Install]
+WantedBy=sockets.target
+```
+
+And after this, the service will be available on both ports.
+Since the service's code does not know anything about networking at all, it won't even notice.
+
 # Summary
 
 Using template systemd services, and redirecting `stdin` and `stdout`, we can create systemd Units that work with programs that are not aware of the fact that they are running connected to the network.
