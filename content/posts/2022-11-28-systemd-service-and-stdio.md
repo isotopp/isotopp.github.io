@@ -154,4 +154,4 @@ Since the service's code does not know anything about networking at all, it won'
 Using template systemd services, and redirecting `stdin` and `stdout`, we can create systemd Units that work with programs that are not aware of the fact that they are running connected to the network.
 This simplifies the code for a service considerably, and also makes it much easier to test the service.
 
-Template Units themselves cannot be enabled or started, which is initially unexpected, but makes a lot of sense once you stop to think about it. 
+Template Units themselves cannot be enabled or started, which is initially unexpected, but makes a lot of sense once you start to think about it. 
