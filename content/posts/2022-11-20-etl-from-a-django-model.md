@@ -229,7 +229,7 @@ But since the `Server` class is a subclass of `RackedAsset`, and that in turn is
 we are getting three tables `servers_server`, `servers_rackedasset` and `servers_asset`, which share a common `id`.
 They are being joined together with an inner join, because we are only interested in servers and not in any other assets (such as Switches or Filers).
 
-The `id` of an Asset,a RackedAsset and a Server are the same, since each is a specialization of the previous one:
+The `id` of an Asset, a RackedAsset and a Server are the same, since each is a specialization of the previous one:
 Assets are things we have.
 RackedAssets also have a position in the data center (and a site).
 And servers have all the properties associated with a machine, such as a CPU type, memory, and disk space.

@@ -50,7 +50,7 @@ SocketGroup=docker
 WantedBy=sockets.target
 ```
 
-Both units are in `lib/systemd/system`, which means they are OS-provided and should not be directly edited.
+Both units are in `/lib/systemd/system`, which means they are OS-provided and should not be directly edited.
 
 # Overriding
 
@@ -66,7 +66,7 @@ ExecStart=/usr/bin/dockerd
 This starts docker without options, and I could define one or more sockets in `/etc/docker/daemon.json`.
 It would also drop systemd socket activation, though.
 
-We led me to the question "How does one actually write a daemon that cooperates with systemctl socket activation?"
+That led me to the question "How does one actually write a daemon that cooperates with systemctl socket activation?"
 and also to the question "Can I have socket activation listen to more than one port, for example a Unix Domain Socket and a TCP-Socket?"
 
 # Writing a Python daemon with socket activation
