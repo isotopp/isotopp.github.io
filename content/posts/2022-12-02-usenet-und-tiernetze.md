@@ -158,7 +158,7 @@ Noch schlimmer waren multimediale Inhalte in Nachrichten.
 Dafür mußte der Newsreader-Client halt Mime verstehen und decodieren können und das konnten viele nicht.
 Also gab es wieder Fedidrama, um die Benutzung von solchen Dingen.
 Oder halt Webboards.
-Das ist im Prinzip genau wie mit den XMMP-Clients.
+Das ist im Prinzip genau wie mit den XMPP-Clients.
 
 Die nimmt heute auch keiner mehr, weil es keine zwei Clients bzw auch keine Server und Clients verschiedener Hersteller gibt,
 die dieselben XEP implementieren (XEP sind XMPP Protokollerweiterungen).
