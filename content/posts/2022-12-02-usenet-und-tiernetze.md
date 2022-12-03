@@ -25,10 +25,10 @@ Die Softwarepakete, die das erlaubt haben, hießen in Deutschland
 - Mausnetz und 
 - Zerberus (noch ein Hund)
 
-Daher wurden diese Netze wurden gesammelt als "Tiernetze" bezeichnet.
+Daher wurden diese Netze gesammelt als "Tiernetze" bezeichnet.
 Außerdem gab es noch das auf Unix basierende UUCP mit USENET (Linux war um diese Zeit herum gerade erst geboren).
 
-Die Mailbox-Software der Tiernetze basierte meistens auf MS-DOS und war nicht Mehrbenutzerfähig.
+Die Mailbox-Software der Tiernetze basierte meistens auf MS-DOS und war nicht mehrbenutzerfähig.
 Die Netze hatten außerdem oft starke Größenbeschränkungen für Nachrichten.
 Dagegen konnte USENET im Prinzip Nachrichten ohne Größenhindernisse auf Mehrbenutzersystemen im Hintergrund befördern.
 
@@ -61,7 +61,7 @@ Es gab also Mailboxen, die neben anderen Zerberus-Gruppen auch die /CL-Gruppen a
 Das heißt, sie haben sich für die /CL-Inhalte also gegenseitig angerufen.
 Und es gab eine /CL-Netzkoordination, die meinte, sie könnte die Ausbreitung der Inhalte der Schreiber in /CL kontrollieren.
 
-Rechtlich war das nicht geregelt -- es möglicherweise Verträge zwischen dem /CL-Träger und einzelnen Systembetreibern,
+Rechtlich war das nicht geregelt -- es gab möglicherweise Verträge zwischen dem /CL-Träger und einzelnen Systembetreibern,
 aber sicher keine Verträge zwischen den Autoren der Artikel und dem /CL-Träger.
 Und jeder Benutzer hat halt mit seinem Client die Beiträge aus dem /CL zum Lesen runter gesaugt.
 So auch ich damals, und gleich ein paar Mal von verschiedenen Quellen.
@@ -75,7 +75,7 @@ Den ich bereitwillig weiter gegeben habe.
 Die /CL-Netzkoordination hatte mir damals gedroht, mich zu deföderieren, 
 aber sie kannte ja meine Quelle nicht.
 Und die war hoch redundant.
-Außerdem hatte ich habe die entsprechenden Herkunftsdaten aus den Artikeln gelöscht, sodaß sie nicht an meinen Upstream herankamen.
+Außerdem hatte ich die entsprechenden Herkunftsdaten aus den Artikeln gelöscht, sodaß sie nicht an meinen Upstream herankamen.
 Ich hatte die betreffenden Personen aufgefordert, mich zu verklagen. 
 Das ist aber nie passiert.
 
@@ -135,7 +135,7 @@ Aber eine Gruppe von Admins vom Kaliber "deutscher Wikipedia-Pedant" davon zu ü
 Die meisten Leute haben dann lieber einen Server von Hetzner geholt und ein Web-Board installiert und am Ende waren die Wikipedia-Typen alleine in ihrem Netz.
 Heute gibt es USENET nicht mehr. Es ist tot, abgeritten zu den Ahnen.
 
-Das andere Problem, daß sich bei USENET gezeigt hat, ist die Tatsache, daß es als föderiertes Netz keine Client-Software gab,
+Das andere Problem, das sich bei USENET gezeigt hat, ist die Tatsache, daß es als föderiertes Netz keine Client-Software gab,
 die neue, inkompatible Features entwickeln konnte.
 
 Schon die Benutzung von Umlaufen in Headerzeilen und im Text war Drama.
