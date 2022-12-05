@@ -6,7 +6,155 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 05 Dec 2022 12:00:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 05 Dec 2022 16:23:37 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Change Data Capture</title>
+      <link>https://blog.koehntopp.info/2022/12/05/change-data-capture.html</link>
+      <pubDate>Mon, 05 Dec 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/12/05/change-data-capture.html</guid>
+      <description>&lt;p&gt;Change Data Capture is a way to capture, well, events from a system that describe how the data in the system changed.
+For a system that does business transactions that may be at the lowest level Create, Update, or Delete of entities or relationships.
+Systems that emit this kind of events are called Entity Services and are kind of the lowest level of events that you can have in such a system.&lt;/p&gt;
+&lt;p&gt;In our sample reservation system from earlier in this blog, we get this schema:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/snowflake-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;In an OLTP database, a reservation is a &lt;code&gt;(resid, userid, thingid, date)&lt;/code&gt;. It references the &lt;code&gt;user&lt;/code&gt; data by &lt;code&gt;userid&lt;/code&gt;, and the &lt;code&gt;thing&lt;/code&gt; data by &lt;code&gt;thingid&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;and therefore the events are&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;CreateUserEvent(user)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;UpdateUserEvent(user)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;DeletUserEvents(user)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;CreateThingEvent(thing)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;UpdateThingEvent(thing)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;DeleteThingEvent(thing)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;CreateReservationEvent(user, thing, date)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;UpdateReservationEvent(user, thing, date)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;DeleteReservationEvent(user, thing, date)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or maybe a slightly more refined version of that, in which you create actual Getters and Setters for the properties of the entities modified.&lt;/p&gt;
+&lt;p&gt;But in an actual Event Sourcing system, you would write down and name the individual business transactions, and describe their behaviors.&lt;/p&gt;
+&lt;p&gt;In our reservation system, we have users that subscribe or unsubscribe to our reservation service, or update their data.
+This should be reflected in the names of the methods.
+We also have operations by users on things, such as a &lt;code&gt;Reservation()&lt;/code&gt;, &lt;code&gt;Cancellation()&lt;/code&gt;, a &lt;code&gt;Takeout()&lt;/code&gt; or a &lt;code&gt;Return()&lt;/code&gt; with the appropriate parameters.
+These events are behavioral, and the behaviors are the business transactions which describe what the business does.&lt;/p&gt;
+&lt;p&gt;But when we are retrofitting CDC onto an existing system, getting behavioral events is often a major refactoring or re-architecting task.
+So for this article, let&amp;rsquo;s focus on grabbing Entity Events.
+And because this is the third in a series of articles on data warehouses, on flattening, that is, replacement of identifiers by the values we want exported.&lt;/p&gt;
+&lt;h1 id=&#34;how-to-get-events&#34;&gt;
+    &lt;a href=&#34;#how-to-get-events&#34;&gt;
+	How to get Events?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In a system designed to generate behavioral business events from the start, you would emit these events directly from the application, and would add the business event identifier also to the transactions in your OLTP system.
+This way you can make sure each record in the database has a matching business event and vice versa, enabling you to audit the database and the event stream for consistency.&lt;/p&gt;
+&lt;p&gt;In our retrofitted system, this is not possible, because we have neither behavioral business events nor identifiers for these.
+We still want data, but we grab it from the database.&lt;/p&gt;
+&lt;p&gt;In MySQL, we get row level change data from the Binlog in a moderately well documented and stable format.
+Binlog is what powers MySQL replication.
+It is guaranteed to have an upgrade path, but it is not necessarily stable.
+So if the binlog format changes, and you have critical applications consuming the binlog that are not MySQL replicas, you need to be prepared to make changes to the binlog processors, quickly, in order to be able to upgrade MySQL.
+This is not a hypothetical scenario: When MySQL introduced Global Transaction IDs and later Binlog compression, a lot of third party binlog consumers broke.&lt;/p&gt;
+&lt;p&gt;Packages that consume binlog are for example
+&lt;a href=&#34;https://github.com/julien-duponchelle/python-mysql-replication&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;python-mysql-replication&lt;/a&gt;
+
+
+, or
+&lt;a href=&#34;https://github.com/debezium/debezium&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Debezium&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Using python-mysql-replication, and creating tables for our simple reservation system above, we can run the &lt;code&gt;examples/dump_events.py&lt;/code&gt; to see what goes on:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) $ python examples/dump_events.py
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;=== QueryEvent ===
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Date: 2022-12-05T16:14:16
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Log position: 3282
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Event size: 181
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Read bytes: 181
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Schema: b&amp;#39;kris&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Execution time: 0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query: create table thing (thingid integer not null primary key, name varchar(80), color varchar(20), weight decimal(12,4))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;=== QueryEvent ===
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Date: 2022-12-05T16:14:32
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Log position: 3751
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Event size: 161
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Read bytes: 161
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Schema: b&amp;#39;kris&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Execution time: 0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query: create table user ( userid integer primary key not null, name varchar(80), address varchar(200))
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;=== QueryEvent ===
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Date: 2022-12-05T16:15:15
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Log position: 4052
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Event size: 199
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Read bytes: 199
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Schema: b&amp;#39;kris&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Execution time: 0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query: create table reservation(resid integer not null primary key, userid integer not null, thingid integer not null, resdate date not null)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For each DDL statement, we get a &lt;code&gt;QueryEvent&lt;/code&gt; with some identifiers, the schema name, and the actual Query statement.
+The Query statement is not normalized, so if we wanted to do more with it than simply passing it on, we would also need a MySQL SQL syntax parser.&lt;/p&gt;
+&lt;p&gt;Later on, when loading data, we get &lt;code&gt;RowsEvent&lt;/code&gt; instances, and need to modify the script a bit to see the actual row changes.
+We send SQL:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;At home&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;thing&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;A Fish&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Colorful&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;reservation&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;now&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And we get Row Change Events. They might look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;action&amp;#39;: &amp;#39;insert&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;address&amp;#39;: &amp;#39;At Home&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;name&amp;#39;: &amp;#39;Kris&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;schema&amp;#39;: &amp;#39;kris&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;table&amp;#39;: &amp;#39;user&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;userid&amp;#39;: 1}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;action&amp;#39;: &amp;#39;insert&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;color&amp;#39;: &amp;#39;Colorful&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;name&amp;#39;: &amp;#39;A Fish&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;schema&amp;#39;: &amp;#39;kris&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;table&amp;#39;: &amp;#39;thing&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;thingid&amp;#39;: 1,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;weight&amp;#39;: Decimal(&amp;#39;10.0000&amp;#39;)}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;action&amp;#39;: &amp;#39;insert&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;resdate&amp;#39;: datetime.date(2022, 12, 5),
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;resid&amp;#39;: 1,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;schema&amp;#39;: &amp;#39;kris&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;table&amp;#39;: &amp;#39;reservation&amp;#39;,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;thingid&amp;#39;: 1,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; &amp;#39;userid&amp;#39;: 1}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We also would get additional events, but we ignored them &amp;ndash; they would contain the transaction ID, table maps and so on.&lt;/p&gt;
+&lt;p&gt;The problem with this kind of data is obvious:
+We know that for a proper ETL process we need the attribute values of the things referenced, not the ids pointing to the attributes.&lt;/p&gt;
+&lt;p&gt;So when we receive a row change event on the &lt;code&gt;reservation&lt;/code&gt; table,
+we only have the option of running a back-query to the database to resolve the ids for data.
+That is, for the &lt;code&gt;userid: 1&lt;/code&gt; from the &lt;code&gt;reservation&lt;/code&gt; row change we would have to &lt;code&gt;select * from user where userid = 1&lt;/code&gt; to resolve the user name and address.&lt;/p&gt;
+&lt;p&gt;But even that has the potential for a race condition, if a table changes faster than we can back-query.
+Worse, it also makes your extraction process very fragile, because the moment we change the &lt;code&gt;reservation&lt;/code&gt; table in an incompatible way our back-queries would break.&lt;/p&gt;
+&lt;h1 id=&#34;the-outbox&#34;&gt;
+    &lt;a href=&#34;#the-outbox&#34;&gt;
+	The Outbox
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If we want to decouple this, we need to have the CDC process ignore all the OLTP tables.
+That is, changes to &lt;code&gt;user&lt;/code&gt;, &lt;code&gt;thing&lt;/code&gt; and &lt;code&gt;reservation&lt;/code&gt; must be ignored.&lt;/p&gt;
+&lt;p&gt;Instead, we need to create a table &lt;code&gt;cdc_outbox&lt;/code&gt;.
+We would then modify the application to make changes to the OLTP tables and a flattened, DWH-like write to &lt;code&gt;cdc_outbox&lt;/code&gt; in a single transaction.
+So instead of&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;we would get&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;start&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;transaction&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;write&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(...);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;insert&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;into&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cdc_outbox&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;values&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Doing this inside a single transaction guarantees that we only see outbox writes when there is also a CDC change.
+The data in the &lt;code&gt;cdc_outbox&lt;/code&gt; would already be flattened, and maybe already in some kind of type-agnostic, easily parseable format like JSON.&lt;/p&gt;
+&lt;p&gt;We can then pick up these changes, and only the changes to &lt;code&gt;cdc_outbox&lt;/code&gt; and process these.
+The transactional team can go and make changes to their transactional tables without talking to the analytics team, as long as they make sure to generate correct change records.
+And we get rid of the back-queries and the potential breakage and race conditions they bring.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>ETL from a Django Model</title>
       <link>https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html</link>
@@ -4458,176 +4606,6 @@ for the placeholder variable.&lt;/p&gt;
 &lt;p&gt;The DBA will have a much easier time in helping you, if you have the output of the following query ready when you ask them about your SQL performance problem.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hostname&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@@&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will tell them the actual instance hostname, the precise version string of the database and the username (and by inference, the permissions) you are using to connect.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Change Data Capture and the Binlog</title>
-      <link>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</link>
-      <pubDate>Tue, 05 Apr 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/04/05/change-data-capture-and-the-binlog.html</guid>
-      <description>&lt;p&gt;MySQL uses replication to do an ongoing life restore of a primary server to any number of replicas.
-How replication came to be I have discussed previously &lt;a href=&#34;https://blog.koehntopp.info/2020/11/27/backups-and-replication.html&#34;&gt;in another article&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Modern replication uses row based replication, with a minimal row image and compression. What is that?&lt;/p&gt;
-&lt;h1 id=&#34;decoding-the-binlog&#34;&gt;
-    &lt;a href=&#34;#decoding-the-binlog&#34;&gt;
-	Decoding the Binlog
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;When using Row Based Replication, the Row Change event is represented using the &lt;code&gt;BINLOG&lt;/code&gt; statement in the output of the &lt;code&gt;mysqlbinlog&lt;/code&gt; command.
-It has a single string parameter, the base64 encoded pre- and post-change row images.&lt;/p&gt;
-&lt;p&gt;Adding the &lt;code&gt;-v&lt;/code&gt; option multiple times will decode that:  &lt;code&gt;mysqlbinlog -vvv&lt;/code&gt;.
-It shows a pseudo SQL statement affecting a single row.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0x0112f9b6 
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         Table_map: `kris`.`testtable` mapped to number 92
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; at &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;220404&lt;/span&gt; 16:34:41 server id &lt;span class=&#34;m&#34;&gt;187076016&lt;/span&gt;  end_log_pos &lt;span class=&#34;m&#34;&gt;1140&lt;/span&gt; CRC32 0xe3714794
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         Delete_rows: table id 92 flags: STMT_END_F
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;BINLOG &amp;#39;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;AQJLYhOwjSYLWwAAAAAAAAAAAFwAAAAAAAEAEHBheW1lbnRjb21wb25lbnQAFHBheW1lbnRfc2Vz
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;c2lvbl9kYXRhAAUI9Q8P9QYEFgCHAAQeAQEAAgEItvkSAQ==
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;AQJLYiCwjSYLLAAAAAAAAAAAAFwAAAAAAAEAAgAFAQDcTtUTAAAAAJRHceM=
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&amp;#39;/*!*/;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## DELETE FROM `kris`.`testtable`&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;## WHERE&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;##   @1=332746460 /* LONGINT meta=0 nullable=0 is_null=0 */&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This example from an RBR binlog shows the replication context.
-Note the table map, which translates a table name into an internal table_id, followed by the binlog checksum and log positions.
-Below that, the actual row change is decoded into a &lt;code&gt;BINLOG&lt;/code&gt; statement, and the pseudo SQL it translates to.&lt;/p&gt;
-&lt;p&gt;The MySQL primary and its replicas have identical metadata.
-While some metadata is part of replication, such as column numbers and data types, other metadata is not part of replication, for example, the column names.&lt;/p&gt;
-&lt;p&gt;Note that even with &lt;code&gt;binlog_format=row&lt;/code&gt; configured, some statements are still being replicated as statements &amp;ndash; notably, all statements that do not change rows are replicated as statements.
-That is for example all DDL: you will see &lt;code&gt;CREATE&lt;/code&gt;, &lt;code&gt;DROP&lt;/code&gt; and &lt;code&gt;ALTER&lt;/code&gt; statements.&lt;/p&gt;
-&lt;h1 id=&#34;how-much-row-is-in-an-rbr-binlog&#34;&gt;
-    &lt;a href=&#34;#how-much-row-is-in-an-rbr-binlog&#34;&gt;
-	How much row is in an RBR binlog?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Originally, the rows in an RBR binlog were full images of the row, once before the change and once after the change.
-This can be a lot of data in a table that has &lt;code&gt;TEXT&lt;/code&gt;, &lt;code&gt;BLOB&lt;/code&gt; or &lt;code&gt;JSON&lt;/code&gt; columns.&lt;/p&gt;
-&lt;p&gt;The pathological case is a table with a primary key, a counter and a large &lt;code&gt;TEXT&lt;/code&gt; column, incrementing the counter.
-In this case, the &lt;code&gt;TEXT&lt;/code&gt; is replicated twice per changed row, unchanged, for an increment of a 4 byte counter.&lt;/p&gt;
-&lt;p&gt;This was relatively quickly fixed by introducing the &lt;code&gt;NOBLOB&lt;/code&gt; and &lt;code&gt;MINIMAL&lt;/code&gt; row image formats.
-&lt;code&gt;NOBLOB&lt;/code&gt; contains all columns before and after the change, except for &lt;code&gt;BLOB&lt;/code&gt; and &lt;code&gt;TEXT&lt;/code&gt; columns, unless they changed.
-&lt;code&gt;MINIMAL&lt;/code&gt; logs only the primary key in the pre-image and contains only changed columns in the post-image.&lt;/p&gt;
-&lt;p&gt;This saves a lot of disk space, while still maintaining all information necessary to safely update a replica.&lt;/p&gt;
-&lt;p&gt;Surprisingly, this is already quite efficient: For our workloads at work, RBR already creates smaller binlogs than SBR, even with &lt;code&gt;FULL&lt;/code&gt; format (around 1/2 to 1/3 the size of SBR binlogs).
-&lt;code&gt;MINIMAL&lt;/code&gt; can bring these numbers down even further.&lt;/p&gt;
-&lt;h1 id=&#34;if-rbr-is-so-efficient-why-compression&#34;&gt;
-    &lt;a href=&#34;#if-rbr-is-so-efficient-why-compression&#34;&gt;
-	If RBR is so efficient, why compression?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Yet, for a large number of replication hierarchies, binlog storage is expensive and often a limiting factor given the fixed size of the disks we use.&lt;/p&gt;
-&lt;p&gt;We want to store several days of binlog, in order to be able to roll forward from restored backups.
-But because some replication hierarchies see a lot of churn, we get many row changes due to all these write operations.
-We should expect that: Online Transaction Processing has a singular purpose in life &amp;ndash; to transact.&lt;/p&gt;
-&lt;p&gt;Using compression, we use less disk space to store transaction, so we can store more of them in the same amount of disk space.
-MySQL compressed binlog events using zstd compression.
-Compressed binlog events encapsulate a regular binlog event each, so compression is per-event.&lt;/p&gt;
-&lt;p&gt;Per-event compression is slightly less efficient than per-file, but has the advantage of easy implementation:
-After applying decompression to a compressed binlog event, a normal binlog event emerges, as before the change.&lt;/p&gt;
-&lt;p&gt;That makes it easy for all binlog consumers to update to the new format with minimal changes:
-Basically you need to add zstd as a dependency, and if you see a compressed event, decompress it and handle it as before.&lt;/p&gt;
-&lt;h1 id=&#34;cdc-versus-replication&#34;&gt;
-    &lt;a href=&#34;#cdc-versus-replication&#34;&gt;
-	CDC versus replication
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The binlog is a MySQL internal data structure.
-It exists to facilitate replication between instances of MySQL.
-It is useful for other things, but as the binlog evolves, these other things have to track the changes.&lt;/p&gt;
-&lt;p&gt;For example, a lot of work is currently being done on CDC with various tools.
-The objective is mainly
-&amp;ldquo;Use replication as a channel to extract database changes in a defined format, and put them on a Kafka bus.
-These change events will then be used to re-create a database image in other formats, for example in Hadoop or elsewhere.&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;So, to formulate it somewhat pointedly, at the purely operational level we are busy reinventing replication in JSON or Avro on Kafka.
-To save face: At the data modelling level things are a bit more involved.&lt;/p&gt;
-&lt;p&gt;Unfortunately, this poses several challenges on the source databases:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Initial data load does not consume a backup in one of our backup formats, but requires a life database instance, as the data load happens by queries instead of parsing data files.
-&lt;ul&gt;
-&lt;li&gt;As the data load needs to be consistent, mapping to exactly one binlog position, it holds a consistent read view for a long time.
-Holding a consistent read view for a long time slows down MySQL a lot, so this instance becomes unusable for everybody but the data loader.
-Some data loads use multiple instances for speed.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;The CDC log parsers ask for full binlogs for simpler parsing.
-&lt;ul&gt;
-&lt;li&gt;MySQLs own replication demonstrates that a minimal binlog is sufficient for replication, so it must be sufficient for CDC as well &amp;ndash; but that requires access to the full previous image of the row to fill in the missing data.
-As CDC does not have access to the full previous row image, it requests full format.
-Fixing that is considerable scope creep:
-instead of reinventing replication you are now reinventing the database.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;The CDC log parsers ask for uncompressed binlogs.
-&lt;ul&gt;
-&lt;li&gt;That&amp;rsquo;s fixable relatively easily by learning to parse and use zstd, and doable.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;transactionality-and-cdc&#34;&gt;
-    &lt;a href=&#34;#transactionality-and-cdc&#34;&gt;
-	Transactionality and CDC
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;MySQL writes a binlog record only on commit.
-As long as the transaction does not commit successfully, nothing is visible to replicas, and neither to CDC.&lt;/p&gt;
-&lt;p&gt;The data written to the binlog are all the row changes affected by a set of statements in a transaction.
-It is not geared to business level events of the kind we want to see on our Kafka, but logs table level changes to the SQL schema.&lt;/p&gt;
-&lt;h2 id=&#34;outboxes---why-and-how&#34;&gt;
-    &lt;a href=&#34;#outboxes---why-and-how&#34;&gt;
-	Outboxes - why and how?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The data written to the binlog will reflect changes to the table structure, as the schema evolves based on the needs of the team owning that schema.
-Since the CDC stream sees the same changes, the data format in there will also change, and break downstream consumers.&lt;/p&gt;
-&lt;p&gt;One might entertain the idea of not reading data from MySQL binlogs, but implementing CDC at the application level.
-This has a few advantages:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;MySQL binlog format may evolve and change, as MySQL evolves and changes.
-For example, a hierarchy may convert to group replication (many do), compression is being introduced, compliance may require encryption or other changes.
-We may not want this tight coupling, but be able to upgrade and change individual instances at will.&lt;/li&gt;
-&lt;li&gt;The schema may evolve depending on the needs of the schema owner, which affects the format of events in the binlog, breaking downstream CDC consumers.
-We may not want this tight coupling, but be able to evolve applications and their schema at will.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;But emitting CDC events at the application level introduces great complexity:
-We must make sure that only events that are actually committed are visible on the bus, and that conversely no events are lost.&lt;/p&gt;
-&lt;p&gt;The default workaround at this point in time is the outbox:
-Applications perform their changes to the data as they wish, and in the same transaction also write to a table in a fixed format, the outbox.&lt;/p&gt;
-&lt;p&gt;CDC reads the complete binlog, discards all writes except writes to the outbox, and uses the outbox changes to create a message on the bus.&lt;/p&gt;
-&lt;p&gt;This guarantees a fixed data format, as the format of the outbox table is fixed, while allowing the data owner to change all other tables at will.&lt;/p&gt;
-&lt;p&gt;It guarantees transactionality as well: as the writes to the private tables and to the outbox happen in a single transaction, they will always succeed or fail together.&lt;/p&gt;
-&lt;p&gt;And it is relatively simple to implement.&lt;/p&gt;
-&lt;h2 id=&#34;not-using-outboxes-and-not-using-binlog&#34;&gt;
-    &lt;a href=&#34;#not-using-outboxes-and-not-using-binlog&#34;&gt;
-	Not using Outboxes and not using binlog
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;But Outboxes are still dependent on reading the MySQL binlog format.
-Every time that changes, CDC breaks.
-Or if it needs to change, the change needs to be coordinated between the data owners of a schema and all their consumers and dependencies.&lt;/p&gt;
-&lt;p&gt;The alternative, emitting a CDC event and performing a change to the database, can only work with some kind of commit tracking in the database.&lt;/p&gt;
-&lt;p&gt;This exists, but is a relatively new and untested feature in MySQL:
-&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/session-state-tracking.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Server Tracking of Client Session State&lt;/a&gt;
-
-.
-Not all client libraries have full support for session state tracking, yet.&lt;/p&gt;
-&lt;p&gt;Session State Tracking allows a client to MySQL to know what the server is currently doing:
-for each piece of
-&lt;a href=&#34;2020-07-28-mysql-connection-scoped-state.md&#34;&gt;Connection Scoped State&lt;/a&gt;
-
-
-a tracker exists, so the client has access to the session state on a controlled way, and is notified if any state on the server changes.&lt;/p&gt;
-&lt;p&gt;For the purposes of CDC, the GTID tracker informs the client if a commit to the server succeeded and a global transaction id was assigned.
-The client gets a chance to correlate bus events with database transactions, and make sure both match.&lt;/p&gt;
-&lt;p&gt;While being a much more complicated approach, it has the chance of breaking the dependency of being able to read MySQL binlogs.
-It is still a work in progress, though.&lt;/p&gt;
 </description>
     </item>
     
