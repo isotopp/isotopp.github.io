@@ -11,15 +11,15 @@ tags:
 Multi-Factor Authentication (Identifikation mit mehreren Faktoren) oder 2FA (Two-Factor-Authentication) sind ein Weg, einen Account vor der Übernahme durch Dritte zu schützen.
 
 Statt sich mit Usernamen und Passwort anzumelden ist zusätzlich noch eine wechselnde Pseudozufallszahl notwendig.
-Diese wird von einem Seed-Wert generiert, der durch eine Buchstabenfolge oder einen QR-Code repräsentiert.
+Diese wird von einem Seed-Wert generiert, der durch eine Buchstabenfolge oder einen QR-Code repräsentiert wird.
 
 # Authenticator Anwendung installieren
 
 Das Verfahren ist [standardisiert](https://www.rfc-editor.org/rfc/rfc6238) und wird von vielen Tools unterstützt.
-Dazu gehören Google Authenticator, Bitwarden und viele andere Paßwortmanager.
+Dazu gehören Google Authenticator, Bitwarden und viele andere Passwortmanager.
 
-Um mit MFA zu arbeiten, sollte man entweder einen Paßwortmanager installiert haben, der auch MFA verwalten kann, oder sich eine 2FA Anwendung installieren.
-Populäre Paßwortmanager sind etwa Bitwarden, 1Password oder LastPass.
+Um mit MFA zu arbeiten, sollte man entweder einen Passwortmanager installiert haben, der auch MFA verwalten kann, oder sich eine 2FA Anwendung installieren.
+Populäre Passwortmanager sind etwa Bitwarden, 1Password oder LastPass.
 Populäre 2FA-Anwendungen sind Google Authenticator, der Authenticator von Microsoft, Twilio Authy oder Aegis.
 
 Auch auf der Kommandozeile kann man 2FA Codes generieren, aber das ist eher für 
@@ -61,11 +61,11 @@ Das ist dann auch einheitlich, Account Recovery ist je nach Anbieter unterschied
 Bitwarden wird mit dem Code und der aktuellen Zeit in die Lage versetzt, den jeweils geltenden Code zu erzeugen und anzuzeigen.*
 
 Verwendet man eine Authenticator-App (oder hat einfach ein aktuelles iPhone), kann man auch einfach den QR-Code mit der App (oder der normalen iPhone Scanfunktion) scannen und ein Eintrag wird erzeugt.
-Entweder in der Authenticator-App, wenn man diese verwendet, oder im Paßwortspeicher des iPhone, wenn man direkt mit dem Telefon scannt.
+Entweder in der Authenticator-App, wenn man diese verwendet, oder im Passwortspeicher des iPhone, wenn man direkt mit dem Telefon scannt.
 
 # Den generierten Code ausprobieren
 
-Nachdem man den QR-Code mit einem Authenticator gescannt hat, oder man den Seed-String in den Paßwortmanager kopiert hat, wird einem dort eine Zahl angezeigt.
+Nachdem man den QR-Code mit einem Authenticator gescannt hat, oder man den Seed-String in den Passwortmanager kopiert hat, wird einem dort eine Zahl angezeigt.
 Sie hat 6 Stellen und wechselt alle 30 Sekunden.
 Sie ist aber oft ein wenig länger gültig: Viele Implementierungen nehmen die vorhergehende und die nachfolgende Zahl auch noch an.
 
@@ -120,7 +120,7 @@ Google Authenticator und Aegis gehören nicht dazu, die Daten werden ausdrückli
 Code-Transfer erfolgt mit QR-Codes.
 
 ![](/uploads/2022/12/2fa-08.png)
-*Twilio Authy fragt bei der Einrichtung nach einer Telefonnummer, sendet dieser dann eine Kennung zu und verbindet den Paßwortspeicher mit der Telefonnummer.
+*Twilio Authy fragt bei der Einrichtung nach einer Telefonnummer, sendet dieser dann eine Kennung zu und verbindet den Passwortspeicher mit der Telefonnummer.
 Auch bei Wechsel zwischen Android und iPhone (oder hier MacOS) beiben die 2FA Secrets erhalten.*
 
 Twilio Authenticator und Microsoft Authenticator sichern Codes in der Cloud.
@@ -129,7 +129,7 @@ Bei Apples Systemspeicher für Passworte hängt es davon ab, ob man Passworte in
 
 # 2FA nicht nur für Mastodon
 
-Viele Paßwortmanager haben die Option, Reports und Account-Audits zu generieren.
+Viele Passwortmanager haben die Option, Reports und Account-Audits zu generieren.
 Oft wird eine Funktion angeboten, die alle möglichen, aber nicht genutzten 2FA-Möglichkeiten listet.
 Diese Liste kann man durchgehen und systematisch für alle Accounts 2FA aktivieren.
 
