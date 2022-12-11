@@ -80,7 +80,7 @@ Der Code ist immer derselbe, vorausgesetzt man kennt den Seed und hat eine genau
 Sowohl der Mastodon-Server als auch die Authenticator-Anwendung kennen diese Daten und generieren den Code, und zwar bei übereinstimmenden Werten denselben Code.
 
 Zur Aktivierung muss man den aktuellen Zahlencode in das Feld unter dem QR-Code eintragen.
-Dies beweist, daß man eine Authenticator-App hat und sie korrekt konfiguiert ist.
+Dies beweist, daß man eine Authenticator-App hat und sie korrekt konfiguriert ist.
 Erst dann wird 2FA wirklich aktiviert.
 
 Dies ist der "Point of no Return" (stimmt nicht: Man kann 2FA auch wieder deaktivieren).
@@ -121,7 +121,7 @@ Code-Transfer erfolgt mit QR-Codes.
 
 ![](/uploads/2022/12/2fa-08.png)
 *Twilio Authy fragt bei der Einrichtung nach einer Telefonnummer, sendet dieser dann eine Kennung zu und verbindet den Passwortspeicher mit der Telefonnummer.
-Auch bei Wechsel zwischen Android und iPhone (oder hier MacOS) beiben die 2FA Secrets erhalten.*
+Auch bei Wechsel zwischen Android und iPhone (oder hier MacOS) bleiben die 2FA Secrets erhalten.*
 
 Twilio Authenticator und Microsoft Authenticator sichern Codes in der Cloud.
 
