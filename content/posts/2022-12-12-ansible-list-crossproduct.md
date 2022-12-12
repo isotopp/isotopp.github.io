@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Ansible: List Crossproduct"
-date: 2022-12-10 06:07:08Z
+date: 2022-12-12 21:22:23Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
