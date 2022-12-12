@@ -6,7 +6,295 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 11 Dec 2022 13:36:06 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 12 Dec 2022 21:34:59 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible: List Crossproduct</title>
+      <link>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</link>
+      <pubDate>Sat, 10 Dec 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</guid>
+      <description>&lt;p&gt;A friend asked in Discord:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ich brauch mal kurz ne Denkhilfe: Jinja..&lt;/p&gt;
+&lt;p&gt;Ich hab&amp;rsquo; zwei Listen &lt;code&gt;x: [a,b,c]&lt;/code&gt; und &lt;code&gt;y: [d,e,f]&lt;/code&gt;, und ich will am Ende eine Liste der Produkte als String.
+Also &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,....,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt; &amp;ndash; das Produkt bekomme ich hin, aber dann hab ich eine Liste von Listen,
+und ich will gerne die inneren Listen zusammen joinen.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In English:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I need a pointer to a solution in Jinja.&lt;/p&gt;
+&lt;p&gt;Given two lists, &lt;code&gt;x: [a,b,c]&lt;/code&gt; and &lt;code&gt;y: [d,e,f]&lt;/code&gt;, I need the cross product &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,....,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt;.
+I know how to produce the cross product, but that then is a list of lists, and I want join the inner lists.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After some experimentation the result was a set of nasty templating loops.
+There has to be a better way.&lt;/p&gt;
+&lt;p&gt;There are two:&lt;/p&gt;
+&lt;h1 id=&#34;ansible-custom-filters-in-python&#34;&gt;
+    &lt;a href=&#34;#ansible-custom-filters-in-python&#34;&gt;
+	Ansible Custom Filters in Python
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;playbook&#34;&gt;
+    &lt;a href=&#34;#playbook&#34;&gt;
+	Playbook
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We want a custom filter &lt;code&gt;cross&lt;/code&gt;, which produces the desired result.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;l&#34;&gt;$ cat testing/myfilter.yml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;vars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;f&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ x| cross(y) }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;desired-output&#34;&gt;
+    &lt;a href=&#34;#desired-output&#34;&gt;
+	Desired Output
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The playbook shall produce this output&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PLAY [Keks] ********************************************************************
+
+TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;a.d&amp;#34;,
+        &amp;#34;a.e&amp;#34;,
+        &amp;#34;a.f&amp;#34;,
+        &amp;#34;b.d&amp;#34;,
+        &amp;#34;b.e&amp;#34;,
+        &amp;#34;b.f&amp;#34;,
+        &amp;#34;c.d&amp;#34;,
+        &amp;#34;c.e&amp;#34;,
+        &amp;#34;c.f&amp;#34;
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;creating-a-custom-filter&#34;&gt;
+    &lt;a href=&#34;#creating-a-custom-filter&#34;&gt;
+	Creating a custom filter
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;For that, we need a directory &lt;code&gt;filter_plugins&lt;/code&gt; next to the playbook (or in the role directory next to the &lt;code&gt;tasks&lt;/code&gt; directory).
+Inside that directory, we place a Python file &lt;code&gt;cross.py&lt;/code&gt;, which will contain our custom filter code.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ find testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/filter_plugins
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/filter_plugins/cross.py
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/myfilter.yml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The file &lt;code&gt;cross.py&lt;/code&gt; looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;collections.abc&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;FilterModule&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;filters&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s1&#34;&gt;&amp;#39;cross&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cross&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;cross&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter1 is not an Iterable&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter2 is not an Iterable&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter3  is not a string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;z&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;j&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;j&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;z&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;This defines a class &lt;code&gt;FilterModule&lt;/code&gt; with a method &lt;code&gt;filters()&lt;/code&gt;.
+The names are prescribed, and cannot be changed.&lt;/p&gt;
+&lt;p&gt;In the &lt;code&gt;filters()&lt;/code&gt; method we are to return a dictionary with pairs of Jinja2 templating filter name (we want &lt;code&gt;cross&lt;/code&gt;) and matching Python function or method references.
+In our example, we map the Jinja2 filter &lt;code&gt;cross&lt;/code&gt; to the method &lt;code&gt;self.cross()&lt;/code&gt; in our Python class (Line 8).&lt;/p&gt;
+&lt;p&gt;The actual &lt;code&gt;cross()&lt;/code&gt; method is in Line 11. It takes 2 mandatory parameters, &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; and an optional parameter &lt;code&gt;sepchar&lt;/code&gt;.
+The first two parameters &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; are supposed to be Lists or other Iterables that are to be cross-joined.
+We expressly prohibit strings, because they are iterable by character, but that is likely not want we want.&lt;/p&gt;
+&lt;p&gt;The third parameter &lt;code&gt;sepchar&lt;/code&gt; is the separator character we are putting between these joined pairs.
+It defaults to &lt;code&gt;.&lt;/code&gt; (dot) and can be left out.&lt;/p&gt;
+&lt;p&gt;The actual work is done in Line 21 after the error checks.
+We produce a list, which we return.&lt;/p&gt;
+&lt;p&gt;We can test with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ansible-playbook testing/myfilter.yml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;which indeed produces the desired output.&lt;/p&gt;
+&lt;h1 id=&#34;ansible-solution-with-native-filters&#34;&gt;
+    &lt;a href=&#34;#ansible-solution-with-native-filters&#34;&gt;
+	Ansible solution with native filters
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;My friend had objections to shipping custom filters with a role.
+So here is a solution that uses no loops and only native filters.&lt;/p&gt;
+&lt;p&gt;We can use the Jinja2 default filter &lt;code&gt;product&lt;/code&gt; to create a cross product:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;vars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;f&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;set_fact&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;z&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ x|product(y) }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ z }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;But this produces the list of lists mentioned in the beginning.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PLAY [Keks] ********************************************************************
+
+TASK [keks] ********************************************************************
+ok: [localhost]
+
+TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        [
+            &amp;#34;a&amp;#34;,
+            &amp;#34;d&amp;#34;
+        ],
+        [
+            &amp;#34;a&amp;#34;,
+            &amp;#34;e&amp;#34;
+        ],
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We can use &lt;code&gt;z: &amp;quot;{{ x|product(y)|map(&#39;join&#39;) }}&amp;quot;&lt;/code&gt; to produce the pairs we want:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;ad&amp;#34;,
+        &amp;#34;ae&amp;#34;,
+        &amp;#34;af&amp;#34;,
+        &amp;#34;bd&amp;#34;,
+        &amp;#34;be&amp;#34;,
+        &amp;#34;bf&amp;#34;,
+        &amp;#34;cd&amp;#34;,
+        &amp;#34;ce&amp;#34;,
+        &amp;#34;cf&amp;#34;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;But we need to pass a parameter to &lt;code&gt;join()&lt;/code&gt;, because we want a &lt;code&gt;.&lt;/code&gt; separator character.
+This is done by adding this parameter after the function to be mapped.
+So we need &lt;code&gt;z: &amp;quot;{{ x|product(y)|map(&#39;join&#39;,&#39;.&#39;) }}&amp;quot;&lt;/code&gt; for our solution.&lt;/p&gt;
+&lt;p&gt;The run results in&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;a.d&amp;#34;,
+        &amp;#34;a.e&amp;#34;,
+        &amp;#34;a.f&amp;#34;,
+        &amp;#34;b.d&amp;#34;,
+        &amp;#34;b.e&amp;#34;,
+        &amp;#34;b.f&amp;#34;,
+        &amp;#34;c.d&amp;#34;,
+        &amp;#34;c.e&amp;#34;,
+        &amp;#34;c.f&amp;#34;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;which is what we wanted.&lt;/p&gt;
+&lt;h1 id=&#34;the-actual-problem&#34;&gt;
+    &lt;a href=&#34;#the-actual-problem&#34;&gt;
+	The actual problem
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The actual problem looks like this, but in a single line:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{%- for host in hosts -%}
+  {%- for domain in domains -%}
+    {{proto}}://{{ host }}.{{ domain }}:{{port}}{{ &amp;#34;, &amp;#34; if not loop.last }}
+  {%- endfor -%}
+  {{ &amp;#34;, &amp;#34; if not loop.last }}
+{%- endfor -%} 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The replacement with native functions looks like this, again in a single line:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{{ [proto] | 
+    product(hosts |
+        product(domains) |
+        map(&amp;#39;join&amp;#39;,&amp;#39;.&amp;#39;)
+    ) | map(&amp;#39;join&amp;#39;,&amp;#39;://&amp;#39;) |
+    product([port])|
+   map(&amp;#39;join&amp;#39;,&amp;#39;:&amp;#39;)|
+   join(&amp;#34;, &amp;#34;) 
+}}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Using &lt;code&gt;cross()&lt;/code&gt; it is a lot less ugly:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;proto | cross(hosts,&amp;#39;://&amp;#39;) | cross(domains) | cross(port,&amp;#39;:&amp;#39;)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If &lt;code&gt;proto&lt;/code&gt; or &lt;code&gt;port&lt;/code&gt; are scalar, write them as &lt;code&gt;[proto]&lt;/code&gt; and &lt;code&gt;[port]&lt;/code&gt; to keep the syntax.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;- name: Keks
+  hosts: localhost
+  gather_facts: false
+  vars:
+    hosts: [ &amp;#34;hosta&amp;#34;, &amp;#34;hostb&amp;#34;, &amp;#34;hostc&amp;#34; ]
+    domains: [ &amp;#34;domaina.net&amp;#34;, &amp;#34;domainb.com&amp;#34;, &amp;#34;domainc.org&amp;#34; ]
+    proto: &amp;#34;https&amp;#34;
+    port: &amp;#34;8443&amp;#34;
+
+  tasks:
+    - name: Keks
+      debug:
+        msg: &amp;#34;{{ [proto]|cross(hosts,&amp;#39;://&amp;#39;)|cross(domains)|cross([port],&amp;#39;:&amp;#39;) }}&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;yields&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;https://hosta.domaina.net:8443&amp;#34;,
+        &amp;#34;https://hosta.domainb.com:8443&amp;#34;,
+        &amp;#34;https://hosta.domainc.org:8443&amp;#34;,
+        &amp;#34;https://hostb.domaina.net:8443&amp;#34;,
+        &amp;#34;https://hostb.domainb.com:8443&amp;#34;,
+        &amp;#34;https://hostb.domainc.org:8443&amp;#34;,
+        &amp;#34;https://hostc.domaina.net:8443&amp;#34;,
+        &amp;#34;https://hostc.domainb.com:8443&amp;#34;,
+        &amp;#34;https://hostc.domainc.org:8443&amp;#34;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;With a short, concise and type-safe Python function that can be shipped as part of the role, we solved the original problem.
+We can produce the solution in a single, rather readable line instead of deeply nesting function calls, or worse,
+a bunch of templating loops.&lt;/p&gt;
+&lt;p&gt;Debugging and testing of the Python function can be done with the full power of our Python tooling,
+instead of messing with an un-debuggable and untestable DSL.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>ChatGPT and Limits</title>
       <link>https://blog.koehntopp.info/2022/12/11/chatgpt-and-limits.html</link>
@@ -3772,144 +4060,6 @@ To properly estimate the impact, multiply the effect by 3-4, and then by the num
 &lt;/h1&gt;
 &lt;p&gt;From the database point of view, this is as good as it gets.
 The database is not currently a stability item or scalability limit, the current config could even be scaled back to a cheap standard Blade.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Straight lines</title>
-      <link>https://blog.koehntopp.info/2022/09/08/mysql-straight-lines.html</link>
-      <pubDate>Thu, 08 Sep 2022 12:13:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/09/08/mysql-straight-lines.html</guid>
-      <description>&lt;p&gt;A database is showing replication delay, and so are all the other instances of the same replication hierarchy, all of which reside in Openstack.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-01.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Shortly before 21:30 the database begins to lag, until around 23:45, when it starts to catch up, slowly. After 00:30, we gain delay again, plateau and then around 01:45, we catch up.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The database is moving deep into replication delay sometimes.
-It does not do that on bare metal.&lt;/p&gt;
-&lt;h1 id=&#34;ground-truth&#34;&gt;
-    &lt;a href=&#34;#ground-truth&#34;&gt;
-	Ground Truth
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The VM is a nice hardware blade simulation, 16C/32T, 128 GB of memory.&lt;/p&gt;
-&lt;p&gt;The data is on persistent volume backed by Ceph.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; df -Th /mysql/&amp;lt;hierarchyname&amp;gt;/
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Filesystem                Type  Size  Used Avail Use% Mounted on
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/dev/mapper/vg00-mysqlVol xfs   1.8T  1.1T  766G  58% /mysql/&amp;lt;hierarchyname&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; vgs
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  VG    #PV #LV #SN Attr   VSize VFree
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  sysvm   1   8   0 wz--n- 1.75t 121.27g
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; du -sh /mysql/&amp;lt;hierarchyname&amp;gt;/*
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;0       /mysql/&amp;lt;hierarchyname&amp;gt;/coredumps
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1017G   /mysql/&amp;lt;hierarchyname&amp;gt;/data
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;24G     /mysql/&amp;lt;hierarchyname&amp;gt;/log
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;0       /mysql/&amp;lt;hierarchyname&amp;gt;/tmp
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This database does not fit into the buffer pools:
-The working set is too large.
-We see read traffic in a warmed up database, at a rate of several dozen MB/s.&lt;/p&gt;
-&lt;p&gt;Checking in on &lt;code&gt;information_schema.tables&lt;/code&gt;, the two largest tables of this database are around 200 GB in size, each.
-They seem to be accessed in full, there is little or no exploitable locality of reference.
-So in order to quench these reads, we would need to supply three times the memory, 384 GB.
-Since we can&amp;rsquo;t, we need to handle the I/O instead.&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s have a look at the I/O:
-When you run iostat, use &lt;code&gt;iostat -x -k 10&lt;/code&gt;, and discard the first output.
-It contains the data collected since system boot, a very large average interval.
-We want a clean 10s sample instead.&lt;/p&gt;
-&lt;p&gt;The paste:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Device            r/s     w/s     rMB/s     wMB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sdc           4302.00  348.00     67.22      1.22     0.00     0.00   0.00   0.00    1.24    1.91   6.00    16.00     3.58   0.21  99.70
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sdb              0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sda              0.00    4.00      0.00      0.02     0.00     0.00   0.00   0.00    0.00    2.50   0.01     0.00     4.00   2.75   1.10
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;loop0            0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;dm-0          4304.00  347.00     67.25      1.21     0.00     0.00   0.00   0.00    1.24    1.93   6.02    16.00     3.58   0.21  99.70
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see the busy drive being sdc, the persistent volume.
-We see increased service times (&lt;code&gt;r_await&lt;/code&gt;, unit ms), and queues (&lt;code&gt;aqu-sz&lt;/code&gt;, unit is &amp;ldquo;average number of requests in  queue, during the observation interval&amp;rdquo;, which is 10s).&lt;/p&gt;
-&lt;p&gt;We also see around 4300 read requests/s and 67 MB/s read traffic.&lt;/p&gt;
-&lt;h1 id=&#34;i-know-that-smell&#34;&gt;
-    &lt;a href=&#34;#i-know-that-smell&#34;&gt;
-	I know that smell
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Some previous experience in other projects suggests that a crucial piece of information may be missing.
-This replication chain is no longer on bare metal, but is running on Openstack.
-All traffic to disk in Openstack is quota-ed.&lt;/p&gt;
-&lt;p&gt;Any I/O problem on Openstack is undebuggable, unless you know the Quota affecting you.
-Indeed:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; openstack volume qos show &amp;lt;uuid&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| Field        | Value                                              |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| associations | standard-iops                                      |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| consumer     | front-end                                          |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| id           | &amp;lt;uuid&amp;gt;                                             |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| name         | 200MB/s-3000iops                                   |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| properties   | total_bytes_sec=&amp;#39;209715200&amp;#39;, total_iops_sec=&amp;#39;3000&amp;#39; |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
-Measured in the system we see an ok bandwidth of 67 MB/s, but the IOPS hit the roof.&lt;/p&gt;
-&lt;p&gt;When we zoom in on a phase of replication delay in the Single Instance Info Panelof our grafana, we get to the bottom of that straight away.&lt;/p&gt;
-&lt;p&gt;Replication delay interval:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-01.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;At the same time:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-02.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;When we have replication delay, we see a straight line in the sum of dm-reads for 70-ish MB/s.
-This is well below quota.&lt;/p&gt;
-&lt;p&gt;Looking at the IOPS:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-03.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;This is the sum of all dm-Reads, and we only are interested in the reads for our device.
-But we do see a straight line, and that suggests some kind of limit or resource exhaustion.
-Also, the line is at around 4000 read/s versus a Quota of 3000 IOPS.
-Together that suggest we run into resource depletion in the IOPS dept here.&lt;/p&gt;
-&lt;p&gt;Is that bad?&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-04.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The observed statement latency for the production user goes up from a minimum 348 ms to a max of 37100 ms (37.1s).
-That is approximately 100x worse than normal.&lt;/p&gt;
-&lt;p&gt;The observed statement latency is also jumping rapidly up and down.
-System performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.&lt;/p&gt;
-&lt;p&gt;This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:&lt;/p&gt;
-&lt;p&gt;Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
-The system stops, because a database without I/O is doing nothing.
-It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
-Then the cycle repeats.&lt;/p&gt;
-&lt;p&gt;Maybe it is less noisy if the quota is applied with &lt;code&gt;consumer=backend&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;All expectations the user may have on performance are broken and the system may as well be offline.
-Also, the variance in performance may create input signal spikes dependent systems, affecting their performance if there is resonance.&lt;/p&gt;
-&lt;p&gt;Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream from the affected system.
-With proper metrics and knowledge of the Quota it is plain obvious.&lt;/p&gt;
-&lt;h1 id=&#34;be-wary-of-straight-lines-in-performance-graphs&#34;&gt;
-    &lt;a href=&#34;#be-wary-of-straight-lines-in-performance-graphs&#34;&gt;
-	Be wary of straight lines in performance graphs
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Load is spiky, straight lines do not exist&lt;/p&gt;
-&lt;p&gt;This is a general truth for our systems:
-In general our load is spiky.
-It has peaks and valleys, and there are no plateaus or straight lines (outside of Kafka and other Queues and the systems fed by them).&lt;/p&gt;
-&lt;p&gt;That is, if you see a straight line, I see a resource being exhausted and limiting system performance.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;In this case, the exhausted resource is IOPS quota.&lt;/p&gt;
-&lt;p&gt;In other cases in the past, a straight line in dirty buffer pool pages graph was signaling exhaustion of the redo log space, or similar performance choke points.&lt;/p&gt;
 </description>
     </item>
     

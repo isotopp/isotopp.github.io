@@ -6,7 +6,295 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 11 Dec 2022 13:36:06 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 12 Dec 2022 21:34:59 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ansible: List Crossproduct</title>
+      <link>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</link>
+      <pubDate>Sat, 10 Dec 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</guid>
+      <description>&lt;p&gt;A friend asked in Discord:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Ich brauch mal kurz ne Denkhilfe: Jinja..&lt;/p&gt;
+&lt;p&gt;Ich hab&amp;rsquo; zwei Listen &lt;code&gt;x: [a,b,c]&lt;/code&gt; und &lt;code&gt;y: [d,e,f]&lt;/code&gt;, und ich will am Ende eine Liste der Produkte als String.
+Also &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,....,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt; &amp;ndash; das Produkt bekomme ich hin, aber dann hab ich eine Liste von Listen,
+und ich will gerne die inneren Listen zusammen joinen.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;In English:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;I need a pointer to a solution in Jinja.&lt;/p&gt;
+&lt;p&gt;Given two lists, &lt;code&gt;x: [a,b,c]&lt;/code&gt; and &lt;code&gt;y: [d,e,f]&lt;/code&gt;, I need the cross product &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,....,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt;.
+I know how to produce the cross product, but that then is a list of lists, and I want join the inner lists.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After some experimentation the result was a set of nasty templating loops.
+There has to be a better way.&lt;/p&gt;
+&lt;p&gt;There are two:&lt;/p&gt;
+&lt;h1 id=&#34;ansible-custom-filters-in-python&#34;&gt;
+    &lt;a href=&#34;#ansible-custom-filters-in-python&#34;&gt;
+	Ansible Custom Filters in Python
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;playbook&#34;&gt;
+    &lt;a href=&#34;#playbook&#34;&gt;
+	Playbook
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We want a custom filter &lt;code&gt;cross&lt;/code&gt;, which produces the desired result.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;l&#34;&gt;$ cat testing/myfilter.yml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;vars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;f&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ x| cross(y) }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;desired-output&#34;&gt;
+    &lt;a href=&#34;#desired-output&#34;&gt;
+	Desired Output
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The playbook shall produce this output&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PLAY [Keks] ********************************************************************
+
+TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;a.d&amp;#34;,
+        &amp;#34;a.e&amp;#34;,
+        &amp;#34;a.f&amp;#34;,
+        &amp;#34;b.d&amp;#34;,
+        &amp;#34;b.e&amp;#34;,
+        &amp;#34;b.f&amp;#34;,
+        &amp;#34;c.d&amp;#34;,
+        &amp;#34;c.e&amp;#34;,
+        &amp;#34;c.f&amp;#34;
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;creating-a-custom-filter&#34;&gt;
+    &lt;a href=&#34;#creating-a-custom-filter&#34;&gt;
+	Creating a custom filter
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;For that, we need a directory &lt;code&gt;filter_plugins&lt;/code&gt; next to the playbook (or in the role directory next to the &lt;code&gt;tasks&lt;/code&gt; directory).
+Inside that directory, we place a Python file &lt;code&gt;cross.py&lt;/code&gt;, which will contain our custom filter code.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ find testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/filter_plugins
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/filter_plugins/cross.py
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/myfilter.yml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The file &lt;code&gt;cross.py&lt;/code&gt; looks like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;collections.abc&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;FilterModule&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;filters&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s1&#34;&gt;&amp;#39;cross&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cross&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;cross&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter1 is not an Iterable&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter2 is not an Iterable&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter3  is not a string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;z&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;j&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;j&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;z&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;This defines a class &lt;code&gt;FilterModule&lt;/code&gt; with a method &lt;code&gt;filters()&lt;/code&gt;.
+The names are prescribed, and cannot be changed.&lt;/p&gt;
+&lt;p&gt;In the &lt;code&gt;filters()&lt;/code&gt; method we are to return a dictionary with pairs of Jinja2 templating filter name (we want &lt;code&gt;cross&lt;/code&gt;) and matching Python function or method references.
+In our example, we map the Jinja2 filter &lt;code&gt;cross&lt;/code&gt; to the method &lt;code&gt;self.cross()&lt;/code&gt; in our Python class (Line 8).&lt;/p&gt;
+&lt;p&gt;The actual &lt;code&gt;cross()&lt;/code&gt; method is in Line 11. It takes 2 mandatory parameters, &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; and an optional parameter &lt;code&gt;sepchar&lt;/code&gt;.
+The first two parameters &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; are supposed to be Lists or other Iterables that are to be cross-joined.
+We expressly prohibit strings, because they are iterable by character, but that is likely not want we want.&lt;/p&gt;
+&lt;p&gt;The third parameter &lt;code&gt;sepchar&lt;/code&gt; is the separator character we are putting between these joined pairs.
+It defaults to &lt;code&gt;.&lt;/code&gt; (dot) and can be left out.&lt;/p&gt;
+&lt;p&gt;The actual work is done in Line 21 after the error checks.
+We produce a list, which we return.&lt;/p&gt;
+&lt;p&gt;We can test with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ansible-playbook testing/myfilter.yml
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;which indeed produces the desired output.&lt;/p&gt;
+&lt;h1 id=&#34;ansible-solution-with-native-filters&#34;&gt;
+    &lt;a href=&#34;#ansible-solution-with-native-filters&#34;&gt;
+	Ansible solution with native filters
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;My friend had objections to shipping custom filters with a role.
+So here is a solution that uses no loops and only native filters.&lt;/p&gt;
+&lt;p&gt;We can use the Jinja2 default filter &lt;code&gt;product&lt;/code&gt; to create a cross product:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;vars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;f&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;set_fact&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;z&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ x|product(y) }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ z }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;But this produces the list of lists mentioned in the beginning.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PLAY [Keks] ********************************************************************
+
+TASK [keks] ********************************************************************
+ok: [localhost]
+
+TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        [
+            &amp;#34;a&amp;#34;,
+            &amp;#34;d&amp;#34;
+        ],
+        [
+            &amp;#34;a&amp;#34;,
+            &amp;#34;e&amp;#34;
+        ],
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We can use &lt;code&gt;z: &amp;quot;{{ x|product(y)|map(&#39;join&#39;) }}&amp;quot;&lt;/code&gt; to produce the pairs we want:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;ad&amp;#34;,
+        &amp;#34;ae&amp;#34;,
+        &amp;#34;af&amp;#34;,
+        &amp;#34;bd&amp;#34;,
+        &amp;#34;be&amp;#34;,
+        &amp;#34;bf&amp;#34;,
+        &amp;#34;cd&amp;#34;,
+        &amp;#34;ce&amp;#34;,
+        &amp;#34;cf&amp;#34;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;But we need to pass a parameter to &lt;code&gt;join()&lt;/code&gt;, because we want a &lt;code&gt;.&lt;/code&gt; separator character.
+This is done by adding this parameter after the function to be mapped.
+So we need &lt;code&gt;z: &amp;quot;{{ x|product(y)|map(&#39;join&#39;,&#39;.&#39;) }}&amp;quot;&lt;/code&gt; for our solution.&lt;/p&gt;
+&lt;p&gt;The run results in&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;a.d&amp;#34;,
+        &amp;#34;a.e&amp;#34;,
+        &amp;#34;a.f&amp;#34;,
+        &amp;#34;b.d&amp;#34;,
+        &amp;#34;b.e&amp;#34;,
+        &amp;#34;b.f&amp;#34;,
+        &amp;#34;c.d&amp;#34;,
+        &amp;#34;c.e&amp;#34;,
+        &amp;#34;c.f&amp;#34;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;which is what we wanted.&lt;/p&gt;
+&lt;h1 id=&#34;the-actual-problem&#34;&gt;
+    &lt;a href=&#34;#the-actual-problem&#34;&gt;
+	The actual problem
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The actual problem looks like this, but in a single line:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{%- for host in hosts -%}
+  {%- for domain in domains -%}
+    {{proto}}://{{ host }}.{{ domain }}:{{port}}{{ &amp;#34;, &amp;#34; if not loop.last }}
+  {%- endfor -%}
+  {{ &amp;#34;, &amp;#34; if not loop.last }}
+{%- endfor -%} 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The replacement with native functions looks like this, again in a single line:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{{ [proto] | 
+    product(hosts |
+        product(domains) |
+        map(&amp;#39;join&amp;#39;,&amp;#39;.&amp;#39;)
+    ) | map(&amp;#39;join&amp;#39;,&amp;#39;://&amp;#39;) |
+    product([port])|
+   map(&amp;#39;join&amp;#39;,&amp;#39;:&amp;#39;)|
+   join(&amp;#34;, &amp;#34;) 
+}}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Using &lt;code&gt;cross()&lt;/code&gt; it is a lot less ugly:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;proto | cross(hosts,&amp;#39;://&amp;#39;) | cross(domains) | cross(port,&amp;#39;:&amp;#39;)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If &lt;code&gt;proto&lt;/code&gt; or &lt;code&gt;port&lt;/code&gt; are scalar, write them as &lt;code&gt;[proto]&lt;/code&gt; and &lt;code&gt;[port]&lt;/code&gt; to keep the syntax.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;- name: Keks
+  hosts: localhost
+  gather_facts: false
+  vars:
+    hosts: [ &amp;#34;hosta&amp;#34;, &amp;#34;hostb&amp;#34;, &amp;#34;hostc&amp;#34; ]
+    domains: [ &amp;#34;domaina.net&amp;#34;, &amp;#34;domainb.com&amp;#34;, &amp;#34;domainc.org&amp;#34; ]
+    proto: &amp;#34;https&amp;#34;
+    port: &amp;#34;8443&amp;#34;
+
+  tasks:
+    - name: Keks
+      debug:
+        msg: &amp;#34;{{ [proto]|cross(hosts,&amp;#39;://&amp;#39;)|cross(domains)|cross([port],&amp;#39;:&amp;#39;) }}&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;yields&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
+ok: [localhost] =&amp;gt; {
+    &amp;#34;msg&amp;#34;: [
+        &amp;#34;https://hosta.domaina.net:8443&amp;#34;,
+        &amp;#34;https://hosta.domainb.com:8443&amp;#34;,
+        &amp;#34;https://hosta.domainc.org:8443&amp;#34;,
+        &amp;#34;https://hostb.domaina.net:8443&amp;#34;,
+        &amp;#34;https://hostb.domainb.com:8443&amp;#34;,
+        &amp;#34;https://hostb.domainc.org:8443&amp;#34;,
+        &amp;#34;https://hostc.domaina.net:8443&amp;#34;,
+        &amp;#34;https://hostc.domainb.com:8443&amp;#34;,
+        &amp;#34;https://hostc.domainc.org:8443&amp;#34;
+    ]
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;With a short, concise and type-safe Python function that can be shipped as part of the role, we solved the original problem.
+We can produce the solution in a single, rather readable line instead of deeply nesting function calls, or worse,
+a bunch of templating loops.&lt;/p&gt;
+&lt;p&gt;Debugging and testing of the Python function can be done with the full power of our Python tooling,
+instead of messing with an un-debuggable and untestable DSL.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Systemd and docker -H fd://</title>
       <link>https://blog.koehntopp.info/2022/11/28/systemd-and-docker-fd.html</link>
@@ -2880,696 +3168,6 @@ Zu einzelnen Zeitpunkten (nachts um 4:15 Uhr, wenn das News-Expire läuft), wird
 Das ist zu diesem Zeitpunkt aber nicht schlimm.&lt;/p&gt;
 &lt;p&gt;Die Spitzenlasten (rote Kurve: 1 Minuten-Load, und davon das Maximum) halten sich außer um 4:15 Uhr im Rahmen, die Maschine kommt nicht nennenswert über Load 2 hinaus.
 Die Kiste hat also nicht mehr allzu viel Reserven, ist aber auch noch nicht überlastet.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Neu auf einem fremden System</title>
-      <link>https://blog.koehntopp.info/2000/04/14/neu-auf-einem-fremden-system.html</link>
-      <pubDate>Fri, 14 Apr 2000 09:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2000/04/14/neu-auf-einem-fremden-system.html</guid>
-      <description>&lt;p&gt;Dies ist eine aktualisierte Version der Schulung „Unix Systemsicherheit“, die ich vor einiger Zeit schon einmal gehalten habe.
-Der Schwerpunkt dieser Schulung hat sich etwas zu den Grundlagen hin verschoben:
-Es geht diesmal weniger um Unix Systemsicherheit als um die typische Situation der Consultants und Bereitschaften:&lt;/p&gt;
-&lt;p&gt;Man kommt an eine neue Maschine und muss sich erst einmal zurechtfinden.&lt;/p&gt;
-&lt;h1 id=&#34;neu-auf-einem-fremden-system&#34;&gt;
-    &lt;a href=&#34;#neu-auf-einem-fremden-system&#34;&gt;
-	Neu auf einem fremden System
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-001.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Orientierung:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Typ und Ausstattung der Maschine
-&lt;ul&gt;
-&lt;li&gt;Prozessor, Festplatten, andere Hardware&lt;/li&gt;
-&lt;li&gt;Speichersituation, historische und aktuelle Lastdaten&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Netzwerk und Netzwerkumfeld der Maschine&lt;/li&gt;
-&lt;li&gt;IP-Adressen, Routing
-&lt;ul&gt;
-&lt;li&gt;Welche Name-Services in welcher Reihenfolge, welche Server werden verwendet?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Was läuft, was soll laufen?
-&lt;ul&gt;
-&lt;li&gt;Was ist installiert?&lt;/li&gt;
-&lt;li&gt;tatsächlich laufende Subsysteme vs. konfigurierte Subsysteme&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Wir sind neu auf einem fremden System und loggen uns zum ersten Mal ein.
-Wie können wir uns zurechtfinden? Was wollen wir überhaupt wissen?&lt;/p&gt;
-&lt;p&gt;Die Maschine selbst ist nach Hardware, Speicher, Platten und Netzwerk zu beurteilen.
-Die Netzwerkumgebung der Maschine ist einzuschätzen.
-Die auf der Maschine installierten Systemdienste sind einzuschätzen und zu beurteilen.
-Es muss ein Soll/Ist-Abgleich stattfinden.&lt;/p&gt;
-&lt;p&gt;Ausgehend von diesen Daten kann die Arbeit auf der Maschine beginnen:&lt;/p&gt;
-&lt;p&gt;Die Maschine kann für ihre Aufgabe angepasst werden (Hardware- oder Softwareinstallation durch Consulting), bzw. die Fehlersuche kann beginnen (Alarmruf für die Bereitschaft).&lt;/p&gt;
-&lt;h1 id=&#34;typ-und-ausstattung-der-maschine&#34;&gt;
-    &lt;a href=&#34;#typ-und-ausstattung-der-maschine&#34;&gt;
-	Typ und Ausstattung der Maschine
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-002.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Was für Hardware ist das hier?&lt;/li&gt;
-&lt;li&gt;Was ist in der Maschine eingebaut?&lt;/li&gt;
-&lt;li&gt;Wie lange ist die Hardware schon &amp;ldquo;up&amp;rdquo;?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Erster Handgriff: &lt;code&gt;uname -a&lt;/code&gt;.
-Weitere Aktionen systemspezfisch.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;lscpu&lt;/code&gt;, &lt;code&gt;free&lt;/code&gt;, &lt;code&gt;df -Th&lt;/code&gt;, &lt;code&gt;lspci&lt;/code&gt;, &lt;code&gt;lsusb&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;prtconf -v&lt;/code&gt;, &lt;code&gt;psrinfo -v&lt;/code&gt;, &lt;code&gt;/usr/platform/$(uname -m)/sbin/prtdiag&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Uptime und Load: &lt;code&gt;w&lt;/code&gt;, &lt;code&gt;uptime -w&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Für uns meist: Sparc/Solaris oder Intel/Linux.
-Bei einigen Kunden auch PPC/AIX oder Intel/SCO.
-Äußerst wenige Kunden mit HP oder Digital Hardware.&lt;/p&gt;
-&lt;p&gt;Peilung des Maschinentyps (mit &lt;code&gt;uname -a&lt;/code&gt;) und der eingebauten Hardware.
-In Solaris mit den drei Kommandos &lt;code&gt;prtconf&lt;/code&gt;, &lt;code&gt;psrinfo&lt;/code&gt; und &lt;code&gt;prtdiag&lt;/code&gt;.
-In Linux mit &lt;code&gt;lscpu&lt;/code&gt;, &lt;code&gt;lspci&lt;/code&gt; oder indem man manuell durch &lt;code&gt;/proc&lt;/code&gt; turnt.&lt;/p&gt;
-&lt;p&gt;Peilung der Systemauslastung und der anwesenden Benutzer:
-Neben &lt;code&gt;w&lt;/code&gt; und &lt;code&gt;uptime&lt;/code&gt; einmal die Prozeßliste ansehen (&lt;code&gt;ps -ef&lt;/code&gt;, &lt;code&gt;ps axuwww&lt;/code&gt;) und die Systemlast checken (&lt;code&gt;iostat&lt;/code&gt;, &lt;code&gt;vmstat&lt;/code&gt;).&lt;/p&gt;
-&lt;h1 id=&#34;speicher-und-last&#34;&gt;
-    &lt;a href=&#34;#speicher-und-last&#34;&gt;
-	Speicher und Last
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-003.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Virtueller Speicher und seine Auslastung:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;free&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;swap -l&lt;/code&gt;, &lt;code&gt;swap -s&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Wenn Accounting &amp;ldquo;up&amp;rdquo; ist (Solaris): &lt;code&gt;sar&lt;/code&gt;, &lt;code&gt;sar -r&lt;/code&gt; (freeswap), &lt;code&gt;sar -w&lt;/code&gt; (paging).&lt;/li&gt;
-&lt;li&gt;In Linux (Suse 6.4): &lt;code&gt;sa&lt;/code&gt; aus dem Paket &lt;code&gt;ap1/acct.rpm&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Der weitaus größte Teil aller Lastprobleme sind Speicherprobleme (zuwenig RAM, zu kleiner Swap).
-Zweithäufigstes Problem ist fehlende I/O-Kapazität.
-Fehlende CPU-Kapazität ist fast niemals das Problem.&lt;/p&gt;
-&lt;p&gt;Erst messen, dann nachdenken, dann handeln (OODA loop &amp;ndash; Observe, Orient, Decide, Act).
-Optimierungen ohne genaue Messungen und Kenntnis des tatsächlichen Problems sind Verschwendung der durch den Kunden bezahlten Arbeitszeit.
-Punktmessungen können hilfreich sein, aber ein Wochenlastprofil ist sehr viel wertvoller (hier &lt;code&gt;sar&lt;/code&gt;-Beispiele von &lt;code&gt;boss&lt;/code&gt; und &lt;code&gt;prime&lt;/code&gt; bringen).&lt;/p&gt;
-&lt;h1 id=&#34;platten&#34;&gt;
-    &lt;a href=&#34;#platten&#34;&gt;
-	Platten
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-004.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Logical Volume Management?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Welches System?&lt;/li&gt;
-&lt;li&gt;Welche Zuordnung?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Quota?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/vfstab&lt;/code&gt;, &lt;code&gt;/etc/fstab&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris (SDS):&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Gerätenamen&lt;/li&gt;
-&lt;li&gt;metastat&lt;/li&gt;
-&lt;li&gt;format&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Linux:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Gerätenamen&lt;/li&gt;
-&lt;li&gt;fdisk&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;raidtool.rpm&lt;/code&gt; als Nachfolger von &lt;code&gt;md-tools&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;/etc/raidtab&lt;/code&gt;, &lt;code&gt;raid.conf&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;df&lt;/code&gt;, &lt;code&gt;du&lt;/code&gt;, &lt;code&gt;mount&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Quota-Tools&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche die sichtbaren Partitionen mit der durch das Hardware-Inventory angezeigten vorhandenen Hardware.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Sind alle Platten partitioniert und eingebunden?&lt;/li&gt;
-&lt;li&gt;Ist die gezeigte Aufteilung sinnvoll gewählt für die Aufgabe der Maschine?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Prüfe auch:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Verteilung der Partitionen nach Auslastung auf Spindeln&lt;/li&gt;
-&lt;li&gt;Verteilung der Partitionen über Platten und Controller nach Ausfallgesichtspunkten?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Welche RAID-Level für welche Aufgabe&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Wir verwenden fast überall RAID 0+1 (Solaris SDS).&lt;/li&gt;
-&lt;li&gt;Linux-RAID (a la Suse) derzeit nur eingeschränkt nützlich.
-&lt;ul&gt;
-&lt;li&gt;Lange Startzeit.&lt;/li&gt;
-&lt;li&gt;Rootplatte, Swap-Partition.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Prüfe auch:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Platzproblem oder Quota-Problem?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;netzwerk-und-netzwerknachbarschaft&#34;&gt;
-    &lt;a href=&#34;#netzwerk-und-netzwerknachbarschaft&#34;&gt;
-	Netzwerk und Netzwerknachbarschaft
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-005.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Übersicht über Interfaces und Routen&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;-n&lt;/code&gt; Option verwenden&lt;/li&gt;
-&lt;li&gt;Woher kommen die Routen?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Weitere Analysetools:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ping&lt;/li&gt;
-&lt;li&gt;tcpdump&lt;/li&gt;
-&lt;li&gt;snoop&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Netzwerkinterfaces: &lt;code&gt;ifconfig -a&lt;/code&gt;, &lt;code&gt;netstat -i&lt;/code&gt;, &lt;code&gt;netstat -s&lt;/code&gt;, &lt;code&gt;netstat -m&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Routen: &lt;code&gt;netstat -rn&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Schicht 2-3 Bindungen: &lt;code&gt;arp -a&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Welche Interfaces und welche Routen werden tatsächlich wie oft verwendet?
-Woher kommen die Routen?&lt;/p&gt;
-&lt;p&gt;Viele Kunden haben ein kaputtes Netzwerkonzept (d.h. keines) und setzen Routen eventuell manuell. Probleme sind vorprogrammiert.&lt;/p&gt;
-&lt;p&gt;Andere Kunden haben nur Default-Routen und bekommen differenzierte Routen nur über ICMP Redirect. Ebenfalls problematisch (Effizenz, Security).&lt;/p&gt;
-&lt;h1 id=&#34;name-resolution&#34;&gt;
-    &lt;a href=&#34;#name-resolution&#34;&gt;
-	Name Resolution
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-006.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Namensdienste werden verwendet?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Server werden verwendet?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wie ist das Verhalten im Fehlerfall?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Ausfall&lt;/li&gt;
-&lt;li&gt;Angriff&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/nsswitch.conf&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Files, DNS/Bind, NIS/NIS+, LDAP, Exoten&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Falls DNS: &lt;code&gt;/etc/resolv.conf&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Falls NIS: &lt;code&gt;ypwhich&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Woher kommen die Namen, welcher Dienst wird verwendet?&lt;/p&gt;
-&lt;p&gt;Oft lokale Hostdateien -&amp;gt; Probleme! Im besten Fall DNS. Dann dort die Zone ansehen und Netzstruktur und Zonengröße abschätzen.&lt;/p&gt;
-&lt;p&gt;Welche Abhängigkeiten existieren zwischen den Servern?&lt;/p&gt;
-&lt;p&gt;Ausfall- und Bootszenarien: Was ist, wenn der DNS-, der Time- oder der NIS-Server nicht da sind? Gibt es NFS-Platten, auf die die lokale Maschine angewiesen ist?&lt;/p&gt;
-&lt;p&gt;Security: Wer macht was in wessen Auftrag? Wer kontrolliert? Wird die Konfiguration manuell gepflegt oder existieren Frontends? Welche Dokumentationsprozeduren existieren?&lt;/p&gt;
-&lt;h1 id=&#34;netzwerkdienste&#34;&gt;
-    &lt;a href=&#34;#netzwerkdienste&#34;&gt;
-	Netzwerkdienste
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-007.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Netzwerkdienste werden erbracht?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Prüfe neben &lt;code&gt;inetd&lt;/code&gt; auch persistenten Server.&lt;/li&gt;
-&lt;li&gt;Prüfe auf Vorhandensein von Sicherheitsmechanismen&lt;/li&gt;
-&lt;li&gt;Prüfe Verhalten im Falle von Ausfällen, etwa Firewall-Versagen&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wie begründen sich diese Dienste?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Sicherheit bieten diese Dienste?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/inetd.conf&lt;/code&gt;, &lt;code&gt;/etc/hosts.allow&lt;/code&gt;, &lt;code&gt;/etc/hosts.deny&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Sonderfälle für das jeweilige System&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Todesfallen bei AIX: Import/Exporttools für &lt;code&gt;inetd.conf&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Todesfallen bei HP/UX: &lt;code&gt;/etc/inetd.sec&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;rpcinfo -p&lt;/code&gt;, &lt;code&gt;showmount -e&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;nmap&lt;/code&gt;!&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche &lt;code&gt;inetd.conf&lt;/code&gt; und Startscripte mit &lt;code&gt;netstat -an&lt;/code&gt;.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Consulting: Viele verstorbene Pflegefälle wegen manuell gestarteter Dienste, die in keiner Konfigurationsdatei auftauchen.&lt;/li&gt;
-&lt;li&gt;Bereitschaft: Umgekehrtes Szenario. Alarm wurde wegen verschwundenem Server ausgelöst.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Sicherheitsanalyse wieder:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Wieder technische und organisatorische Prozesse synchronisieren und abgleichen:
-&lt;ul&gt;
-&lt;li&gt;Was tun die Maschinen?&lt;/li&gt;
-&lt;li&gt;Wer entscheidet das? Wie begründen sich die Dienste?&lt;/li&gt;
-&lt;li&gt;Wer dokumentiert und prüft das?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche Prozeduren bei uns im Haus:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ISP-Betrieb plant und deployed.&lt;/li&gt;
-&lt;li&gt;Operating betreibt nach Doku vom ISP-Betrieb, Operating überwacht und alarmiert die Bereitschaft. Auch diese operiert mit dieser Doku.&lt;/li&gt;
-&lt;li&gt;Konfigurationsgenerierung meist automatisch durch die Backends der KundenDB -&amp;gt; automatische Dokumentation und Abrechnung.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;welche-verzeichnisse-werden-exportiert&#34;&gt;
-    &lt;a href=&#34;#welche-verzeichnisse-werden-exportiert&#34;&gt;
-	Welche Verzeichnisse werden exportiert?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-008.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Häufige Panne:
-&lt;ul&gt;
-&lt;li&gt;Verzeichnisse werden ungewollt exportiert&lt;/li&gt;
-&lt;li&gt;Rechner importiert Verzeichnisse und hängt wegen Abhängigkeit vom Server&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Automounter?
-&lt;ul&gt;
-&lt;li&gt;Mit NIS/NIS+?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Samba?
-&lt;ul&gt;
-&lt;li&gt;Klartextpaßworte?&lt;/li&gt;
-&lt;li&gt;Public Shares?&lt;/li&gt;
-&lt;li&gt;Logfiles?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; showmount -e
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; kshowmount -e
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; share
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; vi /etc/exports&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; vi  /etc/dfs/dfstab
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; vi /etc/auto.master&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; vi /etc/auto.homel vi /etc/auto.misc
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; vi smb.conf&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; smbclient
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Einschlägige Beispielserver draußen zeigen.&lt;/p&gt;
-&lt;p&gt;Wir wollen nicht so enden wie die! Mehrfach gestaffelte Sicherheit durch&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;automatisch generierte Konfigurationen mit Sicherheitssperren&lt;/li&gt;
-&lt;li&gt;Dienstsperrungen für Außen durch &lt;code&gt;tcpwrapper&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Portsperrung und Alamierung über die Firewall und das Operating&lt;/li&gt;
-&lt;li&gt;Logauswertung (Usagelog, Wrapper-Protokoll, Firewall-Protokoll) durch
-&lt;ul&gt;
-&lt;li&gt;Abrechnung (KundenDB), Alarm bei Diensten mit fehlendem technischem Objekt in der KundenDB&lt;/li&gt;
-&lt;li&gt;Operating (Wrapper, Firewall), Alarm bei Attack Patterns&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Einschlägige Selbstmordkonfigurationen zeigen.&lt;/p&gt;
-&lt;h1 id=&#34;was-ist-installiert&#34;&gt;
-    &lt;a href=&#34;#was-ist-installiert&#34;&gt;
-	Was ist installiert?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-009.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Pakete und Programme sind installiert?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;In welcher Version?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Installation validieren?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&amp;ldquo;set permissions&amp;rdquo; und &amp;ldquo;check optionen&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;tripwire?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris: &lt;code&gt;pkginfo&lt;/code&gt;, &lt;code&gt;/var/sadm/install/contents&lt;/code&gt; (Reihenfolge!)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Linux: &lt;code&gt;rpm -qa&lt;/code&gt;, &lt;code&gt;rpm -qi &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -ql &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qlc &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qld &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qf &amp;lt;datei&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qp &amp;lt;datei.rpm&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris Paketarchiv („NetUSE Distribution“) zeigen&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Consulting-CDROM, wird auch an Kunden verkauft&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Keine Installation ohne Paket&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Verweis auf Paketschulung&lt;/li&gt;
-&lt;li&gt;Kein Paket -&amp;gt; automatische Konfigurationsgenerierung aus Installserver oder KundenDB macht die Verzeichnisse möglicherweise platt.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Kommandoäquivalenzen Linux/Solaris&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verweis auf Rootkits&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Rootkits ersetzen wichtige Systemprogramme,&lt;/li&gt;
-&lt;li&gt;in Folge belügt die Maschine den Operator&lt;/li&gt;
-&lt;li&gt;tripwire-Check nach sauberem Reboot zeigen&lt;/li&gt;
-&lt;li&gt;lrk3 demonstrieren (ohne sauberen Reboot bekommt man keine verlässlichen Informationen mehr und kompromittiert sein Netz nur noch weiter)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;was-soll-laufen&#34;&gt;
-    &lt;a href=&#34;#was-soll-laufen&#34;&gt;
-	Was soll laufen?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-010.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Dienste sollen von der Maschine erbracht werden?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Konfiguration beim Systemstart für persistente Server&lt;/li&gt;
-&lt;li&gt;Konfiguration von transienten Servern&lt;/li&gt;
-&lt;li&gt;Konfiguration von zeitgesteuerten Services
-&lt;ul&gt;
-&lt;li&gt;Suche nach Zeitbomben?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Wenn es hängt?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Start/Stopscripte&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;/sbin/init.d/...&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;/etc/init.d/...&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Crondateien: &lt;code&gt;/var/spool/cron/crontabs&lt;/code&gt;, &lt;code&gt;/var/cron/tabs&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;strace&lt;/code&gt;, &lt;code&gt;truss&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ltrace&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Bootsequenz durchgehen, Single User Mode, Wie bekomme ich meine Platten wieder?, Wie überlebe ich ohne Editor und Terminalemulation?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Defekte Programme tracen: &lt;code&gt;ldd&lt;/code&gt;, Solaris &lt;code&gt;proctools&lt;/code&gt;, Linux: &lt;code&gt;/proc/&amp;lt;nummer&amp;gt;/...&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;strace&lt;/code&gt;/&lt;code&gt;truss&lt;/code&gt; Output lesen, &lt;code&gt;ltrace&lt;/code&gt;/&lt;code&gt;sotruss&lt;/code&gt; Output lesen&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;was-läuft&#34;&gt;
-    &lt;a href=&#34;#was-l%c3%a4uft&#34;&gt;
-	Was Läuft?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-011.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Dienste sind auf der Maschine aktiv?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Welche waren aktiv?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Ressourcen belegen diese Dienste?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;ps -ef&lt;/code&gt;, &lt;code&gt;ps auxwww&lt;/code&gt;, &lt;code&gt;top&lt;/code&gt;, &lt;code&gt;lsof&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;ptree&lt;/code&gt;, &lt;code&gt;sa&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;/usr/proc/bin/*&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Beispiele mit den Proctools&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Speicherverbrauch abschätzen für Server&lt;/li&gt;
-&lt;li&gt;Programmaktivität laufender Prozesse feststellen&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;welche-user-können-rein&#34;&gt;
-    &lt;a href=&#34;#welche-user-k%c3%b6nnen-rein&#34;&gt;
-	Welche User können rein?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-012.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Quellen von Userlisten&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;lokal, aus dem Netz&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Erlaubte und nicht erlaubte Shells&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Gehackte Authentisierung&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Modifizierte wu-ftpd, imapd&lt;/li&gt;
-&lt;li&gt;LDAP-Module&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/nsswitch.conf&lt;/code&gt;, &lt;code&gt;/etc/shells&lt;/code&gt;, &lt;code&gt;/etc/ftpusers&lt;/code&gt;, &lt;code&gt;/etc/ftpaccess&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Zugangsmechanismen&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Regeln für den Zugang, etwa über PAM: &lt;code&gt;/etc/pam.d&lt;/code&gt;, &lt;code&gt;/etc/pam.conf&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Verweis auf Folgeschulungen:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;NSS/PAM/GSS nutzen.&lt;/li&gt;
-&lt;li&gt;NSS/PAM/GSS-Module erstellen.&lt;/li&gt;
-&lt;li&gt;Überblick über die von NetUSE für den ISP-Betrieb modifizierte Software.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;welche-user-waren-drin&#34;&gt;
-    &lt;a href=&#34;#welche-user-waren-drin&#34;&gt;
-	Welche User waren drin?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-013.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Auswertung des Logbuches&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Querabgleiche mit anderen Logs&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Auditing-Subsysteme&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/utmp&lt;/code&gt;, &lt;code&gt;/etc/wtmp&lt;/code&gt;, syslog, Auth-Events, Radius-Logs und andere&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Exoten:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Logbücher der Sysadmin-Tools (AIX)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Auditing-Subsysteme&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Linux: fehlendes Auditing, bescheidenes Accounting (falls installiert).&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris: Demo des Auditing&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Beide: Welche Logs liegen wo und wie finde ich die gewünschte Info?&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;zugriffsrechte-und-privilegien-in-unix&#34;&gt;
-    &lt;a href=&#34;#zugriffsrechte-und-privilegien-in-unix&#34;&gt;
-	Zugriffsrechte und Privilegien in UNIX
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Bonusfolien aus der alten Schulung&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-014.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Erkläre, wer unter welchen Bedingungen in UNIX auf eine Datei zugreifen darf!&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;rwx? sst?&lt;/li&gt;
-&lt;li&gt;Verzeichnisrechte vs. Dateirechte&lt;/li&gt;
-&lt;li&gt;Dateiattribute? Dateisystemattribute?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Spuren hinterläßt so ein Zugriff?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/1996/03/01/rwx-sonst-nix.html&#34;&gt;RWX - sonst nix?&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wer bin ich?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Zu welchen Gruppen gehöre ich?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wie kann ich meine Identität ändern?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Rechte (alle!) brauche ich, um auf eine Datei zuzugreifen? Sind es immer dieselben?&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;kurzer-sicherheitscheck-für-zwischendurch&#34;&gt;
-    &lt;a href=&#34;#kurzer-sicherheitscheck-f%c3%bcr-zwischendurch&#34;&gt;
-	Kurzer Sicherheitscheck für Zwischendurch
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Bonusfolien aus der alten Schulung&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-015.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Die meisten Fehler entstehen nicht durch falsche Software, sondern dumme User.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;find / -fstype ... ! -type l -perm ... -ls&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;-perm -2 (find world writeable files)&lt;/li&gt;
-&lt;li&gt;-perm -4000 (find SUID)&lt;/li&gt;
-&lt;li&gt;-perm -2000 (find SGID)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Finde Dateien, die world writeable, suid oder sgid sind.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;/tmp&lt;/code&gt;, &lt;code&gt;/var/tmp&lt;/code&gt; (1777 ?)&lt;/li&gt;
-&lt;li&gt;Verzeichnisse im Pfad, Binaries, Konfigurationsdateien?&lt;/li&gt;
-&lt;li&gt;Dateien mit vorhersagbaren Dateinamen?&lt;/li&gt;
-&lt;li&gt;Geräte? Backup?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;rechte-an-geräten&#34;&gt;
-    &lt;a href=&#34;#rechte-an-ger%c3%a4ten&#34;&gt;
-	Rechte an Geräten
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Bonusfolien aus der alten Schulung&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-016.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Auf vielen älteren kommerziellen Unices sind Gerätedateien unzureichend geschützt.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Beschreibbare Plattendevices, Banddevices&lt;/li&gt;
-&lt;li&gt;777-Verzeichnisse &lt;code&gt;/dev/md/*&lt;/code&gt;, Löschen von LVM-Pseudogerätedateien&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ioctl()&lt;/code&gt;-Aufrufe nicht ausreichend privilegiert.&lt;/li&gt;
-&lt;li&gt;Medien mit sensitivem Inhalt in lesbaren Geräten.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Beispiele:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ioctl()-Aufrufe in AIX teilweise nicht dokumentiert und nicht privilegiert.&lt;/li&gt;
-&lt;li&gt;/dev-Unterverzeichnisse 777 in HP/UX.&lt;/li&gt;
-&lt;li&gt;/bin-Verzeichnisse 777 in HP/UX und AIX nach Installation von Software.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
