@@ -11,14 +11,6 @@ tags:
 
 A friend asked in Discord:
 
-> Ich brauch mal kurz ne Denkhilfe: Jinja..
->
-> Ich hab' zwei Listen `x: [a,b,c]` und `y: [d,e,f]`, und ich will am Ende eine Liste der Produkte als String. 
-> Also `["a.d","a.e","a.f","b.d",....,"c.e","c.f"]` -- das Produkt bekomme ich hin, aber dann hab ich eine Liste von Listen,
-> und ich will gerne die inneren Listen zusammen joinen.
-
-In English:
-
 > I need a pointer to a solution in Jinja.
 > 
 > Given two lists, `x: [a,b,c]` and `y: [d,e,f]`, I need the cross product `["a.d","a.e","a.f","b.d",....,"c.e","c.f"]`.
