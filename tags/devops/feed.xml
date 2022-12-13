@@ -6,9 +6,9 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 12 Dec 2022 21:50:42 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 13 Dec 2022 08:37:01 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Ansible: List Crossproduct</title>
+      <title>Ansible: List Cross-Join</title>
       <link>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</link>
       <pubDate>Mon, 12 Dec 2022 21:22:23 +0000</pubDate>
       
@@ -16,8 +16,8 @@
       <description>&lt;p&gt;A friend asked in Discord:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;I need a pointer to a solution in Jinja.&lt;/p&gt;
-&lt;p&gt;Given two lists, &lt;code&gt;x: [a,b,c]&lt;/code&gt; and &lt;code&gt;y: [d,e,f]&lt;/code&gt;, I need the cross product &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,....,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt;.
-I know how to produce the cross product, but that then is a list of lists, and I want join the inner lists.&lt;/p&gt;
+&lt;p&gt;Given two lists, &lt;code&gt;x: [a,b,c]&lt;/code&gt; and &lt;code&gt;y: [d,e,f]&lt;/code&gt;, I need the cross-join &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,…,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt;.
+I know how to cross-join, but that then is a list of lists, and I want join the inner lists.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;After some experimentation the result was a set of nasty templating loops.
 There has to be a better way.&lt;/p&gt;
@@ -33,7 +33,7 @@ There has to be a better way.&lt;/p&gt;
     &lt;/a&gt;
 &lt;/h2&gt;
 &lt;p&gt;We want a custom filter &lt;code&gt;cross&lt;/code&gt;, which produces the desired result.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;l&#34;&gt;$ cat testing/myfilter.yml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c&#34;&gt;# $ cat testing/myfilter.yml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -77,11 +77,13 @@ localhost                  : ok=1    changed=0    unreachable=0    failed=0    s
 &lt;/h2&gt;
 &lt;p&gt;For that, we need a directory &lt;code&gt;filter_plugins&lt;/code&gt; next to the playbook (or in the role directory next to the &lt;code&gt;tasks&lt;/code&gt; directory).
 Inside that directory, we place a Python file &lt;code&gt;cross.py&lt;/code&gt;, which will contain our custom filter code.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ find testing
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/filter_plugins
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/filter_plugins/cross.py
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/myfilter.yml
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ tree testing/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── filter_plugins
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│   └── cross.py
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└── myfilter.yml
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; directory, &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; files
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The file &lt;code&gt;cross.py&lt;/code&gt; looks like this:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
