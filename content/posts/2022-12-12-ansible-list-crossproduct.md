@@ -1,6 +1,6 @@
 ---
 author: isotopp
-title: "Ansible: List Crossproduct"
+title: "Ansible: List Cross-Join"
 date: 2022-12-12 21:22:23Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
@@ -13,8 +13,8 @@ A friend asked in Discord:
 
 > I need a pointer to a solution in Jinja.
 > 
-> Given two lists, `x: [a,b,c]` and `y: [d,e,f]`, I need the cross product `["a.d","a.e","a.f","b.d",....,"c.e","c.f"]`.
-> I know how to produce the cross product, but that then is a list of lists, and I want join the inner lists.
+> Given two lists, `x: [a,b,c]` and `y: [d,e,f]`, I need the cross-join `["a.d","a.e","a.f","b.d",…,"c.e","c.f"]`.
+> I know how to cross-join, but that then is a list of lists, and I want join the inner lists.
 
 After some experimentation the result was a set of nasty templating loops.
 There has to be a better way.
@@ -26,9 +26,8 @@ There are two:
 ## Playbook
 
 We want a custom filter `cross`, which produces the desired result.
-
 ```yaml
-$ cat testing/myfilter.yml
+# $ cat testing/myfilter.yml
 - name: Keks
   hosts: localhost
   gather_facts: false
@@ -73,11 +72,13 @@ For that, we need a directory `filter_plugins` next to the playbook (or in the r
 Inside that directory, we place a Python file `cross.py`, which will contain our custom filter code.
 
 ```shell
-$ find testing
-testing
-testing/filter_plugins
-testing/filter_plugins/cross.py
-testing/myfilter.yml
+$ tree testing/
+testing/
+├── filter_plugins
+│   └── cross.py
+└── myfilter.yml
+
+1 directory, 2 files
 ```
 
 The file `cross.py` looks like this:
