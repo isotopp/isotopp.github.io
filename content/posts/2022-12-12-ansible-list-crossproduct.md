@@ -116,7 +116,7 @@ In our example, we map the Jinja2 filter `cross` to the method `self.cross()` in
 
 The actual `cross()` method is in Line 11. It takes 2 mandatory parameters, `x` and `y` and an optional parameter `sepchar`.
 The first two parameters `x` and `y` are supposed to be Lists or other Iterables that are to be cross-joined.
-We expressly prohibit strings, because they are iterable by character, but that is likely not want we want.
+We expressly prohibit strings, because they are iterable by character, but that is likely not what we want.
 
 The third parameter `sepchar` is the separator character we are putting between these joined pairs.
 It defaults to `.` (dot) and can be left out.
