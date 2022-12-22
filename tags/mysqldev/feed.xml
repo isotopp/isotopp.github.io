@@ -6,7 +6,141 @@
     <description>Recent content in mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Dec 2022 21:16:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 22 Dec 2022 18:03:31 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tying the BI pipeline together</title>
+      <link>https://blog.koehntopp.info/2022/12/22/tying-the-bi-pipeline-together.html</link>
+      <pubDate>Thu, 22 Dec 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/12/22/tying-the-bi-pipeline-together.html</guid>
+      <description>&lt;p&gt;In
+&lt;a href=&#34;https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html&#34;&gt;Of Stars and Snowflakes&lt;/a&gt;
+
+
+we have been looking at the &amp;ldquo;normal Form&amp;rdquo; for Data Warehouses/BI structures, and how it differs from normal forms used in transactional systems.
+In
+&lt;a href=&#34;https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html&#34;&gt;ETL from a Django Model&lt;/a&gt;
+
+
+we looked at one implementation of a classical offline DWH with a daily load.&lt;/p&gt;
+&lt;p&gt;The normal BI structure is a fact table, in which an object identifier (the one we collect facts about) is paired with a point in time to report facts about the object at a certain point in time.
+That is, we have a table with a compound primary key, in which a component (usually the latter) has a time dimension.
+Fact tables are also often very wide, since we collect any number of facts about the object we report on for each point in time.&lt;/p&gt;
+&lt;p&gt;For certain types of data, it is useful to compress the data using lookup tables.
+That is, instead of reporting a certain value over and over again (&amp;ldquo;Intel Silver 4110&amp;rdquo; each time we report on a certain machine), we replace the string with an integer of appropriate size and resolve that with a lookup table on the side.&lt;/p&gt;
+&lt;p&gt;This can happen with one central string replacement table (&lt;code&gt;lookup_strings&lt;/code&gt;), or structured per type (&lt;code&gt;cpu_types&lt;/code&gt;, &lt;code&gt;vendors&lt;/code&gt;, &lt;code&gt;model_names&lt;/code&gt;).
+Both approaches have certain advantages and disadvantages, and sometimes you find both in the same system.&lt;/p&gt;
+&lt;h1 id=&#34;why-and-how&#34;&gt;
+    &lt;a href=&#34;#why-and-how&#34;&gt;
+	Why and how?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In the transactional system, our objective is to complete the data lifecycle.
+That is, basically, we want to be able to delete data in order to get rid of finished transactions and their data at some point in time in order to keep the size of the OLTP system small, nice and stable.
+Other parts of the business still need the history record, and they need it &lt;em&gt;as a history record&lt;/em&gt;.
+That is, they are not interested into the current data (&amp;ldquo;Where does the customer live now?&amp;rdquo;, &amp;ldquo;What does the article cost now?&amp;rdquo;), but into the values that were valid when the transaction happened (&amp;ldquo;Where did we deliver to?&amp;rdquo;, &amp;ldquo;How much did we bill?&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;Extraction&lt;/strong&gt; pulls data out of the realm of the OLTP system.
+And after it is extracted it can be deleted from the OLTP system, freeing space and keeping the size stable.&lt;/p&gt;
+&lt;p&gt;With the Extraction, we also have the &lt;strong&gt;Transformation&lt;/strong&gt; in which the OLTP references to other normalized tables are resolved into literal attribute values which are the things we want to preserve at the value they had back then.
+The Transformation transitions the data from the OLTP classical database normal form into the form needed for a fact table, the data warehouse normal form.&lt;/p&gt;
+&lt;p&gt;In the &lt;strong&gt;Load&lt;/strong&gt; phase, the data is loaded into the DWH/BI systems fact table.
+This is not just a data ingestion, but often also a validation and cleanup phase.
+And if the data is recompressed by replacing literal values with an integer ID into a lookup table, this usually also happens during load.&lt;/p&gt;
+&lt;p&gt;The fact that IDs in the DWH bear no relationship to IDs in the OLTP system is important and good:
+We are transferring data across an administrative boundary, from one system to another, and having a naming dependency across such a boundary is usually a recipe for desaster.&lt;/p&gt;
+&lt;h2 id=&#34;extraction&#34;&gt;
+    &lt;a href=&#34;#extraction&#34;&gt;
+	Extraction
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Extraction can happen in nightly runs, by making a snapshot of the state of the OLTP system.
+This is what happens every night in
+&lt;a href=&#34;https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html&#34;&gt;ETL from a Django Model&lt;/a&gt;
+
+,
+and also in
+&lt;a href=&#34;https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse.html&#34;&gt;My private data warehouse&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Extraction can also happen when writing transactions to a log table, often called &lt;code&gt;sale&lt;/code&gt;, &lt;code&gt;booking&lt;/code&gt;, &lt;code&gt;reservation&lt;/code&gt; or similar.
+When the transaction is logged in a normalized way, it looks like the &lt;code&gt;reservation&lt;/code&gt; table in the example in
+&lt;a href=&#34;https://blog.koehntopp.info/2022/12/05/change-data-capture.html&#34;&gt;Change Data Capture&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Some systems already copy the data over into such a &lt;code&gt;reservation&lt;/code&gt; table literally, especially when it comes to delivery and billing addresses and prices.
+That is necessary, even from the point of view of the transactional system, because we must record the actual price and delivery address at the point in time when the sale happened.
+Later changes should not affect transactions that are in the middle of fulfillment.&lt;/p&gt;
+&lt;p&gt;For the purpose of the DWH system, this simplifies extraction and transformation, because the &lt;code&gt;reservation&lt;/code&gt; table then already is more of less literally the data we want.
+We just need to grab it and preserve it.&lt;/p&gt;
+&lt;p&gt;When the DWH wants &amp;rsquo;live&amp;rsquo; updates, this can happen by tailing the database log as a replication client, collecting the information of interest, converting it into target format and pushing it elsewhere.
+These days, most often that ends up being a JSON or Avro message on a Kafka Event bus, or similar, in a defined, versioned and documented format that is ideally independent of changes to the source OLTP systems structure.&lt;/p&gt;
+&lt;h2 id=&#34;transformation&#34;&gt;
+    &lt;a href=&#34;#transformation&#34;&gt;
+	Transformation
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;But getting from normalized 3NF OLTP format into resolved DWH literal value attributes is not always for free.&lt;/p&gt;
+&lt;p&gt;The nicest way of getting there is to have the source system prepare its private, internal transaction, and also prepare a transformed record in DWH form.
+Both are committed together in the same transaction, to the internal tables of the OLTP system, and an Outbox.
+The Outbox is under a contract between the producing OLTP and the consuming BI systems, and will not change unannounced.&lt;/p&gt;
+&lt;p&gt;In this case, the BI process can simply tail the binlog, grab only row change events on the Outbox tables, and process and export these.
+Internal table changes will also end up in the binlog, but the CDC extractor ignores these.&lt;/p&gt;
+&lt;p&gt;If that is not possible, we get random normalized change events from the OLTP systems internal tables.
+This is bad, because it is very hard to get a contract and a promise of announced change for them, and because here the data is not in BI form.
+So we get a bunch of 3NF &amp;ldquo;id&amp;rdquo; values and need to run queries backwards into the OLTP system to resolve them into literal values to perform the transformation.
+This is annoying, adds query load and also have the potential to grab &amp;ldquo;invalid&amp;rdquo; data, because there is a race condition and the referenced data may have changed between the commit of the record we caught, and the time we resolve the ID values.&lt;/p&gt;
+&lt;h2 id=&#34;load&#34;&gt;
+    &lt;a href=&#34;#load&#34;&gt;
+	Load
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Pushing CDC data &amp;ldquo;live&amp;rdquo; to a message bus is simple, and allows us to have multiple consumers for this.
+One standard consumer would simply take the event messages and persist them into tables in a really large analytics store such as Hadoop, Snowflake or similar.
+Other standard consumers in the environment I work in are aggregators that take events and aggregate them into time buckets.
+That is, values from events are counted (&amp;ldquo;This error occurred &lt;code&gt;n&lt;/code&gt; times in the last minute&amp;rdquo;), summed up or otherwise classified, and the results are then forwarded as metrics into a time series store.
+Alerts can be generated from thresholds of metrics, or from presence of certain events in the stream.&lt;/p&gt;
+&lt;p&gt;The data load into the persistent store would also update default aggregations as you would expect from the star or snowflake around a fact table.
+Such aggregations would be &amp;ldquo;sales per region per day&amp;rdquo;, or &amp;ldquo;bookings per region per category per day&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Specifically the aggregations to the metrics store are time critical, as they may be tied to alerts.
+We generally aim for a freshness (processing time for the entire pipeline) of less than 15s.
+Freshness itself is also a quality metric for the pipeline itself.&lt;/p&gt;
+&lt;h1 id=&#34;mapping-fowler-to-database-terms&#34;&gt;
+    &lt;a href=&#34;#mapping-fowler-to-database-terms&#34;&gt;
+	Mapping Fowler to Database terms
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The &lt;a href=&#34;https://martinfowler.com/bliki/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fowler Wiki&lt;/a&gt;
+
+ is now in many pages older than 10 years.
+Large parts of it are still hard to read if you are coming from a database background instead of application developer background.
+That is in part, because Fowler reinvents concepts and terms from a developer perspective that already exist in the database world, under different names.&lt;/p&gt;
+&lt;p&gt;The first time I hit that was when reading up on the cryptically named &lt;a href=&#34;https://martinfowler.com/bliki/CQRS.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CQRS&lt;/a&gt;
+
+,
+which is just the concept the various ways of getting Materialized Views by another name.&lt;/p&gt;
+&lt;p&gt;We find this again with the concept of &lt;a href=&#34;https://martinfowler.com/eaaDev/EventSourcing.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Event Sourcing&lt;/a&gt;
+
+,
+which for low quality low level events matches directly on CDC and Binlog capture.
+In order to provide better value, you would have to perform the T of ETL on the events, preferably as early as possible in the pipeline,
+that is, transform from 3NF to BI form either using the Outbox pattern or by instrumenting the application itself.&lt;/p&gt;
+&lt;p&gt;Fowler is never discussing checkpointing, an essential concept necessary to prevent unbounded startup times and unbounded event storage sizes from occurring.&lt;/p&gt;
+&lt;p&gt;Checkpointing and cleanup exist in the database world the concepts of &amp;ldquo;Full Backups&amp;rdquo; associated with Log Positions,
+and then Logs starting from the checkpoint for a Point in Time Recovery.&lt;/p&gt;
+&lt;p&gt;Checkpointing and Log compression also exist in the database world in the tiered log compactions we find in LSMs such as RocksDB:
+The database is writing an endless stream of idempotent row change events, and a compaction process reads the logs in the background,
+providing only still valid and recent row versions, and physically arranging the records in an advantageous way.&lt;/p&gt;
+&lt;p&gt;Events work reasonably well when you look vertically at a single transaction:
+The event propagates through your system of services, kicking off followup events that contain the original data and additional information accrued at this processing stage.
+They also work reasonably well for aggregations in time-bounded buckets or otherwise constrained contexts.&lt;/p&gt;
+&lt;p&gt;They work less well when the application has to implement choices, i.e. when you need to select one user account out of the storage of all users in the system,
+or when you need to allow a user to search the storage of all articles on offer and then allow them select one to buy.
+Here, traditional full materialization is necessary, and global state is manipulated.&lt;/p&gt;
+&lt;p&gt;In the end, looking at the table rows as the materialization and at the log as the stream of idempotent changes to the materialization over time it is clear to the database person that both things are the same.
+Looking at the various ways of implementing database systems, you will even find one posing as the other as needed, depending on the database product you look at (i.e. the LSM is a log, posing as a table, and other systems use tables to store logs).&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Change Data Capture</title>
       <link>https://blog.koehntopp.info/2022/12/05/change-data-capture.html</link>
@@ -4646,99 +4780,6 @@ So I can actually see that&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;d&amp;#39;: &amp;#39;zw&amp;#34;ei&amp;#39;}
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;d&amp;#39;: &amp;#39;dr\\ei&amp;#39;}
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and so I get to actually see that all is fine and well, and properly escaped.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Our MySQL in 2010, a hiring interview question</title>
-      <link>https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html</link>
-      <pubDate>Mon, 27 Sep 2021 18:52:55 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2021/09/27/mysql-booking-2010-a-hiring-interview-question.html</guid>
-      <description>&lt;p&gt;I ranted about hiring interviews, and the canned questions that people have to answer.
-One of the interviews we do is a systems design interview, where we want to see how (senior) people use components and patterns to design a system for reliability and scale-out.&lt;/p&gt;
-&lt;p&gt;A sample question (based on &lt;a href=&#34;https://twitter.com/isotopp/status/1442443978985586691&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;a Twitter thread&lt;/a&gt;
-
- in German):&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;It is 2010, and the company has a database structure where a fixed number front end machines form a cell.
-Reads and writes are already split:
-Writes go to the primary of a replication tree, and are being replicated to the read instance of the database in each cell.
-Reads go to the database instance that is a fixed part of the cell.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/09/mysql-2010-1.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Read and write handles are split in the application. Clients write to a primary MySQL database, which then replicates to a database instance that is fixed part of a cell. Clients from a cell read from this fixed replica.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Unfortunately, this is not very effective:
-The data center has 10 cells, but when a cell overloads its database, spare capacity from other cells cannot be utilized.
-Also, the data center is not redundant.&lt;/p&gt;
-&lt;p&gt;We want to:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Load balance database queries.&lt;/li&gt;
-&lt;li&gt;Extend the architecture to more than a single data center (or AZ).&lt;/li&gt;
-&lt;li&gt;Optionally be resilient against the loss of individual databases or a full AZ.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Possible topics or annotations from a candidate:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;What kind of strategies are available for load balancing database connections?
-&lt;ul&gt;
-&lt;li&gt;DNS, Anycast or L2 techniques&lt;/li&gt;
-&lt;li&gt;Proxy (but not a web proxy)&lt;/li&gt;
-&lt;li&gt;Zookeeper or another consensus system with modified clients&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What are the advantages or disadvantages of this?
-&lt;ul&gt;
-&lt;li&gt;L2. Huh. Don&amp;rsquo;t do that.&lt;/li&gt;
-&lt;li&gt;DNS updates are slow and complicated. It can be made to work, but you will always have very little control over what is balanced why and how. DNS is better used for a global load balancing of http requests, and not as a database load balancer.&lt;/li&gt;
-&lt;li&gt;Zookeeper could be used to do this with modified clients, but we would have to discuss how exactly that works. That&amp;rsquo;s an interesting sub-question of its own.&lt;/li&gt;
-&lt;li&gt;MySQL Router or ProxySQL are made for that, but have a lot of interesting sub-questions of their own. See below.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What else may be different when load balancing database connections instead of http?
-&lt;ul&gt;
-&lt;li&gt;web-proxies are not good database proxies. The database protocol is not http, and it is a &lt;a href=&#34;https://blog.koehntopp.info/2020/07/28/mysql-connection-scoped-state.html&#34;&gt;stateful protocol&lt;/a&gt;
-
-. This requires extra care when load balancing.&lt;/li&gt;
-&lt;li&gt;Database connections can be long-lived. A load balancing action to a different client only ever happens on connect. If you disconnect and reconnect only every 100 web actions or so, it is possible for the system to rebalance slowly. On the other hand, if you are using TLS&amp;rsquo;ed connections, connection setup cost can be high, so longer lived connections amortize better.&lt;/li&gt;
-&lt;li&gt;Database connections have a highly variable result set size. A single select may return a single value of a single row, or an entire 35 TB table. If the proxy tries to be too intelligent and does things with the result as it passes through, it can die from out of memory.&lt;/li&gt;
-&lt;li&gt;Proxies can become bottlenecks. Imagine 50 frontends talking to 10 databases via a single proxy on a typical 2010-box with a single (or two) 1 GBit/s network interface, and results contain BLOBs.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;What else there is to know?
-&lt;ul&gt;
-&lt;li&gt;Replication scales only reads. As this is a shared nothing architecture, each instance eventually sees all writes. To scale writes, we have to split or shard the database. That is out of scope for this question.&lt;/li&gt;
-&lt;li&gt;In our specific scenario, the number of writes is not actually a problem. We can assume a few hundred writes per second.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Can we extend that to more than one AZ?
-&lt;ul&gt;
-&lt;li&gt;Yes, we can create an intermediate primary in each AZ, which takes the writes from the origin AZ into each sub-AZ. It then fans out to the local replicas. This saves on long distance data transfer. It also creates mildly interesting problems for measuring replication delay.&lt;/li&gt;
-&lt;li&gt;Because the replication tree is deeper, writes take longer to reach the leaves. Most applications should be able to accommodate that.&lt;/li&gt;
-&lt;li&gt;The alternative would be something with full Two-Phase-Commit, but that would be even slower, and would have scaling limits in the number of systems that participate in the 2PC.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This is usually how far we get in a single interview session, and only with touching only on some of these points.
-To find all is completely unrealistic, even for experienced people.
-We would now reach a point where we discuss failure scenarios.&lt;/p&gt;
-&lt;p&gt;But it would be highly unusual to get this far, and that is not actually the goal in an interview.
-I do in fact hardly care about the solution we end up with.
-My goal is to have a useful discussion about databases, scale-out and resiliency, and about stateful systems and their limits.
-When there are remarks such as &amp;ldquo;Our environment is smaller, but for us &amp;hellip; works&amp;rdquo; or &amp;ldquo;We tried this: &amp;hellip; but observed that often &amp;hellip;&amp;rdquo; that&amp;rsquo;s actual gold in an interview.&lt;/p&gt;
-&lt;p&gt;Even things such as &amp;ldquo;In HTTP one would do &amp;hellip; but I can imagine that with stateful systems that does not work because &amp;hellip;&amp;rdquo; is already gold, because it shows a level of reflection and insight that is rare.&lt;/p&gt;
-&lt;p&gt;The objective is not to reinvent our 2021 setup. The objective is to use this clearly limited setup as a base for a common conversation about database problems.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;Database Reliability Engineer&amp;rdquo; is the hardest position to hire for in my environment, because it is an &lt;a href=&#34;https://clausraasted.medium.com/t-shaped-consultants-are-great-but-heres-why-you-should-consider-being-h-shaped-instead-72fadf097da9&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;H-shaped qualification&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The concept of H-shaped people is a metaphor used in job recruitment to describe the abilities of individuals in (or outside) the workforce. The vertical bars on the letter H represent the depth of related skills and expertise in a single field or discipline, whereas the horizontal bar is the ability to combine those two disciplines to create value in a way that was hitherto unknown.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The objective is to find a person that &amp;ldquo;Understands MySQL&amp;rdquo; and &amp;ldquo;Understands Python or Go&amp;rdquo; (&amp;ldquo;Understands any database&amp;rdquo; and &amp;ldquo;Understands a useful programming language&amp;rdquo;), so that I can throw them at our existing codebase and have them useful within 3-6 months - ugh.&lt;/p&gt;
-&lt;p&gt;If I can find one person per year, I am very lucky.&lt;/p&gt;
 </description>
     </item>
     

@@ -6,7 +6,141 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 14 Dec 2022 21:16:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 22 Dec 2022 18:03:31 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Tying the BI pipeline together</title>
+      <link>https://blog.koehntopp.info/2022/12/22/tying-the-bi-pipeline-together.html</link>
+      <pubDate>Thu, 22 Dec 2022 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2022/12/22/tying-the-bi-pipeline-together.html</guid>
+      <description>&lt;p&gt;In
+&lt;a href=&#34;https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html&#34;&gt;Of Stars and Snowflakes&lt;/a&gt;
+
+
+we have been looking at the &amp;ldquo;normal Form&amp;rdquo; for Data Warehouses/BI structures, and how it differs from normal forms used in transactional systems.
+In
+&lt;a href=&#34;https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html&#34;&gt;ETL from a Django Model&lt;/a&gt;
+
+
+we looked at one implementation of a classical offline DWH with a daily load.&lt;/p&gt;
+&lt;p&gt;The normal BI structure is a fact table, in which an object identifier (the one we collect facts about) is paired with a point in time to report facts about the object at a certain point in time.
+That is, we have a table with a compound primary key, in which a component (usually the latter) has a time dimension.
+Fact tables are also often very wide, since we collect any number of facts about the object we report on for each point in time.&lt;/p&gt;
+&lt;p&gt;For certain types of data, it is useful to compress the data using lookup tables.
+That is, instead of reporting a certain value over and over again (&amp;ldquo;Intel Silver 4110&amp;rdquo; each time we report on a certain machine), we replace the string with an integer of appropriate size and resolve that with a lookup table on the side.&lt;/p&gt;
+&lt;p&gt;This can happen with one central string replacement table (&lt;code&gt;lookup_strings&lt;/code&gt;), or structured per type (&lt;code&gt;cpu_types&lt;/code&gt;, &lt;code&gt;vendors&lt;/code&gt;, &lt;code&gt;model_names&lt;/code&gt;).
+Both approaches have certain advantages and disadvantages, and sometimes you find both in the same system.&lt;/p&gt;
+&lt;h1 id=&#34;why-and-how&#34;&gt;
+    &lt;a href=&#34;#why-and-how&#34;&gt;
+	Why and how?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In the transactional system, our objective is to complete the data lifecycle.
+That is, basically, we want to be able to delete data in order to get rid of finished transactions and their data at some point in time in order to keep the size of the OLTP system small, nice and stable.
+Other parts of the business still need the history record, and they need it &lt;em&gt;as a history record&lt;/em&gt;.
+That is, they are not interested into the current data (&amp;ldquo;Where does the customer live now?&amp;rdquo;, &amp;ldquo;What does the article cost now?&amp;rdquo;), but into the values that were valid when the transaction happened (&amp;ldquo;Where did we deliver to?&amp;rdquo;, &amp;ldquo;How much did we bill?&amp;rdquo;).&lt;/p&gt;
+&lt;p&gt;The &lt;strong&gt;Extraction&lt;/strong&gt; pulls data out of the realm of the OLTP system.
+And after it is extracted it can be deleted from the OLTP system, freeing space and keeping the size stable.&lt;/p&gt;
+&lt;p&gt;With the Extraction, we also have the &lt;strong&gt;Transformation&lt;/strong&gt; in which the OLTP references to other normalized tables are resolved into literal attribute values which are the things we want to preserve at the value they had back then.
+The Transformation transitions the data from the OLTP classical database normal form into the form needed for a fact table, the data warehouse normal form.&lt;/p&gt;
+&lt;p&gt;In the &lt;strong&gt;Load&lt;/strong&gt; phase, the data is loaded into the DWH/BI systems fact table.
+This is not just a data ingestion, but often also a validation and cleanup phase.
+And if the data is recompressed by replacing literal values with an integer ID into a lookup table, this usually also happens during load.&lt;/p&gt;
+&lt;p&gt;The fact that IDs in the DWH bear no relationship to IDs in the OLTP system is important and good:
+We are transferring data across an administrative boundary, from one system to another, and having a naming dependency across such a boundary is usually a recipe for desaster.&lt;/p&gt;
+&lt;h2 id=&#34;extraction&#34;&gt;
+    &lt;a href=&#34;#extraction&#34;&gt;
+	Extraction
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Extraction can happen in nightly runs, by making a snapshot of the state of the OLTP system.
+This is what happens every night in
+&lt;a href=&#34;https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html&#34;&gt;ETL from a Django Model&lt;/a&gt;
+
+,
+and also in
+&lt;a href=&#34;https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse.html&#34;&gt;My private data warehouse&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Extraction can also happen when writing transactions to a log table, often called &lt;code&gt;sale&lt;/code&gt;, &lt;code&gt;booking&lt;/code&gt;, &lt;code&gt;reservation&lt;/code&gt; or similar.
+When the transaction is logged in a normalized way, it looks like the &lt;code&gt;reservation&lt;/code&gt; table in the example in
+&lt;a href=&#34;https://blog.koehntopp.info/2022/12/05/change-data-capture.html&#34;&gt;Change Data Capture&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Some systems already copy the data over into such a &lt;code&gt;reservation&lt;/code&gt; table literally, especially when it comes to delivery and billing addresses and prices.
+That is necessary, even from the point of view of the transactional system, because we must record the actual price and delivery address at the point in time when the sale happened.
+Later changes should not affect transactions that are in the middle of fulfillment.&lt;/p&gt;
+&lt;p&gt;For the purpose of the DWH system, this simplifies extraction and transformation, because the &lt;code&gt;reservation&lt;/code&gt; table then already is more of less literally the data we want.
+We just need to grab it and preserve it.&lt;/p&gt;
+&lt;p&gt;When the DWH wants &amp;rsquo;live&amp;rsquo; updates, this can happen by tailing the database log as a replication client, collecting the information of interest, converting it into target format and pushing it elsewhere.
+These days, most often that ends up being a JSON or Avro message on a Kafka Event bus, or similar, in a defined, versioned and documented format that is ideally independent of changes to the source OLTP systems structure.&lt;/p&gt;
+&lt;h2 id=&#34;transformation&#34;&gt;
+    &lt;a href=&#34;#transformation&#34;&gt;
+	Transformation
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;But getting from normalized 3NF OLTP format into resolved DWH literal value attributes is not always for free.&lt;/p&gt;
+&lt;p&gt;The nicest way of getting there is to have the source system prepare its private, internal transaction, and also prepare a transformed record in DWH form.
+Both are committed together in the same transaction, to the internal tables of the OLTP system, and an Outbox.
+The Outbox is under a contract between the producing OLTP and the consuming BI systems, and will not change unannounced.&lt;/p&gt;
+&lt;p&gt;In this case, the BI process can simply tail the binlog, grab only row change events on the Outbox tables, and process and export these.
+Internal table changes will also end up in the binlog, but the CDC extractor ignores these.&lt;/p&gt;
+&lt;p&gt;If that is not possible, we get random normalized change events from the OLTP systems internal tables.
+This is bad, because it is very hard to get a contract and a promise of announced change for them, and because here the data is not in BI form.
+So we get a bunch of 3NF &amp;ldquo;id&amp;rdquo; values and need to run queries backwards into the OLTP system to resolve them into literal values to perform the transformation.
+This is annoying, adds query load and also have the potential to grab &amp;ldquo;invalid&amp;rdquo; data, because there is a race condition and the referenced data may have changed between the commit of the record we caught, and the time we resolve the ID values.&lt;/p&gt;
+&lt;h2 id=&#34;load&#34;&gt;
+    &lt;a href=&#34;#load&#34;&gt;
+	Load
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Pushing CDC data &amp;ldquo;live&amp;rdquo; to a message bus is simple, and allows us to have multiple consumers for this.
+One standard consumer would simply take the event messages and persist them into tables in a really large analytics store such as Hadoop, Snowflake or similar.
+Other standard consumers in the environment I work in are aggregators that take events and aggregate them into time buckets.
+That is, values from events are counted (&amp;ldquo;This error occurred &lt;code&gt;n&lt;/code&gt; times in the last minute&amp;rdquo;), summed up or otherwise classified, and the results are then forwarded as metrics into a time series store.
+Alerts can be generated from thresholds of metrics, or from presence of certain events in the stream.&lt;/p&gt;
+&lt;p&gt;The data load into the persistent store would also update default aggregations as you would expect from the star or snowflake around a fact table.
+Such aggregations would be &amp;ldquo;sales per region per day&amp;rdquo;, or &amp;ldquo;bookings per region per category per day&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Specifically the aggregations to the metrics store are time critical, as they may be tied to alerts.
+We generally aim for a freshness (processing time for the entire pipeline) of less than 15s.
+Freshness itself is also a quality metric for the pipeline itself.&lt;/p&gt;
+&lt;h1 id=&#34;mapping-fowler-to-database-terms&#34;&gt;
+    &lt;a href=&#34;#mapping-fowler-to-database-terms&#34;&gt;
+	Mapping Fowler to Database terms
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The &lt;a href=&#34;https://martinfowler.com/bliki/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fowler Wiki&lt;/a&gt;
+
+ is now in many pages older than 10 years.
+Large parts of it are still hard to read if you are coming from a database background instead of application developer background.
+That is in part, because Fowler reinvents concepts and terms from a developer perspective that already exist in the database world, under different names.&lt;/p&gt;
+&lt;p&gt;The first time I hit that was when reading up on the cryptically named &lt;a href=&#34;https://martinfowler.com/bliki/CQRS.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CQRS&lt;/a&gt;
+
+,
+which is just the concept the various ways of getting Materialized Views by another name.&lt;/p&gt;
+&lt;p&gt;We find this again with the concept of &lt;a href=&#34;https://martinfowler.com/eaaDev/EventSourcing.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Event Sourcing&lt;/a&gt;
+
+,
+which for low quality low level events matches directly on CDC and Binlog capture.
+In order to provide better value, you would have to perform the T of ETL on the events, preferably as early as possible in the pipeline,
+that is, transform from 3NF to BI form either using the Outbox pattern or by instrumenting the application itself.&lt;/p&gt;
+&lt;p&gt;Fowler is never discussing checkpointing, an essential concept necessary to prevent unbounded startup times and unbounded event storage sizes from occurring.&lt;/p&gt;
+&lt;p&gt;Checkpointing and cleanup exist in the database world the concepts of &amp;ldquo;Full Backups&amp;rdquo; associated with Log Positions,
+and then Logs starting from the checkpoint for a Point in Time Recovery.&lt;/p&gt;
+&lt;p&gt;Checkpointing and Log compression also exist in the database world in the tiered log compactions we find in LSMs such as RocksDB:
+The database is writing an endless stream of idempotent row change events, and a compaction process reads the logs in the background,
+providing only still valid and recent row versions, and physically arranging the records in an advantageous way.&lt;/p&gt;
+&lt;p&gt;Events work reasonably well when you look vertically at a single transaction:
+The event propagates through your system of services, kicking off followup events that contain the original data and additional information accrued at this processing stage.
+They also work reasonably well for aggregations in time-bounded buckets or otherwise constrained contexts.&lt;/p&gt;
+&lt;p&gt;They work less well when the application has to implement choices, i.e. when you need to select one user account out of the storage of all users in the system,
+or when you need to allow a user to search the storage of all articles on offer and then allow them select one to buy.
+Here, traditional full materialization is necessary, and global state is manipulated.&lt;/p&gt;
+&lt;p&gt;In the end, looking at the table rows as the materialization and at the log as the stream of idempotent changes to the materialization over time it is clear to the database person that both things are the same.
+Looking at the various ways of implementing database systems, you will even find one posing as the other as needed, depending on the database product you look at (i.e. the LSM is a log, posing as a table, and other systems use tables to store logs).&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Ansible: List Cross-Join</title>
       <link>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</link>
@@ -3883,178 +4017,6 @@ We have other instances of simple queries that sometimes take 14s to run, 1000x 
 Average query latencies, and even the P90 look good, but the P99 and the P99.9 go to hell.&lt;/p&gt;
 &lt;p&gt;The box is removed from the pool and a replacement has been scheduled.
 The broken box will get a DCOE ticket.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Artifactory Conclusion</title>
-      <link>https://blog.koehntopp.info/2022/09/14/artifactory-conclusion.html</link>
-      <pubDate>Wed, 14 Sep 2022 12:13:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/09/14/artifactory-conclusion.html</guid>
-      <description>&lt;p&gt;Two weeks ago I was being drawn into the debug of artdb, the Replication hierarchy used by our Artifactory instance.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;h2 id=&#34;tldr&#34;&gt;
-    &lt;a href=&#34;#tldr&#34;&gt;
-	TL;DR
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Artifactory overloaded the database.
-This was incident-handled by optimizing a number of slow queries using some covering index trickery, and by upgrading the hardware substantially.&lt;/p&gt;
-&lt;p&gt;Using the runway we bought, we found and partially fixed the following problems:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; A number of very expensive reporting queries were sped up 16x to 20x using covering indexes, from 180s runtime to 8s-12s runtime.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; We optimized our database and data size by completing the data lifecycle for several repo types, deleting old images.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; Hardware upgrade lowered load even more, and sped up the queries even more.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; Further investigation identified a synchronisation cron job which overloaded the database in 40m intervals. The cron job was throttled and is now on a backlog for refactoring.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; The long running queries were identified in the Artifactory source code, which allowed us and jFrog support to identify that a) the Artifactory internal cache for these queries was bypassed and b) this happens when certain JMX monitoring options are enabled, per application host hitting the database instance. The monitoring was temporarily disabled.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Fixed:&lt;/em&gt; For each image download, Artifactory writes statistics updates, which can lead to lock contention on hot images. We identified a configuration that could turn this off, and later found that these updates can be happening batched in the background.&lt;/li&gt;
-&lt;li&gt;&lt;em&gt;Unfixed:&lt;/em&gt; Artifactory does not understand the concept of Replicas and database scale-out at all, it can only do database scale-up, and that has absolute limits.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The database workload for Artifactory is now well below critical levels and has on the current, upgraded hardware runway for estimated 4x growth.
-Beyond that, vertical scaling is going to be hard without changes to the architecture of Artifactory.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Artifactory is a third party piece of software that stores binary objects in one of several BLOB storages and serves them up to people who need binaries in whatever way.&lt;/p&gt;
-&lt;p&gt;There are several choices of BLOB storages for it, we are using S3.&lt;/p&gt;
-&lt;p&gt;There are several choices of data delivery formats for Artifactory, we are using many of them, with &amp;ldquo;Docker Repository&amp;rdquo; and &amp;ldquo;Maven Repository&amp;rdquo; being the most prominent use-cases.&lt;/p&gt;
-&lt;p&gt;Artifactory is using a database as a metadata storage, and again, there are several possible choices.
-We are using MySQL.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-01.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Binary Delivery Formats and Protocols supported by Artifactory (&lt;a href=&#34;https://jfrog.com/artifactory/%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://jfrog.com/artifactory/)&lt;/a&gt;
-
-.&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;overloaded-database&#34;&gt;
-    &lt;a href=&#34;#overloaded-database&#34;&gt;
-	Overloaded Database
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The original complaint was &amp;ldquo;Artifactory is down&amp;rdquo; and &amp;ldquo;The database is overloaded&amp;rdquo;.
-Investigation of that shows that this was very much true:&lt;/p&gt;
-&lt;p&gt;The primary of the replication hierarchy was a blade from 2017 with 12C/24T, and was showing load spiking into the 40-ies.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-02.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;For a CPU-saturated MySQL on a 12C/24T, anything over 18-20 is probably not very stable and certainly not fun.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;I was looking at the load of the full replication hierarchy and found out multiple things:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Artifactory does not understand the concepts of replication, multiple database handles or scale-out at the database level.
-It only talks to the primary database, and can only scale vertically.&lt;/li&gt;
-&lt;li&gt;The Artifactory database is seeing a very large query load (&amp;gt; 20.000 QPS), which is comprised of a large number of reads and underneath still 1000s of writes per second.
-Some of the reads are long running queries, with runtimes in the 180s.&lt;/li&gt;
-&lt;li&gt;The long running queries have been sped up from 180s to 9s by applying covering indexes and some index order juggling.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Read &lt;a href=&#34;https://blog.koehntopp.info/2022/08/25/mysql-boiling-jfrogs.html&#34;&gt;Boiling JFrogs&lt;/a&gt;
-
- for the full and detailed writeup of this phase.&lt;/p&gt;
-&lt;h1 id=&#34;buying-runway&#34;&gt;
-    &lt;a href=&#34;#buying-runway&#34;&gt;
-	Buying Runway
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Solving the long runners, we found several other issues at the database level.
-But first we threw more cores into the fire and scaled Artifactory vertically to buy more runway:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-03.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The Blade 7 hardware type uses 2x $400 CPUs for 16C/32T. Blade 2A.1 hardware uses 2x $2100 CPUs for 32C/64T. At the same load, these more expensive CPUs are also clocked around 1 GHz faster.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Since we had this long running scan queries on memory-resident data, we were using a lot of CPU.
-Even after the optimization, these were scans, but on less and better organized data with one level of indirection removed from each data access – so 16x to 20x faster.&lt;/p&gt;
-&lt;p&gt;Still, we had a base load of 12 on the Blade 7 with only 12C/24T.
-Moving to the better equipped, but more expensive Blade 2A.1, we have 32C/64T, and at the same load, we gain around 1 GHz is clock speed.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-04.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;At a load of 12 on a Dual-4110, we have 6 cores busy per socket, running at 2400 MHz.
-At a load of 12 on a Dual-6130, we have 6 cores out of many more busy, so we have budget for 3400 MHz clock, 1 GHz faster. The work completes faster, we have less concurrency and the load drops to 8, 4 cores per socket, and 3500 MHz until things stabilize.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Modern CPUs do not have the Power Budget and Thermal Budget to run all their cores at maximum clock speed all of the time.
-The higher the load, the lower they need to clock in order to not melt or starve themselves of power.
-Fortunately, being a web shop, we do not exercise the FPU a lot outside of the ML department, so &amp;ldquo;Normal&amp;rdquo; is the line that applies here.&lt;/p&gt;
-&lt;p&gt;Running the same workload on a higher level CPU keeps a lesser percentage of cores busy, which can then be clocked higher.
-The workload is completed faster, and the level of concurrency is lower – you will actually see a lower Linux load on the box.&lt;/p&gt;
-&lt;p&gt;That is also what happened in our case, we speed up the clock by slightly less than 1/3, and we get a load that is roughly 1/3 lower.
-The replacement box, running the optimized queries, is humming along at a load of 5-10ish, which is okay for a machine of that class and size:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-05.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Replacement machine is good for a load of ~40, but is running at 10 or less, so we are good. Further optimizations after 10-Sep show even more improvement, read on.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;This stabilized things in a way that allowed further experimentation and exposed other problems that previously were invisible in all the fire and smoke.&lt;/p&gt;
-&lt;h1 id=&#34;a-40-minute-pattern&#34;&gt;
-    &lt;a href=&#34;#a-40-minute-pattern&#34;&gt;
-	A 40 Minute Pattern
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Looking at the various indicators reported by the database monitoring, we see a pronounced pattern that shows a 40 minute interval.
-Something is pushing load into the database in waves, but we do not know what it is:
-It is using the normal Artifactory production user and coming from one (but only one) of the Artifactory application boxes.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-06.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;We see access patterns repeating at 40 minute intervals, and pushing various statistics up. The data indicates a read and write load (read heavy), from one Artifactory application machine.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Finding the culprit took us quite some effort, because various other things interfered (among them Puppet re-enabling itself and undoing debug config changes).
-In the end it turned out, it was us, all along.&lt;/p&gt;
-&lt;p&gt;Specifically: There is a cron job which reads data from service directory and from Artifactory, compares the two and then generates access permissions and other configuration in the Artifactory database for the application.
-This enables you to access the artifacts you depend on, based on what is declared in SD.&lt;/p&gt;
-&lt;p&gt;Throttling this cron job immediately brought relief and relaxed the load even further, but slowed down the import of changes from SD into Artifactory.&lt;/p&gt;
-&lt;p&gt;Lessons learned:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Always use distinct users for distinct applications (one per application, per cron job and so on).
-Even if these have the same rights and access the same tables, it will make identifying the software component that is responsible for a thing much easier.&lt;/li&gt;
-&lt;li&gt;While Artifactory cannot understand Replicas and only ever works with the primary database, our own components around this are not limited by that restriction.
-This script could read from any replica and then write back only the necessary changes.&lt;/li&gt;
-&lt;li&gt;This script is surely generating a lot of load for what it does, and needs some love and refactoring.
-It is now on somebody&amp;rsquo;s backlog.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;bad-queries-from-nowhere&#34;&gt;
-    &lt;a href=&#34;#bad-queries-from-nowhere&#34;&gt;
-	Bad Queries from Nowhere?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The bad queries we optimized in Part 1 are still there and looking at what they actually do, they do not look particularly useful.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/artifactory-07.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Multiple instances of a reporting query running in parallel. Even optimized they seem to be wasteful. We want to know where they come from.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Looking at the queries themselves, we see this SQL:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;SUM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bin_length&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;nodes&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;node_type&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;and&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;repo&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;lt;reponame&amp;gt;&amp;#39;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is a reporting query that calculates the cumulative size of all things in one repo in our Artifactory.
-Now that it is fast we can see, it arrives in 15s intervals, and from each of our Artifactory application instances.&lt;/p&gt;
-&lt;p&gt;This suggests that the query string is being generated from the actual Artifactory binary.&lt;/p&gt;
-&lt;p&gt;We can in fact download the Artifactory Java sourcecode and throw it into IntelliJ, and then hunt for this.
-We even find something, because the query string is thankfully embedded literally in a DAO class, and not generated.&lt;/p&gt;
-&lt;p&gt;To make a long search and a number of support conversations short:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;These queries can&amp;rsquo;t be fast, but they can be faster than originally thought, thanks to covering indexes.&lt;/li&gt;
-&lt;li&gt;Because of that, there is a cache in Artifactory for this.&lt;/li&gt;
-&lt;li&gt;Clearly, as shown by the recurring 15s appearance of the queries, the cache does not work.&lt;/li&gt;
-&lt;li&gt;Turns out, it does work for Artifactory work, but if you turn on JMX monitoring, the JMX will circumvent the cache and get you fresh values at high cost, for each Artifactory application instance, from the only database that we have, at the Prometheus scraping interval of 15s.&lt;/li&gt;
-&lt;li&gt;Turning off monitoring for this component removed this source of workload.&lt;/li&gt;
-&lt;li&gt;This is undocumented in Artifactory, and was also not immediately obvious to their support.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The query shown above is just one instance of multiple queries with similar characteristics and cost.
-To properly estimate the impact, multiply the effect by 3-4, and then by the number of application instances connected to the database.&lt;/p&gt;
-&lt;h1 id=&#34;so-are-we-good-now&#34;&gt;
-    &lt;a href=&#34;#so-are-we-good-now&#34;&gt;
-	So are we good now?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;From the database point of view, this is as good as it gets.
-The database is not currently a stability item or scalability limit, the current config could even be scaled back to a cheap standard Blade.&lt;/p&gt;
 </description>
     </item>
     
