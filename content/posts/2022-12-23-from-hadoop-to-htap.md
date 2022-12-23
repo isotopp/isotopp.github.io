@@ -1,6 +1,6 @@
 ---
 author: isotopp
-title: "Hadoop's Demise"
+title: "From Hadoop to HTAP?"
 date: 2022-12-23 06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
