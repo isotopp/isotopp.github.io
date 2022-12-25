@@ -137,7 +137,7 @@ In practice that means that seeks are now basically free, and data access struct
 Since the base assumptions that made Hadoop successful are now invalid, and have been for the last 5 years, we should see Hadoop being replaced.
 
 And we do:
-Hadoop is no longer a thing for investors, and companies offering Hadoop are either merging or going under.
+Hadoop is no longer a thing for investors, and companies offering Hadoop are either merging or going down.
 
 ## HTAP rises
 
