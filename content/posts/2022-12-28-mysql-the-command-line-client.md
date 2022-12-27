@@ -143,4 +143,28 @@ This will pipe the result through `grep` instead of using `less`.
 Yes, this is funny, because using `grep` on a database result is a kind of joke.
 But it is also useful.
 
+# pager pspg
+
+If you want, you can install `pspg` and use `pager pspg` to get fancier output.
+Try
+
+```mysql
+mysql> pager pspg
+mysql> select * from t;
+```
+
+It will work:
+
+![](/uploads/2022/12/mysql-client-01.png)
+*`pager pspg` shows the output of `select * from t`. The cursor can be moved to select rows and columns. Hit `q` to quit.*
+
+It will also handle `SHOW ENGINE INNODB STATUS` just fine.
+
+![](/uploads/2022/12/mysql-client-02.png)
+*The oversized output of `SHOW ENGINE INNODB STATUS` in `pager pspg` in the MySQL command line client.*
+
+Note that `pspg` kind of defeats the purpose of the Command Line client for copy and pasteable results.
+Do not use it when asking for help or working with dbfiddle.
+Do use it at other times, if you care.
+
 This article mostly exists so that I can paste the URL when needed.
