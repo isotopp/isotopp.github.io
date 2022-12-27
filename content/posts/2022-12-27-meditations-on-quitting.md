@@ -15,52 +15,39 @@ Every time before a performance evaluation, or before important meetings, I sit 
 I pull up a word processor, start the empty business letter template, fill in the details and the date, and then write the three or four sentences necessary to inform my employer that the time has come to part ways.
 I print this, collect the letter, fold it properly and put it into an empty unsealed envelope.
 
-
 Then I pull it out, unfold it and put it in front of me.
 Time to start thinking.
 
 There are the logistics of quitting.
 
-Mostly these are personal obligations and finances.
-What is my stance with respect to payments, property, and dependants?
-Could I actually go into a meeting, get fed up, pull the letter, put it on the table and walk out?
+A lot of that is about obligations and finance.
+Could I actually walk out of the meeting, leaving the letter behind?
 
-There have been times, when I was younger, where I easily could have done that.
+There have been times, when I was younger, where I easily could have done that. Not owning property, being unmarried and without child.
 
-I did not own property, was unmarried and childless.
-I worked as a consultant, and travelled the world, 180 days a year spent in hotel rooms.
-I did have my personal, private precautions.
-An unused credit card with a 4k "Return home from any point in the world" limit, and another 400 in cash on my body at any point in time.
-A coordinate transformation on my personal checking account that saw a few 10k plus as Zero, to provide immediate emergency burn fuel. 
+Being a consultant, with 180 travel days a year, I had to build my own personal insurance anyway.
+That's  400 in the pocket at any point in time, 4k on an unused rescue credit card -- enough to take me home on my own from anywhere my job would take me.
+And a coordinate transformation on my checking account that sees a few 10k as Zero, to provide immediate emergency burn fuel.
 
-I had this because of the frequent quitting:
-I sat down, took stock, and considered what would be necessary to have a secure posture and immediate personal independence, whenever I decided that I would need it.
+Enough buffer against possible bumps anywhere in the world is also enough buffer to leave when necessary.
 
-It is the personal equivalence of a Business Continuity Plan, but at the personal level.
+With a family and a house, things are more complicated, and no longer immediate.
 
-When I was paying off property, being married and with a child, life became more complicated, and such things required more preparations.
-They can no longer be immediate, so I needed to evaluate more often, and generally keep a posture where I could move without interrupting cash flows.
-The important thing is to still own the decision, and be able to execute when necessary.
+An exit plan cannot be "walking out and leaving the letter" when an uninterrupted cash flow is part of the requirements.
+But writing the letter is still an important focus point. 
+So I kept the tradition.
 
-Once I have the logistics of quitting down in my mind, it is time to lift the gaze from the space in front of my feet, up to the horizon.
-Where would I want to go next?
+It is like a business continuity management plan, but for your soul.
 
-That starts with finding out where I am.
-What have I done in the last few months?
-What are the projects I have been part of?
+With the logistics done, it is time to lift the gaze from the path in front of my feet, up to the horizon.
+
+What did I do the last few months?
+What projects do I have been part of?
 What have I learned?
 How have I grown?
 And is the place I am in still the place that would let me grow?
-Or do I have to transplant myself?
 
-If I have to move, where to?
-Where do I want to be?
-What do I want to learn?
-What do I want to become?
-Can I do this here?
-And if so, what change is needed from my environment to be able to provide this?
-
-These are not abstract questions.
+There are no abstract questions.
 But in my mind they only become real when I sit in front of this piece of paper, and think about staying or leaving.
 I have made sure I could leave if I wanted.
 Now it is time to think about what I want from this place to make me stay.
@@ -74,9 +61,11 @@ It says what your job title is, where you work, and what they pay you.
 It says what your notice period is.
 
 The other one is unwritten.
-It is the unspoken agreement about the level of autonomy you have, the impact you can have, and the decisions you can be part of.
-It is the environment you work in and what challenges you are allowed to face, and what you can learn from.
-It is the mission you are part of, and the things you build.
+It is the unspoken agreement about the level of autonomy you have, and the decisions you can be part of.
+It is the environment you work in and what challenges you can learn from.
+It is about the things you build.
+
+"Autonomy, Mastery and Purpose"
 
 Working in IT, I always signed, and I always actually quit, because of this second contract.
 When it expires or is violated, it is time to actually leave.
@@ -109,3 +98,8 @@ For some reason that seems to scare people.
 
 Usually then I don't actually have to quit.
 But being able to do that, and understanding when and why helps a lot.
+
+On 2023-Jan-31, after almost another seven years, my second tour of Booking.com will come to an end.
+It was a different ride than the first, it was still amazing, and I met the most wonderful and amazing people.
+Still, I have been called, and the second contract is up.
+I have to move.
