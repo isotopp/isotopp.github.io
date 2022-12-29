@@ -5,7 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_de
 - schnuppel
-- media
+- bildung
 title: Mein Sohn sitzt vor dem Computer
 ---
 Oliver Rautenberg berichtet auf [Twitter](https://twitter.com/AnthroBlogger/status/1222112157787131905) von "Elternvereinbarungen zur Smartphone- und Mediennutzung" an Waldorfschulen in Deutschland.
