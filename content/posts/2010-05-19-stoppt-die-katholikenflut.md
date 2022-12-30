@@ -24,6 +24,8 @@ gegen Ausländerfeindlichkeit auch noch einen Scan irgendwo finde.
 
 *EDIT:* Kein Scan, aber hier ist der Inhalt:
 
+|  | |
+| :--- | :--- |
 | From: | kris@koehntopp.de (Kristian Köhntopp) |
 | Date: | Sun Jan 17 17:08:16 1993 |
 | Subject: | Re: SU:Katholiken-Raus-Flugblatt ;-) |
@@ -37,6 +39,8 @@ In <63.33818@bionic.zer.de> M.BELOW@BIONIC.zer.de writes:
 Das Original haengt noch an meinem schwarzen Brett, aber ich habe kein FAX.
 Dafuer habe ich aber cut & paste:
 
+|  | |
+| :--- | :--- |
 | Original-Path: | tpki.toppoint.de!tpki!kbbs!ums!ums!zivi |
 | Original-Subject: | Kathos raus (Irony:=true) |
 | Original-Newsgroups: | kiel.allgemein |
