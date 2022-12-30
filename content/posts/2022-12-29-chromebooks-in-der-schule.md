@@ -125,7 +125,7 @@ Zugleich ist durch die Datenverwaltung von IAM und OAuth klar, welche Daten im Z
 
 Selbst ohne die Google-eigenen Anwendungen ist das Zusammenspiel von IAM, OAuth und Chromebook schon sehr viel wert.
 Für die Schule und die Anbieter von Inhalten entsteht so eine offene Plattform, gegen die entwickelt werden kann:
-Anbieter können sich auf der Basis von offenen Standards (HTML, CSS, Javascript, dokumentierte Browser-APIs) und verifizierten Identitäten mit einem Rechtesystem in einem Ökosystem gruppieren, in dem sich Dienste anbieter, regeln und abrechnen lassen.
+Anbieter können sich auf der Basis von offenen Standards (HTML, CSS, Javascript, dokumentierte Browser-APIs) und verifizierten Identitäten mit einem Rechtesystem in einem Ökosystem gruppieren, in dem sich Dienste anbieten, regeln und abrechnen lassen.
 
 Die Plattform selbst besteht dabei aus gut verstandenen Komponenten: Linux, Chrome, offenen Standards und Schnittstellen und einem vielfach verifizierten und zertifizierten Dienstanbieter mit einem ausgezeichneten Sicherheitsbewußtsein.
 
