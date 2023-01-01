@@ -91,7 +91,7 @@ Fehlzeiten, entschuldigt und unentschuldigt, bekomme ich auch mit.
 ![](/uploads/2022/12/magister-02.jpg)
 *Stundenplan für den 12. Januar 2023, mit Unterrichtsbeginn um 9:35. Es ist eine Doppelstunde Geschichte, dann Kunst, dann zwei Doppelstunden O&O. Zu Geschichte ist eine Hausaufgabe vorhanden, die noch nicht abgehakt ist.*
 
-In der Notenansicht sind die letzten Ergebnisse, das Darum des neusten Ergebnisses und die Note selbst (hier zensiert) jeweils sichtbar.
+In der Notenansicht sind die letzten Ergebnisse, das Datum des neusten Ergebnisses und die Note selbst (hier zensiert) jeweils sichtbar.
 
 ![](/uploads/2022/12/magister-03.jpg)
 *Die Notenansicht. Sie zeigt jeweils das Datum des letzten Ergebnisses und (hier zensiert) das letzte Ergebnis, sowie die Anzahl der vorliegenden Ergebnisse. Man kann dann auf die einzelnen Leistungsnachweise zurückblättern.*
