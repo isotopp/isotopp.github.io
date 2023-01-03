@@ -236,7 +236,7 @@ In MySQL 8, the `mysql` schema cannot be dropped any more, so you need to edit t
 
 Why `mysqldump` does  not special case this schema nobody knows:
 it is known broken, and documented as broken in the manual page.
-But nobody cared enough to put this single `if (my_strcasecmp(charset_info, ..., "mysql"))` into 
+But nobody cared enough to put this single `&& (!my_strcasecmp(charset_info, ..., "mysql"))` into 
 [the codebase](https://github.com/mysql/mysql-server/blob/a246bad76b9271cb4333634e954040a970222e0a/client/mysqldump.cc#L4547).
 
 We end up running
