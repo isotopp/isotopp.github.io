@@ -6,7 +6,231 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 Dec 2022 14:51:53 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 03 Jan 2023 20:38:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Ways to run mysqldump</title>
+      <link>https://blog.koehntopp.info/2023/01/03/mysql-ways-to-run-mysqldump.html</link>
+      <pubDate>Tue, 03 Jan 2023 01:02:03 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/01/03/mysql-ways-to-run-mysqldump.html</guid>
+      <description>&lt;p&gt;This text exists mainly so that I paste the URL into the &lt;code&gt;#mysql&lt;/code&gt; channel in Libera IRC.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;mysqldump&lt;/code&gt; tools allows you to convert a MySQL database server or individual schemas back to SQL.
+You are left with a script that is supposed to be loadable into a target server and gives you back the full database, including all objects in it.&lt;/p&gt;
+&lt;p&gt;You can read that SQL as a script into an empty server to create a new instance, or process it with different tools for different purposes.
+So in general, a workflow can look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump --options --more-options and parameters &amp;gt; somescript.sql
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; scp somescript.sql somewhere@else.com:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ssh somewhere@else.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysql --show-warnings --whatever-options &amp;lt; somescript.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Instead of &lt;code&gt;mysql&lt;/code&gt; with an input redirect, you may also use the command line client and the &lt;code&gt;source&lt;/code&gt; command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysql --show-warnings --whatever-options
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; source somescript.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;To get everything, run&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --all-databases &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; gzip -9 &amp;gt; mydump.sql.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To get one database, run&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases dbname &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; gzip -9 &amp;gt; mydump.sql.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To get only the schema, use &lt;code&gt;--no-data&lt;/code&gt;.
+For example:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --no-data &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases dbname &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;how-do-we-get-there&#34;&gt;
+    &lt;a href=&#34;#how-do-we-get-there&#34;&gt;
+	How do we get there?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;setting-expectations&#34;&gt;
+    &lt;a href=&#34;#setting-expectations&#34;&gt;
+	Setting expectations
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;SQL scripts are not a compact data representation, and often the &lt;code&gt;mysqldump&lt;/code&gt; of a server is larger than &lt;code&gt;$DATADIR&lt;/code&gt; of that instance.
+The script usually compresses very well.
+So it is useful to run &lt;code&gt;gzip&lt;/code&gt; or similar on it.&lt;/p&gt;
+&lt;p&gt;SQL scripts are a representation of the data in the instance in textual form without indexes.
+Reading the script into a new server not only requires parsing the SQL into server internal data structures.
+It also requires that indexes are being rebuilt, and that is a process that consumes a lot of CPU and memory.&lt;/p&gt;
+&lt;p&gt;Most people would suggest that you do not ship data larger than 10 GB in the form of a &lt;code&gt;mysqldump&lt;/code&gt;, because loading it will take too long.
+As a rule of thumb that holds well, but it really is a function of memory available for index building, and the size of the largest index in the dump.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mysqldump&lt;/code&gt; is single threaded. It profits from faster CPUs, but not from more cores.
+Loading a dump is also single threaded.&lt;/p&gt;
+&lt;p&gt;The defaults of &lt;code&gt;mysqldump&lt;/code&gt; are somewhat sane, if you only want to dump tables.
+For code in the database, additional options are required that are not part of the standard configuration.&lt;/p&gt;
+&lt;h2 id=&#34;dumping-everything-atomically&#34;&gt;
+    &lt;a href=&#34;#dumping-everything-atomically&#34;&gt;
+	Dumping everything, atomically
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We are assuming here that all tables are InnoDB, without exception.
+If in 2023 you still are using non-transactional tables, you are beyond help anyway.&lt;/p&gt;
+&lt;p&gt;Dumping all data in the database takes time.
+While running the dump, the data you are trying to dump may change due to other processes making changes.&lt;/p&gt;
+&lt;p&gt;Specifically, with the default isolation level, each single table will maintain a consistent read view while being dumped.
+It will therefore not change for the &lt;code&gt;mysqldump&lt;/code&gt; while it is being dumped.
+But between tables changes may happen.&lt;/p&gt;
+&lt;p&gt;The option &lt;code&gt;--single-transaction&lt;/code&gt; can be used to run the entire &lt;code&gt;mysqldump&lt;/code&gt; in a single transaction, providing you with a consistent dump of the database.&lt;/p&gt;
+&lt;p&gt;A consistent dump of a database is associated with exactly one binlog position.
+In traditional replication, and for bookkeeping purposes, it is useful to take note of this binlog position.
+So the option &lt;code&gt;--source-data=2&lt;/code&gt; (previously &lt;code&gt;--master-data=2&lt;/code&gt;) should also be used to record this binlog position in the dump.&lt;/p&gt;
+&lt;p&gt;This will result in a comment to be added at the top of the dump file looking like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- Position to start replication or point-in-time recovery from
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- CHANGE MASTER TO MASTER_LOG_FILE=&amp;#39;binlog.000005&amp;#39;, MASTER_LOG_POS=157;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So far, our &lt;code&gt;mysqldump&lt;/code&gt; command to dump everything should look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ... --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;dumping-code-in-the-database&#34;&gt;
+    &lt;a href=&#34;#dumping-code-in-the-database&#34;&gt;
+	Dumping code in the database
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;By default, &lt;code&gt;mysqldump&lt;/code&gt; will not dump all non-table objects in the database.
+You need to pass &lt;code&gt;--routines&lt;/code&gt;, &lt;code&gt;--trigger&lt;/code&gt; and &lt;code&gt;--events&lt;/code&gt; to get all the code from the database as well.&lt;/p&gt;
+&lt;p&gt;On newer versions of MySQL, &lt;code&gt;--trigger&lt;/code&gt; is enabled by default, so they are dumped.
+On older versions, you would have to manually mention it on the command line.&lt;/p&gt;
+&lt;p&gt;Even on the most recent versions of MySQL, stored functions, stored procedures and events are not dumped automatically.
+You would have to mention &lt;code&gt;--routines&lt;/code&gt; and &lt;code&gt;--events&lt;/code&gt; for them to be dumped.&lt;/p&gt;
+&lt;p&gt;On older versions of MySQL that was not a problem, if the &lt;code&gt;mysql.*&lt;/code&gt; schema was part of the dump.
+Inside it were tables in there that contained functions, procedures and even definitions.&lt;/p&gt;
+&lt;p&gt;Starting with MySQL 8, these tables are no longer used, because the definitions are now stored in hidden data dictionary tables.&lt;br&gt;
+Using these options is now mandatory, if you want this code to be part of the dump.&lt;/p&gt;
+&lt;p&gt;So in order to also dump code in the database, our command becomes now&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ... --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; --trigger --routines --events
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;--opt-is-a-set-of-options-enabled-by-default&#34;&gt;
+    &lt;a href=&#34;#--opt-is-a-set-of-options-enabled-by-default&#34;&gt;
+	&lt;code&gt;--opt&lt;/code&gt; is a set of options enabled by default
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;mysqldump&lt;/code&gt; runs with &lt;code&gt;--opt&lt;/code&gt; enabled by default.
+You could run with &lt;code&gt;--skip-opt&lt;/code&gt; to prevent this, but this is not helpful.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;--opt&lt;/code&gt; is a shorthand for the following collection of options:&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;&lt;code&gt;--add-drop-table&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Generate a &lt;code&gt;DROP TABLE&lt;/code&gt; statement before each &lt;code&gt;CREATE TABLE&lt;/code&gt; statement in the dump.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--add-locks&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Enclose the &lt;code&gt;INSERT&lt;/code&gt; statements loading data into the table with &lt;code&gt;LOCK TABLES&lt;/code&gt; and &lt;code&gt;UNLOCK TABLES&lt;/code&gt; statements.
+This used to make data load faster for MyISAM tables, but should not be necessary for InnoDB tables.
+It is not harmful, especially not for initial data loads, so do not worry about it.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--create-options&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Preserve all MySQL specific create options for all tables.
+This is very much needed in almost all use-cases.
+It may be disabled for data transport from MySQL to other database systems.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--disable-keys&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;For each table, enclose the &lt;code&gt;INSERT&lt;/code&gt; statements in &lt;code&gt;DISABLE KEYS&lt;/code&gt; and &lt;code&gt;ENABLE KEYS&lt;/code&gt; statements.
+For MyISAM tables, this improves data load speed, and index quality.
+For InnoDB, it does nothing, but is also not harmful.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--extended-insert&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;The &lt;code&gt;INSERT&lt;/code&gt; statements generated will use extended insert syntax.
+This will generate very long lines in the dump (matching whatever is defined as &lt;code&gt;max-allowed-packet&lt;/code&gt;).
+This will minimize round trips, and make the load faster.
+It will make grepping and editing the dump very hard.
+It may create problems loading the data, if the source server has a modified, large &lt;code&gt;max-allowed-packet&lt;/code&gt;.
+Depending on what you want to do with the dump, it may be useful to &lt;code&gt;--skip-extended-insert&lt;/code&gt; to turn this off.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--lock-tables&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;This will lock the local tables before dumping them.
+This is important when using MyISAM tables, and is overridden, if tables are InnoDB, and &lt;code&gt;--single-transaction&lt;/code&gt; is used.
+So we are okay with it.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--quick&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;This dumps the tables using &lt;code&gt;mysql_use_result()&lt;/code&gt;, so the result is streamed using very little memory in the client.
+If you run with &lt;code&gt;--skip-quick&lt;/code&gt;, full tables will be downloaded into the client before then can be dumped.
+If these tables are many gigabytes in size, &lt;code&gt;mysqldump&lt;/code&gt; will be using a lot of memory, and will be very unhappy.
+Do not disable &lt;code&gt;--quick&lt;/code&gt;.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--set-charset&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Generate a &lt;code&gt;SET NAMES&lt;/code&gt; statement as needed to preserve character encoding.
+This should be always on, in order to preserve character encoding correctly.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p&gt;In general, you should be fine with &lt;code&gt;--opt&lt;/code&gt; and there is no need to change anything.&lt;/p&gt;
+&lt;p&gt;In some cases, you want to run with &lt;code&gt;--skip-extended-insert&lt;/code&gt;, in order to search and manually edit the data in the dump easier.
+The dump will load somewhat slower, and will be somewhat larger in this case.&lt;/p&gt;
+&lt;h2 id=&#34;dumping-only-the-schema&#34;&gt;
+    &lt;a href=&#34;#dumping-only-the-schema&#34;&gt;
+	Dumping only the schema
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you want to dump only the schema, and not the data, there is an option for that: &lt;code&gt;--no-data&lt;/code&gt;.
+You get an SQL file with no &lt;code&gt;INSERT&lt;/code&gt;, only &lt;code&gt;CREATE TABLE&lt;/code&gt; and friends.
+You would still need &lt;code&gt;--routines&lt;/code&gt;, &lt;code&gt;--triggers&lt;/code&gt; and &lt;code&gt;--events&lt;/code&gt; to get all the code.&lt;/p&gt;
+&lt;p&gt;We get&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ... --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;     --trigger --routines --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;     --no-data
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;dumping-all-databases-or-just-one-database&#34;&gt;
+    &lt;a href=&#34;#dumping-all-databases-or-just-one-database&#34;&gt;
+	Dumping all databases, or just one database
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;--all-databases&#34;&gt;
+    &lt;a href=&#34;#--all-databases&#34;&gt;
+	&amp;ndash;all-databases
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;You need to tell &lt;code&gt;mysqldump&lt;/code&gt; what to dump.&lt;/p&gt;
+&lt;p&gt;This can be &lt;code&gt;--all-databases&lt;/code&gt;, which will do exactly that, including the &lt;code&gt;mysql&lt;/code&gt; database with all the grants, the help, the timezone data and so on.&lt;/p&gt;
+&lt;p&gt;If &lt;code&gt;--all-databases&lt;/code&gt; is being used, each database in the dump will be created with a &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement.
+A matching &lt;code&gt;DROP DATABASE&lt;/code&gt; statement is not being generated.
+That is less of a problem than one might assume, because the generated &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement is protected by an &lt;code&gt;IF NOT EXISTS&lt;/code&gt; clause.&lt;/p&gt;
+&lt;p&gt;Still, it may be useful to &lt;code&gt;DROP DATABASE IF EXISTS&lt;/code&gt; before creating a new one, in order to get rid of tables that should not be there.&lt;br&gt;
+To achieve this, you could add the option &lt;code&gt;--add-drop-database&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;But: If you do that together with &lt;code&gt;--all-databases&lt;/code&gt;, then a &lt;code&gt;DROP DATABASE ...;&lt;/code&gt; statement will put in front of each &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement, including the &lt;code&gt;mysql&lt;/code&gt; system database:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/*!40000 DROP DATABASE IF EXISTS `mysql`*/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DATABASE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/*!32312 IF NOT EXISTS*/&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/*!80016 DEFAULT ENCRYPTION=&amp;#39;N&amp;#39; */&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;USE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In MySQL 8, the &lt;code&gt;mysql&lt;/code&gt; schema cannot be dropped any more, so you need to edit that out manually to make the dump useful.&lt;/p&gt;
+&lt;p&gt;Why &lt;code&gt;mysqldump&lt;/code&gt; does  not special case this schema nobody knows:
+it is known broken, and documented as broken in the manual page.
+But nobody cared enough to put this single &lt;code&gt;if (my_strcasecmp(charset_info, ..., &amp;quot;mysql&amp;quot;))&lt;/code&gt; into
+&lt;a href=&#34;https://github.com/mysql/mysql-server/blob/a246bad76b9271cb4333634e954040a970222e0a/client/mysqldump.cc#L4547&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the codebase&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;We end up running&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --all-databases --add-drop-database &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;a-single-database&#34;&gt;
+    &lt;a href=&#34;#a-single-database&#34;&gt;
+	A single database
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Instead of dumping all database, maybe we want just one database, or even a single table from a single database.&lt;/p&gt;
+&lt;p&gt;If you run &lt;code&gt;mysqldump databasename&lt;/code&gt; to dump a single database like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   databasename &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;no &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement is generated.
+You will just get a sequence of &lt;code&gt;CREATE TABLE&lt;/code&gt; statement.
+This can easily be imported into a differently named database.&lt;/p&gt;
+&lt;p&gt;Also, adding &lt;code&gt;--add-drop-database&lt;/code&gt; to this does nothing.&lt;/p&gt;
+&lt;p&gt;If you run &lt;code&gt;mysqldump --databases databasename&lt;/code&gt; to dump a single database instead,&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases databasename &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;this does generate a leading &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement.
+That is, because the &lt;code&gt;--databases&lt;/code&gt; option accepts a space separated list of databases to dump.&lt;/p&gt;
+&lt;p&gt;Here, using &lt;code&gt;--add-drop-database&lt;/code&gt; will do what is expected from it.&lt;/p&gt;
+&lt;p&gt;To dump a single table, use&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases databasename --tables tablename &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alternately mixing &lt;code&gt;--databases&lt;/code&gt; and &lt;code&gt;--tables&lt;/code&gt; will not work.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: The command line client</title>
       <link>https://blog.koehntopp.info/2022/12/28/mysql-the-command-line-client.html</link>
@@ -3671,147 +3895,6 @@ The I/O we see is good for an aggregate I/O of 22 MB/s, and results in complete 
 &lt;p&gt;There is no easy way around this, except deep changes to the application to make it write differently.
 But we do not really want to spend application business unit developer time on &amp;ldquo;code around the intricacies of the storage solution we chose&amp;rdquo; instead of &amp;ldquo;solve business problems&amp;rdquo;.&lt;/p&gt;
 &lt;p&gt;The recommendation to use local storage in the virtualized environment still stands, as it performs better and does not provide storage-level redundancy for which we have no use, given that replication provides capacity &lt;em&gt;and&lt;/em&gt; redundancy at the database level.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Data for Testing</title>
-      <link>https://blog.koehntopp.info/2022/09/26/mysql-data-for-testing.html</link>
-      <pubDate>Mon, 26 Sep 2022 12:13:14 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/09/26/mysql-data-for-testing.html</guid>
-      <description>&lt;p&gt;Where I work, there is an ongoing discussion about test data generation.
-At the moment we do not replace or change any production data for use in the test environments, and we don&amp;rsquo;t generate test data.&lt;/p&gt;
-&lt;p&gt;That is safe and legal, because production data is tokenized.
-That is, PII and PCI data is being replaced by placeholder tokens which can be used by applications to access the actual protected data through specially protected access services.
-Only a very limited circle of people is dealing with data in behind the protected services.&lt;/p&gt;
-&lt;p&gt;Using production data in test databases is also fast, because we copy data in parallel, at line speed, or we make redirect-on-write (&amp;ldquo;copy-on-write&amp;rdquo; in the age of SSD) writeable snapshots available.&lt;/p&gt;
-&lt;p&gt;Assume for a moment we want to change that and&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;mask data from production when we copy it to test databases&lt;/li&gt;
-&lt;li&gt;reduce the amount of data used in test databases, while maintaining referential integrity&lt;/li&gt;
-&lt;li&gt;generate test data sets of any size instead of using production data, keeping referential integrity and also some baseline statistical properties&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;masking-data&#34;&gt;
-    &lt;a href=&#34;#masking-data&#34;&gt;
-	Masking Data
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Assume we make a copy of a production database into a test setup.
-We then prepare that copy by changing every data item we want to mask, for example by replacing it with &lt;code&gt;sha(&amp;quot;secret&amp;quot; + original value)&lt;/code&gt;, or some other replacement token.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;concat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Kristian Köhntopp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sha&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;concat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;Kristian Köhntopp&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;9697&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c8770a3def7475069f3be8b6f2a8e4c7ebf4&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;---------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;row&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;in&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;00&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Why are we using a hash function or some moral equivalent for this?
-We want to keep referential integrity, of course.
-So each occurence of &lt;code&gt;Kristian Köhntopp&lt;/code&gt; will be replaced by &lt;code&gt;9697c8770a3def7475069f3be8b6f2a8e4c7ebf4&lt;/code&gt;, a predictable and stable value, instead of a random number &lt;code&gt;17&lt;/code&gt; on the first occurence, and another random number, &lt;code&gt;25342&lt;/code&gt;, on the next.&lt;/p&gt;
-&lt;p&gt;In terms of database work, it means that after copying the data, we are running an &lt;code&gt;update&lt;/code&gt; on every row, creating a binlog entry for each change.
-If the column we change is indexed, the indexes that contain the column need to be updated.
-If the column we change is a primary key, the physical location of the record in the table also changes, because InnoDB clusters data on primary key.&lt;/p&gt;
-&lt;p&gt;In short, while copying data is fast, masking data has a much, much higher cost and can nowhere run at line speed, on any hardware.&lt;/p&gt;
-&lt;h1 id=&#34;reducing-the-amount-of-data&#34;&gt;
-    &lt;a href=&#34;#reducing-the-amount-of-data&#34;&gt;
-	Reducing the amount of data
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Early in the company history, around 15 years ago, a colleague worked on creating smaller test databases by selecting a subset of production data, while keeping referential integrity intact.
-He failed.&lt;/p&gt;
-&lt;p&gt;Many others tried later, we have had projects trying this around every 3 to 5 years.
-They also failed.&lt;/p&gt;
-&lt;p&gt;Each attempt always selects either an empty database or all of the data from production.&lt;/p&gt;
-&lt;p&gt;Why is that?&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s try a simple model:
-We have users, we have hotels, and they are in a n:m relationship, the stay.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/test-data-01.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;Kris&amp;rdquo; stays in a Hotel, the &amp;ldquo;Casa&amp;rdquo;.
-We select Kris into the test data set from production, and also the &amp;ldquo;Casa&amp;rdquo;.
-Other people stayed at the Casa, so they also are imported into the test set, but they also stayed at other hotels, so these hotels are also imported, and so forth, back between two tables.
-After 3 reflections, 6 transitions, we have selected the entire production database into the test set.&lt;/p&gt;
-&lt;p&gt;Our production data is interconnected, and retaining referential integrity of the production data will mean that selecting one will ultimately select all.&lt;/p&gt;
-&lt;p&gt;Limiting the timeframe can help:
-we select only data from the past week or something.
-But that has other implications, for example on the data distribution.
-Also, our production data is heavily skewed in time when it comes to operations on availability – a lot of bookings happen in the last week.&lt;/p&gt;
-&lt;h1 id=&#34;generating-test-data&#34;&gt;
-    &lt;a href=&#34;#generating-test-data&#34;&gt;
-	Generating test data
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Generating garbage data is fast, but still slower than making a copy.
-That is because copying data from a production machine can copy binary files with prebuilt existing indexes, whereas generating garbage data is equivalent to importing a &lt;code&gt;mysqldump&lt;/code&gt;.
-The data needs to be parsed, and worse, all indexes need to be built.&lt;/p&gt;
-&lt;p&gt;While we can copy data at hundreds of MB per second, up into the GB/s range, importing data happens at single digit MB/s up to low tens of MB/s.
-A lot depends on the availability of RAM, and on the speed of the disk, also on the number of indexes and if the input data is sorted by primary key.&lt;/p&gt;
-&lt;p&gt;Generating non-garbage data is also hard, and slow.&lt;/p&gt;
-&lt;p&gt;You need to have the list of referential integrity constraints either defined or inferred from a schema.
-At work, our schema is large, much larger than a single database or service – users in the user service (test user service, with test user data) need to be referenced in the reservations service (test reservations service with test bookings), referring to hotels in the test availability and test hotel store.&lt;/p&gt;
-&lt;p&gt;That means either creating and maintaining a consistent second universe, or creating this, across services, from scratch, for each test.
-One is a drag on productivity (maintaining consistent universes is a lot of work), the other is slow.&lt;/p&gt;
-&lt;p&gt;Consistency is not the only requirement, though.
-Consistency is fine if you want to test validation code (but my test names are not utf8, they are from the hex digit subset of ASCII!).&lt;/p&gt;
-&lt;p&gt;But if you want to talk performance, additional requirements appear:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Data size&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;If your production data is 2 TB in size, but your test set is 200 GB, it is not linearly 10x faster.
-The relationship is non-linear: On a given piece of hardware, production data may be IO-limited because the working set does not fit into memory, whereas the test data can fit WSS into memory.
-Production data will produce disk reads proportionally to the load, test data will run from memory and after warmup has no read I/O – a completely different performance model applies.
-Performance tests on the test data have zero predictive value for production performance.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;strong&gt;Data Distribution.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Production data and production data access is subject to data access patterns that are largely unknown and undocumented, and are also changing.
-Some users are whales that travel 100x more than norms.
-Other users are frequent travellers, and travel 10x more than norms.
-Some amount of users are one-offs and appear only once in the data set.
-What is the relation between these sets, and what is the effect they have on data access?&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;For example:&lt;/p&gt;
-&lt;h2 id=&#34;a-database-benchmark-i-lost&#34;&gt;
-    &lt;a href=&#34;#a-database-benchmark-i-lost&#34;&gt;
-	A database benchmark I lost
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The german computer magazine c&amp;rsquo;t in 2006 had an application benchmark described in web request accesses to a DVD rental store.
-The contestants were supposed to write a DVD rental store using any technology they wished, defined in the required output and the URL request they would be exposed to in testing.
-MySQL, for which I worked as a consultant, wanted to participate, and for that I put the templates provided into a web shop using MySQL, and tuned shop and database accordingly.&lt;/p&gt;
-&lt;p&gt;I got nowhere the top 10.&lt;/p&gt;
-&lt;p&gt;That is because I used a real web shop with real assumptions about user behavior, including caches and stuff.&lt;/p&gt;
-&lt;p&gt;The test data used was generated, and the requests were equally distributed:
-Each DVD in the simulated DVD store was equally likely to be rented and each user rented the same amount of DVDs.
-Any cache you put into the store would overflow, and go into threshing, or would have to have sufficient memory to keep the entire store in cache.&lt;/p&gt;
-&lt;p&gt;Real DVD rental stores have a top 100 of popular titles, and a long tail. Caching helps.
-In the test, caching destroyed performance.&lt;/p&gt;
-&lt;h2 id=&#34;another-database-benchmark-i-lost&#34;&gt;
-    &lt;a href=&#34;#another-database-benchmark-i-lost&#34;&gt;
-	Another database benchmark I lost
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Another german computer magazine had another database benchmark, which basically hammered the system under test with a very high load.
-Unfortunately, here the load was not evenly distributed, but a few keys were being exercised very often, whereas a lot of keys were never requested.
-Effectively the load generator has a large number of threads, and each thread was exercising &amp;ldquo;their&amp;rdquo; key in the database &amp;ndash; thread 1 to id 1 in the table, and so on.&lt;/p&gt;
-&lt;p&gt;This exercised a certain number of hot keys, and waited very fast on a few locks, but did not actually simulate accurately any throughput limits.
-If you exercised the system with more production-like load, it would have had around 100x more total throughput.&lt;/p&gt;
-&lt;h1 id=&#34;tldr&#34;&gt;
-    &lt;a href=&#34;#tldr&#34;&gt;
-	TL;DR
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Producing masked or simulated data for testing is around 100x more expensive computationally than copying production data.
-If production data is already tokenized, the win is also questionable, compared to the effort spent.&lt;/p&gt;
-&lt;p&gt;Producing valid test data is computationally expensive, especially in a microservices architecture in which referential integrity is to be maintained across service boundaries.&lt;/p&gt;
-&lt;p&gt;Valid test data is not necessarily useful in testing, especially when it comes to performance testing.
-Performance testing is specifically also dependent on data access patterns, working set sizes and arrival rate distributions that affect locking times.&lt;/p&gt;
-&lt;p&gt;In the end, the actual test environment is always production, and in my personal professional experience there is a lot more value in making testing in production safe than in producing accurate testing environments.&lt;/p&gt;
 </description>
     </item>
     

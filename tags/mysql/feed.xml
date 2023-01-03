@@ -6,7 +6,231 @@
     <description>Recent content in mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 30 Dec 2022 14:51:53 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 03 Jan 2023 20:38:00 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Ways to run mysqldump</title>
+      <link>https://blog.koehntopp.info/2023/01/03/mysql-ways-to-run-mysqldump.html</link>
+      <pubDate>Tue, 03 Jan 2023 01:02:03 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/01/03/mysql-ways-to-run-mysqldump.html</guid>
+      <description>&lt;p&gt;This text exists mainly so that I paste the URL into the &lt;code&gt;#mysql&lt;/code&gt; channel in Libera IRC.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;mysqldump&lt;/code&gt; tools allows you to convert a MySQL database server or individual schemas back to SQL.
+You are left with a script that is supposed to be loadable into a target server and gives you back the full database, including all objects in it.&lt;/p&gt;
+&lt;p&gt;You can read that SQL as a script into an empty server to create a new instance, or process it with different tools for different purposes.
+So in general, a workflow can look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump --options --more-options and parameters &amp;gt; somescript.sql
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; scp somescript.sql somewhere@else.com:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ssh somewhere@else.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysql --show-warnings --whatever-options &amp;lt; somescript.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Instead of &lt;code&gt;mysql&lt;/code&gt; with an input redirect, you may also use the command line client and the &lt;code&gt;source&lt;/code&gt; command:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysql --show-warnings --whatever-options
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; source somescript.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;To get everything, run&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --all-databases &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; gzip -9 &amp;gt; mydump.sql.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To get one database, run&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases dbname &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt; gzip -9 &amp;gt; mydump.sql.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To get only the schema, use &lt;code&gt;--no-data&lt;/code&gt;.
+For example:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --no-data &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases dbname &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;how-do-we-get-there&#34;&gt;
+    &lt;a href=&#34;#how-do-we-get-there&#34;&gt;
+	How do we get there?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;setting-expectations&#34;&gt;
+    &lt;a href=&#34;#setting-expectations&#34;&gt;
+	Setting expectations
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;SQL scripts are not a compact data representation, and often the &lt;code&gt;mysqldump&lt;/code&gt; of a server is larger than &lt;code&gt;$DATADIR&lt;/code&gt; of that instance.
+The script usually compresses very well.
+So it is useful to run &lt;code&gt;gzip&lt;/code&gt; or similar on it.&lt;/p&gt;
+&lt;p&gt;SQL scripts are a representation of the data in the instance in textual form without indexes.
+Reading the script into a new server not only requires parsing the SQL into server internal data structures.
+It also requires that indexes are being rebuilt, and that is a process that consumes a lot of CPU and memory.&lt;/p&gt;
+&lt;p&gt;Most people would suggest that you do not ship data larger than 10 GB in the form of a &lt;code&gt;mysqldump&lt;/code&gt;, because loading it will take too long.
+As a rule of thumb that holds well, but it really is a function of memory available for index building, and the size of the largest index in the dump.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mysqldump&lt;/code&gt; is single threaded. It profits from faster CPUs, but not from more cores.
+Loading a dump is also single threaded.&lt;/p&gt;
+&lt;p&gt;The defaults of &lt;code&gt;mysqldump&lt;/code&gt; are somewhat sane, if you only want to dump tables.
+For code in the database, additional options are required that are not part of the standard configuration.&lt;/p&gt;
+&lt;h2 id=&#34;dumping-everything-atomically&#34;&gt;
+    &lt;a href=&#34;#dumping-everything-atomically&#34;&gt;
+	Dumping everything, atomically
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;We are assuming here that all tables are InnoDB, without exception.
+If in 2023 you still are using non-transactional tables, you are beyond help anyway.&lt;/p&gt;
+&lt;p&gt;Dumping all data in the database takes time.
+While running the dump, the data you are trying to dump may change due to other processes making changes.&lt;/p&gt;
+&lt;p&gt;Specifically, with the default isolation level, each single table will maintain a consistent read view while being dumped.
+It will therefore not change for the &lt;code&gt;mysqldump&lt;/code&gt; while it is being dumped.
+But between tables changes may happen.&lt;/p&gt;
+&lt;p&gt;The option &lt;code&gt;--single-transaction&lt;/code&gt; can be used to run the entire &lt;code&gt;mysqldump&lt;/code&gt; in a single transaction, providing you with a consistent dump of the database.&lt;/p&gt;
+&lt;p&gt;A consistent dump of a database is associated with exactly one binlog position.
+In traditional replication, and for bookkeeping purposes, it is useful to take note of this binlog position.
+So the option &lt;code&gt;--source-data=2&lt;/code&gt; (previously &lt;code&gt;--master-data=2&lt;/code&gt;) should also be used to record this binlog position in the dump.&lt;/p&gt;
+&lt;p&gt;This will result in a comment to be added at the top of the dump file looking like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- Position to start replication or point-in-time recovery from
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;--
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;-- CHANGE MASTER TO MASTER_LOG_FILE=&amp;#39;binlog.000005&amp;#39;, MASTER_LOG_POS=157;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So far, our &lt;code&gt;mysqldump&lt;/code&gt; command to dump everything should look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ... --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;dumping-code-in-the-database&#34;&gt;
+    &lt;a href=&#34;#dumping-code-in-the-database&#34;&gt;
+	Dumping code in the database
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;By default, &lt;code&gt;mysqldump&lt;/code&gt; will not dump all non-table objects in the database.
+You need to pass &lt;code&gt;--routines&lt;/code&gt;, &lt;code&gt;--trigger&lt;/code&gt; and &lt;code&gt;--events&lt;/code&gt; to get all the code from the database as well.&lt;/p&gt;
+&lt;p&gt;On newer versions of MySQL, &lt;code&gt;--trigger&lt;/code&gt; is enabled by default, so they are dumped.
+On older versions, you would have to manually mention it on the command line.&lt;/p&gt;
+&lt;p&gt;Even on the most recent versions of MySQL, stored functions, stored procedures and events are not dumped automatically.
+You would have to mention &lt;code&gt;--routines&lt;/code&gt; and &lt;code&gt;--events&lt;/code&gt; for them to be dumped.&lt;/p&gt;
+&lt;p&gt;On older versions of MySQL that was not a problem, if the &lt;code&gt;mysql.*&lt;/code&gt; schema was part of the dump.
+Inside it were tables in there that contained functions, procedures and even definitions.&lt;/p&gt;
+&lt;p&gt;Starting with MySQL 8, these tables are no longer used, because the definitions are now stored in hidden data dictionary tables.&lt;br&gt;
+Using these options is now mandatory, if you want this code to be part of the dump.&lt;/p&gt;
+&lt;p&gt;So in order to also dump code in the database, our command becomes now&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ... --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; --trigger --routines --events
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;--opt-is-a-set-of-options-enabled-by-default&#34;&gt;
+    &lt;a href=&#34;#--opt-is-a-set-of-options-enabled-by-default&#34;&gt;
+	&lt;code&gt;--opt&lt;/code&gt; is a set of options enabled by default
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;mysqldump&lt;/code&gt; runs with &lt;code&gt;--opt&lt;/code&gt; enabled by default.
+You could run with &lt;code&gt;--skip-opt&lt;/code&gt; to prevent this, but this is not helpful.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;--opt&lt;/code&gt; is a shorthand for the following collection of options:&lt;/p&gt;
+&lt;dl&gt;
+&lt;dt&gt;&lt;code&gt;--add-drop-table&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Generate a &lt;code&gt;DROP TABLE&lt;/code&gt; statement before each &lt;code&gt;CREATE TABLE&lt;/code&gt; statement in the dump.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--add-locks&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Enclose the &lt;code&gt;INSERT&lt;/code&gt; statements loading data into the table with &lt;code&gt;LOCK TABLES&lt;/code&gt; and &lt;code&gt;UNLOCK TABLES&lt;/code&gt; statements.
+This used to make data load faster for MyISAM tables, but should not be necessary for InnoDB tables.
+It is not harmful, especially not for initial data loads, so do not worry about it.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--create-options&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Preserve all MySQL specific create options for all tables.
+This is very much needed in almost all use-cases.
+It may be disabled for data transport from MySQL to other database systems.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--disable-keys&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;For each table, enclose the &lt;code&gt;INSERT&lt;/code&gt; statements in &lt;code&gt;DISABLE KEYS&lt;/code&gt; and &lt;code&gt;ENABLE KEYS&lt;/code&gt; statements.
+For MyISAM tables, this improves data load speed, and index quality.
+For InnoDB, it does nothing, but is also not harmful.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--extended-insert&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;The &lt;code&gt;INSERT&lt;/code&gt; statements generated will use extended insert syntax.
+This will generate very long lines in the dump (matching whatever is defined as &lt;code&gt;max-allowed-packet&lt;/code&gt;).
+This will minimize round trips, and make the load faster.
+It will make grepping and editing the dump very hard.
+It may create problems loading the data, if the source server has a modified, large &lt;code&gt;max-allowed-packet&lt;/code&gt;.
+Depending on what you want to do with the dump, it may be useful to &lt;code&gt;--skip-extended-insert&lt;/code&gt; to turn this off.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--lock-tables&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;This will lock the local tables before dumping them.
+This is important when using MyISAM tables, and is overridden, if tables are InnoDB, and &lt;code&gt;--single-transaction&lt;/code&gt; is used.
+So we are okay with it.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--quick&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;This dumps the tables using &lt;code&gt;mysql_use_result()&lt;/code&gt;, so the result is streamed using very little memory in the client.
+If you run with &lt;code&gt;--skip-quick&lt;/code&gt;, full tables will be downloaded into the client before then can be dumped.
+If these tables are many gigabytes in size, &lt;code&gt;mysqldump&lt;/code&gt; will be using a lot of memory, and will be very unhappy.
+Do not disable &lt;code&gt;--quick&lt;/code&gt;.&lt;/dd&gt;
+&lt;dt&gt;&lt;code&gt;--set-charset&lt;/code&gt;&lt;/dt&gt;
+&lt;dd&gt;Generate a &lt;code&gt;SET NAMES&lt;/code&gt; statement as needed to preserve character encoding.
+This should be always on, in order to preserve character encoding correctly.&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;p&gt;In general, you should be fine with &lt;code&gt;--opt&lt;/code&gt; and there is no need to change anything.&lt;/p&gt;
+&lt;p&gt;In some cases, you want to run with &lt;code&gt;--skip-extended-insert&lt;/code&gt;, in order to search and manually edit the data in the dump easier.
+The dump will load somewhat slower, and will be somewhat larger in this case.&lt;/p&gt;
+&lt;h2 id=&#34;dumping-only-the-schema&#34;&gt;
+    &lt;a href=&#34;#dumping-only-the-schema&#34;&gt;
+	Dumping only the schema
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you want to dump only the schema, and not the data, there is an option for that: &lt;code&gt;--no-data&lt;/code&gt;.
+You get an SQL file with no &lt;code&gt;INSERT&lt;/code&gt;, only &lt;code&gt;CREATE TABLE&lt;/code&gt; and friends.
+You would still need &lt;code&gt;--routines&lt;/code&gt;, &lt;code&gt;--triggers&lt;/code&gt; and &lt;code&gt;--events&lt;/code&gt; to get all the code.&lt;/p&gt;
+&lt;p&gt;We get&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ... --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;     --trigger --routines --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;     --no-data
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;dumping-all-databases-or-just-one-database&#34;&gt;
+    &lt;a href=&#34;#dumping-all-databases-or-just-one-database&#34;&gt;
+	Dumping all databases, or just one database
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;--all-databases&#34;&gt;
+    &lt;a href=&#34;#--all-databases&#34;&gt;
+	&amp;ndash;all-databases
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;You need to tell &lt;code&gt;mysqldump&lt;/code&gt; what to dump.&lt;/p&gt;
+&lt;p&gt;This can be &lt;code&gt;--all-databases&lt;/code&gt;, which will do exactly that, including the &lt;code&gt;mysql&lt;/code&gt; database with all the grants, the help, the timezone data and so on.&lt;/p&gt;
+&lt;p&gt;If &lt;code&gt;--all-databases&lt;/code&gt; is being used, each database in the dump will be created with a &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement.
+A matching &lt;code&gt;DROP DATABASE&lt;/code&gt; statement is not being generated.
+That is less of a problem than one might assume, because the generated &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement is protected by an &lt;code&gt;IF NOT EXISTS&lt;/code&gt; clause.&lt;/p&gt;
+&lt;p&gt;Still, it may be useful to &lt;code&gt;DROP DATABASE IF EXISTS&lt;/code&gt; before creating a new one, in order to get rid of tables that should not be there.&lt;br&gt;
+To achieve this, you could add the option &lt;code&gt;--add-drop-database&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;But: If you do that together with &lt;code&gt;--all-databases&lt;/code&gt;, then a &lt;code&gt;DROP DATABASE ...;&lt;/code&gt; statement will put in front of each &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement, including the &lt;code&gt;mysql&lt;/code&gt; system database:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/*!40000 DROP DATABASE IF EXISTS `mysql`*/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;CREATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;DATABASE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/*!32312 IF NOT EXISTS*/&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/*!80016 DEFAULT ENCRYPTION=&amp;#39;N&amp;#39; */&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;USE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In MySQL 8, the &lt;code&gt;mysql&lt;/code&gt; schema cannot be dropped any more, so you need to edit that out manually to make the dump useful.&lt;/p&gt;
+&lt;p&gt;Why &lt;code&gt;mysqldump&lt;/code&gt; does  not special case this schema nobody knows:
+it is known broken, and documented as broken in the manual page.
+But nobody cared enough to put this single &lt;code&gt;if (my_strcasecmp(charset_info, ..., &amp;quot;mysql&amp;quot;))&lt;/code&gt; into
+&lt;a href=&#34;https://github.com/mysql/mysql-server/blob/a246bad76b9271cb4333634e954040a970222e0a/client/mysqldump.cc#L4547&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the codebase&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;We end up running&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --all-databases --add-drop-database &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;a-single-database&#34;&gt;
+    &lt;a href=&#34;#a-single-database&#34;&gt;
+	A single database
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Instead of dumping all database, maybe we want just one database, or even a single table from a single database.&lt;/p&gt;
+&lt;p&gt;If you run &lt;code&gt;mysqldump databasename&lt;/code&gt; to dump a single database like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   databasename &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;no &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement is generated.
+You will just get a sequence of &lt;code&gt;CREATE TABLE&lt;/code&gt; statement.
+This can easily be imported into a differently named database.&lt;/p&gt;
+&lt;p&gt;Also, adding &lt;code&gt;--add-drop-database&lt;/code&gt; to this does nothing.&lt;/p&gt;
+&lt;p&gt;If you run &lt;code&gt;mysqldump --databases databasename&lt;/code&gt; to dump a single database instead,&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases databasename &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;this does generate a leading &lt;code&gt;CREATE DATABASE&lt;/code&gt; statement.
+That is, because the &lt;code&gt;--databases&lt;/code&gt; option accepts a space separated list of databases to dump.&lt;/p&gt;
+&lt;p&gt;Here, using &lt;code&gt;--add-drop-database&lt;/code&gt; will do what is expected from it.&lt;/p&gt;
+&lt;p&gt;To dump a single table, use&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mysqldump ...  --single-transaction --source-data&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --routines --triggers --events &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;   --databases databasename --tables tablename &amp;gt; mydump.sql
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alternately mixing &lt;code&gt;--databases&lt;/code&gt; and &lt;code&gt;--tables&lt;/code&gt; will not work.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: The command line client</title>
       <link>https://blog.koehntopp.info/2022/12/28/mysql-the-command-line-client.html</link>
@@ -3795,102 +4019,6 @@ It should maybe check average row size, or check largest row size in the table, 
 &lt;p&gt;Or it should accept that the &lt;code&gt;INSERT ... SELECT&lt;/code&gt; may fail, if &lt;code&gt;max_binlog_cache_size&lt;/code&gt; has been set, and retry with smaller steps then.
 The second idea would be better, I believe.&lt;/p&gt;
 &lt;p&gt;Again, the flight recorder has been invaluable in nailing down the root cause.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Breaking replication with ALGORITHM = INSTANT</title>
-      <link>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</link>
-      <pubDate>Mon, 20 Jun 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/06/20/mysql-breaking-replication-with-algorithm-instant.html</guid>
-      <description>&lt;p&gt;MySQL 8.0.29 adds &lt;code&gt;ALGORITHM=INSTANT&lt;/code&gt; as a way to run &lt;code&gt;ALTER TABLE&lt;/code&gt; commands with less wait.
-The documentation can be found in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Online DDL Operators&lt;/a&gt;
-
- and instant column operations can be found &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html#online-ddl-column-operations&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Example Syntax looks like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;use&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;12&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;not&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;no&#34;&gt;null&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;algorithm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Query&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rows&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;affected&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;07&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Records&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Duplicates&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Warnings&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;limited-total_row_versions&#34;&gt;
-    &lt;a href=&#34;#limited-total_row_versions&#34;&gt;
-	Limited TOTAL_ROW_VERSIONS
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/innodb-online-ddl-operations.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The manual&lt;/a&gt;
-
- explains a new concept:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A new row version is created after each &lt;code&gt;ALTER TABLE ... ALGORITHM=INSTANT&lt;/code&gt; operation that adds one or more columns, drops one or more columns, or adds and drops one or more columns in the same operation.
-The &lt;code&gt;INFORMATION_SCHEMA.INNODB_TABLES.TOTAL_ROW_VERSIONS&lt;/code&gt; column tracks the number of row versions for a table.
-The value is incremented each time a column is instantly added or dropped.
-The initial value is 0.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total_row_versions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_tables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris/%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;--------+--------------------+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;NAME&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;   &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TOTAL_ROW_VERSIONS&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+--------+--------------------+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;                  &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;|&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+--------+--------------------+&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;So there is a concept called &lt;code&gt;TOTAL_ROW_VERSIONS&lt;/code&gt;.
-This is a version counter for instant alter table, and it is incremented each time a change to a table&amp;rsquo;s schema is being made.&lt;/p&gt;
-&lt;p&gt;The manual continues with a warning:
-The TRV counter has a limit of 64.
-Commands are rejected when the counter is reaching the limit.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;When a table with instantly added or dropped columns is rebuilt by table-rebuilding &lt;code&gt;ALTER TABLE&lt;/code&gt; or &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; operation, the &lt;code&gt;TOTAL_ROW_VERSIONS&lt;/code&gt; value is reset to 0.
-The maximum number of row versions permitted is 64, as each row version requires additional space for table metadata.
-When the row version limit is reached, &lt;code&gt;ADD COLUMN&lt;/code&gt; and &lt;code&gt;DROP COLUMN&lt;/code&gt; operations using &lt;code&gt;ALGORITHM=INSTANT&lt;/code&gt; are rejected with an error message that recommends rebuilding the table using the &lt;code&gt;COPY&lt;/code&gt; or &lt;code&gt;INPLACE&lt;/code&gt; algorithm.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;ERROR 4080 (HY000): Maximum row versions reached for table test/t1. No more columns can be added or dropped instantly. Please use COPY/INPLACE.&lt;/code&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&#34;the-obvious-breakage&#34;&gt;
-    &lt;a href=&#34;#the-obvious-breakage&#34;&gt;
-	The obvious breakage
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;So a command is rejected, when TRV reaches 64.
-Also, MySQL uses replication a lot.
-In fact, I am of the persuasion that any MySQL installation that does not have at least one replica is broken.&lt;/p&gt;
-&lt;p&gt;So can we use this to break replication?&lt;/p&gt;
-&lt;p&gt;The manual suggests that &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; can be used to reset the counter.
-The manual knows the following things about &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/optimize-table.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OPTIMIZE&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;There is a syntax &lt;code&gt;OPTIMIZE LOCAL TABLE&lt;/code&gt;.
-»By default, the server writes &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; statements to the binary log so that they replicate to replicas.
-To suppress logging, specify the optional &lt;code&gt;NO_WRITE_TO_BINLOG&lt;/code&gt; keyword or its alias &lt;code&gt;LOCAL&lt;/code&gt;.«&lt;/li&gt;
-&lt;li&gt;This is not privileged: »This statement requires &lt;code&gt;SELECT&lt;/code&gt; and &lt;code&gt;INSERT&lt;/code&gt; privileges for the table.«&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;We now do this: With &lt;code&gt;dbdeployer&lt;/code&gt; we &lt;code&gt;dbdeployer deploy replication 8.0.29&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;On the primary: &lt;code&gt;./m -u root&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;%&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;identified&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;secret&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;grant&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;all&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;to&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;database&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;create&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;kris&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;serial&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;varchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;20&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Continue as &lt;code&gt;kris&lt;/code&gt; on the primary: &lt;code&gt;./m -u kris -psecret kris&lt;/code&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;add&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;integer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;algorithm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total_row_versions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_tables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris/%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;alter&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;drop&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;column&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;algorithm&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;instant&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total_row_versions&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;information_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb_tables&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;where&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;like&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;kris/%&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now inject the &lt;code&gt;OPTIMIZE LOCAL TABLE&lt;/code&gt; command to plant the bomb.
-This can be done by the &lt;code&gt;kris&lt;/code&gt; user, or any other user having &lt;code&gt;INSERT&lt;/code&gt; and &lt;code&gt;SELECT&lt;/code&gt; privilege.
-It is not necessary to have &lt;code&gt;ALTER&lt;/code&gt; privilege, as long as you know that somebody else is doing instant alter table commands on the table.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;optimize&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;local&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Finally, continue to add and drop the column &lt;code&gt;t.i&lt;/code&gt; as before.
-Check the TRV value on the primary and a replica.
-Note how the TRV value on the primary is lower than on the replica.&lt;/p&gt;
-&lt;p&gt;When the TRV value reaches 64 on the replica, replication will stop with error 4080.
-The replica is unable to execute the alter table command, while the primary was able to run it.&lt;/p&gt;
 </description>
     </item>
     
