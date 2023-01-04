@@ -6,7 +6,144 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 03 Jan 2023 20:50:01 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 04 Jan 2023 15:07:03 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>I don&#39;t hate Let&#39;s Encrypt anymore</title>
+      <link>https://blog.koehntopp.info/2023/01/04/i-dont-hate-letsencrypt-anymore.html</link>
+      <pubDate>Wed, 04 Jan 2023 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/01/04/i-dont-hate-letsencrypt-anymore.html</guid>
+      <description>&lt;p&gt;So, Rachel is in a bad mood:
+&lt;a href=&#34;https://rachelbythebay.com/w/2023/01/03/ssl/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Why I still have an old-school cert on my https site&lt;/a&gt;
+
+
+and I feel her.
+Like her, for my own sites I have always been running Apache.
+There was never much need to upgrade, the software was available, stable, and fast enough.&lt;/p&gt;
+&lt;p&gt;At some point in time, I needed TLS and started to use &lt;a href=&#34;https://letsencrypt.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;That was messy: Running
+&lt;a href=&#34;https://github.com/dehydrated-io/dehydrated&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dehydrated&lt;/a&gt;
+
+,
+a bunch of haphazard shell scripts trying to get certificates authenticated and installed, through a wild chain of callbacks and sourced scripts all over the system,
+driven by Cron, and with bad alerting.&lt;/p&gt;
+&lt;p&gt;None of that was necessary.&lt;/p&gt;
+&lt;p&gt;Turns out, starting with Apache 2.4.30 (19-Feb-2018), Apache supports
+&lt;a href=&#34;https://httpd.apache.org/docs/trunk/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mod_md&lt;/a&gt;
+
+,
+and that supports Let&amp;rsquo;s Encrypt out of the box.
+For good measure, I also enabled &lt;a href=&#34;https://httpd.apache.org/docs/current/mod/mod_macro.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mod_macro&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;This being an Ubuntu, I put this into my &lt;code&gt;/etc/apache2/sites-available/000-default.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apacheconf&#34; data-lang=&#34;apacheconf&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; mybasedomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDomain&lt;/span&gt; mybasedomain.koehntopp.de contentdomain.koehntopp.de proxydomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDContactEmail&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDCerticateAgreement&lt;/span&gt; accepted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDPrivateKeys&lt;/span&gt; RSA &lt;span class=&#34;m&#34;&gt;4096&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There is no additional &amp;ldquo;SSLEngine&amp;rdquo; needed, except &lt;code&gt;SSLEngine on&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I also add two macros that I use a lot to create virtual hosts to the same file.
+One is for straight-up content domains:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apacheconf&#34; data-lang=&#34;apacheconf&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;Macro&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;VHost $host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:80&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteRule&lt;/span&gt; ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:443&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;SSLEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/Macro&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The other is for Proxy Domains to dockerized stuff:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apacheconf&#34; data-lang=&#34;apacheconf&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;Macro&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;ProxyVHost $host $toport&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:80&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteRule&lt;/span&gt; ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:443&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;SSLEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ProxyPreserveHost&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ProxyPass&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://127.0.0.1:$toport/&amp;#34;&lt;/span&gt; nocanon
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ProxyPassReverse&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://127.0.0.1:$toport/&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RequestHeader&lt;/span&gt; set X-Forwarded-Proto %{REQUEST_SCHEME}s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RequestHeader&lt;/span&gt; set X-Forwarded-For %{REMOTE_ADDR}s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RequestHeader&lt;/span&gt; set X-Real-IP %{REMOTE_ADDR}s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;AllowEncodedSlashes&lt;/span&gt; NoDecode
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/Macro&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The actual host definition can then be rather short.
+A content domain is simply&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Use Vhost contentdomain.koehntopp.de&amp;#34;&lt;/span&gt; &amp;gt; /etc/apache2/sites-available/contentdomain.koehntopp.de.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; a2ensite contentdomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and I am done. Similarly, a proxy to some internal service:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Use ProxyVHost proxydomain.koehntopp.de 3000&amp;#34;&lt;/span&gt; &amp;gt; /etc/apache2/sites-available/proxydomain.koehntopp.de.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; a2ensite proxydomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;where &lt;code&gt;3000&lt;/code&gt; is the exposed port from docker. An &lt;code&gt;apachectl configtest&lt;/code&gt; and an &lt;code&gt;apachectl graceful&lt;/code&gt; later things are rolling.
+A look at &lt;code&gt;/server-status&lt;/code&gt; will tell you if things worked, and what the state of the &lt;code&gt;mod_md&lt;/code&gt; deployment is.&lt;/p&gt;
+&lt;p&gt;If you added a new domain, that certificate will be available, but not yet loaded, so a second reload is necessary for deployment.&lt;/p&gt;
+&lt;p&gt;Find the actual cert files in &lt;code&gt;/etc/apache2/md/domains/mybasedomain.koehntopp.de&lt;/code&gt;, as &lt;code&gt;pubcert.pem&lt;/code&gt; and &lt;code&gt;privkey.pem&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Additional Note:&lt;/strong&gt;
+You can use &lt;code&gt;mod_md&lt;/code&gt; to get certificates for your Tailscale domains (Domains in the &lt;code&gt;*.ts.net&lt;/code&gt; namespace).&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Ways to run mysqldump</title>
       <link>https://blog.koehntopp.info/2023/01/03/mysql-ways-to-run-mysqldump.html</link>
@@ -3667,154 +3804,6 @@ Because local caching trickery with special hardware is required, this is very e
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Proper O11y for MySQL</title>
-      <link>https://blog.koehntopp.info/2022/10/25/proper-o11y-for-mysql.html</link>
-      <pubDate>Tue, 18 Oct 2022 06:07:08 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/10/25/proper-o11y-for-mysql.html</guid>
-      <description>&lt;p&gt;Three years ago, I learned that due to SREcon, Charity Majors was in Amsterdam.
-I set up a meeting between Benjamin Tyler, Yves Orton and a few more colleagues of mine, and her.
-That is, because apparently in a case of co-evolution, our company internal &amp;ldquo;Events&amp;rdquo; system and Honeycombs observability tooling, modelled after experiencing Fabooks &amp;ldquo;Scuba&amp;rdquo; seemed to be doing a lot of the same things.&lt;/p&gt;
-&lt;p&gt;These days, we are using Honeycomb a lot to record events, and debug code running in distributed systems.
-But one type of system does not fit into this very well:
-Databases of all kinds.
-And I don&amp;rsquo;t understand why, because it would be perfect.&lt;/p&gt;
-&lt;p&gt;About one year ago, I wrote an article about &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2021/09/15/mysql-tracing-a-single-query-with-performanceschema.html&#34;&gt;Tracing a single query with PERFORMANCE_SCHEMA&lt;/a&gt;
-
-&amp;rdquo;.
-Why would I want to trace a single query like that?&lt;/p&gt;
-&lt;p&gt;I want to get data about query execution out of MySQL, at scale, and push this into Honeycomb.&lt;/p&gt;
-&lt;h1 id=&#34;honeycomb-spans-traces-and-tags&#34;&gt;
-    &lt;a href=&#34;#honeycomb-spans-traces-and-tags&#34;&gt;
-	Honeycomb, Spans, Traces and Tags
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Honeycomb is a tool that ingests &amp;ldquo;Spans&amp;rdquo;, time intervals, that can be annotated with arbitrary key-value pairs.
-Spans do not only have a start and stop time, but also maintain relationships between Callers and Callees as a Tree Structure.
-A root Span and its children form an execution trace (&amp;ldquo;a trace&amp;rdquo;) of a single call or entity of work in a distributed system.&lt;/p&gt;
-&lt;p&gt;A lot of Honeycomb assumes that the values are numbers, but it doesn&amp;rsquo;t have to stop here (and other tooling can read Spans and work with non-numeric data, too).&lt;/p&gt;
-&lt;p&gt;Spans nest, and you could look at the execution of your program as an arrow of time on which the spans are arranged.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/10/proper-o11y-01.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;A root span at the application level is started in &lt;code&gt;buildAvailabilityQuery()&lt;/code&gt;. This called into &lt;code&gt;sqlORM()&lt;/code&gt;, which in turn called &lt;code&gt;runSQL()&lt;/code&gt; several times. All this is recorded from the application and the application code. We&amp;rsquo;d want to see MySQL execution data in there, as subspans of &lt;code&gt;runSQL()&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;For each span then any number of KV-pairs are recorded, so you could record call parameters, results, or intermediate state.&lt;/p&gt;
-&lt;p&gt;Honeycomb allows you to aggregate such data on the fly, in almost real time, so you can ask &amp;ldquo;how many SQL queries is each action running, as a histo&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;You could also ask &amp;ldquo;What is the aggregated SQL time of each action&amp;rdquo;, over time. You&amp;rsquo;d see that at a certain point in time this time changed in the P95 and above.
-With their &amp;ldquo;Bubble up&amp;rdquo; functionality you&amp;rsquo;d mark the time interval and the aggregate interval (&amp;quot;&amp;gt; 1.5ms execution time&amp;quot;).
-Honeycomb would take the marked set vs. the base set (before, and faster), and highlight you all KV pairs that are different.&lt;/p&gt;
-&lt;p&gt;You might see that all slow samples have a specific commit tag associated with them, or you might see that all slow samples have a specific host machine tag or AZ tag associated with them.&lt;/p&gt;
-&lt;p&gt;Without prior knowledge you&amp;rsquo;d see what the root cause for the slowness is.&lt;/p&gt;
-&lt;h1 id=&#34;application-level-instrumentation&#34;&gt;
-    &lt;a href=&#34;#application-level-instrumentation&#34;&gt;
-	Application level instrumentation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Database instrumentation right now does not provide good data that can go into systems such as Honeycomb.&lt;/p&gt;
-&lt;p&gt;With application code, this is all easy.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;beeline&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@beeline.traced&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;external_api_request&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;external_api_request&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;request_params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# ...&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# adding fields here will add it to the active span wrapping&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# this function&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add_context_field&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;response_time&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;response_time&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;c1&#34;&gt;# ...&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nd&#34;&gt;@beeline.traced&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s1&#34;&gt;&amp;#39;main&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;():&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add_context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;({&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;request_params&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;request_params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;c1&#34;&gt;# calling this function will create a new span, under the &amp;#34;main&amp;#34; span&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;error&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;external_api_request&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;request_params&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;c1&#34;&gt;# add more context once we have results&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;add_context&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;({&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;result_count&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;result&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;error&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;error&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;})&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# This will create a span - or if no trace is in progress, will also&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# start a trace&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Do not forget to close the beeline to ensure all spans get sent&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# before the application ends!&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;beeline&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;close&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Example from the &lt;a href=&#34;https://docs.honeycomb.io/getting-data-in/beeline/python/#using-a-decorator&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Honeycomb Documentation&lt;/a&gt;
-
-, showing how to instrument Python code.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Even if you know nothing about Python or Honeycomb, you can understand this.&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;@beeline.traced()&lt;/code&gt; decorator wraps the function after it into the tracing harness, creating a span and maintaining the caller/callee relationships.
-The &lt;code&gt;beeline.add_context()&lt;/code&gt; calls add KV-pairs to the tracing span.&lt;/p&gt;
-&lt;h1 id=&#34;what-database-integration-can-look-like&#34;&gt;
-    &lt;a href=&#34;#what-database-integration-can-look-like&#34;&gt;
-	What database integration can look like
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/10/proper-o11y-02.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;What we want from a Query: The SQL_TEXT, and the Query Plan that actually ran for that Query. We would also want a list of Page#&amp;rsquo;s requested and Page#&amp;rsquo;s read from disk. Optionally, we would want subspans for each lock and wait, with annotations.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Why?&lt;/p&gt;
-&lt;p&gt;We get a Span for each SQL statement, maintaining the Caller/Callee Relationship with the code that sent us the query.
-Thus, we see the SQL exectution in the context of the ORM that generated the SQL, in the context of the Application Code that called into the ORM.&lt;/p&gt;
-&lt;p&gt;Even ungreppable, generated SQL becomes attributable to the location in the source it is coming from.
-We get to see the ORM&amp;rsquo;s work in the context of the application that used it and the SQL it generated. With timings.
-Attribution was previously hard to do, but this way it is trivial, because the call tree relationship is explicitly maintained.&lt;/p&gt;
-&lt;p&gt;We also get to see if somebody is running &amp;ldquo;SELECT in a loop&amp;rdquo; instead of using a JOIN (&amp;ldquo;machine gunning pattern&amp;rdquo;).
-Machine gunning was previously very hard to even detect, and even harder to attribute. Now it is trivial.&lt;/p&gt;
-&lt;p&gt;We get to see the Query plan that ran, in the context of the application code (two spans up) that asked for data, with timings.
-We get to attribute SQL runtime, and result processing time in the application, easily, because we get to see if the database SQL runtime span fills all of the SQL query processing span, or if there is additional time that is only visible in the application. This could only be result processing that was not marked up properly.&lt;/p&gt;
-&lt;p&gt;We get to see pages requested from disk (before hitting the cache) and actual IO generated (cache misses) for each query.
-That allows us to see queries that have a good plan, but are slow, and understand why this is.
-With optional locking and wait information, we&amp;rsquo;d see more of that, for cases where this is not caused by IO but contention.&lt;/p&gt;
-&lt;p&gt;And, as a side benefit, a page# stream before and after the cache also allows us to determine the working set size of the database (for one query, for a subset of queries or for all queries), and to calculate ideal cache and instance sizes.
-This makes instance type selection a guided, non-empirical process, but that is another article.&lt;/p&gt;
-&lt;h1 id=&#34;conclusion&#34;&gt;
-    &lt;a href=&#34;#conclusion&#34;&gt;
-	Conclusion
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;None of that exists, but I don&amp;rsquo;t know why.
-Database tracing is completely ignoring modern observability integration, and things such as PMM or VividCortex are distinct from Honeycomb like systems.
-Attribution of SQL (when generated) is a &lt;em&gt;mess&lt;/em&gt;.&lt;/p&gt;
-&lt;p&gt;Information about the plan of queries that ran is not retained well in MySQL.
-IO traces around the buffer pool are not even instrumented. They can be done. I routinely do them on production systems &lt;a href=&#34;https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html&#34;&gt;at the file system level with blktrace&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;And exfil of that data through &lt;code&gt;P_S&lt;/code&gt; is just painful.
-One would want an in-server ring buffer and a Pusher thread that sends this data in a non-blocking way (using localhost UDP?) to a listener, that transforms this into whatever O11y system you&amp;rsquo;d be using.&lt;/p&gt;
-&lt;p&gt;So here I am, with my limited C++, and a 100 GB build partition, trying to build a P_S table that is mostly a stream of BLOBs, into which I try to collect the data I need in a non-crashing way.
-Once I have that, I can try to build a Pusher that takes data from that pool, trying to ship that to my coprocess, which then takes this and transforms it into whatever Honeycomb wants, injecting Spans into their system.&lt;/p&gt;
-&lt;p&gt;Then I will finally be able to debug SQL properly, and in a single place with the code that made that SQL in the first place.&lt;/p&gt;
-&lt;h1 id=&#34;other-systems&#34;&gt;
-    &lt;a href=&#34;#other-systems&#34;&gt;
-	Other Systems
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;My colleague Willian Stewart pointed me at Vitess, which &lt;a href=&#34;https://vitess.io/docs/16.0/user-guides/configuration-advanced/tracing/#instrumenting-queries&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;already does that for the &amp;ldquo;above MySQL&amp;rdquo;&lt;/a&gt;
-
- part of Vitess:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/10/proper-o11y-03.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The call tree of a Query to Vitess as it is being handled inside of Vitess, as seen by Jaeger.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Vitess requires you to generate a piece of JSON that contains the necessary IDs to build a call tree:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;#34;uber-trace-id&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{trace-id}:{span-id}:{parent-span-id}:{flags}&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;All items of a single trace have the same &lt;code&gt;trace-id&lt;/code&gt;.
-Each span has their own &lt;code&gt;span-id&lt;/code&gt; and also states what the &lt;code&gt;parent-span-id&lt;/code&gt; is.
-Additional &lt;code&gt;flags&lt;/code&gt; control the annotations generated (&amp;ldquo;what gets traced&amp;rdquo;).&lt;/p&gt;
-&lt;p&gt;To protect the data against accidental interpretation and munging, Vitess wants you to base64 encode the thing and then put it into a &lt;code&gt;/*VT_SPAN_CONTEXT=...*/&lt;/code&gt; pseudo-comment as part of the query to be traced.&lt;/p&gt;
 </description>
     </item>
     

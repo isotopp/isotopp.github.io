@@ -6,7 +6,144 @@
     <description>Recent content in security on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 03 Jan 2023 20:50:01 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/security/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 04 Jan 2023 15:07:03 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/security/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>I don&#39;t hate Let&#39;s Encrypt anymore</title>
+      <link>https://blog.koehntopp.info/2023/01/04/i-dont-hate-letsencrypt-anymore.html</link>
+      <pubDate>Wed, 04 Jan 2023 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/01/04/i-dont-hate-letsencrypt-anymore.html</guid>
+      <description>&lt;p&gt;So, Rachel is in a bad mood:
+&lt;a href=&#34;https://rachelbythebay.com/w/2023/01/03/ssl/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Why I still have an old-school cert on my https site&lt;/a&gt;
+
+
+and I feel her.
+Like her, for my own sites I have always been running Apache.
+There was never much need to upgrade, the software was available, stable, and fast enough.&lt;/p&gt;
+&lt;p&gt;At some point in time, I needed TLS and started to use &lt;a href=&#34;https://letsencrypt.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;That was messy: Running
+&lt;a href=&#34;https://github.com/dehydrated-io/dehydrated&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dehydrated&lt;/a&gt;
+
+,
+a bunch of haphazard shell scripts trying to get certificates authenticated and installed, through a wild chain of callbacks and sourced scripts all over the system,
+driven by Cron, and with bad alerting.&lt;/p&gt;
+&lt;p&gt;None of that was necessary.&lt;/p&gt;
+&lt;p&gt;Turns out, starting with Apache 2.4.30 (19-Feb-2018), Apache supports
+&lt;a href=&#34;https://httpd.apache.org/docs/trunk/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mod_md&lt;/a&gt;
+
+,
+and that supports Let&amp;rsquo;s Encrypt out of the box.
+For good measure, I also enabled &lt;a href=&#34;https://httpd.apache.org/docs/current/mod/mod_macro.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mod_macro&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;This being an Ubuntu, I put this into my &lt;code&gt;/etc/apache2/sites-available/000-default.conf&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apacheconf&#34; data-lang=&#34;apacheconf&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; mybasedomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDomain&lt;/span&gt; mybasedomain.koehntopp.de contentdomain.koehntopp.de proxydomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDContactEmail&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDCerticateAgreement&lt;/span&gt; accepted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;MDPrivateKeys&lt;/span&gt; RSA &lt;span class=&#34;m&#34;&gt;4096&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;There is no additional &amp;ldquo;SSLEngine&amp;rdquo; needed, except &lt;code&gt;SSLEngine on&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;I also add two macros that I use a lot to create virtual hosts to the same file.
+One is for straight-up content domains:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apacheconf&#34; data-lang=&#34;apacheconf&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;Macro&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;VHost $host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:80&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteRule&lt;/span&gt; ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:443&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;SSLEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/Macro&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The other is for Proxy Domains to dockerized stuff:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-apacheconf&#34; data-lang=&#34;apacheconf&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;Macro&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;ProxyVHost $host $toport&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:80&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RewriteRule&lt;/span&gt; ^(.*)$ https://%{HTTP_HOST}$1 [R=301,L]
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;VirtualHost&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;*:443&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerName&lt;/span&gt; $host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ServerAdmin&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;user&lt;/span&gt;@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ErrorLog&lt;/span&gt; ${APACHE_LOG_DIR}/error-$host.log
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;CustomLog&lt;/span&gt; ${APACHE_LOG_DIR}/access-$host.log combined
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;DocumentRoot&lt;/span&gt; &lt;span class=&#34;sx&#34;&gt;/var/www/&lt;/span&gt;$host
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;Directory&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;/var/www/$host&lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Options&lt;/span&gt; Indexes FollowSymLinks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;AllowOverride&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;None&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nb&#34;&gt;Require&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;all&lt;/span&gt; granted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nt&#34;&gt;&amp;lt;/Directory&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;SSLEngine&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ProxyPreserveHost&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;On&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ProxyPass&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://127.0.0.1:$toport/&amp;#34;&lt;/span&gt; nocanon
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;ProxyPassReverse&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/&amp;#34;&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;http://127.0.0.1:$toport/&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RequestHeader&lt;/span&gt; set X-Forwarded-Proto %{REQUEST_SCHEME}s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RequestHeader&lt;/span&gt; set X-Forwarded-For %{REMOTE_ADDR}s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;RequestHeader&lt;/span&gt; set X-Real-IP %{REMOTE_ADDR}s
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nb&#34;&gt;AllowEncodedSlashes&lt;/span&gt; NoDecode
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nt&#34;&gt;&amp;lt;/VirtualHost&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nt&#34;&gt;&amp;lt;/Macro&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The actual host definition can then be rather short.
+A content domain is simply&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Use Vhost contentdomain.koehntopp.de&amp;#34;&lt;/span&gt; &amp;gt; /etc/apache2/sites-available/contentdomain.koehntopp.de.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; a2ensite contentdomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and I am done. Similarly, a proxy to some internal service:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;Use ProxyVHost proxydomain.koehntopp.de 3000&amp;#34;&lt;/span&gt; &amp;gt; /etc/apache2/sites-available/proxydomain.koehntopp.de.conf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; a2ensite proxydomain.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;where &lt;code&gt;3000&lt;/code&gt; is the exposed port from docker. An &lt;code&gt;apachectl configtest&lt;/code&gt; and an &lt;code&gt;apachectl graceful&lt;/code&gt; later things are rolling.
+A look at &lt;code&gt;/server-status&lt;/code&gt; will tell you if things worked, and what the state of the &lt;code&gt;mod_md&lt;/code&gt; deployment is.&lt;/p&gt;
+&lt;p&gt;If you added a new domain, that certificate will be available, but not yet loaded, so a second reload is necessary for deployment.&lt;/p&gt;
+&lt;p&gt;Find the actual cert files in &lt;code&gt;/etc/apache2/md/domains/mybasedomain.koehntopp.de&lt;/code&gt;, as &lt;code&gt;pubcert.pem&lt;/code&gt; and &lt;code&gt;privkey.pem&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Additional Note:&lt;/strong&gt;
+You can use &lt;code&gt;mod_md&lt;/code&gt; to get certificates for your Tailscale domains (Domains in the &lt;code&gt;*.ts.net&lt;/code&gt; namespace).&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Was mein Kind in der Schule so macht</title>
       <link>https://blog.koehntopp.info/2022/12/30/was-mein-kind-in-der-schule-so-macht.html</link>
@@ -2913,81 +3050,6 @@ and that is now
 .&lt;/p&gt;
 &lt;p&gt;It&amp;rsquo;s fixed by writing the ed code to a tmp file while filtering the commands
 fed to ed, and then feeding the filtered input into ed.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Spectre #2 Mitigation - Retpolines</title>
-      <link>https://blog.koehntopp.info/2018/02/26/spectre-2-mitigation-retpolines.html</link>
-      <pubDate>Mon, 26 Feb 2018 15:02:37 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2018/02/26/spectre-2-mitigation-retpolines.html</guid>
-      <description>&lt;p&gt;Intel finally published a whitepaper about Spectre #2 Mitigation. The
-&lt;a href=&#34;https://software.intel.com/sites/default/files/managed/1d/46/Retpoline-A-Branch-Target-Injection-Mitigation.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
-
-
-is also featured on
-&lt;a href=&#34;https://news.ycombinator.com/item?id=16423401&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hacker News&lt;/a&gt;
-
-. It&amp;rsquo;s a technical
-whitepaper, but you can see the footprints of lawyers all over the
-language. For me, it basically says that, yes, Retpolines are indeed
-incompatible with Controlflow Enforcement Technology (CET) that Intel
-was planning for later CPUs
-(&lt;a href=&#34;https://software.intel.com/sites/default/files/managed/4d/2a/control-flow-enforcement-technology-preview.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PDF&lt;/a&gt;
-
-,
-&lt;a href=&#34;https://www.theregister.co.uk/2016/06/10/intel_control_flow_enforcement/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;El Reg article&lt;/a&gt;
-
-).&lt;/p&gt;
-&lt;p&gt;CET introduces a shadow stack for return addresses only, and will fail
-your code into an exception if the normal stack return address and the
-shadow stack address disagree. Trying to touch and manipulate the
-shadow stack will also fail into an exception. That is, CET makes
-touching a return address on the stack toxic by having in effect
-separate argument and return address stacks, and your code explodes
-every time you try to do something funny with return addresses. Which
-is what Retpolines depend on.&lt;/p&gt;
-&lt;p&gt;Intel also note that
-Retpolines also require Return Stack Stuffing in order to work
-properly, because otherwise RET will also speculate and the Retpoline
-will not work as intended. They also note that external events can
-interact with the Return Stack Buffer (RSB) and empty it and they
-don&amp;rsquo;t actually write but strongly imply that these external events are
-not a thing you have control over, as these are&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;There are also a number of events that happen asynchronously from normal
-program execution that can result in an empty RSB. Software may use “RSB
-stuffing” sequences whenever these asynchronous events occur:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Interrupts/NMIs/traps/aborts/exceptions which increase call depth.&lt;/li&gt;
-&lt;li&gt;System Management Interrupts (SMI) (see BIOS/Firmware Interactions).&lt;/li&gt;
-&lt;li&gt;Host VMEXIT/VMRESUME/VMENTER.&lt;/li&gt;
-&lt;li&gt;Microcode update load (WRMSR 0x79) on another logical processor of the same core.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;The hardware you run on can either have a Spectre vulnerability and require
-Retpolines, or have CET and Hardware Spectre Mitigation, but not both. So
-you generate code for either one or the other, and they suggest
-instrumentation of the loader to patch all indirect jump callsites as
-required.&lt;/p&gt;
-&lt;p&gt;That&amp;rsquo;s not completely insane, as loaders already patch up jump instructions
-at load time.&lt;/p&gt;
-&lt;p&gt;They do note that virtual machines in clustered setups with life migration
-may be at a disadvantage here, as this is a load-time thing and hence you
-need to expose your worst CPU in a cluster as the virtual CPU to your VMs in
-order for this to work with migration. That&amp;rsquo;s already a requirement in
-heterogenous clusters, but still annoying.&lt;/p&gt;
-&lt;p&gt;All in all, this is basically disappointing to underwhelming.&lt;/p&gt;
-&lt;p&gt;The TL;DR is that Retpolines and CET are indeed incompatible, and ld.so is
-called to the rescue to patch up code at load time for one or the other. The
-ld.so thing is an interesting observation. It means that the code on disk
-and the code in memory differ in one more way.&lt;/p&gt;
-&lt;p&gt;As these things accumulate, the actual on-disk machine instructions mutate
-over time into a kind of virtual machine notation that on load is adjusted
-more and more to the needs of the actual machine it&amp;rsquo;s being executed on.
-Maybe a thing such as a JVM and a JIT is not the worst thing that has
-happened to us.&lt;/p&gt;
 </description>
     </item>
     
