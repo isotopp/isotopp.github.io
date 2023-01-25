@@ -6,7 +6,100 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Jan 2023 15:07:03 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 25 Jan 2023 20:51:25 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mastodon Interaction Counters</title>
+      <link>https://blog.koehntopp.info/2023/01/25/mastodon-interaction-counters.html</link>
+      <pubDate>Wed, 25 Jan 2023 06:07:08 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/01/25/mastodon-interaction-counters.html</guid>
+      <description>&lt;p&gt;In &lt;a href=&#34;https://toot.io/@Sirsquid/109750677079204971&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this post&lt;/a&gt;
+
+, SirSquid@toot.io asks:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Can someone explain to me why seeing retoots and likes is wildly different across Mastodon servers?&lt;/p&gt;
+&lt;p&gt;From toot.io, a toot from @gamingonlinux@mastodon.social shows hardly anything.
+But when viewing it on mastodon.social, it has &lt;em&gt;tons&lt;/em&gt; of both.&lt;/p&gt;
+&lt;p&gt;This is one thing I would love to see properly cleaned up on Masto.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Mastodon is using ActivityPub, a federated protocol.
+Nodes exchange articles, and each node caches articles.&lt;/p&gt;
+&lt;p&gt;In order for a node to receive an article from a remote user in the first place, at least one user on the system needs to subscribe to that remote user.&lt;/p&gt;
+&lt;p&gt;So given the following situation:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/01/mastodon-subscribe.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;On mastodon.social, the user GamingonLinux subscribes to SirSquid@toot.io.
+On chaos.social, the user isotopp subscribes to SirSquid@toot.io.
+On subscription, the toot.io server is notified of the subscription.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Two users on two different servers, isotopp@chaos.social, and GamingonLinux@mastodon.social, subscribe to SirSquid@toot.io.
+The server toot.io is notified of this, and will deliver new posts from SirSquid to these two remote servers.
+Old articles from SirSquid do not exist on either remote server, then will not be backlogged.&lt;/p&gt;
+&lt;p&gt;When SirSquid now posts a new article, the following happens because of the subscription:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/01/mastodon-post.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;SirSquid posts a new article.
+The new article only exists at toot.io.
+It enters the Local Timeline, which is a view into the Outqueue of that server.
+The article is now delivered to the home servers of all subscribers.
+On delivery, it enters the Federated Timeline, which is a view into the Inqueue of that server.
+The local subscribers are then notified and are shown the local copy of that article.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;When SirSquid posts a new article, this article is locally created on toot.io.
+This is going to be the master copy of the new article.&lt;/p&gt;
+&lt;p&gt;The article also enters the local timeline of that server, which can be thought of as a view of the Outqueue of the server
+(This is not actually precisely true, because posts can be unlisted or otherwise restricted in visibility).&lt;/p&gt;
+&lt;p&gt;Queue workers on toot.io will eventually fetch the master copy of the article, determine the article subscribers and then try to post the article to the subscribers remote servers.
+When that works, the article enters the Inqueue of the remote server.
+When that does not work, retries can happen.
+The Inqueue of the remote server is visible (with visibility restrictions) as the Federated Timeline.&lt;/p&gt;
+&lt;p&gt;For each incoming new post, the local subscribers are notified and are shown the local copy of that post.&lt;/p&gt;
+&lt;p&gt;When a user is very popular and has many followers, their posts need to be copied to all subscribers, which can be literally on every single server in the Fediverse.
+That means thousands of deliveries of the post need to be made. That can take time.&lt;/p&gt;
+&lt;p&gt;Not all servers will always be immediately reachable.
+A certain percentage of deliveries will fail, and be backlogged.
+The source server will have to retry a certain number of times, and if the error persists, give up.
+The subscribers on the unavailable server will lack a copy of that post.&lt;/p&gt;
+&lt;p&gt;Users on, say, mastodon.social, could still discover missing posts if they checked the home timeline of SirSquid on toot.io.
+They won&amp;rsquo;t find the post on the copy of the home timeline of SirSquid on mastodon.social.&lt;/p&gt;
+&lt;p&gt;When readers on mastodon.social or chaos.social interact with the local copy of a post, this will happen:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/01/mastodon-interaction.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A user on chaos.social boosts the post.
+The local boost counter for the post is updated.
+The counter change is forwarded to the originating server, toot.io.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A user on mastodon.social likes the post.
+The local like counter for the post is updated.
+The counter change is forwarded to the originating server, toot.io.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Interactions are being aggregated at toot.io.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Interactions with a post are updated locally: A boost on chaos.social increments the boost-counter on chaos.social, and a like on mastodon.social increments the like-counter on mastodon.social.
+Such interactions are also forwarded back to the master copy of the post.
+That is, updates for each boost and each like are being sent back to toot.io.
+The counter at the posts master copy aggregates all these interactions and has totals for the post.
+Notifications are being sent to SirSquid@toot.io, and go Ding, Ding, Ding!&lt;/p&gt;
+&lt;p&gt;If a user is very popular and has many subscribers, and a post is very popular and has many interactions,
+the originating server (here: toot.io) will receive updates from many thousand remote servers, one for each like or boost of the post on any server.
+These updates will need to be persisted, that is, written to disk into a database.
+This will generate a lot of load on the originating server.&lt;/p&gt;
+&lt;p&gt;The aggregated notifications won&amp;rsquo;t be forwarded back to the local copies.
+That is, the master copy of the post at toot.io will have the aggregate number of likes and boosts.
+But these aggregated numbers will not be redistributed back to the subscribers and their servers.&lt;/p&gt;
+&lt;p&gt;In our example, the post will have one like and one boost on toot.io, but only one like and no boosts on mastodon.social.
+It will have no likes and one boost on chaos.social.&lt;/p&gt;
+&lt;p&gt;Distributing all counter updates in increments of one to each and every server that has subscribers to SirSquid&amp;rsquo;s posts would just be too much work.&lt;/p&gt;
+&lt;p&gt;And that is why interaction counters in ActivityPub are usually different on each server, and only the master copy of the post has true counter values.&lt;/p&gt;
+&lt;p&gt;Or true-ish.
+Of course, just like individual articles may never reach individual servers if they are unreachable too long, the same can happen backwards with counter updates.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>I don&#39;t hate Let&#39;s Encrypt anymore</title>
       <link>https://blog.koehntopp.info/2023/01/04/i-dont-hate-letsencrypt-anymore.html</link>
@@ -3564,246 +3657,6 @@ This is usually much faster than loading the data off the volume, over the netwo
 &lt;p&gt;This is safe, because together with Oracle MySQL we developed GTID-based replication, which together with Orchestrator gives us complete flexibility and control over the replication topology, enabling warm and fast switchovers.
 This is around 20x faster than active/passive replication pairs we used before, and reduced a lot of daily operational toil for the DBA team.&lt;/p&gt;
 &lt;p&gt;We recommend the use of distributed storage for large database sizes, but latency considerations apply.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Bandwidth, IOPS and Latency</title>
-      <link>https://blog.koehntopp.info/2022/11/07/bandwidth-iops-and-latency.html</link>
-      <pubDate>Mon, 07 Nov 2022 06:07:08 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/11/07/bandwidth-iops-and-latency.html</guid>
-      <description>&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/db-metrics-01.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Hard_disk_drive#/media/File:Seagate_ST33232A_hard_disk_inner_view.jpg&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;A harddisk&lt;/a&gt;
-
- from 1998.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The opening image for this post shows the stock photo of a hard disk platter.
-You can see a movable arm that can ride in and out of a stack of rotating platters coated with some kind of metal oxide.
-We sometimes call this kind of storage condescendingly &amp;ldquo;rotating rust&amp;rdquo;, when in reality it is a triumph of material science.&lt;/p&gt;
-&lt;p&gt;Moving an arm costs time, and bringing that arm into the right position and then waiting until the right segment of disk rotates underneath it so that we can write things to disk takes time.
-A lot of time &amp;ndash; around 5 ms or so on a modern disk, 4x longer on the old thing in the image.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;How much time is &amp;ldquo;5 ms&amp;rdquo;?&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;A modern CPU at 3 GHz is running 3 clock cycles per nanosecond, 1/1,000,000,000 (10^-9).
-&amp;ldquo;5 ms&amp;rdquo; are therefore 15,000,000 clock cycles (15 million clock cycles).&lt;/p&gt;
-&lt;p&gt;Since x86_64 is a CISC architecture, getting a fixed &amp;ldquo;clockticks per instructions retired&amp;rdquo; (CPI) value is hard.
-&lt;a href=&#34;https://www.intel.com/content/www/us/en/develop/documentation/vtune-help/top/reference/cpu-metrics-reference.html#cpu-metrics-reference_CLOCKTICKS-PER-INSTRUCTIONS-RETIRED-CPI&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Documentation&lt;/a&gt;
-
- and benchmarking with vTune shows variable CPI values between 1 and 2 for some interesting and common use-cases in our environment.&lt;/p&gt;
-&lt;p&gt;Because a single core waiting for a hard disk seek already can block around 10 million executed instructions, &amp;ldquo;not reading data from disk, and if we have to, make it fast&amp;rdquo; was always key to our database design.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&#34;latency&#34;&gt;
-    &lt;a href=&#34;#latency&#34;&gt;
-	Latency
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;That means, writing to a rotating disk takes around 1/200 of a second, or we can write around 200 random blocks on such a disk.
-This is called &lt;strong&gt;Write Latency&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;There is also &lt;strong&gt;Read Latency&lt;/strong&gt;, which works the same way, but the other way around.
-It is often possible to avoid read latency by providing more memory, but when it happens it is worse – writes can often be queued and executed in the background with some compromise on persistence guarantees, but reads often depend on the outcome of previous reads.
-And that means we have to wait for the first read to complete before we know what to read next.&lt;/p&gt;
-&lt;p&gt;Together, when we just talk about the time it takes from issuing a disk request to its completion, we call both timings &lt;strong&gt;Completion Latency&lt;/strong&gt;, or clat.&lt;/p&gt;
-&lt;p&gt;Benchmarking tools will give you a completion time histogram (or clat histo) for a drive, and it looks like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     clat percentiles (usec):
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[   53],  5.00th=[   53], 10.00th=[   53], 20.00th=[   53],
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[   53], 40.00th=[   54], 50.00th=[   55], 60.00th=[   55],
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[   59], 80.00th=[   60], 90.00th=[   73], 95.00th=[   75],
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[   91], 99.50th=[   99], 99.90th=[  235], 99.95th=[  433],
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 2343]
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;fio Benchmark clat histogram from &lt;a href=&#34;https://blog.koehntopp.info/2019/06/13/adventures-in-storageland.html&#34;&gt;Adventures in Storageland&lt;/a&gt;
-
-.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Here we see a Benchmark result from a typical database blade in use at work, a Dell M630 with a PERC controller and a 1.92TB SSD.&lt;/p&gt;
-&lt;p&gt;You can see that the units here are µs, Microseconds (1/1,000,000, a millionth of a second).
-The 99.5th percentile of all clats is 99µs (100µs are 0.1ms).
-For the 99.9th percentile, the clat jumps to more than twice that, 0.235ms, and for the 99.95th it&amp;rsquo;s again the double of that, 0.433ms.
-After than, we get the really bad outliers.&lt;/p&gt;
-&lt;p&gt;That is, we have a storage that performs quite well across the spectrum from 0.05ms to 0.10ms for 99.5% of all requests &amp;ndash; they are actually written to battery buffered (BBU) persistent memory, and then streamed out to the storage medium, which happens to be a SSD.&lt;/p&gt;
-&lt;p&gt;The BBU is what makes this fast, even with HDD, and if the battery ever fails you get a lot worse performance.
-We monitor these batteries very closely for that reason.&lt;/p&gt;
-&lt;p&gt;This is the performance we get from bare metal, for around 100 Euro/TB and 9W-25W per drive unit.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-09.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Write Completion Latency comparison between Local Storage (above) and Ceph (below) from &lt;a href=&#34;https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html&#34;&gt;Database Workload and Storage&lt;/a&gt;
-
-.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The graph above compares two kinds of storages.
-We are looking at how long it takes to wait for a write to the medium, and draw a histogram of write times.
-The X-axis shows write time in µs, the Y-Axis the number of requests with that time.
-The comparison is between a bare-metal storage with a local disk behind a SmartArray or PERC controller on the top, and Ceph below.&lt;/p&gt;
-&lt;p&gt;We can see that writes to the local storage are quick (0.1ms or less), and that they are also not spread out:
-The write time is extremely reliable.&lt;/p&gt;
-&lt;p&gt;The Ceph Storage has a median completion time (P50) of 0.9 ms, and a P99 somewhere up slightly under 2 ms.
-The spectrum of write times is extremely wide, the completion time varies a lot.
-This makes any guarantees on performance very hard.&lt;/p&gt;
-&lt;p&gt;At the P99 scale Ceph is 20x slower, but on top of that the variance makes it really hard to deliver consistent performance.&lt;/p&gt;
-&lt;h1 id=&#34;iops&#34;&gt;
-    &lt;a href=&#34;#iops&#34;&gt;
-	IOPS
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The word IOPS expands to &amp;ldquo;&lt;strong&gt;I&lt;/strong&gt;/O &lt;strong&gt;O&lt;/strong&gt;perations &lt;strong&gt;P&lt;/strong&gt;er &lt;strong&gt;S&lt;/strong&gt;econd&amp;rdquo;.
-It is not the inverse of Latency.
-This is discussed at length in &lt;a href=&#34;https://blog.koehntopp.info/2019/06/13/adventures-in-storageland.html&#34;&gt;Adventures in Storageland&lt;/a&gt;
-
-.
-The distinction is extremely important for Flash Storage with NVME interfaces.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/db-metrics-02.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Storage in SSD and NVME drives is made from a lot of storage chips. Writing to each takes a fixed amount of time, but there are many, and they can be used concurrently.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Writing to a flash chip takes a fixed amount of time, about 1/20,000s to 1/30,000s.
-That is, each single flash chip in a flash drive can perform 20,000 to 30,000 writes per second.
-But with the right interface, each of the chips on the drive can do that in parallel to the other chips.
-So with proper driver soft- and hardware you get a performance that is much higher than 20,000 operations per second.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;SSD&amp;rdquo; puts a SATA interface on the PCI bus, and talks to a flash storage like it did to a hard disk.
-The protocol serializes requests, so you get 20,000/s, even if the hardware behind the SATA interface could do more.
-A lot more.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;NVME&amp;rdquo; drops the SATA interface and puts the flash storage directly onto the PCI bus.
-The protocol now can have many requests in flight concurrently, very many.
-A single enterprise grade NVME hard drive delivers 800,000 IO operations per second, or 800k IOPS.&lt;/p&gt;
-&lt;p&gt;Each single operation will still take 1/20,000s, though.&lt;/p&gt;
-&lt;p&gt;That is, in order to get 800,000 IOPS, you will need to talk in 40 independent streams in parallel to the drive.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;IOPS and Latency are not the same thing.&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Latency measures how long one single operation takes.
-Single Threaded, that is the number of operations you get, so IOPS and 1/Latency are identical in the single threaded case only.&lt;/p&gt;
-&lt;p&gt;The IOPS metric in the drive catalog is not that number.
-It is the aggregated parallel number of requests the drive can serve.
-If you divide IOPS and 1/Latency, you get the degree of parallelism you need to serve in order to actually get all the IOPS the hardware advertises.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Some workloads do have a high or even unlimited degree of parallelism.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/11/db-metrics-03.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The CERN Atlas detector, a measurement device that delivers 10,000s of independent, concurrent metrics streams to a storage. (Image: &lt;a href=&#34;https://atlas.cern/Discover/Detector&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cern&lt;/a&gt;
-
-).&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Imagine you are CERN, and have an array of detectors streaming data from your Synchrotron to some metrics storage.
-Each metrics flow is linear, and independent of what any other sensor writes.
-This is an ideal case for a &amp;ldquo;high latency, high IOPS, streaming metrics storage&amp;rdquo; kind of storage.
-Ceph was developed for this.&lt;/p&gt;
-&lt;p&gt;Other workloads are not like this.
-Online Transaction Processing Databases (OLTP databases) of the kind we run write a stream of transactions.
-Transactions are independent when they have non-overlapping sets of primary key (write sets, wsets), but if their wsets are overlapping, they have a dependency and order between themselves.&lt;/p&gt;
-&lt;p&gt;The average run length of non-overlapping wsets we call the &amp;ldquo;width of the binlog of that database at that point in time&amp;rdquo;.
-It is the number of parallel writes inherent to the workload of this database at that point in time.&lt;/p&gt;
-&lt;p&gt;We have measured it, and I have documented that in &lt;a href=&#34;https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html&#34;&gt;Parallel Replication&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;It is important to remember:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;This is workload dependent, that is, controlled by the application, and not the database.&lt;/li&gt;
-&lt;li&gt;This is extremely highly variable over time.&lt;/li&gt;
-&lt;li&gt;This is a small number, usually not exceeding 3-5 on the average.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Because this is not controlled by the database, we cannot make any SLO on it – SLOs can be made by a team only on things the team can influence.
-Because it is highly variable, and workload dependent, not even an application team can rely on a minimum width.&lt;/p&gt;
-&lt;p&gt;And because it is usually a small number, Latency of a storage is way more important for any OLTP database than any other performance metric.&lt;/p&gt;
-&lt;h1 id=&#34;bandwidth&#34;&gt;
-    &lt;a href=&#34;#bandwidth&#34;&gt;
-	Bandwidth
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Writes to disk have a size.
-Bandwidth is measured in MB/s, and is calculated as &amp;ldquo;number of writes times the size of the writes&amp;rdquo; or &amp;ldquo;sum of the write sizes per second&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;In MySQL, a commit is a multiple of 512 bytes, and a checkpoint write is a multiple of the 16 KB page write.&lt;/p&gt;
-&lt;p&gt;At 2500 writes per second (0.4ms write latency) we get 40 MB/s at 16 KB page write size (and hardly more than 1 MB/s for 512 byte commit writes).&lt;/p&gt;
-&lt;p&gt;At 20000 writes per second (0.04ms write latency) we get 400 MB/s at 16 KB page write size, and hardly more than 10 MB/s for 512 byte commit writes.&lt;/p&gt;
-&lt;p&gt;The point of checkpointing is to coalesce updates to the same page, so it is usually a lot less checkpoint writes than commit writes: several updates to different rows on the same page are checkpointed together at a later time, saving write bandwidth.&lt;/p&gt;
-&lt;p&gt;Our OLTP databases usually write &amp;ldquo;dozens of MB per second&amp;rdquo; under very high load, and a lot less under normal pressure.
-Bandwidth is normally not a metric we are much interested in, because about any storage that can deliver a latency we like automatically tends to have the bandwidth we require.&lt;/p&gt;
-&lt;h1 id=&#34;a-very-simple-benchmark&#34;&gt;
-    &lt;a href=&#34;#a-very-simple-benchmark&#34;&gt;
-	A very simple benchmark
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;All of this leads to a very simple benchmark.
-When we want to understand how a storage behaves with MySQL, we run a &amp;ldquo;16 KB random-write, synchronous writes benchmark at a queue depth of 1 with a single thread&amp;rdquo; and look at the clat histogram.
-We then seek the inflection point, at which percentile does the clat suddenly increase a lot.&lt;/p&gt;
-&lt;p&gt;We can see the &amp;ldquo;normal clat&amp;rdquo;, and with the inverse get the minimum guaranteed transactional rate, &amp;ldquo;commit/s&amp;rdquo;.
-And we see if there is a sharp inflection point (the Dell Perc clat histogram above), that is, we see if we can expect consistent write performance or variable write performance.&lt;/p&gt;
-&lt;p&gt;Ideally, we get a minimal clat that is highly stable until we reach saturation.&lt;/p&gt;
-&lt;p&gt;We can repeat the same with a random-read benchmark, no caching, in order to understand the performance of databases with a working set size larger than available memory.&lt;/p&gt;
-&lt;p&gt;Actual MySQL performance will be largely described by the results of this benchmark, even if the reality is slightly more nuanced.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2021/02/class-200-lba.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Oakgate Workload Analytics shows what a database does with the disk when it is writing (Image from &lt;a href=&#34;https://blog.koehntopp.info/2021/02/25/mysql-from-below.html&#34;&gt;MySQL from Below&lt;/a&gt;
-
-).&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The above graph is the result of a blktrace command recording real world disk write activity to a ramdisk, and then plotting it.
-The diagram plots block number (LBA, linear block address) over time, that is, we see where on the disk we are writing.&lt;/p&gt;
-&lt;p&gt;We can see the small writes to the database log files every time a commit is made.
-This is a synchronous write, a multiple of 512 bytes, and the client hangs and waits until this write is finished.
-Application performance is completely dependent on these writes being fast.&lt;/p&gt;
-&lt;p&gt;Every now and then the database cleans up the log by actually writing data pages back to disk, aggregating many changes that before have been recorded only in log writes.
-This is called a checkpoint.
-We can see that a checkpoint consists of a large number of writes to actual data files with addresses all over the disk.
-These are multiples of 16 KB in size, and they happen asynchronously in the background.&lt;/p&gt;
-&lt;p&gt;The simplified random-write benchmarks takes both requirements, and tests completion latency and minimum bandwidth requirements together.
-Anything that passes the simplified random-write benchmark automatically performs as well, or better with real world workloads.&lt;/p&gt;
-&lt;h1 id=&#34;summary&#34;&gt;
-    &lt;a href=&#34;#summary&#34;&gt;
-	Summary
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Storage performance is described by three parameters:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Latency, how long it takes to read or write a thing.&lt;/li&gt;
-&lt;li&gt;IOPS, the aggregated number of reads or writes a storage can do.
-Exploiting all IOPS often requires a considerable degree of parallelism in many modern storages.&lt;/li&gt;
-&lt;li&gt;Bandwidth, the MB/s that the storage can take or deliver.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Online transactional databases sit between the storage and the application.
-Their job is described by Codd, &lt;a href=&#34;https://en.wikipedia.org/wiki/Jim_Gray_%28computer_scientist%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Gray&lt;/a&gt;
-
- et all as the &lt;a href=&#34;https://en.wikipedia.org/wiki/ACID&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ACID principle (1983)&lt;/a&gt;
-
-.
-That is, they provide transactional write behavior (atomicity), correctness of data (consistency), transactional read behavior (isolation) and finally correct write behavior (durability).&lt;/p&gt;
-&lt;p&gt;The amount of exploitable parallelism is limited by these rules, the application workload, and storage properties.
-For optimal performance, they require the lowest latency they can get, a reasonable IOPS budget, and a moderate bandwidth budget.
-In general, any storage that provides good latency automatically provides sufficient IOPS and Bandwidth.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Latency is the controlling property of storage for OLTP databases.&lt;/strong&gt;&lt;/p&gt;
-&lt;h2 id=&#34;what-latency-can-i-expect-from-various-storages&#34;&gt;
-    &lt;a href=&#34;#what-latency-can-i-expect-from-various-storages&#34;&gt;
-	What Latency can I expect from various storages?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Here are various storages that have successfully run OLTP databases in the past, and now:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;A local HDD without a BBU can be expected to perform in 1/200s or worse.
-That is why controllers with a BBU have been invented, and that is also why storages made from HDDs of the past are often arrays of very many, very small disks, even if larger disks would have been available.
-The larger number of spindles allows you to exploit parallelism, the BBU allows the client to move on a lot quicker than 5 ms.&lt;/li&gt;
-&lt;li&gt;Local Storage (SSD, NVME) can be expected to perform in 1/10,000s or better.
-Some performa a lot better, 1/20,000s to 1/30,000s.
-The difference between Flash presented as SSD and NVME is mainly in the degree of exploitable parallelism.&lt;/li&gt;
-&lt;li&gt;Distributed storage can be expected to perform in 1/2000s or better.
-&lt;ul&gt;
-&lt;li&gt;That is, a NetApp filer from 2012 (FC/AL, BBU, many rotating hard disks) usually did take 1/2000s for a write, over the network.&lt;/li&gt;
-&lt;li&gt;Amazon gp2 type EBS is advertised with 1/3000s, with quotas keeping you down (excepting bursts) if your volume is smaller than 5 TB.
-You want to get out of quota, you buy more space, even if you do not need the space – you need the performance that comes with larger volumes.&lt;/li&gt;
-&lt;li&gt;Amazon io1 type EBS is advertised with 1/10000s or better.
-This is &amp;ldquo;distributed storage with local cache trickery&amp;rdquo;, a hybrid storage.
-It is not possible to get this kind of performance from a distributed storage without some local caching.
-Because local caching trickery with special hardware is required, this is very expensive.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     
