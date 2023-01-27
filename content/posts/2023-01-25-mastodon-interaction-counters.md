@@ -48,8 +48,8 @@ The local subscribers are then notified and are shown the local copy of that art
 When SirSquid posts a new article, this article is locally created on toot.io.
 This is going to be the master copy of the new article.
 
-The article also enters the local timeline of that server, which can be thought of as a view of the Outqueue of the server
-(This is not actually precisely true, because posts can be unlisted or otherwise restricted in visibility).
+The article also enters the local timeline of that server, which can be thought of as a view of the Outqueue of the server.
+(This is not actually precisely true, because posts can be unlisted or otherwise restricted in visibility.)
 
 Queue workers on toot.io will eventually fetch the master copy of the article, determine the article subscribers and then try to post the article to the subscribers remote servers.
 When that works, the article enters the Inqueue of the remote server.
