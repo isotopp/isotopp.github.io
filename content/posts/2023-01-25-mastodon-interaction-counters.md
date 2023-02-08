@@ -32,7 +32,7 @@ On subscription, the toot.io server is notified of the subscription.*
 
 Two users on two different servers, isotopp\@chaos.social, and GamingonLinux\@mastodon.social, subscribe to SirSquid\@toot.io.
 The server toot.io is notified of this, and will deliver new posts from SirSquid to these two remote servers.
-Old articles from SirSquid do not exist on either remote server, then will not be backlogged.
+Old articles from SirSquid do not exist on either remote server, they will not be backlogged.
 
 When SirSquid now posts a new article, the following happens because of the subscription:
 
@@ -51,7 +51,7 @@ This is going to be the master copy of the new article.
 The article also enters the local timeline of that server, which can be thought of as a view of the Outqueue of the server.
 (This is not actually precisely true, because posts can be unlisted or otherwise restricted in visibility.)
 
-Queue workers on toot.io will eventually fetch the master copy of the article, determine the article subscribers and then try to post the article to the subscribers remote servers.
+Queue workers on toot.io will eventually fetch the master copy of the article, determine the articles subscribers, and then try to post the article to the subscribers remote servers.
 When that works, the article enters the Inqueue of the remote server.
 When that does not work, retries can happen.
 The Inqueue of the remote server is visible (with visibility restrictions) as the Federated Timeline.
