@@ -26,7 +26,7 @@ That of course invalidated this approach completely.
 # "Security is a process", what does that even mean?
 
 The MoD then changed their way of working completely.
-They sat down with the teams, and with each they made a catalog of failire modes.
+They sat down with the teams, and with each they made a catalog of failure modes.
 
 "What happens when a web server node fails?"
 "What happens when ten web server nodes fail?"
@@ -34,7 +34,7 @@ They sat down with the teams, and with each they made a catalog of failire modes
 "What when a rollout rolls out broken code, and we need to roll back?"
 "What when storage fails?"
 
-And the MoD sat down and worked their way through protocols of outages past.
+And the MoD sat down and worked their way through protocols of past outages.
 They cataloged the outages and mapped then to the scenarios created above, and if they found missing cases the catalog was extended, together with the team.
 
 # It is only science if you write it down
@@ -78,7 +78,7 @@ This is a "loss of control" scenario, not "loss of availability".
 You do not lose web servers, but you lose the ability to make new ones or to decommission old ones or change the config of the existing ones.
 Systems usually can continue to run without their automation controller for a few hours, provided the operational circumstances are somewhat stable.
 
-In some cases, loss of state in the control plane highlighted that the control plan could not rediscover its clients out their and scan them for state.
+In some cases, loss of state in the control plane highlighted that the control plan could not rediscover its clients out there and scan them for state.
 Instead, it was assumed that the entire region was to be recreated from scratch, when it was in fact there, and perfectly functional, just unknown to the controller.
 
 In some cases the automation assumed that new systems were to be recreated from scratch by cloning over data from remote regions.
