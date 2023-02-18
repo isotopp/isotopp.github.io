@@ -232,7 +232,7 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/ `mysql` /*!40100 DEFAULT CHARACTER SET 
 USE `mysql`;
 ```
 
-In MySQL 8, the `mysql` schema cannot be dropped any more, so you need to edit that out manually to make the dump useful.
+In MySQL 8, the `mysql` schema cannot be dropped anymore, so you need to edit that out manually to make the dump useful.
 
 Why `mysqldump` does  not special case this schema nobody knows:
 it is known broken, and documented as broken in the manual page.

@@ -40,21 +40,21 @@ When SirSquid now posts a new article, the following happens because of the subs
 
 *SirSquid posts a new article.
 The new article only exists at toot.io.
-It enters the Local Timeline, which is a view into the Outqueue of that server.
+It enters the Local Timeline, which is a view into the Out-queue of that server.
 The article is now delivered to the home servers of all subscribers.
-On delivery, it enters the Federated Timeline, which is a view into the Inqueue of that server.
+On delivery, it enters the Federated Timeline, which is a view into the In-queue of that server.
 The local subscribers are then notified and are shown the local copy of that article.*
 
 When SirSquid posts a new article, this article is locally created on toot.io.
 This is going to be the master copy of the new article.
 
-The article also enters the local timeline of that server, which can be thought of as a view of the Outqueue of the server.
+The article also enters the local timeline of that server, which can be thought of as a view of the Out-queue of the server.
 (This is not actually precisely true, because posts can be unlisted or otherwise restricted in visibility.)
 
 Queue workers on toot.io will eventually fetch the master copy of the article, determine the articles subscribers, and then try to post the article to the subscribers remote servers.
-When that works, the article enters the Inqueue of the remote server.
+When that works, the article enters the In-queue of the remote server.
 When that does not work, retries can happen.
-The Inqueue of the remote server is visible (with visibility restrictions) as the Federated Timeline.
+The In-queue of the remote server is visible (with visibility restrictions) as the Federated Timeline.
 
 For each incoming new post, the local subscribers are notified and are shown the local copy of that post.
 

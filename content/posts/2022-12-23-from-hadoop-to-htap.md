@@ -155,7 +155,7 @@ Promising representatives of HTAP databases are
 
 (Unlike TiDB and CockroachDB, Heatwave is not a true distributed database, but a distributed in-memory accelerator to a single-node MySQL OLTP frontend machine that transparently offloads analytics queries)
 
-## No coolaid for me?
+## No cool-aid for me?
 
 In general, these systems are welcome, useful and innovative, because they allow database schemas to grow and spread to a cluster of machines, even for OLTP queries.
 Personally, I remain sceptical with regards to the integrated, copy-less processing of analytics queries.
@@ -165,7 +165,7 @@ In our DWH/BI-Series in this blog (and especially in
 I have tried to explain why I believe the *Transformation* in ETL is a fundamental step that transforms from OLTP "normal form" (mostly 3NF) to BI "normal form" (the star and snowflake forms).
 
 Nobody likes 3NF -- it complicates many things that should be simple, but we must use it in OLTP because data is being modified by transactions.
-Without it, we suffer from all kinds of anomalies, and [normalizaton]({{< ref "/content/posts/2005-09-11-nermalisation.md" >}}) prevents these.
+Without it, we suffer from all kinds of anomalies, and [normalization]({{< ref "/content/posts/2005-09-11-nermalisation.md" >}}) prevents these.
 
 DWH tables are different, because they are records of the past:
 They do not change (after all stragglers have been loaded), and because they are immutable, they cannot have anomalies.

@@ -143,7 +143,7 @@ We know that for a proper ETL process we need the attribute values of the things
 
 So when we receive a row change event on the `reservation` table, 
 we only have the option of running a back-query to the database to resolve the ids for data.
-That is, for the `userid: 1` from the `reservation` row change we would have to `select * from user where userid = 1` to resolve the user name and address.
+That is, for the `userid: 1` from the `reservation` row change we would have to `select * from user where userid = 1` to resolve the username and address.
 
 But even that has the potential for a race condition, if a table changes faster than we can back-query.
 Worse, it also makes your extraction process very fragile, because the moment we change the `reservation` table in an incompatible way our back-queries would break.

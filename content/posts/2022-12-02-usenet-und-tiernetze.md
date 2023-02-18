@@ -74,7 +74,7 @@ Den ich bereitwillig weiter gegeben habe.
 
 Die /CL-Netzkoordination hatte mir damals gedroht, mich zu deföderieren, 
 aber sie kannte ja meine Quelle nicht.
-Und die war hoch redundant.
+Und die war hochredundant.
 Außerdem hatte ich die entsprechenden Herkunftsdaten aus den Artikeln gelöscht, sodaß sie nicht an meinen Upstream herankamen.
 Ich hatte die betreffenden Personen aufgefordert, mich zu verklagen. 
 Das ist aber nie passiert.
@@ -127,7 +127,7 @@ Ein Problem bei der Föderation von USENET trat dann später in den deutschsprac
 und am Ende ist USENET dann daran zugrunde gegangen:
 
 Das Einrichten neuer Gruppen war aus nicht nachvollziehbaren Gründen im USENET ein Riesen-Aufriß mit Diskussion,
-formalen RfV (Request for Vote), in dem um einen Proposal gerungen wurde und dann einem Voting-Prozeß mit Quorum und Mehrheiten.
+formalen RfV (Request for Vote), in dem um einen Proposal gerungen wurde und dann einem Voting-Prozess mit Quorum und Mehrheiten.
 Also, das Einrichten einer Gruppe hat nichts gekostet: 
 Ein Verzeichnis anlegen und gut ist.
 
