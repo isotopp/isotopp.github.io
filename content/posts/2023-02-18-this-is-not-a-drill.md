@@ -18,7 +18,7 @@ The other requirement was to be able to have all systems CVE-free within 30 days
 That was of course impossible to implement.
 
 Managements reaction was to create the position of the "Master of Disaster" (MoD).
-The MoD and their apprentice ("always two there are") have then planned, for many months, a failover between two Regions.
+The MoD and their apprentice ("always two there are") have then planned, for many months, a fail-over between two Regions.
 But they did not achieve much, and they never could, because in the end Management Buy-In was missing.
 In the end, Management wanted to know (needed to know!), before the test, that it would work.
 That of course invalidated this approach completely.
@@ -26,7 +26,7 @@ That of course invalidated this approach completely.
 # "Security is a process", what does that even mean?
 
 The MoD then changed their way of working completely.
-They sat down with the teams, and with each they made a catalog of failire modes.
+They sat down with the teams, and with each they made a catalog of failure modes.
 
 "What happens when a web server node fails?"
 "What happens when ten web server nodes fail?"
@@ -48,7 +48,7 @@ Then the team created a test scenario for each of these outages, bundled them to
 And together with the Master of Disaster, their apprentice and a scribe went through them one by one, writing down what happened.
 Afterwards, all sat down, and compared notes with the predictions, and made a set of tasks to update the Alarms, the Opdocs or the Procedures themselves.
 Then they scheduled a followup session.
-In the end they arrived at a rythm of a Drill every two or three sprints, until the team and the MoD were satisfied with the outcome.
+In the end they arrived at a rhythm of a Drill every two or three sprints, until the team and the MoD were satisfied with the outcome.
 
 # Rinse, Repeat
 
@@ -111,8 +111,8 @@ Do small things with individual teams, first with cooperative teams, then reachi
 
 This was not a single giant monster project, but small steps over many years, with a change in the MoD position and with a redefinition of the title and scope of the position along the way.
 It also was a fundamental change in the way how operations are done, and what is acceptable.
-It improved not only the business continuity stance, but also improved security overall, and made many audits and certficiations easier.
-It also delivered the necessary metadata (machine inventory, mapping of services to instances, mapping of depdencies, implementation of controls) to management to make a large set of certifcations and audits just a formality.
+It improved not only the business continuity stance, but also improved security overall, and made many audits and certifications easier.
+It also delivered the necessary metadata (machine inventory, mapping of services to instances, mapping of dependencies, implementation of controls) to management to make a large set of certifications and audits just a formality.
 
 When people say "Security is a process", this is what they mean.
 Small, doable exercises that become part of everyday operations.
