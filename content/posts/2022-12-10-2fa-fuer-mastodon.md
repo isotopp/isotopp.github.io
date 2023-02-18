@@ -50,9 +50,10 @@ Diese wiederum kann man auch direkt in Anwendungen wie Bitwarden kopieren.*
 
 Klickt man auf Set Up, bekommt man einen QR-Code zum Scannen in der Google Authenticator App, oder den Seed-String als Text (etwa für Bitwarden).
 
-Man sollte auf jeden Fall einen Screenshot vom QR-Code oder eine Kopie von Seed machen, und dies an einem sicheren Ort archivieren.
+Man sollte auf jeden Fall einen Screenshot vom QR-Code oder eine Kopie des Seed machen, und diese an einem sicheren Ort archivieren.
 Ich habe einen USB-Stick für solche Dinge.
 Damit kann man bei Verlust von Telefon oder Rechner dennoch an seine Accounts kommen, denn man kann den QR-Code so oft scannen wie man will, und auf so vielen Geräten scannen wie man will.
+
 In der Regel ist es bei Problemen einfacher, die archivierten QR-Codes neu zu scannen, als durch den Account Recovery Workflow eines mit 2FA geschützten Accounts zu laufen.
 Das ist dann auch einheitlich, Account Recovery ist je nach Anbieter unterschiedlich.
 
@@ -135,7 +136,7 @@ Diese Liste kann man durchgehen und systematisch für alle Accounts 2FA aktivier
 
 ![](/uploads/2022/12/2fa-09.png)
 *Vaultwarden Webanwendung, Passwort-Reports.
-Hier kann man auf "Inactive Two-stop Login" klicken und eine Liste von Logins bekommen, die man hat und die 2FA haben könnten, aber bei denen in Vaultwarden kein 2FA hinterlegt ist.
+Hier kann man auf "Inactive Two-step Login" klicken und eine Liste von Logins bekommen, die man hat und die 2FA haben könnten, aber bei denen in Vaultwarden kein 2FA hinterlegt ist.
 Die meisten Passwortmanager haben inzwischen solche Reports.*
 
 # Zusammenfassung
