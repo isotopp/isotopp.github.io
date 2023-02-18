@@ -97,3 +97,34 @@ Similarly, on a properly virtualized box instead of a VPS it would be much highe
 
 Consider this when you opt for a cheap, overcomitted VPS slice instead of a proper KVM.
 When you go for the VPS, make a monthly contract and do not commit to a one-year option, so you can get rid of it when it turns out to be unsuitable. 
+
+# Actual resource consumption
+
+On our server, we run three instances of "Paper" (a high-performance patch to a patch to a patch of the original minecraft server),
+and waterfall, a Minecraft proxy that directs users between the instances.
+
+![](/uploads/2023/02/native-thread-01.png)
+
+*Output of the `htop` program.
+On the right hand side of the screenshot, we see three identically configured `java` instances, each representing a "Paper" server.
+The resident set size of these servers is relatively small, 3.5 GB per instance, as shown by the left-lower red bubble.
+The virtual size is not quite 10 GB.
+The server instance will grow until it reaches the virtual size.
+Total memory consumption is shown in the upper-left bubble, 11.6 GB are used (the sum of the servers plus some extra from the OS).*
+
+We run the servers with `-Xmx4096M -Xms4096M` each, which is rather generous.
+This creates processes with a total `VIRT` size of ~ 10 GB, of which `RES` is the actually comitted memory, around 3.5 GB per process.
+This results in 11.2 GB memory usage, plus 0.4 GB extra from other processes on the instance.
+
+Our total memory is 32 GB.
+
+The server load is shown as 0.41/8.0, so the machine is pretty idle, and the CPU load meters above the memory meter agrees.
+
+![](/uploads/2023/02/native-thread-02.png)
+
+*Output of the `htop` program, detail. When hitting `H` to toggle display of user threads, the number of running threads is also shown.
+We are running 245 threads.*
+
+Hitting `H` (Uppercase-H) in `htop` unfolds user threads display. It also shows the total number of threads running next to the number of tasks (processes).
+In our case, we are running with 245/1100 threads.
+This is by far the most scarce resource.
