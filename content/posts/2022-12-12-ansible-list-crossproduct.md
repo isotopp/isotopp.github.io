@@ -111,7 +111,7 @@ class FilterModule:
 This defines a class `FilterModule` with a method `filters()`.
 The names are prescribed, and cannot be changed.
 
-In the `filters()` method we are to return a dictionary with pairs of Jinja2 templating filter name (we want `cross`) and matching Python function or method references.
+In the `filters()` method we are to return a dictionary with pairs of Jinja2 templating filter name (we want `cross`) and matching Python function or method reference (that is, the name a callable without parameter parentheses attached).
 In our example, we map the Jinja2 filter `cross` to the method `self.cross()` in our Python class (Line 8).
 
 The actual `cross()` method is in Line 11. It takes 2 mandatory parameters, `x` and `y` and an optional parameter `sepchar`.
