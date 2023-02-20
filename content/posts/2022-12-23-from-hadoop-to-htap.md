@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "From Hadoop to HTAP?"
-date: 2022-12-23 06:07:08Z
+date: 2022-12-23T06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

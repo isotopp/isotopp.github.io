@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "This is not a Drill, this is just Tuesday"
-date: 2023-02-18 06:07:08Z
+date: 2023-02-18T06:07:08Z
 feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_en

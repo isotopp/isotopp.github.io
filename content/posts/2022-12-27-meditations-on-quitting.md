@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Meditations on Quitting"
-date: 2022-12-23 01:02:03Z
+date: 2022-12-23T01:02:03Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en

@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Of Stars and Snowflakes"
-date: 2022-11-16 06:07:08Z
+date: 2022-11-16T06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

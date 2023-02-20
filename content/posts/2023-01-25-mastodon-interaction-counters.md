@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Mastodon Interaction Counters"
-date: 2023-01-25 06:07:08Z
+date: 2023-01-25T06:07:08Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en

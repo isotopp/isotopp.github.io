@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Service Directories, and what they are good for"
-date: 2023-02-06 06:07:08Z
+date: 2023-02-06T06:07:08Z
 feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_en

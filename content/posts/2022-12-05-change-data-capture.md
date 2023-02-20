@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Change Data Capture"
-date: 2022-12-05 06:07:08Z
+date: 2022-12-05T06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

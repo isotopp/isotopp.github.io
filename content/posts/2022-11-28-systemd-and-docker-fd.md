@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Systemd and docker -H fd://"
-date: 2022-11-28 09:10:11Z
+date: 2022-11-28T09:10:11Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en

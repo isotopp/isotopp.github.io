@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Databases on un-RAID-ed storage?"
-date: 2022-11-09 06:07:08Z
+date: 2022-11-09T06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

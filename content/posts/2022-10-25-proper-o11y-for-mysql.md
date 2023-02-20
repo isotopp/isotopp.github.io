@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Proper O11y for MySQL"
-date: 2022-10-18 06:07:08Z
+date: 2022-10-18T06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
@@ -158,4 +158,3 @@ Each span has their own `span-id` and also states what the `parent-span-id` is.
 Additional `flags` control the annotations generated ("what gets traced").
 
 To protect the data against accidental interpretation and munging, Vitess wants you to base64 encode the thing and then put it into a `/*VT_SPAN_CONTEXT=...*/` pseudo-comment as part of the query to be traced.
-

@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "I don't hate Let's Encrypt anymore"
-date: 2023-01-04 06:07:08Z
+date: 2023-01-04T06:07:08Z
 feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_en

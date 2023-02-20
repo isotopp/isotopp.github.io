@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Tying the BI pipeline together"
-date: 2022-12-22 06:07:08Z
+date: 2022-12-22T06:07:08Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
