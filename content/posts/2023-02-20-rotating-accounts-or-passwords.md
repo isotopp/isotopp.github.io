@@ -117,3 +117,5 @@ If you have it, implementing account rotation without complicating authorization
 - Even without multiple passwords, we can always leverage a secrets manager and some relatively simple external driver to rotate accounts instead.
   - This is complicated by the fact that many applications bind authorizations (access permissions) to identities (usernames).
   - We can use roles to work around that, and assign authorizations to these roles, then have the identity inherit from the role.
+- Implementing either account rotation or password rotation still requires additional work: an external driver, safeguards, monitoring and alerting, plus an update of the documentation.
+  In neither case you will be done by simply turning on a feature.
