@@ -118,7 +118,7 @@ When people say "Security is a process", this is what they mean.
 Small, doable exercises that become part of everyday operations.
 Then incremental widening of scope and increase of difficulty.
 
-And the work is not done by the MoD, buy by the teams -- all teams.
+And the work is not done by the MoD, but by the teams -- all teams.
 The MoD only steers the process, and guides the teams through it.
 
 Because this is not a Drill.
