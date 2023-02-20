@@ -6,7 +6,146 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Feb 2023 10:37:04 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Feb 2023 13:37:21 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rotating Accounts or Passwords?</title>
+      <link>https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords.html</link>
+      <pubDate>Mon, 20 Feb 2023 12:13:14 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords.html</guid>
+      <description>&lt;p&gt;Some applications allow you to have multiple passwords.
+For example, in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/password-management.html#dual-passwords&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MySQL, since 8.0.14 you can dual passwords for an account&lt;/a&gt;
+
+.
+Also, &lt;a href=&#34;https://redis.io/docs/management/security/acl/#create-and-edit-user-acls-with-the-acl-setuser-command&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Redis 6 allows you to have multiple passwords on an account ACL&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h1 id=&#34;personal-accounts-and-machine-accounts&#34;&gt;
+    &lt;a href=&#34;#personal-accounts-and-machine-accounts&#34;&gt;
+	Personal Accounts and Machine Accounts.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When running services in a production system, the services sometimes have personal accounts (PAs) that allow humans to login and perform actions on the service.
+Often, these accounts are very limited in number (in production), and privileged.&lt;/p&gt;
+&lt;p&gt;Also, you have clients connecting to the system.
+These are called Non-Personal Accounts, Machine Accounts or Service Accounts (MA) in many environments.
+Machine Accounts are not used by humans, but are a set of credentials used by a client applications to work with a service.&lt;/p&gt;
+&lt;p&gt;It is good practice to assign a different MA to each application using a service,  and to rotate credentials regularly and quickly for each MA.
+In many environments doing this is even a compliance requirement.&lt;/p&gt;
+&lt;h1 id=&#34;different-usernames-are-helpful&#34;&gt;
+    &lt;a href=&#34;#different-usernames-are-helpful&#34;&gt;
+	Different Usernames are helpful
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Assigning different identities (different usernames) to different applications is useful in many ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Access permissions are tied to identities, so different identities are a requirement to separate different sets of permissions.&lt;/li&gt;
+&lt;li&gt;Also, different identities allow you to attribute activity in the service to the identity, thus make monitoring, auditing and accounting possible.
+It is much easier to identify a misbehaving application, if all applications using your service have different user account names.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;dynamically-assigned-credentials&#34;&gt;
+    &lt;a href=&#34;#dynamically-assigned-credentials&#34;&gt;
+	Dynamically assigned credentials
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Very often credentials are not stored at all in the client configuration, but are requested dynamically on-demand from another service, the Secrets Manager or Vault.
+It is either part of a cloud control plane, and can leverage trust from the cloud infrastructure to know who is who and what to allow,
+or it is an external service such as a Hashicorp Vault.&lt;/p&gt;
+&lt;p&gt;In any case, the application would not store Database or Redis username and passwords in configuration files any more,
+but ask the secrets manager to provide these credentials at runtime, receive them, and then store them only in memory.
+They would also be expired and re-requested in regular intervals, on a multiple-minutes to hour scale.&lt;/p&gt;
+&lt;p&gt;This allows the Secrets Manager to perform account operations, such as password or account rotation.&lt;/p&gt;
+&lt;h1 id=&#34;account-rotation-or-password-rotation&#34;&gt;
+    &lt;a href=&#34;#account-rotation-or-password-rotation&#34;&gt;
+	Account Rotation or Password Rotation?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Rotating MA passwords is often a requirement, and most environments also require a comparatively high rotation frequency (&amp;ldquo;once per week&amp;rdquo;, which qualifies as &amp;ldquo;high&amp;rdquo; in database timescales).&lt;/p&gt;
+&lt;p&gt;Some services, such as MySQL and Redis given as examples above, allow you to associate multiple password with a single account.
+Many others do not, in them username (&amp;ldquo;identity&amp;rdquo;) and password (&amp;ldquo;authentication&amp;rdquo;) are a 2-tuple.&lt;/p&gt;
+&lt;p&gt;Rotating passwords, when taken literally, is hard with such services, because changing the password atomically in the server and all its clients is impossible.
+There is always some overlap during which the service already has the new password (and implicitly invalidated the old password),
+while the clients are still using the old password.
+If you rotated the password with traditional methods, there would be a discrepancy between clients and servers in password knowledge, and thus failed logins.&lt;/p&gt;
+&lt;p&gt;One way around that is provisioning new MA accounts for an application, and then feeding the applications not only new passwords, but completely new credentials.
+Thus,&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;an application &lt;code&gt;androidapp&lt;/code&gt; would see the old user &lt;code&gt;androidapp_23ad63&lt;/code&gt; with a generated password &lt;code&gt;BBLA32Tm9feoAGpN&lt;/code&gt;,&lt;/li&gt;
+&lt;li&gt;then account rotation would additionally create &lt;code&gt;androidapp_8760d3&lt;/code&gt; with the password &lt;code&gt;cts6Me5c7T4q6Dq2&lt;/code&gt; and the same authorizations in the service,&lt;/li&gt;
+&lt;li&gt;then the account rotation would test that this newly creates account works as desired,&lt;/li&gt;
+&lt;li&gt;then the account rotation would stop handing out the old credentials (&lt;code&gt;23ad63&lt;/code&gt;) to clients, and start serving the new credentials (&lt;code&gt;8760d3&lt;/code&gt;),&lt;/li&gt;
+&lt;li&gt;then the account rotation would over the course of an hour observe the old account not being used anymore, and the new account picking up traffic,
+&lt;ul&gt;
+&lt;li&gt;then the account rotation would see the old &lt;code&gt;23ad63&lt;/code&gt; account being silent for two hours, and eventually lock and deprovision it&lt;/li&gt;
+&lt;li&gt;or this does not work as expected, and &lt;code&gt;23ad63&lt;/code&gt; stays active past the deadline, in which case we raise an alarm.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;why-no-observability&#34;&gt;
+    &lt;a href=&#34;#why-no-observability&#34;&gt;
+	Why no observability?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Account rotation has some advantages over password rotation:
+First: it works with any application, even those that have no support for multiple passwords.
+Lack of multiple password support is stopping no-one from implementing rotation, it is just account and not password rotation you need to build.&lt;/p&gt;
+&lt;p&gt;Then:
+Even in MySQL and Redis it was not immediately obvious to me how password rotation can be validated to function correctly.
+That is, I have been unable to find a way to isolate instances of logins using the &amp;ldquo;non-primary&amp;rdquo; (or old) password, and somehow make sure that all logins in the last hour or so have been using the newly updated password.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As an engineer running the application, I would want to make sure that the old password is unused before I ask the service to deprovision it.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But observability on this seems to be completely non-existent.
+Which is weird, because any security engineer will tell you that a control is only valid, if you can verify it is working as intended.&lt;/p&gt;
+&lt;p&gt;With account rotation, usage of old accounts is immediately visible.
+The system can check if the old account is still being used, and once it isn&amp;rsquo;t anymore, it can deprovision it.
+If the old account does not go silent within some timeout, we can alert on this, identity the team responsible for the application, and sit down to talk about credential caching.&lt;/p&gt;
+&lt;p&gt;Thus, I would rate the implementation of any password rotation feature that does not have good observability built in as incomplete.&lt;/p&gt;
+&lt;h2 id=&#34;an-authorization-problem&#34;&gt;
+    &lt;a href=&#34;#an-authorization-problem&#34;&gt;
+	An authorization problem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Conversely, while account rotation has automatically good observability, it complicates authorisation.
+Authorisation is the set of permissions ties to an identity, the &lt;code&gt;GRANT&lt;/code&gt;s in SQL-lingo.&lt;/p&gt;
+&lt;p&gt;If you rotate accounts. you are essentially creating new accounts and drop old accounts on a schedule.
+That means&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;either store the authorization outside the system&lt;/li&gt;
+&lt;li&gt;or you can leverage a role system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the latter case, you would create a role &lt;code&gt;androidapp&lt;/code&gt;, and assign it the authorizations, then make sure all &lt;code&gt;androidapp%&lt;/code&gt; accounts are members of the role, inheriting the role authorizations with no individual per-account rules.&lt;/p&gt;
+&lt;p&gt;Most, but not all systems have a role-system for accounts similar to MySQL 8 roles, in which you assign authorizations to groups instead of individual accounts.
+If you have it, implementing account rotation without complicating authorization is comparatively easy.&lt;/p&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Having a secrets manager that hands out secrets to services and clients is useful, because it allows you to prevent materialization of secrets.
+&lt;ul&gt;
+&lt;li&gt;One of the primary features of clouds (private and public) would be that the control-plane of the cloud can attest identity of instances, and would allow you to solve authentication trivially.
+Sadly, Openstack and all Openstack derives private and public clouds seem to not implement that (and thus offer no IAM to services based on control-plane trust).&lt;/li&gt;
+&lt;li&gt;For those where the cloud control-plane does not offer IAM, Hashivault can help out a lot.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Some applications have the ability to have multiple passwords per identity, to allow easier password rotation.
+&lt;ul&gt;
+&lt;li&gt;The value of that feature is greatly diminished by a lack of observability. Any control is only complete if it can be verified to work.
+We need to be able to see if old deprecated passwords are unused in order to safely deprovision them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Even without multiple passwords, we can always leverage a secrets manager and some relatively simple external driver to rotate accounts instead.
+&lt;ul&gt;
+&lt;li&gt;This is complicated by the fact that many applications bind authorizations (access permissions) to identities (usernames).&lt;/li&gt;
+&lt;li&gt;We can use roles to work around that, and assign authorizations to these roles, then have the identity inherit from the role.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
     <item>
       <title>This is not a Drill, this is just Tuesday</title>
       <link>https://blog.koehntopp.info/2023/02/18/this-is-not-a-drill.html</link>
@@ -3118,235 +3257,6 @@ Infrastrukturentwickler die Prozesse mächtig aufbläst - E4 bis E6 lassen
 grüßen und damit geht jedwede mühsam erarbeitete Agilität verloren.&lt;/p&gt;
 &lt;p&gt;Irgendwie kommt mir da der Wind der 90er Jahre aus dem Heft entgegen. Kann
 das sein?&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Wieso zehn Prozent?</title>
-      <link>https://blog.koehntopp.info/2010/05/16/wieso-zehn-prozent.html</link>
-      <pubDate>Sun, 16 May 2010 08:11:32 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2010/05/16/wieso-zehn-prozent.html</guid>
-      <description>&lt;p&gt;In &lt;a href=&#34;http://erichsieht.wordpress.com/2010/05/15/sicherheitsmetrik/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sicherheitsmetrik&lt;/a&gt;
-
-
-heißt es als Antwort auf meinen Artikel
-&lt;a href=&#34;https://blog.koehntopp.info/2010/05/14/denic-erkl-rt-sich.html&#34;&gt;DENIC erklärt sich&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Wir IT-Akademiker forschen gerne an Fragen herum, die einen vagen
-Relitätsbezug haben, die man aber in der Praxis pragmatisch handhabt. Nach
-ein paar Jahren haben wir die Lösungen der Pragmatiker formal dokumentiert
-und wissenschaftlich nachgewiesen, was die Kollegen immer schon wussten,
-nämlich dass das so tatsächlich funktioniert…. Die zehn Prozent sind
-formal betrachtet völlig willkürlich gewählt, tatsächlich aber wohl ein
-Erfahrungswert, der sich aus informellen Beobachtungen typischer Vorgänge
-ergibt. So etwas würde ein Wissenschaftler nie zulassen.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Die zehn Prozent sind natürlich nicht willkürlich gewählt, sondern
-sorgfältig ermessen.&lt;/p&gt;
-&lt;p&gt;Dem Ganzen liegt eine andere Anekdote zugrunde, die die Denkweise eines
-Sysadmins verdeutlicht - am Ende geht es darum, Risiken für Menschen
-intuitiv handhabbar zu präsentieren (anstatt sie mit einem Regelwerk zu
-überschütten).&lt;/p&gt;
-&lt;h3 id=&#34;persönliche-betroffenheit-führt-zu-persönlicher-verantwortung&#34;&gt;
-    &lt;a href=&#34;#pers%c3%b6nliche-betroffenheit-f%c3%bchrt-zu-pers%c3%b6nlicher-verantwortung&#34;&gt;
-	Persönliche Betroffenheit führt zu persönlicher Verantwortung
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;web.de war eine geldreiche Arbeitsumgebung. Mit 150 Mio Euro auf der Bank
-und ohne Schulden agiert eine Firma in Projekten nicht kostengetrieben,
-sondern erlösgetrieben.&lt;/p&gt;
-&lt;p&gt;Es ist eine Umgebung, in der man Großes bewirken kann, aber es ist auch eine
-Umgebung, in der manche Projekteigentümer und Projektleiter nachlässig
-werden. Das ist so, denn in so einer Umgebungs sind Kosten alleine eben kein
-ausreichender Motivator, um bestehende Probleme anzugehen statt neue
-Projekte zu beginnen - die Firma lebt von Velocity, also der Geschwindigkeit
-der Innovation anstatt von Effizienz, denn Gewinn wird mit dem Wachstum des
-Marktes gemacht statt der Konkurrenz Anteile abzunehmen (&lt;a href=&#34;http://en.wikipedia.org/wiki/Cynefin&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cynefin
-Marktreife&lt;/a&gt;
-
- in den Quadranten Complex
-und Complicated).&lt;/p&gt;
-&lt;p&gt;So kommt es, daß in solchen Umgebungen manchmal Systeme im Einsatz sind, die
-die für den Betrieb notwendige Stabilität nicht von sich aus mitbringen,
-sondern bei der die Stabilität durch permanente Arbeit des Operatings
-erzeugt wird.&lt;/p&gt;
-&lt;p&gt;Will sagen, man hat Software mit Memory Leaks oder Race Conditions oder
-anderen schwer zu findenden Fehlern, die mit einer gewissen
-Eintrittswahrscheinlichkeit versehen sind. Der Betrieb erkennt die mit
-Sicherheit &lt;em&gt;irgendwann&lt;/em&gt; eintretende Fehlersituation vorher und behebt das
-Problem durch, äh, vorbeugende Wartung. Also durch das Herausnehmen einer
-Komponente aus dem Loadbalancer und einen Neustart des betreffenden Systems
-mit anschließender Reintegration oder vergleichbare Maßnahmen.&lt;/p&gt;
-&lt;p&gt;Die zur Fehlersuche und Behebung notwendigen Stunden Entwicklerzeit will
-niemand gutwillig bereitstellen, da es andere laufende Projekte verzögern
-würde, also Velocity kosten würde. Und eine tatsächliche Aufwandsschätzung
-ist bei Heisenbugs sowieso immer schwierig, da der Aufwand in der Regel in
-Instrumentation und Warten besteht, solange der Fehler nicht mit
-vernünftigem Aufwand im Labor provoizierbar ist. Man kann also nicht sagen
-&amp;lsquo;Es wird circa 4 Stunden dauern, diesen Bug zu fixen&amp;rsquo;, weil man ihn
-überhaupt erst mal beobachten muß.&lt;/p&gt;
-&lt;p&gt;Wenn nun Kosten im Operating kein Instrument sind mit denen man seine
-Projektleitung zur Bereitstellung von Ressourcen motivieren kann, dann ist
-die erprobte Strategie der Managementmotivation im Operating eine, die ich
-gerne mit &amp;ldquo;Teile die Schmerzen&amp;rdquo; beschrieben möchte.&lt;/p&gt;
-&lt;p&gt;Zum Beispiel setzt man den Projekteigentümer auf dieselbe Alerting-Methode
-wie den Sysadmin, der am Ende Sonntag nachts um 4 Uhr wegen eines Alarms die
-vorbeugende Wartung durchführen muß. Die Begründung ist, daß der
-Projekteigentümer bei einem System dieser Wichtigkeitsstufe ja über Ausfälle
-informiert sein muß. Er muß schließlich bereit stehen, um als Entscheider
-die notwendigen Anweisungen zu geben wenn etwas schiefgeht - so etwas
-wichtiges kann man ja auf keinem Fall einem einfachen Operator überlassen.&lt;/p&gt;
-&lt;p&gt;Wenn wir nun also einen jungen Projektverantwortlichen haben, bei dem das
-Handy Sonntag nachts um vier die Frau und das 6 Monate alte Kind weckt, dann
-ist diese Person nach einigen Wochen unmittelbaren Alerting-Erlebens sehr
-viel zugänglicher, wenn auf auf einem Montagsmeeting der Vorschlag gemacht
-wird, endlich einmal eine Hand voll Entwicklerstunden in die Verbesserung
-der Stabilität dieses vergleichsweise wackeligen Systems zu stecken. Das
-Interesse ergibt sich hier dann nicht aus den Projektkosten, sondern aus
-persönlicher Betroffenheit.&lt;/p&gt;
-&lt;h3 id=&#34;wieviel-risiko-ist-vertretbar&#34;&gt;
-    &lt;a href=&#34;#wieviel-risiko-ist-vertretbar&#34;&gt;
-	Wieviel Risiko ist vertretbar?
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Das ist derselbe Mechanismus, der auch unter den Admins selbst am Werk ist.
-Sie machen Bereitschaft und sie bekommen Alarmmeldungen, Tag und Nacht.
-Admins haben ein natürliches Interesse an den Schranken von Alarmen, denn es
-sind diese Einstellungen der Sensitivität des Überwachungssystemen, nach
-denen sich die Qualität ihres Nachtschlafs und das Klima in ihren Familien
-bemißt. Admins wollen nicht von unnötigen Alarmen gestört werden, sie wollen
-also keine false positives.&lt;/p&gt;
-&lt;p&gt;Noch schlimmer sind aber false negatives, also Alarme die hätten gesendet
-werden sollen, aber nicht gesendet wurden. Denn diese kosten nicht nur den
-Bonus, sondern auch auf Wochen hinaus das Familien- und Arbeitsklima. In
-einem funktionierenden Admin-Team - jedem funktionierenden Admin-Team -  mit
-einem gut eingestellten Monitoring kann man also darauf vertrauen, daß
-gerade eben so viele Alarme zu viel gesendet werden, daß die Meldungen des
-Alarmierungssystems noch vertrauenswürdig sind.&lt;/p&gt;
-&lt;p&gt;Die Schwellwerte im System ergeben sich empirisch unter dieser Strategie:
-Überwachungssysteme werden erschaffen und messen Daten, generieren darauf
-basierend Alarme - in der Regel viel zu viele Alarme.&lt;/p&gt;
-&lt;p&gt;Ein gutes Admin-Team wird die meisten dieser Alarme ignorieren. Es wird
-außerdem regelmäßig die ignorierten und beiseite geschobenen Alarme
-auswerten, um daraufhin das Monitoring anzupassen, damit die Schwellwerte
-realistischer werden. Die neuen Schwellwerte werden immer noch zu sensibel
-sein, aber näher an realistischen Werten. Das Verfahren wird in der Regel
-nicht formalisiert durchgeführt
-(&lt;a href=&#34;http://en.wikipedia.org/wiki/Capability_Maturity_Model#Levels_of_the_Capability_Maturity_Model&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Capability Maturity&lt;/a&gt;
-
-
-Rating 1 für den Prozeß: &amp;lsquo;individual heroics&amp;rsquo;), ist aber im Verhalten
-wahrscheinlich einem inversen TCP Slow Start ähnlich (Man kann das natürlich
-modellieren, aber mir sind keine formalen Papiere zum Thema
-&amp;lsquo;Tuningalgorithmen für Monitoringsysteme&amp;rsquo; bekannt).&lt;/p&gt;
-&lt;h3 id=&#34;risiken-menschengerecht-erlebbar-machen---shared-spaces-statt-regelsysteme&#34;&gt;
-    &lt;a href=&#34;#risiken-menschengerecht-erlebbar-machen---shared-spaces-statt-regelsysteme&#34;&gt;
-	Risiken menschengerecht erlebbar machen - Shared Spaces statt Regelsysteme
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Das Verhalten, das dem ganzen Zugrunde liegt, ist natürlich
-&lt;a href=&#34;http://de.wikipedia.org/wiki/Risikokompensation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Risikokompensation&lt;/a&gt;
-
- und die ist in Grenzen
-&lt;a href=&#34;http://www.sciencedirect.com/science?_ob=ArticleURL&amp;amp;_udi=B6VN8-4TK2PPX-1&amp;amp;_user=10&amp;amp;_coverDate=01%2F31%2F2009&amp;amp;_rdoc=1&amp;amp;_fmt=high&amp;amp;_orig=search&amp;amp;_sort=d&amp;amp;_docanchor=&amp;amp;view=c&amp;amp;_acct=C000050221&amp;amp;_version=1&amp;amp;_urlVersion=0&amp;amp;_userid=10&amp;amp;md5=0328819c455478dbdeed463b371a7f5e&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;modellierbar&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Menschen versuchen, ihr Verhalten so zu optimieren, daß sie ein System
-möglichst voll &amp;lsquo;ausfahren&amp;rsquo;, seine Ressourcen also ausnutzen. Das heißt im
-Verkehr zum Beispiel, daß sie ein Auto schneller fahren oder enger
-überholen, wenn das Auto sich sicherer anfühlt oder eine bessere Lenkung
-oder Bremsen bekommt. Der lenkende Mensch wird dabei versuchen, das gefühlte
-Risiko stabil zu halten, indem er höhere Wagnisse eingeht.&lt;/p&gt;
-&lt;p&gt;Man kann das umgekehrt nutzen, um mehr Sicherheit zu erzeugen, indem man
-Menschen Risiken spüren läßt und Systeme baut, die sich linear und stetig
-verhalten, also um Risiken für Menschen gut vorhersagbar und erlebbar
-machen. Im Verkehr nennt man dieses Konzept
-&lt;a href=&#34;http://de.wikipedia.org/wiki/Shared_Space#Risikobewertung&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Shared Space&lt;/a&gt;
-
-
-und man kann es auch in der IT anwenden.&lt;/p&gt;
-&lt;p&gt;Shared Space funktioniert eben nicht, indem man einfach die Verkehrszeichen
-in einem Ort alle abmontiert und alle Bürgersteige planiert. Es gibt eine
-Reihe von Vorraussetzungen, die alle zusammen erfüllt sein müssen, damit man
-ein System hat, indem Menschen Risiken wahrnehmen und erkennen können und in
-denen sie aktiv agieren, um diese zu vermeiden.&lt;/p&gt;
-&lt;h4 id=&#34;visibility-und-predictability&#34;&gt;
-    &lt;a href=&#34;#visibility-und-predictability&#34;&gt;
-	Visibility (und Predictability)
-    &lt;/a&gt;
-&lt;/h4&gt;
-&lt;p&gt;Eine ist zum Beispiel, daß man es mit einem System zutun hat, das linear
-(oder logarithmisch) und stetig ist, bei dem also dem großen Knall eine
-Reihe von kleineren, mit zunehmendem Risiko schlimmer werdenden Warnsignalen
-auftreten - Menschen machen diese Annahme implizit, auch dann, wenn sie es
-mit Systemen zu tun haben, die weder linear noch stetig sind. Baut man ein
-System, bei dem Totalversagen nicht vorher von harmlosen Warnsignalen
-angekündigt wird, oder bei dem das Versagensrisiko in einer Weise ansteigt
-die von Menschen nicht intuitiv modellierbar ist, dann hat man ein System
-das massenweise Leute umbringt. Die Gefahrensituation muß also für den
-Menschen im Vorfeld erkennbar und vorhersehrbar sein - aktive und passive
-&lt;strong&gt;Visibility&lt;/strong&gt;, sehen und gesehen werden, muß gegeben sein.&lt;/p&gt;
-&lt;p&gt;In einem Shared Space-Verkehrsgebiet bedeutet das zum Beispiel, daß man
-einige Kreuzungen umbauen muß, damit sie einsehbar werden oder andere
-Gebiete so umbauen muß, daß die entzerrt werden, voneinander abhängige
-Gefahrenquellen also entkoppelt werden und so auftreten, daß sie als
-aufeinanderfolgende separate Ereignisse abgehandelt werden, statt die
-Verkehrsteilnehmer mit zu vielen um Aufmerksamkeit konkurrierenden
-Situationen gleichzeitig zu überfordern.&lt;/p&gt;
-&lt;p&gt;In einer Produktionsumgebung in der IT bedeutet dies, daß man Systeme bauen
-muß, die &amp;lsquo;sanft&amp;rsquo; versagen und rechtzeitig vorher erkennbare Warnsignale
-generieren. Und daß man ein Monitoring haben muß, das ist der Lage ist,
-solche Warnungen zu visualisieren. Am Besten auch eines, das allgemein
-wahrgenommen wird - also Monitore mit Displays an wichtigen Stellen im
-Betrieb.&lt;/p&gt;
-&lt;h4 id=&#34;education&#34;&gt;
-    &lt;a href=&#34;#education&#34;&gt;
-	Education
-    &lt;/a&gt;
-&lt;/h4&gt;
-&lt;p&gt;Eine andere Vorraussetzung ist, daß die Menschen in der Lage sein müssen,
-die Gefahrensituationen erkennen und bewerten zu können. Shared Spaces
-funktionieren also nur in einem Umfeld, in dem es eine passende
-&lt;strong&gt;Ausbildung&lt;/strong&gt; gibt.&lt;/p&gt;
-&lt;p&gt;Im Verkehr bedeutet das, daß Verkehrserziehung, Fahrausbildung und Awareness
-auf dem richtigen Niveau sein müssen, damit den Verkehrsteilnehmern das
-erwartete Verhalten, Handlungsmöglichkeiten und typisches Verhaltensfehler
-bekannt sind, so daß sie mit vergleichbaren Erwartungen und gut trainierten
-Sicherheitsreflexen in den Verkehr gehen.&lt;/p&gt;
-&lt;p&gt;In einer Produktionsumgebung bedeutet das, daß den verantwortlichen
-Mitarbeitern die Systeme, die sie fahren sollen, bekannt sind, sodaß sie ein
-Modell des Systems im Kopf haben, das den betrieblichen Realitäten
-entspricht, daß ihnen Diagnose- und Eingriffsmöglichkeiten bekannt sind und
-daß sie Zugriff auf Eskalationsmöglichkeiten in der Systementwicklung haben,
-wenn ein Fehler die Möglichkeiten des Operatings übersteigt.&lt;/p&gt;
-&lt;h4 id=&#34;empowerment&#34;&gt;
-    &lt;a href=&#34;#empowerment&#34;&gt;
-	Empowerment
-    &lt;/a&gt;
-&lt;/h4&gt;
-&lt;p&gt;Und die dritte Vorraussetzung ist, daß die Menschen in einem System die
-Möglichkeit haben, Verantwortung zu übernehmen und ad-hoc vor Ort Regeln
-aufzustellen oder Situationen verbindlich zu klären - das ist
-&lt;strong&gt;Ermächtigung&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Im Verkehr bedeutet das, daß man Zeichen entfernt, die Entscheidungen des
-Autofahrers überstimmen. Ampeln und Vorfahrtszeichen kommen weg, denn sie
-bestimmen über den Kopf des Fahrzeugführers hinweg &amp;lsquo;Du mußt halten&amp;rsquo; oder &amp;lsquo;Du
-kannst fahren&amp;rsquo;. Stattdessen ist der Fahrzeugführer jetzt verantwortlich,
-sein Fahrzeug berührungsfrei durch den Verkehr zu bewegen und er muß jede
-Halte- und Fahrentscheidung selbst und in letzter Verantwortung treffen. Das
-kann er, denn er hat die notwendige Visibility - er wird gesehen und kann
-sehen. Und er hat die notwendige Ausbildung.&lt;/p&gt;
-&lt;p&gt;In einer Produktionsumgebung in der IT sieht es genau so aus - statt dem
-Admins und Entwicklern einen Kubikmeter ITIL V3 Handbuch an den Kopf zu
-werfen und zu sagen: &amp;ldquo;Implementiert das!&amp;rdquo; gibt man ihnen die Verantwortung
-für den Betrieb und sagt: &amp;ldquo;Haltet das am Laufen! Was braucht Ihr dazu?&amp;rdquo;.
-Mitarbeiter mit der passenden Ausbildung und der passenden Visibility sind
-dazu in der Lage, das zu regeln, wenn man sie entsprechend ermächtigt.&lt;/p&gt;
-&lt;p&gt;Die natürliche Risikoanpassung wird dann dazu führen, daß sie selbst die für
-den Betrieb notwendigen Regeln und Absprachen ad-hoc treffen.&lt;/p&gt;
 </description>
     </item>
     

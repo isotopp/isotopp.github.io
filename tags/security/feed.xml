@@ -6,7 +6,146 @@
     <description>Recent content in security on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Feb 2023 10:37:05 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/security/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 20 Feb 2023 13:37:21 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/security/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Rotating Accounts or Passwords?</title>
+      <link>https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords.html</link>
+      <pubDate>Mon, 20 Feb 2023 12:13:14 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords.html</guid>
+      <description>&lt;p&gt;Some applications allow you to have multiple passwords.
+For example, in &lt;a href=&#34;https://dev.mysql.com/doc/refman/8.0/en/password-management.html#dual-passwords&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MySQL, since 8.0.14 you can dual passwords for an account&lt;/a&gt;
+
+.
+Also, &lt;a href=&#34;https://redis.io/docs/management/security/acl/#create-and-edit-user-acls-with-the-acl-setuser-command&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Redis 6 allows you to have multiple passwords on an account ACL&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;h1 id=&#34;personal-accounts-and-machine-accounts&#34;&gt;
+    &lt;a href=&#34;#personal-accounts-and-machine-accounts&#34;&gt;
+	Personal Accounts and Machine Accounts.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When running services in a production system, the services sometimes have personal accounts (PAs) that allow humans to login and perform actions on the service.
+Often, these accounts are very limited in number (in production), and privileged.&lt;/p&gt;
+&lt;p&gt;Also, you have clients connecting to the system.
+These are called Non-Personal Accounts, Machine Accounts or Service Accounts (MA) in many environments.
+Machine Accounts are not used by humans, but are a set of credentials used by a client applications to work with a service.&lt;/p&gt;
+&lt;p&gt;It is good practice to assign a different MA to each application using a service,  and to rotate credentials regularly and quickly for each MA.
+In many environments doing this is even a compliance requirement.&lt;/p&gt;
+&lt;h1 id=&#34;different-usernames-are-helpful&#34;&gt;
+    &lt;a href=&#34;#different-usernames-are-helpful&#34;&gt;
+	Different Usernames are helpful
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Assigning different identities (different usernames) to different applications is useful in many ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Access permissions are tied to identities, so different identities are a requirement to separate different sets of permissions.&lt;/li&gt;
+&lt;li&gt;Also, different identities allow you to attribute activity in the service to the identity, thus make monitoring, auditing and accounting possible.
+It is much easier to identify a misbehaving application, if all applications using your service have different user account names.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;dynamically-assigned-credentials&#34;&gt;
+    &lt;a href=&#34;#dynamically-assigned-credentials&#34;&gt;
+	Dynamically assigned credentials
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Very often credentials are not stored at all in the client configuration, but are requested dynamically on-demand from another service, the Secrets Manager or Vault.
+It is either part of a cloud control plane, and can leverage trust from the cloud infrastructure to know who is who and what to allow,
+or it is an external service such as a Hashicorp Vault.&lt;/p&gt;
+&lt;p&gt;In any case, the application would not store Database or Redis username and passwords in configuration files any more,
+but ask the secrets manager to provide these credentials at runtime, receive them, and then store them only in memory.
+They would also be expired and re-requested in regular intervals, on a multiple-minutes to hour scale.&lt;/p&gt;
+&lt;p&gt;This allows the Secrets Manager to perform account operations, such as password or account rotation.&lt;/p&gt;
+&lt;h1 id=&#34;account-rotation-or-password-rotation&#34;&gt;
+    &lt;a href=&#34;#account-rotation-or-password-rotation&#34;&gt;
+	Account Rotation or Password Rotation?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Rotating MA passwords is often a requirement, and most environments also require a comparatively high rotation frequency (&amp;ldquo;once per week&amp;rdquo;, which qualifies as &amp;ldquo;high&amp;rdquo; in database timescales).&lt;/p&gt;
+&lt;p&gt;Some services, such as MySQL and Redis given as examples above, allow you to associate multiple password with a single account.
+Many others do not, in them username (&amp;ldquo;identity&amp;rdquo;) and password (&amp;ldquo;authentication&amp;rdquo;) are a 2-tuple.&lt;/p&gt;
+&lt;p&gt;Rotating passwords, when taken literally, is hard with such services, because changing the password atomically in the server and all its clients is impossible.
+There is always some overlap during which the service already has the new password (and implicitly invalidated the old password),
+while the clients are still using the old password.
+If you rotated the password with traditional methods, there would be a discrepancy between clients and servers in password knowledge, and thus failed logins.&lt;/p&gt;
+&lt;p&gt;One way around that is provisioning new MA accounts for an application, and then feeding the applications not only new passwords, but completely new credentials.
+Thus,&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;an application &lt;code&gt;androidapp&lt;/code&gt; would see the old user &lt;code&gt;androidapp_23ad63&lt;/code&gt; with a generated password &lt;code&gt;BBLA32Tm9feoAGpN&lt;/code&gt;,&lt;/li&gt;
+&lt;li&gt;then account rotation would additionally create &lt;code&gt;androidapp_8760d3&lt;/code&gt; with the password &lt;code&gt;cts6Me5c7T4q6Dq2&lt;/code&gt; and the same authorizations in the service,&lt;/li&gt;
+&lt;li&gt;then the account rotation would test that this newly creates account works as desired,&lt;/li&gt;
+&lt;li&gt;then the account rotation would stop handing out the old credentials (&lt;code&gt;23ad63&lt;/code&gt;) to clients, and start serving the new credentials (&lt;code&gt;8760d3&lt;/code&gt;),&lt;/li&gt;
+&lt;li&gt;then the account rotation would over the course of an hour observe the old account not being used anymore, and the new account picking up traffic,
+&lt;ul&gt;
+&lt;li&gt;then the account rotation would see the old &lt;code&gt;23ad63&lt;/code&gt; account being silent for two hours, and eventually lock and deprovision it&lt;/li&gt;
+&lt;li&gt;or this does not work as expected, and &lt;code&gt;23ad63&lt;/code&gt; stays active past the deadline, in which case we raise an alarm.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;why-no-observability&#34;&gt;
+    &lt;a href=&#34;#why-no-observability&#34;&gt;
+	Why no observability?
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Account rotation has some advantages over password rotation:
+First: it works with any application, even those that have no support for multiple passwords.
+Lack of multiple password support is stopping no-one from implementing rotation, it is just account and not password rotation you need to build.&lt;/p&gt;
+&lt;p&gt;Then:
+Even in MySQL and Redis it was not immediately obvious to me how password rotation can be validated to function correctly.
+That is, I have been unable to find a way to isolate instances of logins using the &amp;ldquo;non-primary&amp;rdquo; (or old) password, and somehow make sure that all logins in the last hour or so have been using the newly updated password.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;As an engineer running the application, I would want to make sure that the old password is unused before I ask the service to deprovision it.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But observability on this seems to be completely non-existent.
+Which is weird, because any security engineer will tell you that a control is only valid, if you can verify it is working as intended.&lt;/p&gt;
+&lt;p&gt;With account rotation, usage of old accounts is immediately visible.
+The system can check if the old account is still being used, and once it isn&amp;rsquo;t anymore, it can deprovision it.
+If the old account does not go silent within some timeout, we can alert on this, identity the team responsible for the application, and sit down to talk about credential caching.&lt;/p&gt;
+&lt;p&gt;Thus, I would rate the implementation of any password rotation feature that does not have good observability built in as incomplete.&lt;/p&gt;
+&lt;h2 id=&#34;an-authorization-problem&#34;&gt;
+    &lt;a href=&#34;#an-authorization-problem&#34;&gt;
+	An authorization problem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Conversely, while account rotation has automatically good observability, it complicates authorisation.
+Authorisation is the set of permissions ties to an identity, the &lt;code&gt;GRANT&lt;/code&gt;s in SQL-lingo.&lt;/p&gt;
+&lt;p&gt;If you rotate accounts. you are essentially creating new accounts and drop old accounts on a schedule.
+That means&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;either store the authorization outside the system&lt;/li&gt;
+&lt;li&gt;or you can leverage a role system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the latter case, you would create a role &lt;code&gt;androidapp&lt;/code&gt;, and assign it the authorizations, then make sure all &lt;code&gt;androidapp%&lt;/code&gt; accounts are members of the role, inheriting the role authorizations with no individual per-account rules.&lt;/p&gt;
+&lt;p&gt;Most, but not all systems have a role-system for accounts similar to MySQL 8 roles, in which you assign authorizations to groups instead of individual accounts.
+If you have it, implementing account rotation without complicating authorization is comparatively easy.&lt;/p&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Having a secrets manager that hands out secrets to services and clients is useful, because it allows you to prevent materialization of secrets.
+&lt;ul&gt;
+&lt;li&gt;One of the primary features of clouds (private and public) would be that the control-plane of the cloud can attest identity of instances, and would allow you to solve authentication trivially.
+Sadly, Openstack and all Openstack derives private and public clouds seem to not implement that (and thus offer no IAM to services based on control-plane trust).&lt;/li&gt;
+&lt;li&gt;For those where the cloud control-plane does not offer IAM, Hashivault can help out a lot.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Some applications have the ability to have multiple passwords per identity, to allow easier password rotation.
+&lt;ul&gt;
+&lt;li&gt;The value of that feature is greatly diminished by a lack of observability. Any control is only complete if it can be verified to work.
+We need to be able to see if old deprecated passwords are unused in order to safely deprovision them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Even without multiple passwords, we can always leverage a secrets manager and some relatively simple external driver to rotate accounts instead.
+&lt;ul&gt;
+&lt;li&gt;This is complicated by the fact that many applications bind authorizations (access permissions) to identities (usernames).&lt;/li&gt;
+&lt;li&gt;We can use roles to work around that, and assign authorizations to these roles, then have the identity inherit from the role.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
     <item>
       <title>This is not a Drill, this is just Tuesday</title>
       <link>https://blog.koehntopp.info/2023/02/18/this-is-not-a-drill.html</link>
@@ -2872,38 +3011,6 @@ Setze hier als Antwort ebenfalls Zufallspaßworte ein und trage Frage und Antwor
 &lt;/h1&gt;
 &lt;p&gt;In meinem Archiv liegt nicht nur mein Keyring meines Paßwortmanagers, sondern auch Screenshots der QR-Codes für die 2FA Initialisierung.
 Die sind natürlich alle verschlüsselt.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>kauth Handlers in MacOS</title>
-      <link>https://blog.koehntopp.info/2018/12/18/kauth-handlers-in-macos.html</link>
-      <pubDate>Tue, 18 Dec 2018 09:06:19 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2018/12/18/kauth-handlers-in-macos.html</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://flylib.com/books/en/3.126.1.140/1/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;kauth handlers in MacOS&lt;/a&gt;
-
-, from a somewhat outdated MacOS X Internals book.
-But a lot of the content is still relevant.
-This section is about kauth handlers.
-Kauth is a system in MacOS to hook file open and file exec operations.
-It is what is being used by all the Corporate Security Malware that the Compliance Guys like to install on your work Mac, and it is one of the most common reasons for MacOS performance problems at work.&lt;/p&gt;
-&lt;p&gt;That is, because most Corpsec Malware does install a Kauth handler and then evaluates file open permission synchronously in that handler.
-TrendMicro, Cylance, FireEye (xagt) and Websense DLP do this.
-File &lt;code&gt;open()&lt;/code&gt; operations are delayed by a factor of 6x to 10x usually:
-Unpacking an electron app with 27.000 files on my home Mac takes 3 seconds, and took 27 seconds on my work Mac.&lt;/p&gt;
-&lt;p&gt;Usually, these things are also written badly:
-Trendmicro for example runs their evaluations in a privileged userland process with ASLR off, so if you craft the right kind of GIF and drop it into &lt;code&gt;$HOME&lt;/code&gt;, it will pop a shell on any Mac running Trendmicro just fine.
-That is,  because the offsets are always right &amp;ndash; thanks to ASLR off.&lt;/p&gt;
-&lt;p&gt;And Websense DLP did rely on their Kauth handler so much that all files in the installations were world writeable:
-&amp;ldquo;protected&amp;rdquo; only by the Kauth handler.
-Which made exceptions for Binaries with the right name (among them &amp;ldquo;installd&amp;rdquo;, &amp;ldquo;installer&amp;rdquo;, or &amp;ldquo;shove&amp;rdquo;), so if you rename your cp program to &amp;ldquo;installer&amp;rdquo; you could happily overwrite any of the files &amp;ndash; reboot the box, get your own code executed as root and be done.&lt;/p&gt;
-&lt;p&gt;One of the nicest things on the Mac is &lt;a href=&#34;https://www.hopperapp.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;HopperApp&lt;/a&gt;
-
-.
-This is a very cheap, very well done clone of the basic functionality in IDA Pro, and allows you to have a quick look at the code of these Corpsec kernel extensions and see how they are breaking things, then act on that.
-Depending on your alignment you write a report and get a cookie, or you use this for your own purposes.&lt;/p&gt;
-&lt;p&gt;In general, a Macbook with Corporate Security Malware is much more easily owned than a stock Apple device.&lt;/p&gt;
 </description>
     </item>
     
