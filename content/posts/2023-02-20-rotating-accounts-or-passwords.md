@@ -20,7 +20,7 @@ Often, these accounts are very limited in number (in production), and privileged
 
 Also, you have clients connecting to the system.
 These are called Non-Personal Accounts, Machine Accounts or Service Accounts (MA) in many environments.
-Machine Accounts are not used by humans, but are a set of credentials used by a client applications to work with a service.
+Machine Accounts are not used by humans, but are a set of credentials used by client applications to work with a service.
 
 It is good practice to assign a different MA to each application using a service,  and to rotate credentials regularly and quickly for each MA.
 In many environments doing this is even a compliance requirement.
@@ -94,7 +94,7 @@ Thus, I would rate the implementation of any password rotation feature that does
 Conversely, while account rotation has automatically good observability, it complicates authorisation.
 Authorisation is the set of permissions ties to an identity, the `GRANT`s in SQL-lingo.
 
-If you rotate accounts. you are essentially creating new accounts and drop old accounts on a schedule.
+If you rotate accounts, you are essentially creating new accounts and drop old accounts on a schedule.
 That means
 
 - either store the authorization outside the system 
