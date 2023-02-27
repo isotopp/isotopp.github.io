@@ -111,6 +111,6 @@ updating /var/run/docker.sock tcp://0.0.0.0:2375 → /run/docker.sock tcp://0.0.
 please update the unit file accordingly.
 ```
 
-The second one adds a listener to port `[::1]:2375`.
+The second one adds a listener to port `[::]:2375`.
 
 And that will allow me to talk to the Docker server on my development host over the network.
