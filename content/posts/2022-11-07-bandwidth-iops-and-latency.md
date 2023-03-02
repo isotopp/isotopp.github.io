@@ -163,7 +163,7 @@ In MySQL, a commit is a multiple of 512 bytes, and a checkpoint write is a multi
 
 At 2500 writes per second (0.4ms write latency) we get 40 MB/s at 16 KB page write size (and hardly more than 1 MB/s for 512 byte commit writes). 
 
-At 20000 writes per second (0.04ms write latency) we get 400 MB/s at 16 KB page write size, and hardly more than 10 MB/s for 512 byte commit writes. 
+At 25000 writes per second (0.04ms write latency) we get 400 MB/s at 16 KB page write size, and hardly more than 10 MB/s for 512 byte commit writes. 
 
 The point of checkpointing is to coalesce updates to the same page, so it is usually a lot less checkpoint writes than commit writes: several updates to different rows on the same page are checkpointed together at a later time, saving write bandwidth.
 
