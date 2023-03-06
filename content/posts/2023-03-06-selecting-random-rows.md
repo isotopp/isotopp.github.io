@@ -38,7 +38,7 @@ The Recursive CTE will generate 100k pairs of (number, uuid()).
 The initial row is defined in the upper row of the `UNION`, each subsequent row builds recursively on top of that, by simply counting up.
 
 Since we generate all the values in one transaction, the `uuid()` is actually static. 
-That is, because inside a transaction, time stops the uuid is internally time-based.
+That is, because inside a transaction time stops, and the uuid is internally time-based.
 
 Since the `id`-space is free of gaps, we have `rng` many numbers between `min(id) as min` and `max(id) as max`. 
 Using the index on `id`, we can simply generate a random number between these boundaries and select the row.
