@@ -279,3 +279,12 @@ The current OTel compatible implementation is here: [OTel replacement](https://d
 
 A medium article discussion the same decorator usage as we do here, but in the context of OpenTelemetry, is available:
 [Using Decorators to Instrument Python Code With OpenTelemetry Traces](https://digma.ai/blog/using-decorators-to-instrument-python-code-with-opentelemetry-traces/).
+
+# And in C?
+
+A similar solution exists for the C programming language since 1987, in the form of the Fred Fish Debug Macros.
+
+See the usage [in MySQL](https://github.com/mysql/mysql-server/blob/1bfe02bdad6604d54913c62614bde57a055c8332/mysys/list.cc#L44-L56), 
+and grab [the source](https://github.com/mysql/mysql-server/blob/1bfe02bdad6604d54913c62614bde57a055c8332/mysys/dbug.cc).
+
+This is older than time itself, and C is a bit limited compared to Python, but it basically does the same thing, in 36 years old code.
