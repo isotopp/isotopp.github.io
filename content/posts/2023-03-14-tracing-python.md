@@ -288,3 +288,5 @@ See the usage [in MySQL](https://github.com/mysql/mysql-server/blob/1bfe02bdad66
 and grab [the source](https://github.com/mysql/mysql-server/blob/1bfe02bdad6604d54913c62614bde57a055c8332/mysys/dbug.cc).
 
 This is older than time itself, and C is a bit limited compared to Python, but it basically does the same thing, in 36 years old code.
+
+The code for these samples has been made avialable [on GitHub](https://github.com/isotopp/logging-experiments).
