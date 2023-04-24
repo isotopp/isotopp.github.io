@@ -14,4 +14,4 @@ The recording is now out, and you can listen to it at [this location](https://ww
 
 - [Booking.com, Part 1 - Running data infrastructure at an Enterprise scale](https://www.buzzsprout.com/2094584/12080570-booking-com-pt-1-running-data-infrastructure-at-an-enterprise-scale)
 
-- [Booking.com, Part 2 - How Booking.com built their own Sovereign DBaaS at scale]https://www.buzzsprout.com/2094584/12155962-booking-com-pt-2-how-booking-com-built-their-own-sovereign-dbaas-at-scale)
+- [Booking.com, Part 2 - How Booking.com built their own Sovereign DBaaS at scale](https://www.buzzsprout.com/2094584/12155962-booking-com-pt-2-how-booking-com-built-their-own-sovereign-dbaas-at-scale)
