@@ -14,15 +14,15 @@ title: "UNIX Dateisysteme"
 
 **aus »c't - Magazin für Computertechnik«, Ausgabe 2/94**
 
-#### Die Aufgaben eines Betriebssystems bestehen in der fairen Zuteilung der Systemressourcen an alle Bewerber und in der Abstraktion unterschiedlichster Hardware zu einer virtuellen Maschine. Für den Bereich der Plattenplatzverwaltung hat diese Aufgabe das Dateisystem. UNIX Dateisysteme haben eine mehr als zwanzigjähirge Entwicklung hinter sich und dienten als Vorbild für die Dateisysteme vieler anderer Betriebssysteme [1]. Trotz vieler Mängel der ursprünglichen Implementation haben sich die dahinter stehenden Ideen in den letzten zwanzig Jahren nicht wesentlich verändert.
+*Die Aufgaben eines Betriebssystems bestehen in der fairen Zuteilung der Systemressourcen an alle Bewerber und in der Abstraktion unterschiedlichster Hardware zu einer virtuellen Maschine. Für den Bereich der Plattenplatzverwaltung hat diese Aufgabe das Dateisystem. UNIX Dateisysteme haben eine mehr als zwanzigjährige Entwicklung hinter sich und dienten als Vorbild für die Dateisysteme vieler anderer Betriebssysteme [1]. Trotz vieler Mängel der ursprünglichen Implementation haben sich die dahinter stehenden Ideen in den letzten zwanzig Jahren nicht wesentlich verändert.*
 
 ## Daten wiederfinden
 
-UNIX schlägt sich auf den höheren Ebenen des Betriebssystems nicht  mit Angaben zur Plattengeometrie herum. 
+UNIX schlägt sich auf den höheren Ebenen des Betriebssystems nicht mit Angaben zur Plattengeometrie herum. 
 Es betrachtet eine Festplatte als ein langes Band von Plattenblöcken, die linear durchnummeriert sind.
 Die Umrechnung von linearen Blockadressen in Angaben von Zylinder, Kopf und Sektor ist entweder Aufgabe eines Festplattengerätetreibers oder - im Fall von SCSI - der Festplatte selbst.
 Die ersten paar Datenblöcke einer Festplatte sind reserviert für den Bootloader und ähnliche Dinge, die vor dem Betriebssystem geladen werden und deshalb außerhalb seiner Reichweite gelagert werden.
-Der Rest der Platte  wird in Form eines Dateisystems verwaltet.
+Der Rest der Platte wird in Form eines Dateisystems verwaltet.
 UNIX operiert bei Dateisystemen mit der Blockgröße des Mediums.
 Anders als bei DOS werden die Verwaltungseinheiten auf einer Platte also nicht größer, wenn man sehr große Partitionen anlegt.
 
@@ -31,7 +31,7 @@ Er enthält Geometriedaten der Platte, gibt an, wie viele Blöcke das Dateisyste
 
 ![](/uploads/1994/02/disklayout.gif)
 
-*Bild 1: Am Anfang des Dateisystems steht der Superblock. Er enthält alle Metainformationen, die das Dateisystem beschreiben. Der "vordere" Teil des Dateisystems enthält I-Nodes, Dateiköpfe, die alle Metainformationenen über eine Datei speichern. In den Datenblöcken sind dann die eigentlichen Nutzdaten untergebracht. Das Bild zeigt eine I-Node mit ihren Verweisen auf die Datenblöcke der Datei.*
+*Bild 1: Am Anfang des Dateisystems steht der Superblock. Er enthält alle Metainformationen, die das Dateisystem beschreiben. Der "vordere" Teil des Dateisystems enthält I-Nodes, Dateiköpfe, die alle Metainformationen über eine Datei speichern. In den Datenblöcken sind dann die eigentlichen Nutzdaten untergebracht. Das Bild zeigt eine I-Node mit ihren Verweisen auf die Datenblöcke der Datei.*
 
 Die Basis der Dateiverwaltung bildet in UNIX eine Datenstruktur, die sogenannte *index node* oder I-Node (Bild 2).
 
@@ -111,7 +111,7 @@ Die shared libraries in einem Linux-System oder Speicherabzüge von gecrashten P
 
 ## Dateinamen
 
-Die I-Node enthält gesammelt alle Informationen, die UNIX über eine  Datei hat, mit einer Ausnahme: dem Dateinamen.
+Die I-Node enthält gesammelt alle Informationen, die UNIX über eine Datei hat, mit einer Ausnahme: dem Dateinamen.
 Dateinamen speichert UNIX in besonderen Dateien, den Verzeichnissen.
 Ein Verzeichnis ist n jeder Hinsicht eine normale Datei mit einer I-Node, Datenblöcken und so weiter.
 Verzeichnisdateien werden jedoch nicht von Benutzerprogrammen, sondern ausschließlich vom Betriebssystem verwaltet.
@@ -137,7 +137,7 @@ Sobald die Anzahl der Namen einer Datei Null wird, gibt das Betriebssystem dem P
 *Im BSD Dateisystem sind längere Dateinamen erlaubt. Um die Platzverschwendung zu minimieren, ist die Struktur eines Verzeichnisses etwas komplizierter, aber das Prinzip der Zuordnung eines Namens zu einer
 I-Nodenummer wird nicht verletzt.*
 
-Um eine Datei zu öffnen, muß ihr Name in eine I-Nodenummer übersetzt werden.
+Um eine Datei zu öffnen, muss ihr Name in eine I-Nodenummer übersetzt werden.
 Nach dem Öffnen der Datei arbeitet das Betriebssystem dann intern ausschließlich mit der I-Nodenummer weiter.
 Die Übersetzung von Namen in Nodenummern wird in UNIX an einer zentralen Stelle im Betriebssystemkern abgehandelt, in der Kern-internen Funktion `namei()`.
 Für jeden Prozess verwaltet UNIX in der Prozessstruktur zwei Einträge, in denen die I-Nodenummer des Hauptverzeichnisses und des aktuellen Verzeichnisses dieses Prozesses hinterlegt sind.
@@ -172,7 +172,7 @@ Danach wird auf ein x-Recht am "`bin`"-Verzeichnis geprüft, um auf die Datei "`
 Und schließlich muss an der Datei "`ls`" selbst noch r-Recht vorhanden sein, damit auf die Datenblöcke der Datei lesen zugegriffen werden darf. 
 
 x-Recht an einem Verzeichnis ist also immer dann erforderlich, wenn `namei()` einem Zeiger aus diesem Verzeichnis in die I-Nodetabelle folgen muss.
-In Bild 5 sind diese aufwärts führenden Pfeile etwas  dicker hervorgehoben.
+In Bild 5 sind diese aufwärts führenden Pfeile etwas dicker hervorgehoben.
 
 ## Fragmente
 
@@ -183,7 +183,7 @@ Je kleiner die Verwaltungseinheiten des Dateisystems sind, umso effektiver kann 
 Andererseits ist der Datendurchsatz eines Dateisystems um so größer, je größer die Blöcke sind, die es verwaltet.
 Und schließlich kann man bei der Verwendung von großen Datenblöcken oft mehrfach indirekte Blöcke einsparen und macht das Dateisystem auf diese Weise schneller und reduziert den Verwaltungsaufwand.
 In modernen UNIX-Dateisystem löst man dieses Dilemma, indem man ein Dateisystem mit einer relativ großen Blockgröße (meistens 8 Kilobyte) anlegt, Dateienden aber in speziellen Blöcken, den Fragmenten, speichert.
-Fragmente werden erzeugt, in dem man einen normalen Plattenblock in mehrere gleichgrosse Teilblöcke unterteilt, die jeweils das Dateiende einer anderen Datei aufnehmen können. 
+Fragmente werden erzeugt, in dem man einen normalen Plattenblock in mehrere gleich grosse Teilblöcke unterteilt, die jeweils das Dateiende einer anderen Datei aufnehmen können. 
 
 ![](/uploads/1994/02/bsdfragment.gif)
 
@@ -201,7 +201,7 @@ Weitere Geschwindigkeitsvorteile lassen sich erzielen, wenn man dafür sorgen ka
 Die Platte kann in diesem Fall ihren internen Cache füllen und die Daten schneller abliefern.
 Außerdem entfallen Bewegungen des Schreib-/Lesekopfes der Platte.
 Wie man am Beispiel von DOS sehen kann, ist es leider ist es nicht damit getan, die Blöcke einer Datei hintereinander anzuordnen.
-Man muss außerdem auch Platz lassen, damit Dateien wachsen können.
+Man muss ausserdem auch Platz lassen, damit Dateien wachsen können.
 
 ![](/uploads/1994/02/fragmentierung.gif)
 
@@ -218,11 +218,11 @@ Stattdessen versucht man, die einzelnen Stücke möglichst groß zu machen.
 ![](/uploads/1994/02/bsdlayout.gif)
 
 *Bild 8: Das BSD Fast Filing System unterteilt die Platte in Streifen von einigen MB Größe. Das Betriebssystem versucht durch verschiedene Verfahren, 
-das Verhältnis von belegten Datenblöcken zu belegten I-Nodes in allen cylinder groups einer Platte in etwa ausgewogen zu halten. Dadurch ist das Dateisystem effektiv selbstdefragmentierend.*
+das Verhältnis von belegten Datenblöcken zu belegten I-Nodes in allen cylinder groups einer Platte in etwa ausgewogen zu halten. Dadurch ist das Dateisystem effektiv selbst defragmentierend.*
 
 Außerdem würde eine sehr lange Datei alle Datenblöcke, aber nur eine einzige I-Node in einer Zylindergruppe belegen.
 Die Daten zu den I-Nodes aller weiteren Dateien in derselben Zylindergruppe müssten dann auf andere Zylindergruppen verlagert werden, was dort wiederum das ausgewogene Verhältnis zwischen freien I-Nodes und freien Datenblöcken stören würde.
-Dadurch, daß man  jeweils ein Megabyte einer sehr großen Datei auf eine andere Zylindergruppe verlagert, wird der Platz auf der Platte gleichmäßig verbraucht.
+Dadurch, dass man jeweils ein Megabyte einer sehr großen Datei auf eine andere Zylindergruppe verlagert, wird der Platz auf der Platte gleichmäßig verbraucht.
 Man verhindert, daß andere Dateien dann nicht mehr günstig auf der Platte angeordnet werden können.
 
 ## Abgeleitete Dateisysteme
@@ -242,7 +242,7 @@ bestimmten Stelle in den Verzeichnisbaum eingehängt. Beim Wechsel des Verzeichn
 # Literatur
 
 - "The UNIX Time Sharing System", Ritchie, Thompson, Communications of the ACM 7/74, p.365  
-- "A Fast File System for UNIX", McKusick et. al, ACM Trans. on Computer Systems, August 84, p.181
+- "A Fast File System for UNIX", McKusick et al, ACM Trans. on Computer Systems, August 84, p.181
 - "Operating Systems", A. Tanenbaum, Prentice-Hall
 - "The Design of the UNIX Operating System", M.Bach, Prentice-Hall
 - "The Design of the 4.3 BSD UNIX Operating System", McKusick, Addison-Wesley

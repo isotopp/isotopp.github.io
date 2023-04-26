@@ -28,9 +28,7 @@ Let's assume we are using local files, and we do so in a managed, sane way:
 
 And immediately the question came up: “I either misunderstand you or I have a gap in the knowledge. When writes to a file became atomic? They are not in general case.”
 
-There is [a Dilbert for that](https://dilbert.com/strip/1995-06-24).
-
-So let’s go back in time, it’s [Greybeards time](http://silvertonconsulting.com/gbos2/)! We’re going to find out where the things you are working with are actually coming from. With sources and references.
+Let’s go back in time, it’s [Greybeards time](http://silvertonconsulting.com/gbos2/)! We’re going to find out where the things you are working with are actually coming from. With sources and references.
 
 ## The write(2) system call
 
