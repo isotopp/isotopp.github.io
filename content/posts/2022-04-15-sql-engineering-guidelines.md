@@ -401,6 +401,9 @@ The following rules have been proven to be useful guidance in the past:
     - Foreign key constraints are always immediate.
       That means they are checked at the end of each statement, not at the end of a transaction ("deferred"), forcing an order to your SQL statements inside a transaction.
       This is often inconvenient.
+    - Foreign key constraints with cascades (ON DELETE CASCADE, ON DELETE SET NULL and similar) are writes generated at the InnoDB engine level, not at the MySQL binlog level. 
+      They are not visible in the binlog.
+      If you are using Change Data Capture or Online Schema Changes that based on the binlog (`gh-ost`), they break in the face of such FK constraints.    
     - Foreign key constraints require additional lookups and additional locks.
       This can lead to lock escalation and a higher deadlock rate, impacting throughput.
     - With foreign key constraints it is possible to create undeletable and unupdatable rows.

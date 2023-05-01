@@ -114,6 +114,14 @@ Unfortunately, this poses several challenges on the source databases:
 - The CDC log parsers ask for uncompressed binlogs.
   - That's fixable relatively easily by learning to parse and use zstd, and doable.
 
+## Foreign Key Constraints and CDC
+
+In MySQL, foreign key constraints are not implemented at the MySQL level, they are implemented at the engine level, for example in InnoDB.
+Sometimes, FK constraints generate writes, for example when `ON DELETE CASCADE` or `ON DELETE SET NULL` clauses are being used.
+Because these writes are not coming from the MySQL level, they will never show up in the binlog.
+
+MySQL's foreign key constraints are fundamentally incompatible with CDC, and must never be used in hierarchies that use CDC.
+
 # Transactionality and CDC
 
 MySQL writes a binlog record only on commit.
