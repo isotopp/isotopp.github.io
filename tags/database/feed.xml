@@ -6,7 +6,7 @@
     <description>Recent content in database on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 26 Apr 2023 14:01:34 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 May 2023 11:20:44 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: SeveralNines Podcast with Kris</title>
       <link>https://blog.koehntopp.info/2023/04/04/mysql-sovereign-dbaas-decoded.html</link>
@@ -1089,6 +1089,9 @@ They come at a price:&lt;/p&gt;
 &lt;li&gt;Foreign key constraints are always immediate.
 That means they are checked at the end of each statement, not at the end of a transaction (&amp;ldquo;deferred&amp;rdquo;), forcing an order to your SQL statements inside a transaction.
 This is often inconvenient.&lt;/li&gt;
+&lt;li&gt;Foreign key constraints with cascades (ON DELETE CASCADE, ON DELETE SET NULL and similar) are writes generated at the InnoDB engine level, not at the MySQL binlog level.
+They are not visible in the binlog.
+If you are using Change Data Capture or Online Schema Changes that based on the binlog (&lt;code&gt;gh-ost&lt;/code&gt;), they break in the face of such FK constraints.&lt;/li&gt;
 &lt;li&gt;Foreign key constraints require additional lookups and additional locks.
 This can lead to lock escalation and a higher deadlock rate, impacting throughput.&lt;/li&gt;
 &lt;li&gt;With foreign key constraints it is possible to create undeletable and unupdatable rows.&lt;/li&gt;
@@ -1565,6 +1568,15 @@ instead of reinventing replication you are now reinventing the database.&lt;/li&
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
+&lt;h2 id=&#34;foreign-key-constraints-and-cdc&#34;&gt;
+    &lt;a href=&#34;#foreign-key-constraints-and-cdc&#34;&gt;
+	Foreign Key Constraints and CDC
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In MySQL, foreign key constraints are not implemented at the MySQL level, they are implemented at the engine level, for example in InnoDB.
+Sometimes, FK constraints generate writes, for example when &lt;code&gt;ON DELETE CASCADE&lt;/code&gt; or &lt;code&gt;ON DELETE SET NULL&lt;/code&gt; clauses are being used.
+Because these writes are not coming from the MySQL level, they will never show up in the binlog.&lt;/p&gt;
+&lt;p&gt;MySQL&amp;rsquo;s foreign key constraints are fundamentally incompatible with CDC, and must never be used in hierarchies that use CDC.&lt;/p&gt;
 &lt;h1 id=&#34;transactionality-and-cdc&#34;&gt;
     &lt;a href=&#34;#transactionality-and-cdc&#34;&gt;
 	Transactionality and CDC
