@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "50 years in filesystems: 1974"
-date: 2023-03-14T12:13:14Z
+date: 2023-05-05T12:13:14Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
@@ -10,7 +10,7 @@ tags:
 ---
 
 Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
-Often, it is easier to see if you compare modern educational material, and the problems discussed, with older material.
+Often, it is easier to see if you compare modern educational material, and the problems discussed with older material.
 And then look for the research papers and sources that fueled the change.
 
 In Linux (and Unix in general), this is easy.
@@ -88,7 +88,7 @@ struct dinode
  *	of 3 bytes each.
  */
 ```
-*The inode as it appears on disk. 8 inodes fit into a 512 byte disk block, so they are aligned at 64 byte boundaries.*
+*The inode as it appears on disk. 8 inodes fit into a 512-byte disk block, so they are aligned at 64 byte boundaries.*
 
 The inode array on the filesystem has a `short` count, so there can be up to 65535 inodes in a filesystem.
 As each file requires an inode, there can only be that many files per filesystem.
@@ -120,7 +120,7 @@ The `addr` array is being used in the [bmap() function](https://github.com/dspin
 The function consumes an inode (`ip`) and a logical block number `bn` and returns a physical block number.
 That is, it maps a block in a file to a block on a disk, hence the name.
 
-The first 10 block pointers are stored directly in the inode.
+The first 10-block pointers are stored directly in the inode.
 That is, to access for example block 0, `bmap()` [will look up](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/subr.c#L40) `di_addr[0]` in the inode and return this block number.
 
 Additional blocks are stored in an indirect block, and the indirect block is stored in the inode.
@@ -147,7 +147,7 @@ This is true even for long writes, which span multiple block boundaries, and is 
 [But Is It Atomic?]({{< ref "/content/posts/2018-11-29-but-is-it-atomic.md" >}}#source-dive-why-are-writes-atomic).
 
 This also means that even with multiple writer processes, on a single file there can be only ever one disk write active at any point in time.
-This is very inconvenient for authors of datbase systems.
+This is very inconvenient for authors of database systems.
 
 ## Naming files
 
@@ -163,21 +163,28 @@ struct	direct
 	char	d_name[DIRSIZ];
 };
 ```
-*A directory enty contains an inode number (an `unsigned int`), and a filename which can be up to 14 bytes long. This fits 32 directory entries into a disk block, and 320 directory entries into the 10 disks blocks that can being referenced by the direct blocks of a directory file.*
+*A directory entry contains an inode number (an `unsigned int`), and a filename which can be up to 14 bytes long. This fits 32 directory entries into a disk block, and 320 directory entries into the 10 disks blocks that can being referenced by the direct blocks of a directory file.*
 
 The lower filesystem is a sea of files.
 Files have no names, only numbers.
 
-The upper filesystem uses a special type of file, with a simple 16 byte record structure, to assign a name of up to 14 characters to a file.
-A special function, `namei()` [converts a filename into an inode number](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L9-L200).
+The upper filesystem uses a special type of file, with a simple 16-byte record structure,
+to assign a name of up to 14 characters to a file.
+A special function, `namei()`
+[converts a filename into an inode number](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L9-L200).
 
-Pathnames passed to `namei()` are hierarchical: they can contain `/` as a path seaprator, and they are being terminated by `\0 (nul)`.
-[Pathnames](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L37-L41) either start with `/`, in which case the travelsal begins at the filesystem root, making the filename absolute.
+Pathnames passed to `namei()` are hierarchical:
+they can contain `/` as a path separator, and they are being terminated by `\0 (nul)`.
+[Pathnames](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L37-L41) either start with `/`,
+in which case the traversal begins at the filesystem root, making the filename absolute.
 Or they do not, in which case traversal starts at `u.u_cdir`, the current directory.
 
-The function than consumes pathname component after component, using the currently active directory and searching linearly for the name of the current component in that directory.
+The function then consumes pathname component after component,
+using the currently active directory and searching linearly for the name of the current component in that directory.
 It ends when the last pathname component is found, or if at any stage a component is not found.
-It also ends, if at any point in time, for any directory in the path, [we have no x-permission](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L91).
+It also ends,
+if at any point in time, for any directory in the path,
+[we have no x-permission](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L91).
 
 [Some entries are magical](https://github.com/dspinellis/unix-history-repo/blob/Research-V7-Snapshot-Development/usr/sys/sys/nami.c#L179):
 They are mountpoints.
@@ -210,14 +217,18 @@ And there are a number of annoying limitations:
 - There can be only one writer active per file, which kills concurrency.
 - Directory lookups are linear scans, so they become very slow for large directories (more than 320 entries).
 
-- There is no system for mandatory file locking. There are several systems for advisory file locking.
+- There is no system for mandatory file locking.
+  There are several systems for advisory file locking.
 
 And a few quirks:
 
 - There is no `delete()` system call.
-  We have `unlink()`, which removes a files name, and files that have zero names and zero open filehandles are being automatically collected.
-  This has a few unusual consequences, for example, disk space is only freed if a completely unlinked file is also completely closed.
-  Generations of Unix sysadmins have asked where their disk space is, when a deleted log file in `/var/log` was still kept open by some forgotten process.
+  We have `unlink()`, which removes a file name,
+  and files that have zero names and zero open file handles are being automatically collected.
+  This has a few unusual consequences,
+  for example, disk space is only freed if a completely unlinked file is also completely closed.
+  Generations of Unix sysadmins have asked where their disk space is,
+  when a deleted log file in `/var/log` was still kept open by some forgotten process.
 - Initially there is no `mkdir()` and `rmdir()` system call, which leads to exploitable race conditions.
   This is fixed in later versions of Unix.
 
@@ -229,13 +240,13 @@ This leads to a seek intense structure, and enables filesystem fragmentation (in
 Traversing a directory structure means reading a directories inode at the beginning of the disk,
 going to the data blocks further back,
 then reading the next inode of the next pathname component from the beginning of the disk,
-and going back the the data blocks in the back.
+and going back the data blocks in the back.
 This goes back and forth, once for each pathname component, and is not necessarily fast.
 
 ## Today, and Improvements
 
 The PDP-11 V7 Unix filesystem got a faithful reimplementation as the  `minix` filesystem, with all its limitations.
-In modern Linux, it has been removed from the kernel source tree, because it is no longer useful.
+In modern Linux, it has been removed from the kernel source tree because it is no longer useful.
 
 We will see in a later article about the BSD fast filesystem, how the data can be better layouted on disk,
 how we can implement longer filenames, more inodes, and how we can speed things up a bit by taking physical properties of the disk into account.
