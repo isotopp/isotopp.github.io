@@ -36,7 +36,9 @@ These are machines with 32-bit data registers and 32-bit address registers.
 
 External data and address bus sizes vary: 
 Earlier 68k CPUs had smaller sized buses, but in 1984 the Motorola 68020 debuted.
-It was the first 68k to offer buses with the full width of 32 bits, and also had an integrated MMU, at a budget of ca. 200k transistors on the die.
+It was the first 68k to offer buses with the full width of 32 bits, at a budget of ca. 200k transistors on the die.
+Later the 68030 integrated the MMU, previously a separate chip,
+and the 68040 also integrated the FPU, again previously a separate chip.
 
 Early Sun workstations, the Sun-3 series, feature these CPUs.
 But Sun took the designs from the experimental Berkeley RISC systems and released the Sun-4 series in 1986 with SPARC architecture RISC chips.
@@ -249,7 +251,7 @@ Free space in directories is never reclaimed through compaction, only eventually
 The traditional filesystem allowed a file to have multiple names, using the `link()` system call and the hardlink mechanism.
 Hardlinks are limited in number (a `short`, so 64 K names).
 
-They can be lost accidentally, for example by saving a hardlinked file with certain editors.
+They can be lost accidentally, for example, by saving a hardlinked file with certain editors.
 If the editor does write a file as `filename.new`, then unlinks the old `filename` and moves the new file into place, the hardlinked nature of the file will be modified.
 
 Hardlinks also reference the original inode of the file multiple times, so they cannot span filesystem boundaries.
@@ -279,11 +281,11 @@ In order to implement them in a useful way, the behavior of the filesystem had t
 
 - It is now a privileged operation to change the owner of a file away from oneself.
   Without that, it is possible to create a directory that is only accessible for oneself, and then gift all files in it to another user.
-  The files would then count against that users quota.
-- Similarly, it is now no longer possible to change the group of a file to just any group.
-  Instead, only groups from the users group set can be used.
+  The files would then count against that user's quota.
+- Similarly, it is now no longer possible to change the group membership of files to just any group.
+  Instead, only groups from the user's group set can be used.
 - And finally, new directories and files inherit their group from their parent directory, not from a users primary group.
-  That way, project directories would contain files counting against a projects quota, not a users primary group quota.
+  That way, project directories would contain files counting against a project's quota, not a user's primary group quota.
 
 ### Advisory Locking
 
@@ -298,9 +300,10 @@ For this, the new `flock()` syscall has been implemented.
   This is very robust, until `dup()` and `fork()` are coming into play. 
 
 Posix later tried to improve on this, introducing a second, completely different system of locks, using `fcntl()`.
-This is flawed in different ways, but can do byte-ranges and tries some rudimentary deadlock detection.
+This is flawed in different ways, but can do byte-ranges, and it implements some rudimentary deadlock detection.
 
-Kernels that implement both systems such as Linux now have two different, incompatible file locking implementations that do not know of each others locks. 
+Kernels that implement both systems such as Linux now have two different,
+incompatible file locking implementations that do not know of each other. 
 
 [This article](https://loonytek.com/2015/01/15/advisory-file-locking-differences-between-posix-and-bsd-locks/) discusses all of this some more,
 and has example programs.
@@ -313,7 +316,7 @@ The authors note the following advantages in their paper:
   Hence, reading and listing a directory is very low on seeks, and on seek distance (except for subdirectories, which are guaranteed to be far away).
   They measure a 8x speedup for directories without subdirectories.
 - Utilization of the theoretical maximal bandwidth increased from 3% in the traditional filesystem to 22% or even 47%, depending on the controller hardware used.
-  The authors are very proud of the results, because they have been achieved on an actual production system with real user production data being layouted,
+  The authors are very proud of the results because they have been achieved on an actual production system with real user production data being layouted,
   and not on a synthetic benchmark layout. Throughput is stable over the lifetime of the filesystem, as its file population changes.
 
 This solves the main drivers for the improvements: Better throughput and a stable layout that does not degrade performance over time.
@@ -327,7 +330,7 @@ Both BSD FFS and Linux ext2 are still non-logging filesystems that require a fil
 They also cannot deal well with directories with many entries, and deal only slightly better with deep directory hierarchies.
 Additional changes are required to enable truly large filesystems in order to keep up with increasing storage sizes.
 
-Also, other limitations of a more hidden nature still apply:
+Also, other limitations of more hidden nature still apply:
 Several places in the filesystem code are guarded by locks that make scaling certain operations hard on systems with high concurrency.
 
 It would take another ten years, until 1994, for SGI's XFS to tackle these things.
