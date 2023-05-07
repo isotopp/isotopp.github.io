@@ -87,7 +87,7 @@ This causes small disk seeks, and slow I/O.*
 Another goal stated is to increase disk block size.
 Larger disk blocks benefit throughput in two ways:
 - Larger disk blocks provide larger units of I/O, so more data is transferred in a single I/O operation.
-- Larger disk blocks also allow the filesystem to store more file pointers in an indirect block, greatly reducing the number of indirect blick accesses.
+- Larger disk blocks also allow the filesystem to store more file pointers in an indirect block, greatly reducing the number of indirect block accesses.
   This is primarily a problem if indirect blocks are not cached in a file system buffer cache.
 
 The paper quotes the throughput of an already marginally optimized, traditional Unix filesystem at around 4% of the theoretical maximum,
