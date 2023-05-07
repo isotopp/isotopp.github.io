@@ -6,7 +6,7 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 May 2023 21:13:01 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 May 2023 10:04:35 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>50 years in filesystems: 1984</title>
       <link>https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html</link>
@@ -48,7 +48,9 @@ The computers targeted by 4.3BSD are desktop and cabinet workstations.
 These are machines with 32-bit data registers and 32-bit address registers.&lt;/p&gt;
 &lt;p&gt;External data and address bus sizes vary:
 Earlier 68k CPUs had smaller sized buses, but in 1984 the Motorola 68020 debuted.
-It was the first 68k to offer buses with the full width of 32 bits, and also had an integrated MMU, at a budget of ca. 200k transistors on the die.&lt;/p&gt;
+It was the first 68k to offer buses with the full width of 32 bits, at a budget of ca. 200k transistors on the die.
+Later the 68030 integrated the MMU, previously a separate chip,
+and the 68040 also integrated the FPU, again previously a separate chip.&lt;/p&gt;
 &lt;p&gt;Early Sun workstations, the Sun-3 series, feature these CPUs.
 But Sun took the designs from the experimental Berkeley RISC systems and released the Sun-4 series in 1986 with SPARC architecture RISC chips.
 SPARC architecture is not without compromises, but was very viable and saw continuous development until after the purchase of Sun by Oracle, which then killed both the SPARC, and later also the Itanium CPU architecture.&lt;/p&gt;
@@ -281,7 +283,7 @@ If none is found, the new name is appended at the end, growing the directory in 
 &lt;/h3&gt;
 &lt;p&gt;The traditional filesystem allowed a file to have multiple names, using the &lt;code&gt;link()&lt;/code&gt; system call and the hardlink mechanism.
 Hardlinks are limited in number (a &lt;code&gt;short&lt;/code&gt;, so 64 K names).&lt;/p&gt;
-&lt;p&gt;They can be lost accidentally, for example by saving a hardlinked file with certain editors.
+&lt;p&gt;They can be lost accidentally, for example, by saving a hardlinked file with certain editors.
 If the editor does write a file as &lt;code&gt;filename.new&lt;/code&gt;, then unlinks the old &lt;code&gt;filename&lt;/code&gt; and moves the new file into place, the hardlinked nature of the file will be modified.&lt;/p&gt;
 &lt;p&gt;Hardlinks also reference the original inode of the file multiple times, so they cannot span filesystem boundaries.&lt;/p&gt;
 &lt;p&gt;BSD introduces a new filetype (&lt;code&gt;l&lt;/code&gt;, symlink), and places a &amp;ldquo;replacement filename&amp;rdquo; in the linked file, which determines the link target location.
@@ -310,11 +312,11 @@ These are soft and hard limits on the number of files and the amount of disk spa
 &lt;ul&gt;
 &lt;li&gt;It is now a privileged operation to change the owner of a file away from oneself.
 Without that, it is possible to create a directory that is only accessible for oneself, and then gift all files in it to another user.
-The files would then count against that users quota.&lt;/li&gt;
-&lt;li&gt;Similarly, it is now no longer possible to change the group of a file to just any group.
-Instead, only groups from the users group set can be used.&lt;/li&gt;
+The files would then count against that user&amp;rsquo;s quota.&lt;/li&gt;
+&lt;li&gt;Similarly, it is now no longer possible to change the group membership of files to just any group.
+Instead, only groups from the user&amp;rsquo;s group set can be used.&lt;/li&gt;
 &lt;li&gt;And finally, new directories and files inherit their group from their parent directory, not from a users primary group.
-That way, project directories would contain files counting against a projects quota, not a users primary group quota.&lt;/li&gt;
+That way, project directories would contain files counting against a project&amp;rsquo;s quota, not a user&amp;rsquo;s primary group quota.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;advisory-locking&#34;&gt;
     &lt;a href=&#34;#advisory-locking&#34;&gt;
@@ -332,8 +334,9 @@ So when a process dies, its file-handles are automatically closed, which also au
 This is very robust, until &lt;code&gt;dup()&lt;/code&gt; and &lt;code&gt;fork()&lt;/code&gt; are coming into play.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Posix later tried to improve on this, introducing a second, completely different system of locks, using &lt;code&gt;fcntl()&lt;/code&gt;.
-This is flawed in different ways, but can do byte-ranges and tries some rudimentary deadlock detection.&lt;/p&gt;
-&lt;p&gt;Kernels that implement both systems such as Linux now have two different, incompatible file locking implementations that do not know of each others locks.&lt;/p&gt;
+This is flawed in different ways, but can do byte-ranges, and it implements some rudimentary deadlock detection.&lt;/p&gt;
+&lt;p&gt;Kernels that implement both systems such as Linux now have two different,
+incompatible file locking implementations that do not know of each other.&lt;/p&gt;
 &lt;p&gt;&lt;a href=&#34;https://loonytek.com/2015/01/15/advisory-file-locking-differences-between-posix-and-bsd-locks/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This article&lt;/a&gt;
 
  discusses all of this some more,
@@ -349,7 +352,7 @@ and has example programs.&lt;/p&gt;
 Hence, reading and listing a directory is very low on seeks, and on seek distance (except for subdirectories, which are guaranteed to be far away).
 They measure a 8x speedup for directories without subdirectories.&lt;/li&gt;
 &lt;li&gt;Utilization of the theoretical maximal bandwidth increased from 3% in the traditional filesystem to 22% or even 47%, depending on the controller hardware used.
-The authors are very proud of the results, because they have been achieved on an actual production system with real user production data being layouted,
+The authors are very proud of the results because they have been achieved on an actual production system with real user production data being layouted,
 and not on a synthetic benchmark layout. Throughput is stable over the lifetime of the filesystem, as its file population changes.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;This solves the main drivers for the improvements: Better throughput and a stable layout that does not degrade performance over time.&lt;/p&gt;
@@ -359,7 +362,7 @@ recreating the features as described in the literature without using any BSD cod
 &lt;p&gt;Both BSD FFS and Linux ext2 are still non-logging filesystems that require a filesystem check after a crash.
 They also cannot deal well with directories with many entries, and deal only slightly better with deep directory hierarchies.
 Additional changes are required to enable truly large filesystems in order to keep up with increasing storage sizes.&lt;/p&gt;
-&lt;p&gt;Also, other limitations of a more hidden nature still apply:
+&lt;p&gt;Also, other limitations of more hidden nature still apply:
 Several places in the filesystem code are guarded by locks that make scaling certain operations hard on systems with high concurrency.&lt;/p&gt;
 &lt;p&gt;It would take another ten years, until 1994, for SGI&amp;rsquo;s XFS to tackle these things.&lt;/p&gt;
 </description>
