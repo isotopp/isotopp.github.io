@@ -170,7 +170,7 @@ Or can they just call back, and request a read-only screen sharing session to ta
 
 What taxonomy of emergencies do we build, and what are the required steps to verify a case?
 
-Do we plan for preventatice action, when we register a spike in incidents of a certain type (ie a computer virus outbreak)?
+Do we plan for proactive intervention, when we register a spike in incidents of a certain type (ie a computer virus outbreak)?
 Do we have a problem management and change managent on top of our incident management that would want to and be able to prevent a large scale situation in the field?
 In the case of an outbreak, for example, by forcing patches on all machines?
 
