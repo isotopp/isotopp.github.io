@@ -51,7 +51,7 @@ Libraries provide mechanism, but do not enforce a policy.
 They do not proscribe a default way of working with problems.
 Frameworks are opinionated, and have been designed with a specific way of working in mind, and provide policies that are considered default solutions in the context of the framework.
 
-**Side side though:** Kernel, libraries and frameworks are all infrastructure, and as all infrastructure they are being judged by how they fail.
+**Side side thought:** Kernel, libraries and frameworks are all infrastructure, and as all infrastructure they are being judged by how they fail.
 In this case: What solutions exist to bypass the policy in a framework, if the policy does not fit.
 "How can I have queries in [RoR](https://en.wikipedia.org/wiki/Ruby_on_Rails) that bypass [Active Record](https://en.wikipedia.org/wiki/Active_record_pattern)" is one example.
 How free of policy is this library?
