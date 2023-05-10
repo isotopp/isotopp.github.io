@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "It's a Modulith"
-date: 2023-05-10T12:13:14Z
+date: 2023-05-10T01:02:03Z
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
