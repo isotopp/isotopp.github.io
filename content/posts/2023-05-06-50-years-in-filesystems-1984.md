@@ -100,7 +100,7 @@ The authors instead aim for a solution that places files sensibly in the first p
 
 ### Cylinder Groups and understanding CHS
 
-The BSD FFS understands the physical layout of a harddisk, with cylinders, heads and sectors (CHS).
+The BSD FFS understands the physical layout of a harddisk, with [cylinders, heads and sectors](https://en.wikipedia.org/wiki/Cylinder-head-sector) (CHS).
 It divides the disk into cylinder groups, adjacent tracks of all disk heads.
 
 ![](/uploads/2023/05/cylinder-groups.png)
