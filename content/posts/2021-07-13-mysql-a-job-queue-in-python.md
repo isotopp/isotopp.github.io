@@ -120,8 +120,8 @@ For speed, we commit to the jobs table only every tenth job.
 
 ```python
 def generator(generator_id):
-counter = 0
-step = 10
+    counter = 0
+    step = 10
 
     cmd = "insert into jobs (id,d,e,status,owner_id,owner_date) values (NULL,%(d)s,%(e)s,'unclaimed',NULL,NULL)"
 
@@ -256,8 +256,12 @@ def consumer(consumer_id):
         claimed_ids_count = len(claimed_ids)
 
         if len(claimed_ids) == 0:
+            db.commit() # again drop the read view
             continue
 
+        # starting here we have a lock on the records in claimed_ids
+        # so we know we are the only one processing them.
+        #
         # we claim the records, updating their status and owner
         claim_cmd = """update jobs 
            set status = 'claimed', 
