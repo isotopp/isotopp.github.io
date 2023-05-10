@@ -253,8 +253,8 @@ We will later use this in the <code>consumer()</code> to track the owner of a cl
 The new job has the status of <code>unclaimed</code> and the <code>owner_id</code> and <code>owner_date</code> are <code>NULL</code>.
 For speed, we commit to the jobs table only every tenth job.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">generator_id</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl"><span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl"><span class="n">step</span> <span class="o">=</span> <span class="mi">10</span>
+</span></span><span class="line"><span class="cl">    <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+</span></span><span class="line"><span class="cl">    <span class="n">step</span> <span class="o">=</span> <span class="mi">10</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&#34;insert into jobs (id,d,e,status,owner_id,owner_date) values (NULL,</span><span class="si">%(d)s</span><span class="s2">,</span><span class="si">%(e)s</span><span class="s2">,&#39;unclaimed&#39;,NULL,NULL)&#34;</span>
 </span></span><span class="line"><span class="cl">
@@ -390,8 +390,12 @@ We are only interested into the primary keys, so we return only these, in a <cod
 </span></span><span class="line"><span class="cl">        <span class="n">claimed_ids_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">claimed_ids</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">claimed_ids</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span> <span class="c1"># again drop the read view</span>
 </span></span><span class="line"><span class="cl">            <span class="k">continue</span>
 </span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="c1"># starting here we have a lock on the records in claimed_ids</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># so we know we are the only one processing them.</span>
+</span></span><span class="line"><span class="cl">        <span class="c1">#</span>
 </span></span><span class="line"><span class="cl">        <span class="c1"># we claim the records, updating their status and owner</span>
 </span></span><span class="line"><span class="cl">        <span class="n">claim_cmd</span> <span class="o">=</span> <span class="s2">&#34;&#34;&#34;update jobs 
 </span></span></span><span class="line"><span class="cl"><span class="s2">           set status = &#39;claimed&#39;, 
