@@ -94,8 +94,8 @@ Or just use the bus, tram, subway or train, starting at your door.
 
 The city does not believe into building roads to places that have more capacity than can be parked at the destination.
 So most major inroads into Amsterdam are single lane.
-Not only will not be able to park in the city, most likely,
-you will also hate every minute of getting there before you have to turn around.
+Not only will you not be able to park in the city.
+Most likely, you will also hate every minute of getting there before you have to turn around.
 Be sensible, use OV.
 
 # Summary
