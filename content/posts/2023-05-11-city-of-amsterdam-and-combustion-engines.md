@@ -55,7 +55,48 @@ and by 2030 no combustion engines are being allowed in the city at all.
   Ferries over the river Ij are already being converted.
   70% rebate for harbor fees for electric ships right now. 
 - Cars must be Euro 4 or better right now.
-  Only electric cars allowed into the city by 2030.
+  Only electric cars are allowed into the city by 2030.
+
+# Important advice
+
+![](/uploads/2023/05/scanauto.jpg)
+*Scanautos are being used to automatically enforce parking rules inside the city.
+They are checking around 800x more effective than a walking parking enforcement official.*
+
+In Amsterdam, most major streets do not allow you to park on public ground.
+Side streets often have only a limited number of public parking spots,
+the others require a residential parking permit.
+Parking in parking structures or in the street costs around 50 Euro/day if you find a space.
+
+Parking permits are **not** shown on the dashboard, and similarly, parking violations are **not** ticketed in paper behind the windshield wiper.
+Instead, everything is based on automated license plate scanning:
+Enter your license plate at the parking fee collector terminal,
+the scanauto will countercheck what it scanned with the central database.
+
+[Enforcement is automatic](https://algoritmeregister.amsterdam.nl/parkeercontrole/), and the coverage is excellent.
+If you do not pay, or overpark, you will be caught.
+
+[That will cost you](https://www.amsterdam.nl/parkeren/parkeerbon/) at minimum 72.90 Euros in punishment,
+plus fees, plus the unpaid parking fee. 
+In total this usually ends up between 110 Euros and 150 Euros 
+.
+The target for processing (between parking violation and notification) is officially two days. 
+But it often is "while you still park" (20 minutes or less),
+so near realtime.
+This has the effect of ruining whatever you are currently doing in the city, so just park legally.
+
+![](/uploads/2023/05/overtoom.png)
+*S106, Overtoom. A major inroad into the city. Note how this is one lane per direction, and no parking at the side.*
+
+The cheapest way to do that is to park at a [Park and Ride](https://www.amsterdam.nl/en/parking/park-ride/),
+and then take the tram or subway into the city.
+Or just start using the bis, tram, subway or train starting at your door.
+
+The city does not believe into building roads to places that have more capacity than can be parked at the destination.
+So most major inroads into Amsterdam are single lane.
+Not only will not be able to park in the city, most likely,
+you will also hate every minute of getting there before you have to turn around.
+Be sensible, use OV.
 
 # Summary
 
