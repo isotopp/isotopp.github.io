@@ -29,7 +29,7 @@ the city helpfully explains:
 
 > **Let op:** dat u de Milieuzone mag inrijden betekent niet dat u ook in aanmerking komt voor een parkeervergunning. 
 
-**Attention:** Being allowed to enter the milieuzone does not come with a right to park.
+**Attention:** Note that being allowed to enter the Environmental Zone does not mean you are also eligible for a parking permit.
 
 # After 2030
 
