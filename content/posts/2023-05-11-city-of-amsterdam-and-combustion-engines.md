@@ -1,0 +1,72 @@
+---
+author: isotopp
+date: "2023-05-11T01:02:03Z"
+feature-img: assets/img/background/rijksmuseum.jpg
+tags:
+- lang_en
+- mobility
+- netherlands
+title: 'City of Amsterdam and Combustion Engines'
+---
+
+Electrive.net had an article about Copenhagen banning combustion engines in the city, starting 2030:
+([Article in German](https://www.electrive.net/2023/05/08/kopenhagen-will-verbrenner-autos-ab-2030-aussperren/)).
+So I had to check what is the current state in Amsterdam.
+
+# Current state
+
+The Netherlands has a central register for license plates.
+It is public, and anyone can check.
+There are many places that allow you to do that for car, not owner data.
+For [example](https://www.autoweek.nl/kentekencheck/P-664-rg/).
+
+The city of Amsterdam also allows you to check if a given license plate is allowed to enter the cities milieuzone.
+You can [check yourself](https://ontheffingen.amsterdam.nl/publiek/).
+And so can any license plate scanner.
+
+In the [overview page](https://www.amsterdam.nl/verkeer-vervoer/milieuzone-amsterdam/) for the milieuzone,
+the city helpfully explains:
+
+> **Let op:** dat u de Milieuzone mag inrijden betekent niet dat u ook in aanmerking komt voor een parkeervergunning. 
+
+**Attention:** Being allowed to enter the milieuzone does not come with a right to park.
+
+# After 2030
+
+The rules for the milieuzone are becoming stricter [starting 2025](https://www.amsterdam.nl/verkeer-vervoer/milieuzone-amsterdam/aanscherping-milieuzones/),
+and by 2030 no combustion engines are being allowed in the city at all.
+
+- NL-wide license plate check for [commercial vehicles](https://www.opwegnaarzes.nl/).
+- New lorries will need to be electric starting 2025 to be allowed into the city.  
+  Existing lorries will have to be Euro 6 or better. There are some more rules for easing the changeover.
+  Starting 2030, no lorries with combustion engines are allowed into the city.
+- Small commercial delivery vehicles (vans, Sprinters) with Diesel must be Euro 4 or better already.
+  New cars must be electric starting 2025. Euro 5 is required starting 2027, Euro 6 starting 2028, 
+  no combustion starting 2028.
+- Bus lines are in the process of being converted to electric, and this is nearly complete.
+  It will be finished by 2025.
+  Rules for charter buses are to follow.
+- Taxis electric starting 2025.
+  Tax incentives and better starting places as well as priority for parking and taxi licenses are provided already.
+  This is going well, most Taxis are electric already.
+- Scooters (25 km/h and 45 km/h) must be electric by 2025.
+  Get a pedelec, maybe?
+- Ships (tourist and transport) must be electric by 2025. 
+  Ferries over the river Ij are already being converted.
+  70% rebate for harbor fees for electric ships right now. 
+- Cars must be Euro 4 or better right now.
+  Only electric cars allowed into the city by 2030.
+
+# Summary
+
+![](/uploads/2023/05/electric-charge-points.png)
+
+*Map of [electric charge points](https://www.amsterdam.nl/parkeren/elektrische-oplaadpunten-amsterdam/) in Amsterdam*
+
+So for anybody but private individual transport, Amsterdam will be fully electric by 2025,
+and the final conversion will take another 5 years.
+This is not an unrealistic goal.
+If you walk through the city, you can see how the conversion is already in full swing at an amazing and still increasing speed.
+
+The city has built the required infrastructure in terms of charge points already, 
+and provides maps to prove it.
