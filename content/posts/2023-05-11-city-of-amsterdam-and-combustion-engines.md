@@ -61,7 +61,7 @@ and by 2030 no combustion engines are being allowed in the city at all.
 
 ![](/uploads/2023/05/scanauto.jpg)
 *Scanautos are being used to automatically enforce parking rules inside the city.
-They are checking around 800x more effective than a walking parking enforcement official.*
+They are checking around 800x more effective than an unaugmented parking enforcement human.*
 
 In Amsterdam, most major streets do not allow you to park on public ground.
 Side streets often have only a limited number of public parking spots,
@@ -90,7 +90,7 @@ This has the effect of ruining whatever you are currently doing in the city, so 
 
 The cheapest way to do that is to park at a [Park and Ride](https://www.amsterdam.nl/en/parking/park-ride/),
 and then take the tram or subway into the city.
-Or just start using the bis, tram, subway or train starting at your door.
+Or just use the bus, tram, subway or train, starting at your door.
 
 The city does not believe into building roads to places that have more capacity than can be parked at the destination.
 So most major inroads into Amsterdam are single lane.
@@ -111,3 +111,8 @@ If you walk through the city, you can see how the conversion is already in full 
 
 The city has built the required infrastructure in terms of charge points already, 
 and provides maps to prove it.
+
+But individual motorized transport does not scale to a city with the density of Amsterdam.
+Cities are for humans, not for cars, and Amsterdam makes it very clear that cars are not welcome.
+Use public transport to get around in Amsterdam.
+That is already fully electric, and except for the buses always has been.
