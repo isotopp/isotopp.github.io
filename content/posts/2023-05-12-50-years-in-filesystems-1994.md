@@ -229,7 +229,7 @@ Then XFS starts to root a B+-tree of the mapping extents in the inode, indexed b
 
 This data structure allows compressing a substantial number of blocks (up to 2M blocks) in a single descriptor,
 assuming contiguous allocation is possible.
-So even large files could stored in very few extents, in the optimal case one extent per AG.
+So even large files could be stored in very few extents, in the optimal case one extent per AG.
 
 ### Delayed allocation and Preallocation for contiguous layout
 
@@ -273,7 +273,7 @@ They boast "We can have directories with millions of entries", something that wa
 # A lot of code
 
 ![](/uploads/2023/05/xfs-scaling.png)
-*XFS Benchmarks on 1994 show nice and welcome linear scaling behavior that utilizes the hardware offered well.
+*XFS Benchmarks in 1994 show nice and welcome linear scaling behavior that utilizes the hardware offered well.
 It handles well on large boxes with (for 1994) high core-counts.*
 
 XFS is a large filesystem.
@@ -286,3 +286,7 @@ And even in 2024 it is still holding up reasonably well, on HDD and on flash.
 
 It still is the filesystem with the best scaling behavior, the best concurrency behavior, and the most consistent commit times,
 which makes it the preferred filesystem for any kind of database usage.
+This is due to the elimination of several global locks that impair concurrent usage and performance in large filesystems,
+and due to the consistent use of B+-Tree structures with `O(log(n))` scaling behavior where before algorithms with worse scaling behavior have been used.
+The use of extents also allows dynamically growing I/O sizes, benefiting throughput, 
+and together with the novel idea of delayed allocation encourage contiguous file placement.
