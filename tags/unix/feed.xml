@@ -6,7 +6,318 @@
     <description>Recent content in unix on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 May 2023 10:01:24 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/unix/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 May 2023 17:29:57 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/unix/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>50 years in filesystems: 1994</title>
+      <link>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</link>
+      <pubDate>Fri, 12 May 2023 12:13:14 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</guid>
+      <description>&lt;p&gt;This is part 3 of a series.
+The first part is &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/05/50-years-in-filesystems-1974.html&#34;&gt;1974&lt;/a&gt;
+
+&amp;rdquo;.
+The second part is &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html&#34;&gt;1984&lt;/a&gt;
+
+&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
+Often, it is easier to see if you compare modern educational material, and the problems discussed with older material.
+And then look for the research papers and sources that fueled the change.&lt;/p&gt;
+&lt;p&gt;In Linux (and Unix in general), this is easy.&lt;/p&gt;
+&lt;h1 id=&#34;1994--the-sgi-xfs-filesystem&#34;&gt;
+    &lt;a href=&#34;#1994--the-sgi-xfs-filesystem&#34;&gt;
+	1994 — The SGI XFS Filesystem
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In 1994, the paper &lt;a href=&#34;http://www.scs.stanford.edu/nyu/02fa/sched/xfs.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Scalability in the XFS File System&lt;/a&gt;
+
+ saw publication.
+Computers got faster since 1984, and so did storages.
+Notably, we are now seeing boxes with multiple CPUs, and with storages reaching into the Terabytes.
+The improvements to the 4.3BSD fast filing system (or the modified version in SGI IRIX called EFS) were no longer sufficient.&lt;/p&gt;
+&lt;p&gt;SGIs benchmarks cite machines that had large backplanes with many controllers (one benchmark cites a box with 20 SCSI controllers),
+many disks (three-digit-numbers of hard drives),
+and many CPUs (the benchmarks quote 12 socket machines) with a lot of memory (up to one gigabyte quoted in the benchmarks).&lt;/p&gt;
+&lt;p&gt;Filesystems became larger than FFS could handle,
+files became larger than FFS could handle,
+the number of files per directory led to large lookup times,
+central data structures such as allocation bitmaps did no longer scale,
+and global locks made concurrent access to the file system with many CPUs inefficient.
+SGI set out to design a fundamentally different filesystem.&lt;/p&gt;
+&lt;p&gt;Also, the Unix community as a whole was challenged by Cutler and Custer,
+who showed with NTFS for Windows NT 4.0 what was possible if you redesign from scratch.&lt;/p&gt;
+&lt;h1 id=&#34;requirements&#34;&gt;
+    &lt;a href=&#34;#requirements&#34;&gt;
+	Requirements
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The XFS filesystem was a firework of new ideas, and a large deviation from traditional Unix filesystem design.
+The list of new things is long:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Facilitate concurrency with
+&lt;ul&gt;
+&lt;li&gt;allocation zones&lt;/li&gt;
+&lt;li&gt;inode lock splitting&lt;/li&gt;
+&lt;li&gt;facilities for large, parallel I/O requests, DMA and Zero-Copy I/O&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Scalability of access by building the filesystem around the concepts of
+&lt;ul&gt;
+&lt;li&gt;B+-Trees&lt;/li&gt;
+&lt;li&gt;Extents: pairs of (start, length) descriptors&lt;/li&gt;
+&lt;li&gt;decoupling &amp;ldquo;file write&amp;rdquo; and &amp;ldquo;file layout&amp;rdquo; on disk to allow for contiguous files by using delayed allocation and preallocation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Introduce a write-ahead log to journal metadata changes
+&lt;ul&gt;
+&lt;li&gt;log asynchronously to allow for write coalescence&lt;/li&gt;
+&lt;li&gt;leveraging the log for recovery, so that recovery time is proportional to the amount of data in flight, not the size of the filesystem&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;XFS was written with these requirements,
+and primarily in order to provide a filesystem that could leverage all the performance of large SGI boxes for video editing, video serving and scientific computing.&lt;/p&gt;
+&lt;h2 id=&#34;a-logging-filesystem-but-not-a-log-structured-filesystem&#34;&gt;
+    &lt;a href=&#34;#a-logging-filesystem-but-not-a-log-structured-filesystem&#34;&gt;
+	A logging filesystem, but not a log structured filesystem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This is also happening at about the same time as John K. Ousterhout asking
+&amp;ldquo;&lt;a href=&#34;https://web.stanford.edu/~ouster/cgi-bin/papers/osfaster.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Why Aren’t Operating Systems Getting Faster As Fast as Hardware?&lt;/a&gt;
+
+&amp;rdquo;.
+Ousterhout started to explore the ideas of a log-based filesystem with the experimental Sprite operating system.&lt;/p&gt;
+&lt;p&gt;Log-based filesystems are an extremely radical idea that we need to discuss later, even if they originally predate XFS by a bit.
+But they weren&amp;rsquo;t very usable originally, because they need different hardware which can offer a lot more disk seeks.
+Log structured file system ideas had to become a lot more refined to actually have an impact,
+so we are going to discuss them later in the series.&lt;/p&gt;
+&lt;h2 id=&#34;what-irix-had-before&#34;&gt;
+    &lt;a href=&#34;#what-irix-had-before&#34;&gt;
+	What IRIX had before
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;IRIX as coming already with EFS, the specially sauced-up version of BSD FFS that used extents.
+It suffered from an 8 GB filesystem size limit, a 2 GB filesize limit, and it could not utilize the full hardware I/O bandwidth,
+which made many customers of these fantastically expensive machines somewhat sad.&lt;/p&gt;
+&lt;p&gt;Demands for video playback and from the database community led to requirements
+that stated the new filesystem needed to support hundreds of TB of disk space,
+hundreds of MB/s of I/O bandwidth and many parallel I/O requests in order to be able to saturate the hardware provided,
+and all this without running out of CPU.&lt;/p&gt;
+&lt;p&gt;The title of the paper is &amp;ldquo;Scalability in the XFS File System&amp;rdquo; and not &amp;ldquo;Implementation of …&amp;rdquo;,
+so it is more a show of the features provided and a superficial discussion of the implementation and the design decisions around it.
+It is not an in-depth discussion of the implementation,
+nor are extensive benchmarks provided.&lt;/p&gt;
+&lt;h1 id=&#34;features&#34;&gt;
+    &lt;a href=&#34;#features&#34;&gt;
+	Features
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;large-filesystems&#34;&gt;
+    &lt;a href=&#34;#large-filesystems&#34;&gt;
+	Large filesystems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;XFS supports large filesystems.
+Previous filesystems use 32-bit pointers to blocks.
+At 8 KB block size, with 32-bit block pointers, the limit is 32 TB.&lt;/p&gt;
+&lt;p&gt;Moving to 64-bit block pointers would make many data structures multiple of 8 bytes in size, which seemed like a waste.&lt;/p&gt;
+&lt;p&gt;For concurrency (see below), XFS introduces the concept of &lt;strong&gt;allocation groups&lt;/strong&gt; (AGs), which are always smaller than 4 GB.
+Allocation groups have local instances of the filesystem data structures, for example, inode maps or free block tracking.
+These are independently locked and so allow for concurrent operations in different allocation groups.&lt;/p&gt;
+&lt;p&gt;Allocation groups also help to save on pointer sizes:
+Where possible, AG-relative block numbers are being used, and these always fit into 32-bit pointers.
+In fact, a 4G allocation group can have only 1M blocks or fewer blocks (at 4K minimum blocksize),
+so a single maximum sized extent within a single AG can be packed into 40 bits (5 bytes).&lt;/p&gt;
+&lt;p&gt;The maximum file size and filesystem size is 8 EB (2^63-1).&lt;/p&gt;
+&lt;h2 id=&#34;bandwidth-and-concurrency&#34;&gt;
+    &lt;a href=&#34;#bandwidth-and-concurrency&#34;&gt;
+	Bandwidth and Concurrency
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Concurrent operations are a design goal for XFS.
+1994 is the age of 20 MB/s SCSI controllers, but SGI built machines with large chassis that could house many controllers and many drives.
+Benchmarks quote machines with an aggregate bandwidth of 480 MB/s delivering file I/O performance of over 370 MB/s with no tuning, including all overheads.
+This is quite an impressive result for everyday usage in 1994.&lt;/p&gt;
+&lt;p&gt;XFS achieves this using large blocks (4 KB or 8 KB block size), and the concept of extents.&lt;/p&gt;
+&lt;h3 id=&#34;extents-and-b-trees&#34;&gt;
+    &lt;a href=&#34;#extents-and-b-trees&#34;&gt;
+	Extents and B-Trees.
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Extents&lt;/strong&gt; are a core concept in XFS.
+They are tuples, most of the time pairs of &lt;code&gt;(startblock, length)&lt;/code&gt;.
+For mapping file blocks to disk blocks (&amp;ldquo;bmap&amp;rdquo;), they are triples &lt;code&gt;(offset, length, startblock)&lt;/code&gt;.
+Using truncated values, because of the size limits imposed by the maximum AG size,
+they can describe a contiguous sequence of blocks up to 2M blocks in size in 4 bytes,
+which is a lot more efficient than what BSD FFS did before.&lt;/p&gt;
+&lt;p&gt;Extents also allow XFS to do large I/O requests because they describe sections of contiguous blocks,
+making it easy to create read or write requests for several blocks apiece.
+It does I/O by default with 64 KB memory buffers, unless special provisions are being made to make them even larger.&lt;/p&gt;
+&lt;p&gt;The filesystem assumes an underlying disk structure with striping, and provides a number of 2 or 3 outstanding I/O requests to allow for concurrent I/O.
+It checks for backpressure, that is, it checks that the application is actually reading data.
+If it does, it issues additional read requests to keep the number of requests in flight at 3 by default,
+good for 192 KB in flight at once.&lt;/p&gt;
+&lt;p&gt;Groups of Extents can be collected in linear lists, but that will lead to scaling problems.
+So XFS uses &lt;strong&gt;B+-Trees&lt;/strong&gt;, which degrade to linear lists if there is only one single index block.&lt;/p&gt;
+&lt;p&gt;Usually tuples are indexed on their first value, but for some structures such as free lists, multiple indexes are kept:
+It is useful to index free space by &lt;code&gt;startblock&lt;/code&gt; for closeness, but also by &lt;code&gt;length&lt;/code&gt; to fit free spaces in the right size.&lt;/p&gt;
+&lt;h3 id=&#34;breaking-the-single-writer-inode-lock&#34;&gt;
+    &lt;a href=&#34;#breaking-the-single-writer-inode-lock&#34;&gt;
+	Breaking the single-writer inode lock
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/overlapping-write.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;Posix locks the in-memory inode to guarantee &lt;a href=&#34;https://blog.koehntopp.info/2018/11/29/but-is-it-atomic.html&#34;&gt;atomic writes&lt;/a&gt;
+
+.
+This makes sure any two large multiple-block writes always happen one-before-the-other.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;XFS also breaks the in-memory inode locks:
+Posix demands that large, overlapping, multiple block writes are totally ordered.
+When they overlap, it must not happen that there is a block soup of alternating blocks from write A and write B.&lt;/p&gt;
+&lt;p&gt;The default implementation in most kernels is simply a file-global lock placed at the in-memory inode, making sure there can be only one writer per inode.
+Implementers of databases hate that because it limits the write concurrency on any single file to One.
+This is, for example, why Oracle recommends that you make tablespaces from multiple files, each no larger than one GB.&lt;/p&gt;
+&lt;p&gt;XFS, in &lt;code&gt;O_DIRECT&lt;/code&gt; mode, removes this lock and allows atomic, concurrent writes, making database people very happy.&lt;/p&gt;
+&lt;h2 id=&#34;dynamic-inodes-and-improved-free-space-tracking&#34;&gt;
+    &lt;a href=&#34;#dynamic-inodes-and-improved-free-space-tracking&#34;&gt;
+	Dynamic Inodes and improved Free Space Tracking
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With large filesystems, you can never know:
+The applications may need a large number of inodes for many small files, or a small number of large files.
+Also, what is a good distance between the inode and the data blocks that belong to the file?&lt;/p&gt;
+&lt;p&gt;There is no good answer to the first question, and &amp;ldquo;as close as possible&amp;rdquo; is the answer to the second question.
+So XFS creates Inodes dynamically, as needed, in chunks of 64 inodes.&lt;/p&gt;
+&lt;p&gt;The relatively large inode size of 256 bytes (compared to 128 in BSD FFS and 64 in traditional Unix)
+is being compensated by the fact that XFS creates Inodes only as needed, and places them relatively closely to the file start.
+This frees up a substantial amount of disk space –
+in Unix filesystems with fixed inode counts as much as 3-4% of the disk space can be locked up in pre-allocated inodes.
+And even with cylinder groups, there will be considerable distance between an inode and the first data block.&lt;/p&gt;
+&lt;p&gt;Because inodes can reside anywhere on the disk and not just behind the superblock, they need to be tracked.
+XFS does with one B+-tree per allocation group.
+The tree is indexed by the start block, and records for each inode in the chunk if it is available or in-use.
+The inodes themselves are not kept in the tree, but in the actual chunks which are close to the file data.&lt;/p&gt;
+&lt;p&gt;Similarly, free space is tracked in chunks, and kept in per-AG trees, indexed twice: by start block and by length.&lt;/p&gt;
+&lt;h2 id=&#34;write-ahead-log&#34;&gt;
+    &lt;a href=&#34;#write-ahead-log&#34;&gt;
+	Write-Ahead Log
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Recovering a large filesystem after a crash can be slow.
+The recovery time is proportional to the size of the filesystem, and the number of files in it,
+because the system basically has to scan the entire filesystem and rebuild the directory tree in order to sure things are consistent.
+With XFS, the filesystem also is a lot more fragile, as it provides a variable number of inodes, spread out non-contiguously over the disk.
+Recovering them would be extra expensive.&lt;/p&gt;
+&lt;p&gt;Using write-ahead logging for metadata, this can be avoided most of the time.
+Recovery time is proportional to the size of the log, that is, the amount of data in flight at the time of the crash.&lt;/p&gt;
+&lt;p&gt;The log contains log entries containing a descriptor header and a full image of all changed metadata structures:
+inodes, directory blocks, free extent tree blocks, inode allocation tree blocks, allocation group blocks, and the superblock.
+Because full images are stored in the block, recovery is simple: the recovery process simply copies these new, changes images into the place where they are supposed to be, without needing to understand what kind of structure it changes.&lt;/p&gt;
+&lt;p&gt;The trust of the authors into the log was huge:
+Initially XFS had no &lt;code&gt;fsck&lt;/code&gt; program.
+This turned out to be overly optimistic, and so now &lt;code&gt;xfs_repair&lt;/code&gt; exists.&lt;/p&gt;
+&lt;h3 id=&#34;metadata-update-performance&#34;&gt;
+    &lt;a href=&#34;#metadata-update-performance&#34;&gt;
+	Metadata update performance
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;XFS is logging metadata updates, which means they need to be written to the filesystem log.
+By default, this log is placed inline, in the filesystem.
+But it is also possible to take it out, and put onto other media, for example, flash storage or battery-backed memory.&lt;/p&gt;
+&lt;p&gt;Writes to the log are asynchronous, if possible, but with partitions serving NFS they cannot be.
+Asynchronous writes allow for write batching, with speeds things up.
+But NFS servers profit a lot from accelerated log storage.&lt;/p&gt;
+&lt;p&gt;Because all metadata updates need to be logged, it can happen that intense metadata operations flood the log.
+A &lt;code&gt;rm -rf /usr/src/linux&lt;/code&gt; for example is not an operation where XFS is particularly fast, because the metadata update stream will eventually overflow the log.
+And because everything else in XFS is parallel by AG, the log is usually the only source of contention.&lt;/p&gt;
+&lt;h2 id=&#34;large-files-and-sparse-files&#34;&gt;
+    &lt;a href=&#34;#large-files-and-sparse-files&#34;&gt;
+	Large files and sparse files
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In FFS, files are mapped by the classical dynamic array, with direct blocks and up to three levels of indirect blocks.
+With 64-bit filesize, this becomes unwieldy: there will be more than three levels of indirect blocks required,
+and a substantial number of blocks would be required what essentially becomes a list of incrementing numbers.
+FFS (and EFS) are also forced to layout blocks the moment each block is allocated in the filesystem buffer pool.
+So effectively, no attempt to contiguously layout files on disk is being made.
+Instead, blocks are placed individually.&lt;/p&gt;
+&lt;p&gt;XFS replaces this dynamic array with extents.&lt;/p&gt;
+&lt;p&gt;In file placement maps, these mapping extents are triples &lt;code&gt;(blockoffset, length, disk block)&lt;/code&gt;.
+These extents are stored in the inode itself until this overflows.
+Then XFS starts to root a B+-tree of the mapping extents in the inode, indexed by logical block number for fast seeks.&lt;/p&gt;
+&lt;p&gt;This data structure allows compressing a substantial number of blocks (up to 2M blocks) in a single descriptor,
+assuming contiguous allocation is possible.
+So even large files could stored in very few extents, in the optimal case one extent per AG.&lt;/p&gt;
+&lt;h3 id=&#34;delayed-allocation-and-preallocation-for-contiguous-layout&#34;&gt;
+    &lt;a href=&#34;#delayed-allocation-and-preallocation-for-contiguous-layout&#34;&gt;
+	Delayed allocation and Preallocation for contiguous layout
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;XFS also provides a new concept, delayed allocation, in which virtual extents can be allocated in the file system buffer pool.
+These are blocks full of yet unwritten data that have not been layouted, and hence lack a physical position.
+Only on flush these blocks are layouted, contiguously, and then written out linearly in large writes, to speed things up.&lt;/p&gt;
+&lt;p&gt;This is a fundamental change to how the filesystem buffer cache works –
+previously it was possible to use &lt;code&gt;(device, physical block number)&lt;/code&gt; to identify buffer cache blocks and prevent duplicate buffer allocation.
+When porting XFS to Linux, the Linux kernel initially could not accommodate strategies that do not use such identification in the normal buffer cache, so at first XFS required a separate buffer cache.
+This got fixed later, as the porting progressed.&lt;/p&gt;
+&lt;p&gt;To ensure that files can be layouted without fragmentation, in a single extent, XFS aggressively preallocates storage for open files.
+The default amount of disk space preallocated is dependent on the amount of free space in the filesystem, and can be substantial.&lt;/p&gt;
+&lt;p&gt;The internet is littered with questions by XFS users asking where their disk space is, and the answer is always &amp;ldquo;in the open file handles of &lt;code&gt;/var/log&lt;/code&gt;. Also, check the &lt;a href=&#34;https://man7.org/linux/man-pages/man5/xfs.5.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;manpage&lt;/a&gt;
+
+ for &lt;code&gt;allocsize=&lt;/code&gt; and also check &lt;a href=&#34;https://linux-xfs.oss.sgi.narkive.com/jjjfnyI1/faq-xfs-speculative-preallocation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;/proc/sys/fs/xfs/speculative_prealloc_lifetime&lt;/code&gt;&lt;/a&gt;
+
+.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;locality&#34;&gt;
+    &lt;a href=&#34;#locality&#34;&gt;
+	Locality
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;XFS does not use allocation groups for locality much.
+They exist mostly for concurrency.
+Instead, file placement is mostly around directories and existing blocks of the current file.
+The only exception is &amp;ldquo;new directories&amp;rdquo;, which are placed &amp;ldquo;away&amp;rdquo; from their parent directory by putting them into a different AG.&lt;/p&gt;
+&lt;p&gt;In large files, if new extents need to be placed, they go &amp;ldquo;initially near the inode, then near the existing block in the file which is closest to the offset in the file for which we are allocating space&amp;rdquo;, as the paper specifies.
+This places the inode close to the start of the file, and blocks added later to whatever is already present.&lt;/p&gt;
+&lt;h2 id=&#34;large-directories&#34;&gt;
+    &lt;a href=&#34;#large-directories&#34;&gt;
+	Large directories
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In the traditional Unix filesystem and in BSD FFS, directory name lookups are linear operations.
+Large directories slow this down a lot, for any kind of pathname to inode translation.&lt;/p&gt;
+&lt;p&gt;XFS chose the ubiquitous B+-Tree as a structure for directories, too, but with a quirk:
+Since the keys are supposed to be filenames, a variable length structure, they would be completely different from all the other tree implementations in the filesystem.
+The XFS authors did not like this idea, so they are hashing the filename into a fixed 4-byte name hash, and then store one or more directory entries as &lt;code&gt;(name, inode)&lt;/code&gt; pairs in the value.&lt;/p&gt;
+&lt;p&gt;There was some tradeoff discussion involved in this, but the authors found that short keys allow storing many entries per block,
+leading to wide trees, and thus faster lookups.
+They boast &amp;ldquo;We can have directories with millions of entries&amp;rdquo;, something that was previously unthinkable in Unix filesystems.&lt;/p&gt;
+&lt;h1 id=&#34;a-lot-of-code&#34;&gt;
+    &lt;a href=&#34;#a-lot-of-code&#34;&gt;
+	A lot of code
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/xfs-scaling.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;XFS Benchmarks on 1994 show nice and welcome linear scaling behavior that utilizes the hardware offered well.
+It handles well on large boxes with (for 1994) high core-counts.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;XFS is a large filesystem.
+Linux ext2 is only 5000 lines of kernel code (and about 10x this in user-land).
+XFS is 50.000 lines of kernel code, and that is without the IRIX volume manager XLV (in Linux, the XFS port uses LVM2 instead).&lt;/p&gt;
+&lt;p&gt;XFS was released under the GNU GPL in May 1999, and was ported into the Linux kernel starting in 2001.
+As of 2014, it was supported in most Linux distributions and RHEL used it as the default filesystem.
+And even in 2024 it is still holding up reasonably well, on HDD and on flash.&lt;/p&gt;
+&lt;p&gt;It still is the filesystem with the best scaling behavior, the best concurrency behavior, and the most consistent commit times,
+which makes it the preferred filesystem for any kind of database usage.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>50 years in filesystems: 1984</title>
       <link>https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html</link>
@@ -3691,248 +4002,6 @@ Windows für Workgroups wandelt alle Paßworte in reine Großschrift um, wenn ei
 In diesem Fall versucht Samba, das Paßwort zu raten, indem das übermittelte Paßwort in Groß- und Kleinschrift ausprobiert wird.
 Mit der Option &lt;code&gt;password level = zahl&lt;/code&gt; kann man Samba dazu bewegen, auch Kombinationen von Groß- und Kleinbuchstaben zu testen.
 Die Zahl bestimmt dabei die maximale Anzahl von Großbuchstaben im Paßwort.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>init - Starten und Beenden von Linux</title>
-      <link>https://blog.koehntopp.info/1995/12/01/init-starten-und-beenden-von-linux.html</link>
-      <pubDate>Fri, 01 Dec 1995 09:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/1995/12/01/init-starten-und-beenden-von-linux.html</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Linux Magazin, Heft 12/1995&lt;/strong&gt;&lt;/p&gt;
-&lt;h2 id=&#34;init---starten-und-beenden-von-linux&#34;&gt;
-    &lt;a href=&#34;#init---starten-und-beenden-von-linux&#34;&gt;
-	init - Starten und Beenden von Linux
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;em&gt;Der Prozeß mit der Prozeßnummer 1 ist init. init wird beim Starten des Systems geladen und läuft bis zum Abschalten durch. Er ist der direkte oder indirekte Urahn aller anderen Prozesse eines Linux-Systems. Ein genaues Verständnis der Vorgänge vom Starten von init bis zum Erscheinen des ersten Shellprompts nach dem Login ist notwendig, um fehlerhaft konfigurierte Linuxsysteme wiederzubeleben, ohne neu installieren zu müssen.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Die meisten Linux-Distributionen haben heutzutage den sysvinit 2.4 von Miquel van Smoorenburg (Miquel van Smoorenburg) installiert. Diese init-Version entspricht im Großen und Ganzen den von regulären System V Systemen bekannten inits, ist aber auf PC-Verhältnisse besonders angepaßt. sysvinit kennt zum Beispiel spezielle Optionen betreffend das Verhalten bei einem Stromausfall mit einer USV und weiß mit einem Control-Alt-Delete umzugehen. Mit Smoorenburgs init-Paket kommen außer init auch noch die Programme &lt;code&gt;halt&lt;/code&gt;, &lt;code&gt;last&lt;/code&gt;, &lt;code&gt;mesg&lt;/code&gt;, &lt;code&gt;shutdown&lt;/code&gt; und &lt;code&gt;wall&lt;/code&gt; sowie der Quelltext für den &lt;code&gt;powerd&lt;/code&gt;, ein Auswertedämon für die Statusleitungen von USVs. Eine Version von &lt;code&gt;who&lt;/code&gt;, die auf den init abgestimmt wäre, fehlt.&lt;/p&gt;
-&lt;p&gt;Zu dem Zeitpunkt, zu dem init gestartet wird, ist das System soeben gebootet worden. Außer dem Root-Dateisystem, das wahrscheinlich nur read-only gemountet ist und möglicherweise beschädigt ist und der Systemkonsole &lt;code&gt;/dev/console&lt;/code&gt; existieren keine weiteren Ressourcen. Außer init laufen keine anderen Prozesse. Swapspace ist noch nicht angemeldet, was zur Folge hat, daß auf Systemen mit nur 4 MB RAM der Speicher schnell knapp werden könnte. Die Aufgabe von init beim Systemstart ist zunächst einmal, die Dateisysteme zu prüfen, gegebenenfalls zu reparieren und sie sowie eventuell vorhandenen Swapspace anzumelden. Durch die zusätzlichen Dateisysteme und den zusätzlichen Speicher versetzt sich das System in die Lage, die zahlreichen Hintergrundprozesse zu starten, die ein vollständig betriebsbereites Linux auszeichnen. Welche Dämonen gestartet sind, wird durch die Konfigurationsdatei von init, die &lt;code&gt;/etc/inittab&lt;/code&gt; festgelegt. Je nach Run-Level des Systems können dies unterschiedliche Prozesse sein.&lt;/p&gt;
-&lt;h2 id=&#34;run-levels&#34;&gt;
-    &lt;a href=&#34;#run-levels&#34;&gt;
-	Run-Levels
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Ein Run-Level ist dabei einfach nur die numerische Bezeichnung (Okay, es gibt auch noch einen Run-Level S) für eine bestimmte Systemkonfiguration. Abhängig vom aktuellen Run-Level werden bestimmte Zeilen der &lt;code&gt;/etc/inittab&lt;/code&gt; gültig oder ungültig und init stoppt oder startet dementsprechend die zugehörigen Prozesse. Die &lt;code&gt;/etc/inittab&lt;/code&gt; definiert gewissermaßen den Soll-Zustand des Systems in einem bestimmten Run-Level: Fehlende Dämon-Prozesse werden von init nachgestartet, überzählige Dämon-Prozesse werden von init gestoppt.&lt;/p&gt;
-&lt;p&gt;Über den Ist-Zustand des Systems führt init parallel dazu in der utmp-Datei Buch. Für jede Zeile der &lt;code&gt;/etc/inittab&lt;/code&gt; steht in der utmp-Datei ein &lt;code&gt;struct utmp&lt;/code&gt;-Eintrag, der über den Verbleib des zugehörigen Prozesses Aufschluß gibt. Außerdem führt init über seine Aktionen noch in der wtmp-Datei ein Logbuch. Auch diese Datei besteht aus &lt;code&gt;struct utmp&lt;/code&gt;-Einträgen, aber im Gegensatz zu utmp, die eine feste Länge hat, wird wtmp als Logbuch fortgeschrieben (und muß regelmäßig gekürzt werden). Programme wie &lt;code&gt;who&lt;/code&gt;, &lt;code&gt;w&lt;/code&gt;, &lt;code&gt;finger&lt;/code&gt; oder der &lt;code&gt;rwhod&lt;/code&gt; können die utmp-Datei auswerten und anzeigen, welche Benutzer gerade im System eingeloggt sind oder welche Schnittstellen gerade unbelegt sind. Programme wie &lt;code&gt;last&lt;/code&gt; oder Accountingtools werten dagegen die wtmp-Datei aus und können so ein Logbuch über die vergangenen Logins erzeugen.&lt;/p&gt;
-&lt;p&gt;Auf einem richtigen System V kann who nicht nur eine Liste der eingeloggten Benutzer erzeugen, sondern die komplette utmp-Datei analysieren und auch mit der Option -r den aktuellen Run-Level des Systems anzeigen. Im Umfeld der Slackware-Distributionen paßt der &lt;code&gt;who&lt;/code&gt;-Befehl nicht zum init und ihm fehlen diese Optionen, sodaß man auf selbstgeschriebene Programme angewiesen ist.&lt;/p&gt;
-&lt;p&gt;init erzwingt nicht, daß bestimmte Run-Level (ausgenommen S) bestimmte Bedeutungen haben. Das Verhalten des Systems richtet sich ausschließlich nach der Konfiguration in der &lt;code&gt;/etc/inittab&lt;/code&gt;. Per Konvention hat diese auf den meisten Distributionen, die von Slackware abstammen, ein bestimmtes Aussehen. &amp;ldquo;Slackware inittab&amp;rdquo; weiter unten zeigt die &lt;code&gt;/etc/inittab&lt;/code&gt; einer Slackware-Installation.&lt;/p&gt;
-&lt;p&gt;Eine Zeile der &lt;code&gt;inittab&lt;/code&gt; hat dabei das folgende Format:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;	id:runlevels:action:process
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Die &lt;strong&gt;id&lt;/strong&gt; stellt dabei einen eindeutigen Identifikator für die Zeile der inittab dar. Er muß genau zwei Buchstaben lang sein und taucht später als &lt;code&gt;ut_id&lt;/code&gt;-Feld in demjenigen Eintrag in der utmp-Datei auf, der zu dieser Zeile der inittab gehört. Das, was &lt;code&gt;finger&lt;/code&gt; in der Spalte Tty ausdruckt, ist der Inhalt dieses &lt;code&gt;ut_id&lt;/code&gt;-Feldes aus der utmp-Datei.&lt;/p&gt;
-&lt;p&gt;Das Feld &lt;strong&gt;runlevels&lt;/strong&gt; definiert einen oder mehrere Run-Levels, in denen diese Zeile aktiviert sein soll.Wenn der aktuelle Run-Level des Systems hier nicht aufgeführt ist, ist diese Zeile unwirksam: Ein Eintrag im Feld runlevels mit den Ziffern 123 wäre nur in den Run-Levels 1, 2 und 3 gültig.&lt;/p&gt;
-&lt;p&gt;Das Feld &lt;strong&gt;process&lt;/strong&gt; definiert dann den Aufruf eines Prozesses mit allen Parametern, wie er von init gestartet werden soll, wenn das System sich in einem der in runlevels genannten Run-Level befindet. Diese Prozesse sind entweder Dämon-Prozesse wie &lt;code&gt;xdm&lt;/code&gt; oder &lt;code&gt;nnmaster&lt;/code&gt;, Login-Prompts wie &lt;code&gt;getty&lt;/code&gt; oder Scripte und Anweisungen, die beim Wechsel des Run-Levels aktiv werden. init überwacht diese Prozesse. Wenn sich einer von ihnen beendet, bemerkt init dies und entscheidet anhand der &lt;strong&gt;action&lt;/strong&gt; darüber, ob der Dämon neu gestartet werden soll oder was sonst zu tun ist.&lt;/p&gt;
-&lt;p&gt;Der Abschnitt &amp;ldquo;Das action Feld in der inittab&amp;rdquo; erklärt die Bedeutung der verschiedenen Schlüsselworte.&lt;/p&gt;
-&lt;h2 id=&#34;die-rc-scripte&#34;&gt;
-    &lt;a href=&#34;#die-rc-scripte&#34;&gt;
-	Die rc-Scripte
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Bei der Slackware startet die inittab einige rc-Scripte, genau wie bei den meisten anderen Unices auch. Die Bezeichnung &lt;code&gt;rc&lt;/code&gt; steht dabei für &amp;ldquo;run command&amp;rdquo;. Sie stammt noch aus der Urzeit der Computerentwicklung und wurde von einem der vergessenen Vorläufer von UNIX übernommen. Heute würde man wohl stattdessen das Kürzel &amp;ldquo;BAT&amp;rdquo; verwenden.&lt;/p&gt;
-&lt;p&gt;Die Struktur dieser Scripte orientiert sich bei Linux mehr an der wesentlich primitiveren Konfiguration eines BSD-Systems als an einem normalen System V. Mit unserem Wissen über init können wir inzwischen erkennen, daß Linux nach dem Booten wegen des &lt;code&gt;initdefault&lt;/code&gt;-Schlüsselwortes in der inittab den Run-Level 5 ansteuert. Der &lt;code&gt;sysinit&lt;/code&gt;-Eintrag sorgt dann für die Abarbeitung von &lt;code&gt;/etc/rc.d/rc.S&lt;/code&gt;, gefolgt von &lt;code&gt;/etc/rc.d/rc.M&lt;/code&gt;, da der &lt;code&gt;wait&lt;/code&gt;-Eintrag &amp;ldquo;rc&amp;rdquo; den Run-Level 5 enthält. Nachdem init auf das Ende von &lt;code&gt;rc.M&lt;/code&gt; gewartet hat, startet er die &lt;code&gt;getty&lt;/code&gt;-Einträge &lt;code&gt;c2&lt;/code&gt; bis &lt;code&gt;c6&lt;/code&gt; (&lt;code&gt;c1&lt;/code&gt; ist hier auskommentiert) und den &lt;code&gt;nnmaster&lt;/code&gt;. Der Eintrag &lt;code&gt;x1&lt;/code&gt; wird ignoriert, da er nur für den Run-Level 6 gilt.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;/etc/rc.d/rc.S&lt;/code&gt; ist das Script, das als erstes nach dem Systemstart abgearbeitet wird. Es findet den eingangs erwähnten Rechner ohne Dateisysteme und Ressourcen vor und macht sich daran, diesen Zustand zu ändern. Die ersten Handgriffe nach der Definition eines Suchpfades dienen dazu, den Swapspace zu aktivieren: Dazu muß &lt;code&gt;swapon -a&lt;/code&gt; eine gültige &lt;code&gt;/etc/fstab&lt;/code&gt; vorfinden und dort die Swap-Partitionen benannt bekommen. Der &lt;code&gt;update&lt;/code&gt;-Dämon sorgt dann dafür, daß der Speicherinhalt auch gelegentlich auf die Festplatte geschrieben werden. Jetzt ist auch auf Maschinen mit 4 MB RAM genügend Speicher bereitgestellt, um größere Prozesse ablaufen lassen zu können.&lt;/p&gt;
-&lt;p&gt;Die folgenden Anweisungen dienen dazu, die Dateisysteme zu prüfen und - falls möglich - das Root-Dateisystem read-write anzumelden. Wenn der &lt;code&gt;fsck&lt;/code&gt; oder der Remount fehlschlagen, druckt das Script Handlungsanweisungen und versucht noch so etwas wie ein Login hinzubekommen. Die folgenden Anweisungen ab Zeile 92 dienen dann dazu, die üblichen Konfigurations- und Statusdateien zu erzeugen, die beim Systemstart aufgefrischt werden müssen und die Systemzeit zu stellen.&lt;/p&gt;
-&lt;p&gt;Startet man Linux im &lt;i&gt;single user mode&lt;/i&gt; oder gerät man auf andere Weise auf ein System mit einer read-only angemeldeten Root-Platte, kann man sich behelfen, indem man &lt;code&gt;/etc/rc.d/rc.S&lt;/code&gt; von Hand ausführt. Mit ein wenig Glück bekommt man so ein halbwegs vernünftig konfiguriertes System, bei dem man immerhin soviele Eingriffsmöglichkeiten hat, daß man die verbleibenden Fehler von Hand korrigieren kann. Auch normale UNIX-Versionen haben ähnliche Scripte. Da das Checken und Anmelden der Platten nach dem Systemstart mit die dringlichste Aufgabe ist, findet man den Namen des Scriptes am einfachsten heraus, indem man sich den sysinit-Eintrag der betreffenden &lt;code&gt;/etc/inittab&lt;/code&gt; ansieht. Ein häufige Name für dieses Script ist zum Beispiel &lt;code&gt;bcheckrc&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;/etc/rc.d/rc.M&lt;/code&gt; kümmert sich dann um die Vorbereitung des Systems auf den Mehrbenutzerbetrieb. Dieses Script kann davon ausgehen, daß alle lokalen Platten schon verfügbar sind und daß ausreichend Swapspace zur Verfügung steht. Hostnamen und andere das Netzwerk betreffende Dinge sind aber noch undefiniert. &lt;code&gt;rc.M&lt;/code&gt; konfiguriert einen Screenblanker, startet den &lt;code&gt;cron&lt;/code&gt;, setzt den Hostnamen und verzweigt dann vorübergehend in die Scripte &lt;code&gt;rc.inet1&lt;/code&gt; und &lt;code&gt;rc.inet2&lt;/code&gt;. Ersteres dient dazu, den Kernelteil des Netzwerkes zu konfigurieren: Die Interfaces erhalten ihre IP-Nummern und werden gestartet, danach setzt sich der Kernel Routingtabellen. Das gesamte Script besteht im Prinzip nur aus glorifizierten Aufrufen von &lt;code&gt;ifconfig&lt;/code&gt; und &lt;code&gt;route&lt;/code&gt;. Die zweite Datei konfiguriert dann den Anwendungsteil des Netzes, indem dort die entsprechenden Serverprozesse gestartet werden. Die folgenden Arbeiten in &lt;code&gt;rc.M&lt;/code&gt; erledigen dann einige Aufräumarbeiten, die zu verschiedenen Subsystemen gehören. Wichtig ist hier vor allen Dingen der Aufruf von &lt;code&gt;ldconfig&lt;/code&gt;, der Links auf die aktuellen Versionen der shared libraries auf den neuesten Stand bringt. Am Ende von &lt;code&gt;rc.M&lt;/code&gt; wird dann noch auf &lt;code&gt;rc.local&lt;/code&gt; verzweigt, in der der Systemverwalter lokale Modifikationen des Systemstarts unterbringen kann. Einige Versionen der Slackware verzweigen bei Bedarf noch in andere, spezialisierte rc-Dateien zum Verstellen des Zeichensatzes oder der Tastaturbelegung.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/1995/12/init-files.gif&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;h2 id=&#34;erweiterungen-der-rc-dateien&#34;&gt;
-    &lt;a href=&#34;#erweiterungen-der-rc-dateien&#34;&gt;
-	Erweiterungen der rc-Dateien
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Bei der Konstruktion der rc-Dateien, wie sie im Abschnitt &amp;ldquo;Slackware inittab&amp;rdquo; gezeigt wird, ist einzig die Datei &lt;code&gt;rc.local&lt;/code&gt; für lokale Erweiterungen des Bootvorganges vorgesehen. Der Systemverwalter kann hier neben lokalen Anpassungen für Zeichensatz und Tastatur eigene Dämon-Prozesse starten oder den Weg für den Start solcher Prozesse bereiten (indem zum Beispiel alte Lockdateien abgeräumt werden).&lt;/p&gt;
-&lt;p&gt;Dabei sollte man auf jeden Fall darauf achten, daß die &lt;code&gt;rc.local&lt;/code&gt;-Datei beendet wird! &lt;code&gt;rc.S&lt;/code&gt; wird als sysinit-Eintrag ausgeführt und &lt;code&gt;rc.local&lt;/code&gt; ist Bestandteil von &lt;code&gt;rc.M&lt;/code&gt; und wird als wait-Eintrag ausgeführt. In beiden Fällen können die folgenden Einträge der inittab erst dann ausgeführt werden, wenn &lt;code&gt;rc.S&lt;/code&gt; bzw. &lt;code&gt;rc.M&lt;/code&gt; beendet sind. Die folgenden Einträge sind aber die &lt;code&gt;getty&lt;/code&gt;-Prozesse für die Systemkonsole (c1-c6), die das Login überhaupt ermöglichen. Wenn ein Fehler in &lt;code&gt;rc.M&lt;/code&gt; also dazu führt, daß sich das Script niemals beendet, kommen niemals Loginprompts und man kann sich nicht anmelden, um den Fehler zu korrigieren.&lt;/p&gt;
-&lt;p&gt;Der Fehler tritt zum Beispiel gerne dann auf, wenn man in &lt;code&gt;rc.local&lt;/code&gt; einen Dämon startet (es ist ein Characteristikum von Dämonen, daß sie sich nach Möglichkeit nicht beenden), der sich nicht automatisch selbst in den Hintergrund schiebt. Zum Beispiel schiebt sich der &lt;code&gt;nnmaster&lt;/code&gt;-Aufruf&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;	/usr/lib/nn/nnmaster -l -r -C
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;automatisch in den Hintergrund, während&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;	/usr/lib/nn/nnmaster -f -l -r -C
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;keinen Hintergrundprozeß erzeugt, sondern ausdrücklich im Vordergrund bleibt. In der &lt;code&gt;rc.local&lt;/code&gt; würde nur der erste Aufruf korrekt funktionieren, der zweite würde das System blockieren.&lt;/p&gt;
-&lt;p&gt;In der &lt;code&gt;/etc/inittab&lt;/code&gt; im Abschnitt &amp;ldquo;Slackware inittab&amp;rdquo; ist &lt;code&gt;nnmaster&lt;/code&gt; jedoch in der zweiten Variante eingetragen. Wieso ist das hier notwendig? Nun, in der inittab ist &lt;code&gt;nnmaster&lt;/code&gt; als respawn-Eintrag eingetragen: init bewacht den &lt;code&gt;nnmaster&lt;/code&gt; hier und startet ihn neu, falls notwendig. Wäre &lt;code&gt;nnmaster&lt;/code&gt; hier ohne -f eingetragen, würde der Dämon sich in den Hintergrund schieben und der Vordergrundprozeß würde sich gleich wieder beenden. init bemerkt, daß sich der von ihm gestartete Prozeß beendet hat und würde sogleich einen zweiten &lt;code&gt;nnmaster&lt;/code&gt; starten, wie der respawn-Eintrag es befiehlt. Solche Einträge erzeugen dann die Meldung &amp;ldquo;respawning to rapidly&amp;rdquo;.&lt;/p&gt;
-&lt;h2 id=&#34;rc-dateien-im-stile-von-system-v&#34;&gt;
-    &lt;a href=&#34;#rc-dateien-im-stile-von-system-v&#34;&gt;
-	rc-Dateien im Stile von System V
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Das Konzept der &lt;code&gt;rc.local&lt;/code&gt;-Datei ist zwar schön einfach zu verstehen, aber für die automatische Wartung des Systems ist es nicht besonders elegant. In einer kommerziellen Umgebung würde man davon ausgehen, daß die Benutzer des Systems reine Anwender sind und kaum genug Ausbildung haben, um mit der Anwendung selbst klarzukommen. Auch von der Systemverwaltung kann man nicht in jedem Fall verlangen, daß sie zu selbstständigen Änderungen an rc-Dateien in der Lage ist. Das gilt insbesondere dann, wenn diese Änderung den fehlerfreien Wiederanlauf des Systems gefährden kann. Für Anwendungen, die durch schlecht ausgebildete Personen aus vorgefertigen Packages installiert werden sollen, wäre es wünschenswert, wenn ein Mechanismus besteht, durch den sie sich automatisch und weitgehend fehlerfrei in die Programmfolge beim Systemstart einhängen können.&lt;/p&gt;
-&lt;p&gt;Ein ähnliches Problem besteht schon seit Jahren im Bereich MS-DOS, wo Installationsprozeduren von Anwendungspaketen Änderungen an der AUTOEXEC.BAT und der CONFIG.SYS vornehmen müssen. Im Bereich MS-DOS löst man dies, indem jede Anwendung einen großen Installator mit sich herumschleppt, der in der Lage ist, solche Konfigurationsdateien zu parsen und zu korrekt verändern (oder auch nicht). Das so etwas schon bei MS-DOS nicht richtig funktioniert, bemerkt der Autor jedesmal an seiner eigenen Konfiguration, die leider nicht linear ist, sondern mehrere Verzweigungen und Aufrufe von Unterbatches enthält. Praktisch alle DOS-Installationsprogramme führen ihre Änderungen an der falschen Stelle oder nur für eine Konfiguration (meistens nicht die aktive) ein. UNIX Shellscripte sind allerdings noch mächtiger als DOS Batchdateien und für ein Installationsprogramm entsprechend schwieriger zu handhaben. Die Wahrscheinlichkeit, daß ein rc-Modifikator eine etwas komplexere &lt;code&gt;rc.local&lt;/code&gt; durch seine Änderungen zerstört sind viel größer als für ein DOS Installationsprogramm.&lt;/p&gt;
-&lt;p&gt;In System V UNIX verwendet man deswegen ein etwas anderes Konzept, daß ohne aufwendige Parser auskommt und trotzdem viel sicherer funktioniert. Statt alle Anweisungen in eine einzige Datei zu quetschen, hat man die rc-Datei dort in viele kleine Module zerlegt, von denen sich jedes um einen Aspekt des Systemstartes kümmert. Man hat für jeden Run-Level ein Unterverzeichnis &lt;code&gt;/etc/rcn.d&lt;/code&gt; (wobei n die Nummer des Run-Levels ist). Dort befinden sich die Startdateien für diesen Run-Level. Das Script &lt;code&gt;/etc/rcn&lt;/code&gt; (wieder ist n der Run-Level) ist für jeden Run-Level gleich und führt nacheinander alle Dateien im zum Run-Level gehörenden Unterverzeichnis aus.&lt;/p&gt;
-&lt;p&gt;Per Konvention haben alle Dateien im Unterverzeichnis entweder den Namen KxyNAME oder SxyNAME. Eine K-Datei dient dazu, irgendeinen Dienst beim Betreten des Run-Levels zu stoppen, eine S-Datei dient dazu, einen Dienst zu starten. Die Ziffern xy laufen von 00 bis 99 durch und dienen dazu, eine alphabethische Reihenfolge der Script zu definieren: Das Script führt die einzelnen Module in der Reihenfolge K00 bis K99 und dann S00 bis S99 aus. Es ruft K-Scripte mit dem Parameter &lt;code&gt;stop&lt;/code&gt; auf, S-Scripte werden mit dem Parameter &lt;code&gt;start&lt;/code&gt; aufgerufen. Der Bestandteil NAME dient zur Identifikation des Scriptes und bezeichnet das Subsystem, das durch das Script gestartet oder gestoppt wird.&lt;/p&gt;
-&lt;p&gt;Ein Programmpaket kann bei dieser Konstruktion ganz leicht eingefügt werden. Nehmen wir an, ein hypothetischer FAX-Server &lt;code&gt;kfax&lt;/code&gt; braucht beim Systemstart einige Anweisungen, um einen Dämon-Prozeß zu starten und ein wenig aufzuräumen. Das Installationspaket könnte eine Datei mit den benötigten Anweisungen erzeugen und sie als &lt;code&gt;/etc/init.d/kfax&lt;/code&gt; in einem Sammelverzeichnis für alle Startscripte installieren. Das Modul soll beim Betreten von Run-Level 5 getstartet werden. Also erzeugt die Installationsprozedur ein Symlink von &lt;code&gt;/etc/rc5.d/S99kfax&lt;/code&gt; nach &lt;code&gt;/etc/init.d/kfax&lt;/code&gt;. Die Installation braucht also nur eine Datei zu erzeugen und ein Link zu legen, um ihr Modul in die rc-Scripte zu integrieren. Soll das Script in mehr als einem Run-Level aktiviert werden, wird es auch von den anderen &lt;code&gt;/etc/rcn.d&lt;/code&gt;-Verzeichnissen nach &lt;code&gt;/etc/init.d&lt;/code&gt; gelinkt. Lesen und Verstehen von &lt;code&gt;rc.local&lt;/code&gt; oder anderen Scripten ist nicht notwendig. Die Deinstallationsanweisung ist genauso simpel: &amp;ldquo;Löschen Sie die Datei &lt;code&gt;/etc/rc5.d/S99kfax&lt;/code&gt; und starten Sie das System neu.&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;Beim Wechsel in den Run-Level 5 wird unser Beispielsystem das Script &lt;code&gt;/etc/rc5&lt;/code&gt; durch einen once-Eintrag aktivieren. Das Script geht alle Dateien in &lt;code&gt;/etc/rc5.d&lt;/code&gt; durch und führt sie der Reihe nach aus. Es wird zunächst alle &lt;code&gt;/etc/rc.d/K*&lt;/code&gt;-Dateien mit dem Parameter &lt;code&gt;stop&lt;/code&gt; aufrufen, danach wird es alle &lt;code&gt;/etc/rc.d/S*&lt;/code&gt;-Dateien mit dem Parameter &lt;code&gt;start&lt;/code&gt; aufrufen. Ganz am Schluss wird &lt;code&gt;S99kfax start&lt;/code&gt; ausgeführt.&lt;/p&gt;
-&lt;p&gt;Das folgende Listing zeigt den inittab-Eintrag und ein Listing von &lt;code&gt;/etc/rc5&lt;/code&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;system-v-startscript-etcrc5&#34;&gt;
-    &lt;a href=&#34;#system-v-startscript-etcrc5&#34;&gt;
-	System V Startscript &lt;code&gt;/etc/rc5&lt;/code&gt;
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Der Eintrag in der &lt;code&gt;/etc/inittab&lt;/code&gt;:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;r5:5:once:/etc/rc5
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Das zugehörige Script:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# /bin/sh --&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#	Das Script wird ausgefuehrt, wenn das System in den &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#	Run-Level 5 wechselt.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#	Fuer die anderen Run-Levels sollten &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#   analoge Eintraege und Scripte existieren.&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;PATH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/bin:/sbin:/usr/sbin:/usr/bin
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -d /etc/rc5.d &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;# Ausfuehren der Stopscripte&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nv&#34;&gt;MODE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;stop
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; f in /etc/rc5.d/K*
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -x &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			/sbin/sh &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; stop
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			. &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;c1&#34;&gt;# Ausfuehren der Startscripte&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;nv&#34;&gt;MODE&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;start
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; f in /etc/rc3.d/S*
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;do&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt; -x &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;then&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			/sbin/sh &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt; start
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;			. &lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;		&lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;done&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;fi&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;slackware-inittab&#34;&gt;
-    &lt;a href=&#34;#slackware-inittab&#34;&gt;
-	Slackware inittab
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;#
-# inittab       This file describes how the INIT process should set up
-#               the system in a certain Run-Level.
-#
-# Version:      @(#)inittab             2.04    17/05/93        MvS
-#
-# Author:       Miquel van Smoorenburg, &amp;lt;miquels@drinkel.nl.mugnet.org&amp;gt;
-#
-# Default runlevel.
-id:5:initdefault:
-
-# System initialization (runs when system boots).
-si:S:sysinit:/etc/rc.d/rc.S
-
-# Script to run when going single user.
-su:S:wait:/etc/rc.d/rc.K
-
-# Script to run when going multi user.
-rc:123456:wait:/etc/rc.d/rc.M
-
-# What to do at the &amp;#34;Three Finger Salute&amp;#34;.
-ca::ctrlaltdel:/sbin/shutdown -t3 -rf now
-
-# What to do when power fails (shutdown to single user).
-pf::powerfail:/sbin/shutdown -f +5 &amp;#34;THE POWER IS FAILING&amp;#34;
-
-# If power is back before shutdown, cancel the running shutdown.
-pg:0123456:powerokwait:/sbin/shutdown -c &amp;#34;THE POWER IS BACK&amp;#34;
-
-# If power comes back in single user mode, return to multi user mode.
-ps:S:powerokwait:/sbin/init 5
-
-# The getties in multi user mode on consoles an serial lines.
-#
-# NOTE NOTE NOTE adjust this to your getty or you will not be
-#                able to login !!
-#
-# Note: for &amp;#39;agetty&amp;#39; you use linespeed, line.
-# for &amp;#39;getty_ps&amp;#39; you use line, linespeed and also use &amp;#39;gettydefs&amp;#39;
-#c1:12345:respawn:/sbin/agetty 38400 tty1
-c2:12345:respawn:/sbin/agetty 38400 tty2
-c3:12345:respawn:/sbin/agetty 38400 tty3
-c4:45:respawn:/sbin/agetty 38400 tty4
-c5:45:respawn:/sbin/agetty 38400 tty5
-c6:456:respawn:/sbin/agetty 38400 tty6
-
-# nn
-nn:23456:respawn:/usr/lib/nn/nnmaster -f -l -r -C
-
-# Serial lines
-#s1:45:respawn:/sbin/agetty 19200 ttyS0
-#s2:45:respawn:/sbin/agetty 19200 ttyS1
-
-# Dialup lines
-#d1:45:respawn:/sbin/agetty -mt60 38400,19200,9600,2400,1200 ttyS0
-#d2:45:respawn:/sbin/agetty -mt60 38400,19200,9600,2400,1200 ttyS1
-
-# Runlevel 6 used to be for an X-window only system, until we discovered
-# that it throws init into a loop that keeps your load avg at least 1 all 
-# the time. Thus, there is now one getty opened on tty6. Hopefully no one
-# will notice. ;^)
-# It might not be bad to have one text console anyway, in case something 
-# happens to X.
-x1:6:wait:/etc/rc.d/rc.6
-
-# End of /etc/inittab
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;das-action-feld-in-der-etcinittab&#34;&gt;
-    &lt;a href=&#34;#das-action-feld-in-der-etcinittab&#34;&gt;
-	Das Action Feld in der &lt;code&gt;/etc/inittab&lt;/code&gt;
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Das Feld &lt;code&gt;action&lt;/code&gt; in der &lt;code&gt;inittab&lt;/code&gt; bestimmt, wie &lt;code&gt;init&lt;/code&gt; mit dem im Feld &lt;strong&gt;process&lt;/strong&gt; genannten Prozeß verfährt. &lt;code&gt;sysvinit&lt;/code&gt; kennt dieselben Schlüsselworte wie ein richtiger &lt;code&gt;init&lt;/code&gt; eines originalen System V UNIX plus einige eigene Schlüsselworte, die spezifisch für Linux sind.&lt;/p&gt;
-&lt;h3 id=&#34;start-und-restart-von-prozessen&#34;&gt;
-    &lt;a href=&#34;#start-und-restart-von-prozessen&#34;&gt;
-	Start und Restart von Prozessen
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;dl&gt;
-&lt;dt&gt;off:&lt;/dt&gt;
-&lt;dd&gt;Zeilen, die als &lt;code&gt;off&lt;/code&gt; gekennzeichnet sind, sind inaktiv. Dies stellt eine gute Methode dar, um Einträge in der &lt;code&gt;inittab&lt;/code&gt; vorübergehend außer Betrieb zu nehmen. Natürlich könnte man sie auch in Kommentarzeilen verwandeln, indem man an den Anfang der Zeile ein &amp;ldquo;#&amp;rdquo; setzt.&lt;/dd&gt;
-&lt;dt&gt;respawn:&lt;/dt&gt;
-&lt;dd&gt;Dies ist der häufigste Eintrag, wie er für &lt;code&gt;getty&lt;/code&gt;s und für Dämon-Prozesse verwendet wird, die automatisch neu gestartet werden sollen. Wenn sich ein so gekennzeichneter Eintrag beendet, versucht &lt;code&gt;init&lt;/code&gt; den Prozeß erneut zu starten. Kommt es dabei zu einer Endlosschleife (der Prozeß beendet sich aufgrund eines Fehlers sofort wieder, &lt;code&gt;init&lt;/code&gt; startet ihn sofort wieder neu&amp;hellip;), erkennt &lt;code&gt;init&lt;/code&gt; dies und legt den Eintrag für einige Minuten mit der Meldung &amp;ldquo;process respawning too rapidly&amp;rdquo; still.&lt;/dd&gt;
-&lt;dt&gt;initdefault:&lt;/dt&gt;
-&lt;dd&gt;Der &lt;code&gt;initdefault&lt;/code&gt;-Eintrag hat in gewisser Weise eine Sonderrolle: Er spezifiziert keinen Prozeß, sondern sein &lt;code&gt;runlevel&lt;/code&gt;-Feld gibt an, in welchen Run-Level sich das System beim Systemstart begeben soll. Fehlt dieser Eintrag, wird der gewünschte Run-Level beim Booten an der Console erfragt.&lt;/dd&gt;
-&lt;dt&gt;wait:&lt;/dt&gt;
-&lt;dd&gt;Mit wait gekennzeichnete Prozesse werden von &lt;code&gt;init&lt;/code&gt; einmal beim Betreten des Run-Levels gestartet. &lt;code&gt;init&lt;/code&gt; wartet dann darauf, daß der entsprechende Prozeß sich wieder beendet, bevor der nächste Eintrag abgearbeitet wird. Da &lt;code&gt;init&lt;/code&gt; die Einträge einer &lt;code&gt;inittab&lt;/code&gt; von oben nach unten abarbeitet, kann man so eine kontrollierte Folge von Scripten beim Erreichen eines Run-Levels starten.&lt;/dd&gt;
-&lt;dt&gt;once:&lt;/dt&gt;
-&lt;dd&gt;Mit &lt;code&gt;once&lt;/code&gt; gekennzeichnete Prozesse werden von &lt;code&gt;init&lt;/code&gt; einmal beim Betreten des Run-Levels gestartet. Im Gegensatz zur Aktion &lt;code&gt;wait&lt;/code&gt; wartet &lt;code&gt;init&lt;/code&gt; hier aber nicht auf das Ende des Prozesses, bevor der nächste Eintrag der &lt;code&gt;inittab&lt;/code&gt; abgearbeitet wird. &lt;code&gt;once&lt;/code&gt; wird normalerweise verwendet, um einen Dämon zu starten ohne in wie bei &lt;code&gt;respawn&lt;/code&gt; bewachen zu lassen. Sollte der Dämon sich beenden, wird eben kein neuer Prozeß gestartet. In System V UNIX wird &lt;code&gt;once&lt;/code&gt; verwendet, um die &lt;code&gt;/etc/rcn&lt;/code&gt;-Scripte zu starten.&lt;/dd&gt;
-&lt;/dl&gt;
-&lt;h3 id=&#34;boot&#34;&gt;
-    &lt;a href=&#34;#boot&#34;&gt;
-	Boot
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Weil &lt;code&gt;init&lt;/code&gt; als allererster Prozeß im System gestartet wird, muß es Einträge gegeben, die spezifizieren, wie das System ans Laufen gebracht wird. Bei diesen Einträgen wird das Feld &lt;strong&gt;runlevels&lt;/strong&gt; ignoriert. Sie werden beim Start des Systems schlicht von oben nach unten abgearbeitet.&lt;/p&gt;
-&lt;dl&gt;
-&lt;dt&gt;sysinit:&lt;/dt&gt;
-&lt;dd&gt;Die ersten Prozesse der Bootphase werden durch die &lt;code&gt;sysinit&lt;/code&gt;-Einträge bestimmt. Es handelt sich meistens um Scripte, deren Aufgabe es ist, die Platten zu checken und sie read-write anzumelden.&lt;/dd&gt;
-&lt;dt&gt;boot:&lt;/dt&gt;
-&lt;dd&gt;Nach den &lt;code&gt;sysinit&lt;/code&gt;-Scripten folgen dann die anderen Scripte der Bootphase.&lt;/dd&gt;
-&lt;dt&gt;bootwait:&lt;/dt&gt;
-&lt;dd&gt;Bei &lt;code&gt;bootwait&lt;/code&gt;-Einträgen wartet das System mit dem Starten des Folgeeintrags solange, bis der aktuelle Eintrag abgearbeitet ist. Bei &lt;code&gt;boot&lt;/code&gt;-Einträgen wird dagegen nicht gewartet.&lt;/dd&gt;
-&lt;/dl&gt;
-&lt;h3 id=&#34;speziell-für-linux&#34;&gt;
-    &lt;a href=&#34;#speziell-f%c3%bcr-linux&#34;&gt;
-	Speziell für Linux
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;&lt;code&gt;sysvinit&lt;/code&gt; von Linux hat außerdem noch einige Nichtstandard-Aktionen. Sie dienen hauptsächlich der Unterstützung von USVs und zumAbfangen der Tastenkombination Control-Alt-Delete.&lt;/p&gt;
-&lt;dl&gt;
-&lt;dt&gt;ctrlaltdel:&lt;/dt&gt;
-&lt;dd&gt;Bei diesem Eintrag wird das Feld &lt;strong&gt;runlevels&lt;/strong&gt; ebenfalls ignoriert. Er wird aktiviert, wenn jemand an der Console die Tastenkombination Control-Alt-Delete gedrückt hat. Normalerweise wird man hier entweder das System herunterfahren oder in den single user mode wechseln.&lt;/dd&gt;
-&lt;dt&gt;powerwait:&lt;/dt&gt;
-&lt;dt&gt;powerfail:&lt;/dt&gt;
-&lt;dd&gt;Einträge mit der Aktion &lt;code&gt;powerwait&lt;/code&gt; oder &lt;code&gt;powerfail&lt;/code&gt; werden aktiviert, wenn das System ein SIGPWR Signal erhält. Dies ist typischerweise ein Signal, das vom Kernel generiert wird, wenn die Stromversorgung des Systems zusammenbricht und die USV übernimmt. Bei &lt;code&gt;powerwait&lt;/code&gt;-Einträgen wartet &lt;code&gt;init&lt;/code&gt; wieder auf das Ende eines Eintrages, bevor der nächste abgearbeitet wird, während dies bei &lt;code&gt;powerfail&lt;/code&gt;-Einträgen nicht geschieht.&lt;/dd&gt;
-&lt;dt&gt;powerokwait:&lt;/dt&gt;
-&lt;dd&gt;Dieser Eintrag wird aktiviert, wenn ein SIGPWR auftritt und die Datei &lt;code&gt;/etc/powerstatus&lt;/code&gt; das Wort OK enthält. Sollte die Stromversorgung wieder funktionieren, bevor das System sich auf Grund des ersten SIGPWR abgeschaltet hat, kann durch einen Eintrag hier die Abschaltung verhindert werden.&lt;/dd&gt;
-&lt;dt&gt;ondemand:&lt;/dt&gt;
-&lt;dd&gt;Ein Eintrag mit der Bezeichnung ondemand funktioniert ähnlich wie ein Eintrag &lt;code&gt;once&lt;/code&gt;. Während ein &lt;code&gt;once&lt;/code&gt;-Eintrag jedoch nur beim Betreten eines Run-Levels aktiviert wird, wird ein &lt;code&gt;ondemand&lt;/code&gt;-Eintrag auch dann aktiviert, wenn das System in den Run-Level wechseln soll, in dem es sich sowieso schon befindet.&lt;/dd&gt;
-&lt;/dl&gt;
 </description>
     </item>
     

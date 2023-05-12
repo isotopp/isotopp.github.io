@@ -6,7 +6,318 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 11 May 2023 10:01:23 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 May 2023 17:29:57 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>50 years in filesystems: 1994</title>
+      <link>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</link>
+      <pubDate>Fri, 12 May 2023 12:13:14 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</guid>
+      <description>&lt;p&gt;This is part 3 of a series.
+The first part is &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/05/50-years-in-filesystems-1974.html&#34;&gt;1974&lt;/a&gt;
+
+&amp;rdquo;.
+The second part is &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html&#34;&gt;1984&lt;/a&gt;
+
+&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
+Often, it is easier to see if you compare modern educational material, and the problems discussed with older material.
+And then look for the research papers and sources that fueled the change.&lt;/p&gt;
+&lt;p&gt;In Linux (and Unix in general), this is easy.&lt;/p&gt;
+&lt;h1 id=&#34;1994--the-sgi-xfs-filesystem&#34;&gt;
+    &lt;a href=&#34;#1994--the-sgi-xfs-filesystem&#34;&gt;
+	1994 — The SGI XFS Filesystem
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In 1994, the paper &lt;a href=&#34;http://www.scs.stanford.edu/nyu/02fa/sched/xfs.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Scalability in the XFS File System&lt;/a&gt;
+
+ saw publication.
+Computers got faster since 1984, and so did storages.
+Notably, we are now seeing boxes with multiple CPUs, and with storages reaching into the Terabytes.
+The improvements to the 4.3BSD fast filing system (or the modified version in SGI IRIX called EFS) were no longer sufficient.&lt;/p&gt;
+&lt;p&gt;SGIs benchmarks cite machines that had large backplanes with many controllers (one benchmark cites a box with 20 SCSI controllers),
+many disks (three-digit-numbers of hard drives),
+and many CPUs (the benchmarks quote 12 socket machines) with a lot of memory (up to one gigabyte quoted in the benchmarks).&lt;/p&gt;
+&lt;p&gt;Filesystems became larger than FFS could handle,
+files became larger than FFS could handle,
+the number of files per directory led to large lookup times,
+central data structures such as allocation bitmaps did no longer scale,
+and global locks made concurrent access to the file system with many CPUs inefficient.
+SGI set out to design a fundamentally different filesystem.&lt;/p&gt;
+&lt;p&gt;Also, the Unix community as a whole was challenged by Cutler and Custer,
+who showed with NTFS for Windows NT 4.0 what was possible if you redesign from scratch.&lt;/p&gt;
+&lt;h1 id=&#34;requirements&#34;&gt;
+    &lt;a href=&#34;#requirements&#34;&gt;
+	Requirements
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The XFS filesystem was a firework of new ideas, and a large deviation from traditional Unix filesystem design.
+The list of new things is long:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Facilitate concurrency with
+&lt;ul&gt;
+&lt;li&gt;allocation zones&lt;/li&gt;
+&lt;li&gt;inode lock splitting&lt;/li&gt;
+&lt;li&gt;facilities for large, parallel I/O requests, DMA and Zero-Copy I/O&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Scalability of access by building the filesystem around the concepts of
+&lt;ul&gt;
+&lt;li&gt;B+-Trees&lt;/li&gt;
+&lt;li&gt;Extents: pairs of (start, length) descriptors&lt;/li&gt;
+&lt;li&gt;decoupling &amp;ldquo;file write&amp;rdquo; and &amp;ldquo;file layout&amp;rdquo; on disk to allow for contiguous files by using delayed allocation and preallocation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Introduce a write-ahead log to journal metadata changes
+&lt;ul&gt;
+&lt;li&gt;log asynchronously to allow for write coalescence&lt;/li&gt;
+&lt;li&gt;leveraging the log for recovery, so that recovery time is proportional to the amount of data in flight, not the size of the filesystem&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;XFS was written with these requirements,
+and primarily in order to provide a filesystem that could leverage all the performance of large SGI boxes for video editing, video serving and scientific computing.&lt;/p&gt;
+&lt;h2 id=&#34;a-logging-filesystem-but-not-a-log-structured-filesystem&#34;&gt;
+    &lt;a href=&#34;#a-logging-filesystem-but-not-a-log-structured-filesystem&#34;&gt;
+	A logging filesystem, but not a log structured filesystem
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This is also happening at about the same time as John K. Ousterhout asking
+&amp;ldquo;&lt;a href=&#34;https://web.stanford.edu/~ouster/cgi-bin/papers/osfaster.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Why Aren’t Operating Systems Getting Faster As Fast as Hardware?&lt;/a&gt;
+
+&amp;rdquo;.
+Ousterhout started to explore the ideas of a log-based filesystem with the experimental Sprite operating system.&lt;/p&gt;
+&lt;p&gt;Log-based filesystems are an extremely radical idea that we need to discuss later, even if they originally predate XFS by a bit.
+But they weren&amp;rsquo;t very usable originally, because they need different hardware which can offer a lot more disk seeks.
+Log structured file system ideas had to become a lot more refined to actually have an impact,
+so we are going to discuss them later in the series.&lt;/p&gt;
+&lt;h2 id=&#34;what-irix-had-before&#34;&gt;
+    &lt;a href=&#34;#what-irix-had-before&#34;&gt;
+	What IRIX had before
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;IRIX as coming already with EFS, the specially sauced-up version of BSD FFS that used extents.
+It suffered from an 8 GB filesystem size limit, a 2 GB filesize limit, and it could not utilize the full hardware I/O bandwidth,
+which made many customers of these fantastically expensive machines somewhat sad.&lt;/p&gt;
+&lt;p&gt;Demands for video playback and from the database community led to requirements
+that stated the new filesystem needed to support hundreds of TB of disk space,
+hundreds of MB/s of I/O bandwidth and many parallel I/O requests in order to be able to saturate the hardware provided,
+and all this without running out of CPU.&lt;/p&gt;
+&lt;p&gt;The title of the paper is &amp;ldquo;Scalability in the XFS File System&amp;rdquo; and not &amp;ldquo;Implementation of …&amp;rdquo;,
+so it is more a show of the features provided and a superficial discussion of the implementation and the design decisions around it.
+It is not an in-depth discussion of the implementation,
+nor are extensive benchmarks provided.&lt;/p&gt;
+&lt;h1 id=&#34;features&#34;&gt;
+    &lt;a href=&#34;#features&#34;&gt;
+	Features
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;large-filesystems&#34;&gt;
+    &lt;a href=&#34;#large-filesystems&#34;&gt;
+	Large filesystems
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;XFS supports large filesystems.
+Previous filesystems use 32-bit pointers to blocks.
+At 8 KB block size, with 32-bit block pointers, the limit is 32 TB.&lt;/p&gt;
+&lt;p&gt;Moving to 64-bit block pointers would make many data structures multiple of 8 bytes in size, which seemed like a waste.&lt;/p&gt;
+&lt;p&gt;For concurrency (see below), XFS introduces the concept of &lt;strong&gt;allocation groups&lt;/strong&gt; (AGs), which are always smaller than 4 GB.
+Allocation groups have local instances of the filesystem data structures, for example, inode maps or free block tracking.
+These are independently locked and so allow for concurrent operations in different allocation groups.&lt;/p&gt;
+&lt;p&gt;Allocation groups also help to save on pointer sizes:
+Where possible, AG-relative block numbers are being used, and these always fit into 32-bit pointers.
+In fact, a 4G allocation group can have only 1M blocks or fewer blocks (at 4K minimum blocksize),
+so a single maximum sized extent within a single AG can be packed into 40 bits (5 bytes).&lt;/p&gt;
+&lt;p&gt;The maximum file size and filesystem size is 8 EB (2^63-1).&lt;/p&gt;
+&lt;h2 id=&#34;bandwidth-and-concurrency&#34;&gt;
+    &lt;a href=&#34;#bandwidth-and-concurrency&#34;&gt;
+	Bandwidth and Concurrency
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Concurrent operations are a design goal for XFS.
+1994 is the age of 20 MB/s SCSI controllers, but SGI built machines with large chassis that could house many controllers and many drives.
+Benchmarks quote machines with an aggregate bandwidth of 480 MB/s delivering file I/O performance of over 370 MB/s with no tuning, including all overheads.
+This is quite an impressive result for everyday usage in 1994.&lt;/p&gt;
+&lt;p&gt;XFS achieves this using large blocks (4 KB or 8 KB block size), and the concept of extents.&lt;/p&gt;
+&lt;h3 id=&#34;extents-and-b-trees&#34;&gt;
+    &lt;a href=&#34;#extents-and-b-trees&#34;&gt;
+	Extents and B-Trees.
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Extents&lt;/strong&gt; are a core concept in XFS.
+They are tuples, most of the time pairs of &lt;code&gt;(startblock, length)&lt;/code&gt;.
+For mapping file blocks to disk blocks (&amp;ldquo;bmap&amp;rdquo;), they are triples &lt;code&gt;(offset, length, startblock)&lt;/code&gt;.
+Using truncated values, because of the size limits imposed by the maximum AG size,
+they can describe a contiguous sequence of blocks up to 2M blocks in size in 4 bytes,
+which is a lot more efficient than what BSD FFS did before.&lt;/p&gt;
+&lt;p&gt;Extents also allow XFS to do large I/O requests because they describe sections of contiguous blocks,
+making it easy to create read or write requests for several blocks apiece.
+It does I/O by default with 64 KB memory buffers, unless special provisions are being made to make them even larger.&lt;/p&gt;
+&lt;p&gt;The filesystem assumes an underlying disk structure with striping, and provides a number of 2 or 3 outstanding I/O requests to allow for concurrent I/O.
+It checks for backpressure, that is, it checks that the application is actually reading data.
+If it does, it issues additional read requests to keep the number of requests in flight at 3 by default,
+good for 192 KB in flight at once.&lt;/p&gt;
+&lt;p&gt;Groups of Extents can be collected in linear lists, but that will lead to scaling problems.
+So XFS uses &lt;strong&gt;B+-Trees&lt;/strong&gt;, which degrade to linear lists if there is only one single index block.&lt;/p&gt;
+&lt;p&gt;Usually tuples are indexed on their first value, but for some structures such as free lists, multiple indexes are kept:
+It is useful to index free space by &lt;code&gt;startblock&lt;/code&gt; for closeness, but also by &lt;code&gt;length&lt;/code&gt; to fit free spaces in the right size.&lt;/p&gt;
+&lt;h3 id=&#34;breaking-the-single-writer-inode-lock&#34;&gt;
+    &lt;a href=&#34;#breaking-the-single-writer-inode-lock&#34;&gt;
+	Breaking the single-writer inode lock
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/overlapping-write.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;Posix locks the in-memory inode to guarantee &lt;a href=&#34;https://blog.koehntopp.info/2018/11/29/but-is-it-atomic.html&#34;&gt;atomic writes&lt;/a&gt;
+
+.
+This makes sure any two large multiple-block writes always happen one-before-the-other.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;XFS also breaks the in-memory inode locks:
+Posix demands that large, overlapping, multiple block writes are totally ordered.
+When they overlap, it must not happen that there is a block soup of alternating blocks from write A and write B.&lt;/p&gt;
+&lt;p&gt;The default implementation in most kernels is simply a file-global lock placed at the in-memory inode, making sure there can be only one writer per inode.
+Implementers of databases hate that because it limits the write concurrency on any single file to One.
+This is, for example, why Oracle recommends that you make tablespaces from multiple files, each no larger than one GB.&lt;/p&gt;
+&lt;p&gt;XFS, in &lt;code&gt;O_DIRECT&lt;/code&gt; mode, removes this lock and allows atomic, concurrent writes, making database people very happy.&lt;/p&gt;
+&lt;h2 id=&#34;dynamic-inodes-and-improved-free-space-tracking&#34;&gt;
+    &lt;a href=&#34;#dynamic-inodes-and-improved-free-space-tracking&#34;&gt;
+	Dynamic Inodes and improved Free Space Tracking
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With large filesystems, you can never know:
+The applications may need a large number of inodes for many small files, or a small number of large files.
+Also, what is a good distance between the inode and the data blocks that belong to the file?&lt;/p&gt;
+&lt;p&gt;There is no good answer to the first question, and &amp;ldquo;as close as possible&amp;rdquo; is the answer to the second question.
+So XFS creates Inodes dynamically, as needed, in chunks of 64 inodes.&lt;/p&gt;
+&lt;p&gt;The relatively large inode size of 256 bytes (compared to 128 in BSD FFS and 64 in traditional Unix)
+is being compensated by the fact that XFS creates Inodes only as needed, and places them relatively closely to the file start.
+This frees up a substantial amount of disk space –
+in Unix filesystems with fixed inode counts as much as 3-4% of the disk space can be locked up in pre-allocated inodes.
+And even with cylinder groups, there will be considerable distance between an inode and the first data block.&lt;/p&gt;
+&lt;p&gt;Because inodes can reside anywhere on the disk and not just behind the superblock, they need to be tracked.
+XFS does with one B+-tree per allocation group.
+The tree is indexed by the start block, and records for each inode in the chunk if it is available or in-use.
+The inodes themselves are not kept in the tree, but in the actual chunks which are close to the file data.&lt;/p&gt;
+&lt;p&gt;Similarly, free space is tracked in chunks, and kept in per-AG trees, indexed twice: by start block and by length.&lt;/p&gt;
+&lt;h2 id=&#34;write-ahead-log&#34;&gt;
+    &lt;a href=&#34;#write-ahead-log&#34;&gt;
+	Write-Ahead Log
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Recovering a large filesystem after a crash can be slow.
+The recovery time is proportional to the size of the filesystem, and the number of files in it,
+because the system basically has to scan the entire filesystem and rebuild the directory tree in order to sure things are consistent.
+With XFS, the filesystem also is a lot more fragile, as it provides a variable number of inodes, spread out non-contiguously over the disk.
+Recovering them would be extra expensive.&lt;/p&gt;
+&lt;p&gt;Using write-ahead logging for metadata, this can be avoided most of the time.
+Recovery time is proportional to the size of the log, that is, the amount of data in flight at the time of the crash.&lt;/p&gt;
+&lt;p&gt;The log contains log entries containing a descriptor header and a full image of all changed metadata structures:
+inodes, directory blocks, free extent tree blocks, inode allocation tree blocks, allocation group blocks, and the superblock.
+Because full images are stored in the block, recovery is simple: the recovery process simply copies these new, changes images into the place where they are supposed to be, without needing to understand what kind of structure it changes.&lt;/p&gt;
+&lt;p&gt;The trust of the authors into the log was huge:
+Initially XFS had no &lt;code&gt;fsck&lt;/code&gt; program.
+This turned out to be overly optimistic, and so now &lt;code&gt;xfs_repair&lt;/code&gt; exists.&lt;/p&gt;
+&lt;h3 id=&#34;metadata-update-performance&#34;&gt;
+    &lt;a href=&#34;#metadata-update-performance&#34;&gt;
+	Metadata update performance
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;XFS is logging metadata updates, which means they need to be written to the filesystem log.
+By default, this log is placed inline, in the filesystem.
+But it is also possible to take it out, and put onto other media, for example, flash storage or battery-backed memory.&lt;/p&gt;
+&lt;p&gt;Writes to the log are asynchronous, if possible, but with partitions serving NFS they cannot be.
+Asynchronous writes allow for write batching, with speeds things up.
+But NFS servers profit a lot from accelerated log storage.&lt;/p&gt;
+&lt;p&gt;Because all metadata updates need to be logged, it can happen that intense metadata operations flood the log.
+A &lt;code&gt;rm -rf /usr/src/linux&lt;/code&gt; for example is not an operation where XFS is particularly fast, because the metadata update stream will eventually overflow the log.
+And because everything else in XFS is parallel by AG, the log is usually the only source of contention.&lt;/p&gt;
+&lt;h2 id=&#34;large-files-and-sparse-files&#34;&gt;
+    &lt;a href=&#34;#large-files-and-sparse-files&#34;&gt;
+	Large files and sparse files
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In FFS, files are mapped by the classical dynamic array, with direct blocks and up to three levels of indirect blocks.
+With 64-bit filesize, this becomes unwieldy: there will be more than three levels of indirect blocks required,
+and a substantial number of blocks would be required what essentially becomes a list of incrementing numbers.
+FFS (and EFS) are also forced to layout blocks the moment each block is allocated in the filesystem buffer pool.
+So effectively, no attempt to contiguously layout files on disk is being made.
+Instead, blocks are placed individually.&lt;/p&gt;
+&lt;p&gt;XFS replaces this dynamic array with extents.&lt;/p&gt;
+&lt;p&gt;In file placement maps, these mapping extents are triples &lt;code&gt;(blockoffset, length, disk block)&lt;/code&gt;.
+These extents are stored in the inode itself until this overflows.
+Then XFS starts to root a B+-tree of the mapping extents in the inode, indexed by logical block number for fast seeks.&lt;/p&gt;
+&lt;p&gt;This data structure allows compressing a substantial number of blocks (up to 2M blocks) in a single descriptor,
+assuming contiguous allocation is possible.
+So even large files could stored in very few extents, in the optimal case one extent per AG.&lt;/p&gt;
+&lt;h3 id=&#34;delayed-allocation-and-preallocation-for-contiguous-layout&#34;&gt;
+    &lt;a href=&#34;#delayed-allocation-and-preallocation-for-contiguous-layout&#34;&gt;
+	Delayed allocation and Preallocation for contiguous layout
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;XFS also provides a new concept, delayed allocation, in which virtual extents can be allocated in the file system buffer pool.
+These are blocks full of yet unwritten data that have not been layouted, and hence lack a physical position.
+Only on flush these blocks are layouted, contiguously, and then written out linearly in large writes, to speed things up.&lt;/p&gt;
+&lt;p&gt;This is a fundamental change to how the filesystem buffer cache works –
+previously it was possible to use &lt;code&gt;(device, physical block number)&lt;/code&gt; to identify buffer cache blocks and prevent duplicate buffer allocation.
+When porting XFS to Linux, the Linux kernel initially could not accommodate strategies that do not use such identification in the normal buffer cache, so at first XFS required a separate buffer cache.
+This got fixed later, as the porting progressed.&lt;/p&gt;
+&lt;p&gt;To ensure that files can be layouted without fragmentation, in a single extent, XFS aggressively preallocates storage for open files.
+The default amount of disk space preallocated is dependent on the amount of free space in the filesystem, and can be substantial.&lt;/p&gt;
+&lt;p&gt;The internet is littered with questions by XFS users asking where their disk space is, and the answer is always &amp;ldquo;in the open file handles of &lt;code&gt;/var/log&lt;/code&gt;. Also, check the &lt;a href=&#34;https://man7.org/linux/man-pages/man5/xfs.5.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;manpage&lt;/a&gt;
+
+ for &lt;code&gt;allocsize=&lt;/code&gt; and also check &lt;a href=&#34;https://linux-xfs.oss.sgi.narkive.com/jjjfnyI1/faq-xfs-speculative-preallocation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;/proc/sys/fs/xfs/speculative_prealloc_lifetime&lt;/code&gt;&lt;/a&gt;
+
+.&amp;rdquo;&lt;/p&gt;
+&lt;h3 id=&#34;locality&#34;&gt;
+    &lt;a href=&#34;#locality&#34;&gt;
+	Locality
+    &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;XFS does not use allocation groups for locality much.
+They exist mostly for concurrency.
+Instead, file placement is mostly around directories and existing blocks of the current file.
+The only exception is &amp;ldquo;new directories&amp;rdquo;, which are placed &amp;ldquo;away&amp;rdquo; from their parent directory by putting them into a different AG.&lt;/p&gt;
+&lt;p&gt;In large files, if new extents need to be placed, they go &amp;ldquo;initially near the inode, then near the existing block in the file which is closest to the offset in the file for which we are allocating space&amp;rdquo;, as the paper specifies.
+This places the inode close to the start of the file, and blocks added later to whatever is already present.&lt;/p&gt;
+&lt;h2 id=&#34;large-directories&#34;&gt;
+    &lt;a href=&#34;#large-directories&#34;&gt;
+	Large directories
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In the traditional Unix filesystem and in BSD FFS, directory name lookups are linear operations.
+Large directories slow this down a lot, for any kind of pathname to inode translation.&lt;/p&gt;
+&lt;p&gt;XFS chose the ubiquitous B+-Tree as a structure for directories, too, but with a quirk:
+Since the keys are supposed to be filenames, a variable length structure, they would be completely different from all the other tree implementations in the filesystem.
+The XFS authors did not like this idea, so they are hashing the filename into a fixed 4-byte name hash, and then store one or more directory entries as &lt;code&gt;(name, inode)&lt;/code&gt; pairs in the value.&lt;/p&gt;
+&lt;p&gt;There was some tradeoff discussion involved in this, but the authors found that short keys allow storing many entries per block,
+leading to wide trees, and thus faster lookups.
+They boast &amp;ldquo;We can have directories with millions of entries&amp;rdquo;, something that was previously unthinkable in Unix filesystems.&lt;/p&gt;
+&lt;h1 id=&#34;a-lot-of-code&#34;&gt;
+    &lt;a href=&#34;#a-lot-of-code&#34;&gt;
+	A lot of code
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/xfs-scaling.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;XFS Benchmarks on 1994 show nice and welcome linear scaling behavior that utilizes the hardware offered well.
+It handles well on large boxes with (for 1994) high core-counts.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;XFS is a large filesystem.
+Linux ext2 is only 5000 lines of kernel code (and about 10x this in user-land).
+XFS is 50.000 lines of kernel code, and that is without the IRIX volume manager XLV (in Linux, the XFS port uses LVM2 instead).&lt;/p&gt;
+&lt;p&gt;XFS was released under the GNU GPL in May 1999, and was ported into the Linux kernel starting in 2001.
+As of 2014, it was supported in most Linux distributions and RHEL used it as the default filesystem.
+And even in 2024 it is still holding up reasonably well, on HDD and on flash.&lt;/p&gt;
+&lt;p&gt;It still is the filesystem with the best scaling behavior, the best concurrency behavior, and the most consistent commit times,
+which makes it the preferred filesystem for any kind of database usage.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>City of Amsterdam and Combustion Engines</title>
       <link>https://blog.koehntopp.info/2023/05/11/city-of-amsterdam-and-combustion-engines.html</link>
@@ -3196,140 +3507,6 @@ While it may look more complex at first, it may map a lot better onto the realit
 &lt;p&gt;On the other hand, I do like the technology in TiDB and CockroachDB, but that is mostly because the environment I work in suffers from transactional systems and schemas that happen to be larger than a single machine.&lt;/p&gt;
 &lt;p&gt;I fully expect these systems to still have need to the 3NF-to-Snowflake transformation that is a characteristic of ETL, and I am not yet ready to buy into the Gartner HTAP hype,
 unless somebody can show me how this is better handled inside Cockroach or TiDB.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Tying the BI pipeline together</title>
-      <link>https://blog.koehntopp.info/2022/12/22/tying-the-bi-pipeline-together.html</link>
-      <pubDate>Thu, 22 Dec 2022 06:07:08 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/12/22/tying-the-bi-pipeline-together.html</guid>
-      <description>&lt;p&gt;In
-&lt;a href=&#34;https://blog.koehntopp.info/2022/11/16/of-stars-and-snowflakes.html&#34;&gt;Of Stars and Snowflakes&lt;/a&gt;
-
-
-we have been looking at the &amp;ldquo;normal Form&amp;rdquo; for Data Warehouses/BI structures, and how it differs from normal forms used in transactional systems.
-In
-&lt;a href=&#34;https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html&#34;&gt;ETL from a Django Model&lt;/a&gt;
-
-
-we looked at one implementation of a classical offline DWH with a daily load.&lt;/p&gt;
-&lt;p&gt;The normal BI structure is a fact table, in which an object identifier (the one we collect facts about) is paired with a point in time to report facts about the object at a certain point in time.
-That is, we have a table with a compound primary key, in which a component (usually the latter) has a time dimension.
-Fact tables are also often very wide, since we collect any number of facts about the object we report on for each point in time.&lt;/p&gt;
-&lt;p&gt;For certain types of data, it is useful to compress the data using lookup tables.
-That is, instead of reporting a certain value over and over again (&amp;ldquo;Intel Silver 4110&amp;rdquo; each time we report on a certain machine), we replace the string with an integer of appropriate size and resolve that with a lookup table on the side.&lt;/p&gt;
-&lt;p&gt;This can happen with one central string replacement table (&lt;code&gt;lookup_strings&lt;/code&gt;), or structured per type (&lt;code&gt;cpu_types&lt;/code&gt;, &lt;code&gt;vendors&lt;/code&gt;, &lt;code&gt;model_names&lt;/code&gt;).
-Both approaches have certain advantages and disadvantages, and sometimes you find both in the same system.&lt;/p&gt;
-&lt;h1 id=&#34;why-and-how&#34;&gt;
-    &lt;a href=&#34;#why-and-how&#34;&gt;
-	Why and how?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In the transactional system, our objective is to complete the data lifecycle.
-That is, basically, we want to be able to delete data in order to get rid of finished transactions and their data at some point in time in order to keep the size of the OLTP system small, nice and stable.
-Other parts of the business still need the history record, and they need it &lt;em&gt;as a history record&lt;/em&gt;.
-That is, they are not interested into the current data (&amp;ldquo;Where does the customer live now?&amp;rdquo;, &amp;ldquo;What does the article cost now?&amp;rdquo;), but into the values that were valid when the transaction happened (&amp;ldquo;Where did we deliver to?&amp;rdquo;, &amp;ldquo;How much did we bill?&amp;rdquo;).&lt;/p&gt;
-&lt;p&gt;The &lt;strong&gt;Extraction&lt;/strong&gt; pulls data out of the realm of the OLTP system.
-And after it is extracted it can be deleted from the OLTP system, freeing space and keeping the size stable.&lt;/p&gt;
-&lt;p&gt;With the Extraction, we also have the &lt;strong&gt;Transformation&lt;/strong&gt; in which the OLTP references to other normalized tables are resolved into literal attribute values which are the things we want to preserve at the value they had back then.
-The Transformation transitions the data from the OLTP classical database normal form into the form needed for a fact table, the data warehouse normal form.&lt;/p&gt;
-&lt;p&gt;In the &lt;strong&gt;Load&lt;/strong&gt; phase, the data is loaded into the DWH/BI systems fact table.
-This is not just a data ingestion, but often also a validation and cleanup phase.
-And if the data is recompressed by replacing literal values with an integer ID into a lookup table, this usually also happens during load.&lt;/p&gt;
-&lt;p&gt;The fact that IDs in the DWH bear no relationship to IDs in the OLTP system is important and good:
-We are transferring data across an administrative boundary, from one system to another, and having a naming dependency across such a boundary is usually a recipe for desaster.&lt;/p&gt;
-&lt;h2 id=&#34;extraction&#34;&gt;
-    &lt;a href=&#34;#extraction&#34;&gt;
-	Extraction
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Extraction can happen in nightly runs, by making a snapshot of the state of the OLTP system.
-This is what happens every night in
-&lt;a href=&#34;https://blog.koehntopp.info/2022/11/20/etl-from-a-django-model.html&#34;&gt;ETL from a Django Model&lt;/a&gt;
-
-,
-and also in
-&lt;a href=&#34;https://blog.koehntopp.info/2020/09/26/my-private-data-warehouse.html&#34;&gt;My private data warehouse&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Extraction can also happen when writing transactions to a log table, often called &lt;code&gt;sale&lt;/code&gt;, &lt;code&gt;booking&lt;/code&gt;, &lt;code&gt;reservation&lt;/code&gt; or similar.
-When the transaction is logged in a normalized way, it looks like the &lt;code&gt;reservation&lt;/code&gt; table in the example in
-&lt;a href=&#34;https://blog.koehntopp.info/2022/12/05/change-data-capture.html&#34;&gt;Change Data Capture&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;Some systems already copy the data over into such a &lt;code&gt;reservation&lt;/code&gt; table literally, especially when it comes to delivery and billing addresses and prices.
-That is necessary, even from the point of view of the transactional system, because we must record the actual price and delivery address at the point in time when the sale happened.
-Later changes should not affect transactions that are in the middle of fulfillment.&lt;/p&gt;
-&lt;p&gt;For the purpose of the DWH system, this simplifies extraction and transformation, because the &lt;code&gt;reservation&lt;/code&gt; table then already is more of less literally the data we want.
-We just need to grab it and preserve it.&lt;/p&gt;
-&lt;p&gt;When the DWH wants &amp;rsquo;live&amp;rsquo; updates, this can happen by tailing the database log as a replication client, collecting the information of interest, converting it into target format and pushing it elsewhere.
-These days, most often that ends up being a JSON or Avro message on a Kafka Event bus, or similar, in a defined, versioned and documented format that is ideally independent of changes to the source OLTP systems structure.&lt;/p&gt;
-&lt;h2 id=&#34;transformation&#34;&gt;
-    &lt;a href=&#34;#transformation&#34;&gt;
-	Transformation
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;But getting from normalized 3NF OLTP format into resolved DWH literal value attributes is not always for free.&lt;/p&gt;
-&lt;p&gt;The nicest way of getting there is to have the source system prepare its private, internal transaction, and also prepare a transformed record in DWH form.
-Both are committed together in the same transaction, to the internal tables of the OLTP system, and an Outbox.
-The Outbox is under a contract between the producing OLTP and the consuming BI systems, and will not change unannounced.&lt;/p&gt;
-&lt;p&gt;In this case, the BI process can simply tail the binlog, grab only row change events on the Outbox tables, and process and export these.
-Internal table changes will also end up in the binlog, but the CDC extractor ignores these.&lt;/p&gt;
-&lt;p&gt;If that is not possible, we get random normalized change events from the OLTP systems internal tables.
-This is bad, because it is very hard to get a contract and a promise of announced change for them, and because here the data is not in BI form.
-So we get a bunch of 3NF &amp;ldquo;id&amp;rdquo; values and need to run queries backwards into the OLTP system to resolve them into literal values to perform the transformation.
-This is annoying, adds query load and also have the potential to grab &amp;ldquo;invalid&amp;rdquo; data, because there is a race condition and the referenced data may have changed between the commit of the record we caught, and the time we resolve the ID values.&lt;/p&gt;
-&lt;h2 id=&#34;load&#34;&gt;
-    &lt;a href=&#34;#load&#34;&gt;
-	Load
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Pushing CDC data &amp;ldquo;live&amp;rdquo; to a message bus is simple, and allows us to have multiple consumers for this.
-One standard consumer would simply take the event messages and persist them into tables in a really large analytics store such as Hadoop, Snowflake or similar.
-Other standard consumers in the environment I work in are aggregators that take events and aggregate them into time buckets.
-That is, values from events are counted (&amp;ldquo;This error occurred &lt;code&gt;n&lt;/code&gt; times in the last minute&amp;rdquo;), summed up or otherwise classified, and the results are then forwarded as metrics into a time series store.
-Alerts can be generated from thresholds of metrics, or from presence of certain events in the stream.&lt;/p&gt;
-&lt;p&gt;The data load into the persistent store would also update default aggregations as you would expect from the star or snowflake around a fact table.
-Such aggregations would be &amp;ldquo;sales per region per day&amp;rdquo;, or &amp;ldquo;bookings per region per category per day&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;Specifically the aggregations to the metrics store are time critical, as they may be tied to alerts.
-We generally aim for a freshness (processing time for the entire pipeline) of less than 15s.
-Freshness itself is also a quality metric for the pipeline itself.&lt;/p&gt;
-&lt;h1 id=&#34;mapping-fowler-to-database-terms&#34;&gt;
-    &lt;a href=&#34;#mapping-fowler-to-database-terms&#34;&gt;
-	Mapping Fowler to Database terms
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The &lt;a href=&#34;https://martinfowler.com/bliki/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Fowler Wiki&lt;/a&gt;
-
- is now in many pages older than 10 years.
-Large parts of it are still hard to read if you are coming from a database background instead of application developer background.
-That is in part, because Fowler reinvents concepts and terms from a developer perspective that already exist in the database world, under different names.&lt;/p&gt;
-&lt;p&gt;The first time I hit that was when reading up on the cryptically named &lt;a href=&#34;https://martinfowler.com/bliki/CQRS.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CQRS&lt;/a&gt;
-
-,
-which is just the concept the various ways of getting Materialized Views by another name.&lt;/p&gt;
-&lt;p&gt;We find this again with the concept of &lt;a href=&#34;https://martinfowler.com/eaaDev/EventSourcing.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Event Sourcing&lt;/a&gt;
-
-,
-which for low quality low level events matches directly on CDC and Binlog capture.
-In order to provide better value, you would have to perform the T of ETL on the events, preferably as early as possible in the pipeline,
-that is, transform from 3NF to BI form either using the Outbox pattern or by instrumenting the application itself.&lt;/p&gt;
-&lt;p&gt;Fowler is never discussing checkpointing, an essential concept necessary to prevent unbounded startup times and unbounded event storage sizes from occurring.&lt;/p&gt;
-&lt;p&gt;Checkpointing and cleanup exist in the database world the concepts of &amp;ldquo;Full Backups&amp;rdquo; associated with Log Positions,
-and then Logs starting from the checkpoint for a Point in Time Recovery.&lt;/p&gt;
-&lt;p&gt;Checkpointing and Log compression also exist in the database world in the tiered log compactions we find in LSMs such as RocksDB:
-The database is writing an endless stream of idempotent row change events, and a compaction process reads the logs in the background,
-providing only still valid and recent row versions, and physically arranging the records in an advantageous way.&lt;/p&gt;
-&lt;p&gt;Events work reasonably well when you look vertically at a single transaction:
-The event propagates through your system of services, kicking off followup events that contain the original data and additional information accrued at this processing stage.
-They also work reasonably well for aggregations in time-bounded buckets or otherwise constrained contexts.&lt;/p&gt;
-&lt;p&gt;They work less well when the application has to implement choices, i.e. when you need to select one user account out of the storage of all users in the system,
-or when you need to allow a user to search the storage of all articles on offer and then allow them select one to buy.
-Here, traditional full materialization is necessary, and global state is manipulated.&lt;/p&gt;
-&lt;p&gt;In the end, looking at the table rows as the materialization and at the log as the stream of idempotent changes to the materialization over time it is clear to the database person that both things are the same.
-Looking at the various ways of implementing database systems, you will even find one posing as the other as needed, depending on the database product you look at (i.e. the LSM is a log, posing as a table, and other systems use tables to store logs).&lt;/p&gt;
 </description>
     </item>
     
