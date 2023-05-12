@@ -42,7 +42,7 @@ and by 2030 no combustion engines are being allowed in the city at all.
   Starting 2030, no lorries with combustion engines are allowed into the city.
 - Small commercial delivery vehicles (vans, Sprinters) with Diesel must be Euro 4 or better already.
   New cars must be electric starting 2025. Euro 5 is required starting 2027, Euro 6 starting 2028, 
-  no combustion starting 2028.
+  no combustion starting 2030.
 - Bus lines are in the process of being converted to electric, and this is nearly complete.
   It will be finished by 2025.
   Rules for charter buses are to follow.
