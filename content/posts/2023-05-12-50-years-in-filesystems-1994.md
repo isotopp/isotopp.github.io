@@ -22,8 +22,8 @@ In Linux (and Unix in general), this is easy.
 # 1994 — The SGI XFS Filesystem
 
 In 1994, the paper [Scalability in the XFS File System](http://www.scs.stanford.edu/nyu/02fa/sched/xfs.pdf) saw publication.
-Computers got faster since 1984, and so did storages.
-Notably, we are now seeing boxes with multiple CPUs, and with storages reaching into the Terabytes.
+Computers got faster since 1984, and so did storage.
+Notably, we are now seeing boxes with multiple CPUs, and with storage reaching into the Terabytes.
 The improvements to the 4.3BSD fast filing system (or the modified version in SGI IRIX called EFS) were no longer sufficient.
 
 SGIs benchmarks cite machines that had large backplanes with many controllers (one benchmark cites a box with 20 SCSI controllers),
