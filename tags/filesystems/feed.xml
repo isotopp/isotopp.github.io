@@ -6,7 +6,190 @@
     <description>Recent content in filesystems on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 May 2023 11:24:43 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/filesystems/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 May 2023 11:29:54 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/filesystems/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>50 years in filesystems: A detour on vnodes</title>
+      <link>https://blog.koehntopp.info/2023/05/15/50-years-in-filesystems-vnodes.html</link>
+      <pubDate>Mon, 15 May 2023 01:02:03 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/05/15/50-years-in-filesystems-vnodes.html</guid>
+      <description>&lt;p&gt;This is part 4 of a series.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/05/50-years-in-filesystems-1974.html&#34;&gt;1974&lt;/a&gt;
+
+&amp;rdquo; on the traditional Unix Filesystem.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html&#34;&gt;1984&lt;/a&gt;
+
+&amp;rdquo; on the BSD Fast File System.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html&#34;&gt;1994&lt;/a&gt;
+
+&amp;rdquo; on SGI XFS.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
+Often, it is easier to see by comparing modern educational material and the problems discussed with older material.
+Or look for the research papers and sources that fueled the change. So this is what we do.&lt;/p&gt;
+&lt;h1 id=&#34;how-to-have-multiple-filesystems&#34;&gt;
+    &lt;a href=&#34;#how-to-have-multiple-filesystems&#34;&gt;
+	How to have multiple filesystems
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Steve Kleiman wrote
+&amp;ldquo;&lt;a href=&#34;https://www.semanticscholar.org/paper/Vnodes%3A-An-Architecture-for-Multiple-File-System-in-Kleiman/e0d14c74f23ef9b21c2fc37b5197fbfe348a7fcf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Vnodes: An Architecture for Multiple File System Types in Sun UNIX&lt;/a&gt;
+
+&amp;rdquo;
+in 1986.&lt;/p&gt;
+&lt;p&gt;This is a short paper, with little text, because most of it is listing of data structures and diagrams of C language &lt;code&gt;struct&lt;/code&gt;&amp;rsquo;s pointing at each other.
+Kleiman wanted to have multiple file systems in Unix, but wanted the file systems to be able to share interfaces and internal memory, if at all possible.
+Specifically, he wanted a design that provided&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;one common interface with multiple implementations,&lt;/li&gt;
+&lt;li&gt;supporting BSD FFS, but also NFS and RFS, two remote filesystems, and Non-Unix filesystems, specifically MS-DOS,&lt;/li&gt;
+&lt;li&gt;with the operations being defined by the interface being atomic.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And the implementations should be able to handle memory and structures dynamically, without performance impact,
+reentrant and multicore capable, and somewhat object-oriented.&lt;/p&gt;
+&lt;h1 id=&#34;two-abstractions&#34;&gt;
+    &lt;a href=&#34;#two-abstractions&#34;&gt;
+	Two abstractions
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;He looked at the various operations, and decided to provide two major abstractions:
+The filesystem (&lt;code&gt;vfs&lt;/code&gt;, virtual filesystem) and the inode (&lt;code&gt;vnode&lt;/code&gt;, virtual inode), representing a filesystem and a file.&lt;/p&gt;
+&lt;p&gt;In true C++ style (but expressed in C), we get a virtual function table for each type, representing the class:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For the &lt;code&gt;vfs&lt;/code&gt; type, this is a &lt;code&gt;struct vfsops&lt;/code&gt;,
+a collection of function pointers with operations such as &lt;code&gt;mount&lt;/code&gt;, &lt;code&gt;unmount&lt;/code&gt;, &lt;code&gt;sync&lt;/code&gt; and &lt;code&gt;vget&lt;/code&gt;.
+Later in the paper, prototypes and functionality of these functions are explained.&lt;/li&gt;
+&lt;li&gt;For the &lt;code&gt;vnode&lt;/code&gt; type, likewise, we get &lt;code&gt;struct vnodeops&lt;/code&gt;.
+The functions where are &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;rdwr&lt;/code&gt; and &lt;code&gt;close&lt;/code&gt;, of course, but also &lt;code&gt;create&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, and &lt;code&gt;rename&lt;/code&gt;.
+Some functions are specific to a filetype such as &lt;code&gt;readlink&lt;/code&gt;, &lt;code&gt;mkdir&lt;/code&gt;, &lt;code&gt;readdir&lt;/code&gt; and &lt;code&gt;rmdir&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Actual mounts are being tracked in &lt;code&gt;vfs&lt;/code&gt; objects, which point to the operations applicable to this particular subtree with their &lt;code&gt;struct vfsops *&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Similarly, open files are being tracked in &lt;code&gt;vnode&lt;/code&gt; instances, which again, among other things, have a &lt;code&gt;struct *vnodeops&lt;/code&gt; pointer.
+&lt;code&gt;vnodes&lt;/code&gt; are part of their &lt;code&gt;vfs&lt;/code&gt;, so they also have &lt;code&gt;struct *vfs&lt;/code&gt; to their filesystem instance.&lt;/p&gt;
+&lt;p&gt;Both, the &lt;code&gt;vfs&lt;/code&gt; and the &lt;code&gt;vnode&lt;/code&gt; need to provide a way for the implementation to implementation specific data (&amp;ldquo;subclass private fields&amp;rdquo;).
+So both structures end with &lt;code&gt;caddr_t ...data&lt;/code&gt; pointers.
+That is, the private data is not part of the virtual structure, but located elsewhere and pointed to.&lt;/p&gt;
+&lt;h2 id=&#34;vnodes-in-action&#34;&gt;
+    &lt;a href=&#34;#vnodes-in-action&#34;&gt;
+	Vnodes in action
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/vfs-vnode-structures.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;One full page in the paper is dedicated to showing the various structures pointing at each other.
+What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Kleiman sets out to explain how things work using the &lt;code&gt;lookippn()&lt;/code&gt; function, which replaces the older &lt;code&gt;namei()&lt;/code&gt; function from traditional Unix.
+Analogous to &lt;code&gt;namei()&lt;/code&gt;, the function consumes a path name, and returns a &lt;code&gt;struct vnode *&lt;/code&gt; to the vnode represented by that pathname.&lt;/p&gt;
+&lt;p&gt;Pathname traversal starts at the root vnode or the current directory vnode for the current process,
+depending on the first character of a pathname being &lt;code&gt;/&lt;/code&gt; or not.&lt;/p&gt;
+&lt;p&gt;The function then takes the next pathname component, iteratively, and calls the &lt;code&gt;lookup&lt;/code&gt; function for the current vnode.
+This function takes a pathname component, and a current &lt;code&gt;vnode&lt;/code&gt; assuming it is a directory.
+It then returns the &lt;code&gt;vnode&lt;/code&gt; representing that component.&lt;/p&gt;
+&lt;p&gt;If a directory is a mountpoint, it has &lt;code&gt;vfsmountedhere&lt;/code&gt; set.
+This is a &lt;code&gt;struct vfs *&lt;/code&gt;. &lt;code&gt;lookuppn&lt;/code&gt; follows the pointer,
+and can call the &lt;code&gt;root&lt;/code&gt; function for that &lt;code&gt;vfs&lt;/code&gt; to get the root &lt;code&gt;vnode&lt;/code&gt; for that filesystem, replacing the current &lt;code&gt;vnode&lt;/code&gt; being worked on.&lt;/p&gt;
+&lt;p&gt;The inverse must also be possible:
+When resolving a &amp;ldquo;&lt;code&gt;..&lt;/code&gt;&amp;rdquo; component and the current &lt;code&gt;vnode&lt;/code&gt; has a root flag set in its &amp;ldquo;flags&amp;rdquo; field,
+we go from the current &lt;code&gt;vnode&lt;/code&gt; to the &lt;code&gt;vfs&lt;/code&gt; following the &lt;code&gt;vfsmountedhere&lt;/code&gt; pointer.
+Then we can use the &lt;code&gt;vnodecovered&lt;/code&gt; field in that &lt;code&gt;vfs&lt;/code&gt; to get the &lt;code&gt;vnode&lt;/code&gt; of the superior filesystem.&lt;/p&gt;
+&lt;p&gt;In any case, upon successful completion, a &lt;code&gt;struct vnode*&lt;/code&gt; representing the consumed pathname is returned.&lt;/p&gt;
+&lt;h2 id=&#34;new-system-calls&#34;&gt;
+    &lt;a href=&#34;#new-system-calls&#34;&gt;
+	New system calls
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order to make things work,
+and to make things work efficiently, a few new system calls had to be added to round out the interfaces.&lt;/p&gt;
+&lt;p&gt;It is here in Unix history that we get &lt;code&gt;statsfs&lt;/code&gt; and &lt;code&gt;fstatsfs&lt;/code&gt;, to get an interface to filesystems in userland.
+We also gain &lt;code&gt;getdirentries&lt;/code&gt; (plural) to get multiple directory entries at once (depending on the size of the buffer provided),
+which makes directory reading faster a lot for remote filesystems.&lt;/p&gt;
+&lt;h1 id=&#34;in-linux&#34;&gt;
+    &lt;a href=&#34;#in-linux&#34;&gt;
+	In Linux
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Looking at the Linux kernel source, we can find the general structure of Kleiman&amp;rsquo;s design,
+even if the complexity and richness of the Linux kernel obscure most of it.
+The Linux kernel has a wealth of file system types, and added also a lot of functionality that wasn&amp;rsquo;t present in BSD 40 years ago.
+So we find a lot more structures and system calls,
+implementing namespaces, quotas, attributes, read-only modes, directory name caches, and other things.&lt;/p&gt;
+&lt;h2 id=&#34;the-file&#34;&gt;
+    &lt;a href=&#34;#the-file&#34;&gt;
+	The file
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Still, if you squint, the original structure can still be found:
+Linux splits the in-memory structures around files in two, the opened &lt;code&gt;file&lt;/code&gt;, which is an inode with a current position associated,
+and the &lt;code&gt;inode&lt;/code&gt;, which is the whole file.&lt;/p&gt;
+&lt;p&gt;We find instances of file objects, &lt;code&gt;struct file&lt;/code&gt;, defined
+&lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L942C3-L981&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+Among all the other things a file has, it has most notably a field &lt;code&gt;loff_t f_pos&lt;/code&gt;,
+an offset (in bytes) from the start of the file,
+the current position.&lt;/p&gt;
+&lt;p&gt;The file&amp;rsquo;s class is defined via a virtual function table.
+We find the pointer as &lt;code&gt;struct file_operations *f_op&lt;/code&gt;,
+and the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1754-L1798&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+It shows all the things a file can do, most notable, &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;close&lt;/code&gt;, &lt;code&gt;lseek&lt;/code&gt; and then &lt;code&gt;read&lt;/code&gt; and &lt;code&gt;write&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The file also contains pointers to the inode, &lt;code&gt;struct inode *f_inode&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;the-inode&#34;&gt;
+    &lt;a href=&#34;#the-inode&#34;&gt;
+	The inode
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Operations on files without the need of an offset work on the file as a whole,
+defined as &lt;code&gt;struct inode *&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Check the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L595-L705&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+We see other definitions in here that have no equivalent in BSD from 40 years ago, such as ACLs and attributes.&lt;/p&gt;
+&lt;p&gt;We find the inode&amp;rsquo;s class is defined via a virtual function table,
+&lt;code&gt;struct inode_operations *i_op&lt;/code&gt;,
+and the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1800-L1840&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+Again, a lot of them deal with new features such as ACLs and extended attributes,
+but we also find we expect such as &lt;code&gt;link&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, &lt;code&gt;rename&lt;/code&gt; and so on.&lt;/p&gt;
+&lt;p&gt;The inode also contains a pointer to a filesystem, the &lt;code&gt;struct super_block *i_sb&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;the-superblock&#34;&gt;
+    &lt;a href=&#34;#the-superblock&#34;&gt;
+	The superblock
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A mountpoint is represented as an instance of &lt;code&gt;struct super_block&lt;/code&gt;,
+defined &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1136-L1268&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+Again, the class is a &lt;code&gt;struct super_operations *s_op&lt;/code&gt;, defined
+&lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;As an added complexity, there is no finite list of filesystems.
+It is instead extensible through loadable modules, so we also have a &lt;code&gt;struct file_system_type&lt;/code&gt;,
+&lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+This is basically a class with only one class method as a factory for superblocks, &lt;code&gt;mount&lt;/code&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Unix changed.
+It became a lot more runtime extensive, added a lot of new functionality and gained system calls.
+Things became more structured.&lt;/p&gt;
+&lt;p&gt;But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
+We can point to concrete in Linux code, which while looking completely different, is structurally mirroring the original design ideas.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>50 years in filesystems: 1994</title>
       <link>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</link>

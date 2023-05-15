@@ -6,7 +6,190 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 May 2023 11:24:43 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 15 May 2023 11:29:54 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>50 years in filesystems: A detour on vnodes</title>
+      <link>https://blog.koehntopp.info/2023/05/15/50-years-in-filesystems-vnodes.html</link>
+      <pubDate>Mon, 15 May 2023 01:02:03 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/05/15/50-years-in-filesystems-vnodes.html</guid>
+      <description>&lt;p&gt;This is part 4 of a series.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/05/50-years-in-filesystems-1974.html&#34;&gt;1974&lt;/a&gt;
+
+&amp;rdquo; on the traditional Unix Filesystem.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html&#34;&gt;1984&lt;/a&gt;
+
+&amp;rdquo; on the BSD Fast File System.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html&#34;&gt;1994&lt;/a&gt;
+
+&amp;rdquo; on SGI XFS.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
+Often, it is easier to see by comparing modern educational material and the problems discussed with older material.
+Or look for the research papers and sources that fueled the change. So this is what we do.&lt;/p&gt;
+&lt;h1 id=&#34;how-to-have-multiple-filesystems&#34;&gt;
+    &lt;a href=&#34;#how-to-have-multiple-filesystems&#34;&gt;
+	How to have multiple filesystems
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Steve Kleiman wrote
+&amp;ldquo;&lt;a href=&#34;https://www.semanticscholar.org/paper/Vnodes%3A-An-Architecture-for-Multiple-File-System-in-Kleiman/e0d14c74f23ef9b21c2fc37b5197fbfe348a7fcf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Vnodes: An Architecture for Multiple File System Types in Sun UNIX&lt;/a&gt;
+
+&amp;rdquo;
+in 1986.&lt;/p&gt;
+&lt;p&gt;This is a short paper, with little text, because most of it is listing of data structures and diagrams of C language &lt;code&gt;struct&lt;/code&gt;&amp;rsquo;s pointing at each other.
+Kleiman wanted to have multiple file systems in Unix, but wanted the file systems to be able to share interfaces and internal memory, if at all possible.
+Specifically, he wanted a design that provided&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;one common interface with multiple implementations,&lt;/li&gt;
+&lt;li&gt;supporting BSD FFS, but also NFS and RFS, two remote filesystems, and Non-Unix filesystems, specifically MS-DOS,&lt;/li&gt;
+&lt;li&gt;with the operations being defined by the interface being atomic.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;And the implementations should be able to handle memory and structures dynamically, without performance impact,
+reentrant and multicore capable, and somewhat object-oriented.&lt;/p&gt;
+&lt;h1 id=&#34;two-abstractions&#34;&gt;
+    &lt;a href=&#34;#two-abstractions&#34;&gt;
+	Two abstractions
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;He looked at the various operations, and decided to provide two major abstractions:
+The filesystem (&lt;code&gt;vfs&lt;/code&gt;, virtual filesystem) and the inode (&lt;code&gt;vnode&lt;/code&gt;, virtual inode), representing a filesystem and a file.&lt;/p&gt;
+&lt;p&gt;In true C++ style (but expressed in C), we get a virtual function table for each type, representing the class:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For the &lt;code&gt;vfs&lt;/code&gt; type, this is a &lt;code&gt;struct vfsops&lt;/code&gt;,
+a collection of function pointers with operations such as &lt;code&gt;mount&lt;/code&gt;, &lt;code&gt;unmount&lt;/code&gt;, &lt;code&gt;sync&lt;/code&gt; and &lt;code&gt;vget&lt;/code&gt;.
+Later in the paper, prototypes and functionality of these functions are explained.&lt;/li&gt;
+&lt;li&gt;For the &lt;code&gt;vnode&lt;/code&gt; type, likewise, we get &lt;code&gt;struct vnodeops&lt;/code&gt;.
+The functions where are &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;rdwr&lt;/code&gt; and &lt;code&gt;close&lt;/code&gt;, of course, but also &lt;code&gt;create&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, and &lt;code&gt;rename&lt;/code&gt;.
+Some functions are specific to a filetype such as &lt;code&gt;readlink&lt;/code&gt;, &lt;code&gt;mkdir&lt;/code&gt;, &lt;code&gt;readdir&lt;/code&gt; and &lt;code&gt;rmdir&lt;/code&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Actual mounts are being tracked in &lt;code&gt;vfs&lt;/code&gt; objects, which point to the operations applicable to this particular subtree with their &lt;code&gt;struct vfsops *&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Similarly, open files are being tracked in &lt;code&gt;vnode&lt;/code&gt; instances, which again, among other things, have a &lt;code&gt;struct *vnodeops&lt;/code&gt; pointer.
+&lt;code&gt;vnodes&lt;/code&gt; are part of their &lt;code&gt;vfs&lt;/code&gt;, so they also have &lt;code&gt;struct *vfs&lt;/code&gt; to their filesystem instance.&lt;/p&gt;
+&lt;p&gt;Both, the &lt;code&gt;vfs&lt;/code&gt; and the &lt;code&gt;vnode&lt;/code&gt; need to provide a way for the implementation to implementation specific data (&amp;ldquo;subclass private fields&amp;rdquo;).
+So both structures end with &lt;code&gt;caddr_t ...data&lt;/code&gt; pointers.
+That is, the private data is not part of the virtual structure, but located elsewhere and pointed to.&lt;/p&gt;
+&lt;h2 id=&#34;vnodes-in-action&#34;&gt;
+    &lt;a href=&#34;#vnodes-in-action&#34;&gt;
+	Vnodes in action
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/vfs-vnode-structures.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;One full page in the paper is dedicated to showing the various structures pointing at each other.
+What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Kleiman sets out to explain how things work using the &lt;code&gt;lookippn()&lt;/code&gt; function, which replaces the older &lt;code&gt;namei()&lt;/code&gt; function from traditional Unix.
+Analogous to &lt;code&gt;namei()&lt;/code&gt;, the function consumes a path name, and returns a &lt;code&gt;struct vnode *&lt;/code&gt; to the vnode represented by that pathname.&lt;/p&gt;
+&lt;p&gt;Pathname traversal starts at the root vnode or the current directory vnode for the current process,
+depending on the first character of a pathname being &lt;code&gt;/&lt;/code&gt; or not.&lt;/p&gt;
+&lt;p&gt;The function then takes the next pathname component, iteratively, and calls the &lt;code&gt;lookup&lt;/code&gt; function for the current vnode.
+This function takes a pathname component, and a current &lt;code&gt;vnode&lt;/code&gt; assuming it is a directory.
+It then returns the &lt;code&gt;vnode&lt;/code&gt; representing that component.&lt;/p&gt;
+&lt;p&gt;If a directory is a mountpoint, it has &lt;code&gt;vfsmountedhere&lt;/code&gt; set.
+This is a &lt;code&gt;struct vfs *&lt;/code&gt;. &lt;code&gt;lookuppn&lt;/code&gt; follows the pointer,
+and can call the &lt;code&gt;root&lt;/code&gt; function for that &lt;code&gt;vfs&lt;/code&gt; to get the root &lt;code&gt;vnode&lt;/code&gt; for that filesystem, replacing the current &lt;code&gt;vnode&lt;/code&gt; being worked on.&lt;/p&gt;
+&lt;p&gt;The inverse must also be possible:
+When resolving a &amp;ldquo;&lt;code&gt;..&lt;/code&gt;&amp;rdquo; component and the current &lt;code&gt;vnode&lt;/code&gt; has a root flag set in its &amp;ldquo;flags&amp;rdquo; field,
+we go from the current &lt;code&gt;vnode&lt;/code&gt; to the &lt;code&gt;vfs&lt;/code&gt; following the &lt;code&gt;vfsmountedhere&lt;/code&gt; pointer.
+Then we can use the &lt;code&gt;vnodecovered&lt;/code&gt; field in that &lt;code&gt;vfs&lt;/code&gt; to get the &lt;code&gt;vnode&lt;/code&gt; of the superior filesystem.&lt;/p&gt;
+&lt;p&gt;In any case, upon successful completion, a &lt;code&gt;struct vnode*&lt;/code&gt; representing the consumed pathname is returned.&lt;/p&gt;
+&lt;h2 id=&#34;new-system-calls&#34;&gt;
+    &lt;a href=&#34;#new-system-calls&#34;&gt;
+	New system calls
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order to make things work,
+and to make things work efficiently, a few new system calls had to be added to round out the interfaces.&lt;/p&gt;
+&lt;p&gt;It is here in Unix history that we get &lt;code&gt;statsfs&lt;/code&gt; and &lt;code&gt;fstatsfs&lt;/code&gt;, to get an interface to filesystems in userland.
+We also gain &lt;code&gt;getdirentries&lt;/code&gt; (plural) to get multiple directory entries at once (depending on the size of the buffer provided),
+which makes directory reading faster a lot for remote filesystems.&lt;/p&gt;
+&lt;h1 id=&#34;in-linux&#34;&gt;
+    &lt;a href=&#34;#in-linux&#34;&gt;
+	In Linux
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Looking at the Linux kernel source, we can find the general structure of Kleiman&amp;rsquo;s design,
+even if the complexity and richness of the Linux kernel obscure most of it.
+The Linux kernel has a wealth of file system types, and added also a lot of functionality that wasn&amp;rsquo;t present in BSD 40 years ago.
+So we find a lot more structures and system calls,
+implementing namespaces, quotas, attributes, read-only modes, directory name caches, and other things.&lt;/p&gt;
+&lt;h2 id=&#34;the-file&#34;&gt;
+    &lt;a href=&#34;#the-file&#34;&gt;
+	The file
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Still, if you squint, the original structure can still be found:
+Linux splits the in-memory structures around files in two, the opened &lt;code&gt;file&lt;/code&gt;, which is an inode with a current position associated,
+and the &lt;code&gt;inode&lt;/code&gt;, which is the whole file.&lt;/p&gt;
+&lt;p&gt;We find instances of file objects, &lt;code&gt;struct file&lt;/code&gt;, defined
+&lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L942C3-L981&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+Among all the other things a file has, it has most notably a field &lt;code&gt;loff_t f_pos&lt;/code&gt;,
+an offset (in bytes) from the start of the file,
+the current position.&lt;/p&gt;
+&lt;p&gt;The file&amp;rsquo;s class is defined via a virtual function table.
+We find the pointer as &lt;code&gt;struct file_operations *f_op&lt;/code&gt;,
+and the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1754-L1798&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+It shows all the things a file can do, most notable, &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;close&lt;/code&gt;, &lt;code&gt;lseek&lt;/code&gt; and then &lt;code&gt;read&lt;/code&gt; and &lt;code&gt;write&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The file also contains pointers to the inode, &lt;code&gt;struct inode *f_inode&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;the-inode&#34;&gt;
+    &lt;a href=&#34;#the-inode&#34;&gt;
+	The inode
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Operations on files without the need of an offset work on the file as a whole,
+defined as &lt;code&gt;struct inode *&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Check the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L595-L705&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+We see other definitions in here that have no equivalent in BSD from 40 years ago, such as ACLs and attributes.&lt;/p&gt;
+&lt;p&gt;We find the inode&amp;rsquo;s class is defined via a virtual function table,
+&lt;code&gt;struct inode_operations *i_op&lt;/code&gt;,
+and the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1800-L1840&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+Again, a lot of them deal with new features such as ACLs and extended attributes,
+but we also find we expect such as &lt;code&gt;link&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, &lt;code&gt;rename&lt;/code&gt; and so on.&lt;/p&gt;
+&lt;p&gt;The inode also contains a pointer to a filesystem, the &lt;code&gt;struct super_block *i_sb&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;the-superblock&#34;&gt;
+    &lt;a href=&#34;#the-superblock&#34;&gt;
+	The superblock
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A mountpoint is represented as an instance of &lt;code&gt;struct super_block&lt;/code&gt;,
+defined &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1136-L1268&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+Again, the class is a &lt;code&gt;struct super_operations *s_op&lt;/code&gt;, defined
+&lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;As an added complexity, there is no finite list of filesystems.
+It is instead extensible through loadable modules, so we also have a &lt;code&gt;struct file_system_type&lt;/code&gt;,
+&lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
+
+.
+This is basically a class with only one class method as a factory for superblocks, &lt;code&gt;mount&lt;/code&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Unix changed.
+It became a lot more runtime extensive, added a lot of new functionality and gained system calls.
+Things became more structured.&lt;/p&gt;
+&lt;p&gt;But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
+We can point to concrete in Linux code, which while looking completely different, is structurally mirroring the original design ideas.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>50 years in filesystems: 1994</title>
       <link>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</link>
@@ -3318,289 +3501,6 @@ or when you need to allow a user to search the storage of all articles on offer 
 Here, traditional full materialization is necessary, and global state is manipulated.&lt;/p&gt;
 &lt;p&gt;In the end, looking at the table rows as the materialization and at the log as the stream of idempotent changes to the materialization over time it is clear to the database person that both things are the same.
 Looking at the various ways of implementing database systems, you will even find one posing as the other as needed, depending on the database product you look at (i.e. the LSM is a log, posing as a table, and other systems use tables to store logs).&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Ansible: List Cross-Join</title>
-      <link>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</link>
-      <pubDate>Mon, 12 Dec 2022 21:22:23 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/12/12/ansible-list-crossproduct.html</guid>
-      <description>&lt;p&gt;A friend asked in Discord:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;I need a pointer to a solution in Jinja.&lt;/p&gt;
-&lt;p&gt;Given two lists, &lt;code&gt;x: [a,b,c]&lt;/code&gt; and &lt;code&gt;y: [d,e,f]&lt;/code&gt;, I need the cross-join &lt;code&gt;[&amp;quot;a.d&amp;quot;,&amp;quot;a.e&amp;quot;,&amp;quot;a.f&amp;quot;,&amp;quot;b.d&amp;quot;,…,&amp;quot;c.e&amp;quot;,&amp;quot;c.f&amp;quot;]&lt;/code&gt;.
-I know how to cross-join, but that then is a list of lists, and I want join the inner lists.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;After some experimentation the result was a set of nasty templating loops.
-There has to be a better way.&lt;/p&gt;
-&lt;p&gt;There are two:&lt;/p&gt;
-&lt;h1 id=&#34;ansible-custom-filters-in-python&#34;&gt;
-    &lt;a href=&#34;#ansible-custom-filters-in-python&#34;&gt;
-	Ansible Custom Filters in Python
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;playbook&#34;&gt;
-    &lt;a href=&#34;#playbook&#34;&gt;
-	Playbook
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;We want a custom filter &lt;code&gt;cross&lt;/code&gt;, which produces the desired result.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c&#34;&gt;# $ cat testing/myfilter.yml&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;vars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;f&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ x| cross(y) }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;desired-output&#34;&gt;
-    &lt;a href=&#34;#desired-output&#34;&gt;
-	Desired Output
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The playbook shall produce this output&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PLAY [Keks] ********************************************************************
-
-TASK [Keks] ********************************************************************
-ok: [localhost] =&amp;gt; {
-    &amp;#34;msg&amp;#34;: [
-        &amp;#34;a.d&amp;#34;,
-        &amp;#34;a.e&amp;#34;,
-        &amp;#34;a.f&amp;#34;,
-        &amp;#34;b.d&amp;#34;,
-        &amp;#34;b.e&amp;#34;,
-        &amp;#34;b.f&amp;#34;,
-        &amp;#34;c.d&amp;#34;,
-        &amp;#34;c.e&amp;#34;,
-        &amp;#34;c.f&amp;#34;
-    ]
-}
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;creating-a-custom-filter&#34;&gt;
-    &lt;a href=&#34;#creating-a-custom-filter&#34;&gt;
-	Creating a custom filter
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;For that, we need a directory &lt;code&gt;filter_plugins&lt;/code&gt; next to the playbook (or in the role directory next to the &lt;code&gt;tasks&lt;/code&gt; directory).
-Inside that directory, we place a Python file &lt;code&gt;cross.py&lt;/code&gt;, which will contain our custom filter code.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ tree testing/
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;testing/
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;├── filter_plugins
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;│   └── cross.py
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;└── myfilter.yml
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; directory, &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; files
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The file &lt;code&gt;cross.py&lt;/code&gt; looks like this:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
-&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;lnt&#34;&gt;21
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;collections.abc&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;FilterModule&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;filters&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s1&#34;&gt;&amp;#39;cross&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cross&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;cross&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;bp&#34;&gt;self&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;.&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter1 is not an Iterable&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Iterable&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;or&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter2 is not an Iterable&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;not&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;isinstance&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;k&#34;&gt;raise&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;TypeError&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;parameter3  is not a string&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line hl&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;z&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[&lt;/span&gt; &lt;span class=&#34;sa&#34;&gt;f&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sepchar&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}{&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;j&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;j&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;y&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;z&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;This defines a class &lt;code&gt;FilterModule&lt;/code&gt; with a method &lt;code&gt;filters()&lt;/code&gt;.
-The names are prescribed, and cannot be changed.&lt;/p&gt;
-&lt;p&gt;In the &lt;code&gt;filters()&lt;/code&gt; method we are to return a dictionary with pairs of Jinja2 templating filter name (we want &lt;code&gt;cross&lt;/code&gt;) and matching Python function or method reference (that is, the name a callable without parameter parentheses attached).
-In our example, we map the Jinja2 filter &lt;code&gt;cross&lt;/code&gt; to the method &lt;code&gt;self.cross()&lt;/code&gt; in our Python class (Line 8).&lt;/p&gt;
-&lt;p&gt;The actual &lt;code&gt;cross()&lt;/code&gt; method is in Line 11. It takes 2 mandatory parameters, &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; and an optional parameter &lt;code&gt;sepchar&lt;/code&gt;.
-The first two parameters &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt; are supposed to be Lists or other Iterables that are to be cross-joined.
-We expressly prohibit strings, because they are iterable by character, but that is likely not what we want.&lt;/p&gt;
-&lt;p&gt;The third parameter &lt;code&gt;sepchar&lt;/code&gt; is the separator character we are putting between these joined pairs.
-It defaults to &lt;code&gt;.&lt;/code&gt; (dot) and can be left out.&lt;/p&gt;
-&lt;p&gt;The actual work is done in Line 21 after the error checks.
-We produce a list, which we return.&lt;/p&gt;
-&lt;p&gt;We can test with&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ ansible-playbook testing/myfilter.yml
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;which indeed produces the desired output.&lt;/p&gt;
-&lt;h1 id=&#34;ansible-solution-with-native-filters&#34;&gt;
-    &lt;a href=&#34;#ansible-solution-with-native-filters&#34;&gt;
-	Ansible solution with native filters
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;My friend had objections to shipping custom filters with a role.
-So here is a solution that uses no loops and only native filters.&lt;/p&gt;
-&lt;p&gt;We can use the Jinja2 default filter &lt;code&gt;product&lt;/code&gt; to create a cross product:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;hosts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;localhost&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;gather_facts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;kc&#34;&gt;false&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;vars&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;a&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;b&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;y&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;d&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;e&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;f&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;tasks&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;set_fact&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;z&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ x|product(y) }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;- &lt;span class=&#34;nt&#34;&gt;name&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;l&#34;&gt;Keks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;      &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;debug&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;        &lt;/span&gt;&lt;span class=&#34;nt&#34;&gt;msg&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;{{ z }}&amp;#34;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;But this produces the list of lists mentioned in the beginning.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;PLAY [Keks] ********************************************************************
-
-TASK [keks] ********************************************************************
-ok: [localhost]
-
-TASK [Keks] ********************************************************************
-ok: [localhost] =&amp;gt; {
-    &amp;#34;msg&amp;#34;: [
-        [
-            &amp;#34;a&amp;#34;,
-            &amp;#34;d&amp;#34;
-        ],
-        [
-            &amp;#34;a&amp;#34;,
-            &amp;#34;e&amp;#34;
-        ],
-...
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;We can use &lt;code&gt;z: &amp;quot;{{ x|product(y)|map(&#39;join&#39;) }}&amp;quot;&lt;/code&gt; to produce the pairs we want:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
-ok: [localhost] =&amp;gt; {
-    &amp;#34;msg&amp;#34;: [
-        &amp;#34;ad&amp;#34;,
-        &amp;#34;ae&amp;#34;,
-        &amp;#34;af&amp;#34;,
-        &amp;#34;bd&amp;#34;,
-        &amp;#34;be&amp;#34;,
-        &amp;#34;bf&amp;#34;,
-        &amp;#34;cd&amp;#34;,
-        &amp;#34;ce&amp;#34;,
-        &amp;#34;cf&amp;#34;
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;But we need to pass a parameter to &lt;code&gt;join()&lt;/code&gt;, because we want a &lt;code&gt;.&lt;/code&gt; separator character.
-This is done by adding this parameter after the function to be mapped.
-So we need &lt;code&gt;z: &amp;quot;{{ x|product(y)|map(&#39;join&#39;,&#39;.&#39;) }}&amp;quot;&lt;/code&gt; for our solution.&lt;/p&gt;
-&lt;p&gt;The run results in&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
-ok: [localhost] =&amp;gt; {
-    &amp;#34;msg&amp;#34;: [
-        &amp;#34;a.d&amp;#34;,
-        &amp;#34;a.e&amp;#34;,
-        &amp;#34;a.f&amp;#34;,
-        &amp;#34;b.d&amp;#34;,
-        &amp;#34;b.e&amp;#34;,
-        &amp;#34;b.f&amp;#34;,
-        &amp;#34;c.d&amp;#34;,
-        &amp;#34;c.e&amp;#34;,
-        &amp;#34;c.f&amp;#34;
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;which is what we wanted.&lt;/p&gt;
-&lt;h1 id=&#34;the-actual-problem&#34;&gt;
-    &lt;a href=&#34;#the-actual-problem&#34;&gt;
-	The actual problem
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The actual problem looks like this, but in a single line:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{%- for host in hosts -%}
-  {%- for domain in domains -%}
-    {{proto}}://{{ host }}.{{ domain }}:{{port}}{{ &amp;#34;, &amp;#34; if not loop.last }}
-  {%- endfor -%}
-  {{ &amp;#34;, &amp;#34; if not loop.last }}
-{%- endfor -%} 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The replacement with native functions looks like this, again in a single line:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;{{ [proto] | 
-    product(hosts |
-        product(domains) |
-        map(&amp;#39;join&amp;#39;,&amp;#39;.&amp;#39;)
-    ) | map(&amp;#39;join&amp;#39;,&amp;#39;://&amp;#39;) |
-    product([port])|
-   map(&amp;#39;join&amp;#39;,&amp;#39;:&amp;#39;)|
-   join(&amp;#34;, &amp;#34;) 
-}}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Using &lt;code&gt;cross()&lt;/code&gt; it is a lot less ugly:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;proto | cross(hosts,&amp;#39;://&amp;#39;) | cross(domains) | cross(port,&amp;#39;:&amp;#39;)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If &lt;code&gt;proto&lt;/code&gt; or &lt;code&gt;port&lt;/code&gt; are scalar, write them as &lt;code&gt;[proto]&lt;/code&gt; and &lt;code&gt;[port]&lt;/code&gt; to keep the syntax.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;- name: Keks
-  hosts: localhost
-  gather_facts: false
-  vars:
-    hosts: [ &amp;#34;hosta&amp;#34;, &amp;#34;hostb&amp;#34;, &amp;#34;hostc&amp;#34; ]
-    domains: [ &amp;#34;domaina.net&amp;#34;, &amp;#34;domainb.com&amp;#34;, &amp;#34;domainc.org&amp;#34; ]
-    proto: &amp;#34;https&amp;#34;
-    port: &amp;#34;8443&amp;#34;
-
-  tasks:
-    - name: Keks
-      debug:
-        msg: &amp;#34;{{ [proto]|cross(hosts,&amp;#39;://&amp;#39;)|cross(domains)|cross([port],&amp;#39;:&amp;#39;) }}&amp;#34;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;yields&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;TASK [Keks] ********************************************************************
-ok: [localhost] =&amp;gt; {
-    &amp;#34;msg&amp;#34;: [
-        &amp;#34;https://hosta.domaina.net:8443&amp;#34;,
-        &amp;#34;https://hosta.domainb.com:8443&amp;#34;,
-        &amp;#34;https://hosta.domainc.org:8443&amp;#34;,
-        &amp;#34;https://hostb.domaina.net:8443&amp;#34;,
-        &amp;#34;https://hostb.domainb.com:8443&amp;#34;,
-        &amp;#34;https://hostb.domainc.org:8443&amp;#34;,
-        &amp;#34;https://hostc.domaina.net:8443&amp;#34;,
-        &amp;#34;https://hostc.domainb.com:8443&amp;#34;,
-        &amp;#34;https://hostc.domainc.org:8443&amp;#34;
-    ]
-}
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;summary&#34;&gt;
-    &lt;a href=&#34;#summary&#34;&gt;
-	Summary
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;With a short, concise and type-safe Python function that can be shipped as part of the role, we solved the original problem.
-We can produce the solution in a single, rather readable line instead of deeply nesting function calls, or worse,
-a bunch of templating loops.&lt;/p&gt;
-&lt;p&gt;Debugging and testing of the Python function can be done with the full power of our Python tooling,
-instead of messing with an un-debuggable and untestable DSL.&lt;/p&gt;
 </description>
     </item>
     
