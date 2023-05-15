@@ -63,7 +63,7 @@ That is, the private data is not part of the virtual structure, but located else
 
 ![](/uploads/2023/05/vfs-vnode-structures.png)
 *One full page in the paper is dedicated to showing the various structures pointing at each other.
-What looks confusing at first glance is actually pretty straightforward and elegang, once you trace it out.*
+What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.*
 
 Kleiman sets out to explain how things work using the `lookippn()` function, which replaces the older `namei()` function from traditional Unix.
 Analogous to `namei()`, the function consumes a path name, and returns a `struct vnode *` to the vnode represented by that pathname.
@@ -71,8 +71,8 @@ Analogous to `namei()`, the function consumes a path name, and returns a `struct
 Pathname traversal starts at the root vnode or the current directory vnode for the current process, 
 depending on the first character of a pathname being `/` or not.
 
-The function then takes the next pathname component, iteratively, and calls the `lookup` function for the current vode.
-This function takes a pathname component, and a curent `vnode` assuming it is a directory.
+The function then takes the next pathname component, iteratively, and calls the `lookup` function for the current vnode.
+This function takes a pathname component, and a current `vnode` assuming it is a directory.
 It then returns the `vnode` representing that component.
 
 If a directory is a mountpoint, it has `vfsmountedhere` set.
@@ -80,7 +80,7 @@ This is a `struct vfs *`. `lookuppn` follows the pointer,
 and can call the `root` function for that `vfs` to get the root `vnode` for that filesystem, replacing the current `vnode` being worked on.  
 
 The inverse must also be possible:
-When resolving a "`..`" component and the current `vnode` has a root flag set in its flags field,
+When resolving a "`..`" component and the current `vnode` has a root flag set in its "flags" field,
 we go from the current `vnode` to the `vfs` following the `vfsmountedhere` pointer.
 Then we can use the `vnodecovered` field in that `vfs` to get the `vnode` of the superior filesystem.
 
@@ -88,9 +88,10 @@ In any case, upon successful completion, a `struct vnode*` representing the cons
 
 ## New system calls
 
-In order to make things work, and to make things work efficiently, a few new systcalls had to be added to round out the interfaces.
+In order to make things work,
+and to make things work efficiently, a few new system calls had to be added to round out the interfaces.
 
-It is here in Unix history that we get `statsfs` and `fstatsfs`, to get a userland interface to filesystems.
+It is here in Unix history that we get `statsfs` and `fstatsfs`, to get an interface to filesystems in userland.
 We also gain `getdirentries` (plural) to get multiple directory entries at once (depending on the size of the buffer provided),
 which makes directory reading faster a lot for remote filesystems.
 
@@ -99,7 +100,8 @@ which makes directory reading faster a lot for remote filesystems.
 Looking at the Linux kernel source, we can find the general structure of Kleiman's design,
 even if the complexity and richness of the Linux kernel obscure most of it.
 The Linux kernel has a wealth of file system types, and added also a lot of functionality that wasn't present in BSD 40 years ago.
-So we find a lot more structures and syscalls, implementing namespaces, quotas, attributes, read-only modes, directory name caches and so on.
+So we find a lot more structures and system calls, 
+implementing namespaces, quotas, attributes, read-only modes, directory name caches, and other things.
 
 ## The file
 
@@ -141,9 +143,9 @@ The inode also contains a pointer to a filesystem, the `struct super_block *i_sb
 A mountpoint is represented as an instance of `struct super_block`, 
 defined [here](https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1136-L1268).
 Again, the class is a `struct super_operations *s_op`, defined
-[here]()ttps://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918).
+[here](https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918).
 
-As an added complexity, there is no finite list of filesytems.
+As an added complexity, there is no finite list of filesystems.
 It is instead extensible through loadable modules, so we also have a `struct file_system_type`,
 [here](https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918).
 This is basically a class with only one class method as a factory for superblocks, `mount`.
@@ -151,8 +153,8 @@ This is basically a class with only one class method as a factory for superblock
 # Summary
 
 Unix changed.
-It became a lot more runtime extensive, added a lot of new functionality and gained syscalls.
+It became a lot more runtime extensive, added a lot of new functionality and gained system calls.
 Things became more structured.
 
 But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
-We can point to concrete  in Linux code, which while looking completely different, is structurally mirroring the original design ideas.
+We can point to concrete in Linux code, which while looking completely different, is structurally mirroring the original design ideas.
