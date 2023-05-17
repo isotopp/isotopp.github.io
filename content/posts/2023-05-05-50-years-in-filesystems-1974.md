@@ -3,6 +3,7 @@ author: isotopp
 title: "50 years in filesystems: 1974"
 date: 2023-05-05T12:13:14Z
 feature-img: assets/img/background/rijksmuseum.jpg
+toc: true
 tags:
 - lang_en
 - unix
