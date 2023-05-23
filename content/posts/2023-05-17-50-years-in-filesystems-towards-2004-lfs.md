@@ -149,7 +149,7 @@ They note a few shortcomings, and present improvements:
 The cleaner was single-threaded. No matter how many LFS filesystems were mounted, there was only a single cleaner process.
 Now there is one per mounted filesystem.
 They also provide a structural verifier for the filesystem, something similar to a `fsck`, but a thing that can run in the background,
-while the filesystem is mounted..
+while the filesystem is mounted.
 
 Also, the original LFS code was using more memory than necessary, and BSD LFS was made a lot more memory efficient.
 
@@ -179,7 +179,7 @@ Notably, the paper already hints at several improvements:
   and the disk blocks will be eventually collected and freed by the cleaner.
 
   Nothing in this idea is actually dependent on the filesystem being LFS.
-  In fact, it can and was successfully be applied to BSD FFS, too, under the name of 
+  In fact, it can and was successfully applied to BSD FFS, too, under the name of 
   [*soft updates*](https://www.usenix.org/legacy/publications/library/proceedings/usenix99/mckusick.html),
   allowing to mount unchecked filesystems and then running a check in the background.
 
