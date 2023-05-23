@@ -6,7 +6,244 @@
     <description>Recent content in unix on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 May 2023 18:23:50 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/unix/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 May 2023 19:03:04 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/unix/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>50 years in filesystems: towards 2004 – LFS</title>
+      <link>https://blog.koehntopp.info/2023/05/17/50-years-in-filesystems-towards-2004-lfs.html</link>
+      <pubDate>Wed, 17 May 2023 01:02:03 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/05/17/50-years-in-filesystems-towards-2004-lfs.html</guid>
+      <description>&lt;p&gt;This is part 5 of a series.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/05/50-years-in-filesystems-1974.html&#34;&gt;1974&lt;/a&gt;
+
+&amp;rdquo; on the traditional Unix Filesystem.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html&#34;&gt;1984&lt;/a&gt;
+
+&amp;rdquo; on the BSD Fast File System.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html&#34;&gt;1994&lt;/a&gt;
+
+&amp;rdquo; on SGI XFS.&lt;/li&gt;
+&lt;li&gt;&amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/15/50-years-in-filesystems-vnodes.html&#34;&gt;Vnodes&lt;/a&gt;
+
+&amp;rdquo; on how to have multiple filesystems in Unix.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
+Often, it is easier to see by comparing modern educational material and the problems discussed with older material.
+Or look for the research papers and sources that fueled the change. So this is what we do.&lt;/p&gt;
+&lt;h1 id=&#34;frontiers-in-the-nineties&#34;&gt;
+    &lt;a href=&#34;#frontiers-in-the-nineties&#34;&gt;
+	Frontiers in the Nineties
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;SGI&amp;rsquo;s XFS is pretty much the culmination point in filesystem technology for anything that does in-place updates.
+Extents, generous usage of B+-trees and lock splitting across allocation groups make it a great filesystem that is fast and scales well.
+The introduction of a metadata log allows it to recover quickly.&lt;/p&gt;
+&lt;p&gt;The Nineties were also busy with operating systems research.
+Specifically, cluster operating systems were very much en vogue:
+Tanenbaum was in Amsterdam, busy with &lt;a href=&#34;https://en.wikipedia.org/wiki/Amoeba_%28operating_system%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Amoeba&lt;/a&gt;
+
+.
+Bell Labs was busy with &lt;a href=&#34;https://en.wikipedia.org/wiki/Plan_9_from_Bell_Labs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Plan 9&lt;/a&gt;
+
+.
+And at the UCB, Ousterhout was working on &lt;a href=&#34;https://en.wikipedia.org/wiki/Sprite_%28operating_system%29&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Sprite&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;All were experimenting with cluster-unified filesystems, distributed processing, workload migration,
+and generally trying to build what 20 years later would become the &lt;a href=&#34;https://www.amazon.com/Datacenter-Computer-Introduction-Warehouse-Scale-Architecture/dp/159829556X&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Warehouse-Scale Computer&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Part of the Sprite development at UCB, specifically, was the Log-Structured File System (LFS), and
+Mendel Rosenblum and John K. Ousterhout present it in &lt;a href=&#34;https://www.usenix.org/legacy/publications/library/proceedings/sd93/seltzer.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;this paper&lt;/a&gt;
+
+ from 1992.
+This is a long paper, 27 pages, but if you read it with hindsight, you can really appreciate how enlightened it was.&lt;/p&gt;
+&lt;h1 id=&#34;lfs&#34;&gt;
+    &lt;a href=&#34;#lfs&#34;&gt;
+	LFS
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Filesystems with in-place updates are in part already using logs for faster recovery in 1992.
+The paper poses the question &amp;ldquo;What if we had a filesystem that only had a log, and never did in-place updates?&amp;rdquo;,
+calling it a log-structured file system.
+It then proceeds to present an implementation and benchmarks for such a thing.&lt;/p&gt;
+&lt;h2 id=&#34;reads-are-cached-only-writes-matter&#34;&gt;
+    &lt;a href=&#34;#reads-are-cached-only-writes-matter&#34;&gt;
+	&amp;ldquo;Reads are cached, only writes matter&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In working with distributed operating systems, the Sprite team noticed that they have a lot of memory available.
+They found with increasing memory sizes, the probability of a file being served by the buffer cache instead of reading it from disk increased by a lot,
+and eventually almost all disk reads are being served from memory.&lt;/p&gt;
+&lt;p&gt;Writes cannot be cached very well, and eventually they need to hit persistent storage,
+but with the reads being cached it would be worthwhile and possible to construct a filesystem optimized for writes.&lt;/p&gt;
+&lt;p&gt;The team also observes that CPU speeds grow exponentially, following Moore&amp;rsquo;s law.
+The same seems to be true for memory sizes, which being on-chip silicon structures also obey this law.
+But disks do not work that way.
+While their capacity grows, their transfer speed and seek time does not improve much, because mechanical parts do not obey Moore&amp;rsquo;s law.
+Disks are a problem: While linear writes perform well, seeks are slow and are not getting faster much.&lt;/p&gt;
+&lt;p&gt;So they propose never overwriting any data, but always appending changed blocks to the end of a log.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/log-adoption.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;“Ah you think the log is your ally? You merely adopted the log. I was born with it, designed for it.”&lt;/em&gt;&lt;/p&gt;
+&lt;h2 id=&#34;garbage-collection&#34;&gt;
+    &lt;a href=&#34;#garbage-collection&#34;&gt;
+	Garbage collection
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Of course, disks in the Nineties were finite, as they are now.
+So there has to be a &lt;em&gt;cleaner&lt;/em&gt; process that identifies, frees and compacts space that is no longer needed by any current view of the filesystem.&lt;/p&gt;
+&lt;p&gt;This is much like the Garbage Collection in Java Virtual Machines, which were invented around the same time.
+And much like the GC in JVMs, it would turn out to be the weak spot of the system.&lt;/p&gt;
+&lt;p&gt;A lot of the paper busies itself with simulating workloads on the filesystem with different cleaner policies,
+and the team then lands on a system that very much evolves in the same way Java GC evolved,
+with a multi-tier compaction process that mirrors the &amp;ldquo;Young&amp;rdquo;, &amp;ldquo;Old&amp;rdquo;, and &amp;ldquo;Permanent&amp;rdquo; generations of Java objects.
+This is not entirely surprising from hindsight:
+Other, newer systems such as Cassandra, Zookeeper and other storages that use LSM Trees are using a very similar strategy with good success.&lt;/p&gt;
+&lt;p&gt;Specifically, LFS partitions the storage into contiguous segments, and cleans storage segment by segment:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;We used a simulator to explore different cleaning policies and discovered a simple but effective algorithm based on cost and benefit:
+it segregates older, slowly changing data from younger rapidly changing data and treats them differently during cleaning.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Other code takes multiple nearly empty segments of the same age and copies them together into a single segment, freeing up the others.&lt;/p&gt;
+&lt;p&gt;This creates a certain amount of background copy activity from the cleaner process.
+It also creates a race between the writers to the system using up free space,
+and the cleaner process trying to provide sufficient free space.
+If the system writes data heavily and free space goes down, the cleaner may need to be prioritized higher,
+consuming more I/O, in order to make sufficient progress in providing clean segments to write to.
+This will also slow down the writers.&lt;/p&gt;
+&lt;p&gt;Benchmarks executed as part of the research show that the system can indeed write to disk at up to 70% of the theoretically available maximum bandwidth.
+But this is true only under ideal conditions.
+Also, the data is not stored in read-order at all, so read performance is only good if data is actually cached.&lt;/p&gt;
+&lt;p&gt;Segments are sufficiently large to amortize the cost of seeking to them.
+In the Mid-Nineties, that meant a size of around 0.5 to 1 MB.&lt;/p&gt;
+&lt;p&gt;Cleaning is then a three-step process:
+After suitable segments have been identified from metadata,
+the cleaner reads multiple segments into memory, compacts them into a smaller number of segments,
+and writes them out to disk in a single large I/O operation.
+The old segments can now be marked as clean, and be returned to the free segment pool.&lt;/p&gt;
+&lt;h2 id=&#34;using-ffs-data-structures&#34;&gt;
+    &lt;a href=&#34;#using-ffs-data-structures&#34;&gt;
+	Using FFS data structures
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;LFS uses data structures from FFS almost unchanged:
+The filesystem has superblocks, inodes, direct and indirect blocks, and uses the same structures for directories, too.
+All information changed is buffered and then written out sequentially in a single disk write that appends atomically and asynchronously to the log.&lt;/p&gt;
+&lt;p&gt;Not overwriting things means duplicating things, so when a file grows by appending a block, the file&amp;rsquo;s inode changes.
+This means the block containing the changed inode needs to be written out again, together with block added to the file.
+LFS needs to keep track of inodes in an &lt;em&gt;inode map&lt;/em&gt;, and this now also needs to be updated and written out:
+even if it is small enough to be cached in memory, it needs to be persisted.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/lfs-structures.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+&lt;em&gt;LFS does indeed to limited in-place updates: The superblock and checkpoint region are written in fixed locations.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;LFS stops short of also appending new copies of the inode map and ultimately the superblock for each disk write,
+and puts these things into fixed locations.
+So we do have in-place updates for certain limited metadata structures.
+This is unfortunate, as we will see when we are looking at LFS&amp;rsquo; legacy.&lt;/p&gt;
+&lt;h2 id=&#34;soft-updates&#34;&gt;
+    &lt;a href=&#34;#soft-updates&#34;&gt;
+	Soft Updates
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order for LFS to write out changes to data and metadata such as indirect blocks, direct blocks, inodes and directories,
+updates had to be written in the proper order, even if the entire write happened in a single big I/O operation.
+Writing out data &amp;ldquo;from the leaves of the filesystem tree to the top&amp;rdquo; sorts the updates in a way that made recovery easier,
+because each data structure that had pointers to dependent blocks would be written out only after these blocks had already been persisted.&lt;/p&gt;
+&lt;p&gt;It turns out that this logic also has merit for traditional filesystems that do in-place updates.
+It allows &lt;a href=&#34;https://www.usenix.org/legacy/publications/library/proceedings/bsdcon02/mckusick.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;file system checking to go on in the background&lt;/a&gt;
+
+ while the filesystem is already being made available,
+and it can &lt;a href=&#34;https://www.usenix.org/legacy/publications/library/proceedings/usenix99/mckusick.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;eliminate almost all synchronous metadata updates&lt;/a&gt;
+
+ in the filesystem.&lt;/p&gt;
+&lt;h1 id=&#34;lfs-in-bsd&#34;&gt;
+    &lt;a href=&#34;#lfs-in-bsd&#34;&gt;
+	LFS in BSD
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The BSD FFS crew, also at UCB, was very aware of Ousterhout&amp;rsquo;s work, and picks it up the year after he publishes.
+They port the filesystem to BSD and &lt;a href=&#34;https://www.usenix.org/legacy/publications/library/proceedings/sd93/seltzer.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;write a 1993 paper about it&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/lfs-ffs-feature-comparison.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Features and subsystems of BSD FFS are matched with the equivalent structures and concepts on the BSD LFS side.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;They note a few shortcomings, and present improvements:
+The cleaner was single-threaded. No matter how many LFS filesystems were mounted, there was only a single cleaner process.
+Now there is one per mounted filesystem.
+They also provide a structural verifier for the filesystem, something similar to a &lt;code&gt;fsck&lt;/code&gt;, but a thing that can run in the background,
+while the filesystem is mounted..&lt;/p&gt;
+&lt;p&gt;Also, the original LFS code was using more memory than necessary, and BSD LFS was made a lot more memory efficient.&lt;/p&gt;
+&lt;p&gt;A lot of the paper is then a validation that their implementation is indeed a faithful port, and an improvement over original LFS,
+and benchmarking.&lt;/p&gt;
+&lt;p&gt;The benchmarks confirm improved write performance, but also show weakness concerning read workloads.
+This is for two reasons: data is possibly fragmented,
+and the file system buffer cache in their machines is often too small to soak up the disk reads.
+And secondly, when the cleaner process is running, it interacts badly with both the disk reads and writes via disk seeks,
+and that costs more performance than anticipated.
+This is in particular true for database-like (TPC-B) benchmark load,
+which performs badly and requires extensive tuning.&lt;/p&gt;
+&lt;p&gt;Notably, the paper already hints at several improvements:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;There are two places where in-place updates still happen.
+By removing them, the filesystem would automatically become transactional and gain snapshot functionality.
+In fact, each disk write would eventually create a snapshot, and actually &amp;ldquo;snapshotting&amp;rdquo; the filesystem would simply mean
+to prevent the cleaner from collecting certain snapshots.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Adding checksums to disk blocks already has happened in a few places.
+Turning this into a Merkle tree would be a trivial extension, and make validating the complete integrity not only of the
+structure, but also of the file data a lot easier.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The paper already notes that ordering writes in the log in a certain way makes background validation easier:
+If blocks being pointed to are written before blocks that point to them, referential integrity of the filesystem is being kept at all times.
+It is just that a transaction may be incomplete, but because it&amp;rsquo;s not referenced anywhere that is not a problem,
+and the disk blocks will be eventually collected and freed by the cleaner.&lt;/p&gt;
+&lt;p&gt;Nothing in this idea is actually dependent on the filesystem being LFS.
+In fact, it can and was successfully be applied to BSD FFS, too, under the name of
+&lt;a href=&#34;https://www.usenix.org/legacy/publications/library/proceedings/usenix99/mckusick.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;em&gt;soft updates&lt;/em&gt;&lt;/a&gt;
+
+,
+allowing to mount unchecked filesystems and then running a check in the background.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;performance-war&#34;&gt;
+    &lt;a href=&#34;#performance-war&#34;&gt;
+	Performance War
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;While Seltzer, Bostic, McKusick et al., the original authors of the BSD FFS, were busy porting Sprite LFS to BSD,
+and tuning it,
+Larry McVoy and S.R. Kleiman pick up the BSD FFS sources at Sun and add support for extents to it.
+The resulting patch is tiny, and the work is being documented in
+&lt;a href=&#34;https://people.freebsd.org/~pfg/docs/fs/ExtentlikePerformanceforUFS.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Extent-like Performance from a UNIX File System&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;To Seltzers chagrin, EFS often and consistently outperforms LFS, requires little to no tuning.
+In &lt;a href=&#34;https://people.freebsd.org/~pfg/docs/fs/ExtentlikePerformanceforUFS.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;File System Logging Versus Clustering: A Performance Comparison&lt;/a&gt;
+
+
+this is confirmed, even if it takes a long paper with many benchmarks to arrive at this finding.
+The problem is mostly with the disk seeks induced from running the cleaner.&lt;/p&gt;
+&lt;p&gt;If only something could be done about this&amp;hellip;&lt;/p&gt;
+&lt;p&gt;Something could be done, but it would happen at Sun and NetApp, and not in BSD: We&amp;rsquo;re getting ZFS and WAFL.&lt;/p&gt;
+&lt;p&gt;Also, we&amp;rsquo;re getting things that can seek a lot faster than disks: Flash Storage.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>50 years in filesystems: A detour on vnodes</title>
       <link>https://blog.koehntopp.info/2023/05/15/50-years-in-filesystems-vnodes.html</link>
@@ -3364,455 +3601,6 @@ Woher kommen die Routen?&lt;/p&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>rwx - sonst nix?</title>
-      <link>https://blog.koehntopp.info/1996/03/01/rwx-sonst-nix.html</link>
-      <pubDate>Fri, 01 Mar 1996 09:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/1996/03/01/rwx-sonst-nix.html</guid>
-      <description>&lt;p&gt;&lt;strong&gt;aus &amp;ldquo;Linux Magazin&amp;rdquo;, Ausgabe 3/96.&lt;/strong&gt;&lt;/p&gt;
-&lt;h1 id=&#34;rwx---sonst-nix&#34;&gt;
-    &lt;a href=&#34;#rwx---sonst-nix&#34;&gt;
-	rwx - sonst nix?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In jedem Buch über UNIX wird das UNIX-Rechtesystem ungefähr in Kapitel 2 vollständig erläutert und es bleiben keine Frage mehr offen.
-Wieso also ein Artikel über Zugriffsrechte?
-Nun, dieser Artikel erklärt Zugriffsrechte für Leute, die es ganz genau wissen wollen:
-Welche Rechte werden für den Zugriff auf eine Datei benötigt?
-Wer prüft die Rechte und wie passiert das?&lt;/p&gt;
-&lt;p&gt;Wie oft hört man Redewendungen wie &amp;ldquo;Ich öffne jetzt einmal diese Datei&amp;hellip;&amp;rdquo; oder &amp;ldquo;Ich habe keine Zugriffsrechte, um auf dieses Verzeichnis zuzugreifen.&amp;rdquo;
-Solche Formulierungen sind zwar üblich und auch jedermann verständlich, weil sie so schön bildhaft sind.
-Aber wenn man über Zugriffsrechte reden möchte, sind sie eher schädlich als hilfreich.&lt;/p&gt;
-&lt;p&gt;Natürlich öffnet ein User niemals eine Datei oder greift auf ein Verzeichnis zu.
-Prozesse tätigen Systemaufrufe und der Kernel öffnet Dateien oder liest Verzeichnisse im Auftrag und mit den Rechten dieses Prozesses.
-Solche Unterscheidungen sind auf den ersten Blick Haarspaltereien.
-Aber wenn man sich den Spaß macht und die Sache einmal zu Ende verfolgt, wird man feststellen, daß sich auf diese Weise einige Dinge besser verstehen und leichter erklären lassen.
-Der Autor will sich also in  diesem Artikel einer besonders genauen Sprache befleißigen.&lt;/p&gt;
-&lt;h2 id=&#34;woher-kommen-zugriffsrechte&#34;&gt;
-    &lt;a href=&#34;#woher-kommen-zugriffsrechte&#34;&gt;
-	Woher kommen Zugriffsrechte?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Zugriffsrechte und Eigentümer sind etwas, das einem zunächst an Dateien ins Auge fällt.
-Eine Datei besteht in Linux aus einem Haufen Blöcken auf der Festplatte und einer Verwaltungsstruktur, der I-Node.
-Während die Blöcke die eigentliche Information in der Datei speichern, findet man in der I-Node fast alle Information &lt;em&gt;über&lt;/em&gt; die Datei - also Metainformation.
-Was die Rechte betrifft, findet man in der I-Node eine User-ID (UID), eine Group-ID (GID) und zwölf Rechtebits:
-Drei Bits mit den Bezeichnungen &lt;code&gt;sst&lt;/code&gt; und dann jeweils drei Dreiergruppen &lt;code&gt;rwx&lt;/code&gt;.
-&lt;code&gt;sst&lt;/code&gt; sind gewissermaßen Allzweckbits, die je nach Typ der Datei und Systemaufruf unterschiedliche Bedeutung haben können.
-Die Auswertung der übrigen neun Bits erfolgt dagegen relativ zentral in einer Funktion &lt;code&gt;permission()&lt;/code&gt;, auf die wir weiter unten eingehen werden.&lt;/p&gt;
-&lt;p&gt;Was dem UNIX-Neuling noch auffallen wird, ist die Tatsache, daß sich in der I-Node der Datei nicht der Username und der Gruppenname findet, sondern nur jeweils eine ID.
-Diese ID-Nummern werden vom ls-Kommando in Namen umgewandelt, falls man es ihm nicht verbietet.
-Man kann das ls-Kommando zwingen, die Angaben numerisch zu machen, indem man die Option &lt;code&gt;-n&lt;/code&gt; verwendet oder indem man dem Benutzer, der ls aufruft, den Lesezugriff auf /etc/passwd und /etc/group verweigert (&lt;a href=&#34;#experiment-1&#34;&gt;Experiment 1&lt;/a&gt;
-
-).&lt;/p&gt;
-&lt;hr /&gt;
-&lt;h2 id=&#34;experiment-1&#34;&gt;
-    &lt;a href=&#34;#experiment-1&#34;&gt;
-	Experiment 1
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;root@white:~# ls -l /etc/passwd /etc/group
--rw-r--r--   1 root     root          281 Jul 15 14:39 /etc/group
--rw-r--r--   1 root     root         1163 Nov 28 15:30 /etc/passwd
-root@white:~# chmod 000 /etc/passwd /etc/group
-root@white:~# su - kris
-kris@white:~$ ls -l /tmp
--rw-r--r--   1 0        0               5 Nov 23 13:36 lall
--rw-rw-rw-   1 60000    20             11 Nov 28 21:32 lpq.00002b98
-drwxr-xr-x   2 0        0            1024 Nov 17 07:31 root
-kris@white:~$ exit
-root@white:~# chmod 644 /etc/passwd /etc/group
-root@white:~# ls -l /tmp
--rw-r--r--   1 root     root            5 Nov 23 13:36 lall
--rw-rw-rw-   1 smbguest users          11 Nov 28 21:32 lpq.00002b98
-drwxr-xr-x   2 root     root         1024 Nov 17 07:31 root
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Indem man kris die Leserechte auf die Dateien &lt;code&gt;/etc/passwd&lt;/code&gt; und &lt;code&gt;/etc/group&lt;/code&gt; entzieht, kann man demonstrieren, daß in einer I-Node nur numerische Information über Eigentümer und Gruppe einer Datei gespeichert wird.
-ls kann diese Zahlen durch Zugriff auf die Paßwortdatenbank in Namen übersetzen.
-Dazu existiert eine Familie von Bibliotheksfunktionen, die in &lt;code&gt;getpwent(3)&lt;/code&gt;, &lt;code&gt;getpwuid(3)&lt;/code&gt;, &lt;code&gt;getgrent(3)&lt;/code&gt; und &lt;code&gt;getgrgid(3)&lt;/code&gt; dokumentiert ist.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Zugriffe auf Dateien erfolgen durch den Kernel im Auftrag eines Prozesses.
-Der Kernel entscheidet anhand der Rechtebits in der Inode der Datei einer Datei, ob er den Zugriff auf die Datei ausführen wird oder nicht.
-Entscheidend für die Interpretation dieser Rechtebits ist noch, mit welcher UID und GID der Prozeß abläuft, der auf die Datei zugreifen möchte.
-Wie man in &lt;code&gt;/usr/include/linux/sched.h&lt;/code&gt; nachlesen kann, hat ein &lt;code&gt;struct task_struct&lt;/code&gt; in Linux die Felder&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;	#define NGROUPS 32
-
-	unsigned short uid,euid,suid,fsuid;
-	unsigned short gid,egid,sgid,fsgid;
-	int     groups[NGROUPS];
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Linux unterscheidet sich hier von einem normalen UNIX:
-Für Zugriffe auf Dateien sind die Felder &lt;code&gt;fsuid&lt;/code&gt;, &lt;code&gt;fsgid&lt;/code&gt; und &lt;code&gt;groups[]&lt;/code&gt; relevant, während ein normales UNIX &lt;code&gt;euid&lt;/code&gt; und &lt;code&gt;egid&lt;/code&gt; verwendet.
-Natürlich unterscheidet sich Linux nicht so sehr von einem normalen UNIX, daß es inkompatibel wäre:
-Normalerweise ist die &lt;code&gt;fsuid/fsgid&lt;/code&gt; mit der &lt;code&gt;euid/egid&lt;/code&gt; des Prozesses identisch.
-Die Zugriffe auf Dateien erfolgen also mit der sogenannten effektiven User-ID und Group-ID eines Prozesses.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;#experiment-2&#34;&gt;Kasten 2&lt;/a&gt;
-
- zeigt, wie man feststellen kann, unter welchen IDs Zugriffe erfolgen.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;h2 id=&#34;experiment-2&#34;&gt;
-    &lt;a href=&#34;#experiment-2&#34;&gt;
-	Experiment 2
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kris@white:~$ id
-uid=100(kris) gid=20(users) groups=20(users),11(floppy)
-kris@white:~$ su -
-Password:
-root@white:~# id
-uid=0(root) gid=0(root) groups=0(root),1(bin),2(daemon),3(sys),4(adm),6(disk),10(wheel),11(floppy)
-root@white:~# exit
-kris@white:~$ id marit
-uid=101(marit) gid=20(users) groups=11(floppy)
-kris@white:~$ ls -l /tmp/bash
--rwsr-xr-x   1 root     root       295940 Nov 29 12:07 /tmp/bash
-kris@white:~$ /tmp/bash
-kris@white:~# id
-uid=100(kris) gid=20(users) euid=0(root) groups=20(users),11(floppy)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Jemand, der als &lt;code&gt;kris&lt;/code&gt; eingeloggt ist, greift normalerweise mit der UID 100, der GID 20 und den Einträgen 20 und 11 im Feld &lt;code&gt;groups[]&lt;/code&gt; auf Dateien zu.
-Ein Systemverwalter dagegen hat die UID und die GID 0 und noch weitere Einträge im Feld &lt;code&gt;groups[]&lt;/code&gt;.
-Mit einem Usernamen als Parameter kann man auch die IDs anderer Benutzer abfragen.&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Effektive&lt;/em&gt; und &lt;em&gt;reale&lt;/em&gt; UID und GID müssen nicht immer übereinstimmen:
-Werden Programme mit gesetztem &lt;em&gt;Set User ID&lt;/em&gt;-Bit ausgeführt, kann sich die effektive UID eines Prozesses ändern - was &lt;em&gt;set user id&lt;/em&gt; genau ist und was das Bit bewirkt, werden wir später noch klären.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Wir halten fest:
-Dateien haben genau einen Eigentümer und gehören zu genau einer Gruppe, während ein Prozeß einen Eigentümer hat, aber zu bis zu 32 Gruppen gehören kann.
-Zugriffsrechte werden an Dateien in 12 Bit vermerkt.
-Die Interpretation dieser 12 Bit hängt ab vom Typ der Datei und von der Identität des zugreifenden Prozesses.&lt;/p&gt;
-&lt;h2 id=&#34;wo-werden-die-rechte-geprüft&#34;&gt;
-    &lt;a href=&#34;#wo-werden-die-rechte-gepr%c3%bcft&#34;&gt;
-	Wo werden die Rechte geprüft?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Linux prüft Zugriffsrechte mit Hilfe der Funktion &lt;code&gt;permission()&lt;/code&gt;.
-Sie ist in &lt;code&gt;/usr/src/linux/fs/namei.c&lt;/code&gt; in den Zeilen 91 bis 114 definiert.
-Ein Parameter von &lt;code&gt;permission()&lt;/code&gt; ist ein Zeiger auf die I-Node der Datei, auf die zugegriffen wird.
-Außerdem muß der Funktion noch gesagt werden, welche Art von Zugriff auf die Datei gewünscht wird.
-&lt;code&gt;/usr/include/linux/fs.h&lt;/code&gt; definiert dazu in den Zeilen 35 bis 37 die Werte MAY_EXEC, MAY_WRITE und MAY_READ, die zu einer mask zusammengebaut werden können.
-Der &lt;a href=&#34;#experiment-3&#34;&gt;Kasten&lt;/a&gt;
-
- zeigt den Quelltext von &lt;code&gt;permission()&lt;/code&gt; und die Definitionen aus &lt;code&gt;fs.h&lt;/code&gt;.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;h2 id=&#34;experiment-3&#34;&gt;
-    &lt;a href=&#34;#experiment-3&#34;&gt;
-	Experiment 3
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;/usr/src/linux/fs/namei.c:
-    91  /*
-    92   *      permission()
-    93   *
-    94   * is used to check for read/write/execute permissions on a file.
-    95   * We use &amp;#34;fsuid&amp;#34; for this, letting us set arbitrary permissions
-    96   * for filesystem access without changing the &amp;#34;normal&amp;#34; uids which
-    97   * are used for other things..
-    98   */
-    99  int permission(struct inode * inode,int mask)
-   100  {
-   101          int mode = inode-&amp;gt;i_mode;
-   102  
-   103          if (inode-&amp;gt;i_op &amp;amp;&amp;amp; inode-&amp;gt;i_op-&amp;gt;permission)
-   104                  return inode-&amp;gt;i_op-&amp;gt;permission(inode, mask);
-   105          else if ((mask &amp;amp; S_IWOTH) &amp;amp;&amp;amp; IS_IMMUTABLE(inode))
-   106                  return -EACCES; /* Nobody gets write access
-                        to an immutable file */
-   107          else if (current-&amp;gt;fsuid == inode-&amp;gt;i_uid)
-   108                  mode &amp;gt;&amp;gt;= 6;
-   109          else if (in_group_p(inode-&amp;gt;i_gid))
-   110                  mode &amp;gt;&amp;gt;= 3;
-   111          if (((mode &amp;amp; mask &amp;amp; 0007) == mask) || fsuser())
-   112                  return 0;
-   113          return -EACCES;
-   114  }
-
-/usr/include/linux/kernel.h:
-    68  #define fsuser() (current-&amp;gt;fsuid == 0)
-
-/usr/include/linux/fs.h:
-    35  #define MAY_EXEC 1
-    36  #define MAY_WRITE 2
-    37  #define MAY_READ 4
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Die Funktion &lt;code&gt;permission()&lt;/code&gt; ist der zentrale Kontrollpunkt für Zugriffsrechte.
-An ihr kann man sehen, nach welchem Verfahren Linux die Zugriffsrechte prüft.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Der Algorithmus, nach dem &lt;code&gt;permission()&lt;/code&gt; die Zugriffsrechte prüft, ist sehr einfach:
-Zunächst einmal (Zeile 103-104) wird festgestellt, ob für die zu prüfende I-Node im Feld &lt;code&gt;i_op-&amp;gt;permission()&lt;/code&gt; der I-Node Struktur eine dateisystemspezifische &lt;code&gt;permission()&lt;/code&gt;-Routine definiert ist.
-Auf diese Weise können Dateisysteme, die erweiterte oder von UNIX verschiedene Zugriffsrechte implementieren, ihre eigene Routine zum Testen des Zugriffs bereitstellen.
-Derzeit (Kernel 1.2.13) tut dies nur das ext2-Dateisystem mit der Funktion &lt;code&gt;ext2_permission()&lt;/code&gt;, die in &lt;code&gt;/usr/src/linux/fs/ext2/acl.c&lt;/code&gt; definiert ist (und die in Kernel 1.2.13 nichts anderes tut als Zeilen 107-113 der normalen &lt;code&gt;permission()&lt;/code&gt;-Funktion, also noch vollkommen sinnlos ist).&lt;/p&gt;
-&lt;p&gt;Die Zeilen 105-106 prüfen dann, ob die Datei als immutable file (unveränderliche Datei) gekennzeichnet ist.
-Wenn dies der Fall ist und in mask MAY_WRITE gesetzt ist, wird der Zugriff auf die Datei verweigert und der Fehler permission denied (EACCES) zurückgegeben.
-Der Code verwendet in Zeile 105 seltsamerweise die Definition S_IWOTH (das Schreibrecht für other aus der Includedatei &lt;code&gt;linux/stat.h&lt;/code&gt;) anstatt korrekterweise die Definition MAY_WRITE zu verwenden.
-Da aber beide Definitionen den Wert 2 haben, kommt es nicht zu einem Fehler.
-Da das ext2-Dateisystem eine eigene &lt;code&gt;permission()&lt;/code&gt;-Routine bereitstellt, die den Test auf immutable files nicht enthält, kann man dort unveränderliche Dateien beschreiben.
-Das ist ein Fehler, denn an anderen Stellen kennt das ext2-Dateisystemen &lt;code&gt;IS_IMMUTABLE()&lt;/code&gt; und nimmt Rücksicht darauf.&lt;/p&gt;
-&lt;p&gt;Der entscheidende Code befindet sich dann in den Zeilen 107-113:
-&lt;code&gt;current&lt;/code&gt; bezeichnet den &lt;code&gt;struct task&lt;/code&gt; des aktuellen Prozesses, also desjenigen Prozesses, der soeben versucht hat, auf eine Datei zuzugreifen und dessen Zugriffsrechte jetzt geprüft werden müssen.
-Falls die &lt;code&gt;fsuid&lt;/code&gt; dieses Prozesses mit der &lt;code&gt;i_uid&lt;/code&gt; der Datei übereinstimmen, werden die Zugriffsrechte des linken &lt;code&gt;rwx&lt;/code&gt;-Tripels der Datei für die Rechteprüfung verwendet (Zeilen 107 und 108).
-Andernfalls prüft Linux mit der Funktion &lt;code&gt;in_group_p()&lt;/code&gt;, ob irgendeine GID des aktuellen Prozesses mit der &lt;code&gt;i_gid&lt;/code&gt; der Datei übereinstimmt.
-Ist dies der Fall, werden die Zugriffsrechte des mittleren &lt;code&gt;rwx&lt;/code&gt;-Tripels verwendet (Zeilen 109-110).
-Ist weder eine Übereinstimmung der User- noch der Group-IDs zu finden, werden die Defaultzugriffsrechte aus dem rechten Tripel verwendet.&lt;/p&gt;
-&lt;p&gt;Die Funktion &lt;code&gt;in_group_p()&lt;/code&gt; ist in &lt;code&gt;/usr/src/linux/kernel/sys.c&lt;/code&gt; in den Zeilen 585-599 definiert.
-Sie testet, ob ihr Argument gleich der &lt;code&gt;fsgid&lt;/code&gt; des aktuellen Prozesses ist oder ob das Argument gleich einer der Gruppen aus dem &lt;code&gt;groups[]&lt;/code&gt;-Array des Prozesses ist.
-Der Name der Funktion erklärt sich aus der &amp;ldquo;p-convention&amp;rdquo; (siehe Jargon-File, ursprünglich eine Sitte aus dem Bereich der LISP-Programmierung):
-Es handelt sich um ein Prädikat, also eine Funktion, die entweder &lt;code&gt;true&lt;/code&gt; oder &lt;code&gt;false&lt;/code&gt; liefert, je nachdem ob die zu prüfende Aussage wahr oder falsch ist.&lt;/p&gt;
-&lt;p&gt;Die Bedingung in Zeile 111 entscheidet jetzt, ob der Zugriff auf eine I-Node gewährt wird oder nicht.
-Wenn mindestens die in &lt;code&gt;mask&lt;/code&gt; gewünschten Rechtebits in den durch &lt;code&gt;mode&lt;/code&gt; schon in Zeile 101 vorab ermittelten Rechten enthalten sind oder der Zugriff mit Superuser-Privilegien erfolgt (&lt;code&gt;fsuser()&lt;/code&gt; ist wahr), wird der Zugriff auf die Datei gewährt.
-In allen anderen Fällen wird ein Fehler permission denied (EACCES) geliefert.&lt;/p&gt;
-&lt;p&gt;Wir halten fest:
-Einzelne Dateisysteme können besondere Rechteroutinen haben.
-Im Normalfall gelten aber die Userrechte für den Eigentümer einer Datei, die Gruppenrechte für jeden, der Mitglied in der Gruppe der Datei ist und die Other-Rechte für alle anderen.
-Die Prüfung dieser Rechte erledigt Linux an einer zentralen, leicht wartbaren Stelle im System.&lt;/p&gt;
-&lt;h2 id=&#34;pfade-und-rechte-entlang-des-pfades&#34;&gt;
-    &lt;a href=&#34;#pfade-und-rechte-entlang-des-pfades&#34;&gt;
-	Pfade, und Rechte entlang des Pfades
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Alle UNIX-Kernelfunktionen, die mit Dateien hantieren, nehmen Pfadnamen als Parameter an.
-Intern verwendet Linux jedoch wie alle Unices ausschließlich I-Nodes, um mit Dateien zu arbeiten.
-Die Umwandlung eines Pfadnamens in eine I-Node übernimmt in Linux eine von mehreren leicht unterschiedlichen &lt;code&gt;namei()&lt;/code&gt;-Funktionen, die in &lt;code&gt;/usr/src/linux/fs/namei.c&lt;/code&gt; definiert sind.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;namei()&lt;/code&gt; bekommt, vereinfacht dargestellt, einen Pfadnamen und die I-Node eines Verzeichnisses als Startpunkt übergeben.
-In diesem Verzeichnis wird mittels der Funktion &lt;code&gt;lookup()&lt;/code&gt; die I-Node der ersten Komponente des Pfadnamens gesucht.
-Diese I-Node wird jetzt als Startpunkt genommen, um die nächste Komponente des Pfadnames durch &lt;code&gt;lookup()&lt;/code&gt; suchen zu lassen und so weiter bis zum Ende des Pfades.
-Am Ende des Pfades ist das Ergebnis dieser Operation genau die I-Node des Verzeichnisses, das durch den Pfadnamen bezeichnet wird.&lt;/p&gt;
-&lt;p&gt;Der Code von &lt;code&gt;lookup()&lt;/code&gt; ist nicht ganz so einfach wie diese Erklärung, weil er so unschöne Dinge wie Mountpoints, &amp;ldquo;..&amp;quot;-Komponenten im Pfadnamen und ungültige Pfadnamen berücksichtigen muß, aber er ist auch nicht sonderlich kompliziert.
-Für unsere Zwecke sind jedoch nur wenige Zeilen von &lt;code&gt;lookup()&lt;/code&gt; wesentlich:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;/usr/src/linux/fs/namei.c:
-   163          perm = permission(dir,MAY_EXEC);
-
-   181          if (perm != 0) {
-   182                  iput(dir);
-   183                  return perm;
-   184          }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Um in einem Verzeichnis einen Namen nachschlagen zu können, muß der aufrufende Prozeß das &lt;code&gt;x&lt;/code&gt;-Recht an diesem Verzeichnis haben.
-Hat er dieses &lt;code&gt;x&lt;/code&gt;-Recht nicht, schlägt der Aufruf fehl - ganz gleich, welche Kernelfunktion aufgerufen wurde.
-Die Folgen können ziemlich fatal sein, wie &lt;a href=&#34;#experiment-4&#34;&gt;Experiment 4&lt;/a&gt;
-
- demonstriert.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;h2 id=&#34;experiment-4&#34;&gt;
-    &lt;a href=&#34;#experiment-4&#34;&gt;
-	Experiment 4
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;Warnung:&lt;/strong&gt;
-Dieses Experiment darf nur durchgeführt werden, wenn in einem zweiten Fenster noch eine weitere Rootshell aktiv ist.
-Andernfalls kann man sich so die Systeminstallation ruinieren.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;kris@white:~$ ls -ld /
-drwxr-xr-x  20 root     root         1024 Nov 29 22:29 /
-kris@white:~$ su - 
-root@white:~# chmod go-x /
-root@white:~# ls -ld /
-drwxr--r--  20 root     root         1024 Nov 29 22:29 /
-root@white:~# exit
-kris@white:~$ ls 
-csh: /bin/ls: Permission denied
-kris@white:~$ su
-csh: /bin/su: Permission denied
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In einem anderen Fenster mit einer aktiven Rootshell:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;root@white:~# chmod 755 / 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Das Hauptverzeichnis &lt;code&gt;/&lt;/code&gt; hat normalerweise die Rechte 755.
-Jeder Benutzer hat also &lt;code&gt;x&lt;/code&gt;-Recht am Verzeichnis &lt;code&gt;/&lt;/code&gt; und kann damit absolute Pfadnamen auflösen.
-Nimmt man dem Root-Verzeichnis die &lt;code&gt;x&lt;/code&gt;-Rechte, kann kein normaler Benutzer mehr absolute Pfadnamen auflösen und jeder Aufruf eines Systemkommandos schlägt fehl.
-Insbesondere ist auch kein &lt;code&gt;su&lt;/code&gt; mehr möglich, um die Operation rückgängig zu machen.
-Daher muß schon vor dem Beginn des Experimentes eine zweite, aktive Rootshell bereitstehen, um die Zugriffsrechte wieder zu reparieren.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Wir halten fest:
-Jede richtige Antwort auf die Frage &amp;ldquo;Welche Rechte braucht man, um mit einer Datei  eine bestimmte Operation (Öffnen, Löschen, Umbenennen und so weiter) durchführen zu können?&amp;rdquo; muß mit den Worten &amp;ldquo;Man braucht die &lt;code&gt;x&lt;/code&gt;-Rechte an den Verzeichnissen entlang des Pfades und &amp;hellip;&amp;rdquo; beginnen.
-Ohne diese &lt;code&gt;x&lt;/code&gt;-Rechte kann der Pfadname von Linux nicht aufgelöst werden und was immer sich an seinem Ende befindet, ist nicht zugreifbar.
-Weil wirklich jede Antwort mit diesem Halbsatz beginnen muß, wird er oft weggelassen - vergessen darf man ihn trotzdem nicht!
-Die einzelne Operation (&lt;code&gt;open(2)&lt;/code&gt;, &lt;code&gt;unlink(2)&lt;/code&gt;, &lt;code&gt;rename(2)&lt;/code&gt; und so weiter) kann dann noch zusätzlich weitere Zugriffsrechte verlangen.&lt;/p&gt;
-&lt;h2 id=&#34;lese--und-schreibrechte-an-dateien&#34;&gt;
-    &lt;a href=&#34;#lese--und-schreibrechte-an-dateien&#34;&gt;
-	Lese- und Schreibrechte an Dateien
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Welche Zugriffsrechte werden nun wirklich benötigt, um eine Datei zu öffnen?
-Auch dies können wir im Linux-Kernel nachlesen:
-In &lt;code&gt;/usr/src/linux/fs/open.c&lt;/code&gt; befindet sich der Code des Systemaufrufes &lt;code&gt;open(2)&lt;/code&gt;.
-Die Funktion &lt;code&gt;sys_open()&lt;/code&gt;, die diese Kernelfunktion realisiert, ist nur sehr kurz.
-Sie tut kaum mehr, als &lt;code&gt;do_open()&lt;/code&gt; in derselben Datei mit den richtigen Parametern aufzurufen.
-Der Code von &lt;code&gt;do_open()&lt;/code&gt; beschäftigt sich hauptsächlich mit der Verwaltung der Dateitabelle des Kernels und ist für die Klärung unserer Frage nicht interessant.&lt;/p&gt;
-&lt;p&gt;Die eigentliche Arbeit des Öffnens der Datei überläßt er der Funktion &lt;code&gt;open_namei()&lt;/code&gt;, die wie bereits erklärt, den filename in eine I-Node umwandelt.
-Der Aufruf findet sich in Zeile 442 in &lt;code&gt;open.c&lt;/code&gt;:&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;   442          error = open_namei(filename,flag,mode,&amp;amp;inode,NULL);
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Dabei ist &lt;code&gt;filename&lt;/code&gt; der Name der zu öffnenden Datei, &lt;code&gt;flag&lt;/code&gt; der Modus, in dem die Datei geöffnet werden soll (O_RDONLY, O_CREAT und so weiter) und &lt;code&gt;mode&lt;/code&gt; ist nur interessant, wenn die Datei angelegt werden soll:
-Dann soll sie mit den in &lt;code&gt;mode&lt;/code&gt; angegebenen Wunschrechten angelegt werden.
-In &lt;code&gt;inode&lt;/code&gt; liefert die Funktion die I-Node der geöffneten Datei  zurück.&lt;/p&gt;
-&lt;p&gt;Der Code von &lt;code&gt;open_namei()&lt;/code&gt; steht dann in &lt;code&gt;/usr/src/linux/fs/namei.c&lt;/code&gt;, von dem wir uns ja weiter oben schon Teile angesehen haben.
-&lt;code&gt;open_namei()&lt;/code&gt; ist eine lange Funktion, sie erstreckt sich von Zeile 333 bis Zeile 439.
-Die Umwandlung des &lt;code&gt;filename&lt;/code&gt;-Parameters in die &lt;code&gt;inode&lt;/code&gt; erfolgt in zwei Schritten.
-In einem ersten Schritt wird mithilfe von &lt;code&gt;dir_namei()&lt;/code&gt; erst einmal die I-Node des Verzeichnisses lokalisiert, in dem sich die zu öffnende Datei befindet.
-Der zweite Schritt ist dann leicht unterschiedlich, je nachdem, ob die die öffnende Datei bereits existiert oder ob sie wegen eines gesetzten O_CREAT erst noch erzeugt werden muß.&lt;/p&gt;
-&lt;p&gt;In Zeile 342 von &lt;code&gt;namei.c&lt;/code&gt; wird zunächst die I-Node des Verzeichnisses lokalisiert, in dem eine Datei geöffnet werden soll. Das ist der erste Schritt zum Öffnen der Datei.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;   342          error = dir_namei(pathname,&amp;amp;namelen,&amp;amp;basename,base,&amp;amp;dir);
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Dabei wird von &lt;code&gt;dir_namei()&lt;/code&gt; die Variable &lt;code&gt;basename&lt;/code&gt; mit dem Namen der Datei im Verzeichnis belegt, &lt;code&gt;namelen&lt;/code&gt; mit der Länge dieses Namens. &lt;code&gt;dir&lt;/code&gt; ist ein Zeiger auf die I-Node des Verzeichnisses, indem die Datei geöffnet werden soll, das eigentliche Ergebnis dieses Aufrufes (und wird in Zeile 361 weiterverwendet).
-Wenige Zeilen später wird fallweise unterschieden, ob eine Datei angelegt werden soll oder nicht (Zeile 359).&lt;/p&gt;
-&lt;p&gt;Soll eine Datei angelegt werden, muß überprüft werden, ob eine Datei dieses Namens schon existiert (Zeile 361).
-Wenn dies der Fall ist und außerdem O_EXCL als Parameter beim &lt;code&gt;open()&lt;/code&gt; angegeben war, muß das &lt;code&gt;open()&lt;/code&gt; fehlschlagen (Zeile 362-366).&lt;/p&gt;
-&lt;p&gt;Existiert die Datei im Verzeichnis noch nicht, kann versucht werden, sie zu erzeugen.
-Dazu müssen w- und x-Recht am Verzeichnis vorhanden sein, daß die Datei einmal enthalten soll (Zeile 367).
-Außerdem muß eine &lt;code&gt;create&lt;/code&gt;-Funktion in den I-Node-Operations für das Verzeichnis definiert sein (Zeile 369-370).
-Ist dies nicht der Fall, wird ebenfalls  &lt;code&gt;permission denied&lt;/code&gt; gemeldet.&lt;/p&gt;
-&lt;p&gt;Auf Dateisystemen, die read-only angemeldet sind, dürfen selbstverständlich ebenfalls keine Dateien angelegt werden (Zeile 371-372).
-Erst wenn alle diese Vorbedingungen erfüllt sind, darf die Datei wirklich angelegt werden und ist damit geöffnet.&lt;/p&gt;
-&lt;p&gt;Wir halten fest: Um eine Datei in einem Verzeichnis neu anlegen zu können, wird also das x-Recht an allen Verzeichnissen entlang des Pfades dieser Datei benötigt und das w- und das x-Recht an dem Verzeichnis, in dem die Datei neu anzulegen ist.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;   359          if (flag &amp;amp; O_CREAT) {
-   361                  error = lookup(dir,basename,namelen,&amp;amp;inode);
-   362                  if (!error) {
-   363                          if (flag &amp;amp; O_EXCL) {
-   364                                  iput(inode);
-   365                                  error = -EEXIST;
-   366                          }
-   367                  } else if ((error = permission(dir,
-                                              MAY_WRITE | MAY_EXEC)
-   368                          ;       /* error is already set! */
-   369                  else if (!dir-&amp;gt;i_op || !dir-&amp;gt;i_op-&amp;gt;create)
-   370                          error = -EACCES;
-   371                  else if (IS_RDONLY(dir))
-   372                          error = -EROFS;
-   373                  else {
-   
-   375                          error = 
-                     dir-&amp;gt;i_op-&amp;gt;create(dir,basename,namelen,mode,res_inode);
-   
-   379                  }
-   381          } else
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Soll dagegen eine bereits existierende Datei geöffnet werden, muß zunächst ihr Name im Verzeichnis gesucht werden, um eine I-Node für diese Datei zu bekommen (Zeile 382).&lt;/p&gt;
-&lt;p&gt;Es kann sein, daß die so gefundene I-Node nicht die I-Node der wirklich zu öffnenden Datei ist, sondern daß es sich um ein Symlink handelt.
-Ein Aufruf von &lt;code&gt;follow_link()&lt;/code&gt; regelt dies (Zeile  387).&lt;/p&gt;
-&lt;p&gt;Der folgende Code stellt dann sicher, daß ein Verzeichnis niemals zum Schreiben geöffnet werden darf (Zeile 390-393).
-Wäre dies nicht so, könnte man in Verzeichnissen beliebige I-Node-Nummern eintragen und so die Zugriffsrechte entlang des Pfades unterlaufen.&lt;/p&gt;
-&lt;p&gt;Der eigentliche Rechtetest erfolgt dann in den Zeilen 394-397, in denen die gewünschten Zugriffsrechte in &lt;code&gt;flag&lt;/code&gt; mit den vorhandenen Rechten in der inode verglichen werden.
-Nach diesen Zeilen folgt weiterer Code, der Gerätedateien in mit &lt;code&gt;nodev&lt;/code&gt; gemounteten Dateisystemen, read-only Dateisysteme, append-only Files und die Option O_TRUNC beim Öffnen behandelt, uns hier aber bei unserer Frage nichts neues bringt.&lt;/p&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;   382                  error = lookup(dir,basename,namelen,&amp;amp;inode);
-
-   387          error = follow_link(dir,inode,flag,mode,&amp;amp;inode);
-
-   390          if (S_ISDIR(inode-&amp;gt;i_mode) &amp;amp;&amp;amp; (flag &amp;amp; 2)) {
-   391                  iput(inode);
-   392                  return -EISDIR;
-   393          }
-   394          if ((error = permission(inode,ACC_MODE(flag))) != 0) {
-   395                  iput(inode);
-   396                  return error;
-   397          }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Wir halten fest: Beim Öffnen einer vorhandenen Datei wird das x-Recht an allen Verzeichnisses entlang des Pfade dieser Datei benötigt und das passende r- und/oder w-Recht an der Datei selbst.&lt;/p&gt;
-&lt;p&gt;Offenbar ist das Öffnen einer Datei und die Kontrolle der Zugriffsrechte für ein Betriebssystem eine recht anstrengende und langsame Angelegenheit.
-Neben der zeitraubenden Umwandlung von Pfadnamen in I-Nodes müssen auch noch zahlreiche Rechteflags an allen Verzeichnissen und an der Datei selbst kontrolliert werden und zahlreiche Sonderfälle berücksichtigt werden.&lt;/p&gt;
-&lt;p&gt;Zum Glück ist dieser ganze Aufwand auf das Öffnen einer Datei beschränkt.
-Ist die Datei erst einmal geöffnet, findet keine weitere Rechtekontrolle mehr statt. &lt;code&gt;read()&lt;/code&gt; und &lt;code&gt;write()&lt;/code&gt; können sich also auf ihre eigentliche Aufgabe, das Datenschaufeln, konzentrieren und müssen sich nicht mit der Kontrolle von Zugriffsrechten herumschlagen.&lt;/p&gt;
-&lt;h2 id=&#34;ausführungsrechte-an-dateien&#34;&gt;
-    &lt;a href=&#34;#ausf%c3%bchrungsrechte-an-dateien&#34;&gt;
-	Ausführungsrechte an Dateien
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Um das x-Recht an Dateien zu verstehen, müssen wir uns den Systemaufruf &lt;code&gt;execve(2)&lt;/code&gt; ansehen.
-Dieser Systemaufruf ist die einzige Methode, um in UNIX ein neues Programm zu laden.
-In Linux, das auf mehr als einer Prozessorplattform ablaufen kann, ist ein Teil des Aufrufes systemspezifisch.
-Für Intel-Prozessoren befindet sich in &lt;code&gt;/usr/src/linux/arch/i386/kernel/process.c&lt;/code&gt; der Code von &lt;code&gt;sys_execve()&lt;/code&gt;, der die Parameter des Systemaufrufes beschafft und dann den plattformunabhängigen Code in &lt;code&gt;/usr/src/linux/fs/exec.c&lt;/code&gt; aufruft.
-Der Funktion &lt;code&gt;do_execve()&lt;/code&gt; werden außer dem Namen der zu startenden Binärdatei auch noch ein Feld von Parameterstrings und ein Feld von Environmentvariablen sowie ein Satz initiale Prozessorregister mitgegeben.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;do_execve()&lt;/code&gt; beschafft sich durch einen Aufruf von &lt;code&gt;open_namei()&lt;/code&gt; zunächst einmal die I-Node der auszuführenden Datei.
-Weiter oben ist schon gezeigt worden, daß dies nur gelingen kann, wenn auf allen Verzeichnissen entlang des Pfades zu dieser Datei x-Rechte vorhanden sind.&lt;/p&gt;
-&lt;p&gt;Der folgende Code stellt sicher, daß die ausführbare Datei ein &lt;code&gt;regular file&lt;/code&gt; ist.
-Wenn das Dateisystem mit der Option &lt;code&gt;noexec&lt;/code&gt; gemountet ist, schlägt der Aufruf von &lt;code&gt;execve()&lt;/code&gt; in jedem Fall fehl, ebenso wenn der Superblock zugehörigen Dateisystems nicht erreichbar ist.&lt;/p&gt;
-&lt;p&gt;Nach diesen elementaren Überprüfungen folgt der Code, der &lt;em&gt;set user id/set group id&lt;/em&gt; handhabt und das x-Recht testet.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;h2 id=&#34;ausführungsrecht-und-suidsgid-beim-execve-systemaufrufh3&#34;&gt;
-    &lt;a href=&#34;#ausf%c3%bchrungsrecht-und-suidsgid-beim-execve-systemaufrufh3&#34;&gt;
-	Ausführungsrecht und SUID/SGID beim execve() Systemaufruf&lt;/h3&gt;
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;/usr/src/linux/fs/exec.c:
-   586          i = bprm.inode-&amp;gt;i_mode;
-   587          if (IS_NOSUID(bprm.inode) &amp;amp;&amp;amp; (((i &amp;amp; S_ISUID)
-                &amp;amp;&amp;amp; bprm.inode-&amp;gt;i_uid != current-&amp;gt;
-   588              euid) || ((i &amp;amp; S_ISGID) 
-                &amp;amp;&amp;amp; 	!in_group_p(bprm.inode-&amp;gt;i_gid))) &amp;amp;&amp;amp; !suser()) {
-   589                  retval = -EPERM;
-   590                  goto exec_error2;
-   591          }
-   592          /* make sure we don&amp;#39;t let suid, sgid files be ptraced. */
-   593          if (current-&amp;gt;flags &amp;amp; PF_PTRACED) {
-   594                  bprm.e_uid = current-&amp;gt;euid;
-   595                  bprm.e_gid = current-&amp;gt;egid;
-   596          } else {
-   597                  bprm.e_uid = 
-                        (i &amp;amp; S_ISUID) ? bprm.inode-&amp;gt;i_uid : current-&amp;gt;euid;
-   598                  bprm.e_gid = 
-                        (i &amp;amp; S_ISGID) ? bprm.inode-&amp;gt;i_gid : current-&amp;gt;egid;
-   599          }
-   600          if ((retval = permission(bprm.inode, MAY_EXEC)) != 0)
-   601                  goto exec_error2;
-   602          if (!(bprm.inode-&amp;gt;i_mode &amp;amp; 0111) &amp;amp;&amp;amp; fsuser()) {
-   603                  retval = -EACCES;
-   604                  goto exec_error2;
-   605          }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Im Rahmen der Funktion &lt;code&gt;do_execve()&lt;/code&gt; werden das SUID- und SGID-Bit der auszuführenden Datei geprüft und Linux bestimmt, unter welcher euid und egid das Programm zur Ausführung kommt.
-Danach wird getestet, ob ausreichende Rechte vorhanden sind, um das Programm starten zu dürfen.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;Zunächst bestimmt der Kernel die Rechtebits der auszuführenden Datei (Zeile 586).
-Falls das Dateisystem, auf dem sich diese Datei befindet, mit der Option &lt;code&gt;nosuid&lt;/code&gt; angemeldet ist und die Ausführung der Datei einen Wechsel der effektiven User-ID oder Group-ID bewirken würde, darf nur der Superuser die Datei ausführen (Zeilen 587-591).
-Danach wird bestimmt, unter welcher UID und GID das neue Programm zur Ausführung kommen wird.&lt;/p&gt;
-&lt;p&gt;Falls das Programm zur Zeit mittels &lt;code&gt;ptrace()&lt;/code&gt; in einem Debugger bearbeitet wird, werden sich seine Rechte nicht ändern (Zeilen 592-595).
-Auf diese Weise wird verhindert, daß man durch tracen eines SUID-Programmes und nachträgliches Verändern seines Codes zusätzliche Rechte gewinnen könnte.&lt;/p&gt;
-&lt;p&gt;Bei normalen Programmen (Zeilen 596-599) wird die effektive UID aus der I-Node der auszuführenden Datei übernommen, wenn das SUID-Bit an der Datei gesetzt ist, andernfalls wird die UID des Vorläufers ererbt.
-Analog wird mit der GID verfahren.&lt;/p&gt;
-&lt;p&gt;Der Kernel wird das Programm jedoch nur ausführen, wenn die &lt;code&gt;permission()&lt;/code&gt;-Funktion feststellt, das MAY_EXEC-Recht vorhanden ist (Zeilen 600-601).
-Auch ein Superuser kann eine Datei nicht als Programm starten, wenn nicht wenigstens irgendein x-Recht an der Datei vorhanden ist (Zeilen 602-603).&lt;/p&gt;
-&lt;p&gt;Der folgende, sehr umfangreiche Code beschäftigt sich dann mit dem Handling von Shellscripten, die durch einen #!-Kommentar eingeleitet werden.
-Erst ab Zeile 701 kann der Kernel versuchen, tatsächlich ein Programm mit den gegebenen Eigenschaften auszuführen.&lt;/p&gt;
-&lt;p&gt;Wir halten fest:
-Um ein Programm starten zu dürfen, muß außer den x-Rechten an den Verzeichnissen entlang des Pfades auch das x-Recht an der Datei vorhanden sein.
-Ein Superuser kann eine Datei immerhin dann als Programm starten, wenn wenigsten irgendein x-Recht an der Datei vorhanden ist.
-Wenn das SUID-Bit an der zu startenden Datei gesetzt ist, wird die Datei unter der &lt;code&gt;euid&lt;/code&gt; des Dateieigentümers ausgeführt, sonst unter der &lt;code&gt;euid&lt;/code&gt; des aufrufenden Prozesses - Prozesse mit einer bestehenden Verbindung zu einem Debugger werden jedoch aus Sicherheitsgründen immer nur unter der &lt;code&gt;euid&lt;/code&gt; des aufrufenden Prozesses ausgeführt.
-Analog wird auch mit dem SGID-Bit verfahren.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;h2 id=&#34;experiment-5&#34;&gt;
-    &lt;a href=&#34;#experiment-5&#34;&gt;
-	Experiment 5
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;root@white:/tmp# cat &amp;gt;&amp;gt; x
-#! /bin/sh --
-
-id
-root@white:/tmp# chmod 6555 x
-root@white:/tmp# ls -l x
--r-sr-sr-x   1 root     root           18 Dec 10 21:14 x
-root@white:/tmp# exit
-kris@white:~$ /tmp/x
-uid=100(kris) gid=20(users) groups=20(users),11(floppy)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Shellscripte mit gesetztem SUID- und SGID-Bit werden trotzdem mit normalen euid- und egid-Werten aufgerufen.&lt;/p&gt;
-&lt;hr /&gt;
-&lt;p&gt;&lt;a href=&#34;#experiment-5&#34;&gt;Experiment 5&lt;/a&gt;
-
- zeigt, wie der Kernel mit Shellscripten umgeht, die mit SUID- oder SGID-Rechten versehen sind.
-Das liegt daran, daß bei der Interpretation von #!-Zeichen der Name des auszuführenden Programmes verändert wird und danach der &lt;code&gt;execve()&lt;/code&gt;-Aufruf komplett neu gestartet wird.
-Aus dem Aufruf von &lt;code&gt;/tmp/x&lt;/code&gt; wird so durch die Interpretation der #!-Zeile der Aufruf &lt;code&gt;/bin/sh -- /tmp/x&lt;/code&gt;, der vom Kernel komplett neu bewertet wird.&lt;/p&gt;
-&lt;p&gt;An &lt;code&gt;/bin/sh&lt;/code&gt; ist aber weder das SUID- noch das SGID-Bit gesetzt, also wird die Shell mit normalen Rechten gestartet.
-Daß es sich bei einem Parameter des Aufrufes um den Namen einer Datei handelt, an der SUID und SGID gesetzt sind, darf den Kernel nicht interessieren und die Shell wertet es nicht aus - sie könnte es auch nicht, wenn sie wollte.
-Dieser Effekt ist durchaus beabsichtigt: Ein nichttriviales Shellscript zu schreiben, daß sicher und ohne Lücken für eventuelle Hacker unter einer fremden User-ID laufen kann, ist so gut wie unmöglich.&lt;/p&gt;
-&lt;h2 id=&#34;rückblick&#34;&gt;
-    &lt;a href=&#34;#r%c3%bcckblick&#34;&gt;
-	Rückblick
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Wie wir gesehen haben, findet die Kontrolle der Zugriffsrechte an Dateien in Linux so gut es geht zentral statt.
-Wenige Funkionen wie &lt;code&gt;permission()&lt;/code&gt; und die Funktionen der &lt;code&gt;namei()&lt;/code&gt;-Familie spielen dabei eine sehr wichtige Rolle.
-Trotzdem muß jeder Systemaufruf noch für sich selbst die Rechte des aufrufenden Prozesses an der Datei testen, die durch den Systemaufruf manipuliert werden soll.
-Dabei müssen viele Sonderfälle wie &lt;em&gt;immutable files&lt;/em&gt;, &lt;em&gt;append only directories&lt;/em&gt; und andere exotische Dinge beachtet werden.
-Wollte man eine vollständige und genaue Aufstellung von Zugriffsrechten in Linux machen, müßte man eine Liste von Systemaufrufen machen und für jeden Systemaufruf eine vollständige Liste von Vorbedingungen aufschreiben.
-Ein Eintrag würde sich dann in etwa so lesen:&lt;/p&gt;
-&lt;dl&gt;
-&lt;dt&gt;unlink:&lt;/dt&gt;
-&lt;dd&gt;&lt;code&gt;unlink()&lt;/code&gt; löscht eine Datei mit einem gegebenen Pfadnamen, wenn alle Verzeichnisse entlang des Pfades x-Recht haben, der Name der Datei im letzten Verzeichnis nicht leer (&amp;rdquo;&amp;quot;) ist, das Dateisystem nicht read only ist, am enthaltenden Verzeichnis w- und x-Recht bestehen, das enthaltende Verzeichnis nicht append only ist und für die I-Node der Datei eine unlink()-Operation definiert ist. Diese unlink()-Operation kann jedoch noch weitere Bedingungen an die Entfernung einer Datei stellen (das ext2-Dateisystem macht dies zum Beispiel, wenn das t-Bit am enthaltenden Verzeichnis gesetzt ist).&lt;/dd&gt;
-&lt;/dl&gt;
-&lt;p&gt;Letztendlich wird eine solche Tabelle jedoch sehr unübersichtlich und lang.
-Man sieht, daß Zugriffsrechte in UNIX im allgemeinen und Linux im besonderen nur auf den ersten Blick einfach und harmlos aussehen.
-Wenn man über das einfache &lt;code&gt;rwx&lt;/code&gt; hinausgeht, wird die ganze Angelegenheit ziemlich kompliziert und unübersichtlich, da viele Sonderfälle betrachtet werden müssen.
-Zum Glück kommen solche Sonderfälle in einer normalen Installation nur sehr selten vor, denn sonst würde das eingangs erwähnte Kapitel 2 eines UNIX-Handbuches sehr lang werden &amp;hellip;&lt;/p&gt;
 </description>
     </item>
     
