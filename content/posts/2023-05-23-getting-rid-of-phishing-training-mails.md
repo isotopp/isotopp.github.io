@@ -7,13 +7,15 @@ toc: false
 tags:
 - lang_en
 - security
+- spam
 ---
 
 Just like your work computer is being infested with corporate malware as to prevent it from being taken over from other people's malware,
 your account is also being spammed with corporate malware spam as to prevent it from being taken over by other malware spam.
 And just like corporate malware [increases your machine's attack surface]({{< ref "/content/posts/2018-06-18-websense-dlp-gives-instant-root.md" >}}),
 because it is [badly written]({{< ref "/content/posts/2017-10-20-aslr.md" >}}) and running with privileges,
-corporate spam is a [useless] [nuisance](https://publikationen.bibliothek.kit.edu/1000119662) that [doesn't do what it's supposed to do](https://blog.lukaszolejnik.com/solving-phishing-is-not-simple-can-anti-phishing-training-make-it-even-worse/.
+corporate spam is a useless [nuisance](https://publikationen.bibliothek.kit.edu/1000119662) that 
+[doesn't do what it's supposed to do](https://blog.lukaszolejnik.com/solving-phishing-is-not-simple-can-anti-phishing-training-make-it-even-worse/).
 
 Of course, working in an enterprise, you will be subjected to such campaigns anyway.
 So the best outcome for you would be to identify a phishing training campaign when it runs the first time,
