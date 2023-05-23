@@ -47,7 +47,7 @@ In true C++ style (but expressed in C), we get a virtual function table for each
   a collection of function pointers with operations such as `mount`, `unmount`, `sync` and `vget`.
   Later in the paper, prototypes and functionality of these functions are explained.
 - For the `vnode` type, likewise, we get `struct vnodeops`.
-  The functions where are `open`, `rdwr` and `close`, of course, but also `create`, `unlink`, and `rename`.
+  The functions here are `open`, `rdwr` and `close`, of course, but also `create`, `unlink`, and `rename`.
   Some functions are specific to a filetype such as `readlink`, `mkdir`, `readdir` and `rmdir`.
 
 Actual mounts are being tracked in `vfs` objects, which point to the operations applicable to this particular subtree with their `struct vfsops *`.
@@ -55,7 +55,7 @@ Actual mounts are being tracked in `vfs` objects, which point to the operations 
 Similarly, open files are being tracked in `vnode` instances, which again, among other things, have a `struct *vnodeops` pointer.
 `vnodes` are part of their `vfs`, so they also have `struct *vfs` to their filesystem instance.
 
-Both, the `vfs` and the `vnode` need to provide a way for the implementation to implementation specific data ("subclass private fields").
+Both, the `vfs` and the `vnode` need to provide a way for the implementation to store implementation specific data ("subclass private fields").
 So both structures end with `caddr_t ...data` pointers.
 That is, the private data is not part of the virtual structure, but located elsewhere and pointed to.
 
@@ -66,7 +66,7 @@ That is, the private data is not part of the virtual structure, but located else
 *One full page in the paper is dedicated to showing the various structures pointing at each other.
 What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.*
 
-Kleiman sets out to explain how things work using the `lookippn()` function, which replaces the older `namei()` function from traditional Unix.
+Kleiman sets out to explain how things work using the `lookuppn()` function, which replaces the older `namei()` function from traditional Unix.
 Analogous to `namei()`, the function consumes a path name, and returns a `struct vnode *` to the vnode represented by that pathname.
 
 Pathname traversal starts at the root vnode or the current directory vnode for the current process, 
@@ -92,7 +92,7 @@ In any case, upon successful completion, a `struct vnode*` representing the cons
 In order to make things work,
 and to make things work efficiently, a few new system calls had to be added to round out the interfaces.
 
-It is here in Unix history that we get `statsfs` and `fstatsfs`, to get an interface to filesystems in userland.
+It is here in Unix history that we get `statfs` and `fstatfs`, to get an interface to filesystems in userland.
 We also gain `getdirentries` (plural) to get multiple directory entries at once (depending on the size of the buffer provided),
 which makes directory reading faster a lot for remote filesystems.
 
@@ -135,7 +135,7 @@ We find the inode's class is defined via a virtual function table,
 `struct inode_operations *i_op`,
 and the definition [here](https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1800-L1840).
 Again, a lot of them deal with new features such as ACLs and extended attributes, 
-but we also find we expect such as `link`, `unlink`, `rename` and so on.
+but we also find those we expect such as `link`, `unlink`, `rename` and so on.
 
 The inode also contains a pointer to a filesystem, the `struct super_block *i_sb`.
 
@@ -158,4 +158,4 @@ It became a lot more runtime extensive, added a lot of new functionality and gai
 Things became more structured.
 
 But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
-We can point to concrete in Linux code, which while looking completely different, is structurally mirroring the original design ideas.
+We can point to concrete Linux code, which while looking completely different, is structurally mirroring the original design ideas.
