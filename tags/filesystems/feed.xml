@@ -6,7 +6,7 @@
     <description>Recent content in filesystems on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 May 2023 19:06:09 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/filesystems/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 May 2023 07:59:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/filesystems/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>50 years in filesystems: towards 2004 – LFS</title>
       <link>https://blog.koehntopp.info/2023/05/17/50-years-in-filesystems-towards-2004-lfs.html</link>
@@ -298,13 +298,13 @@ The filesystem (&lt;code&gt;vfs&lt;/code&gt;, virtual filesystem) and the inode 
 a collection of function pointers with operations such as &lt;code&gt;mount&lt;/code&gt;, &lt;code&gt;unmount&lt;/code&gt;, &lt;code&gt;sync&lt;/code&gt; and &lt;code&gt;vget&lt;/code&gt;.
 Later in the paper, prototypes and functionality of these functions are explained.&lt;/li&gt;
 &lt;li&gt;For the &lt;code&gt;vnode&lt;/code&gt; type, likewise, we get &lt;code&gt;struct vnodeops&lt;/code&gt;.
-The functions where are &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;rdwr&lt;/code&gt; and &lt;code&gt;close&lt;/code&gt;, of course, but also &lt;code&gt;create&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, and &lt;code&gt;rename&lt;/code&gt;.
+The functions here are &lt;code&gt;open&lt;/code&gt;, &lt;code&gt;rdwr&lt;/code&gt; and &lt;code&gt;close&lt;/code&gt;, of course, but also &lt;code&gt;create&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, and &lt;code&gt;rename&lt;/code&gt;.
 Some functions are specific to a filetype such as &lt;code&gt;readlink&lt;/code&gt;, &lt;code&gt;mkdir&lt;/code&gt;, &lt;code&gt;readdir&lt;/code&gt; and &lt;code&gt;rmdir&lt;/code&gt;.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Actual mounts are being tracked in &lt;code&gt;vfs&lt;/code&gt; objects, which point to the operations applicable to this particular subtree with their &lt;code&gt;struct vfsops *&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Similarly, open files are being tracked in &lt;code&gt;vnode&lt;/code&gt; instances, which again, among other things, have a &lt;code&gt;struct *vnodeops&lt;/code&gt; pointer.
 &lt;code&gt;vnodes&lt;/code&gt; are part of their &lt;code&gt;vfs&lt;/code&gt;, so they also have &lt;code&gt;struct *vfs&lt;/code&gt; to their filesystem instance.&lt;/p&gt;
-&lt;p&gt;Both, the &lt;code&gt;vfs&lt;/code&gt; and the &lt;code&gt;vnode&lt;/code&gt; need to provide a way for the implementation to implementation specific data (&amp;ldquo;subclass private fields&amp;rdquo;).
+&lt;p&gt;Both, the &lt;code&gt;vfs&lt;/code&gt; and the &lt;code&gt;vnode&lt;/code&gt; need to provide a way for the implementation to store implementation specific data (&amp;ldquo;subclass private fields&amp;rdquo;).
 So both structures end with &lt;code&gt;caddr_t ...data&lt;/code&gt; pointers.
 That is, the private data is not part of the virtual structure, but located elsewhere and pointed to.&lt;/p&gt;
 &lt;h2 id=&#34;vnodes-in-action&#34;&gt;
@@ -319,7 +319,7 @@ That is, the private data is not part of the virtual structure, but located else
 
 &lt;em&gt;One full page in the paper is dedicated to showing the various structures pointing at each other.
 What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Kleiman sets out to explain how things work using the &lt;code&gt;lookippn()&lt;/code&gt; function, which replaces the older &lt;code&gt;namei()&lt;/code&gt; function from traditional Unix.
+&lt;p&gt;Kleiman sets out to explain how things work using the &lt;code&gt;lookuppn()&lt;/code&gt; function, which replaces the older &lt;code&gt;namei()&lt;/code&gt; function from traditional Unix.
 Analogous to &lt;code&gt;namei()&lt;/code&gt;, the function consumes a path name, and returns a &lt;code&gt;struct vnode *&lt;/code&gt; to the vnode represented by that pathname.&lt;/p&gt;
 &lt;p&gt;Pathname traversal starts at the root vnode or the current directory vnode for the current process,
 depending on the first character of a pathname being &lt;code&gt;/&lt;/code&gt; or not.&lt;/p&gt;
@@ -341,7 +341,7 @@ Then we can use the &lt;code&gt;vnodecovered&lt;/code&gt; field in that &lt;code
 &lt;/h2&gt;
 &lt;p&gt;In order to make things work,
 and to make things work efficiently, a few new system calls had to be added to round out the interfaces.&lt;/p&gt;
-&lt;p&gt;It is here in Unix history that we get &lt;code&gt;statsfs&lt;/code&gt; and &lt;code&gt;fstatsfs&lt;/code&gt;, to get an interface to filesystems in userland.
+&lt;p&gt;It is here in Unix history that we get &lt;code&gt;statfs&lt;/code&gt; and &lt;code&gt;fstatfs&lt;/code&gt;, to get an interface to filesystems in userland.
 We also gain &lt;code&gt;getdirentries&lt;/code&gt; (plural) to get multiple directory entries at once (depending on the size of the buffer provided),
 which makes directory reading faster a lot for remote filesystems.&lt;/p&gt;
 &lt;h1 id=&#34;in-linux&#34;&gt;
@@ -393,7 +393,7 @@ and the definition &lt;a href=&#34;https://github.com/torvalds/linux/blob/v6.3/i
 
 .
 Again, a lot of them deal with new features such as ACLs and extended attributes,
-but we also find we expect such as &lt;code&gt;link&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, &lt;code&gt;rename&lt;/code&gt; and so on.&lt;/p&gt;
+but we also find those we expect such as &lt;code&gt;link&lt;/code&gt;, &lt;code&gt;unlink&lt;/code&gt;, &lt;code&gt;rename&lt;/code&gt; and so on.&lt;/p&gt;
 &lt;p&gt;The inode also contains a pointer to a filesystem, the &lt;code&gt;struct super_block *i_sb&lt;/code&gt;.&lt;/p&gt;
 &lt;h2 id=&#34;the-superblock&#34;&gt;
     &lt;a href=&#34;#the-superblock&#34;&gt;
@@ -423,7 +423,7 @@ This is basically a class with only one class method as a factory for superblock
 It became a lot more runtime extensive, added a lot of new functionality and gained system calls.
 Things became more structured.&lt;/p&gt;
 &lt;p&gt;But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
-We can point to concrete in Linux code, which while looking completely different, is structurally mirroring the original design ideas.&lt;/p&gt;
+We can point to concrete Linux code, which while looking completely different, is structurally mirroring the original design ideas.&lt;/p&gt;
 </description>
     </item>
     

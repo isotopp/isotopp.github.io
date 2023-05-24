@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.112.0">
+<meta name="generator" content="Hugo 0.112.1">
 <meta property="og:title" content='50 years in filesystems: A detour on vnodes' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -244,13 +244,13 @@ The filesystem (<code>vfs</code>, virtual filesystem) and the inode (<code>vnode
 a collection of function pointers with operations such as <code>mount</code>, <code>unmount</code>, <code>sync</code> and <code>vget</code>.
 Later in the paper, prototypes and functionality of these functions are explained.</li>
 <li>For the <code>vnode</code> type, likewise, we get <code>struct vnodeops</code>.
-The functions where are <code>open</code>, <code>rdwr</code> and <code>close</code>, of course, but also <code>create</code>, <code>unlink</code>, and <code>rename</code>.
+The functions here are <code>open</code>, <code>rdwr</code> and <code>close</code>, of course, but also <code>create</code>, <code>unlink</code>, and <code>rename</code>.
 Some functions are specific to a filetype such as <code>readlink</code>, <code>mkdir</code>, <code>readdir</code> and <code>rmdir</code>.</li>
 </ul>
 <p>Actual mounts are being tracked in <code>vfs</code> objects, which point to the operations applicable to this particular subtree with their <code>struct vfsops *</code>.</p>
 <p>Similarly, open files are being tracked in <code>vnode</code> instances, which again, among other things, have a <code>struct *vnodeops</code> pointer.
 <code>vnodes</code> are part of their <code>vfs</code>, so they also have <code>struct *vfs</code> to their filesystem instance.</p>
-<p>Both, the <code>vfs</code> and the <code>vnode</code> need to provide a way for the implementation to implementation specific data (&ldquo;subclass private fields&rdquo;).
+<p>Both, the <code>vfs</code> and the <code>vnode</code> need to provide a way for the implementation to store implementation specific data (&ldquo;subclass private fields&rdquo;).
 So both structures end with <code>caddr_t ...data</code> pointers.
 That is, the private data is not part of the virtual structure, but located elsewhere and pointed to.</p>
 <h2 id="vnodes-in-action">
@@ -265,7 +265,7 @@ That is, the private data is not part of the virtual structure, but located else
 
 <em>One full page in the paper is dedicated to showing the various structures pointing at each other.
 What looks confusing at first glance is actually pretty straightforward and elegant, once you trace it out.</em></p>
-<p>Kleiman sets out to explain how things work using the <code>lookippn()</code> function, which replaces the older <code>namei()</code> function from traditional Unix.
+<p>Kleiman sets out to explain how things work using the <code>lookuppn()</code> function, which replaces the older <code>namei()</code> function from traditional Unix.
 Analogous to <code>namei()</code>, the function consumes a path name, and returns a <code>struct vnode *</code> to the vnode represented by that pathname.</p>
 <p>Pathname traversal starts at the root vnode or the current directory vnode for the current process,
 depending on the first character of a pathname being <code>/</code> or not.</p>
@@ -287,7 +287,7 @@ Then we can use the <code>vnodecovered</code> field in that <code>vfs</code> to 
 </h2>
 <p>In order to make things work,
 and to make things work efficiently, a few new system calls had to be added to round out the interfaces.</p>
-<p>It is here in Unix history that we get <code>statsfs</code> and <code>fstatsfs</code>, to get an interface to filesystems in userland.
+<p>It is here in Unix history that we get <code>statfs</code> and <code>fstatfs</code>, to get an interface to filesystems in userland.
 We also gain <code>getdirentries</code> (plural) to get multiple directory entries at once (depending on the size of the buffer provided),
 which makes directory reading faster a lot for remote filesystems.</p>
 <h1 id="in-linux">
@@ -339,7 +339,7 @@ and the definition <a href="https://github.com/torvalds/linux/blob/v6.3/include/
 
 .
 Again, a lot of them deal with new features such as ACLs and extended attributes,
-but we also find we expect such as <code>link</code>, <code>unlink</code>, <code>rename</code> and so on.</p>
+but we also find those we expect such as <code>link</code>, <code>unlink</code>, <code>rename</code> and so on.</p>
 <p>The inode also contains a pointer to a filesystem, the <code>struct super_block *i_sb</code>.</p>
 <h2 id="the-superblock">
     <a href="#the-superblock">
@@ -369,7 +369,7 @@ This is basically a class with only one class method as a factory for superblock
 It became a lot more runtime extensive, added a lot of new functionality and gained system calls.
 Things became more structured.</p>
 <p>But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
-We can point to concrete in Linux code, which while looking completely different, is structurally mirroring the original design ideas.</p>
+We can point to concrete Linux code, which while looking completely different, is structurally mirroring the original design ideas.</p>
 
 			</div>
 		</div>
