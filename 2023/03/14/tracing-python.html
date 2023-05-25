@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.112.1">
+<meta name="generator" content="Hugo 0.112.3">
 <meta property="og:title" content='Tracing Python' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -54,7 +54,7 @@
 
 
 
-<link rel="stylesheet" href="https://blog.koehntopp.info/style.a33f0c7b9102cab2af13b04db9aa623d061f187837cd1e351fb3be37e8578c13.css">
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.6b600fb66ca1591ba6dcc9b3bdfc59ebd5c0fdc49622889f839fc36f71dde892.css">
 
 
     </head>
@@ -188,9 +188,45 @@ And more generally, how can I trace function execution in Python, showing functi
 
 </p>
 <p><em>PyCharm, Debug Window, Gear Icon, &ldquo;Show Return Values&rdquo;</em></p>
-<h1 id="do-it-yourself-logging">
+<h1 id="do-it-yourself-syssettrace">
+    <a href="#do-it-yourself-syssettrace">
+	Do it yourself: <code>sys.settrace()</code>
+    </a>
+</h1>
+<p>Python has a built-in API for tracing: <a href="https://docs.python.org/3/library/sys.html#sys.settrace" target="_blank" rel="noopener"><code>sys.settrace()</code></a>
+
+.</p>
+<p>Here&rsquo;s an example of how to use it:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">mytrace</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&#34;call&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;call&#34;</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">elif</span> <span class="n">event</span> <span class="o">==</span> <span class="s2">&#34;return&#34;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;return&#34;</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">,</span> <span class="n">arg</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">mytrace</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">sys</span>
+</span></span><span class="line"><span class="cl"><span class="n">sys</span><span class="o">.</span><span class="n">settrace</span><span class="p">(</span><span class="n">mytrace</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fac</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fac</span><span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">fac</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">result</span><span class="si">=}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>This will output:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">call</span> <span class="n">fac</span> <span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">call</span> <span class="n">fac</span> <span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="n">call</span> <span class="n">fac</span> <span class="p">{</span><span class="s1">&#39;n&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">fac</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">fac</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl"><span class="k">return</span> <span class="n">fac</span> <span class="mi">6</span>
+</span></span><span class="line"><span class="cl"><span class="n">result</span><span class="o">=</span><span class="mi">6</span>
+</span></span></code></pre></div><h1 id="do-it-yourself-logging">
     <a href="#do-it-yourself-logging">
-	Do it yourself: @logging
+	Do it yourself: <code>@logging</code>
     </a>
 </h1>
 <p>You can also implement such a thing from first principles, in Python:</p>
