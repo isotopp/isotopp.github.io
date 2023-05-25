@@ -20,7 +20,47 @@ Of course, you can always simply turn on this in the PyCharm debugger:
 
 *PyCharm, Debug Window, Gear Icon, "Show Return Values"*
 
-# Do it yourself: @logging
+# Do it yourself: `sys.settrace()`
+
+Python has a built-in API for tracing: [`sys.settrace()`](https://docs.python.org/3/library/sys.html#sys.settrace).
+
+Here's an example of how to use it:
+
+```python
+def mytrace(frame, event, arg):
+    if event == "call":
+        print("call", frame.f_code.co_name, frame.f_locals)
+    elif event == "return":
+        print("return", frame.f_code.co_name, arg)
+    return mytrace
+
+import sys
+sys.settrace(mytrace)
+
+def fac(n: int) -> int:
+if n == 1:
+    return 1
+else:
+    return n * fac(n - 1)
+
+if __name__ == '__main__':
+    result = fac(3)
+    print(f"{result=}")
+```
+
+This will output:
+
+```python
+call fac {'n': 3}
+call fac {'n': 2}
+call fac {'n': 1}
+return fac 1
+return fac 2
+return fac 6
+result=6
+```
+
+# Do it yourself: `@logging`
 
 You can also implement such a thing from first principles, in Python:
 
