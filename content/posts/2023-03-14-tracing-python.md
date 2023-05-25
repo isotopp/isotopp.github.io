@@ -22,6 +22,7 @@ Of course, you can always simply turn on this in the PyCharm debugger:
 
 # Do it yourself: `sys.settrace()`
 
+(via [Peterkelly](https://news.ycombinator.com/item?id=36066670)): 
 Python has a built-in API for tracing: [`sys.settrace()`](https://docs.python.org/3/library/sys.html#sys.settrace).
 
 Here's an example of how to use it:
