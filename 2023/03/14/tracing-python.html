@@ -172,6 +172,23 @@
 		<div class='row justify-content-center mx-0 mt-3 mb-5'>
 			<div class="col-lg-8 mb-3">
 				
+				<header class="bg-light">
+					<nav id="TableOfContents">
+  <ul>
+    <li><a href="#pycharm-builtin-method">PyCharm builtin method</a></li>
+    <li><a href="#do-it-yourself-syssettrace">Do it yourself: <code>sys.settrace()</code></a></li>
+    <li><a href="#do-it-yourself-logging">Do it yourself: <code>@logging</code></a></li>
+    <li><a href="#using-autologging">Using autologging</a></li>
+    <li><a href="#using-icecream">Using <code>icecream</code></a></li>
+    <li><a href="#snoop-and-birdseye"><code>snoop</code> and <code>birdseye</code></a></li>
+    <li><a href="#pysnoop">pysnoop</a></li>
+    <li><a href="#peepshow-a-commandline-debugger"><code>peepshow</code>, a commandline debugger</a></li>
+    <li><a href="#honeycomb-and-opentracing">Honeycomb and Opentracing</a></li>
+    <li><a href="#and-in-c">And in C?</a></li>
+  </ul>
+</nav>
+				</header>
+				
 			</div>
 			<div class='col-lg-8'>
 				<p>Based on a discussion on IRC and Mastodon: &ldquo;How can I get access to the return values of my (Python-) programs functions?&rdquo;
@@ -460,7 +477,52 @@ It will then allow you to start a <code>flask</code>-based Webserver on port 777
 
 </p>
 <p><em><code>birdseye</code> webserver showing a trace. You can click through the program execution.</em></p>
-<h1 id="peepshow-a-commandline-debugger">
+<h1 id="pysnoop">
+    <a href="#pysnoop">
+	pysnoop
+    </a>
+</h1>
+<p>(via <a href="https://news.ycombinator.com/item?id=36066786" target="_blank" rel="noopener">lathiat</a>
+
+) A similar but different thing is <a href="https://github.com/cool-RR/PySnooper" target="_blank" rel="noopener">pysnoop</a>
+
+.
+You <code>pip install pysnoop</code> and</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python3</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">pysnooper</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nd">@pysnooper.snoop</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">fac</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fac</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">result</span> <span class="o">=</span> <span class="n">fac</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">result</span><span class="si">=}</span><span class="s2">&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><p>to get</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="n">Source</span> <span class="n">path</span><span class="p">:</span><span class="o">...</span> <span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">kris</span><span class="o">/</span><span class="n">keks</span><span class="o">.</span><span class="n">py</span>
+</span></span><span class="line"><span class="cl"><span class="n">Starting</span> <span class="n">var</span><span class="p">:</span><span class="o">..</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">3</span>
+</span></span><span class="line"><span class="cl"><span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287242</span> <span class="n">call</span>         <span class="mi">6</span> <span class="k">def</span> <span class="nf">fac</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287317</span> <span class="n">line</span>         <span class="mi">7</span>     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl"><span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287330</span> <span class="n">line</span>        <span class="mi">10</span>         <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fac</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Starting</span> <span class="n">var</span><span class="p">:</span><span class="o">..</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">    <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287352</span> <span class="n">call</span>         <span class="mi">6</span> <span class="k">def</span> <span class="nf">fac</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287369</span> <span class="n">line</span>         <span class="mi">7</span>     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287380</span> <span class="n">line</span>        <span class="mi">10</span>         <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fac</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Starting</span> <span class="n">var</span><span class="p">:</span><span class="o">..</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287392</span> <span class="n">call</span>         <span class="mi">6</span> <span class="k">def</span> <span class="nf">fac</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287405</span> <span class="n">line</span>         <span class="mi">7</span>     <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287420</span> <span class="n">line</span>         <span class="mi">8</span>         <span class="k">return</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287428</span> <span class="k">return</span>       <span class="mi">8</span>         <span class="k">return</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Return</span> <span class="n">value</span><span class="p">:</span><span class="o">..</span> <span class="mi">1</span>
+</span></span><span class="line"><span class="cl">        <span class="n">Elapsed</span> <span class="n">time</span><span class="p">:</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000054</span>
+</span></span><span class="line"><span class="cl">    <span class="mi">09</span><span class="p">:</span><span class="mi">38</span><span class="p">:</span><span class="mf">58.287456</span> <span class="k">return</span>      <span class="mi">10</span>         <span class="k">return</span> <span class="n">n</span> <span class="o">*</span> <span class="n">fac</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Return</span> <span class="n">value</span><span class="p">:</span><span class="o">..</span> <span class="mi">2</span>
+</span></span><span class="line"><span class="cl">    <span class="n">Elapsed</span> <span class="n">time</span><span class="p">:</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mf">00.000122</span>
+</span></span></code></pre></div><h1 id="peepshow-a-commandline-debugger">
     <a href="#peepshow-a-commandline-debugger">
 	<code>peepshow</code>, a commandline debugger
     </a>
