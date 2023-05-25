@@ -3,6 +3,7 @@ author: isotopp
 title: "Tracing Python"
 date: 2023-03-14T12:13:14Z
 feature-img: assets/img/background/rijksmuseum.jpg
+toc: true
 tags:
 - lang_en
 - python
@@ -302,6 +303,52 @@ The rendered trace looks like this:
 ![](/uploads/2023/03/python-tracing-07.png)
 
 *`birdseye` webserver showing a trace. You can click through the program execution.*
+
+# pysnoop
+
+(via [lathiat](https://news.ycombinator.com/item?id=36066786)) A similar but different thing is [pysnoop](https://github.com/cool-RR/PySnooper).
+You `pip install pysnoop` and
+
+```python
+#! /usr/bin/env python3
+
+import pysnooper
+
+@pysnooper.snoop()
+def fac(n: int) -> int:
+    if n <= 1:
+        return 1
+    else:
+        return n * fac(n-1)
+
+if __name__ == '__main__':
+    result = fac(3)
+    print(f"{result=}")
+```
+
+to get
+
+```python
+Source path:... /Users/kris/keks.py
+Starting var:.. n = 3
+09:38:58.287242 call         6 def fac(n: int) -> int:
+09:38:58.287317 line         7     if n <= 1:
+09:38:58.287330 line        10         return n * fac(n-1)
+    Starting var:.. n = 2
+    09:38:58.287352 call         6 def fac(n: int) -> int:
+    09:38:58.287369 line         7     if n <= 1:
+    09:38:58.287380 line        10         return n * fac(n-1)
+        Starting var:.. n = 1
+        09:38:58.287392 call         6 def fac(n: int) -> int:
+        09:38:58.287405 line         7     if n <= 1:
+        09:38:58.287420 line         8         return 1
+        09:38:58.287428 return       8         return 1
+        Return value:.. 1
+        Elapsed time: 00:00:00.000054
+    09:38:58.287456 return      10         return n * fac(n-1)
+    Return value:.. 2
+    Elapsed time: 00:00:00.000122
+```
 
 # `peepshow`, a commandline debugger
 
