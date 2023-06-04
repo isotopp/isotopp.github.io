@@ -184,7 +184,7 @@ Similarly, free space is tracked in chunks, and kept in per-AG trees, indexed tw
 
 Recovering a large filesystem after a crash can be slow.
 The recovery time is proportional to the size of the filesystem, and the number of files in it,
-because the system basically has to scan the entire filesystem and rebuild the directory tree in order to sure things are consistent.
+because the system basically has to scan the entire filesystem and rebuild the directory tree in order to ensure things are consistent.
 With XFS, the filesystem also is a lot more fragile, as it provides a variable number of inodes, spread out non-contiguously over the disk.
 Recovering them would be extra expensive.
 
