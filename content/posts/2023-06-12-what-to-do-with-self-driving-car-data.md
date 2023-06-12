@@ -10,7 +10,7 @@ tags:
 - überwachung
 ---
 
-This is what a self-driving car sees, or constructs from the sensor data is uses:
+This is what a self-driving car sees, or constructs from the sensor data it uses:
 
 ![](/uploads/2023/06/self-driving-01.jpg)
 
