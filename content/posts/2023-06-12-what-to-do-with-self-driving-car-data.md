@@ -45,7 +45,7 @@ driving
 3. 70 km/h
 
 In this situation, should the self-driving car send a report to the police for a traffic-violation (speeding) automatically?
-If yes, why at this threshold and not any other? If no, why shoud the car ignore this?
+If yes, why at this threshold and not any other? If no, why should the car ignore this?
 
 ## Detecting speeding while parking
 
@@ -53,7 +53,7 @@ Consider the same situation, but the car is parked in a GDPR-compliant "Sentry M
 That is, the car does not record any data from the public space, unless it has reason to (for example, because it is being burglared).
 But of course its sensors do not stop at a road boundary, and it still somehow notices the speeding happening.
 
-Should it report the traffic violation, it let it go?
+Should it report the traffic violation, or let it go?
 If it should let it go despite having a recording, why? If the threshold is different from driving, why?
 
 ## The offending car could have been on auto, but it was not
@@ -80,7 +80,7 @@ The car warns the driver, and is overridden.
 Behind the driver on the other side of the road is a playground.
 The building in front of the driver is the Wenckebach Hospital.
 
-Should the car self-report the parking violation?
+Should the car self-report the parking violation? Should this include data about the driver?
 Should another car spotting this report the parking violation?
 Or should only a [Scanauto](https://algoritmeregister.amsterdam.nl/en/automated-parking-control/) report this once it spots it on its tour?
 Why or why not?
