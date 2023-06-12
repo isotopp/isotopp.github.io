@@ -6,6 +6,8 @@ feature-img: assets/img/background/schloss.jpg
 toc: false
 tags:
 - lang_en
+- bike
+- überwachung
 ---
 
 This is what a self-driving car sees, or constructs from the sensor data is uses:
@@ -31,7 +33,7 @@ the car would build the world-model wrongly and hit other people or things.
 
 ## Detecting speeding while driving
 
-![](/uploads/2023/06/self-driving-02.png)
+![](/uploads/2023/06/self-driving-02.jpg)
 
 *Albrechtstraße, driving towards Wenckebachstraße, in Berlin. To the right a playground. This road is a "30 zone".*
 
