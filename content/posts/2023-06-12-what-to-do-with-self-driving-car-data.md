@@ -2,7 +2,7 @@
 author: isotopp
 title: "What to do with self-driving car data?"
 date: 2023-06-12T01:02:03Z
-feature-img: assets/img/background/schloss.jpg
+feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
 - lang_en
