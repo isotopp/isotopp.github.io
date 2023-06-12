@@ -118,7 +118,7 @@ LFS needs to keep track of inodes in an *inode map*, and this now also needs to 
 even if it is small enough to be cached in memory, it needs to be persisted.
 
 ![](/uploads/2023/05/lfs-structures.png)
-*LFS does indeed to limited in-place updates: The superblock and checkpoint region are written in fixed locations.*
+*LFS does indeed do limited in-place updates: The superblock and checkpoint region are written in fixed locations.*
 
 LFS stops short of also appending new copies of the inode map and ultimately the superblock for each disk write,
 and puts these things into fixed locations.

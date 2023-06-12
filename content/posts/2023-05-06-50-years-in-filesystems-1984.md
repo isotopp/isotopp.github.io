@@ -261,7 +261,7 @@ BSD introduces a new filetype (`l`, symlink), and places a "replacement filename
 It can be an absolute or relative name (relative to the location of the symlink file).
 
 This creates a "soft" or "symbolic link.
-Trying to access a symlink will kick of a reinterpretation of the filename in `namei()` using the replacement filename,
+Trying to access a symlink will kick off a reinterpretation of the filename in `namei()` using the replacement filename,
 resulting in the attempted `open()` system call being deflected to the link target location. 
 
 Since the deflection happens in `namei()`, which can traverse filesystem boundaries, the new link type is not subject to the single filesystem limitation.
