@@ -116,7 +116,7 @@ Incidentally, it is this (and not ping-pong tables) that builds engagement and l
 
 People love to work for a company that understands how it functions, 
 and can talk sensibly about this – about its business and communication processes, 
-and they why and how of useful interaction.
+and the why and how of useful interaction.
 
 People love to work for organizations that have an idea of how to change and into what, instead of being shaped by accident.
 
