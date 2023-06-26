@@ -27,7 +27,7 @@ These companies are also all in a series of transformations, at all levels of th
 
 - Many are moving on-premises workloads to cloud, but the workloads are not cloud-shaped.
 - Two enterprises I happen to know about are also changing their implementation language from something exotic to something less efficient, but a lot easier to hire for.
-- One enterprise is also breaking of a monolithic application into a set of microservices, but the cut lines are unclear and need to be found.
+- One enterprise is also breaking up a monolithic application into a set of microservices, but the cut lines are unclear and need to be found.
 - One enterprise is modifying the way they do business from a single product to a series of interconnected and interdependent products, some of them in highly regulated markets.
 - Another enterprise is changing the way they make their product from mostly manual labor into something based on sensor input and data science.
 
@@ -42,7 +42,7 @@ On top of that are traditional hierarchies and communication structures that are
 and a skill-set that is well suited for the Clear and Complicated domains of [the Cynefin-Model](https://en.wikipedia.org/wiki/Cynefin_framework), 
 but wrong for the Complex and Chaotic domains.
 
-The set of transitions an enterprise is in cannot be performed, 
+The Enterprise cannot perform the set of transitions it must execute to stay relevant, 
 when the entire Org and the people that carry and build the structure of the Org are incapable of transforming their way of working to match the problem.
 So they leave.
 
@@ -54,9 +54,12 @@ it basically loses its specialty and becomes meaningless, interchangeable and th
 
 # What Remote Work does for companies
 
-Funnily, companies that optimize for remote work are also companies that out of necessity optimize for a written instead of an oral culture,
-have very well documented ways of specifying and teaching what they do, why and how,
-and a proper self-service onboarding process complemented by a mentoring system – and that also works for mid- and C-level management.
+Funnily,
+companies that optimize for remote work are also companies
+that out of necessity optimize for a written instead of an oral culture.
+They tend to have very well documented ways of specifying and teaching what they do, why and how,
+and a proper self-service onboarding process complemented by a mentoring system –
+and that also works for mid- and C-level management.
 
 Companies that optimize for remote are executing transformations easier because they understand their meta better.
 Many workers understand that. 
@@ -85,10 +88,11 @@ If that reads a lot like a reverse interview – well, that's what it is.
 
 But the objective is clear:
 You want to find out if the org you are about to join has access to its own meta,
-and if it can change and consciously design its org structure and work and communications culture.
+and if it can change and consciously design its org structure, work, and communications culture.
 
-All companies right now are executing a series of transformations at multiple levels of their business, 
-but only those that do not let these things happen to them will not be painful to work at.
+All companies right now are executing a series of transformations at multiple levels of their business.
+That is because the world right now is a lot less stable than it used to be in the last 50 years.
+But only those that do not let these things happen to them, but are actively shaping the process will not be painful to work at.
 
 You must find these early in the interview process.
 
@@ -102,15 +106,19 @@ Does it understand what it does, and why? Or are they winging it?"
 Most management is winging it, most companies are cheating their way to the next quarterlies.
 
 You do your work, but you do have an understanding of what management is supposed to do.
-Does it, tho?
+Does management understand their job, tho?
 
 Can you respect your current or future management?
 Can they express the value they provide in a way *that is understandable and meaningful to you?*
 
-Can they explain the business, and what specifically the competitive advantage is this org has within its own competitive set,
-and why this differentiation exists, and how it is protected or extended?
+Can they explain the business, and what specifically the competitive advantage is this org has within its own competitive set?
+Do they know why this differentiation exists, and how it is protected or extended?
 Do they understand in what way the structure they are building and upholding helps in doing this? 
 And how it needs to change to be able to continue?
+
+Basically, you want to find out if they know the C-level strategy they exist in.
+If they know what direction everybody is supposed to march in, and what their local objectives are as a part of the greater whole.
+You need to find out if they have context that they are making local decisions in.
 
 Incidentally, it is this (and not ping-pong tables) that builds engagement and loyalty.
 
@@ -171,7 +179,9 @@ K: "A command and control management is unable to handle situations that require
 
 M: "Yes. Management level A needs to reduce their stress, and forces their lower level B to simplify. That increases pressure and stress at the level of B."
 
-M: C has called that "driven by financials". The only universal scalar is Euro, but expressing all things in Euros is becoming increasingly harder and is losing information.
+M: C has called this "driven by financials."
+The only universal scalar is Euro,
+but expressing all things in Euros is becoming increasingly harder and is losing information.
 
 M: A lot of fighting and pressure is actually about "simplify your reporting" vs. "accept my complexity."
 
