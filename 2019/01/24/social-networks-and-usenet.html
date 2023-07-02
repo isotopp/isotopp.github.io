@@ -19,7 +19,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.114.1">
+<meta name="generator" content="Hugo 0.115.0">
 <meta property="og:title" content='Social Networks and USENET' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -179,41 +179,68 @@
 .</p>
 <p>In the context of the impending shutdown of Google plus, some people reminisce about USENET, especially in the context of social media.</p>
 <p>Before being abused as a broadcast protocol for TV series, Porn and illegal copies of software, USENET was a kind of decentralized social media used for discussion.
-There was a small number of interoperable server implementations, and a plethora of clients, with different audiences and optimisations.</p>
+There was a small number of interoperable server implementations, and a plethora of clients, with different audiences and optimizations.</p>
+<h1 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h1>
+<p>We can not only learn from the successes of USENET, but even more from its failures.</p>
 <h1 id="how-did-usenet-work">
     <a href="#how-did-usenet-work">
 	How did USENET work?
     </a>
 </h1>
-<p>The idea behind USENET is that you have a very large number of servers that forward articles between each other, so that any user can post any article anywhere to any server, and eventually it would end up with exactly one copy of that article on each server that wants it.
+<p>The idea behind USENET is that you have a very large number of servers that forward articles between each other,
+so that any user can post any article anywhere to any server,
+and eventually it would end up with exactly one copy of that article on each server that wants it.
 Servers can have one or more connections with other servers, some had hundreds of links to other servers.
 Message would ideally still be transported only once, and in no case stored multiple times.</p>
-<p>A server keeps a message for a configurable amount of time, and eventually deletes the local copy as the expiration date of this message is being exceeded.</p>
-<p>The format of any USENET post was superficially that of a (pre-multimedia) mail.
-So a USENET article had a number of header lines as Key-Value pairs, broken according to mail long-line folding rules, and a body, which was ASCII text.
-Later additions tried to improve on that, but failed - more about that later.</p>
+<p>Unlike modern federation protocols which were born on the Internet, USENET was a store-and-forward network.
+So articles would not be forwarded directly to subscribers, but were stored locally and forwarded to a few immediate neighbors.
+They would keep a copy of the message and in turn offer it to their direct neighbors, and so on.
+Usually, any two servers on the network would be <a href="https://en.wikipedia.org/wiki/Six_degrees_of_separation" target="_blank" rel="noopener">only very few hops apart</a>
+
+ from each other.</p>
+<p>Each server keeps a message for a configurable amount of time, and eventually deletes the local copy as the expiration date of this message is being exceeded.</p>
+<h2 id="message-format-and-identity">
+    <a href="#message-format-and-identity">
+	Message format and identity
+    </a>
+</h2>
+<p>The format of any USENET post was superficially that of (pre-multimedia) mail.
+So a USENET article had a number of header lines as Key-Value pairs,
+broken according to e-mails long-line folding rules, and a body, which contained ASCII.
+Later additions tried to improve on that, but failed — more on that later.</p>
 <p>A somewhat basic usenet header would look somewhat like this:</p>
 <pre tabindex="0"><code>From: user@host (User Name)
 Date: Thu, 24 Jan 2019 22:15:15 +0100
 Path: news.nntp.dca.giganews.com!news.koehntopp.de!kris
 Newsgroups: kiel.allgemein
 Message-ID: &lt;treXfsfeg17354@news.koehntopp.de&gt;
+Subject: Neue Gruppen einrichten
 In-Reply-To: &lt;eueytdj2625@news.koehntopp.de&gt;
 </code></pre><p>A few header keywords were more important than others, because without them the protocol would not work.</p>
 <p>The key header is the Message-ID:
-It defines the identity of a message for purposes of the protocol &ndash; two instances of a message are considered identical if they have the same ID, different if they ID is different.
+It defines the identity of a message for purposes of the protocol.
+Two instances of a message are considered identical if they have the same ID, and different if their ID is different.
 It was crucial for all implementations to never modify a messages &ldquo;Message-ID:&rdquo; line.</p>
 <p>Servers know which messages they have already seen by keeping a list of Message-IDs in a special database, the server history table.
 Servers would remember the IDs of messages longer than they would remember articles, and they would reject any message with any Message-ID that is even older than their history reaches back in time.
 So a particular server might want to keep messages for 30 days, and a history table for 90 days.
 That particular server would roundabout reject any message older than 90 days.</p>
 <p>Whenever a server sees a message young enough to qualify for lookup in the history table, it would do that lookup.
-If the Message-ID is already known, a decision about this message had already been made in the past and the message is being rejected as a duplicate.</p>
-<p>Only when a message qualifies younger than the history, and as as-of-now unknown in the history, a decision about it (keep it, discard it, &hellip;) has to be made.
-In any case, the server would store the ID as &ldquo;seen&rdquo; in the history table and it would reject any second message with that ID.
-That way duplicates from multiple connections are being recognized and eliminated.</p>
+If the Message-ID is already known, a decision about this message had already been made in the past,
+and the message will be rejected as a duplicate.</p>
+<p>Only when a message qualifies younger than the history, and is so far unknown in the history,
+a decision about it (keep it, discard it, &hellip;) has to be made.
+In any case, the server would store the ID as &ldquo;seen&rdquo; in the history table,
+and it would reject any second message with that ID.
+That way, duplicates from multiple connections are being recognized and eliminated.</p>
 <p>This allows a dense and redundant set of connections between servers without the need of any connection management or requirements on the server topology at all.
-It would also allow a new server to connect to an existing server and request re-feeding any amount of old messages without the danger of accidentally feeding these old messages a second time to other existing servers over another link.</p>
+It would also allow a new server to connect to an existing server
+and request re-feeding any number of old messages without the danger
+of accidentally feeding these old messages a second time to other existing servers over another link.</p>
 <p>Of course, it still is possible for a server with a hundred links to get dozens of copies of the same message through different links, all of which except for the first copy are being rejected.</p>
 <p>That was particularly common for servers that did not have a live connection on the internet, but were batch fed:
 Such servers would have their articles collected in a series of compressed files over the day, would then dial up using a modem and download the compressed batches in one go, multiple times a day.
@@ -221,56 +248,91 @@ After disconnection, they would decompress and process these articles, discardin
 <p>Interactive transfer on live internet lines was slightly more intelligent, and worked somewhat like two kids comparing collection cards.
 One server would post Message-IDs of messages in <code>IHAVE</code> statements, and the receiving server would look up these IDs in turn in their history.
 Anything missing they would ask for with <code>SENDME</code> messages, asking for new files by Message-ID.</p>
-<p>One way to optimise this is the &ldquo;Path&rdquo; header line, which lists all the servers that have seen this copy of a message in order to traversal.
+<h2 id="optimizing-duplicate-delivery-with-path-headers">
+    <a href="#optimizing-duplicate-delivery-with-path-headers">
+	Optimizing duplicate delivery with Path-headers
+    </a>
+</h2>
+<p>One way to optimize this is the &ldquo;Path&rdquo; header line, which lists all the servers that have seen this copy of a message in order to traversal.
 So a message posted to <code>news.koehnntopp.de</code> by the user <code>kris</code> would start out with a &ldquo;<code>Path: news.koehntopp.de!kris</code>&rdquo;.
-That server would feed it for example to <code>news.nntp.dca.giganews.com</code> and to <code>news.toppoint.de</code>, so one copy of that message would end up with a &ldquo;<code>Path: news.nntp.dca.giganews.com!news.koehntopp.de!kris</code>&rdquo;, and the other would end up with &ldquo;<code>Path: news.toppoint.de!news.koehntopp.de!kris</code>&rdquo; in their Path.
-Both copies of the original message would have divergent Path header lines, but identical Message-ID lines, and the same message body.</p>
-<p>The Path line was being used to detect circles before they happen - you would not even offer anything that already has <code>news.koehntopp.de</code> in the Path in any position back to <code>news.koehntopp.de</code>.
-Also, as a server operator you could do stats on Path lines to see which of your links was fast (brought you copies of messages first) and which would be slower.</p>
-<h1 id="message-selection">
-    <a href="#message-selection">
-	Message Selection
+That server would feed it for example to <code>news.nntp.dca.giganews.com</code> and to <code>news.toppoint.de</code>.</p>
+<p>One copy of that message would end up with a &ldquo;<code>Path: news.nntp.dca.giganews.com!news.koehntopp.de!kris</code>&rdquo;,
+and the other would end up with &ldquo;<code>Path: news.toppoint.de!news.koehntopp.de!kris</code>&rdquo; in their Path.
+Both copies of the original message would have divergent Path header lines, but identical Message-ID lines,
+and the same message body.</p>
+<p>The Path line was being used to detect circles before they happen:
+you would not even offer anything that already has <code>news.koehntopp.de</code> in the Path in any position back to <code>news.koehntopp.de</code>.
+Also, as a server operator,
+you could do stats on Path lines to see which of your links was fast
+(brought you copies of messages first) and which would be slower.</p>
+<h1 id="building-links-between-servers">
+    <a href="#building-links-between-servers">
+	Building Links between Servers
     </a>
 </h1>
-<p>So how would a server operator get connections to other servers, and how would they decide which messages they want and not want?</p>
+<p>So how would a server operator get connections to other servers,
+and how would they decide which messages they want and not want?</p>
 <p>This is the first of the weak points of USENET, and often glossed over in glorifying USENET.</p>
-<p>Setting up a link between two servers was a completely manual process, and it was completely controlled by the upstream server feeding a downstream server with messages.</p>
+<p>Setting up a link between two servers was a completely manual process,
+and it was completely controlled by the upstream server feeding a downstream server with messages.</p>
 <p>First, you had to manually discover a server wanting to act as a feed to you.
 Often that was done with mailing lists where server operators and wannabe-server operators offered feeds, or asked for peers.</p>
-<p>Then, after making contact, you would exchange contact information, and negotiate the parameters of setting up a link.
-That required the exchange of login credentials, and the configuration of what the receiving server operator would want from the feed.
-The upstream operator would manually configure these selection criteria and then send stuff to the receiver, which may or may not have been what these people wanted, and they could take that or discard it.</p>
+<p>Then, after making contact, you would exchange contact information and negotiate the parameters of setting up a link.
+That required the exchange of login credentials,
+and the configuration of what the receiving server operator would want from the feed.
+The upstream operator would manually configure these selection criteria,
+and then send stuff to the receiver, which may or may not have been what these people wanted.
+They could take that or discard it.</p>
 <p>This is totally not what anybody would want today or back then.
-There was no automated negotiation where the feeding server would advertise what they have, and the receiving server would then state interactively what they would want to subscribe to and what not.</p>
-<p>Also, all selection was based on another header line, the Newsgroup header.
-So you could not express wishes based on language, author, content type, message-size or any other criteria.
-You could only say you want messages &ldquo;in kiel.allgemein and kiel.uni&rdquo; or &ldquo;in any kiel.* newsgroup&rdquo; or exclusion criteria such as &ldquo;kiel.<em>, but not kiel.binaries.</em>&rdquo;.</p>
-<p>Conversely, server operators and end users where guarding newsgroups strongly - the creation and deletion of newsgroups was a heavily guarded process and misposting and crossposting - posting to the wrong newsgroup or posting to too many newsgroups at once - came attached with social stigma and sanctions.</p>
+There was no automated negotiation where the feeding server would advertise the stuff they offer,
+and the receiving server would then state interactively what they would want to subscribe to and what not.</p>
+<h2 id="gatekeeping-newsgroups">
+    <a href="#gatekeeping-newsgroups">
+	Gatekeeping newsgroups
+    </a>
+</h2>
+<p>Also, all selections were based on one single header line, the Newsgroup header.
+This is very much analogous to subscribing to a hashtag on modern social media,
+only the hashtag is gatekept by a server operator cabal.</p>
+<p>In any way, USENET servers offered to way to express wishes based on language, author, content type, message-size,
+or any other criteria.
+You could only say you want messages &ldquo;in kiel.allgemein and kiel.uni&rdquo; or &ldquo;in any kiel.* Newsgroup&rdquo;
+or exclusion criteria such as &ldquo;kiel.<em>, but not kiel.binaries.</em>&rdquo;.</p>
+<p>When I say &ldquo;gatekept hashtags&rdquo;, I mean server operators and end users were guarding newsgroups strongly.
+The creation and deletion of newsgroups was a heavily formalized process.
+Also, posting to the wrong newsgroup, crossposting to multiple newsgroups came with social stigma and sanctions.</p>
 <p>This made USENET very cumbersome for the end user.
-Users that wanted social space and reach wanted a newsgroup.
-But to get that they had to go through a very slow and formalised discussion process that was designed to keep the number of groups small and audiences in groups large and generalised.
-Protected or small spaces, with a designed, non-public audience were frowned upon, making the creation of safe spaces hard or impossible.</p>
-<h1 id="the-client-dilemma">
-    <a href="#the-client-dilemma">
-	The client dilemma
+Users often wanted a social space, or simply recognition of a topic as a thing and asked for a newsgroup.</p>
+<p>In order to get that, they had to go through a very slow and formalized discussion process
+which purposefully was designed to keep the number of groups small and audiences in groups large and generalized.</p>
+<p>Protected or small spaces with a designated, non-public audience were frowned upon,
+making the creation of safe spaces hard or impossible.</p>
+<h1 id="client-flexibility-but-also-no-common-feature-set">
+    <a href="#client-flexibility-but-also-no-common-feature-set">
+	Client flexibility, but also no common feature set
     </a>
 </h1>
 <p>USENET clients were written as early versions of free software.
 Their source was packaged and posted on USENET itself.
 You would read a newsgroup that transported packaged software, and would find a new version of an end user client posted there.
-You would unpackage the source, configure it for your system and compile it, and then try out the new program.
+You would unpack the source, configure it for your system and compile it, and then try out the new program.
 If it worked, you would roll out the new version on your systems for your end users.</p>
 <p>There were many client programs.
-Sven Guckes maintains a list at <a href="http://www.guckes.net/newsreaders/" target="_blank" rel="noopener">http://www.guckes.net/newsreaders/</a>
+Sven Guckes maintained a list at <a href="http://www.guckes.net/newsreaders/" target="_blank" rel="noopener">http://www.guckes.net/newsreaders/</a>
 
 .</p>
 <p>The wide diversity in reading software also was a main cause of impediment in the evolution of USENET.
-If a news reading program added features that required additional data in the header or the body of an article, all other reading programs would have problems decoding that.
-Simple things as support for Umlauts for example required encoding of characters, because some systems broke Non-ASCII characters.
+If a news reading program added features that required additional data in the header or the body of an article,
+all other reading programs would have problems decoding that.
+Simple things, such as support for Umlauts, required encoding of characters because some systems broke Non-ASCII characters.
 So &ldquo;Kristian Köhntopp&rdquo; was encoded as &ldquo;Kristian =?iso-8859?Q?K=F6hntopp?=&rdquo;.
-While it was displayed properly in readers that supported decoding this, it was shown as &ldquo;Kristian Iso-something-topp&rdquo; to everybody else.</p>
-<p>Putting rich content, such as formatting in Markup or HTML, or inline-images into messages was even worse, because it made messages completely unreadable to users with clients that did not support these new formats.</p>
-<p>Consequently, all extensions got heavy resistance from end-users and operators everywhere, and eventually USENET evolution stopped and everybody moved to web forums.
+While it was displayed properly in readers that supported decoding this,
+it was shown as &ldquo;Kristian Iso-something-topp&rdquo; to everybody else
+(and that is how I got my nickname, Isotopp, by the way).</p>
+<p>Putting rich content, such as formatting in Markup or HTML, or inline-images into messages was even worse,
+because it made messages completely unreadable to users with clients that did not support these new formats.</p>
+<p>Consequently, all extensions got heavy resistance from end-users and operators everywhere,
+and eventually USENET evolution stopped, and everybody moved to web forums.
 Essentially, USENET died with the appearance of phpBB and friends.</p>
 <h1 id="how-web-forum-software-won">
     <a href="#how-web-forum-software-won">
@@ -278,18 +340,33 @@ Essentially, USENET died with the appearance of phpBB and friends.</p>
     </a>
 </h1>
 <p>Web Forum software was, in the eyes of USENET users, a big step backwards.
-It was not distributed, the client was primitive and put a lot of emphasis on presentation, and it was proscribed by the board operator instead of being a choice of the reader.</p>
+It was not distributed, the client was primitive and put emphasis on presentation.
+The presentation was proscribed by the board operator instead of being a choice of the reader.</p>
 <p>But web boards were easy to upgrade:
-With an upgrade, the same set of features was available to all users at once, and there was no possible resistance from users who were slow or negligent in upgrading their software.
-Also, while you had to go through a slow and lengthy discussion process and voting process to get just one newsgroup, it was easy to get a web server with a copy of phpBB up and running and then you could run any number of groups on that.
-Also, you controlled audience and admission, so it was possible to create protected safe spaces - by design an impossibility on USENET.</p>
-<p>In the end that made all but the most hardware tech audience move away from USENET rather quickly, and eventually USENET became irrelevant.</p>
-<h1 id="tldr">
-    <a href="#tldr">
-	TL;DR
+With an upgrade, the same set of features was available to all users at once,
+and there was no possible resistance from users who were slow or negligent in upgrading their software.</p>
+<p>While you had to go through a slow and lengthy discussion process and voting process to get just one newsgroup,
+web forums offered an easy way to get any number of groups on a simple web server with phpBB.
+Also, you controlled audience and admission, so it was possible to create protected safe spaces — by design an impossibility on USENET.</p>
+<p>In the end, that made all but the most hardware tech audience move away from USENET rather quickly,
+and eventually USENET became irrelevant.</p>
+<h1 id="see-also">
+    <a href="#see-also">
+	See also
     </a>
 </h1>
-<p>We can not only learn from the successes of USENET, but even more from its failures.</p>
+<ul>
+<li>&ldquo;Netnews: The Origin Story&rdquo;, (<a href="https://www.cs.columbia.edu/~smb/papers/netnews-hist.pdf" target="_blank" rel="noopener">PDF</a>
+
+),
+Steven M. Bellovin, June 27, 2023.</li>
+<li>&ldquo;Flames und Kommunikationszusammenbrüche im Netz&rdquo;, Kristian Köhntopp (<a href="https://www.youtube.com/watch?v=FXD3vk9M7SQ" target="_blank" rel="noopener">Video</a>
+
+,
+<a href="https://blog.koehntopp.info/2007/02/11/flames-kommunikationszusammenbrueche-im-netz.html">Text</a>
+
+)</li>
+</ul>
 
 			</div>
 		</div>
@@ -326,13 +403,6 @@ Also, you controlled audience and admission, so it was possible to create protec
 		<div class='row justify-content-center py-3 mb-3 mx-0'>
 			<div class='col-lg-8 text-center'>
 				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
-				
-				<a href="/%20tags/#pluspora_import" class='btn btn-sm btn-outline-primary mb-1'>
-				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
-					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
-				</svg>
-				pluspora_import
-				</a>
 				
 				<a href="/%20tags/#lang_de" class='btn btn-sm btn-outline-primary mb-1'>
 				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
