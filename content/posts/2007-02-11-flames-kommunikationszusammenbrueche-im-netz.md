@@ -213,11 +213,13 @@ Dabei wiederholen sich natürlich viele Fragen.
 Das nervt viele Leute, und sie nehmen sich dann auch nicht die Zeit, korrekte oder gute Antworten zu formulieren.
 Durch die Wiederholungen wird die Stimmung schlecht, und bald gibt es statt sinnvoller Antworten nur noch Beschimpfungen.
 
+Die Liste unserer Anfordernugen ist also:
 - Wir wollen ein Erinnerungsvermögen haben!
 - Wir wollen bestimmte Standards etablieren, hinsichtlich Ton und Qualität der Antworten.
 - Neulinge sollen sinnvolle, richtige Antworten und Anleitung in einem freundlichen Ton bekommen.
-- 
-- Wir können nur positive Feedbackmechanismen verwenden.
+
+Und weiterhin als Einschränkung:
+- Wir können nur positive Feedback-Mechanismen verwenden.
 
 # Experiment dclp II
 
@@ -237,7 +239,12 @@ Das ist eine gute Ausgangsbasis.
 1. Ich schreibe Antworten.
 2. Die Antworten sind getestet.
 3. Sie beantworten Fragen, die oft gefragt werden.
-4. Das generiert Karma - öffentliches Ansehen. "Kris löst Probleme und gewinnt so Ansehen bei Fragestellern." "Ich will auch Karma." "Ich mache Kris Verhalten nach."
+4. Das generiert Karma - öffentliches Ansehen.
+
+Der Wirkmechanismus ist also
+1. Kris löst Probleme und gewinnt so Ansehen bei Fragestellern."
+2. "Ich will auch Karma."
+3. "Ich mache Kris Verhalten nach."
 
 Wenn dann Trolle auftauchen und die deswegen trollen, weil sie Aufmerksamkeit wollen, dann sehen sie: 
 So, mit Beleidigungen, kommen sie nicht weiter, sondern werden ignoriert.
@@ -253,15 +260,23 @@ In dieser Gruppe bekommen man Aufmerksamkeit und Ansehen, Meinungsführerschaft,
   - ca. 1h Zeit pro Tag
 
 Das Projekt ist im Grunde das Ergebnis einer Provokation:
-In der deutschen Linux-Gruppe hat eine Person mit Technik- und Soziologie-Hintergrund geschrieben, die richtig gute und technisch vollständige Antworten geschrieben hat.
-Diese waren aber so gestaltet, daß der Leser sich beim Lesen aufgeregt hat und dadurch nicht mehr in der Lage war, die Antwort zu verstehen und sinnvoll zu nutzen.
+In der deutschen Linux-Gruppe hat eine Person mit Technik- und Soziologie-Hintergrund
+mit viel Aufwand vergiftete Antworten geschrieben.
+Sie waren richtig, gut und technisch vollständig.
+
+Diese waren aber auch so gestaltet, daß der Leser sich beim Lesen aufgeregt hat,
+und dadurch nicht mehr in der Lage war, die Antwort zu verstehen und sinnvoll zu nutzen.
 Das waren brillante textliche Werke, die auf eine einzigartige Weise Leute manipuliert haben.
 
-Leider hat das Nachahmer animiert, ebenso zu handeln - ohne zu verstehen, was den Originalautor ausgezeichnet hat und was seine Texte besonders gemacht hat. 
-Dadurch wurde die Gruppe schnell zu einem Sumpf voller Beschimpfungen und die Gruppe wurde nutzlos.
+Leider hat das Nachahmer animiert, ebenso zu handeln.
+Jedoch ohne zu verstehen, was den Originalautor ausgezeichnet hat, und was seine Texte besonders gemacht hat. 
+Dadurch wurde die Gruppe schnell zu einem Sumpf voller langweiliger Beschimpfungen
+ohne sinnvollen Lehrgehalt, und die Gruppe wurde nutzlos.
 
 Der betreffende Autor war außerdem der Auffassung, man könne Laufkundschaft anders nicht in den Griff bekommen.
 Das Experiment dclp war ein Versuch, diesem Menschen das Gegenteil zu beweisen.
+
+Ein Archiv der dclp-FAQ ist in [www.php-faq.de](https://www.php-faq.de/) zu finden.
 
 # Experiment dclp IV
 
@@ -279,8 +294,12 @@ Fragen, die bereits bearbeitet waren, brauchten meine Aufmerksamkeit ja nicht.
 Die generierten Antworten von mir sind in der Regel in weniger als 60 Sekunden verfasst gewesen und bestanden aus 3 Teilen:
 
 1. Bridge: Gleich kommt die Antwort und sie steht mit Deiner Frage folgendermaßen in Verbindung.
-2. Antworten: Die URL auf die Antwort. Nicht die URL auf die FAQ, sondern die URL der spezifischen Antwort. Es geht darum, eine Person mit einem konkreten Problem arbeitsfähig zu machen.
-3. Nachtreten: Das so erworbene Karma verbrauchen. Also, erklären, was richtig oder falsch an der Art der Fragestellung war, und wie man sich hier besser verhalten kann, um bessere Antworten zu bekommen.
+2. Antworten: die URL auf die Antwort.
+   Nicht die URL auf die FAQ, sondern die URL der spezifischen Antwort.
+   Es geht darum, eine Person mit einem konkreten Problem arbeitsfähig zu machen.
+3. Nachtreten: Das so erworbene Karma verbrauchen.
+   Also, erklären, was richtig oder falsch an der Art der Fragestellung war,
+   und wie man sich hier besser verhalten kann, um bessere Antworten zu bekommen.
 
 Das ist auch eine Inszenierung. 
 Das heißt, ich schreibe jeden Artikel immer auch für unbeteiligte Mitleser.
@@ -305,7 +324,9 @@ Mehrere Artikel zu einem Thema ergeben ein Kapitel, aber die Artikel sind nicht 
 Sie stehen nur thematisch und von den URLs nebeneinander.
 
 Ein weitere Kondensationsprozess könnte die Artikel der FAQ nehmen, und in Kapitel eines Buches zum Thema umwandeln.
-Das hat meines Wissens nur mit comp.lang.c funktioniert: Die FAQ dieser Gruppe ist von Peter van der Linden in das Buch "Deep C Secrets" umgewandelt worden.
+Das hat meines Wissens nur mit comp.lang.c funktioniert: Die FAQ dieser Gruppe ist von Peter van der Linden in das Buch 
+"[Deep C Secrets](https://www.amazon.de/Expert-Programming-Deep-Secrets-English-ebook/dp/B00E0LASCU)" 
+umgewandelt worden.
 
 # Experiment drsrm
 
@@ -316,6 +337,8 @@ Kein Hard Science Thema, keine objektive Wahrheit.
 
 Man will also Erinnerung schaffen und Erkenntnisse aus vorherigen Diskussionen aufbewahren.
 Dabei muss man berücksichtigen, daß es viele Regulars und wenig Laufkundschaft gibt.
+
+Die drsrm-FAQ ist [hier archiviert](http://azundris.com/output/rp/drsrm/faq/).
 
 # Experiment drsrm II
 
@@ -352,25 +375,38 @@ Die Regulars von dtb sind dabei losgegangen und haben ihre Art zu kommunizieren 
 
 Ein klassisches Beispiel war "de.alt.ufo", in dem dtb-Regulars versucht haben, in de.alt.ufo die Verschwörungstheoretiker mit neuen Verschwörungsideen zu übertreffen.
 Das war eine interessante Erfahrung, weil das komplett fehlgeschlagen ist:
-Wenn die dtb-Leute in einer Verschwörungstheorie-Gruppe mit einer offensichtlich ausgedachten, verabredeten und unsinnigen Idee auftauchen, dann kommen die de.alt.ufo-Leute, nehmen das und bauen das in ihre Erzählungen einfach ein.
+Wenn die dtb-Leute in einer Verschwörungstheorie-Gruppe mit einer offensichtlich ausgedachten, 
+verabredeten und unsinnigen Idee auftauchen, dann kommen die de.alt.ufo-Leute,
+nehmen das und bauen das in ihre Erzählungen einfach ein.
 Alles wird assimiliert.
 
-Wenn man dasselbe in de.admin.news, der Netzverwaltung macht, dann sitzen dort die ganzen Nomic-Spieler und die sind nicht in der Lage, dtb zu verarbeiten und stürzen ab.
+Wenn man dasselbe in de.admin.news, der Netzverwaltung macht, 
+dann sitzen dort die ganzen [Nomic](https://en.wikipedia.org/wiki/Nomic)-Spieler.
+Die sind nicht in der Lage, dtb zu verarbeiten und stürzen ab.
 
 ## "Wahrheitsfindung ohne Wahrheitsnennung":
 
 Es ist in dtb gelungen, einen Gruppenkonsens herzustellen, ohne diesen zu verbalisieren.
-Es begann damit, daß Personen in dtb eintrafen und versucht haben, mit einer Organisation zu reden, also jemanden zu sprechen, der verantwortlich war.
+Es begann damit, daß Personen in dtb eintrafen und versucht haben,
+mit einer Organisation zu reden, also jemanden zu sprechen, der verantwortlich war.
 
-Ähnliches war zuvor in den kiel.* Netzwerkgruppen passiert, wo jemand aus dem Fido-Netz den Netzwerkkoordinator für kiel.* sprechen wollte.
-Es war einfacher, sich als die betreffende Person zu kennzeichnen als dem Gegenüber zu erklären, daß es solche Strukturen für kiel.* nicht gibt.
+Ähnliches war zuvor in den kiel.* Netzwerkgruppen passiert, 
+wo jemand aus dem Fido-Netz den Netzwerkkoordinator für kiel.* sprechen wollte.
+Es war einfacher, sich als die betreffende Person zu kennzeichnen als dem Gegenüber zu erklären,
+daß es solche Strukturen für kiel.* nicht gibt.
 
-So auch in dtb, wo ich Anordnungen erlassen habe und diese mit "Fünfter und Sprecher des Hohen Rathes der 13 Weisen vom Feed" gezeichnet habe.
-Das ist eine offensichtlich unsinnige Organisation und ich habe mir auch nicht die Führungsposition gegeben und irgendein Neben-Amt, das den Anschein von Autorität vermittelt.
+So auch in dtb, wo ich Anordnungen erlassen habe,
+und diese mit "Fünfter und Sprecher des Hohen Rathes der 13 Weisen vom Feed" gezeichnet habe.
+Das ist eine offensichtlich unsinnige Organisation,
+und ich habe mir auch nicht die Führungsposition gegeben,
+aber irgendein Neben-Amt, das den Anschein von Autorität vermittelt.
 
-Wirkungsweise und Zweck dieser Anmaßung und der Konstruktion dahinter sind von den Regulars dieser Gruppe sofort verstanden worden, und sie haben es aufgegriffen.
+Wirkungsweise und Zweck dieser Anmaßung
+(und der Konstruktion dahinter) sind von den Regulars dieser Gruppe sofort verstanden worden,
+und sie haben es aufgegriffen.
 Dabei sind ohne weitere Absprache weitere Ämter (aber kein Herrscher) und Positionen (aber keine der ersten Drei) belegt worden.
-Es ist also eine Nicht-Organisation formiert worden, ohne sich abzusprechen und diese war im wahrsten Wortsinne kopflos:
+Es ist also eine Nicht-Organisation formiert worden,
+ohne sich abzusprechen und diese war im wahrsten Wortsinne kopflos:
 Organisierte, strukturierte Anarchie!
 
 
@@ -384,7 +420,8 @@ dtb hat das Usenet als Kommunikationsmedium an seine Grenzen gebracht
 "Deutscher Rekordhalter im Fremdcancel": Alle Artikel, dazu auch alle Crosspostings in dtb, durch Fremdcancel gelöscht.
 Drei Tage die Gruppe durch den Cancelbot leer gehalten.
 Das hat auch alle Crosspostings gelöscht.
-Alle Artikel nach drei Tagen wiederhergestellt, aber mit geändertem Betreff - "ONLY THREAD EVER" - und mit geänderten Referenzen, sodaß ein gigantischer verketteter Megathread entstand.
+Alle Artikel nach drei Tagen wiederhergestellt, aber mit geändertem Betreff:
+`ONLY THREAD EVER` - und mit geänderten Referenzen, sodaß ein gigantischer verketteter Megathread entstand.
 
 Dabei sind auch die Crosspostings wiederhergestellt worden, und haben so die anderen, nicht-dtb Gruppen getroffen.
 
@@ -399,6 +436,11 @@ Daraufhin hat de.admin.news sich gewundert, warum die dtb-Leute das wollen, und 
 2. Was ist das Publikum und wie reagieren die?
 3. Was sind die Mittel, die ich habe.
 
-Beispiel: Heise-Forum steuern. Ansatz mit "Carpet-Bombing":
-Unter faktenfreie Artikel im Heise-Forum Antworten mit sinnvollem Inhalt setzen, und dadurch in allen Threads, die aus dem Ruder laufen, die Diskussion wieder in sinnvolle Bereiche bringen.
+Beispiel: Heise-Forum steuern. 
+
+Ansatz mit "Carpet-Bombing":
+
+Unter faktenfreie Artikel im Heise-Forum Antworten mit sinnvollem Inhalt setzen,
+und dadurch in allen Threads, die aus dem Ruder laufen, die Diskussion wieder in sinnvolle Bereiche bringen.
+
 Nach 15-20 Minuten meistens Lufthoheit in dem betreffenden Forum erreicht.
