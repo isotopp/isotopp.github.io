@@ -84,23 +84,24 @@ Es geht auch um die Frage, wer überhaupt ein Interesse daran haben kann, ob
 zwei Personen ohne Kontrolle durch einen Mittler oder Filter miteinander
 kommunizieren dürfen und wieso das eine wichtige Frage ist.
 
-> Zum Ausspruch "The Internet treats censorship as damage ..." von John
-> Gilmore: Das ist die historisch-kaltkriegerische Formulierung des obigen
-> Sachverhaltes - "MittlerfreieKommunikation" _und_ "freie Wahl des
-> Kommunikationsmodus" sind es, die eine Informationsgesellschaft
-> tatsaechlich definieren.In einer solchen Gesellschaft kann Regulierung nur
-> beim Sender oder beim Empfaenger ansetzen. Wenn bei diesen beiden Parteien
-> keine Kooperation besteht, wird es extrem schwierig werden, die
-> Beruecksichtigung dritter Interessen zu erzwingen. Und das ist genau der
-> Grund, warum "Besitz der Privatsphere" das Wohlstand definierende
-> Kriterium der Informationsgesellschaft ist wie "Besitz von
-> Produktionsmitteln" das Wohlstand definierende Kriterium der
-> Industriegesellschaft war und "Besitz von Land" das Wohlstand definierende
-> Kriterium der Agrargesellschaft.Durchdenkt man das zum Ende, fuehrt dies
-> zwingend dazu, dass wir den Begriffen "Privatsphaere" und "Datenschutz"
-> viel umfassendere Bedeutung zumessen muessen, als dies im derzeitigen
-> Datenschutzmodell und -recht in Deutschland bzw. in der EU bisher der Fall
-> ist.
+> Zum Ausspruch "The Internet treats censorship as damage ..." von John  Gilmore:
+> 
+> Das ist die historisch-kaltkriegerische Formulierung des obigen Sachverhaltes.
+> "Mittlerfreie Kommunikation" _und_ "freie Wahl des Kommunikationsmodus" sind es,
+> die eine Informationsgesellschaft tatsächlich definieren.
+> 
+> In einer solchen Gesellschaft kann Regulierung nur beim Sender oder beim Empfänger ansetzen.
+> Wenn bei diesen beiden Parteien keine Kooperation besteht,
+> wird es extrem schwierig werden, die Berücksichtigung dritter Interessen zu erzwingen.
+> 
+> Und das ist genau der Grund, warum "Besitz der Privatsphäre"
+> das Wohlstand definierende Kriterium der Informationsgesellschaft ist 
+> wie "Besitz von Produktionsmitteln" das Wohlstand definierende Kriterium der Industriegesellschaft war 
+> und "Besitz von Land" das Wohlstand definierende Kriterium der Agrargesellschaft.
+> 
+> Durchdenkt man das zum Ende, führt dies zwingend dazu, 
+> dass wir den Begriffen "Privatsphäre" und "Datenschutz"viel umfassendere Bedeutung zumessen müssen,
+> als dies im derzeitigen Datenschutzmodell und -recht in Deutschland bzw. in der EU bisher der Fall ist.
 
 Ebenfalls aus dem April 2000 stammt ein Artikel zum Thema 
 [Jugendschutzfilter](http://www.fitug.de/debate/0004/msg00561.html) unter
