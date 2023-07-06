@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: InnoDB Fragmentation"
-date: 2023-07-06T12:13:14Z
+date: 2023-07-06T01:02:03Z
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
@@ -206,7 +206,7 @@ Until it is fixed, use the filesystem or S3 for this, and store filenames or URL
   making it hard to estimate working set size, and derive an optimal instance size from it.
   You will need to patch the database server in order to grab this data.
   This needs fixing in the mainline server source.
-- MySQL should have a UUID v1 and a UUID v4 data type, which would be a lot less error prone that the
+- MySQL should have a UUID v1 and a UUID v4 data type, which would be a lot less error-prone that the
   current set of functions.
   This needs fixing in the mainline server source.
 - MySQL has an abysmally underdeveloped BLOB storage and long-standing gaps in its BLOB access API
