@@ -6,7 +6,7 @@
     <description>Recent content in database on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 06 Jul 2023 09:48:11 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 06 Jul 2023 10:06:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/database/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: InnoDB Fragmentation</title>
       <link>https://blog.koehntopp.info/2023/07/06/mysql-innodb-fragmentation.html</link>
@@ -22,7 +22,8 @@ about fragmentation in MySQL InnoDB tablespaces, which you should read.&lt;/p&gt
 &lt;p&gt;InnoDB stores data by default in tablespaces, which by default are a file per table.
 These files are subject to the fragmentation and growth rules of your filesystem,
 but if you are smart, you are running MySQL on Linux on the XFS.
-In that case, filesystem fragmentation (and unexplained commit latency variance) are not an issue.&lt;/p&gt;
+In that case, filesystem fragmentation (and unexplained commit latency variance) are not an issue,
+because XFS takes care of handling this properly, and only database-internal fragmentation remains.&lt;/p&gt;
 &lt;h1 id=&#34;primary-keys-data-order-and-working-set-size&#34;&gt;
     &lt;a href=&#34;#primary-keys-data-order-and-working-set-size&#34;&gt;
 	Primary keys, data order and working set size
@@ -52,11 +53,11 @@ This would bring the disk reads to zero or close to zero for the coming 10 minut
 What we do instead is look to the past and hope the future looks alike.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;So most people would want to look at the past 10 minutes,
-and the recorded page numbers read from disk as a triple of &lt;code&gt;(timestamp, tablespace_id, page_number)&lt;/code&gt;.
+and the recorded page numbers requested from disk as a triple of &lt;code&gt;(timestamp, tablespace_id, page_number)&lt;/code&gt;.
 From this, we can build a histogram for a sliding 10m window, and we would know which pages have been in demand.
 From the height of the histogram counter, we would even know how much.&lt;/p&gt;
 &lt;p&gt;We can now size an InnoDB buffer pool, and calculate how large this pool would have to be to cache 95%, 99%, 99.99%, &amp;hellip;
-of all page reads.
+of all page read requests.
 Having a handle on the desired buffer pool size for a data set and a workload would be very useful to determine the amount
 of memory our database instance would need to perform adequately:
 It must be sized for – at least – the estimated buffer pool plus overhead plus some safety margin,
@@ -154,17 +155,17 @@ If you can&amp;rsquo;t, try to go with UUID v1 and the &lt;code&gt;UUID_TO_BIN()
     &lt;/a&gt;
 &lt;/h1&gt;
 &lt;p&gt;MySQL InnoDB is famously bad at storing files, and Pep Pla discusses that cursory, too.
-In fact, the Percona Blog provides
-&lt;a href=&#34;https://www.percona.com/blog/how-innodb-handles-text-blob-columns/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;an article on this&lt;/a&gt;
+In fact, the Percona Blog also provides
+&lt;a href=&#34;https://www.percona.com/blog/how-innodb-handles-text-blob-columns/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;another article on this&lt;/a&gt;
 
 
-as a more in depth article, which is a lot more opinionated than the official manual on the subject at hand.&lt;/p&gt;
+with some more depth, which is a lot more opinionated than the official manual on the subject at hand.&lt;/p&gt;
 &lt;p&gt;Basically, when a row becomes too large (at 1/2 page size, 8 KB),
 InnoDB stores individual fields of a row &amp;ldquo;off-table&amp;rdquo; in overflow pages.
 The article does not discuss this, but to my knowledge, each overflow page holds only one field,
-so the overhead is statistically much larger than &amp;ldquo;on average 1/2 page.&amp;rdquo;
-This effect becomes stronger if you have tables with multiple BLOB/TEXT columns that are just barely large enough
-to trigger off-table storage.&lt;/p&gt;
+so the overhead is statistically much larger than &amp;ldquo;on average 1/2 page&amp;rdquo; as stated in that article.
+This effect becomes stronger if you have tables with multiple BLOB/TEXT columns in a row,
+and each is just barely large enough to trigger off-table storage.&lt;/p&gt;
 &lt;p&gt;Accessing data that is stored in overflow pages uses up additional buffer pool pages to hold them,
 at a rate of at least one per overflowed field, increasing the working set size, and hence necessary instance size.
 In versions of MySQL before MySQL 8, such data also forced the use of on-disk temporary tables,
@@ -190,37 +191,29 @@ Until it is fixed, use the filesystem or S3 for this, and store filenames or URL
     &lt;/a&gt;
 &lt;/h1&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;You probably do not need to care much about fragmentation if your database uses flash-based storage.
+&lt;li&gt;You probably do not need to care much about fragmentation if your database uses flash-based storage.
 InnoDB is relatively stable for DML workload, and &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; is usually not worth the effort,
-unless you move a table to archive/read-only.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;You would do well to design for data density and temporal locality, bringing down working set size.&lt;/p&gt;
+unless you move a table to archive/read-only.&lt;/li&gt;
+&lt;li&gt;You would do well to design for data density and temporal locality, bringing down working set size.
 &lt;ul&gt;
 &lt;li&gt;Often this happens automatically when using &lt;code&gt;auto_increment&lt;/code&gt; as a primary key.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Even in MySQL 8, you would still do well to keep BLOB and TEXT fields out of main tables,
-or where it makes sense, out of the database completely.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;MySQL has no good instrumentation that can trace disk read requests by &lt;code&gt;(ts, tablespace_id, page#)&lt;/code&gt;,
+&lt;li&gt;Even in MySQL 8, you would still do well to keep BLOB and TEXT fields out of main tables,
+or where it makes sense, out of the database completely.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Server Side improvements needed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;MySQL has no good instrumentation that can trace disk read requests by &lt;code&gt;(ts, tablespace_id, page#)&lt;/code&gt;,
 making it hard to estimate working set size, and derive an optimal instance size from it.
 You will need to patch the database server in order to grab this data.
-This needs fixing in the mainline server source.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;MySQL should have a UUID v1 and a UUID v4 data type, which would be a lot less error-prone that the
+This needs fixing in the mainline server source.&lt;/li&gt;
+&lt;li&gt;MySQL should have a UUID v1 and a UUID v4 data type, which would be a lot less error-prone that the
 current set of functions.
-This needs fixing in the mainline server source.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;MySQL has an abysmally underdeveloped BLOB storage and long-standing gaps in its BLOB access API
+This needs fixing in the mainline server source.&lt;/li&gt;
+&lt;li&gt;MySQL has an abysmally underdeveloped BLOB storage and long-standing gaps in its BLOB access API
 (efficient partial updates, BLOB streaming).
-This needs fixing in the mainline server source.&lt;/p&gt;
-&lt;/li&gt;
+This needs fixing in the mainline server source.&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>
