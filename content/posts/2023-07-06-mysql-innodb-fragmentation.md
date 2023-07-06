@@ -18,7 +18,8 @@ The article discusses "fragmentation" of data in tables, which happens in a way 
 InnoDB stores data by default in tablespaces, which by default are a file per table.
 These files are subject to the fragmentation and growth rules of your filesystem,
 but if you are smart, you are running MySQL on Linux on the XFS.
-In that case, filesystem fragmentation (and unexplained commit latency variance) are not an issue.
+In that case, filesystem fragmentation (and unexplained commit latency variance) are not an issue,
+because XFS takes care of handling this properly, and only database-internal fragmentation remains. 
 
 # Primary keys, data order and working set size
 
@@ -50,12 +51,12 @@ This would bring the disk reads to zero or close to zero for the coming 10 minut
 > What we do instead is look to the past and hope the future looks alike.
 
 So most people would want to look at the past 10 minutes,
-and the recorded page numbers read from disk as a triple of `(timestamp, tablespace_id, page_number)`.
+and the recorded page numbers requested from disk as a triple of `(timestamp, tablespace_id, page_number)`.
 From this, we can build a histogram for a sliding 10m window, and we would know which pages have been in demand.
 From the height of the histogram counter, we would even know how much.
 
 We can now size an InnoDB buffer pool, and calculate how large this pool would have to be to cache 95%, 99%, 99.99%, ...
-of all page reads.
+of all page read requests.
 Having a handle on the desired buffer pool size for a data set and a workload would be very useful to determine the amount
 of memory our database instance would need to perform adequately:
 It must be sized for – at least – the estimated buffer pool plus overhead plus some safety margin, 
@@ -158,16 +159,16 @@ For the various MySQL flavors, it remains an open TODO point to provide a UUID v
 # Row Fragmentation
 
 MySQL InnoDB is famously bad at storing files, and Pep Pla discusses that cursory, too.
-In fact, the Percona Blog provides
-[an article on this](https://www.percona.com/blog/how-innodb-handles-text-blob-columns/) 
-as a more in depth article, which is a lot more opinionated than the official manual on the subject at hand.
+In fact, the Percona Blog also provides
+[another article on this](https://www.percona.com/blog/how-innodb-handles-text-blob-columns/) 
+with some more depth, which is a lot more opinionated than the official manual on the subject at hand.
 
 Basically, when a row becomes too large (at 1/2 page size, 8 KB), 
 InnoDB stores individual fields of a row "off-table" in overflow pages.
 The article does not discuss this, but to my knowledge, each overflow page holds only one field,
-so the overhead is statistically much larger than "on average 1/2 page."
-This effect becomes stronger if you have tables with multiple BLOB/TEXT columns that are just barely large enough
-to trigger off-table storage.
+so the overhead is statistically much larger than "on average 1/2 page" as stated in that article.
+This effect becomes stronger if you have tables with multiple BLOB/TEXT columns in a row,
+and each is just barely large enough to trigger off-table storage.
 
 Accessing data that is stored in overflow pages uses up additional buffer pool pages to hold them, 
 at a rate of at least one per overflowed field, increasing the working set size, and hence necessary instance size.
@@ -201,6 +202,8 @@ Until it is fixed, use the filesystem or S3 for this, and store filenames or URL
   - Often this happens automatically when using `auto_increment` as a primary key.
 - Even in MySQL 8, you would still do well to keep BLOB and TEXT fields out of main tables,
   or where it makes sense, out of the database completely.
+
+Server Side improvements needed:
 
 - MySQL has no good instrumentation that can trace disk read requests by `(ts, tablespace_id, page#)`, 
   making it hard to estimate working set size, and derive an optimal instance size from it.
