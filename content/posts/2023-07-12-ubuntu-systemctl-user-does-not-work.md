@@ -75,7 +75,7 @@ The variable definitions must appear before the `case` statement, as shown.
 The user-based `systemd` component was not enabled and started.
 
 ```bash
-# systemctl enable user@.service
+# systemctl enable user@1011.service
 # systemctl start user@1011.service    # the userid of the user I needed
 ```
 
