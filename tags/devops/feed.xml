@@ -6,7 +6,116 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 10 Jul 2023 17:47:59 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 14 Jul 2023 15:46:13 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ubuntu: systemctl --user does not work</title>
+      <link>https://blog.koehntopp.info/2023/07/12/ubuntu-systemctl-user-does-not-work.html</link>
+      <pubDate>Wed, 12 Jul 2023 01:02:03 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/07/12/ubuntu-systemctl-user-does-not-work.html</guid>
+      <description>&lt;p&gt;Memo to self:
+I have a VPS with a legacy Ubuntu 20.04, and when creating a user to run a user-based service,
+trying to use systemctl fails with the message:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ systemctl --user status
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Failed to connect to bus: No such file or directory
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;To solve this, multiple changes were necessary:&lt;/p&gt;
+&lt;h1 id=&#34;fixing-the-systemd-problem&#34;&gt;
+    &lt;a href=&#34;#fixing-the-systemd-problem&#34;&gt;
+	Fixing the &lt;code&gt;systemd&lt;/code&gt; problem
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The service is supposed to run as the user &lt;code&gt;theservice&lt;/code&gt;, from the directory &lt;code&gt;/home/theservice/therepo&lt;/code&gt;,
+and is to be controlled by a systemd instance for this user.
+There was no such instance running.&lt;/p&gt;
+&lt;h2 id=&#34;missing-packages&#34;&gt;
+    &lt;a href=&#34;#missing-packages&#34;&gt;
+	Missing packages
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Several required packages were not installed (server image, minimal packages installed):&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# apt install dbus-user-session libpam-systemd libpam-cgfs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;loginctl-config-not-correct&#34;&gt;
+    &lt;a href=&#34;#loginctl-config-not-correct&#34;&gt;
+	&lt;code&gt;loginctl&lt;/code&gt; config not correct
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Loginctl needs to be told what to do when the user is not logged in:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# loginctl enable-linger theservice&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;missing-environment-variables&#34;&gt;
+    &lt;a href=&#34;#missing-environment-variables&#34;&gt;
+	Missing environment variables
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Two environment variables were not defined properly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ cat ~/.bashrc 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ~/.bashrc: executed by bash(1) for non-login shells.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# for examples&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# THIS INSERTED vvv&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;XDG_RUNTIME_DIR&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/run/user/&lt;span class=&#34;k&#34;&gt;$(&lt;/span&gt;id -u&lt;span class=&#34;k&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;DBUS_SESSION_BUS_ADDRESS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;unix:path=&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;${&lt;/span&gt;&lt;span class=&#34;nv&#34;&gt;XDG_RUNTIME_DIR&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;}&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;/bus&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# THIS INSERTED ^^^&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# If not running interactively, don&amp;#39;t do anything&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;case&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$-&lt;/span&gt; in
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    *i*&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;      *&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;esac&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; As you can see in the &lt;code&gt;case&lt;/code&gt; statement and the comment before, the remainder of the &lt;code&gt;.bashrc&lt;/code&gt; is
+only run for interactive shells.
+The variable definitions must appear before the &lt;code&gt;case&lt;/code&gt; statement, as shown.&lt;/p&gt;
+&lt;h2 id=&#34;userservice-not-enabled-and-started&#34;&gt;
+    &lt;a href=&#34;#userservice-not-enabled-and-started&#34;&gt;
+	&lt;code&gt;user@.service&lt;/code&gt; not enabled and started
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The user-based &lt;code&gt;systemd&lt;/code&gt; component was not enabled and started.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# systemctl enable user@.service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# systemctl start user@1011.service    # the userid of the user I needed&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;defining-the-service&#34;&gt;
+    &lt;a href=&#34;#defining-the-service&#34;&gt;
+	Defining the service
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The service we want to run is a Python program in a virtual environment,
+logging to stdout and stderr.
+It needs to be started by &lt;code&gt;systemd&lt;/code&gt; as the service user.&lt;/p&gt;
+&lt;p&gt;We check out the repo and create virtual environment:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# sudo -Hi theserviceuser&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ git checkout git@github.com:theuser/therepo.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ python3 -m venv venv
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ &lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt; venv/bin/activate
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ pip install -r requirements.txt
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will check out the source, create a &lt;code&gt;venv&lt;/code&gt; and then activate it and install the requirements.&lt;/p&gt;
+&lt;p&gt;We can now create a service.
+As the service user, run &lt;code&gt;systemctl --user edit --full theservice.service&lt;/code&gt; and install&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-systemd&#34; data-lang=&#34;systemd&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c&#34;&gt;# /home/theserviceuser/.config/systemd/user/theservice.service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;[Unit]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;Description&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;The Service&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;After&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;syslog.target network.target&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;[Service]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;Type&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;simple&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;WorkingDirectory&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;/home/theserviceuser/therepo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;ExecStart&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;/home/theserviceuser/therepo/venv/bin/python3 /home/theserviceuser/therepo/main.py&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;Restart&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;on-abort&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;EnvironmentFile&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;/home/theserviceuser/therepo/.env&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;[Install]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;na&#34;&gt;WantedBy&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;multi-user.target&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;By using the Python instance from the &lt;code&gt;venv&lt;/code&gt;, we will automatically use stuff from the &lt;code&gt;venv&lt;/code&gt;, no activation required.&lt;/p&gt;
+&lt;p&gt;We can now update all this with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ systemctl --user stop theservice.service
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ git pull --rebase
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ systemctl --user start theservice.service
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or a script that does the same.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Rotating Accounts or Passwords?</title>
       <link>https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords.html</link>
@@ -3200,65 +3309,6 @@ def my_name():
 
 , how to fail safely, in order to make them actually experience a problem class, instead of just abstractly knowing about it somewhere in the back of their mind.&lt;/p&gt;
 &lt;p&gt;If you do not do that, if you cannot do that, you will soon be replaced by a tiny shell script.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Der Managementansatz zum Thema Sicherheit...</title>
-      <link>https://blog.koehntopp.info/2011/01/04/der-managementansatz-zum-thema-sicherheit.html</link>
-      <pubDate>Tue, 04 Jan 2011 14:58:51 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2011/01/04/der-managementansatz-zum-thema-sicherheit.html</guid>
-      <description>&lt;p&gt;In der aktuellen KES findet sich der Artikel &lt;em&gt;Epische Macht&lt;/em&gt; (
-&lt;a href=&#34;http://www.kes.info/aktuell/akheft/artikel1.htm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;keine stabile URL&lt;/a&gt;
-
-, da der
-Archivzugang mit den stabilen URLs paßwortgeschützt und nur für Abonnenten
-ist).&lt;/p&gt;
-&lt;p&gt;Der Artikel konzentriert sich auf die Machtfülle von Systemadministratoren,
-und prägt das Wort &amp;ldquo;Machtumsetzungsgeschwindigkeit&amp;rdquo; in Bezug auf
-Systemadministratoren. Damit will der Autor (Stephen Feldke) darauf abheben,
-daß Root-Arbeiter besonders schnell besonders viel Schaden gemessen in Mio
-Euro/Minute anrichten können. Der Autor zieht Parallelen zu Prokura- und
-Budget-Regelungen, bei denen man bei bestimmten Transaktionen absichtlich
-mehr als eine Unterschrift für eine Entscheidung fordert, um Prozesse
-künstlich zu verlangsamen und Mehr-Augen-Prinzipien zu erzwingen.&lt;/p&gt;
-&lt;p&gt;Der Autor schlägt eine EPIS-Zertifizierung (&amp;ldquo;Extrem Privilegierte
-IT-Spezialisten&amp;rdquo;) für Sysadmins vor, die in kritischen Infrastrukturen nach
-BSI-Definition arbeiten (&amp;ldquo;volkswirtschaftlich oder gesellschaftlich
-besonders wichtige Institutionen, die für die Sicherheit und Stabilität
-eines Landes essenziell sind (u. a. Großbanken und Energieunternehmen sowie
-deren Dienstleister)&amp;rdquo;) . Für EPIS soll nach den Vorstellungen des Artikels
-eine &amp;ldquo;Zuverlässigkeits- beziehungsweise Sicherheitsüberprüfung als
-Pflichtmaßnahme der Risikovorsorge (möglicherweise sogar per Gesetz)
-vorgesehen&amp;rdquo; werden. &amp;ldquo;Die hierfür notwendige Validierung bezieht sich dabei
-weniger auf die fachliche Kompetenz als vielmehr auf die persönliche
-Zuverlässigkeit und Integrität.&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;Der Artikel hat mir beim Lesen die ganze Zeit ein Lächeln auf das Gesicht
-gezaubert.&lt;/p&gt;
-&lt;p&gt;IT im allgemeinen und insbesondere der Markt für fähige Sysadmins ist ja
-sowieso schon in vielerlei Hinsicht ein Arbeitnehmermarkt. Verknappt man
-diesen Bestand durch EPIS-Requirements noch weiter, ist das für die
-Arbeitnehmer ein wichtiger Punkt, durch den sie ihren Wert noch weiter
-steigern können.&lt;/p&gt;
-&lt;p&gt;Andererseits ist die Maßnahme offensichtlich witzlos, oder der Autor lebt in
-einem komplett anderen Universum als ich.&lt;/p&gt;
-&lt;p&gt;In meiner Welt kenne ich Unternehmen, die gar keine Rechenzentren und
-Rechner mehr haben, sondern komplett aus der Cloud laufen. In meiner Welt
-versuchen Unternehmen ihre Agilität zu erhöhen und mehrere Rollouts von Code
-pro Tag zu realisieren. In meiner Welt haben Unternehmen hunderte offener
-Stellen im Bereich IT. In meiner Welt versuchen Unternehmen ihren
-Systembetrieb zu automatisieren und hunderte oder tausende von Rechnern
-automatisch zu administrieren.&lt;/p&gt;
-&lt;p&gt;In dieser Welt ist eine EPIS-Zertifizierung Augenwischerei.&lt;/p&gt;
-&lt;p&gt;Sie erhöht den Organisationswiderstand gegen Prozeßveränderungen und
-schwächt damit die Anpassungsfähigkeit des Unternehmens an Veränderungen des
-Umfeldes. Sie bringt keine meßbare Verbesserung der Sicherheit, solange man
-nicht auch im Bereich der Feature-Entwickler und im Bereich der
-Infrastrukturentwickler die Prozesse mächtig aufbläst - E4 bis E6 lassen
-grüßen und damit geht jedwede mühsam erarbeitete Agilität verloren.&lt;/p&gt;
-&lt;p&gt;Irgendwie kommt mir da der Wind der 90er Jahre aus dem Heft entgegen. Kann
-das sein?&lt;/p&gt;
 </description>
     </item>
     
