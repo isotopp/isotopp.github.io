@@ -5,6 +5,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en
 - mobility
+- amsterdam
 - netherlands
 title: 'City of Amsterdam and Combustion Engines'
 ---
