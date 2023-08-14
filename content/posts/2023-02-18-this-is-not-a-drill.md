@@ -78,7 +78,7 @@ This is a "loss of control" scenario, not "loss of availability".
 You do not lose web servers, but you lose the ability to make new ones or to decommission old ones or change the config of the existing ones.
 Systems usually can continue to run without their automation controller for a few hours, provided the operational circumstances are somewhat stable.
 
-In some cases, loss of state in the control plane highlighted that the control plan could not rediscover its clients out there and scan them for state.
+In some cases, loss of state in the control plane highlighted that the control plane could not rediscover its clients out there and scan them for state.
 Instead, it was assumed that the entire region was to be recreated from scratch, when it was in fact there, and perfectly functional, just unknown to the controller.
 
 In some cases the automation assumed that new systems were to be recreated from scratch by cloning over data from remote regions.
@@ -91,7 +91,7 @@ Teams picked up the new requirements, development learned a thing or two, and by
 We have now reached a state where automation is only considered "done done" when it survives one of the regularly simulated outages,
 and when the state of the Opdocs is good enough for members of adjacent teams (instead of the native team) to manage the outage.
 
-Also, we have reached a sophistication of automation that allows us to drop each and ever instance and each and every image after 90 days,
+Also, we have reached a sophistication of automation that allows us to drop each and every instance and each and every image after 90 days,
 because replacements are redeployed automatically, and state is cloned over.
 
 # Burning it all down
