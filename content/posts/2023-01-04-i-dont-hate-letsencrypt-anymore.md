@@ -36,7 +36,7 @@ ServerName mybasedomain.koehntopp.de
 
 MDomain mybasedomain.koehntopp.de contentdomain.koehntopp.de proxydomain.koehntopp.de
 MDContactEmail user@example.com
-MDCerticateAgreement accepted
+MDCertificateAgreement accepted
 MDPrivateKeys RSA 4096
 ```
 
