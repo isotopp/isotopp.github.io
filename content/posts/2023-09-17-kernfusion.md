@@ -107,6 +107,8 @@ und
 ![](/uploads/2023/09/strategyand-16.jpg)
 *If Germany acts in time, fusion energy has the potential to become a new engine for the German national economy.*
 
+## Ergebnis
+
 Ich bin under-fucking-whelmed von allem.
 
 Also von diesem 18-Seiten-Null-Content Powerpoint,
@@ -117,3 +119,7 @@ Ich sollte mehr Powerpoint machen, die Milliarden wären mein.
 Das Köhntopp Institut für Feenstaub, gebt mir Fördermittel!
 Ihr braucht eine Strategie, Leute, sonst wird das nichts, 
 wenn die Feenstaub-Fässer in meinem Keller überlaufen und das Land mit Wunschpulver überfluten.
+
+## Sticker
+
+![](/uploads/2023/09/fernfusion.png)
