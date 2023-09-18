@@ -128,3 +128,6 @@ kommt es leicht mit großen zweistelligen prozentualen Verlusten und jahrelangen
 
 Firmen lernen gerade, wie wichtig Personen als Individuen sind.
 Viele Organisationen sind mit dieser, der kapitalistischer Ideologie widersprechenden Erfahrung sehr unzufrieden und tief in Denial.
+
+> Companies forcing their employees back into the office will lose talent and keep wage serfs.
+>   -- Volker Weber ([@vowe@social.heise.de](https://social.heise.de/@vowe))
