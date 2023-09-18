@@ -9,7 +9,7 @@ tags:
 - energy
 ---
 
-(based on a series of posts on Mastdon)
+(based on a series of posts on Mastodon)
 
 # I got an electric car
 
