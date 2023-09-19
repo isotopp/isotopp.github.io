@@ -36,7 +36,7 @@ Dabei wird in diesen Slides Konjunktiv verwendet, denn es gibt keine dauerhafte 
 
 ![](/uploads/2023/09/strategyand-04.jpg)
 *Fusion energy may be the missing key to a sustainable, sufficient and affordable energy supply:
-Im Jahr 2040 taucht magisch Kernfusion auf, und im Jahr 2050 deckt ersetzt sie komplett und just-in-time die fossile Restenergie.*
+Im Jahr 2040 taucht magisch Kernfusion auf, und im Jahr 2050 ersetzt sie komplett und just-in-time die fossile Restenergie.*
 
 Consultantwitzchen am Rande: 
 Das Lithium für die Fusion bekommen wir aus recycelten Batterien, hihi!
