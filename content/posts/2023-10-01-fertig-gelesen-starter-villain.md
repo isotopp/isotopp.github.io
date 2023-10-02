@@ -13,9 +13,9 @@ tags:
 [John Scalzi's](https://mastodon.social/@scalzi) latest book is currently
 [Starter Villain](https://www.amazon.de/Starter-Villain-turbo-charged-supervillains-minions-ebook/dp/B0BJDXRGX8).
 
-![](/uploads/2023/10/starter-villain.png)
+![](/uploads/2023/10/starter-villain.jpg)
 
-The premise is simple: Charlie's estanged Uncle Jake died.
+The premise is simple: Charlie's estranged Uncle Jake died.
 Charlie and his uncle are estranged because Charlie's father and Jake had a fallout at the funeral of Charlie's mom,
 and Charlie has not had much contact at all with Jake ever since.
 Now, with Jake also dead, it turns out that Charlie somehow is his only heir.
@@ -30,7 +30,7 @@ He also learns that "Villain" does not exactly mean what he thinks that it means
 
 Scalzi spent his pages playing nicely with the clichés and expectations around James-Bond-like supervillains,
 and turning them into a fun story with a number of expected and unexpected twists.
-He wouldn't be Scalzi, if there is not stuff to think about lurking in the background.
+He wouldn't be Scalzi if there is no stuff to think about lurking in the background.
 In this case, fairly obviously the relationship between 1950's supervillains and present day billionaires, oligarchs
 and our survival as a species.
 
