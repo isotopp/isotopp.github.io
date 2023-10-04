@@ -10,7 +10,7 @@ tags:
 - cloud
 ---
 
-# Kubernetes and Complexity**
+# Kubernetes and Complexity
 
 On Twitter, [Sandeep](https://twitter.com/crcsmnky/status/1120189000474681347) remarked:
 > The complexity and amount of code involved is staggering.
