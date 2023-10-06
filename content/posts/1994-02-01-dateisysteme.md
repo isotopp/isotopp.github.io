@@ -14,14 +14,19 @@ title: "UNIX Dateisysteme"
 
 **aus »c't - Magazin für Computertechnik«, Ausgabe 2/94**
 
-*Die Aufgaben eines Betriebssystems bestehen in der fairen Zuteilung der Systemressourcen an alle Bewerber und in der Abstraktion unterschiedlichster Hardware zu einer virtuellen Maschine. Für den Bereich der Plattenplatzverwaltung hat diese Aufgabe das Dateisystem. UNIX Dateisysteme haben eine mehr als zwanzigjährige Entwicklung hinter sich und dienten als Vorbild für die Dateisysteme vieler anderer Betriebssysteme [1]. Trotz vieler Mängel der ursprünglichen Implementation haben sich die dahinter stehenden Ideen in den letzten zwanzig Jahren nicht wesentlich verändert.*
+*Die Aufgaben eines Betriebssystems bestehen in der fairen Zuteilung der Systemressourcen an alle Bewerber und in der Abstraktion unterschiedlichster Hardware zu einer virtuellen Maschine. 
+Für den Bereich der Plattenplatzverwaltung hat diese Aufgabe das Dateisystem. 
+UNIX Dateisysteme haben eine mehr als zwanzigjährige Entwicklung hinter sich und dienten als Vorbild für die Dateisysteme vieler anderer Betriebssysteme.
+Trotz vieler Mängel der ursprünglichen Implementation haben sich die dahinter stehenden Ideen in den letzten zwanzig Jahren nicht wesentlich verändert.*
 
 ## Daten wiederfinden
 
 UNIX schlägt sich auf den höheren Ebenen des Betriebssystems nicht mit Angaben zur Plattengeometrie herum. 
 Es betrachtet eine Festplatte als ein langes Band von Plattenblöcken, die linear durchnummeriert sind.
-Die Umrechnung von linearen Blockadressen in Angaben von Zylinder, Kopf und Sektor ist entweder Aufgabe eines Festplattengerätetreibers oder - im Fall von SCSI - der Festplatte selbst.
-Die ersten paar Datenblöcke einer Festplatte sind reserviert für den Bootloader und ähnliche Dinge, die vor dem Betriebssystem geladen werden und deshalb außerhalb seiner Reichweite gelagert werden.
+Die Umrechnung von linearen Blockadressen in Angaben von Zylinder, Kopf und Sektor ist entweder Aufgabe eines Festplattengerätetreibers 
+oder - im Fall von SCSI - der Festplatte selbst.
+Die ersten paar Datenblöcke einer Festplatte sind reserviert für den Bootloader und ähnliche Dinge,
+die vor dem Betriebssystem geladen werden und deshalb außerhalb seiner Reichweite gelagert werden.
 Der Rest der Platte wird in Form eines Dateisystems verwaltet.
 UNIX operiert bei Dateisystemen mit der Blockgröße des Mediums.
 Anders als bei DOS werden die Verwaltungseinheiten auf einer Platte also nicht größer, wenn man sehr große Partitionen anlegt.
@@ -31,7 +36,11 @@ Er enthält Geometriedaten der Platte, gibt an, wie viele Blöcke das Dateisyste
 
 ![](/uploads/1994/02/disklayout.gif)
 
-*Bild 1: Am Anfang des Dateisystems steht der Superblock. Er enthält alle Metainformationen, die das Dateisystem beschreiben. Der "vordere" Teil des Dateisystems enthält I-Nodes, Dateiköpfe, die alle Metainformationen über eine Datei speichern. In den Datenblöcken sind dann die eigentlichen Nutzdaten untergebracht. Das Bild zeigt eine I-Node mit ihren Verweisen auf die Datenblöcke der Datei.*
+*Bild 1: Am Anfang des Dateisystems steht der Superblock. 
+Er enthält alle Metainformationen, die das Dateisystem beschreiben. 
+Der "vordere" Teil des Dateisystems enthält I-Nodes, Dateiköpfe, die alle Metainformationen über eine Datei speichern. 
+In den Datenblöcken sind dann die eigentlichen Nutzdaten untergebracht.
+Das Bild zeigt eine I-Node mit ihren Verweisen auf die Datenblöcke der Datei.*
 
 Die Basis der Dateiverwaltung bildet in UNIX eine Datenstruktur, die sogenannte *index node* oder I-Node (Bild 2).
 
@@ -40,8 +49,11 @@ Für jede Datei, jedes Verzeichnis und jedes Gerät legt UNIX eine I-Node an, in
 Dazu gehören zum einen Informationen über Zugriffsrechte, Dateieigentümer und Zeitmarken, zum anderen Verweise auf die Datenblöcke, die die Daten der Datei enthalten.
 Ursprünglich hat UNIX die I-Nodes eines Dateisystems in Form einer Tabelle zusammengefasst und am Anfang des Dateisystems untergebracht. 
 
-Die Größe dieser Tabelle muss schon beim Anlegen des Dateisystems festgelegt werden, d.h. ein Systemverwalter auf einem UNIX-Rechner muss beim Formatieren einer Platte festlegen, wie viele Dateien später einmal maximal auf dieser Platte angelegt werden können.
-Üblicherweise berechnet man mindestens eine I-Node für jeweils 4 KB zur Verfügung stehenden Plattenplatz, sodass auf einer 200 MB Festplatte in etwa 50 000 I-Nodes angelegt werden.
+Die Größe dieser Tabelle muss schon beim Anlegen des Dateisystems festgelegt werden, 
+d.h. ein Systemverwalter auf einem UNIX-Rechner muss beim Formatieren einer Platte festlegen,
+wie viele Dateien später einmal maximal auf dieser Platte angelegt werden können.
+Üblicherweise berechnet man mindestens eine I-Node für jeweils 4 KB zur Verfügung stehenden Plattenplatz, 
+sodass auf einer 200 MB Festplatte in etwa 50 000 I-Nodes angelegt werden.
 Zum Glück sind I-Nodes relativ kleine Datenstrukturen von nur 128 Bytes. 
 Im Schnitt verschwinden also auf diese Weise 3 % des gesamten Plattenplatzes in Verwaltungsinformationen.
 
@@ -67,7 +79,10 @@ struct  dinode
 };
 ```
 
-*Bild 2: Aufbau einer I-Node eines modernen UNIX-Dateisystems. Die Datenstruktur paßt in ein Feld von 128 Bytes, sodas ein Hardware-Plattenblock 8 I-Nodes halten kann. Sie enthält alle Metainformationen über eine Datei mit Ausnahme der Namen der Datei.*
+*Bild 2: Aufbau einer I-Node eines modernen UNIX-Dateisystems. 
+Die Datenstruktur paßt in ein Feld von 128 Bytes, 
+sodass ein Hardware-Plattenblock 8 I-Nodes halten kann.
+Sie enthält alle Metainformationen über eine Datei mit Ausnahme der Namen der Datei.*
 
 Untersucht man die durchschnittliche Länge von Dateien in einem Dateisystem, dann stellt man fest, das kurze Dateien relativ häufig auftreten.
 Daher versucht UNIX, die Blocknummern der ersten paar Plattenblöcke einer Datei direkt in der I-Node zu speichern. 
@@ -75,17 +90,24 @@ In der I-Node aus Bild 2 werden die ersten 12 Datenblöcke einer Datei im Feld `
 Wenn über ihre I-Nodenummer auf diese Datei zugegriffen wird, stehen die 12 direkten Datenblöcke der Datei also ohne weitere Leseoperation zur Verfügung.
 
 Für große Dateien ist dieses Verfahren natürlich nicht praktikabel, denn die I-Node würde dann sehr groß werden.
-Wächst eine Datei über die Größe von 12 Datenblöcken hinaus, besorgt UNIX einen freien Datenblock und trägt diesen als ersten indirekten Datenblock einer Datei ein.
+Wächst eine Datei über die Größe von 12 Datenblöcken hinaus, 
+besorgt UNIX einen freien Datenblock und trägt diesen als ersten indirekten Datenblock einer Datei ein.
 In diesem indirekten Datenblock werden jetzt die Blocknummern der weiteren Datenblöcke einer Datei abgelegt.
-Bei einer angenommenen Blockgröße von einem Kilobyte können in einem indirekten Block 256 Blocknummern gespeichert werden, von denen jede einen Datenblock von einem Kilobyte adressiert.
-Zusammen mit den direkten Datenblöcken können also Dateien bis zu einer Größe von 266 KB angelegt werden, ohne daß mehr als eine Ebene der Indirektion durchlaufen werden muss.
-Modernere Dateisysteme, die mit einer Blockgröße von 8 Kilobyte arbeiten, bringen 2048 Blocknummern in einem Block unter und können so bis zu 16 Megabyte große Dateien mit einem einzigen indirekten Block verwalten.
+Bei einer angenommenen Blockgröße von einem Kilobyte können in einem indirekten Block 256 Blocknummern gespeichert werden, 
+von denen jede einen Datenblock von einem Kilobyte adressiert.
+Zusammen mit den direkten Datenblöcken können also Dateien bis zu einer Größe von 266 KB angelegt werden,
+ohne daß mehr als eine Ebene der Indirektion durchlaufen werden muss.
+Modernere Dateisysteme, die mit einer Blockgröße von 8 Kilobyte arbeiten, bringen 2048 Blocknummern in einem Block unter 
+und können so bis zu 16 Megabyte große Dateien mit einem einzigen indirekten Block verwalten.
 
 Für noch größere Dateien sieht UNIX doppelt indirekte Blöcke vor, die die Blocknummern von einfach indirekten Blöcken enthalten. 
 Diese wiederum zeigen dann endlich auf die Daten. 
-Bei einer Blockgröße von 8 KB kann man mit diesem Schema schon mehr als die vier Gigabyte verwalten, die sich im Größenfeld `ino_size` einer I-Node verwalten lassen.
-Bei Dateisystemen mit einer Blockgröße von einem Kilobyte muss dagegen ab einer Dateigröße von 64 MB von einem dreifach indirekten Block Gebrauch gemacht werden (Bild 3).
-Zum Glück sind zum Laden eines solchen Datenblockes aber keine vier Plattenzugriffe notwendig, denn alle UNIX-Versionen haben einen Plattencache, der häufig benötigte Daten im RAM präsent hält.
+Bei einer Blockgröße von 8 KB kann man mit diesem Schema schon mehr als die vier Gigabyte verwalten, 
+die sich im Größenfeld `ino_size` einer I-Node verwalten lassen.
+Bei Dateisystemen mit einer Blockgröße von einem Kilobyte muss dagegen ab einer Dateigröße von 64 MB 
+von einem dreifach indirekten Block Gebrauch gemacht werden (Bild 3).
+Zum Glück sind zum Laden eines solchen Datenblockes aber keine vier Plattenzugriffe notwendig,
+denn alle UNIX-Versionen haben einen Plattencache, der häufig benötigte Daten im RAM präsent hält.
 
 ![](/uploads/1994/02/filestructure.gif)
 
@@ -93,12 +115,16 @@ Zum Glück sind zum Laden eines solchen Datenblockes aber keine vier Plattenzugr
 
 Bei der Belegung von Plattenblöcken für eine Datei ist UNIX sehr effizient.
 Nur diejenigen Blöcke einer Datei, die schon einmal beschrieben wurden, belegen auch wirklich Platz auf der Platte.
-Wird beispielsweise begonnen, einen doppelt indirekten Block zu verwenden, so wird für diesen zunächst der erste einfach indirekte Block beschafft und belegt.
+Wird beispielsweise begonnen, einen doppelt indirekten Block zu verwenden, 
+so wird für diesen zunächst der erste einfach indirekte Block beschafft und belegt.
 Die Blocknummern der anderen indirekten Blöcke werden dagegen einfach auf Null gesetzt.
 
 Das führt zu interessanten Effekten bei Dateien, die nicht durchgehend beschrieben werden:
-Legt man unter UNIX eine neue Datei an und bewegt dann den Dateizeiger irgendwo in die oberen Megabytes, um dort ein einziges Byte zu beschreiben, dann wird nur der eine Datenblock belegt, der notwendig ist, um dieses Byte zu speichern (plus der möglicherweise notwendigen indirekten Blöcke, die notwendig sind, um den Block zu erreichen).
-Die Blocknummer aller anderen nicht verwendeten Blöcke bleiben auf Null stehen und es werden auch keine Datenblöcke zwischen dem gespeicherten Byte und dem Dateianfang angefordert.
+Legt man unter UNIX eine neue Datei an und bewegt dann den Dateizeiger irgendwo in die oberen Megabytes, 
+um dort ein einziges Byte zu beschreiben, dann wird nur der eine Datenblock belegt, 
+der notwendig ist, um dieses Byte zu speichern (plus der möglicherweise notwendigen indirekten Blöcke, die notwendig sind, um den Block zu erreichen).
+Die Blocknummer aller anderen nicht verwendeten Blöcke bleiben auf Null stehen 
+und es werden auch keine Datenblöcke zwischen dem gespeicherten Byte und dem Dateianfang angefordert.
 Es entsteht eine Datei, die in der Verzeichnisausgabe viele Megabytes groß erscheint, in Wirklichkeit aber nur wenige Kilobytes belegt.
 Eine solche Datei nennt man in UNIX eine dünn besetzte Datei (sparse file).
 Beim Lesen einer solchen Datei werden für die nicht vorhandenen Blöcke entsprechend viele Nullbytes zurückgemeldet.
@@ -244,6 +270,6 @@ bestimmten Stelle in den Verzeichnisbaum eingehängt. Beim Wechsel des Verzeichn
 - "The UNIX Time Sharing System", Ritchie, Thompson, Communications of the ACM 7/74, p.365  
 - "A Fast File System for UNIX", McKusick et al, ACM Trans. on Computer Systems, August 84, p.181
 - "Operating Systems", A. Tanenbaum, Prentice-Hall
-- "The Design of the UNIX Operating System", M.Bach, Prentice-Hall
+- "The Design of the UNIX Operating System", M. Bach, Prentice-Hall
 - "The Design of the 4.3 BSD UNIX Operating System", McKusick, Addison-Wesley
-- "Advanced Programming in the UNIX Environment", W.R.Stevens, Addison-Wesley
+- "Advanced Programming in the UNIX Environment," W. R. Stevens, Addison-Wesley
