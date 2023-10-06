@@ -1,0 +1,664 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>kubernetes on Die wunderbare Welt von Isotopp</title>
+    <link>https://blog.koehntopp.info/tags/kubernetes.html</link>
+    <description>Recent content in kubernetes on Die wunderbare Welt von Isotopp</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 06 Oct 2023 13:48:50 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/kubernetes/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Something Kubernetes Containers</title>
+      <link>https://blog.koehntopp.info/2017/06/03/something-kubernetes-containers.html</link>
+      <pubDate>Sat, 03 Jun 2017 14:52:26 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2017/06/03/something-kubernetes-containers.html</guid>
+      <description>&lt;p&gt;Talk given at the Netways Open Source Data Center Conference 2017.
+There is a video of the talk &lt;a href=&#34;https://www.youtube.com/watch?v=ggiqbN3xAjs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on Youtube&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-002.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;The title of the talk was not final, when I submitted the proposal, so I just set it to &amp;ldquo;Something Mumble Containers Kubernetes&amp;rdquo;.
+It came out as &amp;ldquo;Containers at Booking&amp;rdquo; in the end.&lt;/p&gt;
+&lt;p&gt;This is kind of an interim report about how compute is changing, the factors and pressures at work there, and how that affects us.
+This is not a finished journey, yet.
+Things are still changing at Booking.&lt;/p&gt;
+&lt;h1 id=&#34;what-we-do&#34;&gt;
+    &lt;a href=&#34;#what-we-do&#34;&gt;
+	What we do
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-003.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;What Booking does was selling rooms, and getting commission from the hotel for that.
+That used to be a very simple thing, it seems, but it was already complicated enough, because the business is very different depending on where in the world you are.&lt;/p&gt;
+&lt;p&gt;It is for example rather hard to explain what to expect from a hotel, as the product is not very standardized except when in the USA.
+Most of the hotels in the world are independently owned and operated, and not part of a hotel chain.
+So they are all very different in interior, room arrangement and facilities and many other details.
+Many reviews and images are necessary to set expectations properly with customers, and to build trust.&lt;/p&gt;
+&lt;p&gt;Running the hotel website from an Infrastructure point of view means we aim to be boring:
+When we fail, or lose bookings, somebody is sleeping under a bridge and we have ruined a holiday.
+While adventure in a vacation is good, that is only when it is planned, and when it ends well.
+So being boringly reliable is what we aim for.&lt;/p&gt;
+&lt;h1 id=&#34;where-we-are&#34;&gt;
+    &lt;a href=&#34;#where-we-are&#34;&gt;
+	Where we are
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-006.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;At this point in time production is completely on bare metal.
+We are a colocation customer, we do not have our own data center buildings, but instead make use of multiple rooms in multiple locations.
+In these we have a few ten thousand machines.
+These are enterprise class blades from HP and Dell, mostly, plus a few pieces of special purpose hardware.&lt;/p&gt;
+&lt;p&gt;To drive this, we have automated the handling and provisioning of the machinery, using several Python Django applications that have been developed in-house.
+They automatically provision stuff:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ServerDB managed hardware, from handling procurement and vendor dat ingest, to burn-in, BIOS updates, inventorization and hardware provisioning.&lt;/li&gt;
+&lt;li&gt;Nemo does the same for networking equipment and provisioning.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;As a developer, you ask ServerDB for servers of a given type in a location.
+ServerDB will flash these things up to spec, provision them for you.
+It will provide a partition table, install a base operating system and tell Puppet what to do.&lt;/p&gt;
+&lt;p&gt;Puppet will install packages and configuration templates, and then hand over to class specific tooling.&lt;/p&gt;
+&lt;p&gt;In the case of databases, for example, this is another piece of class specific tooling, B.admin (&amp;ldquo;badmin&amp;rdquo;).
+This will then provide database packages, replication configuration, data and will ultimately arrange the databases in a replication hierarchy and make them discoverable for clients.&lt;/p&gt;
+&lt;p&gt;It is possible and totally normal to get 200 databases ready to run in a replication chain, discoverable by applications, without a human touching anything in the course of the provisioning.&lt;/p&gt;
+&lt;h2 id=&#34;disadvantages&#34;&gt;
+    &lt;a href=&#34;#disadvantages&#34;&gt;
+	Disadvantages
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Despite this being fully automatic and comfortable, it has a number of disadvantages.
+For example, it is slow, because hardware provisioning is slow. Rebooting a Dell or HP Blade takes 300 seconds, and only then the OS install can begin. A full provisioning run easily takes around 20-30 minutes.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=R_qR9_fVIbQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something-boots.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+
+&lt;em&gt;Not a blade, but an HP 380DL booting, but not much of a difference in timing or handling (&lt;a href=&#34;https://www.youtube.com/watch?v=R_qR9_fVIbQ&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;video&lt;/a&gt;
+
+).&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Bare-metal hardware also is often too large or too small for the task:
+In our case the hardware we use is at the low end of the available specification, but in many cases already is too large for a single application to fully utilize.&lt;/p&gt;
+&lt;h1 id=&#34;current-hardware-is-too-powerful&#34;&gt;
+    &lt;a href=&#34;#current-hardware-is-too-powerful&#34;&gt;
+	Current hardware is too powerful
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-009.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A current bladecenter chassis (HP C7000, Dell M1000e) uses 10 height units of rack space.
+It has room for 16 blades.
+When used with the large kind of CPU (2x Intel 6132 per blade), one chassis alone provides around 900 threads, 3 TB of memory and 320 GBit/s of aggregated network bandwidth, and will consume up to 6400 Watts of power under full load.&lt;/p&gt;
+&lt;p&gt;While the rack theoretically has room for 4 of these things, it cannot realistically power that much compute under full load.
+Most data centers provide around 7000 Watt per rack, so with average load two of these blade centers can be put into a single rack,
+and if we actually ran the machines at full power, only one bladecenter per rack would be possible in a normal data center.&lt;/p&gt;
+&lt;h1 id=&#34;pressures-on-the-data-center-environment&#34;&gt;
+    &lt;a href=&#34;#pressures-on-the-data-center-environment&#34;&gt;
+	Pressures on the data center environment
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-010.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;We do not only need to slice and dice the hardware, but the business also wants us to be even more agile and faster.&lt;/p&gt;
+&lt;p&gt;We need to be able to scale out the IT organisation to 3x the current number of people, because we are a growing company in a growing market,
+but the current way of running things does not support this very well.
+In order to get there, we need to automate provisioning of hardware completely, providing our developers with an API.&lt;/p&gt;
+&lt;p&gt;We need to be able to plan capacity, for which we need metrics.
+Also, data center operations need to be able to provide machinery in advance and independently of the consumption.
+We can no longer support hardware types that are tailored to the use-case,
+we want to buy larger machines and be able to slice and dice them to bite-sized instances.
+This is also more cost effective.&lt;/p&gt;
+&lt;p&gt;And for better planning, we want to get machine readable service descriptions (who talks to what),
+which helps management to see the entire application and all components and the relationships between them.&lt;/p&gt;
+&lt;h1 id=&#34;the-monolith&#34;&gt;
+    &lt;a href=&#34;#the-monolith&#34;&gt;
+	The Monolith
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-011.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+
+The software currently is a monolith and needs to be split from being a 6GB process into something smaller.
+This is startup size, then the thing forks and the actual instances share a lot of memory with the parent process.
+So the actual memory consumption per instance is a lot less.&lt;/p&gt;
+&lt;p&gt;The software is written in perl and is pretty well-structured and modular, but the deployment model is outdated.
+We roll out between 10-14 times a day, and that is of course also automated.&lt;/p&gt;
+&lt;p&gt;Software of this shape is not well suited to a rollout in containers.&lt;/p&gt;
+&lt;p&gt;What so we want to do?
+Change the entire stack:
+Data center and hardware level, but also looking for better data center space.
+Move to containers to be able to slice and dice the hardware.
+Change the application to use microservices, in Java.
+And also work towards a different business model.&lt;/p&gt;
+&lt;h1 id=&#34;what-are-containers&#34;&gt;
+    &lt;a href=&#34;#what-are-containers&#34;&gt;
+	What are containers?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-013.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Containers are just UNIX processes with additional fairy dust added between the &lt;code&gt;fork()&lt;/code&gt; and &lt;code&gt;exec()&lt;/code&gt; system calls.
+Part of this fairy dust are Linux Namespaces and Linux CGroups.&lt;/p&gt;
+&lt;p&gt;Namespaces limit what an application inside a container can see, in terms of other processes, other files, and so on.
+CGroups limit the amount of resouces an application inside a container can consume, in terms of memory, CPU, and so on.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-014.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Containers are for a few years now well understood, and known, in the form of Docker.
+Docker standalone is not useful for production, though.&lt;/p&gt;
+&lt;p&gt;It is dev centric, and from a developer PoV, it is very useful to simulate pristine environments.
+Developers love the layering of filesystem layers, the instant availability,
+and that one is able to fold production into a single host.
+Docker does nothing at all for operations, though.&lt;/p&gt;
+&lt;p&gt;K8s is useful because it throws away most of Docker and does proper production things.
+It provides an environment where the allocation of resources can happen from many hosts, automatically,
+and in which the networking between instances is set automatically, no matter where instances run.
+In also manages storage, in a way where the lifetime of storage can be managed independently from the lifetime of a container.&lt;/p&gt;
+&lt;p&gt;A single dockerhost can take you very far (20C, 512GB memory, disks), it can hold a lot of development.
+It still not useful for production, because it gives you a SPOF, does not scale and does not understand things larger than a single machine.&lt;/p&gt;
+&lt;h1 id=&#34;images-as-a-form-of-wrapping-dependencies&#34;&gt;
+    &lt;a href=&#34;#images-as-a-form-of-wrapping-dependencies&#34;&gt;
+	Images as a form of wrapping dependencies
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-015.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;One of the useful things Docker provides is the concept of an image that collects all the files belonging to an application,
+and all the dependencies it has.
+It keeps the base host clean, and allows us to the application anywhere without much hassle.
+Conversely, it also makes the application app removable.
+We get instant applications, just add CPU and memory anywhere in the data center.&lt;/p&gt;
+&lt;p&gt;Applications become single file, loopmounted images.
+This can also be moved around very quickly, much faster than 100.000s of files.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-016.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Since we cannot know what is in the image, we need to control what goes into the image.
+We need to be able to build the images from scratch, on our own infrastructure, and be able to scan the receipts in order to understand what&amp;rsquo;s inside.
+We cache the dependencies locally, and we use this to have reproducible builds.&lt;/p&gt;
+&lt;h1 id=&#34;mesos-a-project-that-escaped-from-a-hackathon&#34;&gt;
+    &lt;a href=&#34;#mesos-a-project-that-escaped-from-a-hackathon&#34;&gt;
+	Mesos: A project that escaped from a hackathon
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-020.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Booking was running Containers using Mesos.
+This was a Hackathon experiment, that accidentally escaped into internal production.
+It was not running important things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The Blog&lt;/li&gt;
+&lt;li&gt;Some internal websites&lt;/li&gt;
+&lt;li&gt;Some ML/Big Data jobs&lt;/li&gt;
+&lt;li&gt;Some Java component services, mostly internal&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Mesos proved to be a lot like Lego: modular, but parts fall off under load.
+This seems to be somewhat par for the course for ASF stuff, judging from our experience with Hadoop.&lt;/p&gt;
+&lt;p&gt;It was very much not up for production, with many missing things, and also no external mindshare.
+For us, what was missing was isolation of tenants, no discovery, no deployment rules, no auto-scaling,
+no one-time batch runs, and no rbac.&lt;/p&gt;
+&lt;p&gt;But the container thing was useful.
+We wanted to keep that, but run it better.&lt;/p&gt;
+&lt;h1 id=&#34;trying-kubernetes&#34;&gt;
+    &lt;a href=&#34;#trying-kubernetes&#34;&gt;
+	Trying Kubernetes
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When looking around, we found K8s, which has all the stuff we needed.
+The Environment is very cooperative and receptive to suggestions, a lot of momentum and mind-share.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-022.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;This is what you get:
+&amp;ldquo;I want to run something,&amp;rdquo; and it runs somewhere in the cluster where there is space.
+The image is installed on the target node selected, it runs, and after the run is finished, the image can be cleaned up.
+Like &lt;code&gt;init&lt;/code&gt;, but for a set of machines.&lt;/p&gt;
+&lt;p&gt;&amp;ldquo;Run an application anywhere in my data center, I do not care where exactly&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-023.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;K8s refines the concept of a container, compared to Docker:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The Pod: resource barriers (like VM, but is not a VM)&lt;/li&gt;
+&lt;li&gt;Filesystem Namespaces + the Images in one Filesystem Namespace.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This allows the resource barriers to contain multiple processes from multiple images, which can touch each other.
+This is useful for debugging, for sidecars and in many other situations.&lt;/p&gt;
+&lt;p&gt;Sidecars can manipulate and debug payloads in their pod.
+Pods are very cheap, they are basically invisible:
+just namespaces and limits, they take up almost no resources themselves and also have almost no setup time.&lt;/p&gt;
+&lt;p&gt;When talking about Kubernetes, it is useful to not say container, because it is not specific enough.
+What do we mean, when we say container?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the pod,&lt;/li&gt;
+&lt;li&gt;the image,&lt;/li&gt;
+&lt;li&gt;the init-container,&lt;/li&gt;
+&lt;li&gt;the sidecar&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is usually better to use specific words instead of the generic word &amp;ldquo;container&amp;rdquo;.&lt;/p&gt;
+&lt;h1 id=&#34;kubernetes-iteration-1&#34;&gt;
+    &lt;a href=&#34;#kubernetes-iteration-1&#34;&gt;
+	Kubernetes, Iteration 1
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-025.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Earlier this year, we started our first tiny deployment, to test things out:
+8 bladecenters are 128 blades, in 8 racks, with 2x 10 Gbit per Blade.
+If you put only one bladecenter into each rack, the rack is only 10U filled, 30U are empty:
+&amp;ldquo;Not really a cloud, it&amp;rsquo;s more like ground fog&amp;rdquo; when you have only one blade center per rack.&lt;/p&gt;
+&lt;p&gt;Iteration 2 was built with discrete machines (2U):
+128 discrete machines, in 8 racks, 1x 25 Gbit/s per machine, with an option to double this.
+Also, lots of storage and the option to play with distributed storage.&lt;/p&gt;
+&lt;h1 id=&#34;a-million-corecomputer&#34;&gt;
+    &lt;a href=&#34;#a-million-corecomputer&#34;&gt;
+	A million corecomputer
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-026.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;You can try to build the million core computer:
+20.000 machines at 50 cores for a million core computer.
+This is too large for a single cluster, it needs to be split for many reasons.&lt;/p&gt;
+&lt;p&gt;The workload is image based on unified hardware, and the workload is
+location independent.
+That is, any core in any machine can talk to any disk in any box.
+This needs very strong networking.&lt;/p&gt;
+&lt;h1 id=&#34;trying-out-openshift&#34;&gt;
+    &lt;a href=&#34;#trying-out-openshift&#34;&gt;
+	Trying out Openshift
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-027.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;For a full production deployment, we considered using OpenShift.
+At that point in time it looked like a good idea to get more familiar with K8s.
+OpenShift provided a number of solutions for us that otherwise would need specific solutions from us.&lt;/p&gt;
+&lt;p&gt;For about two years it was very useful, but in the end it was moving too slow.&lt;/p&gt;
+&lt;h1 id=&#34;networking&#34;&gt;
+    &lt;a href=&#34;#networking&#34;&gt;
+	Networking
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-029.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Clusters always need good networking.
+The network we have is using L2 domains per rack, L3 with BGP between the racks.
+It is a Leaf-and-spine, which can be oversubscription-free to up to 1.6 TBit/s at the top-of-rack,
+but we have no need for this at the moment.
+The way we built it means we can incrementally grow it as needed.&lt;/p&gt;
+&lt;p&gt;We have a lot of east-west-traffic.
+This is expected for such a cluster, and it is unlike before, with monolithic bare-metal systems.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-030.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Out network looks like this.
+Container machines have 100 Gbit/s, but are part of the same topology as for the bare metal stuff.
+There is no special K8s network and also no dedicated storage network, leaf-and-spine topology takes care of all of this.&lt;/p&gt;
+&lt;h1 id=&#34;you-need-less-sdn-than-you-think&#34;&gt;
+    &lt;a href=&#34;#you-need-less-sdn-than-you-think&#34;&gt;
+	You need less SDN than you think
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We have played with several SDN instances:
+Juniper, Midokura, we found that SDN &amp;ldquo;is too good&amp;rdquo; for our needs.
+Openstack like SDN gives you a lot of flexibility, developers can build an arbitrary virtual network architectures.
+The SDN will build and simulate that.&lt;/p&gt;
+&lt;p&gt;We do not want to give Devs this power, because devs will use this.
+This will be very hard to maintain.
+We want something standardized.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-032.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;It also leads to fragility and upgrade problems at the network level.
+We are not using SDN at the moment, having Midokura on the backburner.
+Instead, we are experimenting with service meshes like Envoy.&lt;/p&gt;
+&lt;p&gt;We want shared infrastructure on a physical node (i.e. centralized logging),
+but we are not doing this right now.
+Instead we use instead sidecars for logging and monitoring.
+Since we are not a hoster it can be okay to share things.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-035.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Finding things is hard in a cluster.
+IP addresses and host names no longer mean a thing, they are no longer fixed and can shift around as the cluster topology changes.
+This is also a problem for IP-based access rules, or for identifying machines by IP-address, as Cassandra does it.
+Everything is dynamic. How do you find things?&lt;/p&gt;
+&lt;p&gt;Enter &lt;code&gt;etcd&lt;/code&gt; as a consensus system and as a registry for endpoints and services.
+Things that run in the cluster register themselves in the &lt;code&gt;etcd&lt;/code&gt; and can provide capacity to a service.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-036.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Kubernetes creates services, which are almost a load balancer.
+The service monitors the available backends in &lt;code&gt;etcd&lt;/code&gt;, and updates when the list in &lt;code&gt;etcd&lt;/code&gt; changes.
+Incoming requests are randomly routed to any available backend.&lt;/p&gt;
+&lt;p&gt;Lookups of services are cheap:
+Backends register themselves in &lt;code&gt;etcd&lt;/code&gt;, with a lifetime, when they are ready to serve.
+They regularly refresh their presence in &lt;code&gt;etcd&lt;/code&gt; in order to prevent the registration from expiring.&lt;/p&gt;
+&lt;p&gt;Services subscribe to changes in the endpoint list, and cache the list.
+They get a notification when the list changes, update their cached copy.
+Incoming requests are being served from the locally cached copy.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-037.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;In OpenShift, this is being implemented in a very, very large number of &lt;code&gt;iptables&lt;/code&gt;-rules,
+and that can lead to problems.
+We typically see a few 10k rules, and they are used to select random instance to handle a request using DNAT.
+This is not pretty.&lt;/p&gt;
+&lt;p&gt;Service meshes solve the same problem with application level proxying, which is easier to handle, at the cost of latency.&lt;/p&gt;
+&lt;h1 id=&#34;balancing-load&#34;&gt;
+    &lt;a href=&#34;#balancing-load&#34;&gt;
+	Balancing load
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-038.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Kubernetes does not migrate instances, ever,
+because that usually does not work at all.
+Instead, instances are rescheduled, which means the old instance is destroyed,
+and a new one is created.
+The number of instances is variable, single things should not exist.&lt;/p&gt;
+&lt;h1 id=&#34;storage&#34;&gt;
+    &lt;a href=&#34;#storage&#34;&gt;
+	Storage
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This is a problem for things that have state, and use storage.
+Kubernetes has a relatively new and recent feature that is largely untested,
+called Persistent Volume Claims, which handles this in a nice way.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-040.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;When you have a piece of hardware that provides storage in the form of volumes.
+Volumes need to be created in a hardware specific way, and are then served as iSCSI volumes to the cluster.
+Somebody needs to format them with a filesystem, but only if they are new and empty.&lt;/p&gt;
+&lt;p&gt;It used to be a manual process: Create a bunch of formatted persistent volumes (PVs), and make them available.
+The cluster would get requests for these, and find the smallest one large enough to serve, label it and assign it an identity.
+It would then serve this out.&lt;/p&gt;
+&lt;p&gt;This is a partially manual process, and also leads to overprovisioning, because the prepared PV is likely larger than requested.&lt;/p&gt;
+&lt;h1 id=&#34;dynamic-persistent-volume-clains-pvcs&#34;&gt;
+    &lt;a href=&#34;#dynamic-persistent-volume-clains-pvcs&#34;&gt;
+	Dynamic Persistent Volume Clains (PVCs)
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-041.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;New and automated: PODs can ask for storage, using a persistent volume claim (PVC).
+The cluster intercepts this request, a volume is made to order, and then served out to the requesting pod.
+This often fails: many storages do not like volumes to be created and deleted at a fast pace.&lt;/p&gt;
+&lt;p&gt;When it works, it looks like this:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-042.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;PVC is scheduled with the rest of things&lt;/li&gt;
+&lt;li&gt;PVC intercepted, PV made to order&lt;/li&gt;
+&lt;li&gt;Host node mounts the PV using iSCSI&lt;/li&gt;
+&lt;li&gt;Bind mount puts the volume into the Pod&lt;/li&gt;
+&lt;li&gt;Volume is being prepared if needed, and&lt;/li&gt;
+&lt;li&gt;Volume is then available.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-043.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;When the node fails,&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The pod is rescheduled&lt;/li&gt;
+&lt;li&gt;The new instance of the pod has the old identity with the old PVC&lt;/li&gt;
+&lt;li&gt;iSCSI lock is broken, volume is dismounted, mounted in on the new host&lt;/li&gt;
+&lt;li&gt;New bind mount&lt;/li&gt;
+&lt;li&gt;PV comes online in the new instance of that Pod.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It requires that Pods have a fixed identity (are available as a fixed size array).
+This is the Kubernetes &lt;code&gt;PetSet&lt;/code&gt; or &lt;code&gt;StatefulSet&lt;/code&gt; now.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-044.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Plenty of limits: In our case, 64 hosts with Solidfire and the Trident API.
+iSCSI has latency issues for some applications.
+These issues are being fixed, but currently don&amp;rsquo;t work.&lt;/p&gt;
+&lt;p&gt;We need &amp;lt; 0.5ms commit latency, but do get 4ms with the current setup.&lt;/p&gt;
+&lt;h1 id=&#34;stateful-sets&#34;&gt;
+    &lt;a href=&#34;#stateful-sets&#34;&gt;
+	Stateful Sets
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-046.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Storage is a way to manage state.
+State is unique, instances have names or fixed identities.
+This is a concept that previously was not available in Kubernetes.&lt;/p&gt;
+&lt;p&gt;The new &lt;code&gt;StatefulSet&lt;/code&gt; API implements this.
+They guarantee ordered teardown and startup of Pods, with fixed identities.
+This is needed by any cluster, for example in Zookeeper, MySQL, Elasticsearch and in many other storage systems.&lt;/p&gt;
+&lt;p&gt;We have mysql running in &lt;code&gt;StatefulSet&lt;/code&gt;.
+We also test with Elastic, and also our internal Availability Database.&lt;/p&gt;
+&lt;h1 id=&#34;no-ipv6&#34;&gt;
+    &lt;a href=&#34;#no-ipv6&#34;&gt;
+	No IPv6
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-049.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;We are using IP per Pod, so we consume a lot of IP addresses.
+With 100 hosts, many Pods per Host.
+Racks are L2 domains, BGP at the Top-of-Rack switch/router.
+A 100 node cluster can easily eat a V4 /16, which is unacceptable even with RFC addresses.&lt;/p&gt;
+&lt;p&gt;Unexpectedly, Kubernetes is an excellent use-case for IPv6 in production,
+but it is internal, not visible to the outside.&lt;/p&gt;
+&lt;p&gt;Unfortunately, Kubernetes, a brand-new project developed at Google,
+is at this point in time totally unaware of IPv6.
+Nobody knews why, and it really hurts.&lt;/p&gt;
+&lt;h1 id=&#34;getting-into-the-cluster-gateway-routers&#34;&gt;
+    &lt;a href=&#34;#getting-into-the-cluster-gateway-routers&#34;&gt;
+	Getting into the cluster: Gateway routers
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-050.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Ingress Routers exist on Gateway nodes.
+These can act as chokepoints,
+especially when there is a lot of traffic from certain nodes,
+for example external databases.&lt;/p&gt;
+&lt;p&gt;A way around that:&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-051.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Put legacy databases inside the cluster
+using in our case ovs-switchd.
+This will &amp;ldquo;take physical database and lift it into the virtual&amp;rdquo;,
+so you have a bare-metal node that pretends to be in the cluster.
+This works only if that external node can be trusted.&lt;/p&gt;
+&lt;p&gt;This is not specific to our way of networking, it is also a problem in proper SDNs.&lt;/p&gt;
+&lt;h1 id=&#34;breaking-ip-based-security&#34;&gt;
+    &lt;a href=&#34;#breaking-ip-based-security&#34;&gt;
+	Breaking IP-based security
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-052.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;red = allowed, green, yellow, blue = random other things&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Exit IP are now random, and do not identify a service.
+Any IP-based security no longer works.&lt;/p&gt;
+&lt;p&gt;Traditional firewalls are useless; the only way to go is to allow-list the entire cluster.&lt;/p&gt;
+&lt;h1 id=&#34;towards-a-service-mesh-and-envoy&#34;&gt;
+    &lt;a href=&#34;#towards-a-service-mesh-and-envoy&#34;&gt;
+	Towards a service mesh, and Envoy
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In our current model, firewall rules are autogenerated from ServerDB data.
+This does not work with Kubernetes at all.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-054.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;A way around this is to TLS all the things, and use client certificates to identity services.
+Connections need to be intercepted and automatically authenticated, then be allowed or disallowed based on their identity.&lt;/p&gt;
+&lt;p&gt;Trireme is a way to do this at the kernel level, requires no adjustment in the application.
+Other ways work with proxies towards the same goal.&lt;/p&gt;
+&lt;p&gt;We haven&amp;rsquo;t been able to test that, yet.
+It feels weird from where we are coming from, and is a bit scary.&lt;/p&gt;
+&lt;h1 id=&#34;sizing-the-cluster&#34;&gt;
+    &lt;a href=&#34;#sizing-the-cluster&#34;&gt;
+	Sizing the cluster
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-056.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;How large can a cluster be?
+It can run on a laptop, or on one or three prod boxes.&lt;/p&gt;
+&lt;p&gt;Currently have low hundreds of cluster nodes.
+Large clusters are not good, you&amp;rsquo;d want more clusters instead of one rather large one.
+This provides resiliency.&lt;/p&gt;
+&lt;p&gt;Next step: Cluster Federation.
+This is a very experimental k8s feature, and a research topic.
+Nobody has an idea how any of that works.
+If it works, it will be very useful.&lt;/p&gt;
+&lt;h1 id=&#34;local-kubernetes-and-the-public-cloud&#34;&gt;
+    &lt;a href=&#34;#local-kubernetes-and-the-public-cloud&#34;&gt;
+	Local Kubernetes and the Public Cloud
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-059.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;We experiment with the public cloud as well.
+But we do like bare-metal:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;we control the crosstalk between apps&lt;/li&gt;
+&lt;li&gt;we can freely define instance sizes&lt;/li&gt;
+&lt;li&gt;When we talk to a cloud provider about 1 mio cores, how long would it take to spin this up?
+&lt;ul&gt;
+&lt;li&gt;They do not have the capacity ready in idle, can take a while to get capacity.&lt;/li&gt;
+&lt;li&gt;At enterprise level, the cloud is not elastic: preallocation is necessary.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Data centers are not things that have high margins or low latency.
+4MW = 20.000 machines -&amp;gt; somebody needs to run excavators to provide this capacity.
+Long term contracts are par for the course, so it is mostly a capex to opex shift.&lt;/p&gt;
+&lt;h1 id=&#34;why-kubernetes-on-bare-metal&#34;&gt;
+    &lt;a href=&#34;#why-kubernetes-on-bare-metal&#34;&gt;
+	Why Kubernetes on Bare-Metal?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-060.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;Virtual Machines are not helping with any problem we have.
+They would add complexity and jitter, and add no benefit.&lt;/p&gt;
+&lt;h1 id=&#34;what-about-the-monolith&#34;&gt;
+    &lt;a href=&#34;#what-about-the-monolith&#34;&gt;
+	What about the Monolith?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2017/06/something/containers-061.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;What about the Monolith?
+That&amp;rsquo;s another problem, it&amp;rsquo;s a problem being worked on.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
+

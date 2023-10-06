@@ -6,7 +6,7 @@
     <description>Recent content in usenet on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 04 Oct 2023 15:41:12 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/usenet/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 06 Oct 2023 13:48:50 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/usenet/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>The Need for Smarter Clients</title>
       <link>https://blog.koehntopp.info/2023/09/18/the-need-for-smarter-clients.html</link>
@@ -1220,6 +1220,385 @@ stellen muß, lautet:
 
 Die Frage, die auch kommen muß: Ist das Konzept des Zwangsmittlers technisch
 und rechtlich durchsetzbar? Ist es gesellschaftlich erwünscht?&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Der eigene USENET Server</title>
+      <link>https://blog.koehntopp.info/2005/03/19/der-eigene-usenet-server.html</link>
+      <pubDate>Sat, 19 Mar 2005 20:08:30 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2005/03/19/der-eigene-usenet-server.html</guid>
+      <description>&lt;p&gt;Der Wegfall von &amp;ldquo;news.individual.net&amp;rdquo; als kostenloser Server für USENET News mag den einen oder anderen Benutzer des Servers motiviert haben,
+sich selber mit News zu versorgen.
+Dieser Text soll dabei helfen,
+etwa auf einem der üblichen Dedicated Server bei einem Hoster oder an einer anderen geeigneten Stelle im Netz einen eigenen INN als News-Server aufzusetzen,
+und so zu konfigurieren, dass er ein nützlicher Teil der USENET-Infrastruktur in Deutschland ist,
+und dass einige Benutzer dort News lesen können.&lt;/p&gt;
+&lt;h1 id=&#34;ressourcenplanung&#34;&gt;
+    &lt;a href=&#34;#ressourcenplanung&#34;&gt;
+	Ressourcenplanung
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;traffic&#34;&gt;
+    &lt;a href=&#34;#traffic&#34;&gt;
+	Traffic
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die Gruppen im deutschsprachigen Teil des USENET haben das Prefix &lt;code&gt;de.*&lt;/code&gt;.
+Lediglich im Teil &lt;code&gt;de.alt.dateien.*&lt;/code&gt; dürfen Bild- und Programmdateien veröffentlicht werden,
+und so kommt es, dass sich das Verkehrsaufkommen im Restteil &lt;code&gt;de.*,!de.alt.dateien.*&lt;/code&gt; in recht engen Grenzen hält:
+Pro Tag sind etwa 20 MB Traffic einzuplanen.
+Internationale Gruppen können ein Verkehrsaufkommen zwischen 150 und 200 MB am Tag erzeugen.&lt;/p&gt;
+&lt;p&gt;Die Maschine, auf der inn-Server laufen soll, sollte eine feste IP-Nummer haben, die unterbrechungsfrei verfügbar ist.
+Es sind Setups denkbar, in denen einer der beiden am Austausch beteiligten Partner eine wechselnde oder nur mit Unterbrechungen verfügbare Adresse hat,
+aber diese sind nicht Gegenstand dieser Dokumentation.&lt;/p&gt;
+&lt;h2 id=&#34;ram--und-festplattenbedarf&#34;&gt;
+    &lt;a href=&#34;#ram--und-festplattenbedarf&#34;&gt;
+	RAM- und Festplattenbedarf
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ein laufender &lt;code&gt;innd&lt;/code&gt; auf einem Intel-basierenden Suse-Linux-System verbraucht 12 MB RAM für den &lt;code&gt;innd&lt;/code&gt;, den eigentlichen Newsserver.
+Außerdem werden noch ein &lt;code&gt;innfeed&lt;/code&gt;-Prozess (2 MB RAM) zur Artikelweitergabe und einige Hilfsprozesse für statistische Zwecke
+und zur Ausführung von Wartungsarbeiten gestartet.
+Alles in allem werden 25-30 MB RAM verbraucht.&lt;/p&gt;
+&lt;p&gt;Die Speicherung der Artikel erfolgt am günstigsten in sogenannten &amp;ldquo;CNFS Cyclebuffs&amp;rdquo;.
+Dabei handelt es sich um Ringpuffer-Dateien fester Größe, sodass der Speicherbedarf für Artikel auf der Festplatte konstant ist.
+Die Installation des Autors hat jeweils ein halbes Gigabyte für &lt;code&gt;de.*,!de.alt.dateien.*&lt;/code&gt; und für regionale deutschsprachige Hierarchien reserviert.
+Drei Gigabyte sind für internationale Artikel aus den Big8-Hierarchien bereitgestellt.&lt;/p&gt;
+&lt;p&gt;INN muss für lesenden Zugriff auf die Artikel eine Overview-Datenbank pflegen.
+Diese belegt etwa 10% des Speichers zusätzlich, der für Artikel belegt wird.&lt;/p&gt;
+&lt;h2 id=&#34;weitere-anforderungen&#34;&gt;
+    &lt;a href=&#34;#weitere-anforderungen&#34;&gt;
+	Weitere Anforderungen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Der CPU-Aufwand und die IO-Last auf dem Server des Autors sind vernachlässigbar.
+Dazu trägt die Verwendung von CNFS ganz erheblich bei.&lt;/p&gt;
+&lt;p&gt;NNTP und NNRP, die Protokolle zum Übertragen von News und zum Lesen von News, verwenden standardmäßig den Port 119/TCP.&lt;/p&gt;
+&lt;p&gt;Der Autor verwendet Suse Linux 9.1 als Grundlage für diese Installation.
+Sie ist jedoch auf allen Linux-Distributionen grundsätzlich ähnlich.&lt;/p&gt;
+&lt;h1 id=&#34;installation&#34;&gt;
+    &lt;a href=&#34;#installation&#34;&gt;
+	Installation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Suse Linux 9.1 liefert im Paket &lt;code&gt;inn&lt;/code&gt; einen INN in der Version 2.4.1.
+Dies ist relativ aktuell.
+Nach der Installation befinden sich die Konfigurationsdateien in &lt;code&gt;/etc/news&lt;/code&gt;,
+die öffentlichen Programme in &lt;code&gt;/usr/bin&lt;/code&gt;,
+die nicht öffentlichen Programme in &lt;code&gt;/usr/lib/news/bin&lt;/code&gt;,
+einige wichtige Arbeitsdateien in &lt;code&gt;/var/lib/news&lt;/code&gt;
+und der Artikelspeicher wird in &lt;code&gt;/var/spool/news&lt;/code&gt; angelegt.
+INN wird nach &lt;code&gt;/var/log/news&lt;/code&gt; loggen.&lt;/p&gt;
+&lt;p&gt;Andere Distributionen verwenden möglicherweise leicht unterschiedliche Speicherorte, die Anleitung ist dann passend abzuwandeln.&lt;/p&gt;
+&lt;p&gt;Alle Konfiguration am INN ist immer als User &lt;code&gt;news&lt;/code&gt; durchzuführen und niemals als User &lt;code&gt;root&lt;/code&gt;,
+außer dies wird ausdrücklich gesagt.
+Sobald durch Änderungen als &lt;code&gt;root&lt;/code&gt; Konfigurations-, Log- oder andere Dateien einem anderen Benutzer als &lt;code&gt;news&lt;/code&gt; gehören,
+wird INN möglicherweise nicht mehr sauber funktionieren.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:-/bin&amp;gt; cat /etc/SusE-release
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;SusE Linux 9.1 (1586)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;VERSION = 9.1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:~/bin&amp;gt; rpm -q inn
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;inn-2.4.1-33
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Man muss also als &lt;code&gt;root&lt;/code&gt; das Kommando &lt;code&gt;su – news&lt;/code&gt; eingeben,
+um auf den Useraccount von &lt;code&gt;news&lt;/code&gt; zu wechseln und auch das Environment des &lt;code&gt;news&lt;/code&gt;-Users zu bekommen.
+Man befindet sich dann auch gleich im Home-Verzeichnis des News-Users.
+In SuSE Linux ist das &lt;code&gt;/etc/news&lt;/code&gt;, wo sich auch die im Folgenden beschriebenen Konfigurationsdateien befinden.&lt;/p&gt;
+&lt;h1 id=&#34;inbetriebnahme&#34;&gt;
+    &lt;a href=&#34;#inbetriebnahme&#34;&gt;
+	Inbetriebnahme
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;artikelspeicher-bereit-stellen&#34;&gt;
+    &lt;a href=&#34;#artikelspeicher-bereit-stellen&#34;&gt;
+	Artikelspeicher bereit stellen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In unserer Beispielinstallation soll der INN mit einem Artikelspeicher in CNFS (&amp;ldquo;Cyclic News File System&amp;rdquo;) betrieben werden,
+weil dies die ressourcensparendste und wartungsärmste Art der Artikelspeicherung ist.
+Die CNFS-Puffer müssen konfiguriert und angelegt werden.&lt;/p&gt;
+&lt;p&gt;Versäumt man das, verwendet INN den in der Default-Konfiguration definierten Traditional Spool.
+Dieser erzeugt jedoch mehr I/O-Last auf dem System und ist in der Größe variabel.
+Dafür steht sein Inhalt Scripten leichter zu Verfügung:
+Artikel werden als Dateien unterhalb von &lt;code&gt;/var/spool/news/articles/&lt;/code&gt; in Verzeichnissen abgelegt,
+die aus dem Namen der Newsgroup abgeleitet sind und müssen durch einen Aufräumjob (&lt;code&gt;expire&lt;/code&gt;) von dort gelöscht werden.
+Die Verwendung von Traditional Spool ist nicht empfohlen, insbesondere nicht für INN Neueinsteiger.&lt;/p&gt;
+&lt;p&gt;Die Puffer werden in der Datei &lt;code&gt;cycbuff.conf&lt;/code&gt; definiert.
+Eine Pufferdefinition besteht aus einer oder mehr Zeilen, von denen jede einen &lt;code&gt;cycbuff&lt;/code&gt; definiert.
+Diese Puffer müssen dann zu einem &lt;code&gt;metacycbuff&lt;/code&gt; zusammengeklebt werden, damit sie durch den INN benutzbar werden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:-/peerdata&amp;gt; cat ~/cycbuff.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; 512MB Puffer fuer de.*
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: DE1: /var/spool/news/cycbuffs/file_de.1:524288
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; Sechs &lt;span class=&#34;m&#34;&gt;512&lt;/span&gt; MB Puffer fuer den Rest
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: INTL1:/var/spool/news/cycbuffs/file_intl.1:524288
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: INTL2:/var/spool/news/cycbuffs/file_intl.2:524288
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: INTL3:/var/spool/news/cycbuffs/file_intl.3:524288 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: INTL4:/var/spool/news/cycbuffs/file_intl.4:524288
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: INTL5:/var/spool/news/cycbuffs/file_intl.5:524288
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cycbuff: INTL6:/var/spool/news/cycbuffs/file_intl.6:524288
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; Puffer zusammenkleben zu Metapuffern
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;metacycbuff: DE: DE1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;metacycbuff: INTL: INTL1, INTL2, INTL3, INTL4, INTL5, INTL6
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Leider ist INN bei der Benennung der &amp;ldquo;cycbuff&amp;rdquo; und &amp;ldquo;metacycbuff&amp;rdquo; sehr eingeschränkt:
+Namen müssen kurz sein und dürfen nur aus Zahlen und Buchstaben bestehen.&lt;/p&gt;
+&lt;p&gt;Im Beispiel wird ein &amp;ldquo;cycbuff&amp;rdquo; mit dem Namen &amp;ldquo;DE1&amp;rdquo; definiert, der 524288 KB (512 MB) groß sein soll.
+Die Location im Dateisystem für diesen Puffer ist &lt;code&gt;/var/spool/news/cycbuffs/file_de.1&lt;/code&gt;.
+Dort muss diese Datei auch angelegt werden.
+Dies erfolgt mit dem Kommando &lt;code&gt;dd&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; dd &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/dev/zero &lt;span class=&#34;nv&#34;&gt;of&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/var/spool/news/cycbuffs/file_de.1 &lt;span class=&#34;nv&#34;&gt;bs&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;1024k &lt;span class=&#34;nv&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;512&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;INN selber arbeitet immer nur mit &amp;ldquo;metacycbuffs&amp;rdquo;.
+Ein &amp;ldquo;metacycbuff&amp;rdquo; faßt dabei einen oder mehrere einzelne &amp;ldquo;cycbuff&amp;rdquo; zu einer für den INN benutzbaren Einheit zusammen.
+Der &amp;ldquo;metacycbuff&amp;rdquo; DE besteht dabei ausschließlich aus dem einzelnen cycbuff &amp;ldquo;DE1&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Das Beispiel definiert außerdem noch sechs jeweils 512 MB umfassende cycbuffs INTL1 bis INTL6.
+Auch diese müssen mit entsprechenden &lt;code&gt;dd&lt;/code&gt;-Kommandos angelegt werden
+und können dann alle zusammen zu einem &amp;ldquo;metacycbuff&amp;rdquo; INTL mit 3 GB Gesamtgröße zusammengefasst werden.&lt;/p&gt;
+&lt;p&gt;Damit INN weiß, welche Artikel in welchem Puffer abgelegt werden sollen,
+müssen in der &lt;code&gt;storage.conf&lt;/code&gt; entsprechende Einträge gemacht werden.&lt;/p&gt;
+&lt;p&gt;Die Zeile &lt;code&gt;newsgroups&lt;/code&gt; legt dabei fest, welche Gruppen in welchem Puffer abgelegt werden.
+Die Zeile &lt;code&gt;class&lt;/code&gt; ist eine eindeutige Nummer für jeden Eintrag, damit man an anderer Stelle auf den Eintrag Bezug nehmen kann.&lt;/p&gt;
+&lt;p&gt;Die Zeile &lt;code&gt;options&lt;/code&gt; legt für CNFS-Einträge fest, welcher &lt;code&gt;metacycbuff&lt;/code&gt; Speicher für den entsprechenden Eintrag bereitstellen soll.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:-/peerdata&amp;gt; cat ~/storage.conf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;method cnfs {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    newsgroups: de.*
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    class: 3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    options: DE
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;method cnfs {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    newsgroups: *
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    class: 2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    options: INTL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; Traditional Spool Klappert leer und wird dann gelöscht...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;method tradspool {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    newsgroups: *
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    class: 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Im Beispiel wandern Artikel für die Newsgroups &lt;code&gt;de.*&lt;/code&gt; immer in den CNFS-Speicher &lt;code&gt;DE&lt;/code&gt; mit der eindeutigen Nummer 3.
+Alle anderen Artikel wandern in den CNFS-Speicher &lt;code&gt;INTL&lt;/code&gt; mit der Nummer 2.&lt;/p&gt;
+&lt;p&gt;Der Eintrag 1 definiert einen Speicher im Format &lt;code&gt;tradspool&lt;/code&gt;.
+Er wird niemals verwendet, weil der Eintrag 2 vorher alle Artikel abfängt.
+Der Eintrag 1 ist der (nicht empfohlene, aber rückwärts kompatible) Default-Eintrag in der &lt;code&gt;storage.conf&lt;/code&gt; von INN.&lt;/p&gt;
+&lt;p&gt;Sobald INN erst einmal gestartet ist (siehe unten), werden die Puffer initialisiert.
+Zu einem späteren Zeitpunkt kann man dann mit dem Kommando &lt;code&gt;cnfsstat -a&lt;/code&gt; ansehen, wie ausgelastet die Puffer sind.&lt;/p&gt;
+&lt;h2 id=&#34;grundkonfiguration-inn&#34;&gt;
+    &lt;a href=&#34;#grundkonfiguration-inn&#34;&gt;
+	Grundkonfiguration inn
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Vor dem ersten Start des Servers ist die &lt;code&gt;/etc/news/inn.conf&lt;/code&gt; anzupassen.
+Zu ändern sind:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-organization: &amp;#34;A pooly-installed InterNetNews site&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+organization: &amp;#34;Deine Organisations-Zeile
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Definiert den Inhalt der Zeile &lt;code&gt;Organization&lt;/code&gt;, die Bestandteil eines jeden Artikels ist.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-#pathhost: localhost
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+pathhost: news.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Definiert, was Deine Site in den Path-Header einträgt.
+Dies ist ein sehr wichtiges Datum für das Peering mit anderen Sites.
+Es sollte Dein Domainname sein, oder ein vom Domainnamen abgeleiteter Name wie &lt;code&gt;news.koehntopp.de&lt;/code&gt; für &lt;code&gt;koehntopp.de&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Mit Hilfe des &lt;code&gt;pathhost&lt;/code&gt; erkennt ein entfernter Server,
+ob ein bestimmter Artikel schon einmal Dein System passiert hat.
+Wenn ja, wird Dir der Artikel kein zweites Mal angeboten.
+Dies kann sehr viel Traffic einsparen, wenn man mehrere Feeds für eine Hierarchie hat.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+complaints: abuse@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+fromhost: example.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Definiert den Inhalt der Headerzeile &lt;code&gt;X-Complaints-To&lt;/code&gt; und die Domain,
+mit deren Hilfe Usernamen zu Mailadressen komplettiert werden, wenn dies notwendig ist.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-docnfsstat: false
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+docnfsstat: true
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dieser Eintrag ist optional.
+Wenn man jedoch später statistische Auswertungen auf dem System für den Betrieb plant,
+sollten laufende Meßdaten für die Auslastung der CNFS-Puffer vorliegen.
+Dazu muss dieser Eintrag aktiv geschaltet sein.&lt;/p&gt;
+&lt;h2 id=&#34;crontab-aufsetzen&#34;&gt;
+    &lt;a href=&#34;#crontab-aufsetzen&#34;&gt;
+	Crontab aufsetzen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;INN muss in regelmäßigen Abständen einige Wartungsaufgaben erledigen.
+Daher sollte für den User &lt;code&gt;news&lt;/code&gt; eine Crontab wie die folgende definiert sein:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:~&amp;gt; cat crontab.current
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; to expire old news-articles
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;15 4 * * * /usr/lib/news/bin/news.daily expireover delayrm lowmark
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; dump path databases
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; * * * /usr/lib/news/bin/ctlinnd flush &lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;inpaths! &amp;gt; /dev/null 2&amp;gt;&lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;5&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;0&lt;/span&gt; 1,15 * * /us/lib/news/bin/sendinaths
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; inews stores news-articles in /var/spool/news/in.coming, &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; INN ist
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; not running. the next &lt;span class=&#34;s2&#34;&gt;&amp;#34;rnews -U&amp;#34;&lt;/span&gt; will feed those news-articles into
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; inn.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;10 * * * * /usr/bin/rnews-U
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;33&lt;/span&gt; * * * * /usr/lib/news/bin/scanlogs norotate 2&amp;gt;/dev/null &amp;gt;/dev/null
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:~&amp;gt; crontab crontab.current 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3113:~&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Crontab enthält nur die für den Betrieb unmittelbar notwendigen Einträge in aktivierter Form.
+Die auskommentierten Einträge sind für spätere Erweiterungen notwendig oder nützlich.&lt;/p&gt;
+&lt;p&gt;Der Eintrag &lt;code&gt;news.daily&lt;/code&gt; führt die zum Betrieb von INN notwendigen Wartungsaufgaben durch.
+Er muss einmal pro Tag ausgeführt werden.&lt;/p&gt;
+&lt;p&gt;Der Eintrag &lt;code&gt;rnews- U&lt;/code&gt; kann einmal pro Stunde ausgeführt werden.
+Er dient dazu, während Betriebspausen aufgelaufene Artikel nachträglich ins System einzuspeisen.&lt;/p&gt;
+&lt;p&gt;Die beiden Einträge &amp;ldquo;inpaths!&amp;rdquo; und &amp;ldquo;sendinpaths&amp;rdquo; sind nur notwendig,
+wenn das System Statistikdaten in die &amp;ldquo;Top 1000 der Newsserver&amp;rdquo; einspielen will.
+Damit das funktioniert sind jedoch noch weitere Konfigurationen notwendig (siehe unten).&lt;/p&gt;
+&lt;p&gt;Der Eintrag &lt;code&gt;scanlogs norotate&lt;/code&gt; dient dazu,
+stündlich den Statistikreport für das laufende System zu aktualisieren.
+Damit das funktioniert sind jedoch noch weitere Konfigurationen notwendig (siehe unten).&lt;/p&gt;
+&lt;h2 id=&#34;server-hochfahren&#34;&gt;
+    &lt;a href=&#34;#server-hochfahren&#34;&gt;
+	Server hochfahren
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Mit der angegebenen Konfiguration sollte der INN durch den Systemadministrator startbar sein.&lt;/p&gt;
+&lt;p&gt;Das Kommando &lt;code&gt;chkconfig inn on&lt;/code&gt; sorgt dafür, dass beim Systemstart automatisch auch der INN mit hochgefahren wird.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Als User root:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; chkconfig inn on
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; rcinn start
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Das Kommando &lt;code&gt;rcinn start&lt;/code&gt; fährt den Server manuell hoch.
+Der Server sollte Startmeldungen in &lt;code&gt;/var/log/news/news.notice&lt;/code&gt; hinterlassen
+und in der Prozessliste sollte ein Prozess &lt;code&gt;innd&lt;/code&gt; erkennbar sein,
+der mit den Rechten des Users &lt;code&gt;news&lt;/code&gt; ausgeführt wird.
+Mit &lt;code&gt;lsof -i -n -P&lt;/code&gt; sollte dieser Prozess auf Port 119 lauschen.
+Von localhost aus kann man jetzt einen Testconnect gegen den NNTP-Port machen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:~&amp;gt; telnet localhost 119
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Trying 127.0.0.1...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Connected to localhost.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Escape character is &amp;#39;^]&amp;#39;.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;200 koehntopp.de InterNetNews server INN 2.4.1 ready
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; mode reader
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;200 koehntopp.de InterNetNews NNRP server INN 2.4.1 ready (posting ok).
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;list
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;215
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;control 0000000000 0000000001 n 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;control.cancel 0000000000 0000000001 n
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;contrel.checkgroups 0000000000 0000000001 n
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;contrel.newgroup 0000000000 0000000001 n 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;control.rmgroup 0000000000 0000000001 n
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;junk 0000000000 0000000001 n
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;quit
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;205
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Connection closed by foreign host.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wenn das funktioniert, ist der Server erfolgreich grundkonfiguriert und hochgefahren.&lt;/p&gt;
+&lt;h1 id=&#34;gruppen-anlegen&#34;&gt;
+    &lt;a href=&#34;#gruppen-anlegen&#34;&gt;
+	Gruppen anlegen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;testgruppe-einrichten&#34;&gt;
+    &lt;a href=&#34;#testgruppe-einrichten&#34;&gt;
+	Testgruppe einrichten
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Der Server läuft nun und hat einige Standard-Newsgroups, die für die interne Verwaltung des Servers notwendig sind.
+Um die weitere Funktion des Servers zu testen, ist es notwendig, mindestens eine lokale Testgruppe anzulegen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ctlinnd newgroup local.test y news@localhost
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;andere-gruppen-einrichten&#34;&gt;
+    &lt;a href=&#34;#andere-gruppen-einrichten&#34;&gt;
+	Andere Gruppen einrichten
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Die anderen benötigten Gruppen kann man leicht anlegen,
+indem man sich eine Liste der Gruppen beim zukünftigen Upstream-Server abholt und sie in Kommandos zur Gruppeneinrichtung umwandelt.&lt;/p&gt;
+&lt;p&gt;Das Kommando &lt;code&gt;getlist&lt;/code&gt; holt die Liste der aktiven Gruppen vom Server &lt;code&gt;news.koehntopp.de&lt;/code&gt; ab
+und legt sie in der Datei &lt;code&gt;active.news.koehntopp.de&lt;/code&gt; ab.
+Durch das &lt;code&gt;grep&lt;/code&gt;-Kommando werden aus dieser Datei alle Gruppen der Hierarchie &lt;code&gt;de.*&lt;/code&gt; extrahiert.
+Für die Einrichtung der Gruppen sind nur das erste und vierte Feld einer jeden Zeile notwendig.
+Mit dem &lt;code&gt;awk&lt;/code&gt;-Kommando ziehen wir also diese Felder aus der Datei heraus und wandeln sie in &lt;code&gt;ctlinnd&lt;/code&gt;-Kommandos um.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; getlist -h news.koehntopp.de &amp;gt; active.news.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; grep &lt;span class=&#34;s2&#34;&gt;&amp;#34;^de\.&amp;#34;&lt;/span&gt; active.news.koehntopp.de &amp;gt; de-groups
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; awk &lt;span class=&#34;s1&#34;&gt;&amp;#39;{ printf &amp;#34;ctlinnd newgroup %s %s news@localhost\n&amp;#34;, $1, $4 }&amp;#39;&lt;/span&gt; de-groups &amp;gt; einrichten.sh 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ctlinnd throttle now
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; sh einrichten.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ctlinnd go now
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Datei &lt;code&gt;einrichten.sh&lt;/code&gt; enthält nun die benötigten Kommandos zur Gruppeneinrichtung.
+Die Ausführung der Datei ist sehr viel schneller,
+wenn man den Server vor der Ausführung der Kommandos in einen Standby-Modus schaltet und danach wieder in Produktivmodus versetzt.&lt;/p&gt;
+&lt;h1 id=&#34;zugangskontrolle-konfigurieren&#34;&gt;
+    &lt;a href=&#34;#zugangskontrolle-konfigurieren&#34;&gt;
+	Zugangskontrolle konfigurieren
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Mit den Default-Einstellungen kann man jetzt schon lokal (von localhost aus) gegen den Server connecten.
+Um Connects von außen zu erlauben, ist es notwendig, einen Anmeldemechanismus und eine Passwortquelle zu konfigurieren.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;auth all {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    auth: &amp;#34;chkpasswd -f /etc/news/passwd.nnrp&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    default-domain: example.com
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;access full {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    users: *
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    newsgroups: *
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    access: RPA
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;INN verwendet intern ein Programm namens &lt;code&gt;ckpasswd&lt;/code&gt; für die Zugangskontrolle.
+Dieses Programm kann entweder auf eine lokale Passwortdatei zugreifen,
+in der INN-spezifische Passwörter konfiguriert werden,
+oder man kann es mit Priviliegien austatten,
+die ihm erlauben, auf die Systempasswortdatei zuzugreifen.
+Letzteres ist nicht empfohlen, da NNTP ohne weitere Maßnahmen Passwörter im Klartext überträgt.&lt;/p&gt;
+&lt;p&gt;Welche Authentisierungsmechanismen in welcher Reihenfolge von INN verwendet werden,
+wird in der readers.conf festgelegt.
+Die folgenden Einträge legen fest, dass INN die Datei &lt;code&gt;/etc/news/passwd.nnrp&lt;/code&gt; verwenden soll,
+um Logins zu gestatten.
+Die Datei hat dasselbe Format wie eine htpasswd-Datei von Apache und kann mit dem Apache-Programm htpasswd angelegt und verwaltet werden.&lt;/p&gt;
+&lt;p&gt;Der Abschnitt &lt;code&gt;auth&lt;/code&gt; legt fest, mit welchem Kommando die Anmeldeinformationen geprüft werden sollen,
+der Abschnitt access legt dann fest, welche Zugriffsrechte diese Benutzer erhalten sollen.&lt;/p&gt;
+&lt;p&gt;Wenn alles funktioniert, ist nun eine Anmeldung mit Benutzername und Passwort von entfernten Systemen möglich.&lt;/p&gt;
+&lt;h1 id=&#34;verbindungen-feeds-konfigurieren&#34;&gt;
+    &lt;a href=&#34;#verbindungen-feeds-konfigurieren&#34;&gt;
+	Verbindungen (Feeds) konfigurieren
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Ein Feed ist eine Verbindung zwischen zwei Newsservern,
+über die gegenseitig Artikel in bestimmten Newsgroups austauschen.
+Der Feed besteht aus einer eingehenden Verbindung, die in der &lt;code&gt;incoming.conf&lt;/code&gt; konfiguriert wird
+und einer ausgehenden Verbindung, die in der &lt;code&gt;innfeed.conf&lt;/code&gt; definiert wird,
+und für die in der &lt;code&gt;newsfeeds&lt;/code&gt; festgelegt wird, welche Dateien gesendet werden sollen.&lt;/p&gt;
+&lt;p&gt;In der &lt;code&gt;incoming.conf&lt;/code&gt; wird festgelegt, welche entfernten Server dem eigenen Server Daten senden dürfen
+und welche Gruppen diese Server beschicken dürfen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;peer koehntopp.de {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    hostname: &amp;#34;news.koehntopp.de&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    patterns: &amp;#34;de.*,!de.alt.dateien.*&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    max-connections: 5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ein solcher Eintrag gestattet dem entfernten Rechner &lt;code&gt;koehntopp.de&lt;/code&gt; bis zu 5 parallele Verbindungen
+zu dem eigenen Server aufzubauen, über die er Artikel ausschließlich in die genannten Gruppen einliefern darf.&lt;/p&gt;
+&lt;p&gt;Ausgehende Verbindungen werden in die &lt;code&gt;innfeed.conf&lt;/code&gt; eingetragen.
+Analog zur &lt;code&gt;incoming.conf&lt;/code&gt; muss dort ein Link für eine ausgehende Verbindung konfiguriert werden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;peer koehntopp-all {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    ip-name: news.koehntopp.de
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    max-connections: 5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Schließlich wird in der Datei &lt;code&gt;newsfeeds&lt;/code&gt; festgelegt, welche Daten über die ausgehende Verbindung gesendet werden sollen.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-conole&#34; data-lang=&#34;conole&#34;&gt;# koehntopp.de Kristian Koehntopp &amp;lt;kris@koehntopp.de&amp;gt;
+koehntopp-all/koehntopp.de\
+    :!*,@*,de.*,!de.alt.dateien.*/!local\
+    :Ap,Tm:innfeed!
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Die Bestellung für den Channel &lt;code&gt;koehntopp-all&lt;/code&gt; aus dem Beispiel liest sich
+&amp;ldquo;keine Artikel, die &lt;code&gt;koehntopp.de&lt;/code&gt; im Path haben (&lt;code&gt;/koehntopp.de&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;Das Pattern legt fest, welche Newsgruppen über den Kanal gesendet werden sollen.
+Es liest sich &lt;code&gt;!*&lt;/code&gt; (&amp;ldquo;nix, gar nix&amp;rdquo;), &lt;code&gt;@*&lt;/code&gt; (auch keine Crossposts, das ist doppelt gemoppelt),
+&lt;code&gt;de.*,!de.alt.dateien.*&lt;/code&gt; (alle de-Gruppen außer de.alt.dateien.*), jedoch keine Artikel mit der Distribution: &lt;code&gt;local&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Die Flags und der Kanalname legen fest, dass die Daten über den Kanal &lt;code&gt;innfeed!&lt;/code&gt; herausgesendet werden sollen.&lt;/p&gt;
+&lt;p&gt;Deswegen muss der vordefinierte &lt;code&gt;innfeed!&lt;/code&gt;-Kanal in der Datei &lt;code&gt;newsfeeds&lt;/code&gt; aktiviert werden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;innfeed!\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    :!*\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    :Tc,Wnm*:/usr/lib/news/bin/startinnfeed
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Außerdem muss das System Steuernachrichten zur Einrichtung neuer Gruppen,
+zum Löschen von Artikeln usw. verarbeiten können.
+Dazu ist die Aktivierung des Controlchan notwendig.&lt;/p&gt;
+&lt;p&gt;Um die Änderungen wirksam werden zu lassen, muss dem INN-Server ein  &amp;ldquo;reload&amp;rdquo;-Kommando gesendet werden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;news@h3118:~&amp;gt; lsof -i -n -P | grep koehntopp
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;innd  28144 news   57u  IPv4 9342609
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;      TCP example.com:199-&amp;gt;koehntopp.de:2418 (ESTABLISHED)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;innd  32740 news   25u  IPv4 9342489
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;      TCP example.com:42275-&amp;gt;koehntopp.de:119 (ESTABLISHED)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wenn alles funktioniert hat,
+ist das Link jetzt sichtbar und kann mit &lt;code&gt;lsof&lt;/code&gt;
+oder &lt;code&gt;tail -f /var/log/news/news /var/log/news/news.notice&lt;/code&gt; gesehen werden.&lt;/p&gt;
 </description>
     </item>
     
