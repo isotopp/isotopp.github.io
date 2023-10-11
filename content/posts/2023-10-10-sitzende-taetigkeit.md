@@ -47,14 +47,14 @@ Dachte ich, aber es gab Luftpolsterfolie!
 
 Der Stuhl kommt mit einem ausführlichen Handbuch und einer Erklärung der Grundlagen der Ergonomie.
 Das braucht es auch, denn dies ist ein richtiger Bürostuhl,
-und kein Rückenbrecher-Gamersitz oder gar, wie einige Kollegen auch im Jahr 3 der Pandemie, ein Küchenstuhl.
+und kein Gamer-Stuhl oder gar, wie einige Kollegen auch im Jahr 3 der Pandemie, ein Küchenstuhl.
 
 ![](/uploads/2023/10/sitz-04.jpg)
 
 *Bild des Bürostuhls am Arbeitsort: Höhenverstellbarer Schreibtisch, jede Menge Strom, eine Rollmatte und ein ordentlicher Stuhl.
 Tageslicht von Links.*
 
-Der Stuhl kommt mit einer Vielzahl an Einstell- und Anpaßmöglichkeiten.
+Der Stuhl kommt mit einer Vielzahl an Einstellmöglichkeiten.
 
 ![](/uploads/2023/10/sitz-05.jpg)
 
@@ -62,7 +62,7 @@ Der Stuhl kommt mit einer Vielzahl an Einstell- und Anpaßmöglichkeiten.
 
 1. Sitzhöhe.
 2. Sitztiefe. Die Sitzfläche gleitet nach vorn, und ich passe auf den Stuhl.
-3. Armlehnenbreite. Ein wichtiger Handgriff, damit mein breiter Hintern in den Sessel passt.
+3. Armlehnen weit ausfahren: Ein wichtiger Handgriff, damit mein breiter Hintern in den Sessel passt.
 4. Rückenlehne fixieren oder losdrehen.
 5. Wenn man 4 losmacht, kann man Einstellen, wie stark die Rückenlehne Gegendruck macht.
 6. Nicht sichtbar: Armlehnen Höhe.
@@ -87,7 +87,7 @@ Die Schritte sind im Grunde bei jedem Stuhl dieselben, sofern die betreffenden E
 3. Sitztiefe einstellen, also die Sitzfläche so weit ausfahren, daß sie bis auf 2-3 Finger an die Kniekehlen heranreicht und die Beine unterstützt.
 4. Nun die Position der Rückenlehne einstellen: Neigung, und wenn höhenverstellbar auch Höhe, bis die Unterstützung im Kreuz angenehm ist.
    Eventuell vorhandene Lordosenstütze in die richtige Position (über dem Becken ins Kreuz) bringen.
-5. Jetzt Sitzflächenneigung einstellen, also die Sychro loslösen und schaukeln, dann annehm fixieren,
+5. Jetzt Sitzflächenneigung einstellen, also die Synchro loslösen und schaukeln, dann in einer angenehmen Position fixieren,
    und danach die Rücken-Neigung noch mal nachstellen.
 6. Armlehnen einstellen - Breite, Höhe, Position.
 7. Danach Feineinstellung justieren: Synchro los, und Rückenlehnen-Gegendruck anpassen, Lordosenstütze Druck einstellen 
