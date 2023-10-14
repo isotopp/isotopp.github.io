@@ -12,7 +12,7 @@ tags:
 - climate
 ---
 
-Ich zum vorhergehenden Artikel bekam ich einen Leserbrief als Github Issue, das ist hier inhaltlich unverändert veröffentliche,
+Zum vorhergehenden Artikel bekam ich einen Leserbrief als Github Issue, das ist hier inhaltlich unverändert veröffentliche,
 weil ich glaube, daß es wichtige Informationen und Überlegungen enthält.
 
 Von [@typxxi](https://github.com/typxxi):

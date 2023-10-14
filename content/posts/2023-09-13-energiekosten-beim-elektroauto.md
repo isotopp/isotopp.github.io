@@ -70,7 +70,7 @@ Ohne den heimischen Ladepunkt hätten wir an einen öffentlichen Ladepfahl gegen
 Der nächstgelegene Ladepunkt ist eine Querstraße weiter und auch nicht teurer:
 Wir zahlen 0.34 Euro/kWh.
 
-![](uploads/2023/09/energiekosten-03.jpg)
+![](/uploads/2023/09/energiekosten-03.jpg)
 
 *Öffentlicher Ladepunkt von Vattenfall bei Nutzung mit einer Vattenfall InCharge oder Eneco Karte.
 Die Energiekosten liegen bei 0.34 Euro/kWh.*
@@ -101,7 +101,7 @@ Der Carver hat eine Reichweite von 100 km und verbraucht die Hälfte vom großen
 
 Beide Fahrzeuge können wir daheim laden, und beide Fahrzeuge erledigen lokale Fahrten ohne Fremdladen:
 Sie werden in der Regel daheim geladen.
-Das ist in der Regel 1-2 die Woche der Fall.
+Das ist in der Regel 1-2 mal die Woche der Fall.
 
 Nur bei Fernreisen geht der Renault an fremde Lader, und dann an Schnell-Lader.
 

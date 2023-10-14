@@ -45,7 +45,7 @@ und ein wenig nach Norden rauf zur damaligen war an der Ecke ein Druckladen,
 der so etwas konnte und auch 3XL Shirts in Qualitäten hatte, die angenehm waren.
 
 Hier in Haarlem habe ich ebenfalls mehrere solche Shops ([Tinto](https://tinto.nl/textiel-bedrukken/) et al),
-und es gibt natürlich immer spreadshirt.nl und spreadshirtde, wenn man nicht nach draußen gehen mag.
+und es gibt natürlich immer spreadshirt.nl und spreadshirt.de, wenn man nicht nach draußen gehen mag.
 
 ## Druck
 

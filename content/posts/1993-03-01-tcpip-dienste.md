@@ -86,7 +86,7 @@ Diese Dienste sind normalerweise auf der Basis eines weiteren Protokolles realis
 
 Der erste Dienst, den man als Benutzer im Internet kennenlernt, ist wahrscheinlich electronic mail.
 Mail erlaubt es, Textnachrichten und neuerdings auch multimediale Dokumente an andere Benutzer im Netz zu verschicken.
-Die Zustellung der Mail erfolgt, in dem der eigene Rechner nach dem Abschicken der Mail eine Verbindung zum Zielrechner aufbaut und die Mail dort online und direkt einliefert.
+Die Zustellung der Mail erfolgt, indem der eigene Rechner nach dem Abschicken der Mail eine Verbindung zum Zielrechner aufbaut und die Mail dort online und direkt einliefert.
 Bei einer schnellen Netzverbindung ist die Mail praktisch Sekunden nach dem Drücken der Returntaste beim Empfänger.
 
 Viele bekannte Firmen sind im Netz durch Mitarbeiter oder sogar mit einer Supportadresse vertreten.
