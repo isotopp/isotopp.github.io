@@ -4,10 +4,11 @@ date: "2017-02-01T09:54:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
 status: publish
+title: "Nobody wants backup. Everybody wants restore."
 tags:
 - data center
 - lang_en
-title: Nobody wants backup. Everybody wants restore.
+- devops
 ---
 ![](/uploads/2017/02/mysql-backup-and-recovery-15-638.jpg)
 
