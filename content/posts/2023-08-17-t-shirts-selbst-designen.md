@@ -41,8 +41,9 @@ und man bekommt eine 30 cmx20 cm Plastikplatte auf der Brust statt weicher, atmu
 
 Ihr braucht außerdem einen "Copyshop" auf dem Pro-Level, also einen Grafikdienstleister, der so was kann.
 In Kiel habe ich im Knooper Weg gegenüber der Humboldt-Schule gewohnt 
-und ein wenig nach Norden rauf zur damaligen war an der Ecke ein Druckladen, 
+und ein wenig nach Norden rauf zur damaligen Fachhochschule war an der Ecke ein Druckladen, 
 der so etwas konnte und auch 3XL Shirts in Qualitäten hatte, die angenehm waren.
+(EDIT: Jetzt [am Exer](https://maps.app.goo.gl/dN3UZzpiobBmi7x66))
 
 Hier in Haarlem habe ich ebenfalls mehrere solche Shops ([Tinto](https://tinto.nl/textiel-bedrukken/) et al),
 und es gibt natürlich immer spreadshirt.nl und spreadshirt.de, wenn man nicht nach draußen gehen mag.
