@@ -37,7 +37,7 @@ der physisch mit der Platte verbunden ist.
 Wir bekommen "Lineare Block Addressen", LBA.
 Viele OS kannten am Anfang gar keine LBA.
 Daher geben Platten eine Fake-Geometrie raus, 
-sie aufgeht und darstellbar ist -- und unsinnig ist.
+die aufgeht und darstellbar ist -- und unsinnig ist.
 255 Cylinders, 63 sectors/track –– von einer SSD.
 
 ```console

@@ -69,10 +69,10 @@ Thompson, Rutherford, und dann Bohr haben bessere (genauere) Modelle,
 die an Ende als Verfeinerungen oder Verkomplizierungen von Dalton aufgefasst werden können.
 Diese Modelle leisten, was ihre Vorgänger jeweils konnten und mehr (größeres Anwendungsgebiet, bessere Genauigkeit).
 
-Du kannst eine Theorie “beweisen” in den Du sie für Vorhersagen verwendest und dann schaust, ob die taugen.
+Du kannst eine Theorie “beweisen”, indem Du sie für Vorhersagen verwendest und dann schaust, ob die taugen.
 Du kannst sie widerlegen: Die Vorhersagen sind unzutreffend oder für den Zweck zu ungenau.
 
-Du kannst nichts tun, wenn sie Theorie keine Vorhersagen liefern kann.
+Du kannst nichts tun, wenn die Theorie keine Vorhersagen liefern kann.
 Das Wesen von Wissenschaft ist, dass Theorien Weltmodelle liefern, die Vorhersagen machen, die sich in Experimenten prüfen lassen.
 
 Deswegen bleiben Theorien dennoch immer Theorien, Systeme von Theoremen,

@@ -35,7 +35,7 @@ Genau diese Anforderung erfüllen die TCP/IP-Protokolle, die im Internet verwend
 # Was kann TCP/IP?
 
 - gibt einem die Unabhängigkeit von Hardware des unterliegenden Trägernetzes.
-- gibt einem eine netzwerkweit einheitliche Adressen.
+- gibt einem eine netzwerkweit einheitliche Adresse.
 - präsentiert dem Programmierer eine einheitliche, geschlossene API.
 - bietet einen Baukasten von standardisierten High-Level-Protokollen für die verschiedensten Netzwerkdienste.
 - ist eine offene Protokollfamilie, die unabhängig von Herstellern entwickelt wurde.
@@ -45,7 +45,7 @@ hat die International Standards Organisation (ISO) ein Architekturmodell für Re
 das OSI Referenzmodell.
 Dieses Modell teilt den Prozess des Verschickens von Daten über ein Rechnernetz in 7 übereinanderliegende Schichten ein,
 die einander zuarbeiten und jede für sich eine bestimmte Abstraktionsebene kennzeichnen.
-Weil diese Schichten in der Abbildung einen übereinander liegen, redet man oft auch von einem
+Weil diese Schichten in der Abbildung übereinander liegen, redet man oft auch von einem
 Protokollstapel.
 
 ![](/uploads/osimodell.gif)
