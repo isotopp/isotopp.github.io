@@ -15,7 +15,7 @@ Ich arbeite im Sitzen, 8h am Tag beruflich, und dann noch ein wenig mehr aus Spa
 
 Ich habe meinen eigenen Platz daheim, immer schon gehabt. 
 Das habe ich von meinem Vater gelernt, der Amateurfunker war und daheim seinen höchst eigenen Bastel- und Arbeitsplatz hatte,
-seinen Ort und Rückzugsplatz.
+seinen Ort und Rückzugplatz.
 Zu einem ordentlichen Arbeitsplatz gehört auch ein Sitz.
 Der Sitz ist ein Arbeitsgerät und da sollte man angesichts der Anzahl der darin verbrauchten Stunden nicht kaspern, sondern klotzen.
 
