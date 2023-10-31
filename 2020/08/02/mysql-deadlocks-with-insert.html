@@ -20,7 +20,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.119.0">
+<meta name="generator" content="Hugo 0.120.2">
 <meta property="og:title" content='MySQL Deadlocks with INSERT' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 
@@ -200,23 +200,23 @@ After some back and forth it becomes clear that the Dev experiences deadlocks an
 <li>what does the originating code look like?</li>
 </ul>
 <p>The last question can be actually answered by the developer, but because they are using Java, in true Java fashion it is almost - but not quite - useless to a database person.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Transactional</span><span class="o">(</span><span class="n">propagation</span> <span class="o">=</span> <span class="n">Propagation</span><span class="o">.</span><span class="na">REQUIRES_NEW</span><span class="o">,</span> 
-</span></span><span class="line"><span class="cl">  <span class="n">timeout</span> <span class="o">=</span> <span class="n">MYSQL_TRANSACTION_TIMEOUT</span><span class="o">,</span>
-</span></span><span class="line"><span class="cl">  <span class="n">rollbackFor</span> <span class="o">=</span> <span class="o">{</span> 
-</span></span><span class="line"><span class="cl">    <span class="n">BucketNotFoundException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">DuplicateTransactionException</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
-</span></span><span class="line"><span class="cl">    <span class="n">BucketBalanceUpdateException</span><span class="o">.</span><span class="na">class</span>
-</span></span><span class="line"><span class="cl">  <span class="o">},</span> 
-</span></span><span class="line"><span class="cl">  <span class="n">isolation</span> <span class="o">=</span> <span class="n">Isolation</span><span class="o">.</span><span class="na">SERIALIZABLE</span>
-</span></span><span class="line"><span class="cl"><span class="o">)</span>
-</span></span><span class="line"><span class="cl"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">initiateBucketBalanceUpdate</span><span class="o">(</span><span class="n">Transaction</span> <span class="n">transaction</span><span class="o">)</span>
-</span></span><span class="line"><span class="cl">  <span class="kd">throws</span> <span class="n">BucketBalanceUpdateException</span><span class="o">,</span>
-</span></span><span class="line"><span class="cl">         <span class="n">DuplicateTransactionException</span> <span class="o">{</span>
-</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">validateAndInsertIdempotencyKey</span><span class="o">(</span><span class="n">transaction</span><span class="o">);</span>
-</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">executeBucketBalanceUpdateFlow</span><span class="o">(</span><span class="n">transaction</span><span class="o">);</span>
-</span></span><span class="line"><span class="cl">  <span class="k">this</span><span class="o">.</span><span class="na">saveTransactionEntries</span><span class="o">(</span><span class="n">transaction</span><span class="o">);</span>
-</span></span><span class="line"><span class="cl"><span class="o">}</span>
-</span></span></code></pre></div><p>So, where is the SQL?</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-java" data-lang="java"><span class="line"><span class="cl"><span class="nd">@Transactional</span><span class="p">(</span><span class="n">propagation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Propagation</span><span class="p">.</span><span class="na">REQUIRES_NEW</span><span class="p">,</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">timeout</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MYSQL_TRANSACTION_TIMEOUT</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">rollbackFor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BucketNotFoundException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">DuplicateTransactionException</span><span class="p">.</span><span class="na">class</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">    </span><span class="n">BucketBalanceUpdateException</span><span class="p">.</span><span class="na">class</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="p">},</span><span class="w"> 
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">isolation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Isolation</span><span class="p">.</span><span class="na">SERIALIZABLE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="kd">public</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">initiateBucketBalanceUpdate</span><span class="p">(</span><span class="n">Transaction</span><span class="w"> </span><span class="n">transaction</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="kd">throws</span><span class="w"> </span><span class="n">BucketBalanceUpdateException</span><span class="p">,</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">         </span><span class="n">DuplicateTransactionException</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">this</span><span class="p">.</span><span class="na">validateAndInsertIdempotencyKey</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">this</span><span class="p">.</span><span class="na">executeBucketBalanceUpdateFlow</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="k">this</span><span class="p">.</span><span class="na">saveTransactionEntries</span><span class="p">(</span><span class="n">transaction</span><span class="p">);</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">}</span><span class="w">
+</span></span></span></code></pre></div><p>So, where is the SQL?</p>
 <p>This is often a problem - Object Relational Mappers encapsulate the things that go on in the database so much that it is really hard for anybody - Developers, DBAs and everybody else - to understand what actually happens and make debugging quite painful.</p>
 <p>Or, if they understand what goes on with the database, to map this to the code.</p>
 <h2 id="transaction-isolation-level-serializable">
