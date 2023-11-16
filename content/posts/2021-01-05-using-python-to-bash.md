@@ -2,6 +2,7 @@
 author: isotopp
 date: "2021-01-05T17:11:57Z"
 feature-img: assets/img/background/rijksmuseum.jpg
+toc: true
 tags:
 - lang_en
 - python
@@ -273,3 +274,10 @@ The external dependency [`pystemd`](https://github.com/facebookincubator/pystemd
 ### subprocess
 
 And of course, we already mentioned [`subprocess.run()`](https://docs.python.org/3/library/subprocess.html#using-the-subprocess-module), the swiss army knife of bad old shell interfacing. Make sure you prefer commands that can produce JSON, that will hurt a lot less.
+
+
+# Addenda
+
+- [Various System Shells](https://www.in-ulm.de/~mascheck/various/shells/): Shell inconsistencies
+- [What exactly was the point of `[ "x$var" = "xval" ]`?](https://www.vidarholen.net/contents/blog/?p=1035): How a simple `test` can fail.
+
