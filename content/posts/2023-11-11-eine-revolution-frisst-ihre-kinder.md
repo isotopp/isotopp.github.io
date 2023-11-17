@@ -62,7 +62,7 @@ der GNU General Public License (GPL), die da lauten:
 - Freiheit 2: Die Freiheit, das Programm weiterzugeben. Die GPL fordert aber,
   dass auch der Quelltext des Programms, der dem weitergegebenen Programm
   entspricht, angeboten wird.
-– Freiheit 3: Die Freiheit, das Programm zu verbessern und diese Verbesserungen
+- Freiheit 3: Die Freiheit, das Programm zu verbessern und diese Verbesserungen
   unter der originalen Lizenz weiterzugeben. Auch dies impliziert Zugang zum Quelltext und das Recht, diesen zu ändern.
 
 Während die GPLv2 die Lizenz ist, die diese Freiheiten das erste Mal kodifiziert hat, 
