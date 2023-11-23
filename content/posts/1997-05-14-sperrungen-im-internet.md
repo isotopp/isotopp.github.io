@@ -3,12 +3,12 @@ author: isotopp
 date: "1997-05-14T16:15:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
+title: "Sperrungen im Internet - Eine systematische Aufarbeitung der Zensurdiskussion"
 tags:
 - lang_de
 - politik
 - usenet
 - jugendschutz
-title: Sperrungen im Internet - Eine systematische Aufarbeitung der Zensurdiskussion
 ---
 ## Zusammenfassung
 
