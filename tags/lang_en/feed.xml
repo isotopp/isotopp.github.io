@@ -6,7 +6,128 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Nov 2023 20:46:23 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 05 Dec 2023 11:38:52 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>x86_64 binaries on M1</title>
+      <link>https://blog.koehntopp.info/2023/12/05/x86_64-binaries-on-m1.html</link>
+      <pubDate>Tue, 05 Dec 2023 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/12/05/x86_64-binaries-on-m1.html</guid>
+      <description>&lt;p&gt;I installed a Python 2.7.18 with &lt;code&gt;pyenv&lt;/code&gt; on Apple Silicon,
+and I needed that binary to be pure &lt;code&gt;x86_64&lt;/code&gt;.
+This was necessary because I needed to load dynamic libraries that were only available in Intel format.&lt;/p&gt;
+&lt;p&gt;It is not possible to load &lt;code&gt;x86_64&lt;/code&gt; libraries into an ARM binary.
+If you build a multi-arch binary, you need to remember to request Intel every time you run a Python script
+which tries to load the Intel-only shared library.
+With an Intel-only binary, this will work every time without additional configuration.&lt;/p&gt;
+&lt;h1 id=&#34;calling-the-intel-code-in-a-multi-architecture-binary&#34;&gt;
+    &lt;a href=&#34;#calling-the-intel-code-in-a-multi-architecture-binary&#34;&gt;
+	Calling the Intel code in a multi-architecture binary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The &lt;code&gt;file&lt;/code&gt; command will tell you if a binary is multi-architecture:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; file /bin/ls
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/bin/ls: Mach-O universal binary with 2 architectures: [x86_64:Mach-O 64-bit executable x86_64] [arm64e:Mach-O 64-bit executable arm64e]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/bin/ls (for architecture x86_64):	Mach-O 64-bit executable x86_64
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/bin/ls (for architecture arm64e):	Mach-O 64-bit executable arm64e
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can manually call the Intel code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; arch -arch x86_64 ls
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Applications		Movies		Music
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;If you call a binary this way, the first time this will trigger the installation of Rosetta2
+(the Intel to ARM JIT compiler) on the Mac.&lt;/p&gt;
+&lt;h1 id=&#34;compiling-for-intel-on-m1&#34;&gt;
+    &lt;a href=&#34;#compiling-for-intel-on-m1&#34;&gt;
+	Compiling for Intel on M1
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;By default, we compile for ARM (M1), and only for this architecture:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; cat hello.c
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;include &amp;lt;stdio.h&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;int main(void) {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;	printf(&amp;#34;Hello!\n&amp;#34;);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; cc -o hello hello.c
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; file hello
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;hello: Mach-O 64-bit executable arm64
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can call the compiler for Intel, and get an Intel-only binary:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; arch -arch x86_64 cc -o hello hello.c
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; file hello
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;hello: Mach-O 64-bit executable x86_64
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ./hello
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Hello!
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;compiling-python-for-intel-only&#34;&gt;
+    &lt;a href=&#34;#compiling-python-for-intel-only&#34;&gt;
+	Compiling Python for Intel only
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The &lt;code&gt;pyenv&lt;/code&gt; installation process uses &lt;code&gt;python-build&lt;/code&gt;.
+This, by default, uses the &lt;code&gt;readline&lt;/code&gt; and &lt;code&gt;openssl&lt;/code&gt; versions provided by Homebrew to build.
+On my system, these are for ARM, so the Python will build and then fail in the linker stage.&lt;/p&gt;
+&lt;p&gt;There is an option to force a build ignoring the Homebrew-provided components, &lt;code&gt;PYTHON_BUILD_SKIP_HOMEBREW&lt;/code&gt;.
+This is a boolean variable: it is sufficient to set it to any value.
+So:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ PYTHON_BUILD_SKIP_HOMEBREW=1 arch -arch x86_64 pyenv install 2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Downloading openssl-1.1.1v.tar.gz...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-&amp;gt; https://www.openssl.org/source/openssl-1.1.1v.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Installing openssl-1.1.1v...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Installed openssl-1.1.1v to /Users/kris/.pyenv/versions/2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Downloading readline-8.0.tar.gz...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-&amp;gt; https://ftpmirror.gnu.org/readline/readline-8.0.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Installing readline-8.0...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Installed readline-8.0 to /Users/kris/.pyenv/versions/2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Downloading Python-2.7.18.tar.xz...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-&amp;gt; https://www.python.org/ftp/python/2.7.18/Python-2.7.18.tar.xz
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Installing Python-2.7.18...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;patching file configure
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;patching file configure.ac
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;patching file setup.py
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Installed Python-2.7.18 to /Users/kris/.pyenv/versions/2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is indeed the desired binary:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; file ~/.pyenv/versions/2.7.18/bin/python2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/Users/kris/.pyenv/versions/2.7.18/bin/python2: Mach-O 64-bit executable x86_64
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;building-a-virtualenv-for-intel-python-2718&#34;&gt;
+    &lt;a href=&#34;#building-a-virtualenv-for-intel-python-2718&#34;&gt;
+	Building a &lt;code&gt;virtualenv&lt;/code&gt; for Intel Python 2.7.18
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The virtual environment for Python 2.7 has to be built with an old version of the &lt;code&gt;virtualenv&lt;/code&gt; command,
+which is compatible with the old Python:&lt;/p&gt;
+&lt;p&gt;We make a &lt;code&gt;testdir&lt;/code&gt;, enter it and set the local Python version to the required version.
+We then install an old version of the &lt;code&gt;virtualenv&lt;/code&gt; command, using &lt;code&gt;pip&lt;/code&gt;, globally into the old Python version.
+This can then be used to create a virtual environment.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; mkdir testdir
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; testdir
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; pyenv &lt;span class=&#34;nb&#34;&gt;local&lt;/span&gt; 2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; python --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Python 2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; which python
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/Users/kris/.pyenv/shims/python
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now the global installation of &lt;code&gt;virtualenv&lt;/code&gt; into our Python 2.7.18 instance:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; pip --version
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pip 19.2.3 from /Users/kris/.pyenv/versions/2.7.18/lib/python2.7/site-packages/pip (python 2.7)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; pip install virtualenv
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We now can call the old version of &lt;code&gt;virtualenv&lt;/code&gt; from our Python 2.7.18 installation directory:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ~/.pyenv/versions/2.7.18/bin/virtualenv venv
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;created virtual environment CPython2.7.18.final.0-64 in 102ms
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;source&lt;/span&gt; venv/bin/activate
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kk:testdir kris$ python --version
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Python 2.7.18
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kk:testdir kris$ python
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Python 2.7.18 (default, Dec  5 2023, 12:09:45)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;[GCC Apple LLVM 15.0.0 (clang-1500.0.40.1)] on darwin
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Type &amp;#34;help&amp;#34;, &amp;#34;copyright&amp;#34;, &amp;#34;credits&amp;#34; or &amp;#34;license&amp;#34; for more information.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;&amp;gt;&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And that gives us an ancient Python in a foreign machine language, so we can continue with our
+software archaeology project.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>A Revolution Devours Its Children</title>
       <link>https://blog.koehntopp.info/2023/11/11/a-revolution-devours-its-children.html</link>
@@ -2552,150 +2673,6 @@ This is due to the elimination of several global locks that impair concurrent us
 and due to the consistent use of B+-Tree structures with &lt;code&gt;O(log(n))&lt;/code&gt; scaling behavior where before algorithms with worse scaling behavior have been used.
 The use of extents also allows dynamically growing I/O sizes, benefiting throughput,
 and together with the novel idea of delayed allocation encourage contiguous file placement.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>City of Amsterdam and Combustion Engines</title>
-      <link>https://blog.koehntopp.info/2023/05/11/city-of-amsterdam-and-combustion-engines.html</link>
-      <pubDate>Thu, 11 May 2023 01:02:03 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2023/05/11/city-of-amsterdam-and-combustion-engines.html</guid>
-      <description>&lt;p&gt;Electrive.net had an article about Copenhagen banning combustion engines in the city, starting 2030:
-(&lt;a href=&#34;https://www.electrive.net/2023/05/08/kopenhagen-will-verbrenner-autos-ab-2030-aussperren/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Article in German&lt;/a&gt;
-
-).
-So I had to check what is the current state in Amsterdam.&lt;/p&gt;
-&lt;h1 id=&#34;current-state&#34;&gt;
-    &lt;a href=&#34;#current-state&#34;&gt;
-	Current state
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The Netherlands has a central register for license plates.
-It is public, and anyone can check.
-There are many places that allow you to do that for car, not owner data.
-For &lt;a href=&#34;https://www.autoweek.nl/kentekencheck/P-664-rg/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;example&lt;/a&gt;
-
-.&lt;/p&gt;
-&lt;p&gt;The city of Amsterdam also allows you to check if a given license plate is allowed to enter the cities milieuzone.
-You can &lt;a href=&#34;https://ontheffingen.amsterdam.nl/publiek/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;check yourself&lt;/a&gt;
-
-.
-And so can any license plate scanner.&lt;/p&gt;
-&lt;p&gt;In the &lt;a href=&#34;https://www.amsterdam.nl/verkeer-vervoer/milieuzone-amsterdam/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;overview page&lt;/a&gt;
-
- for the milieuzone,
-the city helpfully explains:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Let op:&lt;/strong&gt; dat u de Milieuzone mag inrijden betekent niet dat u ook in aanmerking komt voor een parkeervergunning.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Attention:&lt;/strong&gt; Note that being allowed to enter the Environmental Zone does not mean you are also eligible for a parking permit.&lt;/p&gt;
-&lt;h1 id=&#34;after-2030&#34;&gt;
-    &lt;a href=&#34;#after-2030&#34;&gt;
-	After 2030
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The rules for the milieuzone are becoming stricter &lt;a href=&#34;https://www.amsterdam.nl/verkeer-vervoer/milieuzone-amsterdam/aanscherping-milieuzones/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;starting 2025&lt;/a&gt;
-
-,
-and by 2030 no combustion engines are being allowed in the city at all.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;NL-wide license plate check for &lt;a href=&#34;https://www.opwegnaarzes.nl/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;commercial vehicles&lt;/a&gt;
-
-.&lt;/li&gt;
-&lt;li&gt;New lorries will need to be electric starting 2025 to be allowed into the city.&lt;br&gt;
-Existing lorries will have to be Euro 6 or better. There are some more rules for easing the changeover.
-Starting 2030, no lorries with combustion engines are allowed into the city.&lt;/li&gt;
-&lt;li&gt;Small commercial delivery vehicles (vans, Sprinters) with Diesel must be Euro 4 or better already.
-New cars must be electric starting 2025. Euro 5 is required starting 2027, Euro 6 starting 2028,
-no combustion starting 2028.&lt;/li&gt;
-&lt;li&gt;Bus lines are in the process of being converted to electric, and this is nearly complete.
-It will be finished by 2025.
-Rules for charter buses are to follow.&lt;/li&gt;
-&lt;li&gt;Taxis electric starting 2025.
-Tax incentives and better starting places as well as priority for parking and taxi licenses are provided already.
-This is going well, most Taxis are electric already.&lt;/li&gt;
-&lt;li&gt;Scooters (25 km/h and 45 km/h) must be electric by 2025.
-Get a pedelec, maybe?&lt;/li&gt;
-&lt;li&gt;Ships (tourist and transport) must be electric by 2025.
-Ferries over the river Ij are already being converted.
-70% rebate for harbor fees for electric ships right now.&lt;/li&gt;
-&lt;li&gt;Cars must be Euro 4 or better right now.
-Only electric cars are allowed into the city by 2030.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;important-advice&#34;&gt;
-    &lt;a href=&#34;#important-advice&#34;&gt;
-	Important advice
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/scanauto.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-
-&lt;em&gt;Scanautos are being used to automatically enforce parking rules inside the city.
-They are checking around 800x more effective than an unaugmented parking enforcement human.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;In Amsterdam, most major streets do not allow you to park on public ground.
-Side streets often have only a limited number of public parking spots,
-the others require a residential parking permit.
-Parking in parking structures or in the street costs around 50 Euro/day if you find a space.&lt;/p&gt;
-&lt;p&gt;Parking permits are &lt;strong&gt;not&lt;/strong&gt; shown on the dashboard, and similarly, parking violations are &lt;strong&gt;not&lt;/strong&gt; ticketed in paper behind the windshield wiper.
-Instead, everything is based on automated license plate scanning:
-Enter your license plate at the parking fee collector terminal,
-the scanauto will countercheck what it scanned with the central database.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://algoritmeregister.amsterdam.nl/parkeercontrole/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Enforcement is automatic&lt;/a&gt;
-
-, and the coverage is excellent.
-If you do not pay, or overpark, you will be caught.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.amsterdam.nl/parkeren/parkeerbon/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;That will cost you&lt;/a&gt;
-
- at minimum 72.90 Euros in punishment,
-plus fees, plus the unpaid parking fee.
-In total this usually ends up between 110 Euros and 150 Euros
-.
-The target for processing (between parking violation and notification) is officially two days.
-But it often is &amp;ldquo;while you still park&amp;rdquo; (20 minutes or less),
-so near realtime.
-This has the effect of ruining whatever you are currently doing in the city, so just park legally.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/overtoom.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-
-&lt;em&gt;S106, Overtoom. A major inroad into the city. Note how this is one lane per direction, and no parking at the side.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The cheapest way to do that is to park at a &lt;a href=&#34;https://www.amsterdam.nl/en/parking/park-ride/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Park and Ride&lt;/a&gt;
-
-,
-and then take the tram or subway into the city.
-Or just use the bus, tram, subway or train, starting at your door.&lt;/p&gt;
-&lt;p&gt;The city does not believe into building roads to places that have more capacity than can be parked at the destination.
-So most major inroads into Amsterdam are single lane.
-Not only will you not be able to park in the city.
-Most likely, you will also hate every minute of getting there before you have to turn around.
-Be sensible, use OV.&lt;/p&gt;
-&lt;h1 id=&#34;summary&#34;&gt;
-    &lt;a href=&#34;#summary&#34;&gt;
-	Summary
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/electric-charge-points.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Map of &lt;a href=&#34;https://www.amsterdam.nl/parkeren/elektrische-oplaadpunten-amsterdam/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;electric charge points&lt;/a&gt;
-
- in Amsterdam&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;So for anybody but private individual transport, Amsterdam will be fully electric by 2025,
-and the final conversion will take another 5 years.
-This is not an unrealistic goal.
-If you walk through the city, you can see how the conversion is already in full swing at an amazing and still increasing speed.&lt;/p&gt;
-&lt;p&gt;The city has built the required infrastructure in terms of charge points already,
-and provides maps to prove it.&lt;/p&gt;
-&lt;p&gt;But individual motorized transport does not scale to a city with the density of Amsterdam.
-Cities are for humans, not for cars, and Amsterdam makes it very clear that cars are not welcome.
-Use public transport to get around in Amsterdam.
-That is already fully electric, and except for the buses always has been.&lt;/p&gt;
 </description>
     </item>
     
