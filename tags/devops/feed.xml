@@ -6,7 +6,466 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 07 Dec 2023 08:54:07 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 30 Dec 2023 21:03:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Restic</title>
+      <link>https://blog.koehntopp.info/2023/12/30/restic.html</link>
+      <pubDate>Sat, 30 Dec 2023 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/12/30/restic.html</guid>
+      <description>&lt;p&gt;Ich hatte Grund, mich mit &lt;a href=&#34;&#34;&gt;Restic&lt;/a&gt;
+
+ für Backup auseinander zu setzen.&lt;/p&gt;
+&lt;h1 id=&#34;warum-restic&#34;&gt;
+    &lt;a href=&#34;#warum-restic&#34;&gt;
+	Warum &lt;code&gt;restic&lt;/code&gt;?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;restic&lt;/code&gt; ist eine Datensicherung in ein Repository,
+das intern als ein Content-Addressable Storage aufgebaut ist.
+Das heißt, daß innerhalb des Backups Datenstücke liegen,
+die genau ihre (SHA256-) Prüfsumme als Dateinamen haben.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@server:/backup/restic/data/fc# sha256sum fcec*7a5b
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;fcec25d3e3165d159b4dac3867d1a1831707d582215c1fa30e0277cd57dc7a5b  fcec25d3e3165d159b4dac3867d1a1831707d582215c1fa30e0277cd57dc7a5b
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Die Prüfsumme einer Datei im &lt;code&gt;data&lt;/code&gt;-Verzeichnis eines &lt;code&gt;restic&lt;/code&gt;-Repos.
+Sie entspricht genau dem Namen der Datei.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dies führt zu einer Datenstruktur in &lt;code&gt;restic&lt;/code&gt;, die nicht ganz unähnlich der in einem
+&lt;code&gt;.git&lt;/code&gt;-Repository ist, und auch zu einer starken Deduplizierung von Daten.
+Dateien, die in mehr als einer Generation des Backups unverändert vorkommen,
+werden automatisch erkannt und nicht mehrfach gespeichert.
+Stattdessen wird nur ein Reference-Count erhöht.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;restic&lt;/code&gt; verschlüsselt Daten, Metadaten und Dateinamen genau wie Datei-Inhalte,
+prüft die Integrität des Backups über diese Content-Prüfsummen und
+stellt die Sicherung über mehrere Such- und Zugriffsmöglichkeiten zur Verfügung.&lt;/p&gt;
+&lt;h1 id=&#34;situation&#34;&gt;
+    &lt;a href=&#34;#situation&#34;&gt;
+	Situation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Der neue Dedi ist ein E5-1650 v3 mit 12 Threads und 128 GB RAM bei Hetzner.
+Er führt stündlich ein &lt;code&gt;restic&lt;/code&gt; auf die Hetzner Storagebox durch,
+und weiterhin einmal täglich ein &lt;code&gt;restic&lt;/code&gt; nach Hause aus.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-cronexp&#34; data-lang=&#34;cronexp&#34;&gt;10 * * * * /root/bin/run-restic
+34 1 * * * /root/bin/run-restic-to-home
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;em&gt;Crontab mit den Backup-Jobs.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Zu sichern ist ein LVM2 mit einem recht kleinen &lt;code&gt;/root&lt;/code&gt;, &lt;code&gt;/etc&lt;/code&gt; und der Kram auf &lt;code&gt;/home&lt;/code&gt;, der zum Glück noch überschaubar groß ist.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# df -t xfs -h&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Filesystem              Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-root     20G  4.0G   17G  20% /
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-home    200G   40G  160G  20% /home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-restic  250G   57G  194G  23% /restic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Situation mit den Dateisystemen auf dem Dedi.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Real erfolgen faktisch alle Änderungen am Content immer unter Usern in &lt;code&gt;/home&lt;/code&gt;,
+sodaß vor allen Dingen die Sicherung dieser Partition dringend ist.
+Speziell der Minecraft-Spieluser hat eine Menge Churn,
+weil dort im Home alle Server-Instanzen liegen, auf denen gearbeitet wird.&lt;/p&gt;
+&lt;p&gt;Die lokale Sicherung erfolgt mit einem sftp-Backend auf die Hetzner Storagebox,
+das Backup nach Hause verwendet ebenfalls das sftp-Backend.&lt;/p&gt;
+&lt;h1 id=&#34;sshconfig&#34;&gt;
+    &lt;a href=&#34;#sshconfig&#34;&gt;
+	.ssh/config
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Damit alles nicht so weh tut, verwenden wir einen speziellen Backup-Key,
+der nur zur Datensicherung verwendet wird, und der nur die Funktion hat,
+ein paßwortloses Login auf den Backup-Zielen zu erlauben.&lt;/p&gt;
+&lt;p&gt;Wir generieren den Key mit&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ssh-keygen -t rsa -b 4096 -N &amp;#34;&amp;#34; -f ~/.ssh/id_backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und konfigurieren ihn gleich in zwei &lt;code&gt;Host&lt;/code&gt;-Matchblocks rein:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cat .ssh/config&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ServerAliveInterval &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ServerAliveCountMax &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;HashKnownHosts no
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TCPKeepAlive yes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;KeepAlive yes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Host storagebox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Hostname uxxxxxx.your-storagebox.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        User uxxxxxx
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Port &lt;span class=&#34;m&#34;&gt;23&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        IdentityFile /root/.ssh/id_backup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Host restic
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Hostname home.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        User resticuser
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Port &lt;span class=&#34;m&#34;&gt;22&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        IdentityFile /root/.ssh/id_backup
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dadurch können wir die Backup-Ziele korrekt vorkonfiguriert
+über den Namen des Matchblocks ansprechen, also mit &lt;code&gt;storagebox&lt;/code&gt; und &lt;code&gt;restic&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Den Key müssen wir nun auch in der &lt;code&gt;authorized_keys&lt;/code&gt; der Ziele hinterlegen.
+Das geht genauso wie von
+&lt;a href=&#34;https://docs.hetzner.com/robot/storage-box/backup-space-ssh-keys/#upload&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hetzner dokumentiert&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cat .ssh/id_backup.pub | ssh -p23 uXXXXX@uXXXXX.your-storagebox.de install-ssh-key&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uXXXXX@uXXXXX.your-storagebox.de&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;s password:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test mit &lt;code&gt;ssh -p23 -i ~/.ssh/id_backup uXXXXX@uXXXXX.your-storagebox.de&#39;s password&lt;/code&gt;.
+Man landet in der restricted Shell der Storagebox,
+und kann zum Beispiel mit &lt;code&gt;help&lt;/code&gt; eine Kommandoliste bekommen.&lt;/p&gt;
+&lt;h1 id=&#34;restic-handhaben&#34;&gt;
+    &lt;a href=&#34;#restic-handhaben&#34;&gt;
+	Restic handhaben
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;restic-initialisieren&#34;&gt;
+    &lt;a href=&#34;#restic-initialisieren&#34;&gt;
+	Restic initialisieren
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Damit &lt;code&gt;restic&lt;/code&gt; Dinge tun kann, muss man das Repository, in dem die Backups landen,
+erst einmalig initialisieren.
+Dabei wird auch ein Verschlüsselungspaßwort festgelegt, das nicht verloren gehen darf.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic -r sftp://storagebox/restic init&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; new repository:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password again:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;created restic repository 1c28ea9e7b at /root/keks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Please note that knowledge of your password is required to access
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;the repository. Losing your password means that your data is
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;irrecoverably lost.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dies erzeugt eine Verzeichnishierarchie in &lt;code&gt;/restic&lt;/code&gt; auf der Storagebox.&lt;/p&gt;
+&lt;h2 id=&#34;restic-ausführen&#34;&gt;
+    &lt;a href=&#34;#restic-ausf%c3%bchren&#34;&gt;
+	Restic ausführen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das Backup-Script kann nun ausgeführt werden.
+Man kann dies zu Fuß tun, wie ich hier, oder
+&lt;a href=&#34;https://github.com/creativeprojects/resticprofile&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;resticprofile&lt;/a&gt;
+
+
+bemühen.&lt;/p&gt;
+&lt;p&gt;Ich sichere tatsächlich nicht &lt;code&gt;/home&lt;/code&gt;, sondern erzeuge einen LVM2-Snapshot,
+von dem die Sicherung durchgeführt wird, bevor er released wird.&lt;/p&gt;
+&lt;p&gt;Dadurch ist &lt;code&gt;/home&lt;/code&gt; unveränderlich während der Sicherung,
+und die Konsistenz des Backups ist besser.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Some basic config&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;SNAPLV&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;snap
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;SNAPMOUNT&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;RESTIC_REPOSITORY&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;sftp://storagebox/restic
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;RESTIC_PASSWORD&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;secret_password
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# only use up to 4 cpus.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;GOMAXPROCS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Make this safe to run in a crontab&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; -e
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; -o pipefail
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;PATH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/root/.local/bin:/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /root
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Show free space&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh -p &lt;span class=&#34;m&#34;&gt;23&lt;/span&gt; -i /root/.ssh/id_backup storagebox df -m
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Delete old backups&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;restic forget &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-daily &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-monthly &lt;span class=&#34;m&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-within 2d &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-tag keep &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --prune
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Actually perform a backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 1. Snapshot and mount it&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lvcreate -s -n &lt;span class=&#34;nv&#34;&gt;$SNAPLV&lt;/span&gt; -L10G /dev/vg0/home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t xfs -o nouuid /dev/vg0/&lt;span class=&#34;nv&#34;&gt;$SNAPLV&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$SNAPMOUNT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 2. Actual backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;restic backup &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --json &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --exclude-caches &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --iexclude-file /root/bin/restic-excludes &lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nv&#34;&gt;$SNAPMOUNT&lt;/span&gt; /var/www /etc &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;jq &lt;span class=&#34;s1&#34;&gt;&amp;#39;. | select(.message_type == &amp;#34;summary&amp;#34; )&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 3. Get rid of the snapshot&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount &lt;span class=&#34;nv&#34;&gt;$SNAPMOUNT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lvremove -f /dev/vg0/&lt;span class=&#34;nv&#34;&gt;$SNAPLV&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alle &lt;code&gt;restic&lt;/code&gt;-Subkommandos haben die Option &lt;code&gt;--json&lt;/code&gt; auszugeben, was man dann
+mit
+&lt;a href=&#34;https://github.com/tomnomnom/gron&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;gron&lt;/code&gt;&lt;/a&gt;
+
+
+oder
+&lt;a href=&#34;https://github.com/jqlang/jq&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;jq&lt;/code&gt;&lt;/a&gt;
+
+
+konsumieren kann.&lt;/p&gt;
+&lt;p&gt;In diesem Script erzeugen wir mit &lt;code&gt;lvcreate -s&lt;/code&gt; einen Snapshot der &lt;code&gt;/home&lt;/code&gt;-Partition.
+Dieser wird dann in &lt;code&gt;/snapshot-of-home&lt;/code&gt; gemounted.
+Weil ich xfs verwendet und das versehentliches doppeltes Mounten eines Verzeichnisses verhindert,
+muss ich dies mit der Option &lt;code&gt;nouuid&lt;/code&gt; tun.&lt;/p&gt;
+&lt;p&gt;Ich kann jetzt das &lt;code&gt;restic backup&lt;/code&gt;-Kommando laufen lassen.
+Dies erfolgt unter anderem mit der Option &lt;code&gt;--json&lt;/code&gt; und wir fischen den &lt;code&gt;summary&lt;/code&gt;-Blog am Ende raus,
+ohne die Progress Reports weiter zu beachten.&lt;/p&gt;
+&lt;p&gt;Die Option &lt;code&gt;--exclude-caches&lt;/code&gt; tut genau das:
+&lt;a href=&#34;https://bford.info/cachedir/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CACHEDIR.TAG&lt;/a&gt;
+
+ Verzeichnisse ignorieren.
+Außerdem werden die Patterns in einer Exclude-Datei mit &lt;code&gt;--iexclude-file&lt;/code&gt; ebenfalls ignoriert.
+Das Prefix &lt;code&gt;i&lt;/code&gt; steht hier für &lt;code&gt;ignore-case&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Am Ende melden wir den Snapshot wieder ab, und schmeißen ihn weg.&lt;/p&gt;
+&lt;h2 id=&#34;garbage-collection&#34;&gt;
+    &lt;a href=&#34;#garbage-collection&#34;&gt;
+	Garbage Collection
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Am Anfang des Scripts wird einmal
+&lt;code&gt;restic forget --prune&lt;/code&gt;
+bemüht.
+Dies sind die Regeln, nach denen alte Backups verworfen werden:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wir heben alle Backups 2 Tage auf.&lt;/li&gt;
+&lt;li&gt;Wir heben alle Backups mit dem Tag &lt;code&gt;keep&lt;/code&gt; unbegrenzt auf.&lt;/li&gt;
+&lt;li&gt;Wir heben 30 Tage lang das neuste Backup jeden Tages auf.&lt;/li&gt;
+&lt;li&gt;Wir heben 12 Monate lang das neuste Backup jeden Monats auf.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Auf diese Weise haben wir bis zu einem Jahr Historie.
+Dabei ist noch einmal in Erinnerung zu rufen, daß Dinge, die sich nicht ändern,
+nur einmal gespeichert werden, weil &lt;code&gt;restic&lt;/code&gt; dedupliziert.&lt;/p&gt;
+&lt;p&gt;Die Deduplizierung ist sehr effektiv:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic stats&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; repository:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; index files loaded
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scanning...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Stats in restore-size mode:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     Snapshots processed:  &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Total File Count:  &lt;span class=&#34;m&#34;&gt;2431309&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;              Total Size:  1.827 TiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# df -Th /restic/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Filesystem             Type  Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-restic xfs   250G   57G  194G  23% /restic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;1.8 TB Daten werden von 57 GB Plattenplatz repräsentiert.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Das &lt;code&gt;--prune&lt;/code&gt; nach dem Forget gibt Plattenplatz wieder frei.
+Dabei kann es vorkommen, daß&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Der Linkcount einer Datei erniedrigt wird, sonst nichts.&lt;/li&gt;
+&lt;li&gt;Daten frei markiert werden, aber als ungenutzter Datei in einem 16 MB &amp;ldquo;Pack&amp;rdquo; rumstehen.&lt;/li&gt;
+&lt;li&gt;Der freie Platz im &amp;ldquo;Pack&amp;rdquo; so groß wird, daß das Pack neu geschrieben wird.&lt;/li&gt;
+&lt;li&gt;Das Pack komplett frei wird und gelöscht werden kann.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;remove &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; snapshots:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ID        Time                 Host        Tags        Paths
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dac0526f  2023-12-27 13:10:01  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; files deleted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; snapshots have been removed, running prune
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;loading indexes...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;loading all snapshots...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;finding data that is still in use &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:02&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;searching used packs...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;collecting packs &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; deletion and repacking
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;3499&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;3499&lt;/span&gt; packs processed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;to repack:          &lt;span class=&#34;m&#34;&gt;1517&lt;/span&gt; blobs / 466.577 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;this removes:       &lt;span class=&#34;m&#34;&gt;1341&lt;/span&gt; blobs / 444.158 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;to delete:           &lt;span class=&#34;m&#34;&gt;138&lt;/span&gt; blobs / 65.741 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;total prune:        &lt;span class=&#34;m&#34;&gt;1479&lt;/span&gt; blobs / 509.899 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;remaining:        &lt;span class=&#34;m&#34;&gt;174653&lt;/span&gt; blobs / 54.827 GiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unused size after prune: 2.728 GiB &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;4.98% of remaining size&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repacking packs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:01&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; packs repacked
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rebuilding index
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;3468&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;3468&lt;/span&gt; packs processed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;deleting obsolete index files
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; files deleted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;removing &lt;span class=&#34;m&#34;&gt;34&lt;/span&gt; old packs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;34&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;34&lt;/span&gt; files deleted
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Eine detaillierte Statistik zeigt an, wie viel Platz &lt;code&gt;--prune&lt;/code&gt; reclaimed hat,
+und wie viel Platz noch innerhalb der Dateien ungenutzt frei ist.
+Er wird bei einem späteren &lt;code&gt;--prune&lt;/code&gt; freigegeben.&lt;/p&gt;
+&lt;h2 id=&#34;snapshots-anzeigen&#34;&gt;
+    &lt;a href=&#34;#snapshots-anzeigen&#34;&gt;
+	Snapshots anzeigen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Snapshots anzeigen geht mit &lt;code&gt;restic snapshots&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic snapshots&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; repository:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ID        Time                 Host        Tags        Paths
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0b981e61  2023-12-25 14:21:06  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;e4e36825  2023-12-25 23:10:01  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;99153462&lt;/span&gt;  2023-12-29 15:10:01  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir können auch mit &lt;code&gt;restic ls&lt;/code&gt; das Verzeichnis des Snapshots listen lassen,
+oder mit &lt;code&gt;restic dump&lt;/code&gt; eine einzelne Datei ausgeben lassen.&lt;/p&gt;
+&lt;h2 id=&#34;suche&#34;&gt;
+    &lt;a href=&#34;#suche&#34;&gt;
+	Suche
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Wir können einen Snapshot nach einzelnen Dateien durchsuchen.
+Zum Beispiel wollen wir sehen, ob wir das File &lt;code&gt;/home/snackbag/snackbag/extras/snacksmp/v15-fast.zip&lt;/code&gt; im Backup haben.&lt;/p&gt;
+&lt;p&gt;Gesichert worden ist es als &lt;code&gt;/snapshot-of-home/...&lt;/code&gt;.
+Also&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic find &amp;#39;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot fbb371bd from 2023-12-29 13:10:01
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot 498bfd63 from 2023-12-29 14:10:02
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot &lt;span class=&#34;m&#34;&gt;99153462&lt;/span&gt; from 2023-12-29 15:10:01
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot c5d9b64a from 2023-12-29 16:10:01
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Zum Restore brauchen wir die Snapshot-ID (also zum Beispiel: &lt;code&gt;c5d9b64a&lt;/code&gt;) der Version, die wir haben wollen.
+Die Ausgabe ist chronologisch, also brauchen wir die letzte ID.&lt;/p&gt;
+&lt;p&gt;Suche geht auch mit Wildcards:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic find --json &amp;#39;*/v15-fast.zip&amp;#39; | gron&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.hits &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.atime &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2023-12-18T12:53:17+01:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.ctime &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2023-12-18T14:39:47.875074144+01:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.device_id &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 64773&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.gid &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1013&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.group &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;snackbag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.inode &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 67328639&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.links &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.mode &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 420&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.mtime &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2023-12-18T12:53:17+01:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.path &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.permissions &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;-rw-r--r--&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 53774271&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.type &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;file&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.uid &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1013&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.user &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;snackbag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.snapshot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;c5d9b64aad4248840801f599baedc95467c49a2b8634a86d75be5bbd9d130bce&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Oder mit &lt;code&gt;jq&lt;/code&gt; statt &lt;code&gt;gron&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic find --json &amp;#39;*/v15-fast.zip&amp;#39; | jq &amp;#39;.[].snapshot&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;fbb371bd16a2db6c2b619d14f9c7beb8e52b7f40d212b3eafb1b1f145f731478&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;498bfd639d6ae59c926a63812aaced6dc5b541ca1302c5334913044f3b8333e6&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;9915346249d0ed02d35e43a81a46d184b75f6c00ec00133c0446a4b4a9cc8eb5&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c5d9b64aad4248840801f599baedc95467c49a2b8634a86d75be5bbd9d130bce&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;restore&#34;&gt;
+    &lt;a href=&#34;#restore&#34;&gt;
+	Restore
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Restore dann:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir workspace&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic restore \&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;gt; --target workspace &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&amp;gt; --iinclude &lt;span class=&#34;s1&#34;&gt;&amp;#39;*/v15-fast.zip&amp;#39;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;c5d9b64aad4248840801f599baedc95467c49a2b8634a86d75be5bbd9d130bce
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; index files loaded
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;restoring &amp;lt;Snapshot c5d9b64a of &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/snapshot-of-home /var/www /etc&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; at 2023-12-29 16:10:01.934599035 +0100 CET by root@bigbox&amp;gt; to workspace
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Summary: Restored &lt;span class=&#34;m&#34;&gt;6&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; files/dirs &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;51.283 MiB / 51.283 MiB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; in 0:02
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# find workspace/ -type f&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;workspace/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;fuse-mount&#34;&gt;
+    &lt;a href=&#34;#fuse-mount&#34;&gt;
+	FUSE-Mount
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das ist sehr viel schneller als ein Mount,
+aber ein FUSE-Mount kann auch hilfreich sein:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic mount /mnt/restic&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; index files loaded
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Now serving the repository at /mnt/restic
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Use another terminal or tool to browse the contents of this folder.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;When finished, quit with Ctrl-c here or umount the mountpoint.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In einem 2. Fenster dann:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cd /mnt/restic/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls -F&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hosts/  ids/  snapshots/  tags/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls -F ids/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ids/:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0167ffd2/  152ea32f/  2ff8540c/  59f8f55b/  9afe61d3/  d58d50fa/  f22e171d/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;023a782d/  1561f1c8/  33e09326/  5eec2b8c/  a0020775/  d7c8e648/  f80f9e4f/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;02478085/  1b36de2d/  3f0bce8d/  61e02a5b/  a075cdd8/  d972654b/  fbb371bd/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;04216185/  1c253586/  451b146d/  6fcc9fbf/  aa916fab/  dd761561/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0b981e61/  1c64b318/  4961c739/  89aef175/  b4d945ee/  e1b58661/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0caeffbd/  2342db66/  498bfd63/  90a9861c/  be0f439a/  e4e36825/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0d7e65d4/  2566d92a/  4e2ba289/  954210a2/  c0fcfe70/  eb8ce869/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0ee4d0c9/  2cddb602/  5415cd2d/  99153462/  c5d9b64a/  ee6ad425/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cd ids/c5d9b64a&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc  snapshot-of-home  var
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls etc | head -3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;adjtime
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;aliases
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;aliases.db
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;restic-server-aufsetzen&#34;&gt;
+    &lt;a href=&#34;#restic-server-aufsetzen&#34;&gt;
+	&lt;code&gt;restic&lt;/code&gt;-Server aufsetzen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Die Sicherung vom (als kompromittiert anzusehenden) Minecraft-Server nach Hause muss passend gesichert werden.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wir legen einen &lt;code&gt;resticuser&lt;/code&gt; nur für die Sicherung dieses Servers an.&lt;/li&gt;
+&lt;li&gt;Er wird n der &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt; auf &lt;code&gt;sftp-internal&lt;/code&gt; constrained.&lt;/li&gt;
+&lt;li&gt;Der &lt;code&gt;.ssh/authorized_keys&lt;/code&gt; dieses Users wird hinterlegt,
+und als unveränderlich markiert, um Manipulationen zu erschweren.&lt;/li&gt;
+&lt;li&gt;Der &lt;code&gt;sftp&lt;/code&gt;-User bekommt ein &lt;code&gt;chroot(2)&lt;/code&gt; ins Datenverzeichnis und kann nicht auf sein eigenes Home zugreifen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# useradd -m -c &amp;#34;Restic Backup von Minecraft&amp;#34; resticuser&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir ~resticuser/.ssh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# scp .../id_backup.pub ~resticuser/.ssh/authorized_keys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chown -R resticuser:resticuser ~resticuser&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chattr +i ~/.ssh/authorized_keys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# tail -5 /etc/ssh/sshd_config&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Match User restucuser
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ChrootDirectory /backup/minecraft_backup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ForceCommand internal-sftp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    AllowTcpForwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    X11Forwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir /backup/minecraft_backup/restic&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chown -R resticuser:resticuser /backup/minecraft_backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Eine modifizierte Version von &lt;code&gt;run-restic&lt;/code&gt; von oben sollte nun Daten in diesen Speicher schieben können.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Der Admin-Beruf</title>
       <link>https://blog.koehntopp.info/2023/08/28/der-admin-beruf.html</link>
@@ -2995,167 +3454,6 @@ Only mature and somewhat stagnating businesses can be outsourced.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;If your shop uses CPU load alerting, chances are that their tooling and education is in need of emergency updating.&lt;/li&gt;
 &lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Rolling back a rollout</title>
-      <link>https://blog.koehntopp.info/2020/01/17/rolling-back-a-rollout.html</link>
-      <pubDate>Fri, 17 Jan 2020 19:53:49 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2020/01/17/rolling-back-a-rollout.html</guid>
-      <description>&lt;p&gt;Florian Haas &lt;a href=&#34;https://twitter.com/xahteiwi/status/1217903825824120834&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;asks on Twitter&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-back.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;How do you solve reliable rollback. The definition of a reliable rollback being: &amp;lsquo;get reset &amp;ndash;hard &lt;ref&gt;&amp;rsquo;, &amp;lsquo;git push -f&amp;rsquo; and then magic happening that returns your infra to the exact state it was at &lt;ref&gt;.&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;The problem is relatively easy to solve with modern infrastructure-as-code for anything that is stateless. It becomes a bit more involved when you are dealing with things with state, such as database instances or Zookeepers or similar things.&lt;/p&gt;
-&lt;p&gt;My reply on Twitter begins &lt;a href=&#34;https://twitter.com/isotopp/status/1218162310956638209&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
-
-. I am basing my writeup on that reply.&lt;/p&gt;
-&lt;h2 id=&#34;devops-what-does-that-even-mean&#34;&gt;
-    &lt;a href=&#34;#devops-what-does-that-even-mean&#34;&gt;
-	&amp;ldquo;Devops&amp;rdquo;, what does that even mean?
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In 2015, I gave a talk titled &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2015/03/27/go-away-or-i-will-replace-you.html&#34;&gt;Go away, or I will replace you with a little shell script&lt;/a&gt;
-
-&amp;rdquo; as a keynote for the GUUG FFG 2015 in Stuttgart. The german language slides are &lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-or-i-will-replace-you-with-a-little-shell-script&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
-
-, the english slides are &lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
-
- and a Youtube video of the Froscon version of the talk is &lt;a href=&#34;https://www.youtube.com/watch?v=e0CCv7pSK4s&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;
-
-. Unfortunately, the video is the german language version of that talk.&lt;/p&gt;
-&lt;p&gt;The talk focuses on how the sysadmin profession started to die out somewhere around 2001, when we invented horizontal scaleout and &lt;a href=&#34;https://twitter.com/yesthattom&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tom Limoncelli&lt;/a&gt;
-
- published the first edition of &amp;ldquo;&lt;a href=&#34;https://the-sysadmin-book.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Practice of System Administration&lt;/a&gt;
-
-&amp;rdquo;. That book explained in one chapter the role of the sysadmin in the greater corporate organisation and how to cooperate with, not fight against users. The term and the practice of Devops evolved in this decade, until in 2008 &lt;a href=&#34;https://twitter.com/patrickdebois&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Patrick Debois&lt;/a&gt;
-
- coined the actual term &amp;ldquo;Devops&amp;rdquo;, which we use today.&lt;/p&gt;
-&lt;p&gt;The term has been abused a lot, but what does it actually mean? In one slide I show this:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english#19&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-away.jpg&#34; alt=&#34;Go away or I will replace you with a little Shell Script (english) - Slide 19&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The modern development environment according to Devops, and the technical meaning of the term.&lt;/p&gt;
-&lt;p&gt;In todays language, I would phrase these items as follows:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Infrastructure as code&lt;/li&gt;
-&lt;li&gt;Version Control&lt;/li&gt;
-&lt;li&gt;CI/CD&lt;/li&gt;
-&lt;li&gt;Separation of Rollout and Activation&lt;/li&gt;
-&lt;li&gt;Proper Observability with centralized, structured logs&lt;/li&gt;
-&lt;li&gt;Good instant communication&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Infrastructure As Code&lt;/em&gt; describes a way of declaring the execution environment for your code, in code. Code that can be checked in and versioned like the application code itself. Openstack Heat Scripts, AWS Cloud Formation, Kubernetes Deployment Specifications or your Terraform all qualify as this.&lt;/p&gt;
-&lt;p&gt;With this, you can recreate and redeploy your execution environment together with your application, as part of the build and deployment automation. It also means that you get rid of the endlessly fragile state manipulation engines that are Puppet, Ansible, Chef, Salt and CFEngine. You create, build and deploy images and you run immutable infrastructure.&lt;/p&gt;
-&lt;p&gt;Because all of that code and infrastructure declaration are files, you want &lt;em&gt;Version Control&lt;/em&gt;, which in 2020 means, you want all of this in git. This is so normal by now that anything that is not git-able is considered broken and weird.&lt;/p&gt;
-&lt;p&gt;What you check in, you want to be processed automatically. So you push it through a &lt;em&gt;CI/CD pipeline&lt;/em&gt;, which pushes things through whatever pre-production environments you have (many have Dev, Staging and Prod). This, in 2020, probably includes formatting to coding standards, linting, sonarcubing, and whatever tests you wrote.&lt;/p&gt;
-&lt;p&gt;Eventually, your code is rolled out. And a key invention - one that is not yet done by enough people - is &lt;em&gt;separation of Rollout and Activation&lt;/em&gt; by the means of an experiment framework. More on that below.&lt;/p&gt;
-&lt;p&gt;When application code runs, it is appending messages, measurements and context to a hash of hashes. This collection will be pushed into an event processor at the end of a request. Ours is called &amp;ldquo;Booking Events&amp;rdquo;. If you happen to work elsewhere, an Observabilty tool such as &lt;a href=&#34;https://honeycomb.io&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Honeycomb.io&lt;/a&gt;
-
- is the closest to Booking Events I have been able to find outside of Booking.&lt;/p&gt;
-&lt;p&gt;Using this, you alert and push alerts out through a multitude of channels, including Pagerduty, and whatever you use instead of Slack. Humans are being alerted to a situation, and can act on it.&lt;/p&gt;
-&lt;h2 id=&#34;separation-of-rollout-and-activation-and-dual-use-experimentation&#34;&gt;
-    &lt;a href=&#34;#separation-of-rollout-and-activation-and-dual-use-experimentation&#34;&gt;
-	Separation of Rollout and Activation, and Dual Use Experimentation
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;As I mentioned above, the separation of rollout and activation is a key invention that makes rollouts possible. It also makes testing in production safe.&lt;/p&gt;
-&lt;p&gt;In the first iteration, an experiment framework allows you to push code into production that never runs. You can then, through feature flags, activate your code for yourself, or a chosen subset of customers based on whatever selectors your frame work offers. I often quote &amp;ldquo;5% of the population of guest country .jp with a user-agent string that suggests MacOS&amp;rdquo; as an example, but it is really a function of the experiment framework you build.&lt;/p&gt;
-&lt;p&gt;See a very old talk from 2012 of mine: &amp;ldquo;&lt;a href=&#34;https://www.slideshare.net/isotopp/8-rollouts-a-day&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;8 rollouts a day&lt;/a&gt;
-
-&amp;rdquo; (&lt;a href=&#34;https://www.youtube.com/watch?v=6qFNwNEeG1w&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;video&lt;/a&gt;
-
-) for an ancient take on all of this. This is not new technology, we have been doing this for ages, and just iterated on this.&lt;/p&gt;
-&lt;p&gt;Having an experiment framework means that the scaffolding for activation in code is formalized and tested, so errors in gating entry to new code are unlikely to happen.&lt;/p&gt;
-&lt;p&gt;It also means that a control framework exists where you can see experiments that are active, who is exposed to them, and that participation in an experiment is recorded in a user click history. You probably want to record experiment config changes in your monitoring wallgraphs so that a change in observed behavior is linked to possible causes for that in an obvious and in-your-face way.&lt;/p&gt;
-&lt;p&gt;This is also important for customer support: A CS agent needs to be able to see what the customers sees or has seen, if an experiment is a UI/UX experiment. UI/UX variants should be available to CS agents at will, so that they are able to match and retrace customer experience.&lt;/p&gt;
-&lt;p&gt;Having experimentation available obviously means that variant code is in execution concurrently. Or in terms of rollouts: Old and new code run at the same time.&lt;/p&gt;
-&lt;p&gt;For state management, it means that schema changes or similar data adjustments need to be done in advance. They also need to be done in a way that is compatible with the old and the new code. That is not hard to do, and can be done in a robust testable way. You want to package it, and run a bunch of checks on schema changes automatically, so you can detect best practice violation and prevent these from being checked into staging and prod.&lt;/p&gt;
-&lt;p&gt;And yes, you need that table change framework anyway, because SOX will eventually want that from you. You probably will end up with a web frontend and API for &lt;a href=&#34;https://www.percona.com/doc/percona-toolkit/LATEST/pt-online-schema-change.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pt-online-schema-change&lt;/a&gt;
-
- accessible to end users in a way that also advises them automatically on best practice. This also scales better than your DBAs checking manually for the presence of a PK, NULLable columns, columns that are DOUBLE but suggest monetary values in their names, and similar things.&lt;/p&gt;
-&lt;p&gt;Ok, at this point you can push code into staging and prod in a way that the old and new variants of the code can coexist on whatever schema you have and can run concurrently, depending on what variant of which experiment the user is in. You can finally &lt;em&gt;activate&lt;/em&gt; code for a few users, and see what happens.&lt;/p&gt;
-&lt;p&gt;Your second iteration of the experiment framework will therefore measure the &lt;em&gt;impact&lt;/em&gt; of the experiment, and by that I do not only mean the business impact, but also the technical impact.&lt;/p&gt;
-&lt;p&gt;Business impact measurements would answer questions such as &amp;ldquo;What influence has Experiment 17 on conversion?&amp;rdquo; or &amp;ldquo;Does variant B of experiment 17 not only improve conversion, but also customer support call rate, and if so, it is still a positive experiment in the monetary sense&amp;rdquo;?&lt;/p&gt;
-&lt;p&gt;But as a gate to the entry of code paths, the experiment framework can also encapsulate Probes that collect metrics over a Span, delivering technical measurements about the performance cost of an experiment. I can ask questions such as &amp;ldquo;Show me all messages in variant B of rollout 64fd32f that never appear when running variant A&amp;rdquo;, or &amp;ldquo;What messages appear since rollout 64fd32f that did not appear before&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;I can also carry metrics and classify them by experiment related selectors. &amp;ldquo;Show me SQL time spent in variant B compared to variant A of rollout 64fd32f in all sections guarded by experiment 13, normalized by number of executions&amp;rdquo;. In other words, what exactly is the latency contribution of experiment 13b, since 64fd32f?&lt;/p&gt;
-&lt;p&gt;And because I have access to the unshortened, unaggregated raw event data persisted elsewhere, at any point in time I can ask the framework to actually show me the SQL, once I have a selector that finds me the delta I was looking for, and highlight the things that are only present here and not elsewhere.&lt;/p&gt;
-&lt;p&gt;That is the Dual Use value of an experiment framework: You get the business value out of that, testing hypothesis on draft code in production before you spend engineering hours on things that aren&amp;rsquo;t going to make you richer. That is, in terms of bug stages, finding bugs in requirements.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-relative-bugfix-cost.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;From &lt;a href=&#34;https://www.slideshare.net/isotopp/8-rollouts-a-day&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;8 rollouts a day (2012), Slide 19&lt;/a&gt;
-
-: Relative cost of a bugfix in various stages of the code lifecycle. Fixing broken requirements is the cheapest.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;But you also get the technical cost of that, in terms of running the prototype code. That enables you to assess the added execution cost vs. the estimated engineering effort to speed it up. In other words, your engineers only ever work on code that is proven to make you richer, &lt;em&gt;and&lt;/em&gt; you also know how much running it will cost you in AWS units or engineering hours and you can prioritise things properly.&lt;/p&gt;
-&lt;p&gt;And finally, since A and B variants coexist, if B is known to be bad, you not only can roll that back, you don&amp;rsquo;t even have to. Simply turning off activation of B gives you instant silence in production - the known bad variant is still present, but never run for anybody. You can then triage and come up with a resolution of the situation on your own terms. Either you eliminate the B variant and roll back, or you fix B and roll forward. Either way, this is done completely out of the execution path and also without any time pressure constraints on the decision making.&lt;/p&gt;
-&lt;h2 id=&#34;the-sum-of-all-these-parts&#34;&gt;
-    &lt;a href=&#34;#the-sum-of-all-these-parts&#34;&gt;
-	The Sum of All These Parts
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;The sum of these parts is much more than each individual capability gives you. Together they give you an environment that allows you to roll back and forward, at will. And you will be doing this in an informed way. You can reason about code in production, and act on the outcome of that discussion. And you are doing this outside of crisis mode and any time constraints.&lt;/p&gt;
-&lt;p&gt;Separation of Rollout and Activation is a Key Invention here. Put this into an Experimentation Framework, and create a dashboard/control/overview board around this that gives information about running and disabled experiments, experiment outcomes in terms of business and technical data, and that links to raw events and metrics generated from the raw events directly.&lt;/p&gt;
-&lt;p&gt;Marrying an experiment framework + dashboard with a Honeycomb-like observability system, and with pointers to tags, releases and rollouts in your code base allows naviagation between all of these things in an integrated way. It enables product and tech people alike in a unique way to reason about code, what that code does to the business, UX, income, and also resource consumption.&lt;/p&gt;
-&lt;p&gt;It can direct business decisions, because it allows safe rapid development and deployment of draft business expierments.&lt;/p&gt;
-&lt;p&gt;It can direct engineering decisions, because it tells you what is safe, and what isn&amp;rsquo;t, what is good enough and what isn&amp;rsquo;t.&lt;/p&gt;
-&lt;p&gt;It informs product management and backlog decisions, because it links technical cost, potential business income and resource usage cost so that business and tech reason about code at eye level - one single source of truth, and one single set of metrics spanning the lowest levels of tech to business metrics like conversion, cuca call rates, cancellations and other things.&lt;/p&gt;
-&lt;p&gt;After doing that a while, your code will be littered with Experiment Gateways that either protect and measure code that is full-on or perma-off. All of that code is technical debt and needs to be evaluated, and cleaned up. In this way, the experiment framework, even in the final stage of its usefulness acts as visual markup for technical debt assessment and as a guide for garbage code collection.&lt;/p&gt;
-&lt;h2 id=&#34;reliable-rollbacks-and-testing-in-production&#34;&gt;
-    &lt;a href=&#34;#reliable-rollbacks-and-testing-in-production&#34;&gt;
-	Reliable Rollbacks and Testing In Production
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;You can even use this data to build predictors for expected business behavior, and alert on deviations. &amp;ldquo;According to observed growth and data from last year, last month and last week, we would expect x bookings per minute, but see m fewer, so something is likely wrong. That started 10 minutes ago at the yellow activation line of experiment 13&amp;rdquo; is a thing where I live, and turning off 13 before even looking for possible root causes is a complete no-brainer. In 95% of the cases or more it actually fixes the incident for now, so that any followup is done again outside of panic mode.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/01/rolling-production.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;That is: Testing In Production Is A Safe Thing To Do - if you build an environment that makes it survivable. The key ingredients are&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Education&lt;/li&gt;
-&lt;li&gt;Awareness&lt;/li&gt;
-&lt;li&gt;Empowerment&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;I reference that in both talks I linked above: Education means you not only need your general craft, the IT you learned at school, in university or in previous jobs. You also need to learn the local knowledge. We encapsulate that in the two questions&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;If you break it, will you even notice?&lt;/li&gt;
-&lt;li&gt;If you break it, can you fix it?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The first question asks if you do know you dependencies and dependents for any subsystem that you change. If you don&amp;rsquo;t that&amp;rsquo;s okay, we will teach you. That&amp;rsquo;s why we are here.&lt;/p&gt;
-&lt;p&gt;But if you write a patch, gate it in an experiment and then ask &amp;ldquo;Is this good? Can I roll that out?&amp;rdquo;, you are asking the wrong person. There is one expert on the whole planet for that change you just wrote, and that is you. You need to be able to answer the question &amp;ldquo;If you break it, will you even notice&amp;rdquo; with a confident yes in order to be admitted to production. Nobody but you will know the proper answer to that question, ever. We can only help you to find the &amp;ldquo;Yes&amp;rdquo; by teaching you.&lt;/p&gt;
-&lt;p&gt;This is also a question of attitude, and it has to be coming from the top. Back in the day when &lt;a href=&#34;https://twitter.com/keeskoolen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kees&lt;/a&gt;
-
- was CEO, he usually ate with everybody else in the canteen.&lt;/p&gt;
-&lt;p&gt;A typical conversation that happened similarly more than once is Kees asking somebody: &amp;ldquo;I haven&amp;rsquo;t seen you before. Are you new?&amp;rdquo; &amp;ldquo;Yes, of course. I started 3 weeks ago.&amp;rdquo; &amp;ldquo;And&amp;rdquo;, Kees would ask, in one way or the other, &amp;ldquo;did you break production already?&amp;rdquo; The newbie would of course answer &amp;ldquo;No, of course not!&amp;rdquo; and get the usual response &amp;ldquo;So what am I paying you for?&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;The moral in this is that errors and downtimes are a part of doing business. Of course we would like to have infrastructure where these things do not happen, or minimise impact, but velocity and risk taking are a thing of value to a fast company. By having an error budget (the integral between the predicted income and the actual income) and checking that things are within the error budget, management has a control that allows them to check on the state of the engineering culture. If we are over the error budget, we probably need to look at our ways, and the state of our education and practice. If we are under error budget a lot, we are probably not moving fast enough and are too risk averse.&lt;/p&gt;
-&lt;p&gt;All the instrumentation around this - CI/CD, dev and staging, experiment framework and observability framework - exist to make better use of the error budget and get most out of our invest into corporate improvement and organisational learning.&lt;/p&gt;
-&lt;p&gt;The second question asks if you know how to fix the things that your change may break. It is not only a question about scope, but also a question about your network. That is, because in any reasonably large system you won&amp;rsquo;t be able to put it together alone.&lt;/p&gt;
-&lt;p&gt;You should expect to need help.&lt;/p&gt;
-&lt;p&gt;It&amp;rsquo;s people that help, not positions.&lt;/p&gt;
-&lt;p&gt;So you should not answer &amp;ldquo;I will need a DBA around just in case&amp;rdquo;, but you should know if Debs, Greg or Simon would be better to have around in your case.&lt;/p&gt;
-&lt;p&gt;With your education covered, and especially the necessary local knowledge amending your general education, you&amp;rsquo;d then have to be aware of your environment. That ties back to the upper part of this writeup. With probes and annotions from Spans covering Experiment gateways, you will have to access the data collected in your event logging system, your observability pipeline to understand the state and health of your system.&lt;/p&gt;
-&lt;p&gt;And it is that exact state, and the detailed data that will tell you the story.&lt;/p&gt;
-&lt;p&gt;Aggregations are important, they point you into a general direction. But it is the raw data that contains the evidence you need. It is the ability to slice and dice the raw data along arbitrary dimensions at will that will allow you to make the precise cut which isolates the buggy cases from the non-buggy behavior. It will allow you to look at the precise delta in exposed state of your distributed system of dependencies that causes the abnormal behavior.&lt;/p&gt;
-&lt;p&gt;Logs and metrics are good, essential for checks and alerts, to handle known cases and navigate known waters safely. Events, and the ability to search, sort, aggregate and correlate on events at will, are what enable you to see and debug a distributed and developing production system. Experiments, separation of rollout and activation, with integrated Probes in Spans, allow you to collect this data, and to act, by disabling code that introduces undesireable behavior.&lt;/p&gt;
-&lt;p&gt;The rollout is likely to be safe, because any new code you roll out is never executed in production. Unless you activate it. In the end you will find that it is not the rollout sparklines in your graphs that matter, it&amp;rsquo;s the config change sparklines that need watching. You can turn on things for yourself, for a subset of the population, or, if you have gradually built confidence, full on.&lt;/p&gt;
-&lt;p&gt;Full on (or full off and writing the change off as worthless, in 19 of 20 cases) is a precondition then for cleaning up: Removing either the Experiment tooling around one new codepath, removing the old codepath completely, or the other way around.&lt;/p&gt;
-&lt;p&gt;Leaving experimentation instrumentation in the code, but having things full on (or off) is a very easy and visible way to assess technical debt. So even after the experiment has come to a conclusion one way or the other, the experiment framework is useful as a way to demarcate in some way or the other technical debt in source files.&lt;/p&gt;
-&lt;p&gt;And finally, empowerment. Empowerment is giving developers the power to make decisions, and at the same time demanding from them that they make them. You can do that only in a safe environment, and in a blame-free culture where this comes from the top. Hence the importance of Kees eating in the Canteen and asking the questions as told above. Hence, too, the importance of the error budget, and exposing it to all people that roll out.&lt;/p&gt;
 </description>
     </item>
     

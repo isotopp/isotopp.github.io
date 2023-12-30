@@ -6,7 +6,466 @@
     <description>Recent content in lang_de on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 07 Dec 2023 08:54:08 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_de/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 30 Dec 2023 21:03:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_de/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Restic</title>
+      <link>https://blog.koehntopp.info/2023/12/30/restic.html</link>
+      <pubDate>Sat, 30 Dec 2023 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2023/12/30/restic.html</guid>
+      <description>&lt;p&gt;Ich hatte Grund, mich mit &lt;a href=&#34;&#34;&gt;Restic&lt;/a&gt;
+
+ für Backup auseinander zu setzen.&lt;/p&gt;
+&lt;h1 id=&#34;warum-restic&#34;&gt;
+    &lt;a href=&#34;#warum-restic&#34;&gt;
+	Warum &lt;code&gt;restic&lt;/code&gt;?
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;restic&lt;/code&gt; ist eine Datensicherung in ein Repository,
+das intern als ein Content-Addressable Storage aufgebaut ist.
+Das heißt, daß innerhalb des Backups Datenstücke liegen,
+die genau ihre (SHA256-) Prüfsumme als Dateinamen haben.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;root@server:/backup/restic/data/fc# sha256sum fcec*7a5b
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;fcec25d3e3165d159b4dac3867d1a1831707d582215c1fa30e0277cd57dc7a5b  fcec25d3e3165d159b4dac3867d1a1831707d582215c1fa30e0277cd57dc7a5b
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Die Prüfsumme einer Datei im &lt;code&gt;data&lt;/code&gt;-Verzeichnis eines &lt;code&gt;restic&lt;/code&gt;-Repos.
+Sie entspricht genau dem Namen der Datei.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Dies führt zu einer Datenstruktur in &lt;code&gt;restic&lt;/code&gt;, die nicht ganz unähnlich der in einem
+&lt;code&gt;.git&lt;/code&gt;-Repository ist, und auch zu einer starken Deduplizierung von Daten.
+Dateien, die in mehr als einer Generation des Backups unverändert vorkommen,
+werden automatisch erkannt und nicht mehrfach gespeichert.
+Stattdessen wird nur ein Reference-Count erhöht.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;restic&lt;/code&gt; verschlüsselt Daten, Metadaten und Dateinamen genau wie Datei-Inhalte,
+prüft die Integrität des Backups über diese Content-Prüfsummen und
+stellt die Sicherung über mehrere Such- und Zugriffsmöglichkeiten zur Verfügung.&lt;/p&gt;
+&lt;h1 id=&#34;situation&#34;&gt;
+    &lt;a href=&#34;#situation&#34;&gt;
+	Situation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Der neue Dedi ist ein E5-1650 v3 mit 12 Threads und 128 GB RAM bei Hetzner.
+Er führt stündlich ein &lt;code&gt;restic&lt;/code&gt; auf die Hetzner Storagebox durch,
+und weiterhin einmal täglich ein &lt;code&gt;restic&lt;/code&gt; nach Hause aus.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code class=&#34;language-cronexp&#34; data-lang=&#34;cronexp&#34;&gt;10 * * * * /root/bin/run-restic
+34 1 * * * /root/bin/run-restic-to-home
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;em&gt;Crontab mit den Backup-Jobs.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Zu sichern ist ein LVM2 mit einem recht kleinen &lt;code&gt;/root&lt;/code&gt;, &lt;code&gt;/etc&lt;/code&gt; und der Kram auf &lt;code&gt;/home&lt;/code&gt;, der zum Glück noch überschaubar groß ist.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# df -t xfs -h&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Filesystem              Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-root     20G  4.0G   17G  20% /
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-home    200G   40G  160G  20% /home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-restic  250G   57G  194G  23% /restic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Situation mit den Dateisystemen auf dem Dedi.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Real erfolgen faktisch alle Änderungen am Content immer unter Usern in &lt;code&gt;/home&lt;/code&gt;,
+sodaß vor allen Dingen die Sicherung dieser Partition dringend ist.
+Speziell der Minecraft-Spieluser hat eine Menge Churn,
+weil dort im Home alle Server-Instanzen liegen, auf denen gearbeitet wird.&lt;/p&gt;
+&lt;p&gt;Die lokale Sicherung erfolgt mit einem sftp-Backend auf die Hetzner Storagebox,
+das Backup nach Hause verwendet ebenfalls das sftp-Backend.&lt;/p&gt;
+&lt;h1 id=&#34;sshconfig&#34;&gt;
+    &lt;a href=&#34;#sshconfig&#34;&gt;
+	.ssh/config
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Damit alles nicht so weh tut, verwenden wir einen speziellen Backup-Key,
+der nur zur Datensicherung verwendet wird, und der nur die Funktion hat,
+ein paßwortloses Login auf den Backup-Zielen zu erlauben.&lt;/p&gt;
+&lt;p&gt;Wir generieren den Key mit&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ssh-keygen -t rsa -b 4096 -N &amp;#34;&amp;#34; -f ~/.ssh/id_backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und konfigurieren ihn gleich in zwei &lt;code&gt;Host&lt;/code&gt;-Matchblocks rein:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cat .ssh/config&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ServerAliveInterval &lt;span class=&#34;m&#34;&gt;10&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ServerAliveCountMax &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;HashKnownHosts no
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;TCPKeepAlive yes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;KeepAlive yes
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Host storagebox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Hostname uxxxxxx.your-storagebox.de
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        User uxxxxxx
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Port &lt;span class=&#34;m&#34;&gt;23&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        IdentityFile /root/.ssh/id_backup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Host restic
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Hostname home.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        User resticuser
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Port &lt;span class=&#34;m&#34;&gt;22&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        IdentityFile /root/.ssh/id_backup
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dadurch können wir die Backup-Ziele korrekt vorkonfiguriert
+über den Namen des Matchblocks ansprechen, also mit &lt;code&gt;storagebox&lt;/code&gt; und &lt;code&gt;restic&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Den Key müssen wir nun auch in der &lt;code&gt;authorized_keys&lt;/code&gt; der Ziele hinterlegen.
+Das geht genauso wie von
+&lt;a href=&#34;https://docs.hetzner.com/robot/storage-box/backup-space-ssh-keys/#upload&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hetzner dokumentiert&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cat .ssh/id_backup.pub | ssh -p23 uXXXXX@uXXXXX.your-storagebox.de install-ssh-key&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uXXXXX@uXXXXX.your-storagebox.de&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;s password:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test mit &lt;code&gt;ssh -p23 -i ~/.ssh/id_backup uXXXXX@uXXXXX.your-storagebox.de&#39;s password&lt;/code&gt;.
+Man landet in der restricted Shell der Storagebox,
+und kann zum Beispiel mit &lt;code&gt;help&lt;/code&gt; eine Kommandoliste bekommen.&lt;/p&gt;
+&lt;h1 id=&#34;restic-handhaben&#34;&gt;
+    &lt;a href=&#34;#restic-handhaben&#34;&gt;
+	Restic handhaben
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;restic-initialisieren&#34;&gt;
+    &lt;a href=&#34;#restic-initialisieren&#34;&gt;
+	Restic initialisieren
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Damit &lt;code&gt;restic&lt;/code&gt; Dinge tun kann, muss man das Repository, in dem die Backups landen,
+erst einmalig initialisieren.
+Dabei wird auch ein Verschlüsselungspaßwort festgelegt, das nicht verloren gehen darf.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic -r sftp://storagebox/restic init&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; new repository:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password again:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;created restic repository 1c28ea9e7b at /root/keks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Please note that knowledge of your password is required to access
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;the repository. Losing your password means that your data is
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;irrecoverably lost.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dies erzeugt eine Verzeichnishierarchie in &lt;code&gt;/restic&lt;/code&gt; auf der Storagebox.&lt;/p&gt;
+&lt;h2 id=&#34;restic-ausführen&#34;&gt;
+    &lt;a href=&#34;#restic-ausf%c3%bchren&#34;&gt;
+	Restic ausführen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das Backup-Script kann nun ausgeführt werden.
+Man kann dies zu Fuß tun, wie ich hier, oder
+&lt;a href=&#34;https://github.com/creativeprojects/resticprofile&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;resticprofile&lt;/a&gt;
+
+
+bemühen.&lt;/p&gt;
+&lt;p&gt;Ich sichere tatsächlich nicht &lt;code&gt;/home&lt;/code&gt;, sondern erzeuge einen LVM2-Snapshot,
+von dem die Sicherung durchgeführt wird, bevor er released wird.&lt;/p&gt;
+&lt;p&gt;Dadurch ist &lt;code&gt;/home&lt;/code&gt; unveränderlich während der Sicherung,
+und die Konsistenz des Backups ist besser.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#!/usr/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Some basic config&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;SNAPLV&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;snap
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nv&#34;&gt;SNAPMOUNT&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;RESTIC_REPOSITORY&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;sftp://storagebox/restic
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;RESTIC_PASSWORD&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;secret_password
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# only use up to 4 cpus.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;GOMAXPROCS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;4&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Make this safe to run in a crontab&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; -e
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt; -o pipefail
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;PATH&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/root/.local/bin:/root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /root
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Show free space&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh -p &lt;span class=&#34;m&#34;&gt;23&lt;/span&gt; -i /root/.ssh/id_backup storagebox df -m
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Delete old backups&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;restic forget &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-daily &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-monthly &lt;span class=&#34;m&#34;&gt;12&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-within 2d &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --keep-tag keep &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --prune
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# Actually perform a backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 1. Snapshot and mount it&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lvcreate -s -n &lt;span class=&#34;nv&#34;&gt;$SNAPLV&lt;/span&gt; -L10G /dev/vg0/home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mount -t xfs -o nouuid /dev/vg0/&lt;span class=&#34;nv&#34;&gt;$SNAPLV&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;$SNAPMOUNT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 2. Actual backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;restic backup &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --json &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --exclude-caches &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --iexclude-file /root/bin/restic-excludes &lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  &lt;span class=&#34;nv&#34;&gt;$SNAPMOUNT&lt;/span&gt; /var/www /etc &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;jq &lt;span class=&#34;s1&#34;&gt;&amp;#39;. | select(.message_type == &amp;#34;summary&amp;#34; )&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 3. Get rid of the snapshot&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;umount &lt;span class=&#34;nv&#34;&gt;$SNAPMOUNT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lvremove -f /dev/vg0/&lt;span class=&#34;nv&#34;&gt;$SNAPLV&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Alle &lt;code&gt;restic&lt;/code&gt;-Subkommandos haben die Option &lt;code&gt;--json&lt;/code&gt; auszugeben, was man dann
+mit
+&lt;a href=&#34;https://github.com/tomnomnom/gron&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;gron&lt;/code&gt;&lt;/a&gt;
+
+
+oder
+&lt;a href=&#34;https://github.com/jqlang/jq&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;jq&lt;/code&gt;&lt;/a&gt;
+
+
+konsumieren kann.&lt;/p&gt;
+&lt;p&gt;In diesem Script erzeugen wir mit &lt;code&gt;lvcreate -s&lt;/code&gt; einen Snapshot der &lt;code&gt;/home&lt;/code&gt;-Partition.
+Dieser wird dann in &lt;code&gt;/snapshot-of-home&lt;/code&gt; gemounted.
+Weil ich xfs verwendet und das versehentliches doppeltes Mounten eines Verzeichnisses verhindert,
+muss ich dies mit der Option &lt;code&gt;nouuid&lt;/code&gt; tun.&lt;/p&gt;
+&lt;p&gt;Ich kann jetzt das &lt;code&gt;restic backup&lt;/code&gt;-Kommando laufen lassen.
+Dies erfolgt unter anderem mit der Option &lt;code&gt;--json&lt;/code&gt; und wir fischen den &lt;code&gt;summary&lt;/code&gt;-Blog am Ende raus,
+ohne die Progress Reports weiter zu beachten.&lt;/p&gt;
+&lt;p&gt;Die Option &lt;code&gt;--exclude-caches&lt;/code&gt; tut genau das:
+&lt;a href=&#34;https://bford.info/cachedir/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;CACHEDIR.TAG&lt;/a&gt;
+
+ Verzeichnisse ignorieren.
+Außerdem werden die Patterns in einer Exclude-Datei mit &lt;code&gt;--iexclude-file&lt;/code&gt; ebenfalls ignoriert.
+Das Prefix &lt;code&gt;i&lt;/code&gt; steht hier für &lt;code&gt;ignore-case&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Am Ende melden wir den Snapshot wieder ab, und schmeißen ihn weg.&lt;/p&gt;
+&lt;h2 id=&#34;garbage-collection&#34;&gt;
+    &lt;a href=&#34;#garbage-collection&#34;&gt;
+	Garbage Collection
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Am Anfang des Scripts wird einmal
+&lt;code&gt;restic forget --prune&lt;/code&gt;
+bemüht.
+Dies sind die Regeln, nach denen alte Backups verworfen werden:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wir heben alle Backups 2 Tage auf.&lt;/li&gt;
+&lt;li&gt;Wir heben alle Backups mit dem Tag &lt;code&gt;keep&lt;/code&gt; unbegrenzt auf.&lt;/li&gt;
+&lt;li&gt;Wir heben 30 Tage lang das neuste Backup jeden Tages auf.&lt;/li&gt;
+&lt;li&gt;Wir heben 12 Monate lang das neuste Backup jeden Monats auf.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Auf diese Weise haben wir bis zu einem Jahr Historie.
+Dabei ist noch einmal in Erinnerung zu rufen, daß Dinge, die sich nicht ändern,
+nur einmal gespeichert werden, weil &lt;code&gt;restic&lt;/code&gt; dedupliziert.&lt;/p&gt;
+&lt;p&gt;Die Deduplizierung ist sehr effektiv:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic stats&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; repository:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; index files loaded
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;scanning...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Stats in restore-size mode:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;     Snapshots processed:  &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        Total File Count:  &lt;span class=&#34;m&#34;&gt;2431309&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;              Total Size:  1.827 TiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# df -Th /restic/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Filesystem             Type  Size  Used Avail Use% Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/dev/mapper/vg0-restic xfs   250G   57G  194G  23% /restic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;1.8 TB Daten werden von 57 GB Plattenplatz repräsentiert.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Das &lt;code&gt;--prune&lt;/code&gt; nach dem Forget gibt Plattenplatz wieder frei.
+Dabei kann es vorkommen, daß&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Der Linkcount einer Datei erniedrigt wird, sonst nichts.&lt;/li&gt;
+&lt;li&gt;Daten frei markiert werden, aber als ungenutzter Datei in einem 16 MB &amp;ldquo;Pack&amp;rdquo; rumstehen.&lt;/li&gt;
+&lt;li&gt;Der freie Platz im &amp;ldquo;Pack&amp;rdquo; so groß wird, daß das Pack neu geschrieben wird.&lt;/li&gt;
+&lt;li&gt;Das Pack komplett frei wird und gelöscht werden kann.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;remove &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; snapshots:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ID        Time                 Host        Tags        Paths
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dac0526f  2023-12-27 13:10:01  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; files deleted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; snapshots have been removed, running prune
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;loading indexes...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;loading all snapshots...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;finding data that is still in use &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:02&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;searching used packs...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;collecting packs &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; deletion and repacking
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;3499&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;3499&lt;/span&gt; packs processed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;to repack:          &lt;span class=&#34;m&#34;&gt;1517&lt;/span&gt; blobs / 466.577 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;this removes:       &lt;span class=&#34;m&#34;&gt;1341&lt;/span&gt; blobs / 444.158 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;to delete:           &lt;span class=&#34;m&#34;&gt;138&lt;/span&gt; blobs / 65.741 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;total prune:        &lt;span class=&#34;m&#34;&gt;1479&lt;/span&gt; blobs / 509.899 MiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;remaining:        &lt;span class=&#34;m&#34;&gt;174653&lt;/span&gt; blobs / 54.827 GiB
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;unused size after prune: 2.728 GiB &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;4.98% of remaining size&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repacking packs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:01&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;30&lt;/span&gt; packs repacked
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;rebuilding index
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;3468&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;3468&lt;/span&gt; packs processed
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;deleting obsolete index files
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;3&lt;/span&gt; files deleted
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;removing &lt;span class=&#34;m&#34;&gt;34&lt;/span&gt; old packs
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;34&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;34&lt;/span&gt; files deleted
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Eine detaillierte Statistik zeigt an, wie viel Platz &lt;code&gt;--prune&lt;/code&gt; reclaimed hat,
+und wie viel Platz noch innerhalb der Dateien ungenutzt frei ist.
+Er wird bei einem späteren &lt;code&gt;--prune&lt;/code&gt; freigegeben.&lt;/p&gt;
+&lt;h2 id=&#34;snapshots-anzeigen&#34;&gt;
+    &lt;a href=&#34;#snapshots-anzeigen&#34;&gt;
+	Snapshots anzeigen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Snapshots anzeigen geht mit &lt;code&gt;restic snapshots&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic snapshots&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;enter password &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; repository:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ID        Time                 Host        Tags        Paths
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0b981e61  2023-12-25 14:21:06  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;e4e36825  2023-12-25 23:10:01  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;99153462&lt;/span&gt;  2023-12-29 15:10:01  bigbox                  /etc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /snapshot-of-home
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                                                       /var/www
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;51&lt;/span&gt; snapshots
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir können auch mit &lt;code&gt;restic ls&lt;/code&gt; das Verzeichnis des Snapshots listen lassen,
+oder mit &lt;code&gt;restic dump&lt;/code&gt; eine einzelne Datei ausgeben lassen.&lt;/p&gt;
+&lt;h2 id=&#34;suche&#34;&gt;
+    &lt;a href=&#34;#suche&#34;&gt;
+	Suche
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Wir können einen Snapshot nach einzelnen Dateien durchsuchen.
+Zum Beispiel wollen wir sehen, ob wir das File &lt;code&gt;/home/snackbag/snackbag/extras/snacksmp/v15-fast.zip&lt;/code&gt; im Backup haben.&lt;/p&gt;
+&lt;p&gt;Gesichert worden ist es als &lt;code&gt;/snapshot-of-home/...&lt;/code&gt;.
+Also&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic find &amp;#39;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot fbb371bd from 2023-12-29 13:10:01
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot 498bfd63 from 2023-12-29 14:10:02
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot &lt;span class=&#34;m&#34;&gt;99153462&lt;/span&gt; from 2023-12-29 15:10:01
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Found matching entries in snapshot c5d9b64a from 2023-12-29 16:10:01
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Zum Restore brauchen wir die Snapshot-ID (also zum Beispiel: &lt;code&gt;c5d9b64a&lt;/code&gt;) der Version, die wir haben wollen.
+Die Ausgabe ist chronologisch, also brauchen wir die letzte ID.&lt;/p&gt;
+&lt;p&gt;Suche geht auch mit Wildcards:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic find --json &amp;#39;*/v15-fast.zip&amp;#39; | gron&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.hits &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;{}&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.atime &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2023-12-18T12:53:17+01:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.ctime &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2023-12-18T14:39:47.875074144+01:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.device_id &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 64773&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.gid &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1013&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.group &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;snackbag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.inode &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 67328639&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.links &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.mode &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 420&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.mtime &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;2023-12-18T12:53:17+01:00&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.path &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.permissions &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;-rw-r--r--&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.size &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 53774271&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.type &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;file&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.uid &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; 1013&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.matches&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.user &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;snackbag&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;json&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;50&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;.snapshot &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;c5d9b64aad4248840801f599baedc95467c49a2b8634a86d75be5bbd9d130bce&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Oder mit &lt;code&gt;jq&lt;/code&gt; statt &lt;code&gt;gron&lt;/code&gt;:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic find --json &amp;#39;*/v15-fast.zip&amp;#39; | jq &amp;#39;.[].snapshot&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;fbb371bd16a2db6c2b619d14f9c7beb8e52b7f40d212b3eafb1b1f145f731478&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;498bfd639d6ae59c926a63812aaced6dc5b541ca1302c5334913044f3b8333e6&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;9915346249d0ed02d35e43a81a46d184b75f6c00ec00133c0446a4b4a9cc8eb5&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;c5d9b64aad4248840801f599baedc95467c49a2b8634a86d75be5bbd9d130bce&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;restore&#34;&gt;
+    &lt;a href=&#34;#restore&#34;&gt;
+	Restore
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Restore dann:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir workspace&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic restore \&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;gt; --target workspace &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;&amp;gt; --iinclude &lt;span class=&#34;s1&#34;&gt;&amp;#39;*/v15-fast.zip&amp;#39;&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;c5d9b64aad4248840801f599baedc95467c49a2b8634a86d75be5bbd9d130bce
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; index files loaded
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;restoring &amp;lt;Snapshot c5d9b64a of &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;/snapshot-of-home /var/www /etc&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; at 2023-12-29 16:10:01.934599035 +0100 CET by root@bigbox&amp;gt; to workspace
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Summary: Restored &lt;span class=&#34;m&#34;&gt;6&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; files/dirs &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;51.283 MiB / 51.283 MiB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; in 0:02
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# find workspace/ -type f&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;workspace/snapshot-of-home/snackbag/snackbag/extras/snacksmp/v15-fast.zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;fuse-mount&#34;&gt;
+    &lt;a href=&#34;#fuse-mount&#34;&gt;
+	FUSE-Mount
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Das ist sehr viel schneller als ein Mount,
+aber ein FUSE-Mount kann auch hilfreich sein:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# restic mount /mnt/restic&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;repository 3d26efdc opened &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;version 2, compression level auto&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;0:00&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; 100.00%  &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; / &lt;span class=&#34;m&#34;&gt;2&lt;/span&gt; index files loaded
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Now serving the repository at /mnt/restic
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Use another terminal or tool to browse the contents of this folder.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;When finished, quit with Ctrl-c here or umount the mountpoint.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In einem 2. Fenster dann:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cd /mnt/restic/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls -F&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;hosts/  ids/  snapshots/  tags/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls -F ids/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ids/:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0167ffd2/  152ea32f/  2ff8540c/  59f8f55b/  9afe61d3/  d58d50fa/  f22e171d/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;023a782d/  1561f1c8/  33e09326/  5eec2b8c/  a0020775/  d7c8e648/  f80f9e4f/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;02478085/  1b36de2d/  3f0bce8d/  61e02a5b/  a075cdd8/  d972654b/  fbb371bd/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;04216185/  1c253586/  451b146d/  6fcc9fbf/  aa916fab/  dd761561/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0b981e61/  1c64b318/  4961c739/  89aef175/  b4d945ee/  e1b58661/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0caeffbd/  2342db66/  498bfd63/  90a9861c/  be0f439a/  e4e36825/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0d7e65d4/  2566d92a/  4e2ba289/  954210a2/  c0fcfe70/  eb8ce869/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;0ee4d0c9/  2cddb602/  5415cd2d/  99153462/  c5d9b64a/  ee6ad425/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# cd ids/c5d9b64a&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;etc  snapshot-of-home  var
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ls etc | head -3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;adjtime
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;aliases
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;aliases.db
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;restic-server-aufsetzen&#34;&gt;
+    &lt;a href=&#34;#restic-server-aufsetzen&#34;&gt;
+	&lt;code&gt;restic&lt;/code&gt;-Server aufsetzen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Die Sicherung vom (als kompromittiert anzusehenden) Minecraft-Server nach Hause muss passend gesichert werden.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Wir legen einen &lt;code&gt;resticuser&lt;/code&gt; nur für die Sicherung dieses Servers an.&lt;/li&gt;
+&lt;li&gt;Er wird n der &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt; auf &lt;code&gt;sftp-internal&lt;/code&gt; constrained.&lt;/li&gt;
+&lt;li&gt;Der &lt;code&gt;.ssh/authorized_keys&lt;/code&gt; dieses Users wird hinterlegt,
+und als unveränderlich markiert, um Manipulationen zu erschweren.&lt;/li&gt;
+&lt;li&gt;Der &lt;code&gt;sftp&lt;/code&gt;-User bekommt ein &lt;code&gt;chroot(2)&lt;/code&gt; ins Datenverzeichnis und kann nicht auf sein eigenes Home zugreifen.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# useradd -m -c &amp;#34;Restic Backup von Minecraft&amp;#34; resticuser&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir ~resticuser/.ssh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# scp .../id_backup.pub ~resticuser/.ssh/authorized_keys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chown -R resticuser:resticuser ~resticuser&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chattr +i ~/.ssh/authorized_keys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# tail -5 /etc/ssh/sshd_config&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Match User restucuser
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ChrootDirectory /backup/minecraft_backup
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    ForceCommand internal-sftp
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    AllowTcpForwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    X11Forwarding no
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir /backup/minecraft_backup/restic&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chown -R resticuser:resticuser /backup/minecraft_backup&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Eine modifizierte Version von &lt;code&gt;run-restic&lt;/code&gt; von oben sollte nun Daten in diesen Speicher schieben können.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Eine Revolution frißt ihre Kinder</title>
       <link>https://blog.koehntopp.info/2023/11/11/eine-revolution-frisst-ihre-kinder.html</link>
@@ -2780,58 +3239,6 @@ Und XMPP macht halt keiner mehr. Tot.&lt;/p&gt;
 und die Totaleskalation danach, die dazu geführt hat, daß octodon.social social.tchncs.de deförderiert hat.&lt;/p&gt;
 &lt;p&gt;Ich habe Freunde auf beiden Servern, die jetzt nicht mehr miteinander reden können und die allesamt nach anderen Instanzen suchen.&lt;/p&gt;
 &lt;p&gt;Insofern alles wie damals.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Energieverbrauch in Deutschland</title>
-      <link>https://blog.koehntopp.info/2022/07/03/energieverbrauch-in-deutschland.html</link>
-      <pubDate>Sun, 03 Jul 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/07/03/energieverbrauch-in-deutschland.html</guid>
-      <description>&lt;p&gt;Der Wikipedia-Artikel zum Thema &lt;a href=&#34;https://de.wikipedia.org/wiki/Energieverbrauch#Energieverbrauch_in_Deutschland&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Energieverbrauch&lt;/a&gt;
-
- ist wirklich interessant.&lt;/p&gt;
-&lt;p&gt;Schaut man sich zum Beispiel diese Grafik (oder die Tabelle, auf der sie basiert) an, dann sieht man:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/07/germany-primary-energy.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Primärenergieverbrauch Deutschland 1990 bis jetzt&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Wie man sieht, ist der Primärenergieverbrauch von Deutschland seit 1990 fast konstant geblieben.
-Wikipedia schreibt im Detail: &amp;ldquo;Zwischen 1990 und 2011 nahm das reale Bruttoinlandprodukt um 34 % zu, der Energieverbrauch nahm jedoch um 9 % ab.&amp;rdquo;
-Rechnet man um, sind es bummelig 14000 Petajoule, was circa 4000 TWh entspricht.&lt;/p&gt;
-&lt;p&gt;Private Haushalte nutzen &lt;a href=&#34;https://www.umweltbundesamt.de/daten/private-haushalte-konsum/wohnen/energieverbrauch-privater-haushalte#hochster-anteil-am-energieverbrauch-zum-heizen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;laut Umweltbundesamt&lt;/a&gt;
-
- circa 650 TWh, und davon sind etwa 450 TWh Heizenergie.&lt;/p&gt;
-&lt;p&gt;Im Grunde genommen ergeben sich daraus sofort die folgenden Ideen:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Dächer voll machen:
-&lt;ol&gt;
-&lt;li&gt;10 KWp Limit weg.&lt;/li&gt;
-&lt;li&gt;Anmeldung und Steuer vereinfachen, und Eigenverbrauch nicht besteuern.&lt;/li&gt;
-&lt;li&gt;Solarinstallation fördern (statt 9000 Euro bei E-Autos dann lieber hier).&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;Akkus als Ausgleich fördern:
-&lt;ol&gt;
-&lt;li&gt;Hausakku fördern (s.o. Solaranlage)&lt;/li&gt;
-&lt;li&gt;Rückspeisefähigkeit bei E-Autos und deren Ladepunkten vorschreiben.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;Wärmepumpen fördern und vorschreiben.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Selbst, wenn man bei den Wärmepumpen nur einen Workfaktor von 3 annnimmt, bekommt man die 450 TWh zum Heizen gedrittelt, also einen Strom-Mehrverbrauch von maximal 150 TWh und eine Einsparung von 300 TWh (zum Vergleich: Atomkraft liefert derzeit noch ca. 230 TWh).&lt;/p&gt;
-&lt;p&gt;Und: 15 kWh Hausakku entsprechen auch bei sehr großen Häusern 1-2 Tagen Autonomie.&lt;/p&gt;
-&lt;p&gt;Das ist wunderbar, denn Solar und Wind sind in Deutschland jahreszeitlich in etwa konstant.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/07/germany-solar-und-wind.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Die Summe aus Solar und Wind ist in etwa konstant.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Lokale Energiespeicher dienen also in erster Linie dazu, die passende Glättung zu erzeugen.&lt;/p&gt;
 </description>
     </item>
     
