@@ -183,7 +183,8 @@
         <li><a href="#fuse-mount">FUSE-Mount</a></li>
       </ul>
     </li>
-    <li><a href="#restic-server-aufsetzen"><code>restic</code>-Server aufsetzen</a></li>
+    <li><a href="#sftp-für-restic-aufsetzen"><code>sftp</code> für <code>restic</code> aufsetzen</a></li>
+    <li><a href="#restic-server"><code>restic-server</code></a></li>
   </ul>
 </nav>
 				</header>
@@ -225,12 +226,11 @@ und weiterhin einmal täglich ein <code>restic</code> nach Hause aus.</p>
 <pre tabindex="0"><code class="language-cronexp" data-lang="cronexp">10 * * * * /root/bin/run-restic
 34 1 * * * /root/bin/run-restic-to-home
 </code></pre><p><em>Crontab mit den Backup-Jobs.</em></p>
-<p>Zu sichern ist ein LVM2 mit einem recht kleinen <code>/root</code>, <code>/etc</code> und der Kram auf <code>/home</code>, der zum Glück noch überschaubar groß ist.</p>
+<p>Zu sichern ist ein LVM2 mit einem recht kleinen <code>/var/www</code>, <code>/etc</code> und der Kram auf <code>/home</code>, der zum Glück noch überschaubar groß ist.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># df -t xfs -h</span>
 </span></span><span class="line"><span class="cl">Filesystem              Size  Used Avail Use% Mounted on
 </span></span><span class="line"><span class="cl">/dev/mapper/vg0-root     20G  4.0G   17G  20% /
 </span></span><span class="line"><span class="cl">/dev/mapper/vg0-home    200G   40G  160G  20% /home
-</span></span><span class="line"><span class="cl">/dev/mapper/vg0-restic  250G   57G  194G  23% /restic
 </span></span></code></pre></div><p><em>Situation mit den Dateisystemen auf dem Dedi.</em></p>
 <p>Real erfolgen faktisch alle Änderungen am Content immer unter Usern in <code>/home</code>,
 sodaß vor allen Dingen die Sicherung dieser Partition dringend ist.
@@ -297,7 +297,7 @@ Dabei wird auch ein Verschlüsselungspaßwort festgelegt, das nicht verloren geh
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># restic -r sftp://storagebox/restic init</span>
 </span></span><span class="line"><span class="cl">enter password <span class="k">for</span> new repository:
 </span></span><span class="line"><span class="cl">enter password again:
-</span></span><span class="line"><span class="cl">created restic repository 1c28ea9e7b at /root/keks
+</span></span><span class="line"><span class="cl">created restic repository 1c28ea9e7b at /restic
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">Please note that knowledge of your password is required to access
 </span></span><span class="line"><span class="cl">the repository. Losing your password means that your data is
@@ -359,7 +359,7 @@ und die Konsistenz des Backups ist besser.</p>
 </span></span></span><span class="line"><span class="cl"><span class="se"></span>  --json <span class="se">\
 </span></span></span><span class="line"><span class="cl"><span class="se"></span>  --exclude-caches <span class="se">\
 </span></span></span><span class="line"><span class="cl"><span class="se"></span>  --iexclude-file /root/bin/restic-excludes <span class="se">\ </span>
-</span></span><span class="line"><span class="cl">  <span class="nv">$SNAPMOUNT</span> /var/www /etc <span class="p">|</span> 
+</span></span><span class="line"><span class="cl">  <span class="nv">$SNAPMOUNT</span> /var/www /etc /root <span class="p">|</span> 
 </span></span><span class="line"><span class="cl">jq <span class="s1">&#39;. | select(.message_type == &#34;summary&#34; )&#39;</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl"><span class="c1"># 3. Get rid of the snapshot</span>
@@ -608,9 +608,9 @@ aber ein FUSE-Mount kann auch hilfreich sein:</p>
 </span></span><span class="line"><span class="cl">adjtime
 </span></span><span class="line"><span class="cl">aliases
 </span></span><span class="line"><span class="cl">aliases.db
-</span></span></code></pre></div><h1 id="restic-server-aufsetzen">
-    <a href="#restic-server-aufsetzen">
-	<code>restic</code>-Server aufsetzen
+</span></span></code></pre></div><h1 id="sftp-für-restic-aufsetzen">
+    <a href="#sftp-f%c3%bcr-restic-aufsetzen">
+	<code>sftp</code> für <code>restic</code> aufsetzen
     </a>
 </h1>
 <p>Die Sicherung vom (als kompromittiert anzusehenden) Minecraft-Server nach Hause muss passend gesichert werden.</p>
@@ -640,6 +640,21 @@ und als unveränderlich markiert, um Manipulationen zu erschweren.</li>
 </span></span><span class="line"><span class="cl"><span class="c1"># mkdir /backup/minecraft_backup/restic</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># chown -R resticuser:resticuser /backup/minecraft_backup</span>
 </span></span></code></pre></div><p>Eine modifizierte Version von <code>run-restic</code> von oben sollte nun Daten in diesen Speicher schieben können.</p>
+<h1 id="restic-server">
+    <a href="#restic-server">
+	<code>restic-server</code>
+    </a>
+</h1>
+<p>(via Matthias Gumz)</p>
+<p><a href="https://github.com/restic/rest-server" target="_blank" rel="noopener"><code>restic-server</code></a>
+
+ ist ein Unterprojekt von <code>restic</code>,
+das ein Server-Backend für das REST-Protokoll von <code>restic</code> implementiert.
+Es hat einen <code>--append-only</code> Modus, mit dem man Backups aus unsicheren Quellen annehmen kann,
+ohne daß die Backup-Quelle das Backup zerstören oder löschen kann.
+Natürlich muß <code>prune</code> dann lokal auf dem Server getriggert werden und nicht durch den Backup-Prozess.</p>
+<p>Das Projekt kommt mit einer umfangreichen Installationsanleitung und mit offiziellen Docker-Images,
+sodaß das Aufsetzen eines Server mit wenigen Handgriffen getan ist.</p>
 
 			</div>
 		</div>
