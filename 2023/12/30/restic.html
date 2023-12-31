@@ -184,7 +184,7 @@
       </ul>
     </li>
     <li><a href="#sftp-für-restic-aufsetzen"><code>sftp</code> für <code>restic</code> aufsetzen</a></li>
-    <li><a href="#restic-server"><code>restic-server</code></a></li>
+    <li><a href="#rest-server"><code>rest-server</code></a></li>
   </ul>
 </nav>
 				</header>
@@ -647,21 +647,54 @@ und als unveränderlich markiert, um Manipulationen zu erschweren.</li>
 </span></span><span class="line"><span class="cl"><span class="c1"># mkdir /backup/minecraft_backup/restic</span>
 </span></span><span class="line"><span class="cl"><span class="c1"># chown -R resticuser:resticuser /backup/minecraft_backup</span>
 </span></span></code></pre></div><p>Eine modifizierte Version von <code>run-restic</code> von oben sollte nun Daten in diesen Speicher schieben können.</p>
-<h1 id="restic-server">
-    <a href="#restic-server">
-	<code>restic-server</code>
+<h1 id="rest-server">
+    <a href="#rest-server">
+	<code>rest-server</code>
     </a>
 </h1>
 <p>(via Matthias Gumz)</p>
-<p><a href="https://github.com/restic/rest-server" target="_blank" rel="noopener"><code>restic-server</code></a>
+<p><a href="https://github.com/restic/rest-server" target="_blank" rel="noopener"><code>rest-server</code></a>
 
  ist ein Unterprojekt von <code>restic</code>,
 das ein Server-Backend für das REST-Protokoll von <code>restic</code> implementiert.
 Es hat einen <code>--append-only</code> Modus, mit dem man Backups aus unsicheren Quellen annehmen kann,
 ohne daß die Backup-Quelle das Backup zerstören oder löschen kann.
-Natürlich muß <code>prune</code> dann lokal auf dem Server getriggert werden und nicht durch den Backup-Prozess.</p>
+Natürlich müssen <code>forget</code> und <code>prune</code> dann lokal auf dem Server getriggert werden und nicht durch den Backup-Prozess.</p>
 <p>Das Projekt kommt mit einer umfangreichen Installationsanleitung und mit offiziellen Docker-Images,
-sodaß das Aufsetzen eines Server mit wenigen Handgriffen getan ist.</p>
+sodass das Aufsetzen eines Servers mit wenigen Handgriffen getan ist.</p>
+<p>Der Aufruf sieht im Wesentlichen so aus:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ lvcreate -L 100G -n testing hdd
+</span></span><span class="line"><span class="cl">$ mkfs -t xfs /dev/hdd/testing
+</span></span><span class="line"><span class="cl">$ mkdir /backup/testing
+</span></span><span class="line"><span class="cl">$ mount /dev/hdd/testing /backup/testing
+</span></span><span class="line"><span class="cl">$ <span class="nb">cd</span> /backup/testing
+</span></span><span class="line"><span class="cl">$ htpasswd -B -c .htpasswd kris
+</span></span><span class="line"><span class="cl">Password: keks
+</span></span><span class="line"><span class="cl">$ cp /etc/apache2/md/domains/<span class="o">{</span>privkey,pubcert<span class="o">}</span>.pem .
+</span></span><span class="line"><span class="cl">$ rest-server <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --append-only <span class="se">\ </span>
+</span></span><span class="line"><span class="cl">  --tls <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --tls-cert pubcert.pem <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --tls-key privkey.pem <span class="se">\ </span> 
+</span></span><span class="line"><span class="cl">  --path /backup/testing/ <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --max-size <span class="m">107374182400</span> <span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>  --listen <span class="s1">&#39;192.168.1.10:8000&#39;</span>
+</span></span></code></pre></div><p><em>Testweises Starten von <code>rest-server</code> mit lokalen Kopien der bei &ldquo;Let&rsquo;s Encrypt&rdquo; generierten Zertifikate und ein Test-Repository.</em></p>
+<p>Der Beispielaufruf startet den <code>rest-server</code> auf Port 8000 der Testmaschine.
+Er verwendet Kopien der von &ldquo;mod_md&rdquo; generierten &ldquo;Let&rsquo;s Encrypt&rdquo;-Zertifikate aus <code>/etc/apache/md/domains</code>,
+und greift auf ein &ldquo;append-only&rdquo;-Repository in <code>/backup/testing</code> zu.
+Die Größe des Repository ist auf 100 GB (100 * 1024^3 Bytes) limitiert.</p>
+<p>Wir können das Repository unter dem Namen <code>rest:https://home.example.com:8000</code> ansprechen.
+Also</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">$ <span class="nb">export</span> <span class="nv">RESTIC_REPOSITORY</span><span class="o">=</span>rest:https://home.example.com:8000
+</span></span><span class="line"><span class="cl">$   <span class="nb">export</span> <span class="nv">RESTIC_PASSWORD</span><span class="o">=</span>keks
+</span></span><span class="line"><span class="cl">$ restic init
+</span></span><span class="line"><span class="cl">...
+</span></span><span class="line"><span class="cl">$ restic backup --exclude-caches /etc 
+</span></span></code></pre></div><p>zum Sichern ein paar mal laufen lassen und dann <code>restic snapshots</code> zum Ansehen der Backups.</p>
+<p>Löschen von Backups mit <code>forget</code> und <code>prune</code> ist durch den Client nicht mehr machbar.</p>
+<p>Stattdessen kann man das Backup lokal als <code>-r /backup/testing</code> ansprechen und per Cron
+das entsprechende <code>forget --prune --keep...</code>-Regel laufen lassen.</p>
 
 			</div>
 		</div>

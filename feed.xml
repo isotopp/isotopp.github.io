@@ -6,7 +6,7 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 31 Dec 2023 13:12:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 31 Dec 2023 14:15:41 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Restic</title>
       <link>https://blog.koehntopp.info/2023/12/30/restic.html</link>
@@ -469,21 +469,54 @@ und als unveränderlich markiert, um Manipulationen zu erschweren.&lt;/li&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# mkdir /backup/minecraft_backup/restic&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# chown -R resticuser:resticuser /backup/minecraft_backup&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Eine modifizierte Version von &lt;code&gt;run-restic&lt;/code&gt; von oben sollte nun Daten in diesen Speicher schieben können.&lt;/p&gt;
-&lt;h1 id=&#34;restic-server&#34;&gt;
-    &lt;a href=&#34;#restic-server&#34;&gt;
-	&lt;code&gt;restic-server&lt;/code&gt;
+&lt;h1 id=&#34;rest-server&#34;&gt;
+    &lt;a href=&#34;#rest-server&#34;&gt;
+	&lt;code&gt;rest-server&lt;/code&gt;
     &lt;/a&gt;
 &lt;/h1&gt;
 &lt;p&gt;(via Matthias Gumz)&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/restic/rest-server&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;restic-server&lt;/code&gt;&lt;/a&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/restic/rest-server&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;rest-server&lt;/code&gt;&lt;/a&gt;
 
  ist ein Unterprojekt von &lt;code&gt;restic&lt;/code&gt;,
 das ein Server-Backend für das REST-Protokoll von &lt;code&gt;restic&lt;/code&gt; implementiert.
 Es hat einen &lt;code&gt;--append-only&lt;/code&gt; Modus, mit dem man Backups aus unsicheren Quellen annehmen kann,
 ohne daß die Backup-Quelle das Backup zerstören oder löschen kann.
-Natürlich muß &lt;code&gt;prune&lt;/code&gt; dann lokal auf dem Server getriggert werden und nicht durch den Backup-Prozess.&lt;/p&gt;
+Natürlich müssen &lt;code&gt;forget&lt;/code&gt; und &lt;code&gt;prune&lt;/code&gt; dann lokal auf dem Server getriggert werden und nicht durch den Backup-Prozess.&lt;/p&gt;
 &lt;p&gt;Das Projekt kommt mit einer umfangreichen Installationsanleitung und mit offiziellen Docker-Images,
-sodaß das Aufsetzen eines Server mit wenigen Handgriffen getan ist.&lt;/p&gt;
+sodass das Aufsetzen eines Servers mit wenigen Handgriffen getan ist.&lt;/p&gt;
+&lt;p&gt;Der Aufruf sieht im Wesentlichen so aus:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ lvcreate -L 100G -n testing hdd
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ mkfs -t xfs /dev/hdd/testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ mkdir /backup/testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ mount /dev/hdd/testing /backup/testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ &lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /backup/testing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ htpasswd -B -c .htpasswd kris
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Password: keks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ cp /etc/apache2/md/domains/&lt;span class=&#34;o&#34;&gt;{&lt;/span&gt;privkey,pubcert&lt;span class=&#34;o&#34;&gt;}&lt;/span&gt;.pem .
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ rest-server &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --append-only &lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  --tls &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --tls-cert pubcert.pem &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --tls-key privkey.pem &lt;span class=&#34;se&#34;&gt;\ &lt;/span&gt; 
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  --path /backup/testing/ &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --max-size &lt;span class=&#34;m&#34;&gt;107374182400&lt;/span&gt; &lt;span class=&#34;se&#34;&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;se&#34;&gt;&lt;/span&gt;  --listen &lt;span class=&#34;s1&#34;&gt;&amp;#39;192.168.1.10:8000&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;em&gt;Testweises Starten von &lt;code&gt;rest-server&lt;/code&gt; mit lokalen Kopien der bei &amp;ldquo;Let&amp;rsquo;s Encrypt&amp;rdquo; generierten Zertifikate und ein Test-Repository.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Der Beispielaufruf startet den &lt;code&gt;rest-server&lt;/code&gt; auf Port 8000 der Testmaschine.
+Er verwendet Kopien der von &amp;ldquo;mod_md&amp;rdquo; generierten &amp;ldquo;Let&amp;rsquo;s Encrypt&amp;rdquo;-Zertifikate aus &lt;code&gt;/etc/apache/md/domains&lt;/code&gt;,
+und greift auf ein &amp;ldquo;append-only&amp;rdquo;-Repository in &lt;code&gt;/backup/testing&lt;/code&gt; zu.
+Die Größe des Repository ist auf 100 GB (100 * 1024^3 Bytes) limitiert.&lt;/p&gt;
+&lt;p&gt;Wir können das Repository unter dem Namen &lt;code&gt;rest:https://home.example.com:8000&lt;/code&gt; ansprechen.
+Also&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ &lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;RESTIC_REPOSITORY&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;rest:https://home.example.com:8000
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$   &lt;span class=&#34;nb&#34;&gt;export&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;RESTIC_PASSWORD&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;keks
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ restic init
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ restic backup --exclude-caches /etc 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;zum Sichern ein paar mal laufen lassen und dann &lt;code&gt;restic snapshots&lt;/code&gt; zum Ansehen der Backups.&lt;/p&gt;
+&lt;p&gt;Löschen von Backups mit &lt;code&gt;forget&lt;/code&gt; und &lt;code&gt;prune&lt;/code&gt; ist durch den Client nicht mehr machbar.&lt;/p&gt;
+&lt;p&gt;Stattdessen kann man das Backup lokal als &lt;code&gt;-r /backup/testing&lt;/code&gt; ansprechen und per Cron
+das entsprechende &lt;code&gt;forget --prune --keep...&lt;/code&gt;-Regel laufen lassen.&lt;/p&gt;
 </description>
     </item>
     
