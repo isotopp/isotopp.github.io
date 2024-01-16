@@ -13,6 +13,19 @@ tags:
   - lang_de
 ---
 
+Es ist also dies hier passiert:
+[Wen schützen eigentlich Jugendschutzprogramme?](https://lilithwittmann.medium.com/wen-sch%C3%BCtzen-eigentlich-jugendschutzprogramme-7f13fb8ebc51)
+Lilith Wittmann nimmt den Filter von JusProg e.V. auseinander und es ist eine einzige Eskalation:
+
+- Die Filterkriterien sind nicht nachvollziehbar.
+- Gefilterte Websites wissen nichts von ihrer Einstufung.
+- Die Einstufungen sind systematisch falsch, und man kann eine politische Richtung erkennen.
+- Das ist JusProg e.V. aber eigentlich egal, denn es sind ja auch viele Websites nicht geblockt worden.
+
+- Die Website für den Download ist ein kompromittiertes Wordpress.
+- Eventuell hat das Wordpress Malware verteilt, aber JusProg e.V. kann das nicht ausschließen und auch nicht nachvollziehen, weil sie die Software nicht im Griff hat.
+- Die Infektion mit Malware war JusProg e.V. bekannt, und sie haben versucht, daran herumzudoktern, aber erfolglos. Das besorgt sie aber nicht besonders.  
+
 # Warum Jugendschutz?
 
 Der Jugendschutz im Allgemeinen ist eine im Grundgesetz verankerte staatliche Aufgabe.
