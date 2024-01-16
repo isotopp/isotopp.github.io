@@ -174,7 +174,7 @@ Damit ist die Motivationsgrundlage entfallen, die das deutsche Jugendschutzsyste
 
 # Aber wir brauchen Bewertungen – für unsere Sites
 
-Die Mitglieder von JusProg e.V. sind traditionelle Medienanbeiter.
+Die Mitglieder von JusProg e.V. sind traditionelle Medienanbieter.
 Lilith Wittmann nennt Mitglieder und stellt die Motivation klar:
 
 > [JusProg eV] wurde mit dem Ziel gegründet, eine solche Software bereitzustellen. 
