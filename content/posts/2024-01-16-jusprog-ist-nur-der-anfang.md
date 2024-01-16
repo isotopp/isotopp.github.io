@@ -129,7 +129,7 @@ keine Haut sichtbar ist (keine Nacktheit), die Pose nicht sexuell suggestiv ist 
 keine Gewalt zu sehen ist (keine Gewalt) und auch keine unangemessene Sprache verwendet wird (keine Flüche oder verbotene Worte).
 Zugleich werden ein Haufen Stakeholder protestieren und dieses Bild irgendwie klassifiziert sehen wollen.
 
-# Jugendschutz ist nicht systematisch nicht objektivierbar und automatisierbar 
+# Jugendschutz ist nicht systematisch objektivierbar und automatisierbar 
 
 Es geht darum, welche Inhalte unserem Nachwuchs wie und mit welcher Bewertung präsentiert werden, 
 denn das ist, was Erziehung ist – die Vermittlung von Werten.
