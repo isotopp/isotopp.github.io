@@ -26,6 +26,9 @@ Lilith Wittmann nimmt den Filter von JusProg e.V. auseinander und es ist eine ei
 - Eventuell hat das Wordpress Malware verteilt, aber JusProg e.V. kann das nicht ausschließen und auch nicht nachvollziehen, weil sie die Software nicht im Griff hat.
 - Die Infektion mit Malware war JusProg e.V. bekannt, und sie haben versucht, daran herumzudoktern, aber erfolglos. Das besorgt sie aber nicht besonders.  
 
+Was passiert hier, und warum zerfetzt Lilith Wittmann ausgerechnet JusProg?
+Dazu müssen wir ein wenig ausholen und fast 30 Jahre zurückschauen.
+
 # Warum Jugendschutz?
 
 Der Jugendschutz im Allgemeinen ist eine im Grundgesetz verankerte staatliche Aufgabe.
