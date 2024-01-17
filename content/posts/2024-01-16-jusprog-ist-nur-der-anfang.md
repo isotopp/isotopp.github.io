@@ -96,19 +96,19 @@ Die Idee von JusProg und anderen Filterprogrammen ist immer das Konzept eines in
 dem Filter, der den direkten Zugriff auf bestimmte Inhalte verhindert. 
 Das setzt bestimmte Dinge voraus, wir werden da gleich noch drauf eingehen.
 
-Und massenhaft heißt, daß es keine Vorauswahl gibt.
+Und **massenhaft** heißt, daß es keine Vorauswahl gibt.
 Nicht durch einen Mediator, etwa einen Verlag mit einem Editor, der das gut finden muss, was Du publizieren willst.
 Aber auch nicht finanziell – die Grundkosten sind so niedrig, daß effektiv jede Person alles publizieren kann,
 was diese Person publizieren möchte. 
 Und auch nicht durch eine Lizenz – man muss im Internet nicht wie beim deutschen BTX der späten 80er Jahre 
 als Anbieter statt Nutzer registrieren lassen, damit man Dinge schreiben darf und mehr tun kann als konsumieren.
 
-**Massenhaft** hat zur Folge, dass die Anzahl und Menge der produzieren Medien die Bewertungskapazität der zur Verfügung stehenden qualifizierten Bewerter massiv übersteigt.
+Massenhaft hat zur Folge, dass die Anzahl und Menge der produzieren Medien die Bewertungskapazität der zur Verfügung stehenden qualifizierten Bewerter massiv übersteigt.
 Damit ist nicht nur keine Diskussion über individuelle Bewertungen mehr möglich,
 sondern Bewertungen müssen schematisch nach Syntax, nicht Semantik erfolgen.
 Sie können nicht einmal mehr stichprobenhaft auf Korrektheit kontrolliert werden.
 
-Und weltweit heißt, daß sowohl Inhalte als auch ihre Klassifizierung die Grenzen eines homogenen Kulturraumes weit überschreiten.
+Und **weltweit** heißt, daß sowohl Inhalte als auch ihre Klassifizierung die Grenzen eines homogenen Kulturraumes weit überschreiten.
 Eine sinnvolle Einigung über Klassifikationen ist nicht mehr möglich.
 Teilweise ist nicht einmal eine Unterhaltung über Dimensionen und Skalen einer Klassifikation möglich.
 
