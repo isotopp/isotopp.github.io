@@ -6,7 +6,140 @@
     <description>Recent content in linux on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Jan 2024 06:44:04 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/linux/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Jan 2024 16:36:28 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/linux/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deploying websites - an escalation</title>
+      <link>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</link>
+      <pubDate>Tue, 09 Jan 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</guid>
+      <description>&lt;p&gt;We are still playing minecraft.
+This time it is a highly modded Fabric server, which requires more memory than the old box had.
+The new box has 12 cores, 128 GB of memory, and two nice SSD.
+It is pretty nifty.&lt;/p&gt;
+&lt;h1 id=&#34;a-simple-problem-easily-solved-by-ansible&#34;&gt;
+    &lt;a href=&#34;#a-simple-problem-easily-solved-by-ansible&#34;&gt;
+	A simple problem, easily solved by Ansible.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The machine also needs some kind of webserver to run websites.
+An easy problem to solve, naturally.&lt;/p&gt;
+&lt;p&gt;A bit of Ansible, deploy a few config files into the system and be done with it.&lt;/p&gt;
+&lt;p&gt;Only, these are different types of websites, and over time additional sites are being added.
+When a new website is being added, we need to collect all website names&lt;br&gt;
+and generate an
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;MDomain&lt;/code&gt;&lt;/a&gt;
+
+
+statement in the config for Apache&amp;rsquo;s
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;mod_md&lt;/code&gt;&lt;/a&gt;
+
+.
+This module will then automatically the necessary certificates for the webserver&amp;rsquo;s TLS.&lt;/p&gt;
+&lt;p&gt;Collecting all domain names from the configuration files can be done that in Ansible, but it kind of hurts.
+Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.&lt;/p&gt;
+&lt;p&gt;It is also more complicated than this, because we have different types of websites.
+Initially we had only&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;static sites&lt;/code&gt; (&lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed &lt;code&gt;redirect_sites&lt;/code&gt; (&lt;code&gt;https://www.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed reverse proxies for applications (&lt;code&gt;https://grafana.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://localhost:3000&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Then we also needed the &lt;code&gt;wsgi_site&lt;/code&gt; deployed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But a &lt;code&gt;wsgi_site&lt;/code&gt; needs to be redeployed when the code has changed on GitHub.
+Also, initial deployment of a &lt;code&gt;wsgi_site&lt;/code&gt; needs to create a user,
+and initial checkout of the code into the users home,
+and installation of the requirements.&lt;/p&gt;
+&lt;p&gt;After a code update, the server needs to be restarted.&lt;/p&gt;
+&lt;h1 id=&#34;this-actually-needs-a-shell-script&#34;&gt;
+    &lt;a href=&#34;#this-actually-needs-a-shell-script&#34;&gt;
+	This actually needs a shell script
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Okay, let&amp;rsquo;s not do this in Ansible.
+Let&amp;rsquo;s write a simple and easy shell script for this.&lt;/p&gt;
+&lt;p&gt;That kind of worked, initially, but quickly fell apart when the number of variants grew,
+error checking became complicated.&lt;/p&gt;
+&lt;p&gt;Ultimately, it broke when we needed to collect and store per-site config parameters as a JSON, and act on it.
+The moment you write shell functions with parameters, traps and other bells and whistles,
+it is time to cut your losses and start over differently.
+In this case, in Python.&lt;/p&gt;
+&lt;h1 id=&#34;enter-deploy-a-python-cli-application&#34;&gt;
+    &lt;a href=&#34;#enter-deploy-a-python-cli-application&#34;&gt;
+	Enter &lt;code&gt;deploy&lt;/code&gt;, a Python CLI application
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In the current intermediate stage, this is a Python script of 32 KB and around 1000 lines.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# wc -l Source/deploy/deploy &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;951&lt;/span&gt; Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#  ls -l Source/deploy/deploy&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-rwxr-xr-x. &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; root root &lt;span class=&#34;m&#34;&gt;31428&lt;/span&gt; Jan  &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt; 18:42 Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It understands the five types of server outlined above, and can handle a number of different operations for them.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;create&lt;/code&gt; makes a new server-config.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;delete&lt;/code&gt; throws it away.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We store them in a central directory, &lt;code&gt;/etc/projects&lt;/code&gt;, as JSON files.
+For each site type, we accept a number of parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--type&lt;/code&gt;, the five types above.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--username&lt;/code&gt;, a Unix User we create for the site.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--github&lt;/code&gt; The source code repository URL.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--hostname&lt;/code&gt; If necessary, this is inferred from the username and the default domain.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--projectdir&lt;/code&gt; Only necessary for anomalously structured Python code.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--to_host&lt;/code&gt; Only for redirects.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--port&lt;/code&gt; Only for proxies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We now can do&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show projects&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show grafana&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : None
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : grafana.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- port      : &lt;span class=&#34;m&#34;&gt;3000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;deploy create --type proxy --hostname grafana.example.com --port 3000&lt;/code&gt; has created an apache configuration,
+built the TLS configuration and restarted the &lt;code&gt;httpd.service&lt;/code&gt; to update things.&lt;/p&gt;
+&lt;p&gt;We can also do more complicated things:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy create --type wsgi_site --user learn --github ... learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;... creates /etc/project/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : git@github.com:.../learn.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- home      : /home/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : learn.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- projectdir: learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- pubkey    : ssh-rsa AAAAB3...cfudtTQ&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; root@bigbox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : wsgi_site
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- username  : learn
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a Linux user, set up a checkout of the GitHub, install requirements, set up a WSGI Apache configuration,
+configure TLS, and restart the server as needed.&lt;/p&gt;
+&lt;p&gt;We can now &lt;code&gt;deploy update learn&lt;/code&gt; or &lt;code&gt;deploy restart learn&lt;/code&gt; to check out a new version and restart the server,
+and we can also &lt;code&gt;deploy logs learn&lt;/code&gt; to tail the server logs for this site.&lt;/p&gt;
+&lt;h1 id=&#34;it-is-still-ugly&#34;&gt;
+    &lt;a href=&#34;#it-is-still-ugly&#34;&gt;
+	It is still ugly
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Because this started out as a shell script, it still is ugly.
+There are multiple levels of giant case-branches in this.
+To become a proper solution, it needs a cleaner structure, in a more object-oriented fashion.&lt;/p&gt;
+&lt;p&gt;But already it works better than the shell script it initially was,
+has better error handling and can handle borderline cases more safely.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/isotopp/deploy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Restic</title>
       <link>https://blog.koehntopp.info/2023/12/30/restic.html</link>
@@ -3729,696 +3862,6 @@ Die Kiste hat also nicht mehr allzu viel Reserven, ist aber auch noch nicht übe
 &lt;li&gt;Projekt &amp;lt;-&amp;gt; Prozeß&lt;/li&gt;
 &lt;li&gt;&amp;ldquo;Jetzt&amp;rdquo; &amp;lt;-&amp;gt; &amp;ldquo;Richtig&amp;rdquo;, &amp;ldquo;Ordentlich&amp;rdquo;&lt;/li&gt;
 &lt;li&gt;&amp;ldquo;F&amp;amp;E&amp;rdquo; &amp;lt;-&amp;gt; &amp;ldquo;IT&amp;rdquo; &amp;lt;-&amp;gt; &amp;ldquo;Support&amp;rdquo;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Neu auf einem fremden System</title>
-      <link>https://blog.koehntopp.info/2000/04/14/neu-auf-einem-fremden-system.html</link>
-      <pubDate>Fri, 14 Apr 2000 09:00:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2000/04/14/neu-auf-einem-fremden-system.html</guid>
-      <description>&lt;p&gt;Dies ist eine aktualisierte Version der Schulung „Unix Systemsicherheit“, die ich vor einiger Zeit schon einmal gehalten habe.
-Der Schwerpunkt dieser Schulung hat sich etwas zu den Grundlagen hin verschoben:
-Es geht diesmal weniger um Unix Systemsicherheit als um die typische Situation der Consultants und Bereitschaften:&lt;/p&gt;
-&lt;p&gt;Man kommt an eine neue Maschine und muss sich erst einmal zurechtfinden.&lt;/p&gt;
-&lt;h1 id=&#34;neu-auf-einem-fremden-system&#34;&gt;
-    &lt;a href=&#34;#neu-auf-einem-fremden-system&#34;&gt;
-	Neu auf einem fremden System
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-001.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Orientierung:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Typ und Ausstattung der Maschine
-&lt;ul&gt;
-&lt;li&gt;Prozessor, Festplatten, andere Hardware&lt;/li&gt;
-&lt;li&gt;Speichersituation, historische und aktuelle Lastdaten&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Netzwerk und Netzwerkumfeld der Maschine&lt;/li&gt;
-&lt;li&gt;IP-Adressen, Routing
-&lt;ul&gt;
-&lt;li&gt;Welche Name-Services in welcher Reihenfolge, welche Server werden verwendet?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Was läuft, was soll laufen?
-&lt;ul&gt;
-&lt;li&gt;Was ist installiert?&lt;/li&gt;
-&lt;li&gt;tatsächlich laufende Subsysteme vs. konfigurierte Subsysteme&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Wir sind neu auf einem fremden System und loggen uns zum ersten Mal ein.
-Wie können wir uns zurechtfinden? Was wollen wir überhaupt wissen?&lt;/p&gt;
-&lt;p&gt;Die Maschine selbst ist nach Hardware, Speicher, Platten und Netzwerk zu beurteilen.
-Die Netzwerkumgebung der Maschine ist einzuschätzen.
-Die auf der Maschine installierten Systemdienste sind einzuschätzen und zu beurteilen.
-Es muss ein Soll/Ist-Abgleich stattfinden.&lt;/p&gt;
-&lt;p&gt;Ausgehend von diesen Daten kann die Arbeit auf der Maschine beginnen:&lt;/p&gt;
-&lt;p&gt;Die Maschine kann für ihre Aufgabe angepasst werden (Hardware- oder Softwareinstallation durch Consulting), bzw. die Fehlersuche kann beginnen (Alarmruf für die Bereitschaft).&lt;/p&gt;
-&lt;h1 id=&#34;typ-und-ausstattung-der-maschine&#34;&gt;
-    &lt;a href=&#34;#typ-und-ausstattung-der-maschine&#34;&gt;
-	Typ und Ausstattung der Maschine
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-002.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Was für Hardware ist das hier?&lt;/li&gt;
-&lt;li&gt;Was ist in der Maschine eingebaut?&lt;/li&gt;
-&lt;li&gt;Wie lange ist die Hardware schon &amp;ldquo;up&amp;rdquo;?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Erster Handgriff: &lt;code&gt;uname -a&lt;/code&gt;.
-Weitere Aktionen systemspezfisch.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;lscpu&lt;/code&gt;, &lt;code&gt;free&lt;/code&gt;, &lt;code&gt;df -Th&lt;/code&gt;, &lt;code&gt;lspci&lt;/code&gt;, &lt;code&gt;lsusb&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;prtconf -v&lt;/code&gt;, &lt;code&gt;psrinfo -v&lt;/code&gt;, &lt;code&gt;/usr/platform/$(uname -m)/sbin/prtdiag&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Uptime und Load: &lt;code&gt;w&lt;/code&gt;, &lt;code&gt;uptime -w&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Für uns meist: Sparc/Solaris oder Intel/Linux.
-Bei einigen Kunden auch PPC/AIX oder Intel/SCO.
-Äußerst wenige Kunden mit HP oder Digital Hardware.&lt;/p&gt;
-&lt;p&gt;Peilung des Maschinentyps (mit &lt;code&gt;uname -a&lt;/code&gt;) und der eingebauten Hardware.
-In Solaris mit den drei Kommandos &lt;code&gt;prtconf&lt;/code&gt;, &lt;code&gt;psrinfo&lt;/code&gt; und &lt;code&gt;prtdiag&lt;/code&gt;.
-In Linux mit &lt;code&gt;lscpu&lt;/code&gt;, &lt;code&gt;lspci&lt;/code&gt; oder indem man manuell durch &lt;code&gt;/proc&lt;/code&gt; turnt.&lt;/p&gt;
-&lt;p&gt;Peilung der Systemauslastung und der anwesenden Benutzer:
-Neben &lt;code&gt;w&lt;/code&gt; und &lt;code&gt;uptime&lt;/code&gt; einmal die Prozeßliste ansehen (&lt;code&gt;ps -ef&lt;/code&gt;, &lt;code&gt;ps axuwww&lt;/code&gt;) und die Systemlast checken (&lt;code&gt;iostat&lt;/code&gt;, &lt;code&gt;vmstat&lt;/code&gt;).&lt;/p&gt;
-&lt;h1 id=&#34;speicher-und-last&#34;&gt;
-    &lt;a href=&#34;#speicher-und-last&#34;&gt;
-	Speicher und Last
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-003.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Virtueller Speicher und seine Auslastung:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;free&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;swap -l&lt;/code&gt;, &lt;code&gt;swap -s&lt;/code&gt;.&lt;/li&gt;
-&lt;li&gt;Wenn Accounting &amp;ldquo;up&amp;rdquo; ist (Solaris): &lt;code&gt;sar&lt;/code&gt;, &lt;code&gt;sar -r&lt;/code&gt; (freeswap), &lt;code&gt;sar -w&lt;/code&gt; (paging).&lt;/li&gt;
-&lt;li&gt;In Linux (Suse 6.4): &lt;code&gt;sa&lt;/code&gt; aus dem Paket &lt;code&gt;ap1/acct.rpm&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Der weitaus größte Teil aller Lastprobleme sind Speicherprobleme (zuwenig RAM, zu kleiner Swap).
-Zweithäufigstes Problem ist fehlende I/O-Kapazität.
-Fehlende CPU-Kapazität ist fast niemals das Problem.&lt;/p&gt;
-&lt;p&gt;Erst messen, dann nachdenken, dann handeln (OODA loop &amp;ndash; Observe, Orient, Decide, Act).
-Optimierungen ohne genaue Messungen und Kenntnis des tatsächlichen Problems sind Verschwendung der durch den Kunden bezahlten Arbeitszeit.
-Punktmessungen können hilfreich sein, aber ein Wochenlastprofil ist sehr viel wertvoller (hier &lt;code&gt;sar&lt;/code&gt;-Beispiele von &lt;code&gt;boss&lt;/code&gt; und &lt;code&gt;prime&lt;/code&gt; bringen).&lt;/p&gt;
-&lt;h1 id=&#34;platten&#34;&gt;
-    &lt;a href=&#34;#platten&#34;&gt;
-	Platten
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-004.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Logical Volume Management?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Welches System?&lt;/li&gt;
-&lt;li&gt;Welche Zuordnung?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Quota?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/vfstab&lt;/code&gt;, &lt;code&gt;/etc/fstab&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris (SDS):&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Gerätenamen&lt;/li&gt;
-&lt;li&gt;metastat&lt;/li&gt;
-&lt;li&gt;format&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Linux:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Gerätenamen&lt;/li&gt;
-&lt;li&gt;fdisk&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;raidtool.rpm&lt;/code&gt; als Nachfolger von &lt;code&gt;md-tools&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;/etc/raidtab&lt;/code&gt;, &lt;code&gt;raid.conf&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;df&lt;/code&gt;, &lt;code&gt;du&lt;/code&gt;, &lt;code&gt;mount&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Quota-Tools&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche die sichtbaren Partitionen mit der durch das Hardware-Inventory angezeigten vorhandenen Hardware.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Sind alle Platten partitioniert und eingebunden?&lt;/li&gt;
-&lt;li&gt;Ist die gezeigte Aufteilung sinnvoll gewählt für die Aufgabe der Maschine?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Prüfe auch:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Verteilung der Partitionen nach Auslastung auf Spindeln&lt;/li&gt;
-&lt;li&gt;Verteilung der Partitionen über Platten und Controller nach Ausfallgesichtspunkten?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Welche RAID-Level für welche Aufgabe&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Wir verwenden fast überall RAID 0+1 (Solaris SDS).&lt;/li&gt;
-&lt;li&gt;Linux-RAID (a la Suse) derzeit nur eingeschränkt nützlich.
-&lt;ul&gt;
-&lt;li&gt;Lange Startzeit.&lt;/li&gt;
-&lt;li&gt;Rootplatte, Swap-Partition.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Prüfe auch:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Platzproblem oder Quota-Problem?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;netzwerk-und-netzwerknachbarschaft&#34;&gt;
-    &lt;a href=&#34;#netzwerk-und-netzwerknachbarschaft&#34;&gt;
-	Netzwerk und Netzwerknachbarschaft
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-005.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Übersicht über Interfaces und Routen&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;-n&lt;/code&gt; Option verwenden&lt;/li&gt;
-&lt;li&gt;Woher kommen die Routen?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Weitere Analysetools:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ping&lt;/li&gt;
-&lt;li&gt;tcpdump&lt;/li&gt;
-&lt;li&gt;snoop&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Netzwerkinterfaces: &lt;code&gt;ifconfig -a&lt;/code&gt;, &lt;code&gt;netstat -i&lt;/code&gt;, &lt;code&gt;netstat -s&lt;/code&gt;, &lt;code&gt;netstat -m&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Routen: &lt;code&gt;netstat -rn&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Schicht 2-3 Bindungen: &lt;code&gt;arp -a&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Welche Interfaces und welche Routen werden tatsächlich wie oft verwendet?
-Woher kommen die Routen?&lt;/p&gt;
-&lt;p&gt;Viele Kunden haben ein kaputtes Netzwerkonzept (d.h. keines) und setzen Routen eventuell manuell. Probleme sind vorprogrammiert.&lt;/p&gt;
-&lt;p&gt;Andere Kunden haben nur Default-Routen und bekommen differenzierte Routen nur über ICMP Redirect. Ebenfalls problematisch (Effizenz, Security).&lt;/p&gt;
-&lt;h1 id=&#34;name-resolution&#34;&gt;
-    &lt;a href=&#34;#name-resolution&#34;&gt;
-	Name Resolution
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-006.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Namensdienste werden verwendet?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Server werden verwendet?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wie ist das Verhalten im Fehlerfall?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Ausfall&lt;/li&gt;
-&lt;li&gt;Angriff&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/nsswitch.conf&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Files, DNS/Bind, NIS/NIS+, LDAP, Exoten&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Falls DNS: &lt;code&gt;/etc/resolv.conf&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Falls NIS: &lt;code&gt;ypwhich&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Woher kommen die Namen, welcher Dienst wird verwendet?&lt;/p&gt;
-&lt;p&gt;Oft lokale Hostdateien -&amp;gt; Probleme! Im besten Fall DNS. Dann dort die Zone ansehen und Netzstruktur und Zonengröße abschätzen.&lt;/p&gt;
-&lt;p&gt;Welche Abhängigkeiten existieren zwischen den Servern?&lt;/p&gt;
-&lt;p&gt;Ausfall- und Bootszenarien: Was ist, wenn der DNS-, der Time- oder der NIS-Server nicht da sind? Gibt es NFS-Platten, auf die die lokale Maschine angewiesen ist?&lt;/p&gt;
-&lt;p&gt;Security: Wer macht was in wessen Auftrag? Wer kontrolliert? Wird die Konfiguration manuell gepflegt oder existieren Frontends? Welche Dokumentationsprozeduren existieren?&lt;/p&gt;
-&lt;h1 id=&#34;netzwerkdienste&#34;&gt;
-    &lt;a href=&#34;#netzwerkdienste&#34;&gt;
-	Netzwerkdienste
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-007.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Netzwerkdienste werden erbracht?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Prüfe neben &lt;code&gt;inetd&lt;/code&gt; auch persistenten Server.&lt;/li&gt;
-&lt;li&gt;Prüfe auf Vorhandensein von Sicherheitsmechanismen&lt;/li&gt;
-&lt;li&gt;Prüfe Verhalten im Falle von Ausfällen, etwa Firewall-Versagen&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wie begründen sich diese Dienste?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Sicherheit bieten diese Dienste?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/inetd.conf&lt;/code&gt;, &lt;code&gt;/etc/hosts.allow&lt;/code&gt;, &lt;code&gt;/etc/hosts.deny&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Sonderfälle für das jeweilige System&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Todesfallen bei AIX: Import/Exporttools für &lt;code&gt;inetd.conf&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Todesfallen bei HP/UX: &lt;code&gt;/etc/inetd.sec&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;rpcinfo -p&lt;/code&gt;, &lt;code&gt;showmount -e&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;nmap&lt;/code&gt;!&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche &lt;code&gt;inetd.conf&lt;/code&gt; und Startscripte mit &lt;code&gt;netstat -an&lt;/code&gt;.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Consulting: Viele verstorbene Pflegefälle wegen manuell gestarteter Dienste, die in keiner Konfigurationsdatei auftauchen.&lt;/li&gt;
-&lt;li&gt;Bereitschaft: Umgekehrtes Szenario. Alarm wurde wegen verschwundenem Server ausgelöst.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Sicherheitsanalyse wieder:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Wieder technische und organisatorische Prozesse synchronisieren und abgleichen:
-&lt;ul&gt;
-&lt;li&gt;Was tun die Maschinen?&lt;/li&gt;
-&lt;li&gt;Wer entscheidet das? Wie begründen sich die Dienste?&lt;/li&gt;
-&lt;li&gt;Wer dokumentiert und prüft das?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Vergleiche Prozeduren bei uns im Haus:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ISP-Betrieb plant und deployed.&lt;/li&gt;
-&lt;li&gt;Operating betreibt nach Doku vom ISP-Betrieb, Operating überwacht und alarmiert die Bereitschaft. Auch diese operiert mit dieser Doku.&lt;/li&gt;
-&lt;li&gt;Konfigurationsgenerierung meist automatisch durch die Backends der KundenDB -&amp;gt; automatische Dokumentation und Abrechnung.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;welche-verzeichnisse-werden-exportiert&#34;&gt;
-    &lt;a href=&#34;#welche-verzeichnisse-werden-exportiert&#34;&gt;
-	Welche Verzeichnisse werden exportiert?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-008.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Häufige Panne:
-&lt;ul&gt;
-&lt;li&gt;Verzeichnisse werden ungewollt exportiert&lt;/li&gt;
-&lt;li&gt;Rechner importiert Verzeichnisse und hängt wegen Abhängigkeit vom Server&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Automounter?
-&lt;ul&gt;
-&lt;li&gt;Mit NIS/NIS+?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Samba?
-&lt;ul&gt;
-&lt;li&gt;Klartextpaßworte?&lt;/li&gt;
-&lt;li&gt;Public Shares?&lt;/li&gt;
-&lt;li&gt;Logfiles?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; showmount -e
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; kshowmount -e
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; share
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; vi /etc/exports&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; vi  /etc/dfs/dfstab
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; vi /etc/auto.master&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; vi /etc/auto.homel vi /etc/auto.misc
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; vi smb.conf&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; smbclient
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Einschlägige Beispielserver draußen zeigen.&lt;/p&gt;
-&lt;p&gt;Wir wollen nicht so enden wie die! Mehrfach gestaffelte Sicherheit durch&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;automatisch generierte Konfigurationen mit Sicherheitssperren&lt;/li&gt;
-&lt;li&gt;Dienstsperrungen für Außen durch &lt;code&gt;tcpwrapper&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Portsperrung und Alamierung über die Firewall und das Operating&lt;/li&gt;
-&lt;li&gt;Logauswertung (Usagelog, Wrapper-Protokoll, Firewall-Protokoll) durch
-&lt;ul&gt;
-&lt;li&gt;Abrechnung (KundenDB), Alarm bei Diensten mit fehlendem technischem Objekt in der KundenDB&lt;/li&gt;
-&lt;li&gt;Operating (Wrapper, Firewall), Alarm bei Attack Patterns&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Einschlägige Selbstmordkonfigurationen zeigen.&lt;/p&gt;
-&lt;h1 id=&#34;was-ist-installiert&#34;&gt;
-    &lt;a href=&#34;#was-ist-installiert&#34;&gt;
-	Was ist installiert?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-009.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Pakete und Programme sind installiert?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;In welcher Version?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Installation validieren?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&amp;ldquo;set permissions&amp;rdquo; und &amp;ldquo;check optionen&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;tripwire?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris: &lt;code&gt;pkginfo&lt;/code&gt;, &lt;code&gt;/var/sadm/install/contents&lt;/code&gt; (Reihenfolge!)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Linux: &lt;code&gt;rpm -qa&lt;/code&gt;, &lt;code&gt;rpm -qi &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -ql &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qlc &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qld &amp;lt;paket&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qf &amp;lt;datei&amp;gt;&lt;/code&gt;, &lt;code&gt;rpm -qp &amp;lt;datei.rpm&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris Paketarchiv („NetUSE Distribution“) zeigen&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Consulting-CDROM, wird auch an Kunden verkauft&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Keine Installation ohne Paket&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Verweis auf Paketschulung&lt;/li&gt;
-&lt;li&gt;Kein Paket -&amp;gt; automatische Konfigurationsgenerierung aus Installserver oder KundenDB macht die Verzeichnisse möglicherweise platt.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Kommandoäquivalenzen Linux/Solaris&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verweis auf Rootkits&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Rootkits ersetzen wichtige Systemprogramme,&lt;/li&gt;
-&lt;li&gt;in Folge belügt die Maschine den Operator&lt;/li&gt;
-&lt;li&gt;tripwire-Check nach sauberem Reboot zeigen&lt;/li&gt;
-&lt;li&gt;lrk3 demonstrieren (ohne sauberen Reboot bekommt man keine verlässlichen Informationen mehr und kompromittiert sein Netz nur noch weiter)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;was-soll-laufen&#34;&gt;
-    &lt;a href=&#34;#was-soll-laufen&#34;&gt;
-	Was soll laufen?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-010.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Dienste sollen von der Maschine erbracht werden?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Konfiguration beim Systemstart für persistente Server&lt;/li&gt;
-&lt;li&gt;Konfiguration von transienten Servern&lt;/li&gt;
-&lt;li&gt;Konfiguration von zeitgesteuerten Services
-&lt;ul&gt;
-&lt;li&gt;Suche nach Zeitbomben?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Wenn es hängt?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Start/Stopscripte&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;/sbin/init.d/...&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;/etc/init.d/...&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Crondateien: &lt;code&gt;/var/spool/cron/crontabs&lt;/code&gt;, &lt;code&gt;/var/cron/tabs&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;strace&lt;/code&gt;, &lt;code&gt;truss&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ltrace&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Bootsequenz durchgehen, Single User Mode, Wie bekomme ich meine Platten wieder?, Wie überlebe ich ohne Editor und Terminalemulation?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Defekte Programme tracen: &lt;code&gt;ldd&lt;/code&gt;, Solaris &lt;code&gt;proctools&lt;/code&gt;, Linux: &lt;code&gt;/proc/&amp;lt;nummer&amp;gt;/...&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;strace&lt;/code&gt;/&lt;code&gt;truss&lt;/code&gt; Output lesen, &lt;code&gt;ltrace&lt;/code&gt;/&lt;code&gt;sotruss&lt;/code&gt; Output lesen&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;was-läuft&#34;&gt;
-    &lt;a href=&#34;#was-l%c3%a4uft&#34;&gt;
-	Was Läuft?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-011.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Dienste sind auf der Maschine aktiv?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Welche waren aktiv?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Ressourcen belegen diese Dienste?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;ps -ef&lt;/code&gt;, &lt;code&gt;ps auxwww&lt;/code&gt;, &lt;code&gt;top&lt;/code&gt;, &lt;code&gt;lsof&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Linux: &lt;code&gt;ptree&lt;/code&gt;, &lt;code&gt;sa&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Solaris: &lt;code&gt;/usr/proc/bin/*&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Beispiele mit den Proctools&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Speicherverbrauch abschätzen für Server&lt;/li&gt;
-&lt;li&gt;Programmaktivität laufender Prozesse feststellen&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;welche-user-können-rein&#34;&gt;
-    &lt;a href=&#34;#welche-user-k%c3%b6nnen-rein&#34;&gt;
-	Welche User können rein?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-012.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Quellen von Userlisten&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;lokal, aus dem Netz&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Erlaubte und nicht erlaubte Shells&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Gehackte Authentisierung&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Modifizierte wu-ftpd, imapd&lt;/li&gt;
-&lt;li&gt;LDAP-Module&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/nsswitch.conf&lt;/code&gt;, &lt;code&gt;/etc/shells&lt;/code&gt;, &lt;code&gt;/etc/ftpusers&lt;/code&gt;, &lt;code&gt;/etc/ftpaccess&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Zugangsmechanismen&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Regeln für den Zugang, etwa über PAM: &lt;code&gt;/etc/pam.d&lt;/code&gt;, &lt;code&gt;/etc/pam.conf&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Verweis auf Folgeschulungen:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;NSS/PAM/GSS nutzen.&lt;/li&gt;
-&lt;li&gt;NSS/PAM/GSS-Module erstellen.&lt;/li&gt;
-&lt;li&gt;Überblick über die von NetUSE für den ISP-Betrieb modifizierte Software.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;welche-user-waren-drin&#34;&gt;
-    &lt;a href=&#34;#welche-user-waren-drin&#34;&gt;
-	Welche User waren drin?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-013.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Auswertung des Logbuches&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Querabgleiche mit anderen Logs&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Auditing-Subsysteme&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/etc/utmp&lt;/code&gt;, &lt;code&gt;/etc/wtmp&lt;/code&gt;, syslog, Auth-Events, Radius-Logs und andere&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Exoten:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Logbücher der Sysadmin-Tools (AIX)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Auditing-Subsysteme&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Linux: fehlendes Auditing, bescheidenes Accounting (falls installiert).&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Solaris: Demo des Auditing&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Beide: Welche Logs liegen wo und wie finde ich die gewünschte Info?&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;zugriffsrechte-und-privilegien-in-unix&#34;&gt;
-    &lt;a href=&#34;#zugriffsrechte-und-privilegien-in-unix&#34;&gt;
-	Zugriffsrechte und Privilegien in UNIX
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Bonusfolien aus der alten Schulung&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-014.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Erkläre, wer unter welchen Bedingungen in UNIX auf eine Datei zugreifen darf!&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;rwx? sst?&lt;/li&gt;
-&lt;li&gt;Verzeichnisrechte vs. Dateirechte&lt;/li&gt;
-&lt;li&gt;Dateiattribute? Dateisystemattribute?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Spuren hinterläßt so ein Zugriff?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/1996/03/01/rwx-sonst-nix.html&#34;&gt;RWX - sonst nix?&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wer bin ich?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Zu welchen Gruppen gehöre ich?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Wie kann ich meine Identität ändern?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Welche Rechte (alle!) brauche ich, um auf eine Datei zuzugreifen? Sind es immer dieselben?&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;kurzer-sicherheitscheck-für-zwischendurch&#34;&gt;
-    &lt;a href=&#34;#kurzer-sicherheitscheck-f%c3%bcr-zwischendurch&#34;&gt;
-	Kurzer Sicherheitscheck für Zwischendurch
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Bonusfolien aus der alten Schulung&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-015.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Die meisten Fehler entstehen nicht durch falsche Software, sondern dumme User.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;find / -fstype ... ! -type l -perm ... -ls&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;-perm -2 (find world writeable files)&lt;/li&gt;
-&lt;li&gt;-perm -4000 (find SUID)&lt;/li&gt;
-&lt;li&gt;-perm -2000 (find SGID)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Finde Dateien, die world writeable, suid oder sgid sind.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;/tmp&lt;/code&gt;, &lt;code&gt;/var/tmp&lt;/code&gt; (1777 ?)&lt;/li&gt;
-&lt;li&gt;Verzeichnisse im Pfad, Binaries, Konfigurationsdateien?&lt;/li&gt;
-&lt;li&gt;Dateien mit vorhersagbaren Dateinamen?&lt;/li&gt;
-&lt;li&gt;Geräte? Backup?&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;rechte-an-geräten&#34;&gt;
-    &lt;a href=&#34;#rechte-an-ger%c3%a4ten&#34;&gt;
-	Rechte an Geräten
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Bonusfolien aus der alten Schulung&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2000/04/neu-system-016.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Auf vielen älteren kommerziellen Unices sind Gerätedateien unzureichend geschützt.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Beschreibbare Plattendevices, Banddevices&lt;/li&gt;
-&lt;li&gt;777-Verzeichnisse &lt;code&gt;/dev/md/*&lt;/code&gt;, Löschen von LVM-Pseudogerätedateien&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ioctl()&lt;/code&gt;-Aufrufe nicht ausreichend privilegiert.&lt;/li&gt;
-&lt;li&gt;Medien mit sensitivem Inhalt in lesbaren Geräten.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Beispiele:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;ioctl()-Aufrufe in AIX teilweise nicht dokumentiert und nicht privilegiert.&lt;/li&gt;
-&lt;li&gt;/dev-Unterverzeichnisse 777 in HP/UX.&lt;/li&gt;
-&lt;li&gt;/bin-Verzeichnisse 777 in HP/UX und AIX nach Installation von Software.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;

@@ -6,7 +6,7 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Jan 2024 06:44:03 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Jan 2024 16:36:28 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>JusProg ist nur der Anfang</title>
       <link>https://blog.koehntopp.info/2024/01/16/jusprog-ist-nur-der-anfang.html</link>
@@ -243,6 +243,139 @@ Gerade jetzt, wo um uns herum eine politische Ideologie auflebt, die nur darauf 
 
  –
 Warum wir nicht einfach alles &amp;ldquo;ab 18&amp;rdquo; machen können und warum damit ein Haufen Leuten mit unproblematischen Inhalten notlos Arbeit aufgebürdet wird.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Deploying websites - an escalation</title>
+      <link>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</link>
+      <pubDate>Tue, 09 Jan 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</guid>
+      <description>&lt;p&gt;We are still playing minecraft.
+This time it is a highly modded Fabric server, which requires more memory than the old box had.
+The new box has 12 cores, 128 GB of memory, and two nice SSD.
+It is pretty nifty.&lt;/p&gt;
+&lt;h1 id=&#34;a-simple-problem-easily-solved-by-ansible&#34;&gt;
+    &lt;a href=&#34;#a-simple-problem-easily-solved-by-ansible&#34;&gt;
+	A simple problem, easily solved by Ansible.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The machine also needs some kind of webserver to run websites.
+An easy problem to solve, naturally.&lt;/p&gt;
+&lt;p&gt;A bit of Ansible, deploy a few config files into the system and be done with it.&lt;/p&gt;
+&lt;p&gt;Only, these are different types of websites, and over time additional sites are being added.
+When a new website is being added, we need to collect all website names&lt;br&gt;
+and generate an
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;MDomain&lt;/code&gt;&lt;/a&gt;
+
+
+statement in the config for Apache&amp;rsquo;s
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;mod_md&lt;/code&gt;&lt;/a&gt;
+
+.
+This module will then automatically the necessary certificates for the webserver&amp;rsquo;s TLS.&lt;/p&gt;
+&lt;p&gt;Collecting all domain names from the configuration files can be done that in Ansible, but it kind of hurts.
+Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.&lt;/p&gt;
+&lt;p&gt;It is also more complicated than this, because we have different types of websites.
+Initially we had only&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;static sites&lt;/code&gt; (&lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed &lt;code&gt;redirect_sites&lt;/code&gt; (&lt;code&gt;https://www.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed reverse proxies for applications (&lt;code&gt;https://grafana.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://localhost:3000&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Then we also needed the &lt;code&gt;wsgi_site&lt;/code&gt; deployed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But a &lt;code&gt;wsgi_site&lt;/code&gt; needs to be redeployed when the code has changed on GitHub.
+Also, initial deployment of a &lt;code&gt;wsgi_site&lt;/code&gt; needs to create a user,
+and initial checkout of the code into the users home,
+and installation of the requirements.&lt;/p&gt;
+&lt;p&gt;After a code update, the server needs to be restarted.&lt;/p&gt;
+&lt;h1 id=&#34;this-actually-needs-a-shell-script&#34;&gt;
+    &lt;a href=&#34;#this-actually-needs-a-shell-script&#34;&gt;
+	This actually needs a shell script
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Okay, let&amp;rsquo;s not do this in Ansible.
+Let&amp;rsquo;s write a simple and easy shell script for this.&lt;/p&gt;
+&lt;p&gt;That kind of worked, initially, but quickly fell apart when the number of variants grew,
+error checking became complicated.&lt;/p&gt;
+&lt;p&gt;Ultimately, it broke when we needed to collect and store per-site config parameters as a JSON, and act on it.
+The moment you write shell functions with parameters, traps and other bells and whistles,
+it is time to cut your losses and start over differently.
+In this case, in Python.&lt;/p&gt;
+&lt;h1 id=&#34;enter-deploy-a-python-cli-application&#34;&gt;
+    &lt;a href=&#34;#enter-deploy-a-python-cli-application&#34;&gt;
+	Enter &lt;code&gt;deploy&lt;/code&gt;, a Python CLI application
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In the current intermediate stage, this is a Python script of 32 KB and around 1000 lines.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# wc -l Source/deploy/deploy &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;951&lt;/span&gt; Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#  ls -l Source/deploy/deploy&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-rwxr-xr-x. &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; root root &lt;span class=&#34;m&#34;&gt;31428&lt;/span&gt; Jan  &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt; 18:42 Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It understands the five types of server outlined above, and can handle a number of different operations for them.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;create&lt;/code&gt; makes a new server-config.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;delete&lt;/code&gt; throws it away.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We store them in a central directory, &lt;code&gt;/etc/projects&lt;/code&gt;, as JSON files.
+For each site type, we accept a number of parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--type&lt;/code&gt;, the five types above.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--username&lt;/code&gt;, a Unix User we create for the site.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--github&lt;/code&gt; The source code repository URL.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--hostname&lt;/code&gt; If necessary, this is inferred from the username and the default domain.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--projectdir&lt;/code&gt; Only necessary for anomalously structured Python code.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--to_host&lt;/code&gt; Only for redirects.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--port&lt;/code&gt; Only for proxies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We now can do&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show projects&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show grafana&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : None
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : grafana.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- port      : &lt;span class=&#34;m&#34;&gt;3000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;deploy create --type proxy --hostname grafana.example.com --port 3000&lt;/code&gt; has created an apache configuration,
+built the TLS configuration and restarted the &lt;code&gt;httpd.service&lt;/code&gt; to update things.&lt;/p&gt;
+&lt;p&gt;We can also do more complicated things:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy create --type wsgi_site --user learn --github ... learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;... creates /etc/project/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : git@github.com:.../learn.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- home      : /home/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : learn.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- projectdir: learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- pubkey    : ssh-rsa AAAAB3...cfudtTQ&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; root@bigbox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : wsgi_site
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- username  : learn
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a Linux user, set up a checkout of the GitHub, install requirements, set up a WSGI Apache configuration,
+configure TLS, and restart the server as needed.&lt;/p&gt;
+&lt;p&gt;We can now &lt;code&gt;deploy update learn&lt;/code&gt; or &lt;code&gt;deploy restart learn&lt;/code&gt; to check out a new version and restart the server,
+and we can also &lt;code&gt;deploy logs learn&lt;/code&gt; to tail the server logs for this site.&lt;/p&gt;
+&lt;h1 id=&#34;it-is-still-ugly&#34;&gt;
+    &lt;a href=&#34;#it-is-still-ugly&#34;&gt;
+	It is still ugly
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Because this started out as a shell script, it still is ugly.
+There are multiple levels of giant case-branches in this.
+To become a proper solution, it needs a cleaner structure, in a more object-oriented fashion.&lt;/p&gt;
+&lt;p&gt;But already it works better than the shell script it initially was,
+has better error handling and can handle borderline cases more safely.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/isotopp/deploy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;
+
+.&lt;/p&gt;
 </description>
     </item>
     
@@ -2684,122 +2817,6 @@ We are then using &lt;code&gt;chardet.detect()&lt;/code&gt; on this byte-string 
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bname=b&amp;#39;keks/\xfc\xa1\xa1\xa1\xa1\xa1&amp;#39;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;{&amp;#39;encoding&amp;#39;: &amp;#39;ISO-8859-1&amp;#39;, &amp;#39;confidence&amp;#39;: 0.73, &amp;#39;language&amp;#39;: &amp;#39;&amp;#39;}
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The guesses are trying to find a valid charset for the bytestring, and they find the lowest (least large) charset that matches.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Energiekosten beim Elektroauto</title>
-      <link>https://blog.koehntopp.info/2023/09/13/energiekosten-beim-elektroauto.html</link>
-      <pubDate>Wed, 13 Sep 2023 01:02:03 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2023/09/13/energiekosten-beim-elektroauto.html</guid>
-      <description>&lt;p&gt;Das neue Auto hat eine Batterie mit 60 kWh Kapazität, also muss es 42 kWh aufnehmen, um von 10 % auf 80 % zu kommen.
-Die 80 % sind eine Art magische Grenze, weil die Ladegeschwindigkeit des Autos insbesondere beim Schnellladen unterwegs
-vom Füllstand der Batterie abhängig ist, und ab 80 % stark absinkt.
-Die letzten 20 % dauern also lange.&lt;/p&gt;
-&lt;p&gt;Dazu kommt, daß das Auto auch beim elektrischen Bremsen – beim Rekuperieren – lädt und wenn der Akku-Füllstand über 80 % ist,
-ist das Rekuperationsvermögen durch die geringere Ladegeschwindigkeit der Batterie eingeschränkt.
-Ist das Auto also in städtischen Umgebungen unterwegs, wird man beim dauernden Bremsen im Stadtgebiet oberhalb von 80 %
-Energie durch mechanischen Bremsen verschwenden, anstatt sie durch elektrisches Bremsen zurückzugewinnen.&lt;/p&gt;
-&lt;h1 id=&#34;ladeleistung&#34;&gt;
-    &lt;a href=&#34;#ladeleistung&#34;&gt;
-	Ladeleistung
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Ersetzt werden müssen&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;60 kWh * (0.8 - 0.1) = 42 kWh
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und das dauert circa 30 Min. bis 35 Min. an einem Schnell-Lader, zum Beispiel von Fastned.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/energiekosten-01.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Ladekurve für den Renault Megane 60 kWh an einem Schnell-Lader von Fastned.
-Man erkennt, wie die Ladeleistung mit zunehmendem Akku-Füllstand sinkt und gegen Ende sogar
-unter die Motorleistung (55 kW Dauerleistung) absinkt.&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;kosten&#34;&gt;
-    &lt;a href=&#34;#kosten&#34;&gt;
-	Kosten
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Mit Fastned Gold bezahlt man 0.483 Euro/kWh, also&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;42 * 0.483 = 20.28 Euro   # Laden von 10 % bis 80 %
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;14 * 0.483 = 6.76 Euro    # Laden von 100 km Reichweite
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;für einen Ladevorgang bzw. für 100 km Reichweite bei 14 kWh/100 km.
-Daheim kostet die kWh in der Theorie 33 Cent, das wären dann entsprechend 13,86 Euro für 42 kWh und 4.62 Euro für 100 km Reichweite.
-Das ist theoretisch, weil wir bis Ende 2024 noch die Saldierungsregelung haben, bei der die Solarproduktion mit dem Verbrauch 1:1 verrechnet wird,
-und wir fett Guthaben haben.&lt;/p&gt;
-&lt;p&gt;Daheim fährt das Auto also gratis.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/energiekosten-02.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Unsere Solaranlage in O/W-Lage produziert ihr Maximum am späten Nachmittag, um circa 17:00 Uhr. Auch dann werden 5 kW nicht überschritten.
-Das Laden des Autos zieht jedoch 11 kW, sodaß ein reines Überschußladen ohne spezielle Steuerung nicht möglich ist.
-Selbst dann sind 42 kWh Ertrag am Tag nur an guten Tagen im Hochsommer machbar.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Um den Anteil des selbst erzeugten Stromes zu maximieren, wäre es sinnvoll, das Auto oft zu laden,
-und auch die Ladeleistung des Anschlusses auf die Menge des selbst produzierten Stromes zu begrenzen (&amp;ldquo;Überschußladen&amp;rdquo;).&lt;/p&gt;
-&lt;p&gt;Viele Ladepunkte können das nicht von Hause aus, und selbst bei denen, die es können, setzt die Elektronik enge Grenzen:
-Der Regelbereich für den Ladestrom geht vom Maximum von 16 Ampere bis auf minimal 6 Ampere herab.
-Bei drei Phasen ist die minimale Ladeleistung also &lt;code&gt;6 Ampere * 230 V * 3 Phasen = 4140 Watt&lt;/code&gt;,
-kann man Auto und Ladesäule auf eine Phase einschränken, kann man immerhin auf 1380 Watt herunter.&lt;/p&gt;
-&lt;p&gt;Im Bild ist erkennbar, daß der Energieverbrauch am Meßtag für den Gesamthaushalt 50.8 kWh war,
-dem 17.2 kWh Produktion gegenüber stehen. Davon wurden 6.9 kWh eingespeist, und 40.5 kWh bezogen.
-Insgesamt hatten wir an diesem Tag einen Unterschuß von 33.65 kWh.&lt;/p&gt;
-&lt;p&gt;Ohne den heimischen Ladepunkt hätten wir an einen öffentlichen Ladepfahl gegen müssen.
-Der nächstgelegene Ladepunkt ist eine Querstraße weiter und auch nicht teurer:
-Wir zahlen 0.34 Euro/kWh.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/energiekosten-03.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Öffentlicher Ladepunkt von Vattenfall bei Nutzung mit einer Vattenfall InCharge oder Eneco Karte.
-Die Energiekosten liegen bei 0.34 Euro/kWh.&lt;/em&gt;&lt;/p&gt;
-&lt;h1 id=&#34;mobilität-ist-energieintensiv&#34;&gt;
-    &lt;a href=&#34;#mobilit%c3%a4t-ist-energieintensiv&#34;&gt;
-	Mobilität ist energieintensiv
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Für die Akten:&lt;/p&gt;
-&lt;p&gt;Wir verbrauchen ohne Auto im Schnitt 15 kWh/Tag im Haus (3 Leute, ein Rechner, der alleine 900 kWh/Jahr zieht),
-für 5500 kWh/Jahr, und eine Basislast von 300 Watt nachts.
-Das ist im Vergleich recht viel.&lt;/p&gt;
-&lt;p&gt;100 km im großen Auto sind 14 kWh/100 km, also etwa so viel wie ein Haus-Tag.&lt;/p&gt;
-&lt;p&gt;100 km im Carver sind 7 kWh/100 km, also 1/2 Haus-Tag.
-Der Carver hat auch nur einen Schnarchlader, also Schuko, und kann direkt aus dem Solar-Array laden, nachmittags, von März bis Oktober.&lt;/p&gt;
-&lt;h1 id=&#34;wie-oft-und-wo-laden&#34;&gt;
-    &lt;a href=&#34;#wie-oft-und-wo-laden&#34;&gt;
-	Wie oft und wo laden?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;10 % bis 80 % von einem 60 kWh Akku sind 42 kWh,
-und bei einem Verbrauch von 14 kWh (Sommer) sind die in 3 Stunden leer.
-Ich muss also alle 3 Stunden eine halbe Stunde pausieren, um zu laden.&lt;/p&gt;
-&lt;p&gt;Im Winter vermutlich öfter, aber ich glaube, im Winter will ich eine Tour Amsterdam–Berlin eher mit der Bahn machen.&lt;/p&gt;
-&lt;p&gt;Das große Auto hat eine Reichweite von 300 bis 400 km, je nachdem wie man es fährt.
-Der Carver hat eine Reichweite von 100 km und verbraucht die Hälfte vom großen Auto.&lt;/p&gt;
-&lt;p&gt;Beide Fahrzeuge können wir daheim laden, und beide Fahrzeuge erledigen lokale Fahrten ohne Fremdladen:
-Sie werden in der Regel daheim geladen.
-Das ist in der Regel 1-2 mal die Woche der Fall.&lt;/p&gt;
-&lt;p&gt;Nur bei Fernreisen geht der Renault an fremde Lader, und dann an Schnell-Lader.&lt;/p&gt;
-&lt;h1 id=&#34;fahrerlebnis&#34;&gt;
-    &lt;a href=&#34;#fahrerlebnis&#34;&gt;
-	Fahrerlebnis
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Im Stadtverkehr ist das Elektroauto eine Offenbarung.
-Es ist super sparsam, weil das ganze Beschleunigen durch Bremsen mit Rekuperation wieder zu Akkuladung umgewandelt wird
-(ca. 70 % Effizienz), während ein Verbrenner in dieser Situation gerne einmal säuft.&lt;/p&gt;
-&lt;p&gt;Auch Beschleunigen und den Hintern aus dem Weg räumen oder im Stau ohne Nerv vorwärts kriechen ist mit einem Elektroauto sehr viel weniger nervig.
-Die Fahrassistenzsysteme im großen Auto machen es noch angenehmer, aber selbst der Carver glänzt.&lt;/p&gt;
-&lt;p&gt;Auf der Autobahn lernt man gleichmäßige gemächliche Geschwindigkeiten sehr schätzen.&lt;/p&gt;
-&lt;p&gt;Ich glaube, das Tempolimit von 120 km/h wird in Deutschland faktisch automatisch kommen,
-sobald nur genügend elektrische Autos auf der Straße sind.
-Niemand in so einer Kiste hat dauerhaft das Bedürfnis,
-sinnlos Akku durchzubladen ohne Effekt.
-Die Verbrenner-Raser sitzen dann zwischen den ganzen e-Mobilen fest.&lt;/p&gt;
 </description>
     </item>
     

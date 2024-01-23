@@ -6,7 +6,140 @@
     <description>Recent content in devops on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Jan 2024 06:44:04 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Jan 2024 16:36:28 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/devops/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deploying websites - an escalation</title>
+      <link>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</link>
+      <pubDate>Tue, 09 Jan 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</guid>
+      <description>&lt;p&gt;We are still playing minecraft.
+This time it is a highly modded Fabric server, which requires more memory than the old box had.
+The new box has 12 cores, 128 GB of memory, and two nice SSD.
+It is pretty nifty.&lt;/p&gt;
+&lt;h1 id=&#34;a-simple-problem-easily-solved-by-ansible&#34;&gt;
+    &lt;a href=&#34;#a-simple-problem-easily-solved-by-ansible&#34;&gt;
+	A simple problem, easily solved by Ansible.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The machine also needs some kind of webserver to run websites.
+An easy problem to solve, naturally.&lt;/p&gt;
+&lt;p&gt;A bit of Ansible, deploy a few config files into the system and be done with it.&lt;/p&gt;
+&lt;p&gt;Only, these are different types of websites, and over time additional sites are being added.
+When a new website is being added, we need to collect all website names&lt;br&gt;
+and generate an
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;MDomain&lt;/code&gt;&lt;/a&gt;
+
+
+statement in the config for Apache&amp;rsquo;s
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;mod_md&lt;/code&gt;&lt;/a&gt;
+
+.
+This module will then automatically the necessary certificates for the webserver&amp;rsquo;s TLS.&lt;/p&gt;
+&lt;p&gt;Collecting all domain names from the configuration files can be done that in Ansible, but it kind of hurts.
+Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.&lt;/p&gt;
+&lt;p&gt;It is also more complicated than this, because we have different types of websites.
+Initially we had only&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;static sites&lt;/code&gt; (&lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed &lt;code&gt;redirect_sites&lt;/code&gt; (&lt;code&gt;https://www.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed reverse proxies for applications (&lt;code&gt;https://grafana.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://localhost:3000&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Then we also needed the &lt;code&gt;wsgi_site&lt;/code&gt; deployed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But a &lt;code&gt;wsgi_site&lt;/code&gt; needs to be redeployed when the code has changed on GitHub.
+Also, initial deployment of a &lt;code&gt;wsgi_site&lt;/code&gt; needs to create a user,
+and initial checkout of the code into the users home,
+and installation of the requirements.&lt;/p&gt;
+&lt;p&gt;After a code update, the server needs to be restarted.&lt;/p&gt;
+&lt;h1 id=&#34;this-actually-needs-a-shell-script&#34;&gt;
+    &lt;a href=&#34;#this-actually-needs-a-shell-script&#34;&gt;
+	This actually needs a shell script
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Okay, let&amp;rsquo;s not do this in Ansible.
+Let&amp;rsquo;s write a simple and easy shell script for this.&lt;/p&gt;
+&lt;p&gt;That kind of worked, initially, but quickly fell apart when the number of variants grew,
+error checking became complicated.&lt;/p&gt;
+&lt;p&gt;Ultimately, it broke when we needed to collect and store per-site config parameters as a JSON, and act on it.
+The moment you write shell functions with parameters, traps and other bells and whistles,
+it is time to cut your losses and start over differently.
+In this case, in Python.&lt;/p&gt;
+&lt;h1 id=&#34;enter-deploy-a-python-cli-application&#34;&gt;
+    &lt;a href=&#34;#enter-deploy-a-python-cli-application&#34;&gt;
+	Enter &lt;code&gt;deploy&lt;/code&gt;, a Python CLI application
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In the current intermediate stage, this is a Python script of 32 KB and around 1000 lines.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# wc -l Source/deploy/deploy &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;951&lt;/span&gt; Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#  ls -l Source/deploy/deploy&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-rwxr-xr-x. &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; root root &lt;span class=&#34;m&#34;&gt;31428&lt;/span&gt; Jan  &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt; 18:42 Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It understands the five types of server outlined above, and can handle a number of different operations for them.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;create&lt;/code&gt; makes a new server-config.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;delete&lt;/code&gt; throws it away.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We store them in a central directory, &lt;code&gt;/etc/projects&lt;/code&gt;, as JSON files.
+For each site type, we accept a number of parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--type&lt;/code&gt;, the five types above.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--username&lt;/code&gt;, a Unix User we create for the site.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--github&lt;/code&gt; The source code repository URL.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--hostname&lt;/code&gt; If necessary, this is inferred from the username and the default domain.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--projectdir&lt;/code&gt; Only necessary for anomalously structured Python code.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--to_host&lt;/code&gt; Only for redirects.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--port&lt;/code&gt; Only for proxies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We now can do&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show projects&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show grafana&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : None
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : grafana.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- port      : &lt;span class=&#34;m&#34;&gt;3000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;deploy create --type proxy --hostname grafana.example.com --port 3000&lt;/code&gt; has created an apache configuration,
+built the TLS configuration and restarted the &lt;code&gt;httpd.service&lt;/code&gt; to update things.&lt;/p&gt;
+&lt;p&gt;We can also do more complicated things:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy create --type wsgi_site --user learn --github ... learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;... creates /etc/project/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : git@github.com:.../learn.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- home      : /home/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : learn.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- projectdir: learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- pubkey    : ssh-rsa AAAAB3...cfudtTQ&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; root@bigbox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : wsgi_site
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- username  : learn
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a Linux user, set up a checkout of the GitHub, install requirements, set up a WSGI Apache configuration,
+configure TLS, and restart the server as needed.&lt;/p&gt;
+&lt;p&gt;We can now &lt;code&gt;deploy update learn&lt;/code&gt; or &lt;code&gt;deploy restart learn&lt;/code&gt; to check out a new version and restart the server,
+and we can also &lt;code&gt;deploy logs learn&lt;/code&gt; to tail the server logs for this site.&lt;/p&gt;
+&lt;h1 id=&#34;it-is-still-ugly&#34;&gt;
+    &lt;a href=&#34;#it-is-still-ugly&#34;&gt;
+	It is still ugly
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Because this started out as a shell script, it still is ugly.
+There are multiple levels of giant case-branches in this.
+To become a proper solution, it needs a cleaner structure, in a more object-oriented fashion.&lt;/p&gt;
+&lt;p&gt;But already it works better than the shell script it initially was,
+has better error handling and can handle borderline cases more safely.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/isotopp/deploy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Restic</title>
       <link>https://blog.koehntopp.info/2023/12/30/restic.html</link>
@@ -3428,91 +3561,6 @@ that you cannot afford the administrative barrier between business and execution
 &lt;p&gt;And without having a set of well-understood snd tested quantitative metrics that both sides of the outsourcing relationship
 agree on, it is going to be tough to have a useful discussion about the quality of the services rendered.
 Only mature and somewhat stagnating businesses can be outsourced.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Waffle House Index of Tooling</title>
-      <link>https://blog.koehntopp.info/2020/06/08/waffle-house-index-of-tooling.html</link>
-      <pubDate>Mon, 08 Jun 2020 11:46:42 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2020/06/08/waffle-house-index-of-tooling.html</guid>
-      <description>&lt;p&gt;Charity Majors was &lt;a href=&#34;https://twitter.com/mipsytipsy/status/1268418428542443520&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;on fire and on target, again&lt;/a&gt;
-
-:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://twitter.com/mipsytipsy/status/1268418428542443520&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2020/06/waffle-house-index.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;What is a &lt;a href=&#34;https://en.wikipedia.org/wiki/Waffle_House_Index#Levels&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Waffle House Index&lt;/a&gt;
-
-?&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The Waffle House Index is an informal metric named after the Waffle House restaurant chain and is used by the Federal Emergency Management Agency (FEMA) to determine the effect of a storm and the &lt;strong&gt;likely scale of assistance required for disaster recovery&lt;/strong&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;A &amp;ldquo;Waffle House Index for Tooling&amp;rdquo; would be an indicator how bad the situation on the ground in an IT department is. Charity Majors suggest &amp;ldquo;CPU load alerts&amp;rdquo; as a tooling emergency indicator.&lt;/p&gt;
-&lt;p&gt;Why? CPU load or %CPU used is a useful metric, because it tells you how &amp;ldquo;full&amp;rdquo; the compute part of a thing is.&lt;/p&gt;
-&lt;h3 id=&#34;rightsizing-capacity-is-not-easy&#34;&gt;
-    &lt;a href=&#34;#rightsizing-capacity-is-not-easy&#34;&gt;
-	&amp;ldquo;Rightsizing capacity&amp;rdquo; is not easy
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Alerting on it is a very weird idea, though, and still I find people doing this all of the time. Usually these people are in dire need of a better education, though.&lt;/p&gt;
-&lt;p&gt;If you right size your infrastructure, your goal is to have as little overhead as possible in provisioned resources: Only provision as little as needed, just as much as necessary to deliver.&lt;/p&gt;
-&lt;p&gt;But if you did that, a CPU alert would be going off all of the time, because ideally you want your boxes loaded to the limit, right?&lt;/p&gt;
-&lt;h3 id=&#34;alerting-or-provisioning&#34;&gt;
-    &lt;a href=&#34;#alerting-or-provisioning&#34;&gt;
-	Alerting or provisioning?
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Or you can&amp;rsquo;t, because this is complicated: there are a lot of preconditions that go into even being able to load boxes to this limit. If you can&amp;rsquo;t, then a CPU load alert would also be useless, because it would either never fire, or if it did, it would be too late.&lt;/p&gt;
-&lt;p&gt;Web workloads, specifically, are usually spiky. Your workload may be within the provisioned capacity most of the time, but there will be very sudden, very short spikes that are not. These spikes are usually way shorter than the time it takes to grow your capacity. The way to handle that is to provision not for a median needed capacity, or even low 90ies percentile of required capacity, but to provision for max or 99.9 in order to be able to ride the waves.&lt;/p&gt;
-&lt;p&gt;If you alert on CPU load in such an environment, by the time the alert goes off, it will be too late already. Also, if you could alert, you could also size.&lt;/p&gt;
-&lt;h3 id=&#34;experimentation-has-effects-on-capacity&#34;&gt;
-    &lt;a href=&#34;#experimentation-has-effects-on-capacity&#34;&gt;
-	Experimentation has effects on capacity
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;Or you may be in an environment where the code is unpredictable, because you change it a lot with experiments going in and out of the codebase, or from 1%-on to full-on.&lt;/p&gt;
-&lt;p&gt;When experimenting, it is important to expose code to users really quickly. That code being efficient is not a priority, because most of it will be scrapped as having a net-negative outcome anyway. It is not worth it putting engineering into code before you have the business side of things right.&lt;/p&gt;
-&lt;p&gt;Being able to run experiments means you need to overprovision capacity.&lt;/p&gt;
-&lt;h3 id=&#34;detailed-many-dimensional-highly-tagged-metrics&#34;&gt;
-    &lt;a href=&#34;#detailed-many-dimensional-highly-tagged-metrics&#34;&gt;
-	Detailed, many-dimensional, highly tagged metrics
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;But that of course means you need to alert on change in variants, and compare code path variants not only with respect to business metrics, but also on technical metrics in order to offset business wins. With proper experimentation, you cannot only say &amp;ldquo;This code is making us x Euro/h richer than the base variant.&amp;rdquo; You also need to be able to say &amp;ldquo;To run this we will have to pay y Euro/h more&amp;rdquo; and &amp;ldquo;Refactoring this for efficiency will cost z Euro in Engineering Time over a potential lifecycle of n hours, so y Euro/h more&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;This not only enables quantified reasoning over the change the experiment introduces, but also about how to proceed with the codebase when it goes full-on: Do we leave it as is and just buy more machinery, or do we put engineers on it to make it nice?&lt;/p&gt;
-&lt;h3 id=&#34;production-load-testing-numbers-for-capacity&#34;&gt;
-    &lt;a href=&#34;#production-load-testing-numbers-for-capacity&#34;&gt;
-	Production load testing numbers for capacity
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;But in order to allow developers to experiment safely, you need to have accurate capacity metrics, which CPU load is not. Testing in production, safely, specifically automated load tests with actual production users and separate monitoring of experiment codepaths (and consumption attribution at the request level to experiment variants) will provide these numbers.&lt;/p&gt;
-&lt;p&gt;And that is the way to go: From reactive scaling (&amp;ldquo;CPU Load too high, raise capacity&amp;rdquo;) to predictive scaling (&amp;ldquo;Our capacity is x req/m per box, and we have n. Evening peak will be m, so we need y boxen more by 16:00.&amp;rdquo;). Which brings us back to the spiky loads where we started.&lt;/p&gt;
-&lt;h2 id=&#34;tldr&#34;&gt;
-    &lt;a href=&#34;#tldr&#34;&gt;
-	TL;DR
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;If CPU load alerting worked, reactive autoscaling would work, too.&lt;/li&gt;
-&lt;li&gt;In a web workload environment, it usually doesn&amp;rsquo;t.&lt;/li&gt;
-&lt;li&gt;If you experiment, you need to attribute cost and benefit to experiment variants.
-&lt;ul&gt;
-&lt;li&gt;That means load tests with production users.&lt;/li&gt;
-&lt;li&gt;That means detailed, many-dimensional metrics with many tags, and a lot of ad-hoc metrics exploration.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Once you have that, you are also ready for predictive autoscaling, which actually works.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;and&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;If your shop uses CPU load alerting, chances are that their tooling and education is in need of emergency updating.&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

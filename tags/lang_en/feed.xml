@@ -6,7 +6,140 @@
     <description>Recent content in lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 23 Jan 2024 06:44:04 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 23 Jan 2024 16:36:28 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Deploying websites - an escalation</title>
+      <link>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</link>
+      <pubDate>Tue, 09 Jan 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</guid>
+      <description>&lt;p&gt;We are still playing minecraft.
+This time it is a highly modded Fabric server, which requires more memory than the old box had.
+The new box has 12 cores, 128 GB of memory, and two nice SSD.
+It is pretty nifty.&lt;/p&gt;
+&lt;h1 id=&#34;a-simple-problem-easily-solved-by-ansible&#34;&gt;
+    &lt;a href=&#34;#a-simple-problem-easily-solved-by-ansible&#34;&gt;
+	A simple problem, easily solved by Ansible.
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The machine also needs some kind of webserver to run websites.
+An easy problem to solve, naturally.&lt;/p&gt;
+&lt;p&gt;A bit of Ansible, deploy a few config files into the system and be done with it.&lt;/p&gt;
+&lt;p&gt;Only, these are different types of websites, and over time additional sites are being added.
+When a new website is being added, we need to collect all website names&lt;br&gt;
+and generate an
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;MDomain&lt;/code&gt;&lt;/a&gt;
+
+
+statement in the config for Apache&amp;rsquo;s
+&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;mod_md&lt;/code&gt;&lt;/a&gt;
+
+.
+This module will then automatically the necessary certificates for the webserver&amp;rsquo;s TLS.&lt;/p&gt;
+&lt;p&gt;Collecting all domain names from the configuration files can be done that in Ansible, but it kind of hurts.
+Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.&lt;/p&gt;
+&lt;p&gt;It is also more complicated than this, because we have different types of websites.
+Initially we had only&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;static sites&lt;/code&gt; (&lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed &lt;code&gt;redirect_sites&lt;/code&gt; (&lt;code&gt;https://www.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;We also needed reverse proxies for applications (&lt;code&gt;https://grafana.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://localhost:3000&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;Then we also needed the &lt;code&gt;wsgi_site&lt;/code&gt; deployed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But a &lt;code&gt;wsgi_site&lt;/code&gt; needs to be redeployed when the code has changed on GitHub.
+Also, initial deployment of a &lt;code&gt;wsgi_site&lt;/code&gt; needs to create a user,
+and initial checkout of the code into the users home,
+and installation of the requirements.&lt;/p&gt;
+&lt;p&gt;After a code update, the server needs to be restarted.&lt;/p&gt;
+&lt;h1 id=&#34;this-actually-needs-a-shell-script&#34;&gt;
+    &lt;a href=&#34;#this-actually-needs-a-shell-script&#34;&gt;
+	This actually needs a shell script
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Okay, let&amp;rsquo;s not do this in Ansible.
+Let&amp;rsquo;s write a simple and easy shell script for this.&lt;/p&gt;
+&lt;p&gt;That kind of worked, initially, but quickly fell apart when the number of variants grew,
+error checking became complicated.&lt;/p&gt;
+&lt;p&gt;Ultimately, it broke when we needed to collect and store per-site config parameters as a JSON, and act on it.
+The moment you write shell functions with parameters, traps and other bells and whistles,
+it is time to cut your losses and start over differently.
+In this case, in Python.&lt;/p&gt;
+&lt;h1 id=&#34;enter-deploy-a-python-cli-application&#34;&gt;
+    &lt;a href=&#34;#enter-deploy-a-python-cli-application&#34;&gt;
+	Enter &lt;code&gt;deploy&lt;/code&gt;, a Python CLI application
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;In the current intermediate stage, this is a Python script of 32 KB and around 1000 lines.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# wc -l Source/deploy/deploy &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;951&lt;/span&gt; Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#  ls -l Source/deploy/deploy&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-rwxr-xr-x. &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; root root &lt;span class=&#34;m&#34;&gt;31428&lt;/span&gt; Jan  &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt; 18:42 Source/deploy/deploy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It understands the five types of server outlined above, and can handle a number of different operations for them.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;create&lt;/code&gt; makes a new server-config.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;delete&lt;/code&gt; throws it away.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We store them in a central directory, &lt;code&gt;/etc/projects&lt;/code&gt;, as JSON files.
+For each site type, we accept a number of parameters:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;--type&lt;/code&gt;, the five types above.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--username&lt;/code&gt;, a Unix User we create for the site.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--github&lt;/code&gt; The source code repository URL.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--hostname&lt;/code&gt; If necessary, this is inferred from the username and the default domain.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--projectdir&lt;/code&gt; Only necessary for anomalously structured Python code.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--to_host&lt;/code&gt; Only for redirects.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;--port&lt;/code&gt; Only for proxies.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We now can do&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show projects&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show grafana&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : None
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : grafana.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- port      : &lt;span class=&#34;m&#34;&gt;3000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : grafana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : proxy
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;deploy create --type proxy --hostname grafana.example.com --port 3000&lt;/code&gt; has created an apache configuration,
+built the TLS configuration and restarted the &lt;code&gt;httpd.service&lt;/code&gt; to update things.&lt;/p&gt;
+&lt;p&gt;We can also do more complicated things:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy create --type wsgi_site --user learn --github ... learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;... creates /etc/project/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show learn&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : git@github.com:.../learn.git
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- home      : /home/learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : learn.example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- projectdir: learn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- pubkey    : ssh-rsa AAAAB3...cfudtTQ&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; root@bigbox
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : wsgi_site
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- username  : learn
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a Linux user, set up a checkout of the GitHub, install requirements, set up a WSGI Apache configuration,
+configure TLS, and restart the server as needed.&lt;/p&gt;
+&lt;p&gt;We can now &lt;code&gt;deploy update learn&lt;/code&gt; or &lt;code&gt;deploy restart learn&lt;/code&gt; to check out a new version and restart the server,
+and we can also &lt;code&gt;deploy logs learn&lt;/code&gt; to tail the server logs for this site.&lt;/p&gt;
+&lt;h1 id=&#34;it-is-still-ugly&#34;&gt;
+    &lt;a href=&#34;#it-is-still-ugly&#34;&gt;
+	It is still ugly
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Because this started out as a shell script, it still is ugly.
+There are multiple levels of giant case-branches in this.
+To become a proper solution, it needs a cleaner structure, in a more object-oriented fashion.&lt;/p&gt;
+&lt;p&gt;But already it works better than the shell script it initially was,
+has better error handling and can handle borderline cases more safely.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/isotopp/deploy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;
+
+.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>x86_64 binaries on M1</title>
       <link>https://blog.koehntopp.info/2023/12/05/x86_64-binaries-on-m1.html</link>
@@ -2389,321 +2522,6 @@ It became a lot more runtime extensive, added a lot of new functionality and gai
 Things became more structured.&lt;/p&gt;
 &lt;p&gt;But the original design and data structures conceived by Kleiman and Joy held up, and can still be found in current Linux, 40 years later.
 We can point to concrete Linux code, which while looking completely different, is structurally mirroring the original design ideas.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>50 years in filesystems: 1994</title>
-      <link>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</link>
-      <pubDate>Fri, 12 May 2023 12:13:14 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2023/05/12/50-years-in-filesystems-1994.html</guid>
-      <description>&lt;p&gt;This is part 3 of a series.
-The first part is &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/05/50-years-in-filesystems-1974.html&#34;&gt;1974&lt;/a&gt;
-
-&amp;rdquo;.
-The second part is &amp;ldquo;&lt;a href=&#34;https://blog.koehntopp.info/2023/05/06/50-years-in-filesystems-1984.html&#34;&gt;1984&lt;/a&gt;
-
-&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
-Often, it is easier to see if you compare modern educational material, and the problems discussed with older material.
-And then look for the research papers and sources that fueled the change.&lt;/p&gt;
-&lt;p&gt;In Linux (and Unix in general), this is easy.&lt;/p&gt;
-&lt;h1 id=&#34;1994--the-sgi-xfs-filesystem&#34;&gt;
-    &lt;a href=&#34;#1994--the-sgi-xfs-filesystem&#34;&gt;
-	1994 — The SGI XFS Filesystem
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In 1994, the paper &lt;a href=&#34;http://www.scs.stanford.edu/nyu/02fa/sched/xfs.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Scalability in the XFS File System&lt;/a&gt;
-
- saw publication.
-Computers got faster since 1984, and so did storage.
-Notably, we are now seeing boxes with multiple CPUs, and with storage reaching into the Terabytes.
-The improvements to the 4.3BSD fast filing system (or the modified version in SGI IRIX called EFS) were no longer sufficient.&lt;/p&gt;
-&lt;p&gt;SGIs benchmarks cite machines that had large backplanes with many controllers (one benchmark cites a box with 20 SCSI controllers),
-many disks (three-digit-numbers of hard drives),
-and many CPUs (the benchmarks quote 12 socket machines) with a lot of memory (up to one gigabyte quoted in the benchmarks).&lt;/p&gt;
-&lt;p&gt;Filesystems became larger than FFS could handle,
-files became larger than FFS could handle,
-the number of files per directory led to large lookup times,
-central data structures such as allocation bitmaps did no longer scale,
-and global locks made concurrent access to the file system with many CPUs inefficient.
-SGI set out to design a fundamentally different filesystem.&lt;/p&gt;
-&lt;p&gt;Also, the Unix community as a whole was challenged by Cutler and Custer,
-who showed with NTFS for Windows NT 4.0 what was possible if you redesign from scratch.&lt;/p&gt;
-&lt;h1 id=&#34;requirements&#34;&gt;
-    &lt;a href=&#34;#requirements&#34;&gt;
-	Requirements
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The XFS filesystem was a firework of new ideas, and a large deviation from traditional Unix filesystem design.
-The list of new things is long:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Facilitate concurrency with
-&lt;ul&gt;
-&lt;li&gt;allocation zones&lt;/li&gt;
-&lt;li&gt;inode lock splitting&lt;/li&gt;
-&lt;li&gt;facilities for large, parallel I/O requests, DMA and Zero-Copy I/O&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Scalability of access by building the filesystem around the concepts of
-&lt;ul&gt;
-&lt;li&gt;B+-Trees&lt;/li&gt;
-&lt;li&gt;Extents: pairs of (start, length) descriptors&lt;/li&gt;
-&lt;li&gt;decoupling &amp;ldquo;file write&amp;rdquo; and &amp;ldquo;file layout&amp;rdquo; on disk to allow for contiguous files by using delayed allocation and preallocation.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Introduce a write-ahead log to journal metadata changes
-&lt;ul&gt;
-&lt;li&gt;log asynchronously to allow for write coalescence&lt;/li&gt;
-&lt;li&gt;leveraging the log for recovery, so that recovery time is proportional to the amount of data in flight, not the size of the filesystem&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;XFS was written with these requirements,
-and primarily in order to provide a filesystem that could leverage all the performance of large SGI boxes for video editing, video serving and scientific computing.&lt;/p&gt;
-&lt;h2 id=&#34;a-logging-filesystem-but-not-a-log-structured-filesystem&#34;&gt;
-    &lt;a href=&#34;#a-logging-filesystem-but-not-a-log-structured-filesystem&#34;&gt;
-	A logging filesystem, but not a log structured filesystem
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;This is also happening at about the same time as John K. Ousterhout asking
-&amp;ldquo;&lt;a href=&#34;https://web.stanford.edu/~ouster/cgi-bin/papers/osfaster.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Why Aren’t Operating Systems Getting Faster As Fast as Hardware?&lt;/a&gt;
-
-&amp;rdquo;.
-Ousterhout started to explore the ideas of a log-based filesystem with the experimental Sprite operating system.&lt;/p&gt;
-&lt;p&gt;Log-based filesystems are an extremely radical idea that we need to discuss later, even if they originally predate XFS by a bit.
-But they weren&amp;rsquo;t very usable originally, because they need different hardware which can offer a lot more disk seeks.
-Log structured file system ideas had to become a lot more refined to actually have an impact,
-so we are going to discuss them later in the series.&lt;/p&gt;
-&lt;h2 id=&#34;what-irix-had-before&#34;&gt;
-    &lt;a href=&#34;#what-irix-had-before&#34;&gt;
-	What IRIX had before
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;IRIX as coming already with EFS, the specially sauced-up version of BSD FFS that used extents.
-It suffered from an 8 GB filesystem size limit, a 2 GB filesize limit, and it could not utilize the full hardware I/O bandwidth,
-which made many customers of these fantastically expensive machines somewhat sad.&lt;/p&gt;
-&lt;p&gt;Demands for video playback and from the database community led to requirements
-that stated the new filesystem needed to support hundreds of TB of disk space,
-hundreds of MB/s of I/O bandwidth and many parallel I/O requests in order to be able to saturate the hardware provided,
-and all this without running out of CPU.&lt;/p&gt;
-&lt;p&gt;The title of the paper is &amp;ldquo;Scalability in the XFS File System&amp;rdquo; and not &amp;ldquo;Implementation of …&amp;rdquo;,
-so it is more a show of the features provided and a superficial discussion of the implementation and the design decisions around it.
-It is not an in-depth discussion of the implementation,
-nor are extensive benchmarks provided.&lt;/p&gt;
-&lt;h1 id=&#34;features&#34;&gt;
-    &lt;a href=&#34;#features&#34;&gt;
-	Features
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;h2 id=&#34;large-filesystems&#34;&gt;
-    &lt;a href=&#34;#large-filesystems&#34;&gt;
-	Large filesystems
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;XFS supports large filesystems.
-Previous filesystems use 32-bit pointers to blocks.
-At 8 KB block size, with 32-bit block pointers, the limit is 32 TB.&lt;/p&gt;
-&lt;p&gt;Moving to 64-bit block pointers would make many data structures multiple of 8 bytes in size, which seemed like a waste.&lt;/p&gt;
-&lt;p&gt;For concurrency (see below), XFS introduces the concept of &lt;strong&gt;allocation groups&lt;/strong&gt; (AGs), which are always smaller than 4 GB.
-Allocation groups have local instances of the filesystem data structures, for example, inode maps or free block tracking.
-These are independently locked and so allow for concurrent operations in different allocation groups.&lt;/p&gt;
-&lt;p&gt;Allocation groups also help to save on pointer sizes:
-Where possible, AG-relative block numbers are being used, and these always fit into 32-bit pointers.
-In fact, a 4G allocation group can have only 1M blocks or fewer blocks (at 4K minimum blocksize),
-so a single maximum sized extent within a single AG can be packed into 40 bits (5 bytes).&lt;/p&gt;
-&lt;p&gt;The maximum file size and filesystem size is 8 EB (2^63-1).&lt;/p&gt;
-&lt;h2 id=&#34;bandwidth-and-concurrency&#34;&gt;
-    &lt;a href=&#34;#bandwidth-and-concurrency&#34;&gt;
-	Bandwidth and Concurrency
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Concurrent operations are a design goal for XFS.
-1994 is the age of 20 MB/s SCSI controllers, but SGI built machines with large chassis that could house many controllers and many drives.
-Benchmarks quote machines with an aggregate bandwidth of 480 MB/s delivering file I/O performance of over 370 MB/s with no tuning, including all overheads.
-This is quite an impressive result for everyday usage in 1994.&lt;/p&gt;
-&lt;p&gt;XFS achieves this using large blocks (4 KB or 8 KB block size), and the concept of extents.&lt;/p&gt;
-&lt;h3 id=&#34;extents-and-b-trees&#34;&gt;
-    &lt;a href=&#34;#extents-and-b-trees&#34;&gt;
-	Extents and B-Trees.
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Extents&lt;/strong&gt; are a core concept in XFS.
-They are tuples, most of the time pairs of &lt;code&gt;(startblock, length)&lt;/code&gt;.
-For mapping file blocks to disk blocks (&amp;ldquo;bmap&amp;rdquo;), they are triples &lt;code&gt;(offset, length, startblock)&lt;/code&gt;.
-Using truncated values, because of the size limits imposed by the maximum AG size,
-they can describe a contiguous sequence of blocks up to 2M blocks in size in 4 bytes,
-which is a lot more efficient than what BSD FFS did before.&lt;/p&gt;
-&lt;p&gt;Extents also allow XFS to do large I/O requests because they describe sections of contiguous blocks,
-making it easy to create read or write requests for several blocks apiece.
-It does I/O by default with 64 KB memory buffers, unless special provisions are being made to make them even larger.&lt;/p&gt;
-&lt;p&gt;The filesystem assumes an underlying disk structure with striping, and provides a number of 2 or 3 outstanding I/O requests to allow for concurrent I/O.
-It checks for backpressure, that is, it checks that the application is actually reading data.
-If it does, it issues additional read requests to keep the number of requests in flight at 3 by default,
-good for 192 KB in flight at once.&lt;/p&gt;
-&lt;p&gt;Groups of Extents can be collected in linear lists, but that will lead to scaling problems.
-So XFS uses &lt;strong&gt;B+-Trees&lt;/strong&gt;, which degrade to linear lists if there is only one single index block.&lt;/p&gt;
-&lt;p&gt;Usually tuples are indexed on their first value, but for some structures such as free lists, multiple indexes are kept:
-It is useful to index free space by &lt;code&gt;startblock&lt;/code&gt; for closeness, but also by &lt;code&gt;length&lt;/code&gt; to fit free spaces in the right size.&lt;/p&gt;
-&lt;h3 id=&#34;breaking-the-single-writer-inode-lock&#34;&gt;
-    &lt;a href=&#34;#breaking-the-single-writer-inode-lock&#34;&gt;
-	Breaking the single-writer inode lock
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/overlapping-write.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-
-&lt;em&gt;Posix locks the in-memory inode to guarantee &lt;a href=&#34;https://blog.koehntopp.info/2018/11/29/but-is-it-atomic.html&#34;&gt;atomic writes&lt;/a&gt;
-
-.
-This makes sure any two large multiple-block writes always happen one-before-the-other.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;XFS also breaks the in-memory inode locks:
-Posix demands that large, overlapping, multiple block writes are totally ordered.
-When they overlap, it must not happen that there is a block soup of alternating blocks from write A and write B.&lt;/p&gt;
-&lt;p&gt;The default implementation in most kernels is simply a file-global lock placed at the in-memory inode, making sure there can be only one writer per inode.
-Implementers of databases hate that because it limits the write concurrency on any single file to One.
-This is, for example, why Oracle recommends that you make tablespaces from multiple files, each no larger than one GB.&lt;/p&gt;
-&lt;p&gt;XFS, in &lt;code&gt;O_DIRECT&lt;/code&gt; mode, removes this lock and allows atomic, concurrent writes, making database people very happy.&lt;/p&gt;
-&lt;h2 id=&#34;dynamic-inodes-and-improved-free-space-tracking&#34;&gt;
-    &lt;a href=&#34;#dynamic-inodes-and-improved-free-space-tracking&#34;&gt;
-	Dynamic Inodes and improved Free Space Tracking
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;With large filesystems, you can never know:
-The applications may need a large number of inodes for many small files, or a small number of large files.
-Also, what is a good distance between the inode and the data blocks that belong to the file?&lt;/p&gt;
-&lt;p&gt;There is no good answer to the first question, and &amp;ldquo;as close as possible&amp;rdquo; is the answer to the second question.
-So XFS creates Inodes dynamically, as needed, in chunks of 64 inodes.&lt;/p&gt;
-&lt;p&gt;The relatively large inode size of 256 bytes (compared to 128 in BSD FFS and 64 in traditional Unix)
-is being compensated by the fact that XFS creates Inodes only as needed, and places them relatively closely to the file start.
-This frees up a substantial amount of disk space –
-in Unix filesystems with fixed inode counts as much as 3-4% of the disk space can be locked up in pre-allocated inodes.
-And even with cylinder groups, there will be considerable distance between an inode and the first data block.&lt;/p&gt;
-&lt;p&gt;Because inodes can reside anywhere on the disk and not just behind the superblock, they need to be tracked.
-XFS does with one B+-tree per allocation group.
-The tree is indexed by the start block, and records for each inode in the chunk if it is available or in-use.
-The inodes themselves are not kept in the tree, but in the actual chunks which are close to the file data.&lt;/p&gt;
-&lt;p&gt;Similarly, free space is tracked in chunks, and kept in per-AG trees, indexed twice: by start block and by length.&lt;/p&gt;
-&lt;h2 id=&#34;write-ahead-log&#34;&gt;
-    &lt;a href=&#34;#write-ahead-log&#34;&gt;
-	Write-Ahead Log
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Recovering a large filesystem after a crash can be slow.
-The recovery time is proportional to the size of the filesystem, and the number of files in it,
-because the system basically has to scan the entire filesystem and rebuild the directory tree in order to ensure things are consistent.
-With XFS, the filesystem also is a lot more fragile, as it provides a variable number of inodes, spread out non-contiguously over the disk.
-Recovering them would be extra expensive.&lt;/p&gt;
-&lt;p&gt;Using write-ahead logging for metadata, this can be avoided most of the time.
-Recovery time is proportional to the size of the log, that is, the amount of data in flight at the time of the crash.&lt;/p&gt;
-&lt;p&gt;The log contains log entries containing a descriptor header and a full image of all changed metadata structures:
-inodes, directory blocks, free extent tree blocks, inode allocation tree blocks, allocation group blocks, and the superblock.
-Because full images are stored in the block, recovery is simple: the recovery process simply copies these new, changes images into the place where they are supposed to be, without needing to understand what kind of structure it changes.&lt;/p&gt;
-&lt;p&gt;The trust of the authors into the log was huge:
-Initially XFS had no &lt;code&gt;fsck&lt;/code&gt; program.
-This turned out to be overly optimistic, and so now &lt;code&gt;xfs_repair&lt;/code&gt; exists.&lt;/p&gt;
-&lt;h3 id=&#34;metadata-update-performance&#34;&gt;
-    &lt;a href=&#34;#metadata-update-performance&#34;&gt;
-	Metadata update performance
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;XFS is logging metadata updates, which means they need to be written to the filesystem log.
-By default, this log is placed inline, in the filesystem.
-But it is also possible to take it out, and put onto other media, for example, flash storage or battery-backed memory.&lt;/p&gt;
-&lt;p&gt;Writes to the log are asynchronous, if possible, but with partitions serving NFS they cannot be.
-Asynchronous writes allow for write batching, with speeds things up.
-But NFS servers profit a lot from accelerated log storage.&lt;/p&gt;
-&lt;p&gt;Because all metadata updates need to be logged, it can happen that intense metadata operations flood the log.
-A &lt;code&gt;rm -rf /usr/src/linux&lt;/code&gt; for example is not an operation where XFS is particularly fast, because the metadata update stream will eventually overflow the log.
-And because everything else in XFS is parallel by AG, the log is usually the only source of contention.&lt;/p&gt;
-&lt;h2 id=&#34;large-files-and-sparse-files&#34;&gt;
-    &lt;a href=&#34;#large-files-and-sparse-files&#34;&gt;
-	Large files and sparse files
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In FFS, files are mapped by the classical dynamic array, with direct blocks and up to three levels of indirect blocks.
-With 64-bit filesize, this becomes unwieldy: there will be more than three levels of indirect blocks required,
-and a substantial number of blocks would be required what essentially becomes a list of incrementing numbers.
-FFS (and EFS) are also forced to layout blocks the moment each block is allocated in the filesystem buffer pool.
-So effectively, no attempt to contiguously layout files on disk is being made.
-Instead, blocks are placed individually.&lt;/p&gt;
-&lt;p&gt;XFS replaces this dynamic array with extents.&lt;/p&gt;
-&lt;p&gt;In file placement maps, these mapping extents are triples &lt;code&gt;(blockoffset, length, disk block)&lt;/code&gt;.
-These extents are stored in the inode itself until this overflows.
-Then XFS starts to root a B+-tree of the mapping extents in the inode, indexed by logical block number for fast seeks.&lt;/p&gt;
-&lt;p&gt;This data structure allows compressing a substantial number of blocks (up to 2M blocks) in a single descriptor,
-assuming contiguous allocation is possible.
-So even large files could be stored in very few extents, in the optimal case one extent per AG.&lt;/p&gt;
-&lt;h3 id=&#34;delayed-allocation-and-preallocation-for-contiguous-layout&#34;&gt;
-    &lt;a href=&#34;#delayed-allocation-and-preallocation-for-contiguous-layout&#34;&gt;
-	Delayed allocation and Preallocation for contiguous layout
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;XFS also provides a new concept, delayed allocation, in which virtual extents can be allocated in the file system buffer pool.
-These are blocks full of yet unwritten data that have not been layouted, and hence lack a physical position.
-Only on flush these blocks are layouted, contiguously, and then written out linearly in large writes, to speed things up.&lt;/p&gt;
-&lt;p&gt;This is a fundamental change to how the filesystem buffer cache works –
-previously it was possible to use &lt;code&gt;(device, physical block number)&lt;/code&gt; to identify buffer cache blocks and prevent duplicate buffer allocation.
-When porting XFS to Linux, the Linux kernel initially could not accommodate strategies that do not use such identification in the normal buffer cache, so at first XFS required a separate buffer cache.
-This got fixed later, as the porting progressed.&lt;/p&gt;
-&lt;p&gt;To ensure that files can be layouted without fragmentation, in a single extent, XFS aggressively preallocates storage for open files.
-The default amount of disk space preallocated is dependent on the amount of free space in the filesystem, and can be substantial.&lt;/p&gt;
-&lt;p&gt;The internet is littered with questions by XFS users asking where their disk space is, and the answer is always &amp;ldquo;in the open file handles of &lt;code&gt;/var/log&lt;/code&gt;. Also, check the &lt;a href=&#34;https://man7.org/linux/man-pages/man5/xfs.5.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;manpage&lt;/a&gt;
-
- for &lt;code&gt;allocsize=&lt;/code&gt; and also check &lt;a href=&#34;https://linux-xfs.oss.sgi.narkive.com/jjjfnyI1/faq-xfs-speculative-preallocation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;/proc/sys/fs/xfs/speculative_prealloc_lifetime&lt;/code&gt;&lt;/a&gt;
-
-.&amp;rdquo;&lt;/p&gt;
-&lt;h3 id=&#34;locality&#34;&gt;
-    &lt;a href=&#34;#locality&#34;&gt;
-	Locality
-    &lt;/a&gt;
-&lt;/h3&gt;
-&lt;p&gt;XFS does not use allocation groups for locality much.
-They exist mostly for concurrency.
-Instead, file placement is mostly around directories and existing blocks of the current file.
-The only exception is &amp;ldquo;new directories&amp;rdquo;, which are placed &amp;ldquo;away&amp;rdquo; from their parent directory by putting them into a different AG.&lt;/p&gt;
-&lt;p&gt;In large files, if new extents need to be placed, they go &amp;ldquo;initially near the inode, then near the existing block in the file which is closest to the offset in the file for which we are allocating space&amp;rdquo;, as the paper specifies.
-This places the inode close to the start of the file, and blocks added later to whatever is already present.&lt;/p&gt;
-&lt;h2 id=&#34;large-directories&#34;&gt;
-    &lt;a href=&#34;#large-directories&#34;&gt;
-	Large directories
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In the traditional Unix filesystem and in BSD FFS, directory name lookups are linear operations.
-Large directories slow this down a lot, for any kind of pathname to inode translation.&lt;/p&gt;
-&lt;p&gt;XFS chose the ubiquitous B+-Tree as a structure for directories, too, but with a quirk:
-Since the keys are supposed to be filenames, a variable length structure, they would be completely different from all the other tree implementations in the filesystem.
-The XFS authors did not like this idea, so they are hashing the filename into a fixed 4-byte name hash, and then store one or more directory entries as &lt;code&gt;(name, inode)&lt;/code&gt; pairs in the value.&lt;/p&gt;
-&lt;p&gt;There was some tradeoff discussion involved in this, but the authors found that short keys allow storing many entries per block,
-leading to wide trees, and thus faster lookups.
-They boast &amp;ldquo;We can have directories with millions of entries&amp;rdquo;, something that was previously unthinkable in Unix filesystems.&lt;/p&gt;
-&lt;h1 id=&#34;a-lot-of-code&#34;&gt;
-    &lt;a href=&#34;#a-lot-of-code&#34;&gt;
-	A lot of code
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/05/xfs-scaling.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-
-&lt;em&gt;XFS Benchmarks in 1994 show nice and welcome linear scaling behavior that utilizes the hardware offered well.
-It handles well on large boxes with (for 1994) high core-counts.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;XFS is a large filesystem.
-Linux ext2 is only 5000 lines of kernel code (and about 10x this in user-land).
-XFS is 50.000 lines of kernel code, and that is without the IRIX volume manager XLV (in Linux, the XFS port uses LVM2 instead).&lt;/p&gt;
-&lt;p&gt;XFS was released under the GNU GPL in May 1999, and was ported into the Linux kernel starting in 2001.
-As of 2014, it was supported in most Linux distributions and RHEL used it as the default filesystem.
-And even in 2024 it is still holding up reasonably well, on HDD and on flash.&lt;/p&gt;
-&lt;p&gt;It still is the filesystem with the best scaling behavior, the best concurrency behavior, and the most consistent commit times,
-which makes it the preferred filesystem for any kind of database usage.
-This is due to the elimination of several global locks that impair concurrent usage and performance in large filesystems,
-and due to the consistent use of B+-Tree structures with &lt;code&gt;O(log(n))&lt;/code&gt; scaling behavior where before algorithms with worse scaling behavior have been used.
-The use of extents also allows dynamically growing I/O sizes, benefiting throughput,
-and together with the novel idea of delayed allocation encourage contiguous file placement.&lt;/p&gt;
 </description>
     </item>
     
