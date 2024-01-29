@@ -92,7 +92,7 @@ Indeed:
 We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
 Measured in the system we see an ok bandwidth of 67 MB/s, but the IOPS hit the roof.
 
-When we zoom in on a phase of replication delay in the Single Instance Info Panelof our grafana, we get to the bottom of that straight away.
+When we zoom in on a phase of replication delay in the Single Instance Info Panel of our grafana, we get to the bottom of that straight away.
 
 Replication delay interval:
 
