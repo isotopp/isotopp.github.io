@@ -134,9 +134,9 @@ Then the cycle repeats.
 Maybe it is less noisy if the quota is applied with `consumer=backend`.
 
 All expectations the user may have on performance are broken and the system may as well be offline.
-Also, the variance in performance may create input signal spikes dependent systems, affecting their performance if there is resonance.
+Also, the variance in performance may create input signal spikes on dependent systems, affecting their performance if there is resonance.
 
-Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream from the affected system.
+Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream of the affected system.
 With proper metrics and knowledge of the Quota it is plain obvious.
 
 # Be wary of straight lines in performance graphs
