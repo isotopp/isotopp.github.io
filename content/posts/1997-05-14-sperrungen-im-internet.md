@@ -3,14 +3,16 @@ author: isotopp
 date: "1997-05-14T16:15:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 published: true
+title: "Sperrungen im Internet - Eine systematische Aufarbeitung der Zensurdiskussion"
+toc: true
 tags:
 - lang_de
 - politik
 - usenet
 - jugendschutz
-title: Sperrungen im Internet - Eine systematische Aufarbeitung der Zensurdiskussion
 ---
-## Zusammenfassung
+
+# Zusammenfassung
 
 Wie alle anderen Medien wird auch das Internet zur Verbreitung von beispielsweise rechtsradikalen oder kinderpornographischen Informationen mißbraucht. Dies hat in letzter Zeit den Ruf nach einem staatlichen Eingriff laut werden lassen, um zentrale Sperrungen bestimmter Inhalte zu erreichen.  
 
@@ -20,7 +22,7 @@ Dezentrale Lösungsansaetze können dem Nutzer die Möglichkeit geben, im eigene
 
 Jede Art von staatlicher Regulierung treibt die Kosten in die Höhe. Es ist abzusehen, daß der Versuch, Inhalte im Internet zu bewerten, sehr personalintensiv sein wird. Bereits heute sind die Kommunikationskosten am Standort Deutschland wesentlich höher als bei konkurrierenden Nationen wie den USA. Regulierungen können daher zu einem Standortnachteil führen.
 
-## Was soll mit einer Sperrung erreicht werden?
+# Was soll mit einer Sperrung erreicht werden?
 
 Bevor man über technische Maßnahmen zur Sperrung von Inhalten im Internet und die Chancen ihrer Realisierung reden kann, muß man sich darüber klar werden, welche Ziele man mit einer solchen Sperrung erreichen möchte.
 
@@ -32,7 +34,7 @@ Mögliche Ziele sind:
 - **Rating:** Für jeden Teilnehmer im Netz soll weiterhin frei definierbar sein, welches Material empfangen/nicht empfangen werden soll, aber es soll eine Bewertungsstruktur geschaffen werden, die es jedem Konsumenten in  eigener Verantwortung ermöglicht, seine Präferenzen anzugeben (kein Sex/viel Sex, keine Gewalt/Blood and Splatter, politisch links/politisch rechts, konform mit den Vorstellungen der katholischen Kirche/islamisch korrekt) und nur noch den Ausschnitt aus dem Internet wahrzunehmen, der diesen selbstgewählten Filter passieren kann.
 - **Nichtregulation:** Jeder Netzteilnehmer soll freien Zugriff auf alle angebotene Information haben. Sogar die Existenz von Bewertungskriterien Dritter wird als schädlich angesehen und die Bildung einer Bewertungsinfrastruktur nicht gefördert bzw. sogar behindert.
 
-## Welche Dienste werden betrachtet?
+# Welche Dienste werden betrachtet?
 
 Unter der Bezeichnung *Inhalte im Internet* wird in der Regel eine ganze Reihe von Diensten subsumiert, die technisch vollkommen unterschiedlich realisiert werden und administrativ zu großen Teilen disjunkte Strukturen aufweisen. Allen Diensten ist lediglich gemeinsam, dass ihnen das Datenübertragungsprotokoll TCP/IP zugrunde liegt.  
 
@@ -70,7 +72,7 @@ Die Entscheidung über die von einem Server angebotenen Diskussionsforen obliegt
 
 Die Dienste **IRC** (**Internet Relay Chat**) und *E-Mail* (Private elektronische Post sowie halböffentliche Mailinglists als Diskussionsforen) wären ebenfalls zu betrachten, sollen hier aber im Interesse einer kompakten Darstellung nicht diskutiert werden, da sie weniger im Rampenlicht der öffentlichen Diskussion stehen. Die genannten Argumente gelten aber in ähnlicher Form auch dort. Es existieren weitere Dienste, die fuer die öffentliche Kommunikation in der Regel von geringerer Bedeutung sind (*telnet*) oder deren Diskussion keine neuen Aspekte zu Tage foerdern wuerde (*ftp*, siehe *http*).
 
-## Wie koennen zu sperrende Inhalte identifiziert werden?
+# Wie koennen zu sperrende Inhalte identifiziert werden?
 
 Um Inhalte zuverlässig sperren zu können, ist es notwendig, diese Inhalte in irgendeiner Form zu identifizieren. Diese Identifizierung kann von unterschiedlicher Auflösung sein.  
 
@@ -123,7 +125,7 @@ Inzwischen existieren (illegal) entschlüsselte Versionen der Sperrlisten aller 
 
 Beispielsweise wurden vielfach Angebote von *womens organizations*, Informationsangebote über Abtreibung und Angebote schwuler und lesbischer Gruppen zensiert. Es ist weiterhin üblich, Webseiten in die Sperrlisten aufzunehmen, die den Hersteller des Sperrprogramms kritisieren, die Sperrliste offenlegen oder allgemein gegen Rating argumentieren. Beim Hersteller des Programms Cybersitter geht dies so weit, daß bei installiertem Cybersitter alle Seiten nicht mehr abrufbar sind, in denen die Namen von Kritikern seines Programms erwähnt werden.
 
-## Mit welchen Mitteln kann eine Sperrung erreicht werden?
+# Mit welchen Mitteln kann eine Sperrung erreicht werden?
 
 Sperrungen können auf unterschiedlichen Ebenen der Kommunikation ansetzen:  
 
@@ -153,7 +155,7 @@ Ein Identifikationsmechanismus, der das Geforderte leistet, existiert derzeit ni
 
 Eine Sperrung beim Abrufer würde bedeuten, daß die angebotenen Inhalte nach bestimmten Bewertungskriterien ausgezeichnet sind (*rating*, z.B. nach PICS) und daß der Abrufer selbst seine Software so konfiguriert, daß Seiten mit bestimmten Ratings nicht mehr abgerufen werden können. Eine Kooperation des Anbieters wäre hier wünschenswert, ist aber nicht notwendig, da die Bewertungen auch von Servern Dritter geliefert werden können.
 
-## Auf welche Weise koennen Sperrungen unterlaufen werden?
+# Auf welche Weise koennen Sperrungen unterlaufen werden?
 
 Für den Nutzer stellt sich eine Sperrung von Inhalten als Betriebsstörung dar. Er wird nach Wegen suchen, die ordnungsgemäße Funktion des Netzes wiederherzustellen, d.h. die Sperrung zu unterlaufen. Diese Motivation ist um so größer, je stärker sich der Benutzer durch die Sperrung behindert fühlt.
 
@@ -190,7 +192,7 @@ Der Anbieter der gesperrten Information kann Abrufer unterstützen, indem er ebe
 
 Während die bisher diskutierten Möglichkeiten des Unterlaufens von Sperrungen unabhängig vom gesperrten Dienst waren, sind die folgenden Moeglichkeiten dienstspezifisch:
 
-#### WWW<
+## WWW
 
 Ähnlich der erwähnten Veränderung der IP-Nummer eines Serverrechners kann  auch die Adresse eines Angebotes auf einem Server automatisch verändert werden. Eine automatische Sperrung einzelner Angebote würde dadurch unterlaufen werden, und man müßte wieder den gesamten Rechner pauschal sperren. Dort greifen dann wieder die Methoden zum Unterlaufen einer Komplettsperrung.
 
@@ -200,7 +202,7 @@ Das Verfahren des indirekten Zugriffs, wie es unter Mobile-IP diskutiert wurde, 
 
 Bei verschlüsselter Kommunikation (etwa mit dem in allen gängigen Browsern eingebauten SSL-Support) entsteht ein nicht mehr in Echtzeit einsehbarer und nicht einfach verfälschbarer Kanal zwischen Server und Client. Für Dritte ist nicht erkennbar, welche Seiten abgerufen werden und welche Informationen sie enthalten.
 
-#### News
+## News
 
 Artikel in den USENET News liegen in zahlreichen Kopien auf Tausenden von Servern überall auf der Welt vor. Löschungen (*Cancel*) werden von vielen dieser Server nicht mehr ausgeführt, nachdem es seit einigen Jahren immer wieder zu gefälschten Löschaufforderungen von Saboteuren kam. Die großen Archive fuer USENET News (DejaNews und AltaVista) führen grundsätzlich keine Löschungen aus. Über Archivanfragen ist es daher in der Regel möglich, auch auf ältere und lokal nicht mehr verfügbare Texte zuzugreifen. Dabei gilt wie bei Suchmaschinen für Webseiten (siehe oben): Artikel sind nicht nur unter einer festen Bezeichnung abrufbar, sondern werden auch zu beliebigen im Artikel enthaltenen Stichworten gefunden.
 
@@ -212,7 +214,7 @@ de.org.politik.spd (Forum des virtuellen Ortsverbandes der SPD).
 Da die Neueinrichtung von Newsgroups technisch automatisiert werden kann, kommt es vielfach zur Neueinrichtung schlecht verbreiteter Gruppen unter neuem Namen oder zum Angebot bekannter Gruppen unter Aliasnamen. So wurde die Gruppe de.talk.sex (Diskussionsforum über Sexualität) an einer deutschen Universität mehrere Jahre lang unter dem Namen de.soc.verkehr geführt, nachdem dort entschieden worden war, keine Gruppen mehr anzubieten, deren Bezeichnung den Begriff sex enthält.
 
 
-## Andere Effekte von Sperrungsversuchen
+# Andere Effekte von Sperrungsversuchen
 
 Jede Sperre kann unterlaufen werden, indem die gesperrte Information vielfach repliziert wird. Dann ist jedes Vorkommen dieser Information gesondert zu sperren. Dadurch werden die unangenehmen Nebenwirkungen der Sperrung vervielfacht, bis die Kosten fuer die Sperrung ihren Nutzen übersteigen. Im Falle der Sperrung von www.xs4all.nl wegen des Angebotes der verbotenen Radikal 154 existierten innerhalb kürzester Zeit über 40 Kopien der gesperrten Information. Die 6000 aus technischen Gründen mitgesperrten Anbieter wurden jedoch nicht repliziert. Bezüglich der angestrebten Wirkung wurde also eher das Gegenteil erreicht, während viele Anbieter durch die unbeabsichtigten Nebenwirkungen Verluste hinnehmen mußten.  
 
@@ -222,7 +224,7 @@ Alle Kommunikation mit Hilfe des TCP/IP-Protokolls ist konstruktionsbedingt eine
 
 Nicht nur vom Standpunkt der Kontrolle der Bewerter, sondern auch vom Standpunkt des technischen Netzbetriebes ist eine Offenlegung aller Sperrungen unbedingt notwendig. Wenn Sperrungen von Rechnern oder einzelnen Angeboten massenhaft umgesetzt werden, ist für den einzelnen Systembetreiber genau wie für den einzelnen Anwender nämlich nicht mehr entscheidbar, ob eine technische Störung vorliegt, die zu beheben ist, oder ob eine inhaltlich begründete Sperrung vorgenommen wurde. Damit wird einer zuverlässigen Fehleranalyse durch die Betreiber von Netzen oder einzelnen Maschinen jede Grundlage entzogen, da aus dem Vorliegen einer Störung keine sichere Verhaltensvorschrift zu ihrer Behebung abgeleitet werden kann. Andererseits können offengelegte Sperrlisten natuerlich leicht als Kataloge fuer sexuell explizite oder gewalttätige Angebote mißbraucht werden. Eine Sperrung wäre dann eine Art Qualitaetssiegel. Offengelegte Sperrungen sind mit entsprechend modifizierten Programmen außerdem automatisiert umgehbar.
 
-## Modifikation des Internet
+# Modifikation des Internet
 
 In dem heutigen Internet können Sperren nach den obigen Ausführungen also nicht oder nur mit unvertretbar hohen Kosten und Nebenwirkungen realisiert werden. Daraus ergibt sich die Frage, inwieweit das Internet modifiziert werden müßte, um effizientes Sperren von Inhalten zu erlauben. 
 
@@ -234,7 +236,7 @@ Unabhängig von der Frage, ob ein solches Verfahren mit einem demokratischen Rec
 
 Insgesamt könnte ein solches Modell katastrophale Standortnachteile mit sich bringen. Kommunikation ist eine Ressource, die in ihrer Bedeutung den Arbeitskräften oder der Verkehrsinfrastruktur in keiner Weise nachsteht. Auf der anderen Seite kann man, wie sich am Beispiel China zeigen läßt, selbst auf diese Art die Verbreitung unerwünschter Inhalte nur begrenzt unterbinden, denn für jede der oben genannten Massnahmen existieren wiederum Gegenmaßnahmen.
 
-## Bewertung
+# Bewertung
 
 Eine zentrale Sperre von Inhalten im Internet läßt sich technisch nicht paßgenau vornehmen, ließe sich von den Benutzern bei Bedarf umgehen und wäre mit hohen Kosten verbunden (siehe auch Heimo Ponnath: [Pornographie im Internet](http://bda.netuse.de/bda/jp/home/heimo.ponnath/articles/SiN.html)? Dichtung und Wahrheit, inside online 2/3 1996). Bedingt durch die globalen Datennetze zeigt sich hier der Paradigmenwechsel in den Aufgaben des Staates durch die Informationsgesellschaft, wie Alexander Rossnagel beschreibt (Alexander Rossnagel: Globale Datennetze: Ohnmacht des Staates - Selbstschutz der Buerger, ZRP 1997, Heft 1, 26-30). Die Ohnmachtserfahrung des Staates in der globalisierten Welt bedeutet jedoch nicht gleichzeitig eine Kapitulation vor den neuen Gefahren, sondern die modernen Informationstechnologien bergen vielfältige Möglichkeiten, daß der Bürger sich selbst schützen kann. Daraus erwächst die Verpflichtung für den Staat, Strukturen zu schaffen, die seine Bürger befähigen, ihre Interessen in der Welt der Netze selbstbestimmt zu schützen.  
 
@@ -244,14 +246,14 @@ Ein universelles Rating wie PICS ist mit erhöhtem Zeitaufwand und zusätzlichen
 
 Die Erfahrungen in den USA zeigen, daß Organisationen das Instrument der Bewertung von Inhalten für die Durchsetzung ihrer eigenen politischen Ziele unter dem Deckmantel des Jugendschutzes oder der Aufrechterhaltung der öffentlichen Moral mißbrauchen. Es ist zu verhindern, daß die Definition moralischer und gesellschaftlicher Werte in den Aufgabenbereich privater Organisationen übertragen wird. Durch eine Offenlegung der Bewertungsmaßstäbe und aller Bewertungen kann diese Gefahr des Mißbrauchs reduziert werden.
 
-## Danksagung
+# Danksagung
 
 Wir danken Hannes Federrath und Andreas Pfitzmann von der Technischen Universitaet Dresden für zahlreiche Anregungen und Diskussionen, die zur Entstehung dieses Textes beigetragen haben.  
 
-### Die Autoren
+# Die Autoren
 
 <a href="mailto:kris@koehntopp.de">Kristian Köhntopp</a> ist Diplominformatiker und arbeitet als freiberuflicher Consultant fuer heterogene Datennetze und Rechnersicherheit.  
 
 <a href="mailto:marit@koehntopp.de">Marit Köhntopp</a> ist Diplominformatikerin und arbeitet beim Landesbeauftragten für den Datenschutz Schleswig-Holstein als Referentin in den Bereichen "Neue Medien und Informationstechnologien" sowie "Technikfolgenabschätzung".
 
-<a href="mailto:ms@netuse.de">Martin Seeger</a> ist Diplominformatiker und Geschäftsfuehrer der <a href="http://www.netuse.de">NetUSE ommunikationstechnologie GmbH</a>. Das Unternehmen beschäftigt sich mit der Internet-/Intranet-Technologie und der Sicherheit von Rechnern in Netzen.
+<a href="mailto:ms@netuse.de">Martin Seeger</a> ist Diplominformatiker und Geschäftsführer der <a href="http://www.netuse.de">NetUSE ommunikationstechnologie GmbH</a>. Das Unternehmen beschäftigt sich mit der Internet-/Intranet-Technologie und der Sicherheit von Rechnern in Netzen.

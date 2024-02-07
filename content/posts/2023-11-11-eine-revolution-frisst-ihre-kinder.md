@@ -169,7 +169,7 @@ hinter denen nicht eine einzelne große Firma und ihre Venture-Kapitalgeber steh
 sie alle zeichnen sich durch eine breite und vielfach verankerte Basis von Beitragenden aus.
 
 Seit einigen Jahren zeigen sich Risse:
-RedHat, Elastic, MongoDb, MariaDB (ein MySQL-Fork), HashiCorp und viele andere haben ihre Lizenzen geändert 
+RedHat, Elastic, MongoDB, MariaDB (ein MySQL-Fork), HashiCorp und viele andere haben ihre Lizenzen geändert 
 oder sich umstrukturiert, um einen bestimmten Use-Case auszuschließen. 
 Da dies eine Verletzung der Freiheit 0 darstellt, 
 sind es damit auch keine Open-Source-Projekte im Sinne der OSI und der DFSG mehr.

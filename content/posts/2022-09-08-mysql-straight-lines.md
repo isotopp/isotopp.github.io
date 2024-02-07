@@ -92,7 +92,7 @@ Indeed:
 We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
 Measured in the system we see an ok bandwidth of 67 MB/s, but the IOPS hit the roof.
 
-When we zoom in on a phase of replication delay in the Single Instance Info Panelof our grafana, we get to the bottom of that straight away.
+When we zoom in on a phase of replication delay in the Single Instance Info Panel of our grafana, we get to the bottom of that straight away.
 
 Replication delay interval:
 
@@ -134,9 +134,9 @@ Then the cycle repeats.
 Maybe it is less noisy if the quota is applied with `consumer=backend`.
 
 All expectations the user may have on performance are broken and the system may as well be offline.
-Also, the variance in performance may create input signal spikes dependent systems, affecting their performance if there is resonance.
+Also, the variance in performance may create input signal spikes on dependent systems, affecting their performance if there is resonance.
 
-Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream from the affected system.
+Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream of the affected system.
 With proper metrics and knowledge of the Quota it is plain obvious.
 
 # Be wary of straight lines in performance graphs
