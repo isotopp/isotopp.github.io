@@ -28,7 +28,7 @@ and generate an
 [`MDomain`](https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain)
 statement in the config for Apache's 
 [`mod_md`](https://httpd.apache.org/docs/2.4/mod/mod_md.html).
-This module will then automatically the necessary certificates for the webserver's TLS.
+This module will then automatically request the necessary certificates for the webserver's TLS.
 
 Collecting all domain names from the configuration files can be done that in Ansible, but it kind of hurts.
 Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.
