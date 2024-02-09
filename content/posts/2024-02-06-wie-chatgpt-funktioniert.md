@@ -100,7 +100,7 @@ Stellt man mehr Kontext, arbeitet man also mit n-Grammen für n=3, 4, …,
 dann bekommt man eher Dinge, die wie korrekte Sätze aussehen.
 
 Man bekommt auch eine kombinatorische Explosion: 
-Statt 26, 26*26, 26*26*26, ... Wahrscheinlichkeiten zum Abspeichern hat man jetzt zum Beispiel 40.000 als Basis.
+Statt 26, 26\*26, 26\*26\*26, ... Wahrscheinlichkeiten zum Abspeichern hat man jetzt zum Beispiel 40.000 als Basis.
 Und bei einem großen Kontext – statt 4 oder 5 eher was bei 100 – hat man dann mit 40.000 hoch 100 zu tun.
 
 Also, nicht – weil man das so nicht verarbeiten kann,
