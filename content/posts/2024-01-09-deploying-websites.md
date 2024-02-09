@@ -23,14 +23,14 @@ An easy problem to solve, naturally.
 A bit of Ansible, deploy a few config files into the system and be done with it.
 
 Only, these are different types of websites, and over time additional sites are being added.
-When a new website is being added, we need to collect all website names  
+When a new website is being added, we need to collect all website names
 and generate an 
 [`MDomain`](https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain)
 statement in the config for Apache's 
 [`mod_md`](https://httpd.apache.org/docs/2.4/mod/mod_md.html).
 This module will then automatically request the necessary certificates for the webserver's TLS.
 
-Collecting all domain names from the configuration files can be done that in Ansible, but it kind of hurts.
+Collecting all domain names from the configuration files can be done in Ansible, but it kind of hurts.
 Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.
 
 It is also more complicated than this, because we have different types of websites.
@@ -39,6 +39,7 @@ Initially we had only
 - `static sites` (`https://example.com`)
 - We also needed `redirect_sites` (`https://www.example.com` -> `https://example.com`)
 - We also needed reverse proxies for applications (`https://grafana.example.com` -> `https://localhost:3000`)
+- We also need a Discord bot.
 - Then we also needed the `wsgi_site` deployed.
 
 But a `wsgi_site` needs to be redeployed when the code has changed on GitHub.
@@ -54,7 +55,7 @@ Okay, let's not do this in Ansible.
 Let's write a simple and easy shell script for this.
 
 That kind of worked, initially, but quickly fell apart when the number of variants grew, 
-error checking became complicated.
+also error checking became complicated.
 
 Ultimately, it broke when we needed to collect and store per-site config parameters as a JSON, and act on it.
 The moment you write shell functions with parameters, traps and other bells and whistles,
