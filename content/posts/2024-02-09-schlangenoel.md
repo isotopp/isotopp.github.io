@@ -12,6 +12,9 @@ tags:
 - lang_de
 ---
 
+This text also has a version in 
+[english language]({{< ref "/content/posts/2024-02-10-snake-oil.md" >}}).
+
 Diese Woche war "Kaputte Security Software Werbewoche".
 
 # Fortigate und Ivanti
