@@ -119,6 +119,38 @@ The account is unknown.*
 I click on "forgotten password", and supply the mail adress the validation mail was sent to.
 "This email address was not found."
 
+Okay, since my account does not exist, I create it again:
+
+![](/uploads/2024/02/element-10.jpg)
+
+*I recreate my account, using the same mail address. As you can see, the first registration mail still is in the account.
+I take the validation URL, which is longer than 80 characters, and use it to successfully validate, again.*
+
+I create the account again, using the same parameters.
+The account validation mail is sent to my address.
+The old account validation mail is also still in the account.
+I take the new URL, which is longer than 80 characters, and use it to successfully validate my account, again.
+
+This time I accidentally left the "create account" window open.
+This window is now suddenly logged in.
+Turns out, you MUST NOT, UNDER ANY CIRCUMSTANCES, close the "create account" window until the account is validated,
+or it is simply not created.
+This is not stated anywhere.
+
+To confirm the account works and the password in Bitwarden is stored successfully,
+I log out and log in again.
+
+I get this:
+
+![](/uploads/2024/02/element-11.jpg)
+
+* **Unable to verify this device**
+It looks like you don't have a Security Key or any other devices you can verify against.
+This device will not be able to access old encrypted messages.
+In order to verify your identity on this device, you'll need to reset your verification keys.*
+
+What does that even mean?
+
 # After onboarding
 
 Why have I been trying this?
