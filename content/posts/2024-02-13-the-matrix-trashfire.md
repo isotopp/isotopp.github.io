@@ -126,3 +126,9 @@ Outside of Element, there are very few clients, most of them very old and not be
 
 All in all, this is a mess, and my recommendation is to avoid Matrix for at least two years.
 It is not secure, it is actively user-hostile, and looks not well managed.
+
+This is a project in severe need of management changes, a thorough UX evaluation.
+The design needs changes that make onboarding and usage smoother, encourage secure workflows,
+keep accounts available, and encourage secure practice.
+It also needs careful curation of servers and clients.
+At the moment it is a trash fire.
