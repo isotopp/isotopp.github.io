@@ -95,7 +95,6 @@ Scrolling down, I end up with the option to onboard to this:
 Why in heaven or earth would anybody put unavailable or vulnerable servers into an onboarding listing?
 Isn't this supposed a "secure" messenger?
 
-
 # Trying to use it, nontheless
 
 I made an "isotopp" account at [tchncs.de](https://chat.tchncs.de/#/login).
@@ -150,6 +149,49 @@ This device will not be able to access old encrypted messages.
 In order to verify your identity on this device, you'll need to reset your verification keys.*
 
 What does that even mean?
+
+# Trying Element X with my account
+
+Starting Element X, it tries to onboard me to Matrix.org.
+I select "Change Server", and get a form field where it says "matrix.org".
+I am overwriting it with "chat.tchncs.de", which supposedly is my server.
+At least that is what it says in the web client.
+
+![](/uploads/2024/02/element-12.jpg)
+
+That is not accepted.
+
+I take the URL from the browser and paste that instead.
+
+![](/uploads/2024/02/element-13.jpg)
+
+That is also not accepted, but I can learn more.
+I click.
+
+![](/uploads/2024/02/element-14.jpg)
+
+The what?
+
+Turns out, while the Chat is running on "chat.tchncs.de", this is not the "Identity Provider."
+That one is called "tchncs.de".
+You only learn this when you open your config menu in the web chat and look at Identifer shown there.
+
+![](/uploads/2024/02/element-15.jpg)
+
+Once you enter this, Element X and the web chat get hectic.
+There is a new client, and both clients want to authenticate that the new device is legit.
+
+![](/uploads/2024/02/element-16.jpg)
+
+For that purpose, they display a set of Emojis, which look differently in the web client and the application,
+and ask me if they are the same.
+Helpful Emoji names are shown under the Emoji, and they are identical.
+I simply click yes.
+
+After that, both clients can see my Chat, but the Element X Client still has no access to any chat history.
+That is, because the client is unverified (so is the web client).
+
+When I close any client, I have to re-login, re-compare the Emojis, and all chat history is gone.
 
 # After onboarding
 
