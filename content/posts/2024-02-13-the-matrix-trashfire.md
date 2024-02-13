@@ -132,3 +132,21 @@ The design needs changes that make onboarding and usage smoother, encourage secu
 keep accounts available, and encourage secure practice.
 It also needs careful curation of servers and clients.
 At the moment it is a trash fire.
+
+# Trying to use it, nontheless
+
+I made an "isotopp" account at [tchncs.de](https://chat.tchncs.de/#/login).
+The password is generated and stored in Bitwarden.
+A validation mail is sent to a unique address at koehntopp.de and arrives.
+
+I try to login not being validated, using Bitwarden.
+The login is rejected.
+
+I validate the email.
+The server says I am validated.
+
+I try to login, using Bitwarden.
+The login is rejected.
+
+I click on "forgotten password", and supply the mail adress the validation mail was sent to.
+"This account does not exist."
