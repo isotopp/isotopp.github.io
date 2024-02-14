@@ -64,7 +64,8 @@ daß "q" quasi immer von "u" gefolgt wird, und man kann das sehen.
 
 ![](/uploads/2024/02/chatgpt-04.jpg)
 
-*Waagrecht die ersten Buchstaben von Paaren, senkrecht die zweiten Buchstaben.
+*Entlang der X-Achse die ersten Buchstaben von Paaren, 
+entlang der Y-Achse die zweiten Buchstaben.
 Je roter und dunkler das Feld, umso häufiger die Kombination.
 Die Spalte "q" ist ganz weiß, mit Ausnahme der "qu"-Kombination.*
 
