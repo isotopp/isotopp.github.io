@@ -230,3 +230,54 @@ The design needs changes that make onboarding and usage smoother, encourage secu
 keep accounts available, and encourage secure practice.
 It also needs careful curation of servers and clients.
 At the moment it is a trash fire.
+
+# Matrix responds
+
+Added on 14-Feb-2024:
+People at Matrix.org and Matrix developers have picked this up and responded in a very constructive way.
+They cannot address all things because they are not in the realm of Matrix, but part of Element.
+So far, no responses from Element.
+
+[Matrix writes](https://mastodon.matrix.org/@matrix/111924190165706931):
+
+![](/uploads/2024/02/element-17.jpg)
+
+> well, this is a trashfire indeed.
+> Thanks for writing this up.
+> You've caught Element in the middle of their migration to Element X, and there's a lot of legit feedback here:
+> - Both E & EX should be in the macOS app store.
+> - EX should clearly be labelled WIP in appstores.
+> -It's a mistake that matrix.org hurls people to servers.joinmatrix.org (which is not run by us); 
+>   until recently it defaulted to matrix.org for convenience.
+> - Keeping the "create account" window open is a pure bug.
+
+[The continue](https://mastodon.matrix.org/@matrix/111924227099676114)
+
+![](/uploads/2024/02/element-18.jpg)
+
+> - Verification UX in Element is a disaster, and being reworked in EX:
+>   [Github link](https://github.com/element-hq/element-meta/blob/develop/docs/FTUE.md)
+> - Element Android failing to compute a recovery key is clearly a bug too.
+> 
+> Your other complaints about Element UX (e.g. user discovery by email;
+> specifying the server URL) are also very familiar.
+> 
+> It's not true to say vector.im uses "the very same dark patterns as LinkedIn" for contact discovery though;
+> [Github link](https://github.com/matrix-org/matrix-spec-proposals/blob/hs/hash-identity/proposals/2134-identity-hash-lookup.md)
+> explains how it works (and is strictly opt-in).
+
+Matrix Director of Program Development [Thibault A. Martin responds](https://mamot.fr/@thibaultamartin/111924256997285624)
+
+![](/uploads/2024/02/element-19.jpg)
+
+> Hej @isotopp I'm one of the maintainers of the matrix.org website.
+> 
+> Your post provides a very valuable perspective. 
+> I gathered the following gripes that we can address on the website itself in this issue: 
+> [Matrix.Org Issue 2178](https://github.com/matrix-org/matrix.org/issues/2178)
+> 
+> If you have the time to let me know if I got things right, 
+> that would be very useful!
+
+Thanks for picking this up, people!
+I very much hope that Matrix and Element eventually turn into something useful.
