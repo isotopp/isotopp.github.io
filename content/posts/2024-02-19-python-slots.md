@@ -262,3 +262,10 @@ and Python `__dict__` based objects are also comparable, around 3.4 KB per objec
 The Python "list of objects" is much smaller than expected, though,
 so there seems to be an optimization that does some slot-ification 
 or hash key compression in Python for large numbers of identical objects.
+
+# Some possible explanations
+
+- Florian Laws pointed me to the Medium-Article 
+[Python Objects Part III: String Interning](https://medium.com/@bdov_/https-medium-com-bdov-python-objects-part-iii-string-interning-625d3c7319de).
+- Nico Erfurth pointed me to the Youtube-Video 
+[How we are making Python 3.11 faster - presented by Mark Shannon](https://www.youtube.com/watch?v=xKk7IXm0XO0)
