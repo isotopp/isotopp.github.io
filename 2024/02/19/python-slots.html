@@ -167,7 +167,13 @@
 			<div class="col-lg-8 mb-3">
 				
 				<header class="toc bg-light">
-					<nav id="TableOfContents"></nav>
+					<nav id="TableOfContents">
+  <ul>
+    <li><a href="#the-code">The Code</a></li>
+    <li><a href="#the-result">The Result</a></li>
+    <li><a href="#the-math">The Math</a></li>
+  </ul>
+</nav>
 				</header>
 				
 			</div>
@@ -180,6 +186,11 @@ Then I am trying to measure the size of this in memory.</p>
 <p>Supposedly using <code>__slots__</code> the instances should save me a lot of memory,
 and for a single instance they seem to do that.
 For a large list, they save a bit of memory, but not a lot.</p>
+<h1 id="the-code">
+    <a href="#the-code">
+	The Code
+    </a>
+</h1>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">random</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
@@ -246,7 +257,12 @@ For a large list, they save a bit of memory, but not a lot.</p>
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Total size (with deep size of objects): </span><span class="si">{</span><span class="n">as_s</span><span class="si">}</span><span class="s2"> bytes&#34;</span><span class="p">)</span>
 </span></span><span class="line"><span class="cl">
 </span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;Delta Size: </span><span class="si">{</span><span class="n">delta_size</span><span class="si">}</span><span class="s2"> bytes&#34;</span><span class="p">)</span>
-</span></span></code></pre></div><p>This prints</p>
+</span></span></code></pre></div><h1 id="the-result">
+    <a href="#the-result">
+	The Result
+    </a>
+</h1>
+<p>This prints</p>
 <pre tabindex="0"><code>Size of list: 8448728 bytes
 Size of instance: 56 bytes
 Deep size of instance: 3328 bytes
@@ -273,8 +289,22 @@ and Python not being Perl,
 to duplicate these keys a million times
 (Perl would not, it will always turn dict keys into integers internal, and use a secret lookup hash,
 combining the memory efficiency I would have expected from <code>slots</code> with the extensibility of <code>dicts</code>).</p>
-<p>Clearly, I don&rsquo;t yet fully understand what goes on here.
-Also, Python seems to be pretty memory inefficient.</p>
+<p>Clearly, I don&rsquo;t yet fully understand what goes on here.</p>
+<h1 id="the-math">
+    <a href="#the-math">
+	The Math
+    </a>
+</h1>
+<p>One million Slots objects should be <code>1000000 * 1632 = 1632000000</code> bytes.
+The report says 1640448728 bytes, and the list itself indeed occupies around 8 MB when you measure.
+This checks out.</p>
+<p>One million Dict objects should be <code>1000000 * 3328 = 3328000000</code> bytes.
+The report says 1736450328 bytes, which is around half the expected size.
+This is almost as efficient as the Slots version, and something seems to be optimizing here,
+but I don&rsquo;t understand what goes on.</p>
+<p>The documentation praises Slots as a lot smaller, a lot faster and more typesafe than Dicts,
+but while Slots are somewhat smaller, they are not a lot smaller.
+I do get why you&rsquo;d want an exception for <code>self.doesntexist = 1</code> in many cases, so there&rsquo;s that.</p>
 
 			</div>
 		</div>
