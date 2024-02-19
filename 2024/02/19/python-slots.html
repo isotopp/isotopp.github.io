@@ -172,6 +172,9 @@
     <li><a href="#the-code">The Code</a></li>
     <li><a href="#the-result">The Result</a></li>
     <li><a href="#the-math">The Math</a></li>
+    <li><a href="#trying-perl">Trying perl</a></li>
+    <li><a href="#trying-php">Trying PHP</a></li>
+    <li><a href="#an-overview">An Overview</a></li>
   </ul>
 </nav>
 				</header>
@@ -263,16 +266,16 @@ For a large list, they save a bit of memory, but not a lot.</p>
     </a>
 </h1>
 <p>This prints</p>
-<pre tabindex="0"><code>Size of list: 8448728 bytes
-Size of instance: 56 bytes
-Deep size of instance: 3328 bytes
-Total size (with deep size of objects): 1736450328 bytes
-Size of list: 8448728 bytes
-Size of instance: 192 bytes
-Deep size of instance: 1632 bytes
-Total size (with deep size of objects): 1640448728 bytes
-Delta Size: 96001600 bytes
-</code></pre><p>We find:
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">Size of list: 8448728 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Size of instance: 56 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Deep size of instance: 3328 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Total size (with deep size of objects): 1736450328 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Size of list: 8448728 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Size of instance: 192 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Deep size of instance: 1632 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Total size (with deep size of objects): 1640448728 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Delta Size: 96001600 bytes
+</span></span></span></code></pre></div><p>We find:
 The <code>DictTest</code> instance is 3328 bytes in size, the <code>SlotTest</code> instance only 1632 bytes, according to pympler.
 Using <code>sys.getsizeof()</code>, we severely underestimate the actual memory usage.</p>
 <p>We also find <code>(1640448728*100)/1736450328 = 94.5</code>, so the Slots version is still 94.5% the size of the Dict version,
@@ -281,14 +284,8 @@ What happens here?</p>
 <p>The string &ldquo;a_key_with_a_very_long_name_xx&rdquo; has 30 characters, and we have 20 of them.
 Each string associated with a key has 20 characters.
 In the end we store <code>(20+30) * 20 = 1000</code> characters per object.</p>
-<p>Out of these, 600 characters are identical in every instance (the key names).</p>
-<p>I would have expected the Slots version to define slots with integer IDs per slot,
-with a resolution table for slot id to slot name to be stored in the class.
-I would have expected the Dict version to store a <code>__dict__</code> with key names and values per instance,
-and Python not being Perl,
-to duplicate these keys a million times
-(Perl would not, it will always turn dict keys into integers internal, and use a secret lookup hash,
-combining the memory efficiency I would have expected from <code>slots</code> with the extensibility of <code>dicts</code>).</p>
+<p>Out of these, 600 characters are identical in every instance (the key names),
+and 400 characters are different in every instance (the randomly generated values).</p>
 <p>Clearly, I don&rsquo;t yet fully understand what goes on here.</p>
 <h1 id="the-math">
     <a href="#the-math">
@@ -303,8 +300,136 @@ The report says 1736450328 bytes, which is around half the expected size.
 This is almost as efficient as the Slots version, and something seems to be optimizing here,
 but I don&rsquo;t understand what goes on.</p>
 <p>The documentation praises Slots as a lot smaller, a lot faster and more typesafe than Dicts,
-but while Slots are somewhat smaller, they are not a lot smaller.
-I do get why you&rsquo;d want an exception for <code>self.doesntexist = 1</code> in many cases, so there&rsquo;s that.</p>
+but while Slots are somewhat smaller, they are not a lot smaller.</p>
+<p>I do get why you&rsquo;d want an exception for <code>self.doesntexist = 1</code> in many cases, so there&rsquo;s that.</p>
+<h1 id="trying-perl">
+    <a href="#trying-perl">
+	Trying perl
+    </a>
+</h1>
+<p>Ok, knowing how Perl optimizes things internally, I am trying to compare:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-perl" data-lang="perl"><span class="line"><span class="cl"><span class="ch">#!/usr/bin/env perl</span>
+</span></span><span class="line"><span class="cl"><span class="k">use</span> <span class="nn">strict</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">use</span> <span class="nn">warnings</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">use</span> <span class="nn">List::Util</span> <span class="sx">qw(shuffle)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">use</span> <span class="nn">Devel::Size</span> <span class="sx">qw(total_size)</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">sub</span> <span class="nf">random_string</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">my</span> <span class="nv">$length</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">join</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="nb">map</span> <span class="p">{</span> <span class="p">(</span><span class="s">&#39;a&#39;</span><span class="o">..</span><span class="s">&#39;z&#39;</span><span class="p">)[</span><span class="nb">rand</span> <span class="mi">26</span><span class="p">]</span> <span class="p">}</span> <span class="mi">1</span><span class="o">..</span><span class="nv">$length</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">package</span> <span class="nn">DictTest</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">sub</span> <span class="nf">new</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">my</span> <span class="nv">$class</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">my</span> <span class="nv">$self</span> <span class="o">=</span> <span class="nb">bless</span> <span class="p">{},</span> <span class="nv">$class</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="k">my</span> <span class="nv">$i</span> <span class="p">(</span><span class="mi">0</span><span class="o">..</span><span class="mi">19</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$self</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#34;a_key_with_a_very_long_name_$i&#34;</span><span class="p">}</span> <span class="o">=</span> <span class="nn">main::</span><span class="n">random_string</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$self</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">my</span> <span class="nv">$n</span> <span class="o">=</span> <span class="mi">1_000_000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">my</span> <span class="nv">@d</span> <span class="o">=</span> <span class="nb">map</span> <span class="p">{</span> <span class="nn">DictTest</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">()</span> <span class="p">}</span> <span class="mi">1</span><span class="o">..</span><span class="nv">$n</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">my</span> <span class="nv">$as_d</span> <span class="o">=</span> <span class="n">total_size</span><span class="p">(</span><span class="o">\</span><span class="nv">@d</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">print</span> <span class="s">&#34;Total size for DictTest: $as_d bytes\n&#34;</span><span class="p">;</span>
+</span></span></code></pre></div><p>I get an object size of around 1904 bytes.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> perl probe.pl
+</span></span><span class="line"><span class="cl"><span class="go">Total size for DictTest: 1904001334 bytes
+</span></span></span></code></pre></div><p>Suddenly, Python does not look so bad by comparison.</p>
+<h1 id="trying-php">
+    <a href="#trying-php">
+	Trying PHP
+    </a>
+</h1>
+<p>Using PHP 8.3.2, we can try the same using PHP</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="c1">#! /usr/bin/env php
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">&lt;?</span><span class="nx">php</span>
+</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">DictTest</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__construct</span><span class="p">()</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="o">@</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="p">{</span><span class="s2">&#34;a_key_with_a_very_long_name_</span><span class="si">$i</span><span class="s2">&#34;</span><span class="p">}</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">randomString</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">private</span> <span class="k">function</span> <span class="nf">randomString</span><span class="p">(</span><span class="nv">$length</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$abc</span> <span class="o">=</span> <span class="s1">&#39;abcdefghijklmnopqrstuvwxyz&#39;</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">        <span class="nv">$l</span> <span class="o">=</span> <span class="nx">strlen</span><span class="p">(</span><span class="nv">$abc</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">        <span class="k">for</span> <span class="p">(</span><span class="nv">$res</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nv">$length</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nv">$res</span> <span class="o">.=</span> <span class="nv">$abc</span><span class="p">[</span><span class="nx">rand</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nv">$l</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)];</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$res</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="nv">$n</span> <span class="o">=</span> <span class="mi">1000000</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">$objects</span> <span class="o">=</span> <span class="p">[];</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Measure memory before creating objects
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$memoryBefore</span> <span class="o">=</span> <span class="nx">memory_get_usage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nv">$n</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nv">$objects</span><span class="p">[]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DictTest</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Measure memory after creating objects
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$memoryAfter</span> <span class="o">=</span> <span class="nx">memory_get_usage</span><span class="p">();</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1">// Calculate the difference
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$memoryUsed</span> <span class="o">=</span> <span class="nv">$memoryAfter</span> <span class="o">-</span> <span class="nv">$memoryBefore</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">echo</span> <span class="s2">&#34;Approximate total size for DictTest: </span><span class="si">$memoryUsed</span><span class="s2"> bytes</span><span class="se">\n</span><span class="s2">&#34;</span><span class="p">;</span>
+</span></span></code></pre></div><p>In order for this to work, we have to silence the warning in the dynamic instance variable assignment
+(or very verbosely define the 20 instance variables like we had to do in the Python Slots version).
+We also had to raise the memory limit of PHP to 4096 MB.</p>
+<p>We get</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">$</span> php probe.php
+</span></span><span class="line"><span class="cl"><span class="go">Approximate total size for DictTest: 3481174608 bytes
+</span></span></span></code></pre></div><p>So in PHP, we get around 3481 bytes (or 3.4 KB) per object.</p>
+<h1 id="an-overview">
+    <a href="#an-overview">
+	An Overview
+    </a>
+</h1>
+<table>
+<thead>
+<tr>
+<th>Version</th>
+<th>Size per Object</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python Slots</td>
+<td>1632</td>
+</tr>
+<tr>
+<td>Python Dicts</td>
+<td>3328</td>
+</tr>
+<tr>
+<td>Perl Dicts</td>
+<td>1904</td>
+</tr>
+<tr>
+<td>PHP Dicts</td>
+<td>3481</td>
+</tr>
+</tbody>
+</table>
+<p>I do know that Perl compresses hash keys with a lookup table.
+When you have an Array of Hashes with one million hashes,
+it does not store one million copies of the same identical 20 hash keys.
+It instead has a secret internal hash that translates the key into an integer,
+and then transparently creates hashes keyed by these integers.</p>
+<p>This is also what I thought <code>__slots__</code> would do in Python, and indeed the resulting object size is comparable.</p>
+<p>The single object sizes of PHP (which does not do such hash key compression)
+and Python <code>__dict__</code> based objects are also comparable, around 3.4 KB per object.</p>
+<p>The Python &ldquo;list of objects&rdquo; is much smaller than expected, though,
+so there seems to be an optimization that does some slot-ification
+or hash key compression in Python for large numbers of identical objects.</p>
 
 			</div>
 		</div>
