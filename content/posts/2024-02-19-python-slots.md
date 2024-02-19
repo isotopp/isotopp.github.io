@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
 This prints
 
-```
+```console
 Size of list: 8448728 bytes
 Size of instance: 56 bytes
 Deep size of instance: 3328 bytes
@@ -120,15 +120,8 @@ The string "a_key_with_a_very_long_name_xx" has 30 characters, and we have 20 of
 Each string associated with a key has 20 characters.
 In the end we store `(20+30) * 20 = 1000` characters per object.
 
-Out of these, 600 characters are identical in every instance (the key names).
-
-I would have expected the Slots version to define slots with integer IDs per slot,
-with a resolution table for slot id to slot name to be stored in the class.
-I would have expected the Dict version to store a `__dict__` with key names and values per instance,
-and Python not being Perl,
-to duplicate these keys a million times 
-(Perl would not, it will always turn dict keys into integers internal, and use a secret lookup hash, 
-combining the memory efficiency I would have expected from `slots` with the extensibility of `dicts`).
+Out of these, 600 characters are identical in every instance (the key names),
+and 400 characters are different in every instance (the randomly generated values).
 
 Clearly, I don't yet fully understand what goes on here.
 
@@ -145,4 +138,128 @@ but I don't understand what goes on.
 
 The documentation praises Slots as a lot smaller, a lot faster and more typesafe than Dicts,
 but while Slots are somewhat smaller, they are not a lot smaller.
+
 I do get why you'd want an exception for `self.doesntexist = 1` in many cases, so there's that.
+
+# Trying perl
+
+Ok, knowing how Perl optimizes things internally, I am trying to compare:
+
+```perl
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use List::Util qw(shuffle);
+use Devel::Size qw(total_size);
+
+sub random_string {
+    my $length = shift;
+    join '', map { ('a'..'z')[rand 26] } 1..$length;
+}
+
+package DictTest {
+    sub new {
+        my $class = shift;
+        my $self = bless {}, $class;
+        for my $i (0..19) {
+            $self->{"a_key_with_a_very_long_name_$i"} = main::random_string(20);
+        }
+        return $self;
+    }
+}
+
+my $n = 1_000_000;
+my @d = map { DictTest->new() } 1..$n;
+my $as_d = total_size(\@d);
+
+print "Total size for DictTest: $as_d bytes\n";
+```
+
+I get an object size of around 1904 bytes.
+
+```console
+$ perl probe.pl
+Total size for DictTest: 1904001334 bytes
+```
+
+Suddenly, Python does not look so bad by comparison.
+
+# Trying PHP
+
+Using PHP 8.3.2, we can try the same using PHP
+
+```php
+#! /usr/bin/env php
+<?php
+class DictTest {
+    public function __construct() {
+        for ($i = 0; $i < 20; $i++) {
+            @$this->{"a_key_with_a_very_long_name_$i"} = $this->randomString(20);
+        }
+    }
+
+    private function randomString($length) {
+        $abc = 'abcdefghijklmnopqrstuvwxyz';
+        $l = strlen($abc);
+        for ($res = '', $i = 0; $i < $length; $i++) {
+            $res .= $abc[rand(0, $l - 1)];
+        }
+        return $res;
+    }
+}
+
+$n = 1000000;
+$objects = [];
+
+// Measure memory before creating objects
+$memoryBefore = memory_get_usage();
+
+for ($i = 0; $i < $n; $i++) {
+    $objects[] = new DictTest();
+}
+
+// Measure memory after creating objects
+$memoryAfter = memory_get_usage();
+
+// Calculate the difference
+$memoryUsed = $memoryAfter - $memoryBefore;
+
+echo "Approximate total size for DictTest: $memoryUsed bytes\n";
+```
+
+In order for this to work, we have to silence the warning in the dynamic instance variable assignment 
+(or very verbosely define the 20 instance variables like we had to do in the Python Slots version).
+We also had to raise the memory limit of PHP to 4096 MB.
+
+We get
+
+```console
+$ php probe.php
+Approximate total size for DictTest: 3481174608 bytes
+```
+
+So in PHP, we get around 3481 bytes (or 3.4 KB) per object.
+
+# An Overview
+
+| Version      | Size per Object |
+|--------------|-----------------|
+| Python Slots | 1632            |
+| Python Dicts | 3328            |
+| Perl Dicts   | 1904            | 
+| PHP Dicts    | 3481            |
+
+I do know that Perl compresses hash keys with a lookup table.
+When you have an Array of Hashes with one million hashes, 
+it does not store one million copies of the same identical 20 hash keys.
+It instead has a secret internal hash that translates the key into an integer,
+and then transparently creates hashes keyed by these integers.
+
+This is also what I thought `__slots__` would do in Python, and indeed the resulting object size is comparable.
+
+The single object sizes of PHP (which does not do such hash key compression)
+and Python `__dict__` based objects are also comparable, around 3.4 KB per object.
+
+The Python "list of objects" is much smaller than expected, though,
+so there seems to be an optimization that does some slot-ification 
+or hash key compression in Python for large numbers of identical objects.
