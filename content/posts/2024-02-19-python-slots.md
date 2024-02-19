@@ -241,12 +241,12 @@ So in PHP, we get around 3481 bytes (or 3.4 KB) per object.
 
 # An Overview
 
-| Version      | Size per Object |
-|--------------|-----------------|
-| Python Slots | 1632            |
-| Python Dicts | 3328            |
-| Perl Dicts   | 1904            | 
-| PHP Dicts    | 3481            |
+| Version      | Size per Object  |
+|--------------|------------------|
+| Python Slots | 1632             |
+| Python Dicts | 3328 (1736 eff.) |
+| Perl Dicts   | 1904             | 
+| PHP Dicts    | 3481             |
 
 I do know that Perl compresses hash keys with a lookup table.
 When you have an Array of Hashes with one million hashes, 
