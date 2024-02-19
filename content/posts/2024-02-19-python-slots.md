@@ -21,6 +21,8 @@ Supposedly using `__slots__` the instances should save me a lot of memory,
 and for a single instance they seem to do that.
 For a large list, they save a bit of memory, but not a lot.
 
+# The Code
+
 ```python
 #! /usr/bin/env python
 import random
@@ -90,6 +92,8 @@ if __name__ == '__main__':
     print(f"Delta Size: {delta_size} bytes")
 ```
 
+# The Result
+
 This prints
 
 ```
@@ -127,4 +131,18 @@ to duplicate these keys a million times
 combining the memory efficiency I would have expected from `slots` with the extensibility of `dicts`).
 
 Clearly, I don't yet fully understand what goes on here.
-Also, Python seems to be pretty memory inefficient.
+
+# The Math
+
+One million Slots objects should be `1000000 * 1632 = 1632000000` bytes.
+The report says 1640448728 bytes, and the list itself indeed occupies around 8 MB when you measure.
+This checks out.
+
+One million Dict objects should be `1000000 * 3328 = 3328000000` bytes.
+The report says 1736450328 bytes, which is around half the expected size.
+This is almost as efficient as the Slots version, and something seems to be optimizing here,
+but I don't understand what goes on.
+
+The documentation praises Slots as a lot smaller, a lot faster and more typesafe than Dicts,
+but while Slots are somewhat smaller, they are not a lot smaller.
+I do get why you'd want an exception for `self.doesntexist = 1` in many cases, so there's that.
