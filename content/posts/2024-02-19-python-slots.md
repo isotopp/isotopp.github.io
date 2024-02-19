@@ -149,7 +149,6 @@ Ok, knowing how Perl optimizes things internally, I am trying to compare:
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use List::Util qw(shuffle);
 use Devel::Size qw(total_size);
 
 sub random_string {
