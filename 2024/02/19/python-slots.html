@@ -175,6 +175,8 @@
     <li><a href="#trying-perl">Trying perl</a></li>
     <li><a href="#trying-php">Trying PHP</a></li>
     <li><a href="#an-overview">An Overview</a></li>
+    <li><a href="#countertesting-with-pure-dicts">Countertesting with pure Dicts</a></li>
+    <li><a href="#some-possible-explanations">Some possible explanations</a></li>
   </ul>
 </nav>
 				</header>
@@ -429,6 +431,41 @@ and Python <code>__dict__</code> based objects are also comparable, around 3.4 K
 <p>The Python &ldquo;list of objects&rdquo; is much smaller than expected, though,
 so there seems to be an optimization that does some slot-ification
 or hash key compression in Python for large numbers of identical objects.</p>
+<h1 id="countertesting-with-pure-dicts">
+    <a href="#countertesting-with-pure-dicts">
+	Countertesting with pure Dicts
+    </a>
+</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">hash_test</span><span class="p">():</span>
+</span></span><span class="line"><span class="cl">    <span class="n">h</span> <span class="o">=</span> <span class="p">{}</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">        <span class="n">h</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;a_key_with_a_very_long_name_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_string</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">h</span>
+</span></span></code></pre></div><p>This results in the following values for sizing:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">Sizing hash_test
+</span></span></span><span class="line"><span class="cl"><span class="go">Size of list: 8448728 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Size of instance: 464 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Deep size of instance: 3504 bytes
+</span></span></span><span class="line"><span class="cl"><span class="go">Total size (with deep size of objects): 3512448728 bytes
+</span></span></span></code></pre></div><p>We can see that the optimization is not happening for normal dictionaries.
+Here we get circa 3.5 KB dict size.
+This is comparable to what PHP reports, and also consistent with the size of a single hash.</p>
+<h1 id="some-possible-explanations">
+    <a href="#some-possible-explanations">
+	Some possible explanations
+    </a>
+</h1>
+<ul>
+<li>Florian Laws pointed me to the Medium-Article
+<a href="https://medium.com/@bdov_/https-medium-com-bdov-python-objects-part-iii-string-interning-625d3c7319de" target="_blank" rel="noopener">Python Objects Part III: String Interning</a>
+
+.</li>
+<li>Nico Erfurth pointed me to the Youtube-Video
+<a href="https://www.youtube.com/watch?v=xKk7IXm0XO0" target="_blank" rel="noopener">How we are making Python 3.11 faster - presented by Mark Shannon</a>
+
+</li>
+</ul>
 
 			</div>
 		</div>
