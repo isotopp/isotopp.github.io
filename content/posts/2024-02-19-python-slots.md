@@ -263,6 +263,30 @@ The Python "list of objects" is much smaller than expected, though,
 so there seems to be an optimization that does some slot-ification 
 or hash key compression in Python for large numbers of identical objects.
 
+# Countertesting with pure Dicts
+
+```python
+def hash_test():
+    h = {}
+    for i in range(0, 20):
+        h[f'a_key_with_a_very_long_name_{i}'] = random_string()
+
+    return h
+```
+
+This results in the following values for sizing:
+
+```console
+Sizing hash_test
+Size of list: 8448728 bytes
+Size of instance: 464 bytes
+Deep size of instance: 3504 bytes
+Total size (with deep size of objects): 3512448728 bytes
+```
+We can see that the optimization is not happening for normal dictionaries.
+Here we get circa 3.5 KB dict size.
+This is comparable to what PHP reports, and also consistent with the size of a single hash.
+
 # Some possible explanations
 
 - Florian Laws pointed me to the Medium-Article 
