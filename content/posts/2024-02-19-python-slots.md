@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Python: Slots"
-date: 2023-12-05T05:06:07Z
+date: 2024-02-20T05:06:07Z
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
