@@ -293,3 +293,5 @@ This is comparable to what PHP reports, and also consistent with the size of a s
 [Python Objects Part III: String Interning](https://medium.com/@bdov_/https-medium-com-bdov-python-objects-part-iii-string-interning-625d3c7319de).
 - Nico Erfurth pointed me to the Youtube-Video 
 [How we are making Python 3.11 faster - presented by Mark Shannon](https://www.youtube.com/watch?v=xKk7IXm0XO0)
+- Raymond Hettinger: "Modern Python Dictionaries: A confluence of a dozen great ideas", PyCon 2017](https://www.youtube.com/watch?v=npw4s1QTmPg)
+- [PEP 412 – Key-Sharing Dictionary](https://peps.python.org/pep-0412/) by Mark Shannon, 2012
