@@ -183,7 +183,7 @@ Total size for DictTest: 1904001334 bytes
 
 Suddenly, Python does not look so bad by comparison.
 
-# Trying PHP
+# Trying PHP naively
 
 Using PHP 8.3.2, we can try the same using PHP
 
@@ -239,14 +239,73 @@ Approximate total size for DictTest: 3481174608 bytes
 
 So in PHP, we get around 3481 bytes (or 3.4 KB) per object.
 
+# Smarter PHP
+
+I have been told that the warning I silenced with the `@` is there for a reason and not just cosmetic.
+When I declare properties statically, I am writing a lot of very verbose and ugly code, 
+but PHP will internally much more efficient structures.
+
+```php
+#! /usr/bin/env php
+<?php
+class DictTest {
+        public $a_key_with_a_very_long_name_00;
+... omitted for brevity
+        public $a_key_with_a_very_long_name_19;
+
+    public function __construct() {
+                $this->a_key_with_a_very_long_name_00 = $this->randomString(20);
+... omitted for brevity
+                $this->a_key_with_a_very_long_name_19 = $this->randomString(20);
+    }
+
+    private function randomString($length) {
+        $abc = 'abcdefghijklmnopqrstuvwxyz';
+        $l = strlen($abc);
+        for ($res = '', $i = 0; $i < $length; $i++) {
+            $res .= $abc[rand(0, $l - 1)];
+        }
+        return $res;
+    }
+}
+
+$n = 1000000;
+$objects = [];
+
+// Measure memory before creating objects
+$memoryBefore = memory_get_usage();
+
+for ($i = 0; $i < $n; $i++) {
+    $objects[] = new DictTest();
+}
+
+// Measure memory after creating objects
+$memoryAfter = memory_get_usage();
+
+// Calculate the difference
+$memoryUsed = $memoryAfter - $memoryBefore;
+
+echo "Approximate total size for DictTest: $memoryUsed bytes\n";
+```
+
+resulting in a total memory usage of
+
+```console
+$ php probe.php
+Approximate total size for DictTest: 1369174120 bytes
+```
+
+This indeed brings us down to 1369 bytes per object.
+
 # An Overview
 
-| Version      | Size per Object  |
-|--------------|------------------|
-| Python Slots | 1632             |
-| Python Dicts | 3328 (1736 eff.) |
-| Perl Dicts   | 1904             | 
-| PHP Dicts    | 3481             |
+| Version      | Size per Object |
+|--------------|-----------------|
+| Python Slots | 1632            |
+| Python Dicts | 1736 effective  |
+| Perl Dicts   | 1904            | 
+| PHP Dicts    | 3481            |
+| PHP declared | 1369            |
 
 I do know that Perl compresses hash keys with a lookup table.
 When you have an Array of Hashes with one million hashes, 
@@ -258,6 +317,8 @@ This is also what I thought `__slots__` would do in Python, and indeed the resul
 
 The single object sizes of PHP (which does not do such hash key compression)
 and Python `__dict__` based objects are also comparable, around 3.4 KB per object.
+PHP with statically declared instance variables does apply a number of optimizations, 
+and comes in at 1.6 KB per object, up there with Python and Perl.
 
 The Python "list of objects" is much smaller than expected, though,
 so there seems to be an optimization that does some slot-ification 
@@ -285,7 +346,8 @@ Total size (with deep size of objects): 3512448728 bytes
 ```
 We can see that the optimization is not happening for normal dictionaries.
 Here we get circa 3.5 KB dict size.
-This is comparable to what PHP reports, and also consistent with the size of a single hash.
+This is comparable to what PHP with dynamic instance variables reports,
+and also consistent with the size of a single hash.
 
 # Some possible explanations
 
