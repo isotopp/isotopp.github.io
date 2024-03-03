@@ -262,30 +262,23 @@ Also patched man</p>
 </span></span></span><span class="line"><span class="cl"><span class="gi"></span>                }
 </span></span><span class="line"><span class="cl"> #endif
 </span></span><span class="line"><span class="cl">        } else {
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">```console
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Wenn ich mich nicht sehr täusche ist `innodb_flush_log_on_trx_commit = 2` jetzt ACID und sehr viel schneller als die Write/Flush-Sequenz - sechs bis siebenmal schneller.
-</span></span><span class="line"><span class="cl">Das Blinken meiner Platten-LED sieht auch plausibel aus.
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Dasselbe Verhalten beobachten wir nun auch mit dem Binlog:
-</span></span><span class="line"><span class="cl">`log-bin= ...` sorgt für `WriteFile()`-Aufrufe ins Binlog, und mit `sync_binlog = 1` kriegen wir nach jedem Write ein langsames Flush.
-</span></span><span class="line"><span class="cl">Besser wäre es, das `CreateFile()` für das Binlog zu finden und dort ebenfalls `FILE_FLAG_WRITE_THROUGH` zu machen. Damit wäre schon ein normales Binlog-Schreiben &#34;sync&#34; und schneller als die Write/Flush-Paare von `sync_binlog = 1`.
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">Versucht man denselben Benchmark mit Linux, kriege ich auf meinen Testsystemen übrigens vollkommene Unsinns-Zeiten raus.
-</span></span><span class="line"><span class="cl">Das liegt daran, weil
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">```console
-</span></span><span class="line"><span class="cl">linux:~ # hdparm -I /dev/sda
-</span></span><span class="line"><span class="cl">...
-</span></span><span class="line"><span class="cl">        Enabled Supported:
-</span></span><span class="line"><span class="cl">           *    SMART feature set
-</span></span><span class="line"><span class="cl">                Security Mode feature set
-</span></span><span class="line"><span class="cl">           *    Power Management feature set
-</span></span><span class="line"><span class="cl">           *    Write cache
-</span></span><span class="line"><span class="cl">           *    Look-ahead
-</span></span><span class="line"><span class="cl">...
-</span></span></code></pre></div><p>Der Write-Cache ist also bei dieser Platte enabled.
+</span></span></code></pre></div><p>Wenn ich mich nicht sehr täusche ist <code>innodb_flush_log_on_trx_commit = 2</code> jetzt ACID und sehr viel schneller als die Write/Flush-Sequenz - sechs bis siebenmal schneller.
+Das Blinken meiner Platten-LED sieht auch plausibel aus.</p>
+<p>Dasselbe Verhalten beobachten wir nun auch mit dem Binlog:
+<code>log-bin= ...</code> sorgt für <code>WriteFile()</code>-Aufrufe ins Binlog, und mit <code>sync_binlog = 1</code> kriegen wir nach jedem Write ein langsames Flush.
+Besser wäre es, das <code>CreateFile()</code> für das Binlog zu finden und dort ebenfalls <code>FILE_FLAG_WRITE_THROUGH</code> zu machen. Damit wäre schon ein normales Binlog-Schreiben &ldquo;sync&rdquo; und schneller als die Write/Flush-Paare von <code>sync_binlog = 1</code>.</p>
+<p>Versucht man denselben Benchmark mit Linux, kriege ich auf meinen Testsystemen übrigens vollkommene Unsinns-Zeiten raus.
+Das liegt daran, weil</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">linux:~ # hdparm -I /dev/sda
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">        Enabled Supported:
+</span></span></span><span class="line"><span class="cl"><span class="go">           *    SMART feature set
+</span></span></span><span class="line"><span class="cl"><span class="go">                Security Mode feature set
+</span></span></span><span class="line"><span class="cl"><span class="go">           *    Power Management feature set
+</span></span></span><span class="line"><span class="cl"><span class="go">           *    Write cache
+</span></span></span><span class="line"><span class="cl"><span class="go">           *    Look-ahead
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>Der Write-Cache ist also bei dieser Platte enabled.
 Für so einen ACID-Commit ist das eher nicht so gut.</p>
 <p>Mit</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">linux:~ # hdparm -W0 /dev/sda
