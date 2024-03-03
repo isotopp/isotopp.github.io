@@ -359,3 +359,8 @@ and we are loading and calling `Dependent` from `External` statically, using a m
 
 We could do the class loader dance a second time to load and call `Dependent` dynamically as well,
 if we wanted to.
+
+See also:
+
+[Dynamisch geladener Code]({{< relref "2005-10-08-dynamisch-geladener-code.md" >}})
+: Article from 2005 in German language, which discusses a similar problem in C.
