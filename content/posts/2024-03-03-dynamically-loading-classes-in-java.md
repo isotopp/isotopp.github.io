@@ -350,6 +350,21 @@ Only when `External` instantiates its `Dependent` class to call the static metho
 We can see that, 
 because the class loader debug output referencing the `Dependent` class comes after the `"New Hello from External!"` message. 
 
+# Creating Instances 
+
+It is also possible to create instances, and then call them.
+For example, in a plugin loader for Minecraft:
+
+```java 
+    try {
+        Object obj = pluginClass.newInstance();
+        Method method = pluginClass.getMethod("onEnable");
+        method.invoke(obj);        
+    } catch (...e) {
+        e.printStackTrace();        
+    }
+```
+
 # Summary
 
 In this tiny example, we have created a multi-target Maven project with static dependencies between the subprojects.
