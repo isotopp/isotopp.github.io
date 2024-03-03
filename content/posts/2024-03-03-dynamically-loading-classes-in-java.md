@@ -86,14 +86,14 @@ The top level `pom.xml` will define the submodules:
 ```
 
 Each submodule then needs to have its own `pom.xml`, will produce its own `target/` directory with its own `.jar` file.
-We are not trying to bundle all these files into one "fat" jar, because that was not required.
+We are not trying to bundle all these files into one "fat" jar because that was not required.
 
 In order to be able to define submodules, we also need to specify a `<packaging />` method. The default is `jar`, 
 but for submodules we need to use `pom`.
 
 # `Dependent.java`
 
-The class `Dependent` is a simple "Hellom, world!" style program.
+The class `Dependent` is a simple "Hello, world!" style program.
 It looks like this:
 
 ```java
@@ -232,7 +232,7 @@ To find the `jar` with the `External` class, we start to search for any `jar` fi
 This is done in `searchForJar(dir, urls)`.
 
 We are using the `dir` directory to list all files in it,
-then walk though the found files.
+then walk through the found files.
 If the current file is a directory, we recursively descend into it.
 
 If the current file has a name ending in `".jar"`, we add it to the `urls` list.
@@ -248,8 +248,7 @@ The second and following parameters are the arguments, here an empty `String[]` 
 
 ## Calling with `java -jar`
 
-In order to be able to call the `Main` class from its `jar`, we need to add the line
-
+To be able to call the `Main` class from its `jar`, we need to add the line
 ```console
 Main-Class: de.koehntopp.java.Main
 ```
@@ -319,7 +318,7 @@ Hello from Dependent!
 
 # Debugging the class loading
 
-In order to better understand what happens we can run it with 
+To better understand what happens, we can run it with 
 
 ```console
 $ java -verbose:class -jar main/target/main-1.0-SNAPSHOT.jar |grep -v 'shared objects file'
