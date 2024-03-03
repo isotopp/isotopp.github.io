@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Was wäre wenn alle Autos elektrisch führen?"
-date: 2023-08-02T01:02:03Z
+date: "2023-08-02T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

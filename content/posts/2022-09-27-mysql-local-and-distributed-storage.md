@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Local and distributed storage"
-date: 2022-09-27T12:13:14Z
+date: "2022-09-27T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

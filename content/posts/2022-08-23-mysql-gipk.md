@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: GIPK (InnoDB and Primary Keys)"
-date: 2022-08-23T08:39:21Z
+date: "2022-08-23T08:39:21Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

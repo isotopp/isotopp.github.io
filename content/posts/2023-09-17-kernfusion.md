@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Kernfusion"
-date: 2023-09-17T02:03:04Z
+date: "2023-09-17T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

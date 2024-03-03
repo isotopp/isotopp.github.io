@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "ChatGPT and Limits"
-date: 2022-12-11T06:07:08Z
+date: "2022-12-11T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en

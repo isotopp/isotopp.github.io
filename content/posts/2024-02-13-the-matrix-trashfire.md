@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "The Matrix Trashfire"
-date: 2023-12-05T05:06:07Z
+date: "2023-12-05T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

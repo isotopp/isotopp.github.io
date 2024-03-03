@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2022-06-02T08:42Z"
+date: "2022-06-02T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Rolling MySQL back and forward"
 published: true

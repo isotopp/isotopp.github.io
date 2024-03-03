@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2022-08-15T18:42Z"
+date: "2022-08-15T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Good Energy News"
 published: true

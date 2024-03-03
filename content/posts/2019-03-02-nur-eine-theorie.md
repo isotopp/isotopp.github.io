@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Nur eine Theorie"
-date: 2019-03-02T02:03:04Z
+date: "2019-03-02T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

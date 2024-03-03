@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Früher hatten wir Festplatten..."
-date: 2023-08-09T01:02:03Z
+date: "2023-08-09T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

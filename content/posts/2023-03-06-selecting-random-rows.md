@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Selecting random rows"
-date: 2023-02-20T12:13:14Z
+date: "2023-02-20T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

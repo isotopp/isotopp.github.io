@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Sitzende Tätigkeit"
-date: 2023-10-10T02:03:04Z
+date: "2023-10-10T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

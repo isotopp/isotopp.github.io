@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Energiekosten beim Elektroauto"
-date: 2023-09-13T01:02:03Z
+date: "2023-09-13T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

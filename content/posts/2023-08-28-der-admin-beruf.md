@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Der Admin-Beruf"
-date: 2023-08-28T01:02:03Z
+date: "2023-08-28T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "The Gospel of Efficiency vs. Actual Growth"
-date: 2023-09-19T01:02:03Z
+date: "2023-09-19T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

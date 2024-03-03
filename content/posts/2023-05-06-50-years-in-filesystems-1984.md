@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "50 years in filesystems: 1984"
-date: 2023-05-06T12:13:14Z
+date: "2023-05-06T12:13:14Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

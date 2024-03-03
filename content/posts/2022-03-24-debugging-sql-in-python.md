@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2022-03-24T08:35Z"
+date: "2022-03-24T08:35:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Debugging SQL in Python"
 published: true

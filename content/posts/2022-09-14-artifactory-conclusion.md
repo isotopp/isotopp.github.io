@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Artifactory Conclusion"
-date: 2022-09-14T12:13:00Z
+date: "2022-09-14T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

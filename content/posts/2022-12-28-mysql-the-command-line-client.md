@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: The command line client"
-date: 2022-09-08T12:13:00Z
+date: "2022-09-08T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

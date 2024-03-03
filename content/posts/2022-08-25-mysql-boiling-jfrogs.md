@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Boiling JFrogs"
-date: 2022-08-25T11:13:00Z
+date: "2022-08-25T11:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

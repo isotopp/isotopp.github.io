@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Deutschland der Zukunft"
-date: 2023-08-10T01:02:03Z
+date: "2023-08-10T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

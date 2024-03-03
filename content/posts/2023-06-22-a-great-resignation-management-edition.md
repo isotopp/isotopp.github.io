@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "A Great Resignation, Management Edition"
-date: 2023-06-22T01:02:03Z
+date: "2023-06-22T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

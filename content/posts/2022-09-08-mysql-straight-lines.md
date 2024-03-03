@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Straight lines"
-date: 2022-09-08T12:13:00Z
+date: "2022-09-08T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
@@ -152,4 +152,3 @@ With proper metrics and knowledge of the Quota it is plain obvious.
 In this case, the exhausted resource is IOPS quota.
 
 In other cases in the past, a straight line in dirty buffer pool pages graph was signaling exhaustion of the redo log space, or similar performance choke points.
-

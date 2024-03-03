@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Deploying websites - an escalation"
-date: 2024-01-09T05:06:07Z
+date: "2024-01-09T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

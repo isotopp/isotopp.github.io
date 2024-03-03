@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Software Supply Chain Issues"
-date: 2022-10-18T06:07:08Z
+date: "2022-10-18T06:07:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en

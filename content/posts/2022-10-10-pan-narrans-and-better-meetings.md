@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Pan Narrans and Better Meetings"
-date: 2022-10-10T12:13:14Z
+date: "2022-10-10T12:13:14Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - lang_en

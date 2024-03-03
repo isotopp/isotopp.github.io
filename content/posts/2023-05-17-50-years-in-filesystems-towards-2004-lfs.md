@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "50 years in filesystems: towards 2004 – LFS"
-date: 2023-05-17T01:02:03Z
+date: "2023-05-17T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

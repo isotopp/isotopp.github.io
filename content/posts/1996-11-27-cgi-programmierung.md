@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "CGI Programmierung"
-date: 1996-11-27T01:02:03Z
+date: "1996-11-27T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

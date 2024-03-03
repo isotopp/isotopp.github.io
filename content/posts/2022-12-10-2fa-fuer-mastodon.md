@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "2FA für Mastodon"
-date: 2022-12-10T06:07:08Z
+date: "2022-12-10T06:07:08Z"
 feature-img: assets/img/background/schloss.jpg
 tags:
 - lang_de

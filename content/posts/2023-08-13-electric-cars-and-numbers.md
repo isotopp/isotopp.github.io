@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Electric Cars and Numbers"
-date: 2023-08-13T01:02:03Z
+date: "2023-08-13T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

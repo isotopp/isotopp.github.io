@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Getting rid of phishing training mails"
-date: 2023-05-23T01:02:03Z
+date: "2023-05-23T01:02:03Z"
 feature-img: assets/img/background/schloss.jpg
 toc: false
 tags:

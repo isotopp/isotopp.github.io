@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: SeveralNines Podcast with Kris"
-date: 2023-04-04T12:13:14Z
+date: "2023-04-04T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

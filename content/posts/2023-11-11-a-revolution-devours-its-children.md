@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "A Revolution Devours Its Children"
-date: 2023-11-11T05:06:07Z
+date: "2023-11-11T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

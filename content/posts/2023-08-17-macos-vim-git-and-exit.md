@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MacOS, vim, git and exit..."
-date: 2023-08-17T01:02:03Z
+date: "2023-08-17T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2022-05-02T09:42Z"
+date: "2022-05-02T09:42:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "A solar roof 2"
 published: true

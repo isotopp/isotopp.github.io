@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: YOLO mode"
-date: 2022-09-02T12:13:00Z
+date: "2022-09-02T12:13:00Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

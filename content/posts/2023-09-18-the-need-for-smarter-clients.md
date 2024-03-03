@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "The Need for Smarter Clients"
-date: 2023-09-18T01:02:03Z
+date: "2023-09-18T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

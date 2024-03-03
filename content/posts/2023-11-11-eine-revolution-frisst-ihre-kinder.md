@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Eine Revolution frißt ihre Kinder"
-date: 2023-11-11T02:03:04Z
+date: "2023-11-11T02:03:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

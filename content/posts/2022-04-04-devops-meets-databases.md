@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2022-04-04T08:42Z"
+date: "2022-04-04T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "DevOps meets Databases"
 published: true

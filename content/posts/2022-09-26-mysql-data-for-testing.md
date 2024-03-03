@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Data for Testing"
-date: 2022-09-26T12:13:14Z
+date: "2022-09-26T12:13:14Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

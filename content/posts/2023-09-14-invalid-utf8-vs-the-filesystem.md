@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Invalid-UTF8 vs the filesystem"
-date: 2023-09-14T01:02:03Z
+date: "2023-09-14T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:

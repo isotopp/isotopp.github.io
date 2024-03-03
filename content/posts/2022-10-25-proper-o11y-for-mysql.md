@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "Proper O11y for MySQL"
-date: 2022-10-18T06:07:08Z
+date: "2022-10-18T06:07:08Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en

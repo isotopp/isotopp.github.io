@@ -1,6 +1,6 @@
 ---
 author: isotopp
-date: "2022-06-28T12:42Z"
+date: "2022-06-28T08:09:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "The new energy bill"
 published: true

@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "50 years in filesystems: A detour on vnodes"
-date: 2023-05-15T01:02:03Z
+date: "2023-05-15T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:

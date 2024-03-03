@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Row Literals"
-date: 2022-08-22T08:39:21Z
+date: "2022-08-22T08:39:21Z"
 feature-img: assets/img/background/mysql.jpg
 tags:
 - lang_en
@@ -96,4 +96,3 @@ mysql> with t (i) as ( values row(1), row(2), row(3) )
 +---+
 3 rows in set (0.00 sec)
 ```
-
