@@ -730,84 +730,99 @@ zweite Verbindung selbst eine Transaktion durchführt - die Sequenz
 </span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
 </span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root on mysql.sock [innodemo]&gt; commit;
 </span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 0 rows affected (0.00 sec)
-</span></span></span></code></pre></div><h3 id="transaction-isolation-level-repeatable-read">
-    <a href="#transaction-isolation-level-repeatable-read">
-	Transaction Isolation Level Repeatable-Read
-    </a>
-</h3>
-<p>Genau dies ändert sich, wenn wir im Transaction Isolation Level <code>REPEATABLE READ</code> arbeiten: In dem Moment, in dem wir mit <code>BEGIN</code> eine Transaktion starten,
-sieht diese Verbindung einen Snapshot der Datenbank, der sich nicht mehr
-verändert, bis die Transaktion beendet wird. In <code>REPEATABLE READ</code> hat also
-auch eine Read-Only-Transaktion eine Bedeutung.</p>
-<p>Intern wird dies so realisiert, daß beim Lesen einer Zeile nicht nur einen
-Schritt in die Vergangenheit der Zeile im Undo-Log gegangen wird, sondern
-den untereinander verbundenen Zeigern im Undo-Log so lange gefolgt wird bis
-die neuste Zeile gefunden wird, die für diesen Leser noch sichtbar ist.
-Während also die schreibenden Verbindungen die Daten in der Tabelle immer
-weiter und weiter ändern, wandern mehr und mehr alte Versionen dieser Zeile
-ins Undo-Log, wo sie bis auf weiteres archiviert werden.</p>
-<p>Während bei <code>READ COMITTED</code> also immer nur ein Schritt von der Tabelle ins
-Undo-Log gemacht wird, kann es bei <code>REPEATABLE READ</code> vorkommen, daß für einen
-bestimmten Leser viele Schritte im Undo-Log in die Vergangenheit der Zeile
-gemacht werden müssen. Dadurch ist die Lebensdauer einzelner Einträge im
-Undo-Log aber nicht mehr einheitlich, sondern es kann sein, daß einmal mehr
-oder weniger Einträge im Undo-Log aufbewahrt werden müssen. InnoDB hat einen
-globalen (für <code>SHOW PROCESSLIST</code> nicht sichtbaren) Purge-Thread, der schaut,
-was die älteste Transaktion im System für eine Transaktionsnummer noch
-brauchen würde. Der Purge-Thread löscht dann alle Einträge im Undo-Log, die
-noch älter sind als diese Transaktion.</p>
-<p>Das bedeutet aber anders herum auch, daß eine lange laufende Transaktion den
-Purge-Thread effektiv still legt. Wenn zum Beispiel ein <code>mysqldump --single-transaction</code> eine große Datenbank exportiert, dann kann es sein,
-daß diese &ldquo;single transaction&rdquo; viele Minuten oder je nach Datenmenge gar
-stundenlang stehen bleibt und damit auch der Purge Thread nichts löschen
-kann.</p>
-<p>Finden in dieser Zeit viele Schreibzugriffe statt, wird das Undo-Log
-unter Umständen beträchtlich anwachsen. Wie weiter oben erklärt, liegt das
-Undo-Log <em>immer</em> im ibdata-File, auch dann, wenn <code>innodb_file_per_table</code>
-aktiviert ist. Das bedeutet, daß das ibdata-File auch bei einem Server, der
-<code>innodb_file_per_table</code> aktiviert hat, größer werden kann - 256M bis 1G sind
-unter Umständen vollkommen normal.</p>
-<p>Wenn ein ibdata-File zu klein ist und nicht wachsen kann, weil in der
-<code>innodb_data_file_path</code> ohne <code>autoextend</code> definiert ist oder die Platte voll
-ist, kann dies unter Umständen zu schwer verständlichen Fehlermeldungen
-(&ldquo;Table full&rdquo;, obwohl noch mächtig Platz da ist) oder Transaktionsabbrüchen
-führen.</p>
-<h3 id="transaction-isolation-level-serializable-und-select--for-update">
-    <a href="#transaction-isolation-level-serializable-und-select--for-update">
-	Transaction Isolation Level SERIALIZABLE und SELECT &hellip; FOR UPDATE
-    </a>
-</h3>
-<p>Während <code>REPEATABLE READ</code> also alle unsere Leseprobleme löst, fehlt uns jetzt
-noch ein Mechanismus, mit dem wir <code>READ-MODIFY-WRITE</code> Zyklen korrekt handhaben
-können. Ein Read-Modify-Write-Zyklus ist ein Zugriff, bei dem eine Anwendung
-Daten liest, in der Anwendung verarbeitet und dann die geänderten Daten
-zurück schreibt.</p>
-<p>Damit dies konsistent geschehen kann, muß sichergestellt sein, daß die Daten
-im Datenbanksystem nicht mehr geändert werden nachdem die Anwendung sie
-gelesen hat, ansonsten bekommen wir eine Race-Condition, weil zwei
-Verbindungen zeitgleich dieselben Daten lesen und sich gegenseitig die
-Änderungen überschreiben.</p>
-<p>Wir erreichen dies durch eine Transaktion, in der die Daten mit einem <code>SELECT ... FOR UPDATE</code>-Statement gelesen werden. Dies ist eine Select-Anweisung, die
-normal lesend zugreift, aber dabei Locks erzeugt wie ein Update-Statement.
-In unserem Fall bedeutet dies, daß exclusive Locks auf allen Zeilen erzeugt
-werden, die vom Select-Statement über den Index zugegriffen wird. Die Locks
-bleiben bis zum Ende der Transaktion stehen. Das <code>FOR UPDATE</code> bewirkt also
-durch die Locks, daß zwei Änderungen an denselben Zeilen nacheinander, also
-serialisiert, erfolgen.</p>
-<p>Dabei gilt es ein paar trickreiche Dinge zu beachten:</p>
-<p>Zunächst einmal werden die Locks über den Index erzeugt. Wenn wir also einen
-<code>EXPLAIN</code>-Plan sehen, indem ein &ldquo;using where&rdquo; steht, dann heißt das in der
-Regel, daß mehr Zeilen über den Index selektiert werden als nachher im
-Result Set zu sehen sind - es gibt weitere einschränkende Bedingungen, die
-den über den Index generierten Result Set weiter verkleinern. Für die Locks
-bedeutet es aber, daß unter Umständen mehr Zeilen gelockt werden als wir
-möchten oder im Result Set sehen können.</p>
-<p>Wir können das demonstrieren, indem wir eine Tabelle mit zwei Spalten a und
-b erzeugen.</p>
-<p>a sei Primary Key und b sei nicht indiziert. Wenn wir jetzt ein <code>SELECT ... FOR UPDATE</code> ausführen, das <code>WHERE a = ... AND b = ...</code> enthält, werden alle in
-der a-Bedingung gefundenen Zeilen gelockt, auch jene, bei denen die
-b-Bedingung nicht zutrifft.</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">-- 
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">```console
+</span></span></span><span class="line"><span class="cl"><span class="go"> 
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span><span class="c1">## Transaction Isolation Level Repeatable-Read</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Genau dies ändert sich, wenn wir im Transaction Isolation Level `REPEATABLE
+</span></span></span><span class="line"><span class="cl"><span class="go">READ` arbeiten: In dem Moment, in dem wir mit `BEGIN` eine Transaktion starten,
+</span></span></span><span class="line"><span class="cl"><span class="go">sieht diese Verbindung einen Snapshot der Datenbank, der sich nicht mehr
+</span></span></span><span class="line"><span class="cl"><span class="go">verändert, bis die Transaktion beendet wird. In `REPEATABLE READ` hat also
+</span></span></span><span class="line"><span class="cl"><span class="go">auch eine Read-Only-Transaktion eine Bedeutung.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Intern wird dies so realisiert, daß beim Lesen einer Zeile nicht nur einen
+</span></span></span><span class="line"><span class="cl"><span class="go">Schritt in die Vergangenheit der Zeile im Undo-Log gegangen wird, sondern
+</span></span></span><span class="line"><span class="cl"><span class="go">den untereinander verbundenen Zeigern im Undo-Log so lange gefolgt wird bis
+</span></span></span><span class="line"><span class="cl"><span class="go">die neuste Zeile gefunden wird, die für diesen Leser noch sichtbar ist.
+</span></span></span><span class="line"><span class="cl"><span class="go">Während also die schreibenden Verbindungen die Daten in der Tabelle immer
+</span></span></span><span class="line"><span class="cl"><span class="go">weiter und weiter ändern, wandern mehr und mehr alte Versionen dieser Zeile
+</span></span></span><span class="line"><span class="cl"><span class="go">ins Undo-Log, wo sie bis auf weiteres archiviert werden.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Während bei `READ COMITTED` also immer nur ein Schritt von der Tabelle ins
+</span></span></span><span class="line"><span class="cl"><span class="go">Undo-Log gemacht wird, kann es bei `REPEATABLE READ` vorkommen, daß für einen
+</span></span></span><span class="line"><span class="cl"><span class="go">bestimmten Leser viele Schritte im Undo-Log in die Vergangenheit der Zeile
+</span></span></span><span class="line"><span class="cl"><span class="go">gemacht werden müssen. Dadurch ist die Lebensdauer einzelner Einträge im
+</span></span></span><span class="line"><span class="cl"><span class="go">Undo-Log aber nicht mehr einheitlich, sondern es kann sein, daß einmal mehr
+</span></span></span><span class="line"><span class="cl"><span class="go">oder weniger Einträge im Undo-Log aufbewahrt werden müssen. InnoDB hat einen
+</span></span></span><span class="line"><span class="cl"><span class="go">globalen (für `SHOW PROCESSLIST` nicht sichtbaren) Purge-Thread, der schaut,
+</span></span></span><span class="line"><span class="cl"><span class="go">was die älteste Transaktion im System für eine Transaktionsnummer noch
+</span></span></span><span class="line"><span class="cl"><span class="go">brauchen würde. Der Purge-Thread löscht dann alle Einträge im Undo-Log, die
+</span></span></span><span class="line"><span class="cl"><span class="go">noch älter sind als diese Transaktion.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Das bedeutet aber anders herum auch, daß eine lange laufende Transaktion den
+</span></span></span><span class="line"><span class="cl"><span class="go">Purge-Thread effektiv still legt. Wenn zum Beispiel ein `mysqldump
+</span></span></span><span class="line"><span class="cl"><span class="go">--single-transaction` eine große Datenbank exportiert, dann kann es sein,
+</span></span></span><span class="line"><span class="cl"><span class="go">daß diese &#34;single transaction&#34; viele Minuten oder je nach Datenmenge gar
+</span></span></span><span class="line"><span class="cl"><span class="go">stundenlang stehen bleibt und damit auch der Purge Thread nichts löschen
+</span></span></span><span class="line"><span class="cl"><span class="go">kann. 
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Finden in dieser Zeit viele Schreibzugriffe statt, wird das Undo-Log
+</span></span></span><span class="line"><span class="cl"><span class="go">unter Umständen beträchtlich anwachsen. Wie weiter oben erklärt, liegt das
+</span></span></span><span class="line"><span class="cl"><span class="go">Undo-Log _immer_ im ibdata-File, auch dann, wenn `innodb_file_per_table`
+</span></span></span><span class="line"><span class="cl"><span class="go">aktiviert ist. Das bedeutet, daß das ibdata-File auch bei einem Server, der
+</span></span></span><span class="line"><span class="cl"><span class="go">`innodb_file_per_table` aktiviert hat, größer werden kann - 256M bis 1G sind
+</span></span></span><span class="line"><span class="cl"><span class="go">unter Umständen vollkommen normal.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Wenn ein ibdata-File zu klein ist und nicht wachsen kann, weil in der
+</span></span></span><span class="line"><span class="cl"><span class="go">`innodb_data_file_path` ohne `autoextend` definiert ist oder die Platte voll
+</span></span></span><span class="line"><span class="cl"><span class="go">ist, kann dies unter Umständen zu schwer verständlichen Fehlermeldungen
+</span></span></span><span class="line"><span class="cl"><span class="go">(&#34;Table full&#34;, obwohl noch mächtig Platz da ist) oder Transaktionsabbrüchen
+</span></span></span><span class="line"><span class="cl"><span class="go">führen.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span><span class="c1">## Transaction Isolation Level SERIALIZABLE und SELECT ... FOR UPDATE</span>
+</span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Während `REPEATABLE READ` also alle unsere Leseprobleme löst, fehlt uns jetzt
+</span></span></span><span class="line"><span class="cl"><span class="go">noch ein Mechanismus, mit dem wir `READ-MODIFY-WRITE` Zyklen korrekt handhaben
+</span></span></span><span class="line"><span class="cl"><span class="go">können. Ein Read-Modify-Write-Zyklus ist ein Zugriff, bei dem eine Anwendung
+</span></span></span><span class="line"><span class="cl"><span class="go">Daten liest, in der Anwendung verarbeitet und dann die geänderten Daten
+</span></span></span><span class="line"><span class="cl"><span class="go">zurück schreibt.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Damit dies konsistent geschehen kann, muß sichergestellt sein, daß die Daten
+</span></span></span><span class="line"><span class="cl"><span class="go">im Datenbanksystem nicht mehr geändert werden nachdem die Anwendung sie
+</span></span></span><span class="line"><span class="cl"><span class="go">gelesen hat, ansonsten bekommen wir eine Race-Condition, weil zwei
+</span></span></span><span class="line"><span class="cl"><span class="go">Verbindungen zeitgleich dieselben Daten lesen und sich gegenseitig die
+</span></span></span><span class="line"><span class="cl"><span class="go">Änderungen überschreiben.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Wir erreichen dies durch eine Transaktion, in der die Daten mit einem `SELECT
+</span></span></span><span class="line"><span class="cl"><span class="go">... FOR UPDATE`-Statement gelesen werden. Dies ist eine Select-Anweisung, die
+</span></span></span><span class="line"><span class="cl"><span class="go">normal lesend zugreift, aber dabei Locks erzeugt wie ein Update-Statement.
+</span></span></span><span class="line"><span class="cl"><span class="go">In unserem Fall bedeutet dies, daß exclusive Locks auf allen Zeilen erzeugt
+</span></span></span><span class="line"><span class="cl"><span class="go">werden, die vom Select-Statement über den Index zugegriffen wird. Die Locks
+</span></span></span><span class="line"><span class="cl"><span class="go">bleiben bis zum Ende der Transaktion stehen. Das `FOR UPDATE` bewirkt also
+</span></span></span><span class="line"><span class="cl"><span class="go">durch die Locks, daß zwei Änderungen an denselben Zeilen nacheinander, also
+</span></span></span><span class="line"><span class="cl"><span class="go">serialisiert, erfolgen.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Dabei gilt es ein paar trickreiche Dinge zu beachten: 
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Zunächst einmal werden die Locks über den Index erzeugt. Wenn wir also einen
+</span></span></span><span class="line"><span class="cl"><span class="go">`EXPLAIN`-Plan sehen, indem ein &#34;using where&#34; steht, dann heißt das in der
+</span></span></span><span class="line"><span class="cl"><span class="go">Regel, daß mehr Zeilen über den Index selektiert werden als nachher im
+</span></span></span><span class="line"><span class="cl"><span class="go">Result Set zu sehen sind - es gibt weitere einschränkende Bedingungen, die
+</span></span></span><span class="line"><span class="cl"><span class="go">den über den Index generierten Result Set weiter verkleinern. Für die Locks
+</span></span></span><span class="line"><span class="cl"><span class="go">bedeutet es aber, daß unter Umständen mehr Zeilen gelockt werden als wir
+</span></span></span><span class="line"><span class="cl"><span class="go">möchten oder im Result Set sehen können.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Wir können das demonstrieren, indem wir eine Tabelle mit zwei Spalten a und
+</span></span></span><span class="line"><span class="cl"><span class="go">b erzeugen. 
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">a sei Primary Key und b sei nicht indiziert. Wenn wir jetzt ein `SELECT ...
+</span></span></span><span class="line"><span class="cl"><span class="go">FOR UPDATE` ausführen, das `WHERE a = ... AND b = ...` enthält, werden alle in
+</span></span></span><span class="line"><span class="cl"><span class="go">der a-Bedingung gefundenen Zeilen gelockt, auch jene, bei denen die
+</span></span></span><span class="line"><span class="cl"><span class="go">b-Bedingung nicht zutrifft.
+</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">```console
+</span></span></span><span class="line"><span class="cl"><span class="go">-- 
 </span></span></span><span class="line"><span class="cl"><span class="go">-- Tabelle anlegen
 </span></span></span><span class="line"><span class="cl"><span class="go">-- 
 </span></span></span><span class="line"><span class="cl"><span class="go">root on mysql.sock [kris]&gt; create table t ( 
