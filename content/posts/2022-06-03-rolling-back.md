@@ -10,7 +10,7 @@ tags:
 - lang_en
 ---
 
-Where I work, we [manage databases in an automated way]({{< ref "/content/posts/2021-03-24-a-lot-of-mysql.md" >}}).
+Where I work, we [manage databases in an automated way]({{< relref "/2021-03-24-a-lot-of-mysql.md" >}}).
 Not as automated as I wish it to be, but largely without touching boxes.
 
 We have been doing so for a long time.

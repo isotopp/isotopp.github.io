@@ -16,7 +16,7 @@ Hardcover, 1008 Seiten. 1400 Gramm. Kindle auf dem Android ist eine feine Sache.
 ![](/uploads/TheWiseMansFearUKcover.jpeg)
 
 "The Wise Man's Fear" ist der Folgeband zu 
-[Der Name des Windes]({{< ref "/content/posts/2010-08-08-fertig-gelesen-der-name-des-windes.md" >}}).
+[Der Name des Windes]({{< relref "/2010-08-08-fertig-gelesen-der-name-des-windes.md" >}}).
 
 Kvothe, unser Held aus dem ersten Band, macht sich an der Universität
 ernsthaft Feinde und muß sich eine Weile zurückziehen, um Gras über die

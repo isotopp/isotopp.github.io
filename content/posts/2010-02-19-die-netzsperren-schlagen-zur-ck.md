@@ -66,7 +66,7 @@ wird dann
 wegen des Drucks des Netzes zur Version 2.0 angeblich entschärft.
 Stattdessen setzt man auf elternseitig installierte Filterprogramme. Die
 werden zwar
-[auch nicht funktionieren]({{< ref "/content/posts/2009-08-06-jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.md" >}}), 
+[auch nicht funktionieren]({{< relref "/2009-08-06-jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.md" >}}), 
 aber immerhin niemandem schaden außer den Kindern der Eltern, die so was
 einsetzen.
 

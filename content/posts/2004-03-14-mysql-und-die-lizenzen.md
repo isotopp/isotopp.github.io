@@ -172,7 +172,7 @@ zu interpretieren:
 geht hier ausführlich in englischer Sprache darauf ein. MySQL argumentiert,
 daß auch jede Reimplementation von deren Protokoll MySQLs geistiges Eigentum
 wäre, weil es sich um ein abgeleitetes Werk handelt. Also ganz genau
-[die SCO Argumentation]({{< ref "/content/posts/2004-02-08-cooties.md" >}}).
+[die SCO Argumentation]({{< relref "/2004-02-08-cooties.md" >}}).
 
 MySQL ist außerdem jetzt schon seit mehr als einem Jahr damit beschäftigt,
 dieses Problem zu lösen.

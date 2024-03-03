@@ -11,7 +11,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: "Zero Point"'
 ---
-In "[The Departure]({{< ref "/content/posts/2013-12-05-fertig-gelesen-the-departure-neal-asher.md" >}})" treffen wir auf eine überbevölkerte, dystopische und hoffnungslose Erde, in der "Das Komitee" eine Überwachungsbürokratur und einen Sicherheitsstaat zur Verwaltung des allfälligen Mangels etabliert hat. Der Protagonist, Alan Saul, entwickelt sich zum Hybridwesen aus Mensch, Maschine und Wetware-Extensions und übernimmt die Raumstation "Argus", um sie in einer langen Reise zum Mars zu bewegen. In seinem Übernahmekampf löst er auf der Erde eine Revolution gegen das Komitee aus.
+In "[The Departure]({{< relref "/2013-12-05-fertig-gelesen-the-departure-neal-asher.md" >}})" treffen wir auf eine überbevölkerte, dystopische und hoffnungslose Erde, in der "Das Komitee" eine Überwachungsbürokratur und einen Sicherheitsstaat zur Verwaltung des allfälligen Mangels etabliert hat. Der Protagonist, Alan Saul, entwickelt sich zum Hybridwesen aus Mensch, Maschine und Wetware-Extensions und übernimmt die Raumstation "Argus", um sie in einer langen Reise zum Mars zu bewegen. In seinem Übernahmekampf löst er auf der Erde eine Revolution gegen das Komitee aus.
 
 [![](/uploads/2014/01/zero-point.png)](http://www.amazon.de/Zero-Point-Owner-Trilogy-2-ebook/dp/B00844Y686)
 

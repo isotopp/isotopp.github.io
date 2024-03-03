@@ -12,7 +12,7 @@ tags:
 title: Wikipedia - Quellenkritik
 ---
 Vor einiger Zeit schrieb ich einen Artikel 
-[Wie man einen Wikipedia-Artikel… liest]({{< ref "/content/posts/2009-11-28-wie-man-einen-wikipedia-artikel-liest.md" >}})
+[Wie man einen Wikipedia-Artikel… liest]({{< relref "/2009-11-28-wie-man-einen-wikipedia-artikel-liest.md" >}})
 Jetzt erreicht mich eine Mail von Thomas Emden-Weinert, in der er mich auf
 [Wikipedia-Quellenkritik](http://wikipedia-quellenkritik.de/) hinweist. 
 

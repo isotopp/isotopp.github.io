@@ -106,7 +106,7 @@ The original version, to check what the actual hashed key should look like, and 
 
 That should be easy: 
 An example 
-[from 2005]({{< ref "/content/posts/2005-10-08-dynamisch-geladener-code.md" >}})
+[from 2005]({{< relref "/2005-10-08-dynamisch-geladener-code.md" >}})
 (german language article) shows
 
 - how to turn a function into a `libsomething.a`, 

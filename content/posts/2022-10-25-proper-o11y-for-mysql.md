@@ -19,7 +19,7 @@ But one type of system does not fit into this very well:
 Databases of all kinds.
 And I don't understand why, because it would be perfect.
 
-About one year ago, I wrote an article about "[Tracing a single query with PERFORMANCE_SCHEMA]({{< ref "/content/posts/2021-09-15-mysql-tracing-a-single-query-with-performanceschema.md" >}})". 
+About one year ago, I wrote an article about "[Tracing a single query with PERFORMANCE_SCHEMA]({{< relref "/2021-09-15-mysql-tracing-a-single-query-with-performanceschema.md" >}})". 
 Why would I want to trace a single query like that?
 
 I want to get data about query execution out of MySQL, at scale, and push this into Honeycomb.
@@ -129,7 +129,7 @@ Database tracing is completely ignoring modern observability integration, and th
 Attribution of SQL (when generated) is a *mess*.
 
 Information about the plan of queries that ran is not retained well in MySQL.
-IO traces around the buffer pool are not even instrumented. They can be done. I routinely do them on production systems [at the file system level with blktrace]({{< ref "/content/posts/2022-09-27-mysql-local-and-distributed-storage.md" >}}).
+IO traces around the buffer pool are not even instrumented. They can be done. I routinely do them on production systems [at the file system level with blktrace]({{< relref "/2022-09-27-mysql-local-and-distributed-storage.md" >}}).
 
 And exfil of that data through `P_S` is just painful.
 One would want an in-server ring buffer and a Pusher thread that sends this data in a non-blocking way (using localhost UDP?) to a listener, that transforms this into whatever O11y system you'd be using.

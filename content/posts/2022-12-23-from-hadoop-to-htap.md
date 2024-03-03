@@ -161,11 +161,11 @@ In general, these systems are welcome, useful and innovative, because they allow
 Personally, I remain sceptical with regards to the integrated, copy-less processing of analytics queries.
 
 In our DWH/BI-Series in this blog (and especially in 
-[Tying the BI pipeline together]({{< ref "/content/posts/2022-12-22-tying-the-bi-pipeline-together.md" >}})) 
+[Tying the BI pipeline together]({{< relref "/2022-12-22-tying-the-bi-pipeline-together.md" >}})) 
 I have tried to explain why I believe the *Transformation* in ETL is a fundamental step that transforms from OLTP "normal form" (mostly 3NF) to BI "normal form" (the star and snowflake forms).
 
 Nobody likes 3NF -- it complicates many things that should be simple, but we must use it in OLTP because data is being modified by transactions.
-Without it, we suffer from all kinds of anomalies, and [normalization]({{< ref "/content/posts/2005-09-11-nermalisation.md" >}}) prevents these.
+Without it, we suffer from all kinds of anomalies, and [normalization]({{< relref "/2005-09-11-nermalisation.md" >}}) prevents these.
 
 DWH tables are different, because they are records of the past:
 They do not change (after all stragglers have been loaded), and because they are immutable, they cannot have anomalies.

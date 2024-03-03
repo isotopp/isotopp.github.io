@@ -88,7 +88,7 @@ Diskussion deutlich geworden ist, dann das.
 
 Rupert Scholz und mit ihm die Partei, die er repräsentiert, stehen für diese
 Welt der Zurückgebliebenen. Wir nennen sie 
-[Alte Männer mit Kugelschreibern]({{< ref "/content/posts/2007-09-18-alte-m-nner-mit-kugelschreibern.md" >}})
+[Alte Männer mit Kugelschreibern]({{< relref "/2007-09-18-alte-m-nner-mit-kugelschreibern.md" >}})
 oder Internetausdrucker. Wir wissen nicht, wie wir mit ihnen reden sollen
 und wie wir ihnen unsere Welt erklären sollen, und wir hoffen, daß es eine
 biologische Lösung für dieses Problem gibt.

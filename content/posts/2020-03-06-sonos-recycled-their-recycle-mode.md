@@ -8,7 +8,7 @@ tags:
 - media
 title: Sonos recycled their recycle mode
 ---
-So I wrote about [the Sonos Recycle Program]({{< ref "/content/posts/2019-12-30-sonos-recycle-mode.md" >}}) before Sonos announced their plans to actively discontinue support for their older Speakers. Back then, the program did make sense, because it was kind of voluntary and avoided sending stuff back to Sonos for a Trade-Up. Even then, people disliked it.
+So I wrote about [the Sonos Recycle Program]({{< relref "/2019-12-30-sonos-recycle-mode.md" >}}) before Sonos announced their plans to actively discontinue support for their older Speakers. Back then, the program did make sense, because it was kind of voluntary and avoided sending stuff back to Sonos for a Trade-Up. Even then, people disliked it.
 
 Then Sonos announced that they would discontinue support for these devices and it's basically 'you brick them now, or we are going to brick them for you in May and without a rebate for new equipment'.
 

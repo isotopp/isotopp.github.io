@@ -14,7 +14,7 @@ title: 'MySQL: NULL is NULL'
 ---
 *Question:* Hey, I got a UNIQUE INDEX, but I can store multiple rows with the same value, NULL. That is surprising. Is that a bug?
 
-> This is a rewrite of [the same in German from 9 years ago]({{< ref "/content/posts/2011-11-04-null-is-null.md" >}}).
+> This is a rewrite of [the same in German from 9 years ago]({{< relref "/2011-11-04-null-is-null.md" >}}).
 
 ```sql
 root@localhost [kris]> create table t ( a integer, b integer, unique (a,b));

@@ -94,7 +94,7 @@ Es ist also sinnvoll, mit dem Java-Minecraft-Account auch noch gleich einen (kos
 
 Dabei ist es extrem sinnvoll, diesen Zugang (wie auch den Microsoft-Zugang) mit 2-Faktor-Authentisierung abzusichern und das Kind gleich von Anfang an zu 2FA zu erziehen.
 Warum ist das so?
-[Dazu hier ein kleines Erlebnis]({{< ref "/content/posts/2021-11-30-discord-nitro-spam-and-2fa.md" >}}).
+[Dazu hier ein kleines Erlebnis]({{< relref "/2021-11-30-discord-nitro-spam-and-2fa.md" >}}).
 
 ## Was wird eigentlich gespielt?
 

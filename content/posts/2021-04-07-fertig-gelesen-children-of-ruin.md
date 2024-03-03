@@ -9,7 +9,7 @@ tags:
 - lang_en
 title: 'Fertig gelesen: Children of Ruin'
 ---
-[Children of Ruin](https://www.amazon.de/Children-Ruin-Time-Novels-English-ebook/dp/B07KPMJ7V9/) is the second part of [Children of Time]({{< ref "/content/posts/2017-11-07-fertig-gelesen-children-of-time.md" >}}) by english Sci-Fi author Adrian Tchaikovsky.
+[Children of Ruin](https://www.amazon.de/Children-Ruin-Time-Novels-English-ebook/dp/B07KPMJ7V9/) is the second part of [Children of Time]({{< relref "/2017-11-07-fertig-gelesen-children-of-time.md" >}}) by english Sci-Fi author Adrian Tchaikovsky.
 
 [![](/uploads/2021/04/children-of-ruin.jpg)](https://www.amazon.de/Children-Ruin-Time-Novels-English-ebook/dp/B07KPMJ7V9/)
 
@@ -19,6 +19,6 @@ This almost Peter-Watts-like eclectic and unlikely cast of characters is amended
 
 Tchaikovsky again manages to pull off nonhuman characters in a way that reads interesting and relatable, while at the same time completely alien.
 
-See also [Other Minds]({{< ref "/content/posts/2021-04-07-fertig-gelesen-other-minds.md" >}})
+See also [Other Minds]({{< relref "/2021-04-07-fertig-gelesen-other-minds.md" >}})
 
 "[Children of Ruin](https://www.amazon.de/Children-Ruin-Time-Novels-English-ebook/dp/B07KPMJ7V9/)", Adrian Tchaikovsky, EUR 5.99

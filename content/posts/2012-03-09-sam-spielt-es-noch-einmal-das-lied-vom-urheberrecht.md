@@ -21,7 +21,7 @@ Die Diskussion und die Argumente sind nicht neu, wir finden sie auch im
 hinteren Teil der Diskussion 
 [mit Lena Falkenhagen im November](https://plus.google.com/109379939195289805891/posts/3XQnYzbSqLA), 
 die ich seinerzeit in 
-[Nicht das Urheberrecht ist das Kernthema]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
+[Nicht das Urheberrecht ist das Kernthema]({{< relref "/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 zusammengefaßt habe.  Sicherheitshalber hat Marcel Weiss 
 [die Standardantwort auf diese Standardfrage](http://www.neunetz.com/2012/03/07/kleine-antwort-an-die-befuerworter-des-geistigen-eigentums/)
 noch einmal aufgeschrieben, denn manchmal braucht auch einer wie Wolfgang
@@ -34,9 +34,9 @@ gemacht hat, und Andreas Eschbach diskutiert dort auch mit.
 
 Das wäre nicht weiter interessant, denn diese Richtung der Diskussion geht,
 wie wir in 
-[Nicht das Urheberrecht ist das Kernthema]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
+[Nicht das Urheberrecht ist das Kernthema]({{< relref "/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 und dem 
-[Nachtrag]({{< ref "/content/posts/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}})
+[Nachtrag]({{< relref "/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}})
 dazu etabliert haben, vollkommen am Kern des Problems vorbei.  Der
 "Blechpirat" Karsten greift das auf: 
 
@@ -80,7 +80,7 @@ das so:
 > Was die neue, digitale Natur von Werken ändert hatte ich in der vorherigen
 > Instanz dieser Debatte schon einmal aufgemalt:
 >
-> [Nicht das Urheberrecht ist das Kernthema]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
+> [Nicht das Urheberrecht ist das Kernthema]({{< relref "/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 >
 > "Dann ist da aber auch die Verminderung des Aufwandes und die Verkürzung
 > der Publishing Pipeline: Jeder, der schreiben will, kann nun schreiben. 
@@ -106,7 +106,7 @@ das so:
 > Urheberschaft teilweise ein schwer feststellbares Konzept.
 > 
 > Zu 3: Besonders ausgeprägt im Bereich der Programmentwicklung, teilweise aber auch bei der Texterstellung - kollaborative Systeme dienen dazu, kleinste Beiträge von Einzelpersonen zu einem Gesamtwerk zu aggregieren. Fast alle moderne Werkentstehung arbeitet auf diese Weise, und wo das gelingt, haben Einzelpersonen kaum noch eine Chance.  Dazu kann ich auf
-> Anfrage mehr schreiben ([Nachtrag]({{< ref "/content/posts/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}}))
+> Anfrage mehr schreiben ([Nachtrag]({{< relref "/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}}))
 > redet da schon teilweise drüber).
 > 
 > Über das Urheberrecht zu diskutieren geht am Kern des Problems vorbei.  Das
@@ -352,7 +352,7 @@ eine weitere Sache aufmerksam: Niedrige Preise machen
 experimentierfreudiger.  
 
 > Und in den Laden gehen, aussuchen, bezahlen?  Mache ich und all die anderen 
-> [anonymen Amazoniker]({{< ref "/content/posts/2011-06-20-anonyme-amazoniker.md" >}})
+> [anonymen Amazoniker]({{< relref "/2011-06-20-anonyme-amazoniker.md" >}})
 > schon seit langem nicht mehr.  Stattdessen bauen wir auf die
 > vielfältigen Empfehlungsnetzwerke, die wir uns aufgebaut haben und surfen
 > dann den ebookshop oder den legalen Downloadbereich unseres Vertrauens an. 
@@ -417,7 +417,7 @@ Ich zücke mein Blog, denn ich habe da schon mal was vorbereitet.  Es zitiert
 > Bedingungslose Grundeinkommen.  Kristian Köhntopp - Zum Thema BGE, wo das
 > Geld herkommen könnte und was das mit Andreas Eschbach zu tun hat, siehe
 > auch
-> [The pursuit of happiness]({{< ref "/content/posts/2011-12-05-the-pursuit-of-happiness.md" >}}).
+> [The pursuit of happiness]({{< relref "/2011-12-05-the-pursuit-of-happiness.md" >}}).
 >
 > Arbeit leisten bei uns seit 1980 oder so im wesentlichen Maschinen.  Ihre
 > Erträge werden effektiv kaum besteuert.

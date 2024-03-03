@@ -17,8 +17,6 @@ Ausgehend von Ägypten blickt das Buch auf den Umgang der arabischen Welt mit de
 [Sex and the citadel](https://www.amazon.de/Sex-Citadel-Intimate-Changing-World-ebook/dp/B00BFTSZK2)
 
 Alles in allem sehr lesenswert und eine wertvolle Ergänzung zu 
-[The Veils Resurgence]({{< ref "/content/posts/2013-08-22-fertig-gelesen-a-quiet-revolution.md" >}})
+[The Veils Resurgence]({{< relref "/2013-08-22-fertig-gelesen-a-quiet-revolution.md" >}})
 
 "[Sex and the Citadel: Intimate Life in a Changing Arab World](https://www.amazon.de/Sex-Citadel-Intimate-Changing-World-ebook/dp/B00BFTSZK2)", Shereen El Feki, EUR 7.04
-
-

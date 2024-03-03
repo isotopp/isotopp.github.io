@@ -11,8 +11,8 @@ tags:
 ---
 
 This is part 3 of a series.
-The first part is "[1974]({{< ref "/content/posts/2023-05-05-50-years-in-filesystems-1974.md" >}})".
-The second part is "[1984]({{< ref "/content/posts/2023-05-06-50-years-in-filesystems-1984.md" >}})".
+The first part is "[1974]({{< relref "/2023-05-05-50-years-in-filesystems-1974.md" >}})".
+The second part is "[1984]({{< relref "/2023-05-06-50-years-in-filesystems-1984.md" >}})".
 
 Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
 Often, it is easier to see if you compare modern educational material, and the problems discussed with older material.
@@ -145,7 +145,7 @@ It is useful to index free space by `startblock` for closeness, but also by `len
 ### Breaking the single-writer inode lock 
 
 ![](/uploads/2023/05/overlapping-write.png)
-*Posix locks the in-memory inode to guarantee [atomic writes]({{< ref "/content/posts/2018-11-29-but-is-it-atomic.md" >}}).
+*Posix locks the in-memory inode to guarantee [atomic writes]({{< relref "/2018-11-29-but-is-it-atomic.md" >}}).
 This makes sure any two large multiple-block writes always happen one-before-the-other.*
 
 XFS also breaks the in-memory inode locks:

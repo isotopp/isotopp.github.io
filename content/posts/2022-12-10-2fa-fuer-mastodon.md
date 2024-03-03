@@ -23,7 +23,7 @@ Populäre Passwortmanager sind etwa Bitwarden, 1Password oder LastPass.
 Populäre 2FA-Anwendungen sind Google Authenticator, der Authenticator von Microsoft, Twilio Authy oder Aegis.
 
 Auch auf der Kommandozeile kann man 2FA Codes generieren, aber das ist eher für 
-[komische Spielereien]({{< ref "/content/posts/2017-07-27-zero-factor-authentication.md" >}})
+[komische Spielereien]({{< relref "/2017-07-27-zero-factor-authentication.md" >}})
 wichtig.
 Auf jeden Fall implementiert auch `oath-toolkit` die üblichen Verfahren zur Generierung dieser Codes. 
 
@@ -107,7 +107,7 @@ Dennoch kann es nützlich sein, auch die Recovery-Codes zu archivieren.*
 Warum sollte ich mich mit 2FA rumnerven?"
 
 Hier eine Geschichte aus dem echten Leben:
-[Discord Nitro Spam and 2FA]({{< ref "/content/posts/2021-11-30-discord-nitro-spam-and-2fa.md" >}})
+[Discord Nitro Spam and 2FA]({{< relref "/2021-11-30-discord-nitro-spam-and-2fa.md" >}})
 
 2FA erlaubt es in vielen Fällen, einen Account zu retten, auch wenn er ganz oder in Teilen durch einen Unfall übernommen wird.
 2FA, OAuth2 und "scoped Tokens" retten Euren Arsch auch dann, wenn ihr schon gehackt oder gecybert worden seid.

@@ -18,7 +18,7 @@ title: 'Fertig gelesen: Galactic Exploration'
 One of the very first things I read on Kindle has been 
 [Anomaly by Peter Cawdron](https://www.amazon.de/Anomaly-English-Peter-Cawdron-ebook/dp/B005OJF0ZC) -
 his first publication. My review in German Language is
-[here]({{< ref "/content/posts/2012-08-24-fertig-gelesen-anomaly.md" >}}). Turns out,
+[here]({{< relref "/2012-08-24-fertig-gelesen-anomaly.md" >}}). Turns out,
 Cawdron is a quite productive author, and active and responsive on
 [Goodreads](https://www.goodreads.com/author/show/5252525.Peter_Cawdron).
 Seeing my review there, he pointed me to his other works, and to his

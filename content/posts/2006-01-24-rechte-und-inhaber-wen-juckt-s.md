@@ -13,7 +13,7 @@ title: Rechte und Inhaber - wen juckt's?
 ---
 
 Wer die 
-[Ereignisse rund um das Sony Rootkit]({{< ref "/content/posts/2006-01-24-rechte-und-inhaber-wen-juckt-s.md" >}})
+[Ereignisse rund um das Sony Rootkit]({{< relref "/2006-01-24-rechte-und-inhaber-wen-juckt-s.md" >}})
 verfolgt hat, der weiß schon, daß es Rechteinhaber mit dem Urheberrecht selbst nicht so genau nehmen und zum Beispiel schon mal gerne GPL Sourcecode ohne Beachtung der Lizenzbestimmungen in ihre Software einbauen, bevor sie diese ungefragt und getarnt auf fremden Rechnern einschmuggeln.
 
 Da ist es nur konsequent, wenn ausgerechnet die Oberschreihälse und Raubkopiererjäger von der 

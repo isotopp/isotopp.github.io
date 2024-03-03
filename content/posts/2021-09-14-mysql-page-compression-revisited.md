@@ -131,7 +131,7 @@ Some filesystems allow you to punch holes into files, using the [`fallocate(2)`]
 This system call can be used to assign blocks to a file, making sure it is not a sparse file, without actually having to write all those bytes and a few other things.
 Using the filesystem dependent `FALLOC_FL_PUNCH_HOLE` flag, extents in the file can be marked as 'unused' and be given back to the filesystem.
 
-Let's look what our tables from the [previous article]({{< ref "/content/posts/2021-09-09-mysql-two-kinds-of-compression.md" >}}) look like on disk, using `xfs_bmap`.
+Let's look what our tables from the [previous article]({{< relref "/2021-09-09-mysql-two-kinds-of-compression.md" >}}) look like on disk, using `xfs_bmap`.
 
 The uncompressed table looks like this:
 

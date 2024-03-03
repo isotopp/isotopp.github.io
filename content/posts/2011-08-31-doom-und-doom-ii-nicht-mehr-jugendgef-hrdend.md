@@ -11,7 +11,7 @@ tags:
 title: Doom und Doom II nicht mehr jugendgefährdend
 ---
 Nachtrag zu 
-[Jugendmediendoom]({{< ref "/content/posts/2010-07-21-jugendmediendoom.md" >}}):
+[Jugendmediendoom]({{< relref "/2010-07-21-jugendmediendoom.md" >}}):
 
 [Doom und Doom II vom Index gestrichen](http://www.golem.de/1108/86095.html). 
 Mit Wirkung von heute sind Doom und Doom II nicht mehr jugendgefährdend. Die

@@ -17,11 +17,11 @@ Die Grafik da rechts zeigt sehr schön den Unterschied im Medienerlebnis auf,
 das Torrent-Benutzer gegenüber dem Käufer einer DVD haben. Das haben die
 meisten Leute auch verstanden. Diejenigen, die es nicht verstanden haben -
 
-- [Microsoft]({{< ref "/content/posts/2008-04-23-microsoft-schaltet-plays-for-sure-ab.md" >}})
-- [Yahoo!]({{< ref "/content/posts/2008-07-25-yahoo-schaltet-yahoo-music-ab.md" >}})
-- [Fictionwise]({{< ref "/content/posts/2009-01-09-fictionwise-overdrive-schaltet-drm-server-ab.md" >}})
-- [Migros]({{< ref "/content/posts/2009-07-28-migros-schaltet-i-m-ch-ab.md" >}})
-- [Netflix]({{< ref "/content/posts/2008-01-04-drm-krieg-auf-anwender-rechnern.md" >}})
+- [Microsoft]({{< relref "/2008-04-23-microsoft-schaltet-plays-for-sure-ab.md" >}})
+- [Yahoo!]({{< relref "/2008-07-25-yahoo-schaltet-yahoo-music-ab.md" >}})
+- [Fictionwise]({{< relref "/2009-01-09-fictionwise-overdrive-schaltet-drm-server-ab.md" >}})
+- [Migros]({{< relref "/2009-07-28-migros-schaltet-i-m-ch-ab.md" >}})
+- [Netflix]({{< relref "/2008-01-04-drm-krieg-auf-anwender-rechnern.md" >}})
 - [Ubisoft](http://www.heise.de/newsticker/meldung/Online-Zwang-fuer-Offline-Spieler-Update-935628.html) 
 
 sind nur ein paar Beispiele - gehen nacheinander vom Markt und lehren ihre

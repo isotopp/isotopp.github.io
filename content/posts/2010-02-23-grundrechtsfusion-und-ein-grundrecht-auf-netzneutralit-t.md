@@ -200,7 +200,7 @@ gesellschaftlier Regulierung von Diskursen und Kommunikation immer an den
 Mittlern statt an den Sendern und Empfängern angesetzt.
 
 Nach Auffassung derer, die 
-[das Internet tatsächlich verwenden]({{< ref "/content/posts/2010-02-22-philipp-schindler-ber-alte-m-nner-mit-kugelschreibern.md" >}})
+[das Internet tatsächlich verwenden]({{< relref "/2010-02-22-philipp-schindler-ber-alte-m-nner-mit-kugelschreibern.md" >}})
 statt nur darüber zu reden ist das beim Internet nicht akzeptabel. Es ist
 nicht akzeptabel, weil das Internet eine Kommunikationsinfrastruktur ist und
 ein Internet-Anbieter - sei es ein Zugangsanbieter, ein Dienstbetreiber oder
@@ -235,7 +235,7 @@ manipuliert - ganz egal
 dann ist sie keine Infrastruktur mehr, sondern eine dritte Partei. Dann
 gehen Transaktionskosten in die Höhe und der Nutzen der vernachlässigbaren
 Kosten geht verloren -
-[kostenlos wird teurer]({{< ref "/content/posts/2010-01-26-ab-18.md" >}}).
+[kostenlos wird teurer]({{< relref "/2010-01-26-ab-18.md" >}}).
 
 Das Problem ist, daß die Idee der Regulierung von Kommunikation und
 gesellschaftlichem Diskurs tief in den Institutionen unserer Gesellschaft

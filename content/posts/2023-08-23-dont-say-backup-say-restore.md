@@ -64,4 +64,4 @@ Everybody wants restore."
   -- Martin Seeger*
 
 See also
-[Gitlab Data Loss]({{< ref "/content/posts/2017-02-01-nobody-wants-backup-everybody-wants-restore.md" >}}).
+[Gitlab Data Loss]({{< relref "/2017-02-01-nobody-wants-backup-everybody-wants-restore.md" >}}).

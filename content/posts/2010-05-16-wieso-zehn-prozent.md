@@ -12,7 +12,7 @@ title: Wieso zehn Prozent?
 ---
 In [Sicherheitsmetrik](http://erichsieht.wordpress.com/2010/05/15/sicherheitsmetrik/)
 heißt es als Antwort auf meinen Artikel
-[DENIC erklärt sich]({{< ref "/content/posts/2010-05-14-denic-erkl-rt-sich.md" >}}):
+[DENIC erklärt sich]({{< relref "/2010-05-14-denic-erkl-rt-sich.md" >}}):
 
 > Wir IT-Akademiker forschen gerne an Fragen herum, die einen vagen
 > Relitätsbezug haben, die man aber in der Praxis pragmatisch handhabt. Nach

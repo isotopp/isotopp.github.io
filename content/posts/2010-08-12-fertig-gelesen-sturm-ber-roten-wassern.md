@@ -15,7 +15,7 @@ Scott Lynch, EUR 16.00, 944 Seiten.
 
 ![](/uploads/locke_lamora2.jpg)
 
-Nach den [Lügen von Locke Lamora]({{< ref "/content/posts/2010-08-10-fertig-gelesen-die-l-gen-des-locke-lamora.md" >}})
+Nach den [Lügen von Locke Lamora]({{< relref "/2010-08-10-fertig-gelesen-die-l-gen-des-locke-lamora.md" >}})
 stellte ich erfreut fest, daß es einen zweiten Band gibt.
 
 Die Folgen der Ereignisse in Camorr haben es notwendig gemacht, daß Locke
@@ -40,5 +40,3 @@ Hintergrund seiner Erzählwelt, ohne zu viel an Erzähltempo zu verliere. Wenn
 man sich darauf einläßt, bekommt man eine Geschichte mit einer cinestisch
 aufgemachten Handlung, die noch mehr an eine gute Shadowrun-Story in einer
 Fantasywelt erinnert als es schon der erste Teil tut.
-
-

@@ -11,10 +11,10 @@ tags:
 ---
 
 In
-[Of Stars and Snowflakes]({{< ref "/content/posts/2022-11-16-of-stars-and-snowflakes.md" >}})
+[Of Stars and Snowflakes]({{< relref "/2022-11-16-of-stars-and-snowflakes.md" >}})
 we have been looking at the "normal Form" for Data Warehouses/BI structures, and how it differs from normal forms used in transactional systems.
 In
-[ETL from a Django Model]({{< ref "/content/posts/2022-11-20-etl-from-a-django-model.md" >}})
+[ETL from a Django Model]({{< relref "/2022-11-20-etl-from-a-django-model.md" >}})
 we looked at one implementation of a classical offline DWH with a daily load.
 
 The normal BI structure is a fact table, in which an object identifier (the one we collect facts about) is paired with a point in time to report facts about the object at a certain point in time.
@@ -51,13 +51,13 @@ We are transferring data across an administrative boundary, from one system to a
 
 Extraction can happen in nightly runs, by making a snapshot of the state of the OLTP system.
 This is what happens every night in
-[ETL from a Django Model]({{< ref "/content/posts/2022-11-20-etl-from-a-django-model.md" >}}),
+[ETL from a Django Model]({{< relref "/2022-11-20-etl-from-a-django-model.md" >}}),
 and also in
-[My private data warehouse]({{< ref "/content/posts/2020-09-26-my-private-data-warehouse.md" >}}).
+[My private data warehouse]({{< relref "/2020-09-26-my-private-data-warehouse.md" >}}).
 
 Extraction can also happen when writing transactions to a log table, often called `sale`, `booking`, `reservation` or similar.
 When the transaction is logged in a normalized way, it looks like the `reservation` table in the example in
-[Change Data Capture]({{< ref "/content/posts/2022-12-05-change-data-capture.md" >}}).
+[Change Data Capture]({{< relref "/2022-12-05-change-data-capture.md" >}}).
 
 Some systems already copy the data over into such a `reservation` table literally, especially when it comes to delivery and billing addresses and prices.
 That is necessary, even from the point of view of the transactional system, because we must record the actual price and delivery address at the point in time when the sale happened.

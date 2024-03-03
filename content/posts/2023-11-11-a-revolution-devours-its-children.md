@@ -14,7 +14,7 @@ Initially published in c't 26/23, page 70.
 All my texts are made available in this blog after some time.
 The version shown is the raw edit of the article text without pictures and illustrations.
 
-Hier ist das Original [in deutscher Sprache]({{< ref "/content/posts/2023-11-11-eine-revolution-frisst-ihre-kinder.md" >}}).
+Hier ist das Original [in deutscher Sprache]({{< relref "/2023-11-11-eine-revolution-frisst-ihre-kinder.md" >}}).
 
 # A Revolution Devours Its Children
 by Kristian Köhntopp

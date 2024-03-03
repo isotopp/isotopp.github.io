@@ -16,7 +16,7 @@ title: 'Sony: "Das Internet ist für uns ein Segen"'
 
 Heute ist Donnerstag, der 23.  Februar 2012.  Heute ist Weltuntergang.
 
-Edgar Berger, Chef von [Sony]({{< ref "/content/posts/2011-04-27-wenn-man-sony-ist-hat-man-es-nicht-leicht.md" >}})
+Edgar Berger, Chef von [Sony]({{< relref "/2011-04-27-wenn-man-sony-ist-hat-man-es-nicht-leicht.md" >}})
 Music International (weltgrößter Provider von Rootkits!), sagt im 
 [Interview mit der Welt](http://www.welt.de/wirtschaft/webwelt/article13881492/Das-Internet-muss-frei-sein-nicht-umsonst.html):
 

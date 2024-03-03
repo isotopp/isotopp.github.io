@@ -206,4 +206,4 @@ and eventually USENET became irrelevant.
 - "Netnews: The Origin Story", ([PDF](https://www.cs.columbia.edu/~smb/papers/netnews-hist.pdf)),
   Steven M. Bellovin, June 27, 2023.
 - "Flames und Kommunikationszusammenbrüche im Netz", Kristian Köhntopp ([Video](https://www.youtube.com/watch?v=FXD3vk9M7SQ),
-  [Text]({{< ref "/content/posts/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md">}}))
+  [Text]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md">}}))

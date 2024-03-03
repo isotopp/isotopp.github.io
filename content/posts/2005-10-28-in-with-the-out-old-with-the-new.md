@@ -18,8 +18,8 @@ title: In with the out, old with the new...
 Bis heute - fast zwei Jahre lang - war ich Security-Fuzzi für web.de.
 Das bedeutet: Ich habe Security Policy definiert, Fachabteilungen bei der Umsetzung von Policies beraten und entweder selbst oder von Dritten die Umsetzung von Policies prüfen lassen, und außerdem den Security Incident Management Prozess betrieben.
 In der Praxis bedeutet das, daß ich am härtesten Arbeitstag meines Lebens mit der Hilfe von vielen Kollegen 
-[einmal]({{< ref "/content/posts/2005-05-14-wenn-es-mal-wieder-laenger-dauert.md" >}}) 
-[das gesamte Rechenzentrum]({{< ref "/content/posts/2005-05-14-danach.md" >}}) von web.de runter- und danach wieder hochgefahren habe, daß ich jede Menge über das BSI Grundschutzhandbuch und die BS 7799/ISO 17799 vs. die Praxis gelernt habe, daß ich jetzt erklären kann, wieso 
+[einmal]({{< relref "/2005-05-14-wenn-es-mal-wieder-laenger-dauert.md" >}}) 
+[das gesamte Rechenzentrum]({{< relref "/2005-05-14-danach.md" >}}) von web.de runter- und danach wieder hochgefahren habe, daß ich jede Menge über das BSI Grundschutzhandbuch und die BS 7799/ISO 17799 vs. die Praxis gelernt habe, daß ich jetzt erklären kann, wieso 
 [Security Management](http://kris.koehntopp.de/artikel/security_management) bedeutet, daß jeder außer mir in der Firma Security macht, und daß ich 
 [geschätzten Kollegen](http://www.torsten-sievers.de/) erfolgreich vermitteln konnte, daß eine Krise nicht schneller vorbeigeht, wenn man sich mehr aufregt.
 
@@ -38,7 +38,7 @@ Ich glaube, das ist das Beste, was man über eine Führungskraft sagen kann.
 Die vergangenen zwei Jahre waren jedenfalls ein wilder und spannender Ritt.
 
 Er ist nun vorbei, der 
-[Change]({{< ref "/content/posts/2005-07-26-change-request.md" >}}) ist durchgeführt.
+[Change]({{< relref "/2005-07-26-change-request.md" >}}) ist durchgeführt.
 
 web.de ist jetzt United Internet.
 Und Isotopp ist nun kris bei MySQL.
@@ -57,7 +57,7 @@ Obwohl wir so verstreut sind, stehen wir zum Teil enger und schneller miteinande
 Mit MySQL 5.0 haben wir ein richtig feines Produkt, mit dem wir MySQL endgültig im Enterprise-Markt etablieren werden.
 Vor uns liegt die Herausforderung, die schlagkräftige [Professional](http://www.mysql.com/consulting/) 
 [Services](http://www.mysql.com/training/) [Organisation](http://www.mysql.com/support/) aufzubauen, die dann auch dauerhaft die Dienstleistung bringen kann, die in diesem Bereich gefordert wird.
-Das [junge EMEA]({{< ref "/content/posts/2005-09-10-mysql-consulting-bootcamp-munich-2005.md" >}})-Team ist gerade dabei, seine Sollkonfiguration zu erreichen.
+Das [junge EMEA]({{< relref "/2005-09-10-mysql-consulting-bootcamp-munich-2005.md" >}})-Team ist gerade dabei, seine Sollkonfiguration zu erreichen.
 
 Ich freue mich darauf, mit diesen Leuten Dinge zu bewegen und neue Sachen zu lernen, die ich mir vorher nie zugetraut hätte.
 Vor allen Dingen freue ich mich aber darauf, mit einem internationalen Team zusammenzuarbeiten und - wenn ich denn schon wieder Kilometer reißen muss - dies auf einer wirklich großen Landkarte zu tun.

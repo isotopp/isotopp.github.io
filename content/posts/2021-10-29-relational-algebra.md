@@ -18,7 +18,7 @@ What is "relational" and "algebra" about "Relational Algebra" and SQL?
 
 ![](/uploads/vorsicht_mathe.png)
 
-*This is the english version of a [much older german writeup]({{< ref "/content/posts/2010-04-28-was-bedeutet-eigentlich-relationale-algebra.md" >}}).
+*This is the english version of a [much older german writeup]({{< relref "/2010-04-28-was-bedeutet-eigentlich-relationale-algebra.md" >}}).
 
 # Algebra
 An "Algebra" is a structure that is defined on base set A, with one or more operations on it.

@@ -7,7 +7,7 @@ tags:
 - iot
 title: Air Quality Sensors
 ---
-In an earlier episode I asked for [Plugs with Wi-Fi]({{< ref "/content/posts/2020-05-12-plugs-with-wifi.md" >}}) and ended up with [Gosund and Tasmota]({{< ref "/content/posts/2020-05-20-gosund-and-tasmota.md" >}}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
+In an earlier episode I asked for [Plugs with Wi-Fi]({{< relref "/2020-05-12-plugs-with-wifi.md" >}}) and ended up with [Gosund and Tasmota]({{< relref "/2020-05-20-gosund-and-tasmota.md" >}}). Considering this to be a success, I asked the Twitters for Temperature and Humidity Sensors. Of course, this got complicated.
 
 [![](/uploads/2020/05/temp-question.png)](https://twitter.com/isotopp/status/1264943546085322754)
 *Now that I have Powermeter Plugs everywhere: What are good sensors for temperature, humidity and CO2 that can be tasmotified? Wi-Fi, http or mqtt?*

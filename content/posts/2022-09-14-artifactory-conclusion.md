@@ -60,7 +60,7 @@ I was looking at the load of the full replication hierarchy and found out multip
   Some of the reads are long running queries, with runtimes in the 180s.
 - The long running queries have been sped up from 180s to 9s by applying covering indexes and some index order juggling. 
 
-Read [Boiling JFrogs]({{< ref "/content/posts/2022-08-25-mysql-boiling-jfrogs.md" >}}) for the full and detailed writeup of this phase.
+Read [Boiling JFrogs]({{< relref "/2022-08-25-mysql-boiling-jfrogs.md" >}}) for the full and detailed writeup of this phase.
 
 # Buying Runway
 

@@ -10,7 +10,7 @@ tags:
 title: 'Fertig gelesen: Titan'
 ---
 The story of 
-[Heaven's River]({{< ref "/content/posts/2021-04-07-fertig-gelesen-heavens-river.md" >}})
+[Heaven's River]({{< relref "/2021-04-07-fertig-gelesen-heavens-river.md" >}})
 , stranding in and then exploring an alien megastructure, is one that has been written before: In [Niven's Ringworld](https://www.amazon.de/Ringworld-English-Larry-Niven-ebook/dp/B01513ZIL6), [Clarke's Rama](https://www.amazon.de/Rendezvous-Rama-Book-English-ebook/dp/B0079MRDIE), and [Farmer's Riverworld](https://www.amazon.de/Riverworld-Including-Scattered-Fabulous-Riverboat/dp/0765326523/). John Varley's take on this, very seventies, is [Titan](https://www.amazon.de/Titan-Gaia-Book-1-English-ebook/dp/B009KUXCBK), [Wizard](https://www.amazon.de/gp/product/B009KUXKAI), and [Demon](https://www.amazon.de/gp/product/B009KUXAEO), the Gaia Trilogy.
 
 [![](/uploads/2021/05/titan.jpg)](https://www.amazon.de/Titan-Gaia-Book-1-English-ebook/dp/B009KUXCBK)

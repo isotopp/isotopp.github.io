@@ -11,7 +11,7 @@ tags:
 ---
 
 Ich arbeite im Sitzen, 8h am Tag beruflich, und dann noch ein wenig mehr aus Spaß:
-[Spaces]({{< ref "/content/posts/2022-02-21-spaces.md" >}}).
+[Spaces]({{< relref "/2022-02-21-spaces.md" >}}).
 
 Ich habe meinen eigenen Platz daheim, immer schon gehabt. 
 Das habe ich von meinem Vater gelernt, der Amateurfunker war und daheim seinen höchst eigenen Bastel- und Arbeitsplatz hatte,

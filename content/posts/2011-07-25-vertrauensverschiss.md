@@ -26,7 +26,7 @@ interessiert sie sich viel für Regelungen den Einsatz ihrer technischen
 Mittel betreffend.
 
 Vergleiche
-[1]({{< ref "/content/posts/2007-03-11-vertrauensvorschu.md" >}}),
-[2]({{< ref "/content/posts/2008-05-30-vertrauensvorschu-ii.md" >}}), 
-[3]({{< ref "/content/posts/2008-10-30-mehr-vertrauen.md" >}})
-und auch noch [4]({{< ref "/content/posts/2007-12-14-wir-sind-die-guten.md" >}}).
+[1]({{< relref "/2007-03-11-vertrauensvorschu.md" >}}),
+[2]({{< relref "/2008-05-30-vertrauensvorschu-ii.md" >}}), 
+[3]({{< relref "/2008-10-30-mehr-vertrauen.md" >}})
+und auch noch [4]({{< relref "/2007-12-14-wir-sind-die-guten.md" >}}).

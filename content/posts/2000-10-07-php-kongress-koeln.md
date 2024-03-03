@@ -81,7 +81,7 @@ My own keynote was supposed to be scheduled for noon, but
 because of the technical problems with the internet connection
 before it started late. I had to cut down on content in order to
 make good for the lost time. Find my slides at 
-[Web Security]({{< ref "/content/posts/2000-08-21-web-security.md" >}}).
+[Web Security]({{< relref "/2000-08-21-web-security.md" >}}).
 My talk went well (I had my slides available locally, and did
 not need a remote connection), and I was able to make a number of
 contacts...

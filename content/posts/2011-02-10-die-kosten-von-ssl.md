@@ -14,7 +14,7 @@ Bei web.de waren schon 2003 mehr als 80% des Datenverkehrs
 SSL-verschlüsselt, da dort die Policy herrschte "Paßworte werden nur
 verschlüsselt übertragen" und "Wenn ein Login stattgefunden hat, findet der
 Rest der Session bis zum Logout verschlüsselt statt". Ich habe in
-[einem Artikel]({{< ref "/content/posts/2009-02-11-ein-paar-worte-zu-ssl.md" >}})
+[einem Artikel]({{< relref "/2009-02-11-ein-paar-worte-zu-ssl.md" >}})
 schon einmal dargelegt, daß das rechenleistungsmäßig keine große Belastung
 ist - der ganze SSL-Aufwand macht etwa 1/250stel der Gesamtleistung des
 Systems aus.

@@ -83,7 +83,7 @@ what is on fire in which way precisely when you get an alert from a Type 1
 system. It's a **debug system** , not a time series collector in the first
 place. Often it's not a system at all, but your ass in an ssh over there
 running strace, but
-[sysdig]({{< ref "/content/posts/2017-04-20-understanding-sysdig.md" >}}) is
+[sysdig]({{< relref "/2017-04-20-understanding-sysdig.md" >}}) is
 a much more sophisticated way of doing that in a modern environment. It is
 important to understand the differences between the alerting OLTP system,
 the trend collecting data warehouse system and the debug system:

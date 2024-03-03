@@ -45,5 +45,5 @@ Sie sind eine ständige Erinnerung daran, daß nicht nur Kriminelle anonym kommu
 
 Natürlich kann man nur hoffen, daß die Betreiber solcher anonymer Tippkästen keine Logs von IP-Adressen führen, von denen der Tipp gekommen ist. 
 Oder man hofft nicht, sondern hilft sich selbst. 
-[Tor]({{< ref "/content/posts/2005-06-05-selber-zwiebeln-anonymit-t-selbst-gemacht.md" >}}) 
+[Tor]({{< relref "/2005-06-05-selber-zwiebeln-anonymit-t-selbst-gemacht.md" >}}) 
 ist eine gute Methode, seine digitalen Spuren zu verwischen.

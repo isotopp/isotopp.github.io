@@ -25,7 +25,7 @@ This is a car made from cupholders and small compartments, and it served its fun
 Nothing Renault makes lasts longer than 15 years, though, and so the thing was showing signs of age.
 
 Also, 
-[the City of Amsterdam changes the rules]({{< ref "/content/posts/2023-05-11-city-of-amsterdam-and-combustion-engines.md" >}})
+[the City of Amsterdam changes the rules]({{< relref "/2023-05-11-city-of-amsterdam-and-combustion-engines.md" >}})
 of how to get into the city, and the old Scenic soon would be unable to get into the city.
 So, an electric car was needed.
 
@@ -65,7 +65,7 @@ Such a 1 m^2 solar array would have an installed peak capacity of 200 Wp ("Watt 
 Five of those would deliver 1 kWp, and produce around 950 kWh of energy per year, under optimal conditions.
 
 In fact, 46 m^2 of my roof are covered in solar panels. 
-[That's 9250 Wp]({{< ref "/content/posts/2022-05-02-a-solar-roof.md" >}}),
+[That's 9250 Wp]({{< relref "/2022-05-02-a-solar-roof.md" >}}),
 which under this formula should produce up to 8780 kWh/year.
 
 They did, in fact, deliver 8000-ish kWh/year, from June 2022 to June 2023.

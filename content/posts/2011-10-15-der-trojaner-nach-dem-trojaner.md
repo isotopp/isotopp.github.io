@@ -90,7 +90,7 @@ Informatik schwere handwerkliche Mängel aufweist:
   sendet kann, wird ungeprüft ausgeführt).
 - Der Rückkanal mit den ausgelesenen Daten ist mangelhaft
   verschlüsselt - es wird AES (ein im Grunde guter Algorithmus) im
-  [ECB-Modus]({{< ref "/content/posts/2011-06-03-einige-kryptographische-grundlagen.md" >}})
+  [ECB-Modus]({{< relref "/2011-06-03-einige-kryptographische-grundlagen.md" >}})
   (eine hirntote Betriebsart diese Verfahrens) verwendet. Warum das eine
   schlechte Idee ist, erläutert 
   [dieser Artikel über dmcrypt](http://opensource.dyc.edu/random-vs-encrypted) 

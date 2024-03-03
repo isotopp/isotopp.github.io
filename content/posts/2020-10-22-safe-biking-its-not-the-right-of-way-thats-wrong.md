@@ -46,7 +46,7 @@ Other cities were less lucky, and took heavy damage.
 
 *Utrecht Catharijnesingel was destroyed and turned into an Autobahn. It took more than 40 years to restore this part of the city to something not insane. [Article at Bicycledutch](https://bicycledutch.wordpress.com/2016/01/05/motorway-removed-to-bring-back-original-water/).*
 
-In Amsterdam, the same story is told, slightly differently. We have [Vijzelbuurt is changing]({{< ref "/content/posts/2020-10-08-vijzelbuurt-is-changing.md" >}}) here in this blog, explaining the construction of [De Rode Loper](https://nl.wikipedia.org/wiki/Rode_Loper_(Amsterdam)) as an extension of the Metro 52 construction. At station Vijzelstraat, the room between the street and the very deeply located metro station is now turned into a parking garage. On street parking will be dialled back or completely removed, and people that still want a car can rent space down there - but it will of course cost substantially.
+In Amsterdam, the same story is told, slightly differently. We have [Vijzelbuurt is changing]({{< relref "/2020-10-08-vijzelbuurt-is-changing.md" >}}) here in this blog, explaining the construction of [De Rode Loper](https://nl.wikipedia.org/wiki/Rode_Loper_(Amsterdam)) as an extension of the Metro 52 construction. At station Vijzelstraat, the room between the street and the very deeply located metro station is now turned into a parking garage. On street parking will be dialled back or completely removed, and people that still want a car can rent space down there - but it will of course cost substantially.
 
 This is systematic:
 
@@ -91,7 +91,7 @@ Some key points:
 
 *Later we pass over the N205, across the bike bridge. Underneath are 2x2 lanes of the N205 and the 2x1 lane of the reserved bus lane.*
 
-This is not an unusual trip in the Netherlands. In another article in this blog, [we cycle shopping]({{< ref "/content/posts/2020-02-22-in-which-we-cycle-shopping.md" >}}), and the experience is much the same. We never interact with cars.
+This is not an unusual trip in the Netherlands. In another article in this blog, [we cycle shopping]({{< relref "/2020-02-22-in-which-we-cycle-shopping.md" >}}), and the experience is much the same. We never interact with cars.
 
 ## But these bike paths are empty!
 

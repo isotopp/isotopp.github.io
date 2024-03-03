@@ -82,7 +82,7 @@ In Folge kommt es zu den Stoßzeiten auf überregionalen Leitungen mehr oder wen
 
 Das Internet stellt seinen Benutzern auf der Basis von TCP/IP als Transportprotokoll eine Vielzahl von Dienstleistungen zur Verfügung. 
 Diese Dienste sind normalerweise auf der Basis eines weiteren Protokolles realisiert, das wiederum auf TCP/IP aufsetzt 
-(vgl. [Internet Technik Artikel]({{< ref "/content/posts/1993-04-01-tcpip-technik.md" >}})).
+(vgl. [Internet Technik Artikel]({{< relref "1993-04-01-tcpip-technik.md" >}})).
 
 Der erste Dienst, den man als Benutzer im Internet kennenlernt, ist wahrscheinlich electronic mail.
 Mail erlaubt es, Textnachrichten und neuerdings auch multimediale Dokumente an andere Benutzer im Netz zu verschicken.

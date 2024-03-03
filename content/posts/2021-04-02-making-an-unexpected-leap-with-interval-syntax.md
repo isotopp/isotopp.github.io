@@ -10,7 +10,7 @@ title: Making an unexpected leap with interval syntax
 
 (based on a find by Ruud van Tol, and several Twitter contributions)
 
-Ruud commented on [our DST discussion]({{< ref "/content/posts/2021-03-29-mysql-date-time-dst.md" >}}) with
+Ruud commented on [our DST discussion]({{< relref "/2021-03-29-mysql-date-time-dst.md" >}}) with
 
 ```sql
 mysql> SELECT 

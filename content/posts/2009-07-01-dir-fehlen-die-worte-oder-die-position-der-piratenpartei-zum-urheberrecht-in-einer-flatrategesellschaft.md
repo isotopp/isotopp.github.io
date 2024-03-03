@@ -15,7 +15,7 @@ title: '"Dir fehlen die Worte" oder "Die Position der Piratenpartei zum Urheberr
 > -- Kris
 
 Es geht um
-[Urheberrecht]({{< ref "/content/posts/2009-07-01-urheberrecht-360-grad-ansicht.md" >}})
+[Urheberrecht]({{< relref "/2009-07-01-urheberrecht-360-grad-ansicht.md" >}})
 und um den Graben des Nichtverstehens zwischen Online und Offline.
 
 Die Position der Piratenpartei zum Urheberrecht wird in Fernseh- und

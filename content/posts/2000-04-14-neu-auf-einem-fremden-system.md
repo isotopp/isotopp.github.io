@@ -360,7 +360,7 @@ Bonusfolien aus der alten Schulung
   - Verzeichnisrechte vs. Dateirechte
   - Dateiattribute? Dateisystemattribute?
 - Welche Spuren hinterläßt so ein Zugriff?
-- [RWX - sonst nix?]({{< ref "/content/posts/1996-03-01-rwx-sonst-nix.md" >}})
+- [RWX - sonst nix?]({{< relref "1996-03-01-rwx-sonst-nix.md" >}})
 
 - Wer bin ich?
 - Zu welchen Gruppen gehöre ich?

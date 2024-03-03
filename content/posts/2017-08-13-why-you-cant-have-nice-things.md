@@ -172,4 +172,4 @@ me.](https://twitter.com/avalanche_edin/status/895979245339541504)
 Some people define themselves through Media. That's ok, but that's not me,
 [that's John Cusack](http://www.imdb.com/title/tt0146882/), and I am not
 him, [I am the copyright
-fairy]({{< ref "/content/posts/2011-11-24-von-einem-absturz-tutus-und-einem-neuen-urheberrecht.md" >}}).
+fairy]({{< relref "/2011-11-24-von-einem-absturz-tutus-und-einem-neuen-urheberrecht.md" >}}).

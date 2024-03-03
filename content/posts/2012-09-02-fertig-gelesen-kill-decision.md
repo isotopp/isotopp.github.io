@@ -14,7 +14,7 @@ Daniel Suarez, USD 12.99
 ![Suarez: Kill Decision](/uploads/kill_decision.png)
 
 Nach
-[Daemon und Freedom™]({{< ref "/content/posts/2011-05-08-fertig-gelesen-daemon-freedom.md" >}}) und
+[Daemon und Freedom™]({{< relref "/2011-05-08-fertig-gelesen-daemon-freedom.md" >}}) und
 waren die Hoffnungen hoch, daß das neue Buch von Daniel Suarez den Standard
 halten kann, den er mit seinen ersten beiden Büchern gesetzt hat.  TL;DR:
 Das hat funktioniert.
@@ -35,4 +35,3 @@ extrapoliert, um es zu SciFi zu machen.  Ohne Absetzen durchgelesen und in
 der Tat an einem Wochenende durchgezogen.
 
 Will man.
-

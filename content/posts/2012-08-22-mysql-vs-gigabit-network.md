@@ -12,7 +12,7 @@ tags:
 title: MySQL vs. Gigabit Network
 ---
 Wir generieren eine neue Art von 
-[Materialized View]({{< ref "/content/posts/2012-08-15-materialized-view.md" >}})
+[Materialized View]({{< relref "/2012-08-15-materialized-view.md" >}})
 mit dem bekannten Generator-Setup:
 
 ![Materialized View Generator](/uploads/queue.png)

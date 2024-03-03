@@ -127,6 +127,6 @@ Meine Kunden haben im Laufe des Jahres die Features von 5.0 entdeckt und so erob
 
 Meine Hauptthemen im Bereich Operating waren "Monitoring" und "Backup", im Bereich DBA sind "Replikation" und "SQL-Optimierung", im Bereich Entwicklung "InnoDB und Transaktionen".
 Seltsamerweise sind Stored Procedures und Trigger ein wichtiger Checkpoint, um ernst genommen zu werden, aber sie werden dann (glücklicherweise!) kaum eingesetzt - denn das Thema im Bereich Architektur war "Scale-Out" - 
-[horizontales Wachstum]({{< ref "/content/posts/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}).
+[horizontales Wachstum]({{< relref "/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}).
 Intern war das wichtigste Thema für uns Consultants "Wachstum und Integration von neuen Mitarbeitern" und ist nun "Best Practice Building".
 Langsam, aber sicher ändert sich die Art der Arbeit von Pivot-Consulting to Projekt-Consulting...

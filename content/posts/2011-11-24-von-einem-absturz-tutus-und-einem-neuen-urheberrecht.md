@@ -15,7 +15,7 @@ title: Von einem Absturz, Tutus und einem neuen Urheberrecht
 Argh! Ein mal, ein einziges Mal tut man etwas Gutes und dann das!
 
 In den Kommentaren zu
-[Nicht das Urheberrecht ist das Kernthema]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
+[Nicht das Urheberrecht ist das Kernthema]({{< relref "/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 schrieb ich also: 
 
 > Du kannst Lena Falkenhagen ein neues Urheberrecht schreiben lassen, nach
@@ -24,7 +24,7 @@ schrieb ich also:
 > liegen nicht im Urheberrecht.
 
 und machte meinen Standpunkt also in einem 
-[Nachtrag]({{< ref "/content/posts/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}})
+[Nachtrag]({{< relref "/2011-11-10-nachtrag-nicht-das-urheberrecht-ist-das-kernthema.md" >}})
 noch einmal deutlicher.
 
 Dadurch habe ich mir wohl eine Art Fadenkreuz auf die Stirn gemalt. Es
@@ -38,7 +38,7 @@ Eduardo Wefers Verástegui</a>, der in den Kommentaren dann von eben diesem
 Fadenkreuz Gebraucht macht: 
 
 > Auf der anderen Seite: Du hast sowieso keine Wahl, denn wie 
-> [Kristian Köhntopp]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
+> [Kristian Köhntopp]({{< relref "/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 >  letzthin so schön verbloggt hatte: Das Urheberrecht und der
 > Schutz von Urheberrechten ist nicht Dein Problem. Es wird Dir auch nicht
 > helfen jeden Filesharer standrechtlich zu erschiessen.

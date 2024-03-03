@@ -25,8 +25,8 @@ auch wenn ich in der Doku selber keine Hinweise darauf gefunden habe.
 
 Warum Postgres das nicht kann ist zunächst einmal klar: MVCC macht das sehr
 schwierig. In meinem Vortrag zur InnoDB Storage Engine 
-([Teil 1]({{< ref "/content/posts/2008-01-30-die-innodb-storage-engine.md" >}}),
-[Teil 2]({{< ref "/content/posts/2008-02-03-die-innodb-storage-engine-konfiguration.md" >}}))
+([Teil 1]({{< relref "/2008-01-30-die-innodb-storage-engine.md" >}}),
+[Teil 2]({{< relref "/2008-02-03-die-innodb-storage-engine-konfiguration.md" >}}))
 habe ich schon einmal beschrieben, was passiert, wenn eine Zeile in InnoDB
 geschrieben wird.
 

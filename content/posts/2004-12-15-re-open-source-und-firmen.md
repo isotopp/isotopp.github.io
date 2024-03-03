@@ -11,7 +11,7 @@ title: Re Open Source Software und Firmen
 
 Ein Gastblogeintrag von 
 [Matthew Langham](http://www.silentpenguin.com) als Antwort auf 
-[Open Source und Firmen]({{< ref "/content/posts/2004-12-14-open-source-software-und-firmen.md" >}}), 
+[Open Source und Firmen]({{< relref "/2004-12-14-open-source-software-und-firmen.md" >}}), 
 den er mir per Mail gesendet hat und den ich auf Nachfrage als Gastblogeintrag veröffentlichen darf: 
 
 > Ein sehr interessanter Beitrag auf Deinem Weblog. Leider ist mein Kommentar zu lang - daher als E-Mail. Ich hätte das auch noch auf meinem Weblog gepostet - aber da ich dort auf Englisch schreibe....

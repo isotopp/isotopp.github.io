@@ -152,6 +152,6 @@ skalieren können.  Aus dieser Sicht kann man also getrost sagen, daß "MySQL
 an Stellen Fehler hat, an denen Postgres nicht mal Code hatte".
 
 Siehe auch
-[einen älteren Artikel]({{< ref "/content/posts/2010-11-04-red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.md" >}})
+[einen älteren Artikel]({{< relref "/2010-11-04-red-vs-blue-at-oracle-und-ein-paar-gedanken-zu-postgres.md" >}})
 zum Thema (der Artikel bezieht Performancegewinne von MySQL 5.5 und 5.6 noch
 nicht ein).

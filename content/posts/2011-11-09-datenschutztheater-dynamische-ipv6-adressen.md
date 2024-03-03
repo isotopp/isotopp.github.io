@@ -14,7 +14,7 @@ title: 'Datenschutztheater: dynamische IPv6 Adressen'
 ---
 
 Wir hatten das Thema schon einmal in 
-[IP V6 verkehrt]({{< ref "/content/posts/2011-06-05-ip-v6-verkehrt.md" >}}),
+[IP V6 verkehrt]({{< relref "/2011-06-05-ip-v6-verkehrt.md" >}}),
 aber es ist noch nicht tot. Spezialexperten für den Datenschutz aus aller
 Welt haben sich getroffen, und waren gemeinsam besorgt:
 

@@ -30,6 +30,6 @@ Brandron Sanderson:
 ])"
 
 Mehr Reviews:
-- [Mistborn: The Final Empire, #1-#3]({{< ref "/content/posts/2015-11-29-fertig-gelesen-mistborn-the-final-empire-the-well-of-ascension-the-hero-of-ages.md" >}})
-- [Mistborn: The Allow of Law, #4-#6]({{< ref "/content/posts/2016-02-28-fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.md" >}})
-- [Mistborn: Secret History]({{< ref "/content/posts/2016-02-28-fertig-gelesen-mistborn-secret-history.md" >}})
+- [Mistborn: The Final Empire, #1-#3]({{< relref "/2015-11-29-fertig-gelesen-mistborn-the-final-empire-the-well-of-ascension-the-hero-of-ages.md" >}})
+- [Mistborn: The Allow of Law, #4-#6]({{< relref "/2016-02-28-fertig-gelesen-the-alloy-of-law-shadows-of-self-the-bands-of-mourning.md" >}})
+- [Mistborn: Secret History]({{< relref "/2016-02-28-fertig-gelesen-mistborn-secret-history.md" >}})

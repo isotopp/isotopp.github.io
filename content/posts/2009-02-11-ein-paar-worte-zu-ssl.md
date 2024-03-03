@@ -10,7 +10,7 @@ tags:
 - lang_de
 title: Ein paar Worte zu SSL
 ---
-Slowtiger antwortet in einem Kommentar zu [Mein natives IP V6]({{< ref "/content/posts/2009-02-10-mein-natives-ip-v6.md" >}}):
+Slowtiger antwortet in einem Kommentar zu [Mein natives IP V6]({{< relref "/2009-02-10-mein-natives-ip-v6.md" >}}):
 
 > Wenn ich Sätze wie "Ob ich überhaupt noch unverschlüsseltes http auf V6 anbieten werde weiß ich nicht - die politische Situation legt nahe, daß dies Unsinn ist." in einem Technikblog lese, dann gruselts mich wirklich.
 

@@ -12,7 +12,7 @@ tags:
 - lang_en
 title: Load, Load Testing and Benchmarking
 ---
-(This article also available in [german language]({{< ref "/content/posts/2012-08-28-load-load-testing-und-benchmarks.md" >}}).)
+(This article also available in [german language]({{< relref "/2012-08-28-load-load-testing-und-benchmarks.md" >}}).)
 
 So you have a new system and want to know what the load limits are. For that
 you want to run a benchmark.

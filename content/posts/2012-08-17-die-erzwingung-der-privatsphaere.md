@@ -12,7 +12,7 @@ tags:
 title: Die Erzwingung der Privatsphäre
 ---
 In
-[]({{< ref "/content/posts/2012-03-03-wieso-wir-uns-veroeffentlichen.md" >}})
+[]({{< relref "/2012-03-03-wieso-wir-uns-veroeffentlichen.md" >}})
 habe ich erklärt, wo die persönlichen Vorteile der Offenlegung von
 Informationen über eigene Interessen oder Eigenschaften liegen können, und
 es in den Kommentaren auch mit einigen ganz konkreten, selbst erfahrenen

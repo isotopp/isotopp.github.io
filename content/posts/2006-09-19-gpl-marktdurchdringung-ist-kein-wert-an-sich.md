@@ -11,7 +11,7 @@ tags:
 - lang_de
 title: 'GPL: Marktdurchdringung ist kein Wert an sich'
 ---
-[Kommentar]({{< ref "/content/posts/2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md" >}}) zu GPL in Deutschland vor Gericht durchgesetzt.
+[Kommentar]({{< relref "/2006-09-10-gpl-in-deutschland-vor-gericht-durchgesetzt.md" >}}) zu GPL in Deutschland vor Gericht durchgesetzt.
 
 > Ich glaube nicht das bei der BSD Lizenz ein
 > Konstruktionsfehler vorliegt. Ich denke, es war beabsichtigt
@@ -79,7 +79,7 @@ Sie sagt:
 nicht musst, **dann** musst Du das zu unseren Bedingungen tun."
 
 Das ist ganz genau das, was jede andere Lizenz auch sagt. Die
-GPL nennt außerdem diese [Bedingungen]({{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}})
+GPL nennt außerdem diese [Bedingungen]({{< relref "/2005-02-07-von-der-gpl.md" >}})
 vorab, wie jede andere Lizenz auch. Es gibt keine
 Überraschungen, keine Lizenzbedingungsänderungen und es gibt
 insbesondere keinen Zwang zu irgendwas. Es gibt allerdings eine

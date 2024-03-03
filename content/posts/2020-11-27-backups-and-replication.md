@@ -251,4 +251,4 @@ Arriving at this stage took MySQL around 10 years:
 
 It has taken MySQL another 10 years of changes to improve on this, with Global Transaction IDs, Parallel Replication and Group Replication, but that is for another article.
 
-This article is continued in [Parallel Replication]({{< ref "/content/posts/2021-11-08-mysql-parallel-replication.md" >}}).
+This article is continued in [Parallel Replication]({{< relref "/2021-11-08-mysql-parallel-replication.md" >}}).

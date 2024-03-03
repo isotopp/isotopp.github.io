@@ -17,6 +17,6 @@ Kriminalgeschichte im Stile von Casablanca, die in einem dystopischen Europa 50 
 
 [Drohnenland](https://www.amazon.de/Drohnenland-Kriminalroman-Tom-Hillenbrand-ebook/dp/B00GZCU598)
 
-Was "[The Circle]({{< ref "/content/posts/2014-01-29-fertig-gelesen-the-circle.md" >}})" hätte sein können. Leseempfehlung, großartiges Buch.
+Was "[The Circle]({{< relref "/2014-01-29-fertig-gelesen-the-circle.md" >}})" hätte sein können. Leseempfehlung, großartiges Buch.
 
 "[Drohnenland](https://www.amazon.de/Drohnenland-Kriminalroman-Tom-Hillenbrand-ebook/dp/B00GZCU598)", Tom Hillenbrand, EUR 9.99

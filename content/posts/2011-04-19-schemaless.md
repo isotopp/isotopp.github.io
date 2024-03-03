@@ -52,4 +52,4 @@ lazy implementiert wie oben geschildert?
 
 Bitte helft mir und diskutiert in den Kommentaren.
 
-[Die Antwort]({{< ref "/content/posts/2011-04-20-zusammenfassung-schemaless.md" >}}) in einem späteren Artikel.
+[Die Antwort]({{< relref "/2011-04-20-zusammenfassung-schemaless.md" >}}) in einem späteren Artikel.

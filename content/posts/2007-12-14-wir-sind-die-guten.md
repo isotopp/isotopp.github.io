@@ -11,7 +11,7 @@ tags:
 title: Wir sind die Guten!
 ---
 Zum Thema 
-[Vertrauensvorschuß]({{< ref "/content/posts/2008-05-30-vertrauensvorschu-ii.md" >}})
+[Vertrauensvorschuß]({{< relref "/2008-05-30-vertrauensvorschu-ii.md" >}})
 nun auch eine passende Meldung aus Deutschland beim 
 [Lawblog](http://www.lawblog.de/index.php/archives/2007/12/13/privatadressen-aus-dem-polizeicomputer/): 
 

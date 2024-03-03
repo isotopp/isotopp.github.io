@@ -15,7 +15,7 @@ title: 'MySQL: Deleting data'
 Completing the data lifecycle is often harder than originally expected:
 Deleting data can sometimes cost way more than inserting it in the first place.
 MySQL Partitions can offer a way out. 
-We have an [earlier post]({{< ref "/content/posts/2020-05-13-deleting-data-from-mysql.md" >}}) on the subject.
+We have an [earlier post]({{< relref "/2020-05-13-deleting-data-from-mysql.md" >}}) on the subject.
 
 ## A sample table, and a problem statement
 
@@ -76,7 +76,7 @@ This is our basic Python framework for experimentation, using the `click` framew
 
 The log table has three columns: `id`, an auto_increment counter, and two columns `d` and `e`, each containing 64 characters of data. To get things started, we add an initial partition, containing all id-values below 10.000 and an initial row.
 
-If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from [ALTER TABLE for UUID]({{< ref "/content/posts/2020-09-22-alter-table-for-uuid.md" >}}) that the physical order of any InnoDB table is by primary key - our id-counter.
+If we were to add data to this table in a loop, we would increment our id-counter, and with InnoDB being what it is, all new rows will be added at the end of the table: We remember from [ALTER TABLE for UUID]({{< relref "/2020-09-22-alter-table-for-uuid.md" >}}) that the physical order of any InnoDB table is by primary key - our id-counter.
 
 Now, if we were to expire old data, we would start to delete rows with the lowest id-values, so we would delete rows from the beginning of the table, or the left-hand side of the B+-Tree. To keep the tree balanced, MySQL would have to execute balancing operations, which will be expensive, because rows are being shuffled around in the tree.
 

@@ -15,7 +15,7 @@ durchgeführt und kurz vor 17:00 Uhr einen unerklärlichen Spike und einen
 Leistungsabfall festgestellt.  Kannst Du mal gucken?"
 
 Klar kann ich.  Wo ich arbeite machen wir etwas, das wir
-[Testing in Production]({{< ref "/content/posts/2011-12-02-testing-in-production.md" >}})
+[Testing in Production]({{< relref "/2011-12-02-testing-in-production.md" >}})
 nennen.
 
 Für Lasttests bedeutet das, daß wir einzelne Systeme im Loadbalancer so

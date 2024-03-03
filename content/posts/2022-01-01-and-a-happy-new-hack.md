@@ -25,7 +25,7 @@ Wir haben tägliche Backups, sodass das schnell behoben ist. Bleibt die Frage, w
 Unter den Spielern ist die Frage schnell geklärt: "`<user>` wurde gehackt."
 
 Es stellt sich raus:
-- "`<user>`" bekommt einen [Free Nitro Spam]({{< ref "/content/posts/2021-11-30-discord-nitro-spam-and-2fa.md" >}}).
+- "`<user>`" bekommt einen [Free Nitro Spam]({{< relref "/2021-11-30-discord-nitro-spam-and-2fa.md" >}}).
 - Er klickt darauf.
 - Er wird gebeten, "`FreeNitro.exe`" zu installieren und macht das, startet dann das `.exe`.
 - Sein Rechner macht ein Dutzend Fenster auf, rappelt los, und geht am Ende aus (und bleibt aus).

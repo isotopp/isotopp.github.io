@@ -105,7 +105,7 @@ dann natürlich eine Technik, die das unterstützt und eine Benutzerinterface,
 das korrektes und erwünschtes Verhalten ermutigt und erleichtert.
 
 Zur Zeit haben wir in der produktiven Wikipedia Strukturen, 
-[die das Gegenteil tun]({{< ref "/content/posts/2009-11-11-communitygift.md" >}}).
+[die das Gegenteil tun]({{< relref "/2009-11-11-communitygift.md" >}}).
 
 Wikipedia-Seiten sind anonym und sehen inert aus - für den
 Gelegenheitsnutzer ist in der Standardansicht nicht erkennbar, ob Teile

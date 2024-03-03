@@ -14,7 +14,7 @@ Dieser Text erschien in c't 26/23 auf Seite 70.
 Wie alle meine Texte ist er nach einiger Zeit auch in meinem Blog frei verfügbar.
 Die hier veröffentlichte Fassung ist die Rohfassung des Artikeltexts ohne Abbildungen und Illustrationen.
 
-This text is also [available in English]({{< ref "/content/posts/2023-11-11-a-revolution-devours-its-children.md" >}}).
+This text is also [available in English]({{< relref "/2023-11-11-a-revolution-devours-its-children.md" >}}).
 
 # Eine Revolution frisst ihre Kinder
 von Kristian Köhntopp

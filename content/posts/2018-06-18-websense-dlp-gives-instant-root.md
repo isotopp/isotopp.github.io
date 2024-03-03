@@ -11,7 +11,7 @@ title: Websense DLP gives instant root
 
 Enterprise security software is interesting, because in order to do what it does it often uses privilege, but it is also very often written extremely badly.
 
-In [ASLR]({{< ref "/content/posts/2017-10-20-aslr.md" >}}) we have had a look on the Trend Micro binary on MacOS and found that it is running as root, and with ASLR off. That means we have a privileged process that is being loaded at a fixed address, and that process is parsing random user generated data in order to scan it for viruses. If we manage to find a bug in that code, we have a way to make this privileged process do our bidding – by simply putting a special file into a directory that is being scanned by the virus scanner.
+In [ASLR]({{< relref "/2017-10-20-aslr.md" >}}) we have had a look on the Trend Micro binary on MacOS and found that it is running as root, and with ASLR off. That means we have a privileged process that is being loaded at a fixed address, and that process is parsing random user generated data in order to scan it for viruses. If we manage to find a bug in that code, we have a way to make this privileged process do our bidding – by simply putting a special file into a directory that is being scanned by the virus scanner.
 
 Because ASLR is off, that antivirus process is at the same, fixed address on every machine running the same OS version and Trendmicro version. This means: our bug works the same way on every single machine with these properties. We basically control the entire fleet of machines at once.
 

@@ -10,9 +10,9 @@ tags:
 ---
 
 Based on what I learned in
-[Systemd Service and Socket Activation]({{< ref "/content/posts/2022-11-27-systemd-service-and-socket-activation.md" >}})
+[Systemd Service and Socket Activation]({{< relref "/2022-11-27-systemd-service-and-socket-activation.md" >}})
 and
-[Systemd Service and stdio]({{< ref "/content/posts/2022-11-28-systemd-service-and-stdio.md" >}}),
+[Systemd Service and stdio]({{< relref "/2022-11-28-systemd-service-and-stdio.md" >}}),
 we can now have a look at Docker.
 
 The code for `-H fd://`-Handling is [here](https://github.com/moby/moby/blob/41be7293f54f15dc04f024bf2b0f09e1a697208b/daemon/listeners/listeners_linux.go#L63-L107).

@@ -11,7 +11,7 @@ tags:
 - scifi
 title: 'Fertig gelesen: Apex'
 ---
-Dritter Teil der Nexus-Trilogie von Ramez Naam, nach [Nexus]({{< ref "/content/posts/2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md" >}}) und [Crux]({{< ref "/content/posts/2013-09-27-fertig-gelesen-crux-ramez-naam.md" >}}).
+Dritter Teil der Nexus-Trilogie von Ramez Naam, nach [Nexus]({{< relref "/2013-09-04-fertig-gelesen-nexus-mankind-gets-an-upgrade-ramez-naam.md" >}}) und [Crux]({{< relref "/2013-09-27-fertig-gelesen-crux-ramez-naam.md" >}}).
 
 [![](/uploads/2015/11/apex.jpg)](https://www.amazon.de/gp/product/B076H478T2)
 

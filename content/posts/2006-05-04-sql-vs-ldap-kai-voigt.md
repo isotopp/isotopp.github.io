@@ -12,7 +12,7 @@ tags:
 ---
 
 A talk given by Kai Voigt at Linuxtag in Wiesbaden, based on 
-[LDAP vs. SQL]({{< ref "/content/posts/2002-01-31-ldap-vs-sql.md" >}}) 
+[LDAP vs. SQL]({{< relref "/2002-01-31-ldap-vs-sql.md" >}}) 
 and additional experience we had, based on our work with directory services.
 
 # SQL vs. LDAP

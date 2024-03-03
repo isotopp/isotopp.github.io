@@ -15,7 +15,7 @@ title: Recht auf Vergeben
 Unser Innenminister diskutiert das "[Recht auf Vergessen](http://www.spiegel.de/netzwelt/netzpolitik/0,1518,817830,00.html)"
 im Spiegel Online und benutzt dort wieder Worte komisch. 
 Ich habe das in 
-[Vergeben, vergessen und vernichten]({{< ref "/content/posts/2011-01-18-vergeben-vergessen-und-vernichten.md" >}})
+[Vergeben, vergessen und vernichten]({{< relref "/2011-01-18-vergeben-vergessen-und-vernichten.md" >}})
 schon mal angesprochen.
 
 Die entsprechenden Diskussion auf 
@@ -31,7 +31,7 @@ Vergessen" so wie es zuvor in der Politik diskutiert worden ist, extrem
 schädlich wäre (denn inhaltlich war das ein Recht auf Vernichtung).
 
 Nein, die Nomenklatur ist krude, siehe 
-[Vergeben, vergessen und vernichten]({{< ref "/content/posts/2011-01-18-vergeben-vergessen-und-vernichten.md" >}}).
+[Vergeben, vergessen und vernichten]({{< relref "/2011-01-18-vergeben-vergessen-und-vernichten.md" >}}).
 
 Inhaltlich verlangt er nun in seinem Text eigentlich ein Recht auf
 Vergebung.
@@ -58,7 +58,7 @@ wird.  Der größere Kontext ist hier zur korrekten Interpretation zwingend
 notwendig.
 
 Dennoch ist es von dort nur 
-[ein kleiner Schritt zur Spackeria]({{< ref "/content/posts/2011-05-12-von-der-spackeria-von-aluhueten-und-vom-kontrollverlust.md" >}}),
+[ein kleiner Schritt zur Spackeria]({{< relref "/2011-05-12-von-der-spackeria-von-aluhueten-und-vom-kontrollverlust.md" >}}),
 die im wesentlichen sagt: 
 
 1. Die Welt ist so, das ist eine Eigenschaft der Technik und Gesetze werden

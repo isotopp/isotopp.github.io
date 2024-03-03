@@ -10,7 +10,7 @@ tags:
 title: 'Fertig gelesen: Exit Strategy'
 ---
 [Exit Strategy](https://www.amazon.de/gp/product/B078X1N8VF) by Martha Wells
-is the fourth book in the the Murderbot Diaries ([All Systems Red]({{< ref "/content/posts/2017-11-08-fertig-gelesen-all-systems-red.md" >}}), 
+is the fourth book in the the Murderbot Diaries ([All Systems Red]({{< relref "/2017-11-08-fertig-gelesen-all-systems-red.md" >}}), 
 Artificial Condition,
 Rogue Protocol,
 Exit Strategy,  Network Effect). 
@@ -34,4 +34,3 @@ storytelling and characterisation and are strongly recommended.
 
 "[Exit Strategy](http://www.amazon.de/gp/product/B078X1N8VF)",
 Martha Wells, EUR 9.34
-

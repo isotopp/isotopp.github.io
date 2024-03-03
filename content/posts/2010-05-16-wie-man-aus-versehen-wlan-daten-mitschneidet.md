@@ -15,7 +15,7 @@ title: Wie man aus Versehen WLAN-Daten mitschneidet
 
 - Technische Erklärung dessen, was passiert ist: dieser Artikel.
 - Wozu macht Google das eigentlich? 
-  [WLANs mappen]({{< ref "/content/posts/2010-05-17-wlans-mappen.md" >}})-Artikel.
+  [WLANs mappen]({{< relref "/2010-05-17-wlans-mappen.md" >}})-Artikel.
 - Wer ist dieser Kristian Köhntopp eigentlich? 
   [XING-Profil](https://www.xing.com/profile/Kristian_Koehntopp)
 - [TL;DR](http://en.wiktionary.org/wiki/tl;dr): 
@@ -23,7 +23,7 @@ title: Wie man aus Versehen WLAN-Daten mitschneidet
     und Netzwerknamen von WLANs, weil diese in dicht besiedelten Gebieten
     eine sehr schnelle und recht gute Näherung für eine Positionsbestimmung
     sind (GPS: 80 Sekunden, WLAN-Fingerprint der Position: <2 Sekunden,
-    Details im Artikel [WLANs mappen]({{< ref "/content/posts/2010-05-17-wlans-mappen.md" >}})).
+    Details im Artikel [WLANs mappen]({{< relref "/2010-05-17-wlans-mappen.md" >}})).
   - Dazu hat Google alle unverschlüsselten Pakete aufgezeichnet, die deren
     WLAN-Antenne gesehen hat: 32 Kanäle, je Kanal 1/5 Sekunde, immer im
     Kreis, genau wie jeder Laptop, der ein passendes WLAN sucht. Normal sind
@@ -38,7 +38,7 @@ title: Wie man aus Versehen WLAN-Daten mitschneidet
     ist. Das ist kein gezielter Lauschangriff, sondern eine Panne. 
   - Es ist Google hoch anzurechnen, daß sie den Fall ehrlicherweise
     öffentlich gemacht haben, anstatt unter den Teppich zu kehren, wie es
-    sonst [allgemein üblich]({{< ref "/content/posts/2010-05-18-incident-management-und-transparenz.md" >}}) ist.
+    sonst [allgemein üblich]({{< relref "/2010-05-18-incident-management-und-transparenz.md" >}}) ist.
 
 ### Originalartikel
 
@@ -86,7 +86,7 @@ lang und wem das zu lang ist, der findet
 [bei Wi-Fi-Planet](http://www.wi-fiplanet.com/tutorials/article.php/1447501) eine Übersicht.
 
 Ich schrieb in 
-[Internet mit Kugelschreibern (und Bussen)]({{< ref "/content/posts/2009-06-24-internet-mit-kugelschreibern-und-bussen.md" >}})
+[Internet mit Kugelschreibern (und Bussen)]({{< relref "/2009-06-24-internet-mit-kugelschreibern-und-bussen.md" >}})
 ja schon einmal:
 
 > Mein Rechner hat also keine Internet-Karte. Aber er kann jede seiner
@@ -186,7 +186,7 @@ Wenn man dann denkt wie ein Haufen Physiker...
 > zu portieren.
 
 schrieb ich in 
-[Das Google-Missverständnis]({{< ref "/content/posts/2009-11-07-das-google-missverstaendnis.md" >}}).
+[Das Google-Missverständnis]({{< relref "/2009-11-07-das-google-missverstaendnis.md" >}}).
 
 Zu dem Ansatz, den typische Physiker (stellvertretend für alle
 Naturwissenschaftler) typischerweise wählen gehört auch das Aufbewahren von
@@ -216,7 +216,7 @@ schauen uns die dort gestellten Fragen an. Was können wir beantworten?
 ### Warum entwickeln Google-Programmierer Schnüffel-Software?
 
 Weil Google WLANs auf einer Karte verzeichnen will 
-([Wozu ist das gut?]({{< ref "/content/posts/2010-05-17-wlans-mappen.md" >}}))
+([Wozu ist das gut?]({{< relref "/2010-05-17-wlans-mappen.md" >}}))
 
 Entwickelt worden ist eine Bibliothek zur Erfassung von 802.11 Frames. Erst
 nachdem man einen Frame erfasst hat, kann man auf die Felder Frame-Type und

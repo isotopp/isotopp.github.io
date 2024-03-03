@@ -75,7 +75,7 @@ höre. Leute die Worte wie 'Kulturschaffender' verwenden sagen auch
 Dem gegenüber steht die Kultur der Leute, die mit dem Internet groß geworden
 sind. Für sie gibt es diese Hierarchien und die Trennung nicht mehr. Kultur
 ist nichts, was man publiziert und das dann
-[in Mediatheken vor sich hin sedimentiert]({{< ref "/content/posts/2006-09-22-gesetz-ber-die-deutsche-nationalbibliothek.md" >}})
+[in Mediatheken vor sich hin sedimentiert]({{< relref "/2006-09-22-gesetz-ber-die-deutsche-nationalbibliothek.md" >}})
 Eine Veröffentlichung ist für diese Leute etwas zum Verarbeiten, zum
 Verbessern, zum Verändern, zum Verknüpfen, zum Kommentieren, und auch zum
 Verbreiten.
@@ -99,9 +99,9 @@ Copyright aufhalten oder auch nur nennenswert beeinflussen kann, denn die
 partizipatorische Struktur der Internetkultur ist eine 
 [emergente Eigenschaft](http://de.wikipedia.org/wiki/Emergenz#Emergenz_als_disziplin.C3.BCbergreifendes_Konzept),
 die sich aus 
-[mittlerfreier Kommunikation]({{< ref "/content/posts/2005-05-10-materialsammlung-mittlerfreie-kommunikation.md" >}})
+[mittlerfreier Kommunikation]({{< relref "/2005-05-10-materialsammlung-mittlerfreie-kommunikation.md" >}})
 zwangsläufig ergibt - die meisten Menschen sind 
-[echte Helden]({{< ref "/content/posts/2007-09-07-echte-helden.md" >}})
+[echte Helden]({{< relref "/2007-09-07-echte-helden.md" >}})
 und wenn man ihnen die Gelegenheit gibt, die Welt als Ganzes mit niedrigen
 Transaktionskosten zu verbessern, dann tun sie es auch.
 

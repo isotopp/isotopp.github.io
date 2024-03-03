@@ -158,7 +158,7 @@ Ja. Nein. Nein, eigentlich nicht.
 
 Ja, klar, das ist alles nicht neu und nicht unerwartet. Andere Leute hatten diese Probleme schon und haben darüber geschrieben, viel und oft und mit hohem Detailgrad.
 
-Nein, denn das sagt nichts, weil es nichts bedeutet. Ich habe [anderswo]({{< ref "/content/posts/2020-08-31-on-touching-candles.md" >}}) einmal aufgeschrieben, wie mein Sohn das Wort "heiß" gelernt hat. Es war vor sieben Jahren, um die Weihnachtszeit, und sein drittes Wort. Er hat es gehört und nachgesprochen, aber es hat für ihn nichts bedeutet. Bis er in eine Kerze gefasst hat.
+Nein, denn das sagt nichts, weil es nichts bedeutet. Ich habe [anderswo]({{< relref "/2020-08-31-on-touching-candles.md" >}}) einmal aufgeschrieben, wie mein Sohn das Wort "heiß" gelernt hat. Es war vor sieben Jahren, um die Weihnachtszeit, und sein drittes Wort. Er hat es gehört und nachgesprochen, aber es hat für ihn nichts bedeutet. Bis er in eine Kerze gefasst hat.
 
 Im [Google SRE Buch](https://sre.google/sre-book/table-of-contents/) ist ausführlich in mehr als einem Kapitel beschrieben, wie man Cubby/Zookeeper aufsetzt und nicht aufsetzt und warum man keinen globalen, firmenweiten Zookeeper haben kann oder will. 
 

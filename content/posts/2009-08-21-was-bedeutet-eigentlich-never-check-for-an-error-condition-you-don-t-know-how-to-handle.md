@@ -39,7 +39,7 @@ Man könnte argumentieren, daß `malloc()` dann intern ein `tja_was_dann()` aufr
 **Nebengedanke:** Das ist einer der Hauptunterschiede zwischen einer Bibliothek und einem Framework. Eine Bibliothek stellt Mechanismen bereit, erzwingt aber keine bestimmte Policy, also eine bestimmte Default-Herangehensweise an Probleme. Frameworks dagegen sind mit einem bestimmten Modus im Kopf entwickelt worden und bringen eine Policy mit, die im Kontext des Frameworks als Standardlösung angesehen wird.
 
 **Nebennebengedanke:** Kernel, Bibliotheken und Frameworks sind Infrastruktur, und wie jede Infrastruktur werden sie auch zu einem guten Teil 
-[daran gemessen, wie sie versagen]({{< ref "/content/posts/2008-05-30-the-importance-of-fail.md" >}}). In diesem Fall also: Welche Möglichkeiten gibt es, bei einem Framework an der Policy vorbei zu programmieren, wenn die Policy mal nicht paßt ('Wie kann ich in 
+[daran gemessen, wie sie versagen]({{< relref "/2008-05-30-the-importance-of-fail.md" >}}). In diesem Fall also: Welche Möglichkeiten gibt es, bei einem Framework an der Policy vorbei zu programmieren, wenn die Policy mal nicht paßt ('Wie kann ich in 
 [RoR](http://de.wikipedia.org/wiki/Ruby_on_Rails) Queries an 
 [Active Record](http://de.wikipedia.org/wiki/Ruby_on_Rails#Konzept) vorbei schicken?') oder wie frei von Policy ist diese Bibliothek wirklich gestaltet - habe ich nur einen Mechanismus, oder ist er mit einer Intention, einer Policy belastet?
 

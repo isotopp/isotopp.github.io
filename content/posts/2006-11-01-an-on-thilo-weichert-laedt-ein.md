@@ -30,7 +30,7 @@ Das Programm der Veranstaltung findet man im
 
 ![](/uploads/zorro.jpg)
 
-[Anonyme Kommunikation]({{< ref "/content/posts/2005-05-24-ueber-anonymitaet-reden.md" >}})
+[Anonyme Kommunikation]({{< relref "/2005-05-24-ueber-anonymitaet-reden.md" >}})
 ist in Zeiten der Vorratsdatenspeicherung wichtiger denn je. Sie ist auch
 eine Vorraussetzung für die Durchführung freier, gleicher und geheimer
 Wahlen etwa von Computern zu Hause. Ob und wie AN.ON/JAP nach dem Auslaufen
@@ -40,10 +40,10 @@ thematisiert.
 
 Aber jeder mit einem eigenen Server im Internet kann selbst etwas für die
 anonyme Kommunikation im Internet tun: Mit einem eigenen
-[tor]({{< ref "/content/posts/2005-06-02-die-welt-ist-meine-zwiebel.md" >}})-Node
+[tor]({{< relref "/2005-06-02-die-welt-ist-meine-zwiebel.md" >}})-Node
 kann man selbst einen Knoten in einem internationalen und öffentlichen
 Netzwerk von Mixen betreiben. Das
-[Setup]({{< ref "/content/posts/2005-06-05-selber-zwiebeln-anonymit-t-selbst-gemacht.md" >}})
+[Setup]({{< relref "/2005-06-05-selber-zwiebeln-anonymit-t-selbst-gemacht.md" >}})
 ist nicht kompliziert und mit meinem Strato MR2 ziehe ich zur Zeit gut 2 TB
 Traffic im Monat durch. tor und JAP interoperieren auch, sodaß
 tor-Bandbreite in gewisser Weise auch AN.ON/JAP hilft.

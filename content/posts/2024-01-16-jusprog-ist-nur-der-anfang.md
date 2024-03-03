@@ -234,8 +234,8 @@ Gerade jetzt, wo um uns herum eine politische Ideologie auflebt, die nur darauf 
 # Siehe auch
 
 Seit 27 Jahren kein Fortschritt im Diskurs:
-[Sperrungen im Internet]({{< ref "/content/posts/1997-05-14-sperrungen-im-internet.md" >}})
+[Sperrungen im Internet]({{< relref "/1997-05-14-sperrungen-im-internet.md" >}})
 
 Seit 15 Jahren kein Fortschritt im Diskurs:
-[Jugendschutzfilter saugen und dafür gibt es einen Grund]({{< ref "/content/posts/2009-08-06-jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.md"  >}}) –
+[Jugendschutzfilter saugen und dafür gibt es einen Grund]({{< relref "/2009-08-06-jugendschutzfilter-saugen-und-daf-r-gibt-es-einen-grund.md"  >}}) –
 Warum wir nicht einfach alles "ab 18" machen können und warum damit ein Haufen Leuten mit unproblematischen Inhalten notlos Arbeit aufgebürdet wird.

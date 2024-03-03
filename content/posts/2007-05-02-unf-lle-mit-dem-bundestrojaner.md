@@ -13,7 +13,7 @@ title: Unfälle mit dem Bundestrojaner
 ![](/uploads/bundestrojaner.jpg)
 
 Wie in
-[Der Bundestrojaner durchdekliniert]({{< ref "/content/posts/2007-02-26-der-bundestrojaner-durchdekliniert.md" >}})
+[Der Bundestrojaner durchdekliniert]({{< relref "/2007-02-26-der-bundestrojaner-durchdekliniert.md" >}})
 versprochen:
 
 > [ Mit dem Bundestrojaner bekommt ] der Staat einen Mechanismus, der für

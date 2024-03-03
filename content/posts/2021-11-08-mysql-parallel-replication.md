@@ -9,14 +9,14 @@ tags:
 - replication
 ---
 
-At work, [replication]({{< ref "/content/posts/2020-11-27-backups-and-replication.md" >}}) is a central feature in our MySQL Standard Architecture.
+At work, [replication]({{< relref "/2020-11-27-backups-and-replication.md" >}}) is a central feature in our MySQL Standard Architecture.
 
 But until MySQL 5.6, replication was strictly sequential:
 Even if transactions happened in parallel on a primary, they would be downloaded to the replica by the IO_THREAD into the relay log.
 From there, a single SQL_THREAD would apply them, one after the other in strict binlog order.
 That can lead to Replication Delay.
 
-We had a monitor for that, [courtesy of Dennis Kaarsemaker]({{< ref "/content/posts/2012-09-28-mysql-replication-load-monitor.md" >}}).
+We had a monitor for that, [courtesy of Dennis Kaarsemaker]({{< relref "/2012-09-28-mysql-replication-load-monitor.md" >}}).
 That code looked at the time consumption in the SQL_THREAD, and counted the percentage of idle time over time, visualizing it in Graphite or Grafana. 
 
 This was the amount of runway we had.

@@ -54,7 +54,7 @@ But first things first:
 [![](/uploads/2020/02/shopping-n201.jpg)](https://www.google.com/maps/@52.3141836,4.6843711,17.27z)
 
 We need to cross the N201, and we don't do intersections when other solutions are viable. Remember the 
-[hierarchy of mitigations]({{< ref "/content/posts/2020-02-19-how-to-build-a-cycling-environment.md" >}})
+[hierarchy of mitigations]({{< relref "/2020-02-19-how-to-build-a-cycling-environment.md" >}})
 from OSHA? We can Isolate (#3), so we don't have to Engineer Controls (#4).
 
 The same thing happens again at Kruisweg:

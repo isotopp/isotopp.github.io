@@ -19,6 +19,6 @@ In short, Octopi are basically aliens that co-evolved on our planet.
 
 And despite their very short lifespans they are highly intelligent: They can distinguish humans and remember how different humans treated them differently in the past. They open complicated locking mechanisms, remember schedules and plan escapes, shoot lights out by aiming water spouts at switches and use other convenient tools. They can learn by observation and deduction.
 
-How do their brains work, and what does the world look like to an Octopus? Goes extremely well with [Children of Ruin]({{< ref "/content/posts/2021-04-07-fertig-gelesen-children-of-ruin.md" >}})
+How do their brains work, and what does the world look like to an Octopus? Goes extremely well with [Children of Ruin]({{< relref "/2021-04-07-fertig-gelesen-children-of-ruin.md" >}})
 
 "[Other Minds: The Octopus and the Evolution of Intelligent Life](https://www.amazon.de/Other-Minds-Octopus-Evolution-Intelligent-ebook/dp/B01LXKA6FO)", Peter Godfrey-Smith, EUR 6.77.

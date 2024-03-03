@@ -240,7 +240,7 @@ The shuffle has not been made persistent.
 Often, the problem is not to select a random row, but to consume rows in random order.
 We can store a random number with each row, and then use this as an (indexed) ordering key.
 Using the knowledge from 
-[the queueing article]({{< ref "/content/posts/2021-07-13-mysql-a-job-queue-in-python.md" >}}),
+[the queueing article]({{< relref "/2021-07-13-mysql-a-job-queue-in-python.md" >}}),
 we can select the item with the highest ordering value, lock it for consumption, retrieve it and delete it.
 
 The idea is to add a column `ordering` to our table, indexed for fast access.

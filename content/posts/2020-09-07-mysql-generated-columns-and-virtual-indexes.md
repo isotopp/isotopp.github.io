@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 title: 'MySQL: Generated Columns and virtual indexes'
 ---
-We have had a look at [how MySQL 8 handles JSON]({{< ref "/content/posts/2020-09-04-mysql-json-data-type.md" >}}) recently, but with all those JSON functions and expressions it is clear that many JSON accesses cannot be fast. To grab data from a JSON column, you will use a lot of `$->>field` expressions and similar, and without indexes nothing of this will be fast.
+We have had a look at [how MySQL 8 handles JSON]({{< relref "/2020-09-04-mysql-json-data-type.md" >}}) recently, but with all those JSON functions and expressions it is clear that many JSON accesses cannot be fast. To grab data from a JSON column, you will use a lot of `$->>field` expressions and similar, and without indexes nothing of this will be fast.
 
 JSON cannot be indexed.
 
@@ -665,4 +665,3 @@ There is a lot more to all of this than I can show here. This means you have hom
 
 - The CREATE INDEX statement and [multi valued indexes](https://dev.mysql.com/doc/refman/8.0/en/create-index.html#create-index-multi-valued)
   The entire page is useful, because it speaks about functional indexes and how they are implemented as hidden virtual columns and indexes on these (which has implications). But within the discussion of JSON, the interesting part are Multi-Valued Indexes, which are indexes on non-scalar values such as JSON arrays, and how they are being used to speed up certain JSON functions that deal with array membership and overlaps.
-

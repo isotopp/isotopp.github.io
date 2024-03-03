@@ -18,5 +18,5 @@ Alles in allem ganz wunderbar geschrieben und mit viel Konzentration auf die Cha
 [Retaliation](https://www.amazon.de/Retaliation-Slingshot-Book-2-English-ebook/dp/B01J1PTUYG), EUR 2.99
 
 Mehr Reviews:
-- [Slingshot]({{< ref "/content/posts/2015-11-30-fertig-gelesen-slingshot.md" >}})
-- [Retaliation]({{< ref "/content/posts/2017-01-02-fertig-gelesen-retaliation.md" >}})
+- [Slingshot]({{< relref "/2015-11-30-fertig-gelesen-slingshot.md" >}})
+- [Retaliation]({{< relref "/2017-01-02-fertig-gelesen-retaliation.md" >}})

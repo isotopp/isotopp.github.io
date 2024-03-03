@@ -13,7 +13,7 @@ tags:
 title: 'Nachtrag: Nicht das Urheberrecht ist das Kernthema'
 ---
 Der Beitrag 
-[Nicht das Urheberrecht ist das Kernthema]({{< ref "/content/posts/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
+[Nicht das Urheberrecht ist das Kernthema]({{< relref "/2011-11-08-nicht-urheberrecht-ist-das-kernthema.md" >}})
 ist von der taz verlinkt worden: Frédéric Valin faßt unter dem Titel
 [Fortschritt ins dunkle Mittelalter](http://www.taz.de/!81547/)
 den Stand der Debatte zusammen, kommt aber ebenfalls nicht zu einer Lösung -
@@ -43,10 +43,10 @@ alle dies nun, für lau.
 Dieses Wikpedia-Prinzip ist es, das nun in immer mehr Kopfarbeiter-Branchen
 einzieht und dort links und rechts Geschäftsmodelle killt. Denn was anderes
 ist 
-[Sal Khan's "Khan Academy"]({{< ref "/content/posts/2010-06-30-kostenloskultur.md" >}})
+[Sal Khan's "Khan Academy"]({{< relref "/2010-06-30-kostenloskultur.md" >}})
 für Hersteller von Unterrichtsvideos? Was anderes
 sind 
-[Harry auf Deutsch]({{< ref "/content/posts/2009-04-27-politik-polemik-und-eine-agenda.md" >}})
+[Harry auf Deutsch]({{< relref "/2009-04-27-politik-polemik-und-eine-agenda.md" >}})
 oder Anime Fansubs, als die Anwendung des Wikipedia-Prinzips
 auf Übersetzungen und Untertitelungen? Was anderes ist 
 [O'Reillys Online Feedback Publishing System](http://ofps.oreilly.com/titles/9781449396107/index.html)

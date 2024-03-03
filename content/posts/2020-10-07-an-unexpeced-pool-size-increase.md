@@ -124,7 +124,7 @@ So
 - a machine load going up by 2 from 1 to 3 (per thread problem, two queries?)
 - long-running
 
-We have [seen this before]({{< ref "/content/posts/2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< ref "/content/posts/2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo-log size:
+We have [seen this before]({{< relref "/2019-11-18-a-blast-from-the-past.md" >}}), and we have seen it [a long time before that]({{< relref "/2011-04-28-mysql-undo-log.md" >}}) as well. Let’s check the undo-log size:
 
 ![](/uploads/2020/10/mysql-undo-log.png)
 
@@ -134,9 +134,9 @@ We observe a shark fin in the Undo-Log size that perfectly matches the time span
 
 ## We knew this is bad
 
-We know from [MySQL Transactions - the physical side]({{< ref "/content/posts/2020-07-27-mysql-transactions.md" >}}) what the Undo-Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.
+We know from [MySQL Transactions - the physical side]({{< relref "/2020-07-27-mysql-transactions.md" >}}) what the Undo-Log is and what it is being used for: It’s keeping old versions of a row so that a transaction can have a stable read view preventing phantom reads.
 
-We learned in [MySQL Transactions - the logical side]({{< ref "/content/posts/2020-07-29-mysql-transactions-the-logical-view.md" >}}) how the Undo-Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.
+We learned in [MySQL Transactions - the logical side]({{< relref "/2020-07-29-mysql-transactions-the-logical-view.md" >}}) how the Undo-Log is consulted, depending on the transaction isolation level setting of the reading connection. Go to that article now, and read the section on “Repeatable Read and Long Running Transactions”, now.
 
 The part where it says:
 
@@ -186,7 +186,7 @@ With such tooling, we need to connect what we teach with actual incidents that s
 
 Which is why I am typing up this thing, right now and link to the actual write-ups that enabled me to show you this. Go, read these things again, please, in the light of this particular episode.
 
-You know in your head what "Undo-Log" means. Here you can understand what "Undo-Log" feels like. Go, [touch the candle]({{< ref "/content/posts/2020-08-31-on-touching-candles.md" >}}).
+You know in your head what "Undo-Log" means. Here you can understand what "Undo-Log" feels like. Go, [touch the candle]({{< relref "/2020-08-31-on-touching-candles.md" >}}).
 
 We have all the tooling, but it is from a different age. 
 An age where people either routinely had access to production or sat next to a DBA in an office and could easily get at all the metrics.

@@ -8,7 +8,7 @@ tags:
 - security
 ---
 
-Dieser Artikel wurde von Lenz Grimmer auch [ins Englische]({{< ref "/content/posts/2021-11-16-a01-2021-broken-access-control-en.md" >}}) übersetzt.
+Dieser Artikel wurde von Lenz Grimmer auch [ins Englische]({{< relref "/2021-11-16-a01-2021-broken-access-control-en.md" >}}) übersetzt.
 
 In einem 
 [Twitter-Thread von Christian Basl](https://twitter.com/ChristianBasl/status/1459851276817158151)

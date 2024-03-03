@@ -25,8 +25,7 @@ interviewed Thomas de Maizière:
 > dann wird Karlsruhe darüber zu entscheiden haben.
 
 Wie 
-[immer]({{< ref "/content/posts/2006-12-26-bundestrojaner.md" >}})
+[immer]({{< relref "/2006-12-26-bundestrojaner.md" >}})
 möchte ich an dieser Stelle meine Forderung wiederholen, Politiker für die
 Folgen schlechter Gesetze im selben Umfang persönlich haftbar zu machen wie
 ich es etwa als Consultant vor Ort bin.
- 

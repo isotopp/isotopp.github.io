@@ -9,7 +9,7 @@ tags:
 - review
 title: 'Fertig gelesen: Die Krone der Sterne: Hexenmacht/Maschinengötter'
 ---
-"Hexenmacht" (German Edition) and "Maschinengötter" (German Edition) are part 2 and 3 in the series "Die Krone der Sterne" (The Crown of Stars) by Kai Meyer. See [Die Krone der Sterne]({{< ref "/content/posts/2017-02-13-fertig-gelesen-die-krone-der-sterne.md" >}}) for a review of part 1.
+"Hexenmacht" (German Edition) and "Maschinengötter" (German Edition) are part 2 and 3 in the series "Die Krone der Sterne" (The Crown of Stars) by Kai Meyer. See [Die Krone der Sterne]({{< relref "/2017-02-13-fertig-gelesen-die-krone-der-sterne.md" >}}) for a review of part 1.
 
 [![](/uploads/2020/05/hexenmacht.jpg)](https://www.amazon.de/-/en/Die-Krone-Sterne-Kai-Meyer-ebook/dp/B076Q1RZH9)
 

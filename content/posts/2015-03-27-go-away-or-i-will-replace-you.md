@@ -159,7 +159,7 @@ Applying developer methods to operations problems changes the environment and to
 - Systems are provisioned with "Infrastructure as Code", automatically and on demand, via an API with no humans involved.
 - The code for the application and the infrastructure itself resides in a shared version control system, where it can also be subject to automation.
 - There is a one step build and deploy automation that produces deliverables. These are then automatically deployed into production with zero humans involved, if so desired.
-- The deployment and the activation of code paths is separated, using feature flags and instrumentation to compare performance aspects of these code paths. Separation of deployment and activation is key to safe and fast rollouts, gradual activation and [one-click rollbacks]({{< ref "/content/posts/2020-01-17-rolling-back-a-rollout.md" >}}).
+- The deployment and the activation of code paths is separated, using feature flags and instrumentation to compare performance aspects of these code paths. Separation of deployment and activation is key to safe and fast rollouts, gradual activation and [one-click rollbacks]({{< relref "/2020-01-17-rolling-back-a-rollout.md" >}}).
 - Monitoring and freshness indicator on monitoring metrics are key to proper failure detection.
 - Instant and shared communication is key to decisive join action in failure situations.
 
@@ -374,6 +374,6 @@ Devops means that as a System Administrator you have to learn the tools of a Dev
 
 As a Devops Engineer, or Infrastructure Developer, it is your task to keep the entire stack in mind. Applying Infrastructure thinking to this means you know how that change 20 levels down in the stack affects production on a grander scale - because somebody has to know the details and understand all the dependencies.
 
-As a Devops Engineer you also need to teach enthusiastic young people with a feature developer mindset how to [touch candles]({{< ref "/content/posts/2020-08-31-on-touching-candles.md" >}}), how to fail safely, in order to make them actually experience a problem class, instead of just abstractly knowing about it somewhere in the back of their mind.
+As a Devops Engineer you also need to teach enthusiastic young people with a feature developer mindset how to [touch candles]({{< relref "/2020-08-31-on-touching-candles.md" >}}), how to fail safely, in order to make them actually experience a problem class, instead of just abstractly knowing about it somewhere in the back of their mind.
 
 If you do not do that, if you cannot do that, you will soon be replaced by a tiny shell script.

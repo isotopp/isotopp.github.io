@@ -22,7 +22,7 @@ This is not yet a proper talk, but some kind of collection of material I wrote a
 # What is "DevOps"?
 
 I had a talk on the German UNIX Users Group Spring Talks titled "Go Away, or I Will Replace You With a Very Little Shell Script" ("There is no such thing as a DevOps Team").
-The slides are on [Slideshare](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english), and I also have a [Blog article]({{< ref "/content/posts/2015-03-27-go-away-or-i-will-replace-you.md" >}}). 
+The slides are on [Slideshare](https://www.slideshare.net/isotopp/go-away-of-i-will-replace-you-with-a-little-shell-script-english), and I also have a [Blog article]({{< relref "/2015-03-27-go-away-or-i-will-replace-you.md" >}}). 
 The talk basically explains what happened in the 10 years after the Dotcom Boom, and how the adoption of "scale-out" instead of "scale-up" created the need for Sysadmins to pick up Developer tooling and some developer methods in order to deal with machinery in numbers. 
 
 While the tooling largely aligned, the outlook on life did not -- developers are looking at new features, basically new best cases.
@@ -54,7 +54,7 @@ The most obvious exposure to state that developers have when dealing with databa
 These are not https/TLS connections, and cannot be sent through regular https proxies such as Envoy.
 Why is that?
 
-Databases have a lot of [connection scoped state]({{< ref "/content/posts/2020-07-28-mysql-connection-scoped-state.md" >}}).
+Databases have a lot of [connection scoped state]({{< relref "/2020-07-28-mysql-connection-scoped-state.md" >}}).
 The most glaring example of state in a database connection is the transaction:
 If you are in the middle of a transaction and lose the connection to the database, the open transaction is being rolled back.
 
@@ -62,7 +62,7 @@ Developers need to catch this problem, and go back to the beginning of the trans
 So reconnecting to the database transparently and hiding the disconnect/reconnnect from the application is almost impossible.
 Developers are hating the database for this, or ignore the problem, producing incorrect code.
 
-Developers want a pony, and failing that, at least [a queue with exactly-once semantics]({{< ref "/content/posts/2021-01-28-database-as-a-queue.md" >}}).
+Developers want a pony, and failing that, at least [a queue with exactly-once semantics]({{< relref "/2021-01-28-database-as-a-queue.md" >}}).
 
 They can have that, up to a point, but at a terrible cost of one transaction per state change.
 It is a legal wish to have, if you can afford the cost, because it makes development easier and a lot more boring. 
@@ -72,7 +72,7 @@ You can, as a company, get away with "[boring technology](https://www.slideshare
 That is good, because it simplifies developer life and allows them to move forward without much technical complexity to take into account.
 Eventually you run out of runway, though, and need to take this on. 
 That's usually a painful breakpoint in the company's growth journey. 
-It also makes it very hard [to find database SRE people]({{< ref "/content/posts/2021-09-27-mysql-booking-2010-a-hiring-interview-question.md" >}}).
+It also makes it very hard [to find database SRE people]({{< relref "/2021-09-27-mysql-booking-2010-a-hiring-interview-question.md" >}}).
 
 ## Automating databases is hard, because of internode dependencies
 
@@ -98,13 +98,13 @@ Only salt and k8s have concepts that can handle clusters or where you can implem
 
 ## Automating database is slow, because data has weight
 
-Working with databases is always slow, [because data has weight]({{< ref "/content/posts/2022-02-16-databases-how-large-is-too-large.md" >}}). At 400 MB/s, copying 1 TB takes 45 minutes, and replication catchup and cache warmup take another 15 minutes, so we can calculate and communicate "1 hour per 1 TB of data size".
+Working with databases is always slow, [because data has weight]({{< relref "/2022-02-16-databases-how-large-is-too-large.md" >}}). At 400 MB/s, copying 1 TB takes 45 minutes, and replication catchup and cache warmup take another 15 minutes, so we can calculate and communicate "1 hour per 1 TB of data size".
 Of course "reactive autoscaling" is never a thing for persistence systems.
 All changes always need to be planned, and then take time.
 
 ## Automating databases is possible, but usually not done
 
-[When you have automated databases]({{< ref "/content/posts/2021-03-24-a-lot-of-mysql.md" >}}) to a point where
+[When you have automated databases]({{< relref "/2021-03-24-a-lot-of-mysql.md" >}}) to a point where
 
 - instances are made automatically,
 - instances enter their replication hierarchies automatically,
@@ -129,11 +129,11 @@ Stack upwards, in the general direction of the developer, and stack downwards, i
 MySQL for example, has pretty good aggregate monitoring -- the Telegraf MySQL collector is splendid and rather complete for a general MySQL collector.
 
 But the data collection for a singular query is underdeveloped, and gathering the data is slow and painful.
-If you try to collect data about a single SQL query that just ran, [it takes 10-12 followup queries to P_S]({{< ref "/content/posts/2021-09-15-mysql-tracing-a-single-query-with-performanceschema.md" >}}) to extract data about what this particular query did.
+If you try to collect data about a single SQL query that just ran, [it takes 10-12 followup queries to P_S]({{< relref "/2021-09-15-mysql-tracing-a-single-query-with-performanceschema.md" >}}) to extract data about what this particular query did.
 And you still did not have the execution plan, or the number of actual pages read for this single query.
 
 Conversely, while `blktrace` collects all kinds of data about the I/O a system sees, the open source tools to visualize this are underdeveloped.
-It took a commercial company and a commercial tool ([Oakgate Workload Intelligence Analytics]({{< ref "/content/posts/2021-02-24-validating-storage.md" >}})) to provide tools to parse `blktrace` and paint useful images from it.
+It took a commercial company and a commercial tool ([Oakgate Workload Intelligence Analytics]({{< relref "/2021-02-24-validating-storage.md" >}})) to provide tools to parse `blktrace` and paint useful images from it.
 
 # Stateful is different, and the gap is far from closing
 

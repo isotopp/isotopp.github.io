@@ -10,7 +10,7 @@ tags:
 title: Ein Ring mit zwei MySQL-Servern und auto_increment_increment
 ---
 Lalufu fragte in den Kommentaren von
-[Master-Master]({{< ref "/content/posts/2010-08-16-master-master-und-distributed-transactions.md" >}}):
+[Master-Master]({{< relref "/2010-08-16-master-master-und-distributed-transactions.md" >}}):
 
 > Ich habe eine MM-Replikation mit zwei Servern.
 >

@@ -96,7 +96,7 @@ Wen es interessiert: [OptiX OSN 6800](https://www.alibaba.com/product-detail/Hua
 
 *Mein Jitsi ruckelt nicht, Tweak.nl sei Dank!*
 
-Jedenfalls ist es, Cloud oder nicht, [sinnvoller Netz in die Schule zu legen]({{< ref "/content/posts/2020-06-23-schulen-digitalisieren.md" >}}) und für Strom und Netz in allen Klassenräumen zu sorgen (das muß man in jedem Fall tun!), als Server in die Schule zu stellen. Eine Schule ist ungefähr der dümmste mögliche Platz für Server, die Raspi 4s mit den Minecraft-Servern des Informatik-Kurses ausgenommen.
+Jedenfalls ist es, Cloud oder nicht, [sinnvoller Netz in die Schule zu legen]({{< relref "/2020-06-23-schulen-digitalisieren.md" >}}) und für Strom und Netz in allen Klassenräumen zu sorgen (das muß man in jedem Fall tun!), als Server in die Schule zu stellen. Eine Schule ist ungefähr der dümmste mögliche Platz für Server, die Raspi 4s mit den Minecraft-Servern des Informatik-Kurses ausgenommen.
 
 ## Wie sieht so etwas aus?
 

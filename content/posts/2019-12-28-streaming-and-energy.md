@@ -17,7 +17,7 @@ and
 [Bento](https://www.bento.de/politik/klickscham-wie-viel-co2-streaming-und-googlen-verursacht-und-welche-loesungen-es-gibt-a-c6e5ff54-71e9-46da-80cf-6ee1547d8b3a),
 but there is a larger series of articles acrooss multiple newspapers.
 
-A better structured reasoning can be found in [SRF](https://www.srf.ch/news/panorama/energieverbrauch-im-internet-warum-streaming-viel-strom-braucht) (German), and it highlights how arbitrary and wrong the energy numbers in the former articles are. But even this article ignores the facts that the energy consumption in a typical cloud data center is most likely carbon neutral, because the power used is likely to be completely green. How green exactly is depending on the cloud operator and the location of the data center - I have written a [much more detailed overview]({{< ref "/content/posts/2019-10-05-data-centers-and-energy.md" >}}) elsewhere in this blog.
+A better structured reasoning can be found in [SRF](https://www.srf.ch/news/panorama/energieverbrauch-im-internet-warum-streaming-viel-strom-braucht) (German), and it highlights how arbitrary and wrong the energy numbers in the former articles are. But even this article ignores the facts that the energy consumption in a typical cloud data center is most likely carbon neutral, because the power used is likely to be completely green. How green exactly is depending on the cloud operator and the location of the data center - I have written a [much more detailed overview]({{< relref "/2019-10-05-data-centers-and-energy.md" >}}) elsewhere in this blog.
 
 For some reason, the majority of these articles focus on video streaming, ignoring outright waste of energy at a much larger scale, for example blockchain use. Furthermore, most of the calculations on the energy use of specifically video streaming are making flawed assumptions. They are designed to create vastly oversized energy footprints, and even more oversized carbon footprints.
 
@@ -54,7 +54,7 @@ For encoding, the approaches differ. Netflix is running on AWS, and used to use 
 Google offers their own dedicated [video encoding cloud service](https://cloud.google.com/solutions/media-entertainment/use-cases/video-encoding-transcoding/), but does not document what they are using. It is likely that a hybrid of software and hardware encoding is being used: Google is known to have [fuzzed ffmpeg](https://www.quora.com/What-does-YouTube-use-for-encoding-video/answer/Ciro-Santilli) a lot and to use it extensively. Also, ffmpeg can [make use of GPU hardware for encoding](https://www.tal.org/tutorials/ffmpeg_nvidia_encode), when such hardware is available, and GCP has such hardware.
 
 
-**Running a cloud service uses energy, but it is way less energy than anybody else would use for the same job. Also, if you choose your cloud provider wisely, you may use energy, but won't produce CO2** I have explained that in [much more detail]({{< ref "/content/posts/2019-10-05-data-centers-and-energy.md" >}}) elsewhere.
+**Running a cloud service uses energy, but it is way less energy than anybody else would use for the same job. Also, if you choose your cloud provider wisely, you may use energy, but won't produce CO2** I have explained that in [much more detail]({{< relref "/2019-10-05-data-centers-and-energy.md" >}}) elsewhere.
 
 The TL;DR is: Cloud providers run data centers on renewable energy, Google is one of the worlds largest investors into solar and wind farms. So even if energy is being used, no CO2 is being produced to run the data center.
 

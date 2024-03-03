@@ -15,7 +15,7 @@ Another Friday, another replication hierarchy lost.
 # The error from June, July edition?
 
 The errors reported look awfully familiar: Binlog position is supposedly 4, and the error message has text about "max_allowed_packet".
-Could it be another instance of [this bug]({{< ref "/content/posts/2022-06-07-mysql-binlog-compression-and-large-transactions.md" >}}) from early last month?
+Could it be another instance of [this bug]({{< relref "/2022-06-07-mysql-binlog-compression-and-large-transactions.md" >}}) from early last month?
 
 Indeed, one symptom was "a large binlog, larger than max_binlog_size".
 We check.
@@ -32,7 +32,7 @@ Meh.
 
 # To the flight recorder
 
-Let's check the [flight recorder]({{< ref "/content/posts/2021-04-22-a-mysql-flight-recorder.md" >}}), again:
+Let's check the [flight recorder]({{< relref "/2021-04-22-a-mysql-flight-recorder.md" >}}), again:
 
 ```console
 # cd /var/log/mysql_pl/Fri
@@ -98,7 +98,7 @@ Checking the schema shows us two `MEDIUMTEXT` columns.
 
 # Analysis
 
-The mitigation from [last month]({{< ref "/content/posts/2022-06-07-mysql-binlog-compression-and-large-transactions.md" >}}) had not been implemented, yet.
+The mitigation from [last month]({{< relref "/2022-06-07-mysql-binlog-compression-and-large-transactions.md" >}}) had not been implemented, yet.
 It has now been escalated.
 
 The event triggering the outage was a transaction larger than 1 GB, as before, in the face of binlog compression.

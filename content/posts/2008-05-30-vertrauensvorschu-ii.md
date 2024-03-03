@@ -9,7 +9,7 @@ tags:
 title: Vertrauensvorschuß II
 ---
 Im Anschluß an 
-[Vertrauensvorschuß]({{< ref "/content/posts/2007-03-11-vertrauensvorschu.md" >}}):
+[Vertrauensvorschuß]({{< relref "/2007-03-11-vertrauensvorschu.md" >}}):
 
 - [Volkswagen](http://de.wikipedia.org/wiki/VW-Korruptionsaffäre)
 - [Siemens](http://de.wikipedia.org/wiki/Arbeitsgemeinschaft_Unabhängiger_Betriebsangehöriger)

@@ -12,7 +12,7 @@ title: 'Neue Ideen in Dateisystemen (oder: BTRFS in Fedora 11)'
 ---
 > There are two kinds of fool. One says, “This is old, and therefore good..” And one says “This is new, and therefore better..”	—John Brunner, in The Shockwave Rider
 
-Neue Ideen in Dateisystemen sind so eine Sache. Es handelt sich bei einem Dateisystem ja um Infrastrukturcode par excellence, und so reden die meisten Leute gerne von ihrem letzten Datenverlust, wenn man sie nach Dateisystemen befragt. Das ist nicht neu, ich habe in [The Importance Of FAIL]({{< ref "/content/posts/2008-05-30-the-importance-of-fail.md" >}}) das Thema ja schon mal angeschnitten.
+Neue Ideen in Dateisystemen sind so eine Sache. Es handelt sich bei einem Dateisystem ja um Infrastrukturcode par excellence, und so reden die meisten Leute gerne von ihrem letzten Datenverlust, wenn man sie nach Dateisystemen befragt. Das ist nicht neu, ich habe in [The Importance Of FAIL]({{< relref "/2008-05-30-the-importance-of-fail.md" >}}) das Thema ja schon mal angeschnitten.
 
 Neue Ideen in Dateisystemen sind auch langsam. 1984 bis 1992 gab es das 
 [Sprite Projekt](http://en.wikipedia.org/wiki/Sprite_operating_system) in Berkeley, bei dem es um die Entwicklung eines rechnerübergreifenden Betriebssystems ging. Teil von Sprite war auch etwas, das sich [LFS (Log Structured Filesystem)](http://en.wikipedia.org/wiki/Log-structured_file_system) nannte.

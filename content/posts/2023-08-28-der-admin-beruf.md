@@ -23,7 +23,7 @@ Er wird zunehmend ersetzt durch die Kombination von *Infrastrukturentwicklung* u
 Infrastrukturentwicklung befasst sich dabei mit der Automatisierung von Provisionierung, Konfiguration, Betrieb, Überwachung und Aktualisierung.
 Neben Kenntnissen über Betrieb sind auch Kenntnisse der Programmentwicklung notwendig.
 
-[Mehr zu Devops]({{< ref "/content/posts/2015-03-27-go-away-or-i-will-replace-you.md" >}})
+[Mehr zu Devops]({{< relref "/2015-03-27-go-away-or-i-will-replace-you.md" >}})
 in einem älteren Talk von mir.
 
 # Betriebsprozesse finden und durch Code unterstützen
@@ -65,7 +65,7 @@ Jens Finkhäuser
 > Was hat sich jetzt genau geändert? 
 
 Es gibt Perl und es gibt SysAdmin Perl.
-Das ist im Grunde die Diskussion aus [Using Python to bash]({{< ref "/content/posts/2021-01-05-using-python-to-bash.md" >}}).
+Das ist im Grunde die Diskussion aus [Using Python to bash]({{< relref "/2021-01-05-using-python-to-bash.md" >}}).
 
 ## Anerkennung?
 

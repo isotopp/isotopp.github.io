@@ -11,7 +11,7 @@ tags:
 title: Zehn Zentimeter
 ---
 > Kristian, wenn Du über Performance redest, dann redest Du immer von
-> [verteilten, asynchronen Systemen]({{< ref "/content/posts/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}).
+> [verteilten, asynchronen Systemen]({{< relref "/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}).
 > Verteilte, asynchrone Systeme sind doof, schwer zu programmieren und
 > laufen der Theorie zuwider, die ich an der Uni gelernt habe. Ich warte
 > glaube ich lieber auf schnellere Prozessoren.

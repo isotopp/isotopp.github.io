@@ -36,7 +36,7 @@ Es ist nicht möglich, bestimmte Firmen von der Nutzung GPL lizenzierter Softwar
 Das ist Absicht und wird von den Entwicklern der GPL als Feature gesehen.
 
 Die GPL geht zweigleisig an das Problem heran (
-[mehr Details]({{< ref "/content/posts/2005-02-07-von-der-gpl.md" >}}))
+[mehr Details]({{< relref "/2005-02-07-von-der-gpl.md" >}}))
 . Die ersten drei Freiheiten, die die GPL gewährt, sind 
 
 - Die Freiheit, das Programm zu jedem Zweck auszuführen.
@@ -66,7 +66,7 @@ Auch nicht für die ursprünglichen Lizenzinhaber.
 Die GPL gibt damit Sicherheit:
 Die Freiheiten, die die GPL gewährt, sind auch dann sicher, wenn unter den Beteiligten in irgendeiner Weise Unstimmigkeiten herrschen oder ein offener Disput besteht.
 Die GPL und GPL lizensierte Software 
-[spielen nicht am Markt]({{< ref "/content/posts/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md" >}}) der kompetitiven Player und sind im Gegensatz zu anderen Lizenzen absichtlich so gestaltet, daß die Lizenz-politischen Instrumente der kompetitiven Player nicht zum Einsatz kommen können.
+[spielen nicht am Markt]({{< relref "/2006-09-19-gpl-marktdurchdringung-ist-kein-wert-an-sich.md" >}}) der kompetitiven Player und sind im Gegensatz zu anderen Lizenzen absichtlich so gestaltet, daß die Lizenz-politischen Instrumente der kompetitiven Player nicht zum Einsatz kommen können.
 
 Die GPL ist die Verfassung der kooperativen Spieler.
 Sie ist so gestaltet, daß sie alle Parteien für immer entwaffnet, solange sie im kooperativen Bereich spielen, und daß sie kompetitive Spieler draußen hält:
@@ -86,7 +86,7 @@ Die GPL erzwingt und belohnt kooperatives Verhalten.
 Die in den letzten 10 Jahren neu eröffneten Kriegsschauplätze Lizenzen und Marken sind den Entwicklern der GPL wohl bewusst und die Arbeit an der 
 [GPL V3](http://gplv3.fsf.org/gpl-draft-2006-07-27.html) 
 geht voran (
-[mehr Details]({{< ref "/content/posts/2006-07-30-gpl-v3-2nd-draft.md" >}}})).
+[mehr Details]({{< relref "/2006-07-30-gpl-v3-2nd-draft.md" >}}})).
 Über die neuen Bestimmungen der GPL V3 ist viel gejammert worden, insbesondere auch vom Linux Kernel Team.
 
 Darum gibt es eine 

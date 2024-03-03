@@ -11,7 +11,7 @@ tags:
 - erklaerbaer
 title: Cloud and Energy
 ---
-In [Data Centers and Energy]({{< ref "/content/posts/2019-10-05-data-centers-and-energy.md" >}}) I wrote about Hyperscaler Data Centers and Open Compute, and how they bring down the PUE of data centers, making them more efficient, and in [Streaming and Energy]({{< ref "/content/posts/2019-12-28-streaming-and-energy.md" >}}) I followed up on this, explaining how Netflix energy usage fits into this. Now the Uptime Institute has released [a study](https://journal.uptimeinstitute.com/data-center-pues-flat-since-2013/) that claims "Data center energy efficiency gains have flattened out".
+In [Data Centers and Energy]({{< relref "/2019-10-05-data-centers-and-energy.md" >}}) I wrote about Hyperscaler Data Centers and Open Compute, and how they bring down the PUE of data centers, making them more efficient, and in [Streaming and Energy]({{< relref "/2019-12-28-streaming-and-energy.md" >}}) I followed up on this, explaining how Netflix energy usage fits into this. Now the Uptime Institute has released [a study](https://journal.uptimeinstitute.com/data-center-pues-flat-since-2013/) that claims "Data center energy efficiency gains have flattened out".
 
 It is summarized as:
 > The average power usage effectiveness (PUE) ratio for a data center in 2020 is 1.58, only marginally better than 7 years ago, according to the latest annual Uptime Institute survey (findings to be published shortly).

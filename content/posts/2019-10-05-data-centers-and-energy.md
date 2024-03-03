@@ -18,7 +18,7 @@ computers are using power.
 
 Let's have a look.
 
-**EDIT:** Second part [Streaming and Energy]({{< ref "/content/posts/2019-12-28-streaming-and-energy.md" >}}) now available.
+**EDIT:** Second part [Streaming and Energy]({{< relref "/2019-12-28-streaming-and-energy.md" >}}) now available.
 
 ## End-User Device.
 
@@ -131,7 +131,7 @@ Finally, computer power usage is not linear: Power management on
 a data center CPU turns cores on and off as needed, and thus, a
 CPU uses already circa 50% power at 10% utilisation. From a cost
 and from an environmental perspective it is best to utilise any
-CPU to the fullest. Some older [measurements of mine]({{< ref "/content/posts/2017-07-19-threads-vs-watts.md" >}}) on this.
+CPU to the fullest. Some older [measurements of mine]({{< relref "/2017-07-19-threads-vs-watts.md" >}}) on this.
 
 ## Networking
 

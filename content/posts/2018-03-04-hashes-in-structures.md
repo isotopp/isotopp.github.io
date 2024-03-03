@@ -10,7 +10,7 @@ tags:
 title: Hashes in Structures
 ---
 In 
-[Hashes and their uses]({{< ref "/content/posts/2018-02-26-hashes-and-their-uses.md" >}}) 
+[Hashes and their uses]({{< relref "/2018-02-26-hashes-and-their-uses.md" >}}) 
 we have been talking about hash functions in general, and
 cryptographic hashes in particular. We wanted four things from
 cryptographic hashes:
@@ -276,4 +276,4 @@ patent for Merkle Trees was created by Ralph Merkle in 1979 (and
 [granted in 1982](https://worldwide.espacenet.com/publicationDetails/biblio?CC=US&NR=4309569&KC=&FT=E&locale=en_EP))
 and is since expired. Eternal Log files are an idea created by
 David Chaum even before that. Continued from 
-[Hashes and their uses]({{< ref "/content/posts/2018-02-26-hashes-and-their-uses.md" >}})
+[Hashes and their uses]({{< relref "/2018-02-26-hashes-and-their-uses.md" >}})
