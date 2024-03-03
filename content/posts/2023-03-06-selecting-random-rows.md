@@ -230,7 +230,7 @@ mysql> select * from tbl as t1
 +----------+--------------------------------------+----------+
 1 row in set (0.82 sec)
 
-```
+```console
 
 # Consuming rows
 

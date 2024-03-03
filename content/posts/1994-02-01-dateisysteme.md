@@ -57,7 +57,7 @@ sodass auf einer 200 MB Festplatte in etwa 50 000 I-Nodes angelegt werden.
 Zum Glück sind I-Nodes relativ kleine Datenstrukturen von nur 128 Bytes. 
 Im Schnitt verschwinden also auf diese Weise 3 % des gesamten Plattenplatzes in Verwaltungsinformationen.
 
-```
+```console
 struct  dinode
 {
 /*	Typ     Feldname          Byte-Offset: Beschreibung */

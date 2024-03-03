@@ -47,7 +47,7 @@ diesem Verzeichnis arbeitet, funktioniert nur für den Systemverwalter.
 
 Hier sind die korrekten Zugriffsrechte für diese Verzeichnisse:
 
-```
+```console
 root@white:~# ls -ld /tmp /var/tmp /usr/tmp
 drwxrwxrwt   3 root     root         1024 Jul 20 16:43 /tmp
 lrwxrwxrwx   1 root     root            8 Jul  8 14:55 /usr/tmp -> /var/tmp
@@ -61,7 +61,7 @@ Wartung an Cnews muß immer als news erfolgen!* Ich habe dem
 `news`-User der Slackware daher ein Homeverzeichnis und ein
 Paßwort gegeben:
 
-```
+```console
 root@white:~# grep news /etc/passwd
 news:deletedforsafety:9:13:white.schulung.netuse.de news:/var/lib/news:
 
@@ -93,7 +93,7 @@ An einigen der Programme unterhalb von `/usr/lib/newsbin` habe ich
 mich vergriffen, damit das Newssystem so funktioniert, wie ich mir das
 vorgestellt habe. Im Einzelnen waren die Änderungen:
 
-```
+```console
 news@white:/usr/lib/newsbin$ find . -type f -mtime -100 -print
 ./ctl/newgroup
 ./maint/newsdaily
@@ -119,7 +119,7 @@ Es genügt, `pnews` in den Editor zu laden und nach dem Text "`Lines`" zu suchen
 
 Keine dieser Änderungen war kritisch. Es sind mehr Schönheitskorrekturen. Wichtiger sind stattdessen die Steuerdateien von Cnews. Sie befinden sich wie gesagt in `/var/lib/news`. Im Unterverzeichnis `bin` steht dort eine Datei `config`. Sie enthält einen Haufen Informationen, die die Shellscripte von Cnews benötigen. Diese Informationen müssen genau mit den Steuerinformationen des restlichen Newssystems übereinstimmen oder Cnews stellt die Arbeit kommentarlos ein. Daher darf diese Datei niemals verändert werden. Leider hatte sie jemand verändert, jedenfalls war sie schon auf der CD falsch. Hier ist die korrekte `/usr/lib/news/bin/config`:
 
-```
+```console
 # configuration -- all the shell files pick this up using "."
 # this makes it possible to add new variables here and have them
 #  available everywhere immediately
@@ -148,7 +148,7 @@ NEWSCONFIG=${NEWSCONFIG-/var/lib/news/bin/config}
 
 Jetzt kann man daran gehen, den Rest des Newssystems zu konfigurieren. Als erstes muß die Identität des Systems korrekt eingestellt werden: In den Dateien `whoami` und `mailname` muß der komplette Name des eigenen Systems inklusive Domain eingetragen werden. Da mein System den Namen `white.schulung.netuse.de` trägt, habe ich also diese Namen eingesetzt:
 
-```
+```console
 news@white:~$ cat whoami
 white.schulung.netuse.de
 news@white:~$ cat mailname
@@ -159,7 +159,7 @@ Leider steht hier im `NEWS-HOWTO` und in der Anleitung von Cnews, daß man in `w
 
 Der nächste Handgriff gilt der Datei `organization`, die den Inhalt der gleichnamigen Headerzeile darstellt. In dieser einzeiligen Datei soll die eigene Organisation möglichst kurz und prägnant beschrieben werden.
 
-```
+```console
 news@white:~$ cat organization
 My personal Linux in Kiel, Germany.
 ```
@@ -168,13 +168,13 @@ Die dritte, relativ statische Konfigurationsdatei betrifft moderierte Newsgroups
 
 Das genaue Format der Datei mailpaths ist in einem Artikel beschrieben, der von David C. Lawrence regelmäßig in den internationalen Gruppen `news.lists`,`news.admin.misc` und `news.answers `unter dem Titel "How to Construct the Mailpaths File" veröffentlicht wird.  Aber für den Anfang genügt es, dort den Text
 
-```
+```console
 news@white:~$ cat mailpaths
 backbone     uunet.uu.net!%s
 ```
 einzutragen. Nachdem diese vier kleinen Konfigurationsdateien einmal aufgesetzt worden sind, kann man sie erst einmal vergessen. Die folgenden Steuerdateien sind wichtiger. Sie benötigen im Laufe der Existenz eines Newssystems wahrscheinlich gelegentlich Anpassungen, wenn weitere Gruppen eingerichtet werden oder wenn die Festplatte volläuft. Die erste dieser zentralen Konfigurationsdateien ist die Datei `sys`. Sie legt fest, welche Newsgroups wir überhaupt akzeptieren und an wen wir Newsgroups weiterleiten.
 
-```
+```console
 news@white:~$ cat sys
 # Diese Zeile zeigt an, welche Newsgroups wir überhaupt akzeptieren:
 # Wir nehmen jeden Müll an. Warum Streß machen...
@@ -208,7 +208,7 @@ nuki/nuki.NetUSE.de:all,all.all,!white.all/all,!white,!local:f:
 
 Alle Zeilen mit "#" in dieser Datei sind selbstverständlich Kommentare. Sie können gerne weggelassen werden. Neu erzeugte Artikel müssen natürlich irgendwann einmal verpackt und an `nuki.netuse.de` weitergeleitet werden. Wie das geschieht, steuert die Datei `batchparms`. Sie muß für jedes System, an das wir senden wollen, einen Eintrag enthalten:
 
-```
+```console
 news@white:~$ cat batchparms
 # big batches for fast modem (ISDN!), simple compression
 # site          size    queue   builder muncher sender
@@ -219,7 +219,7 @@ nuki            500000  20      batcher compcun viauux
 So, jetzt können wir daran gehen, einen Spoolbereich für News einzurichten und danach können dann Gruppen erzeugt werden. Standardmäßig sieht es bei der Slackware so aus:
 
 
-```
+```console
 news@white:~$ cd /usr/spool/news
 news@white:/usr/spool/news$ ls
 news@white:/usr/spool/news$
@@ -227,7 +227,7 @@ news@white:/usr/spool/news$
 
 Nichts da. Für jede Gruppe in der Datei `~news/active` muß hier ein passendes Unterverzeichnis angelegt werden. Außerdem brauchen wir noch einige Spezialverzeichnisse.
 
-```
+```console
 news@white:/usr/spool/news$ cat ~news/active
 junk 000000001 00001 y
 control 000000001 00001 y
@@ -238,7 +238,7 @@ news@white:/usr/spool/news$ mkdir in.coming in.coming/bad out.going out.going/nu
 
 Statt nuki und nuki.netuse.de müssen natürlich die Namen des eigenen Feeds als Verzeichnisnamen eingesetzt werden. Aber zurück in das Verzeichnis `~news`: Im Laufe des Lebens des Newssystems wird man sich öfter als User `news` einloggen müssen. Also sollte man diesem Benutzer in seinem Home eine vernünftige `.profile` verpassen. Hier ist eine:
 
-```
+```console
 news@white:~$ cat .profile
 echo ".profile"
 PATH=/bin:/usr/bin:/usr/local/bin:/usr/sbin:/sbin:/usr/lib/newsbin/maint:/usr/lib/newsbin/expire:/usr/lib/newsbin/input:/usr/lib/newsbin/batch
@@ -246,7 +246,7 @@ PATH=/bin:/usr/bin:/usr/local/bin:/usr/sbin:/sbin:/usr/lib/newsbin/maint:/usr/li
 
 Diese Pathangabe ist ziemlich lang, aber sie vereinfacht die Wartung des Newssystems. Nach dem Einlesen der `.profile`-Datei kann man sich dann daran machen, Newsgroups anzulegen:
 
-```
+```console
 news@white:~$ . .profile
 news@white:~$ echo $PATH
 /bin:/usr/bin:/usr/local/bin:/usr/sbin:/sbin:/usr/lib/newsbin/maint:/usr/lib/newsbin/expire:/usr/lib/newsbin/input:/usr/lib/newsbin/batch
@@ -255,13 +255,13 @@ news@white:~$ addgroup gewuenschte.name.fuer.die.gruppe y
 
 Mit dem Kommando `addgroup` kann man neue Newsgroups anlegen. Auf jeden Fall sollte man sich eine lokale Gruppe zum Testen anlegen. Diese Gruppe sollte *nicht* nach draußen exportiert werden. Im Beispiel oben ist die Gruppenhierarchie `white.all` schon dafür vorbereitet worden. Also kann man gefahrlos eine Gruppe `white.test` anlegen:
 
-```
+```console
 news@white:~$ addgroup white.test y
 ```
 
 Weiterhin möchte man natürlich Newsgroups anlegen, die man von seinem Feed bestellt hat. Am einfachsten geht das, indem man eine Datei anlegt, in der diese Gruppen aufgezählt sind, jeweils ein Name pro Zeile. Im Beispiel enthält die Datei `x` eine solche Liste. Wir zeigen nur den Kopf dieser Liste, um Platz zu sparen:
 
-```
+```console
 news@white:~$ head x
 alt.fan.pratchett
 alt.tv.babylon-5
@@ -279,7 +279,7 @@ news@white:~$ cat x | xargs -i addgroup {} y
 Das Kommando `xargs` sorgt dafür, daß sein Parameter `addgroup` für jede Zeile der Standardeingabe einmal ausgeführt wird. Es wird also für jede Zeile der Datei `x` ein `addgroup`-Kommando gestartet. Nachdem dies abgeschlossen ist (es dauert eine gewisse Zeit), könnten im Prinzip schon News eingespielt werden. Wir möchten jedoch auch, daß diese Artikel nach einer gewissen Zeit wieder verschwinden. Daher muß auch noch konfiguriert werden, in welcher Gruppe die Artikel wieviele Tage verbleiben sollen. Die Steuerdatei, die dies regelt, ist die Datei `explist`:
 
 
-```
+```console
 news@white:~$ cat explist
 # Die Reihenfolge der Zeilen in dieser Datei ist wichtig!
 
@@ -298,7 +298,7 @@ all                             x       7       -
 Wenn man auch damit durch ist, kann das System endlich auf Autopiloten gestellt werden. Daztu muß eine Datei `crontab.news` im Homeverzeichnis von news erzeugt werden. Sie sollte so aussehen:
 
 
-```
+```console
 # Auspacken von neu eingegangenen News
 0,10,20,30,40,50 *  * * * /usr/lib/newsbin/input/newsrun
 
@@ -323,19 +323,19 @@ Wenn man auch damit durch ist, kann das System endlich auf Autopiloten gestellt 
 Die auskommentierten Zeilen sind nur wichtig, wenn der Newsreader nn verwendet wird. In diesem Fall müssen sie aktiviert werden, d.h. die Kommentarzeichen müssen gelöscht werden. Die Crontab-Datei wird mit dem Kommando¯
 
 
-```
+```console
 news@white:~$ crontab crontab.sample
 ```
 
 installiert und kann mit dem Kommando
 
-```
+```console
 news@white:~$ crontab -l
 ```
 
 geprüft werden. Die Crontab regelt, wann am Tag das Programm cron bestimmte Tätigkeiten ausführt. So bedeutet die Zeile
 
-```
+```console
 59 0  * * * /usr/lib/newsbin/expire/doexpire
 ```
 
@@ -343,7 +343,7 @@ aus der Crontab oben zum Beispiel, daß jeden Tag um 0 Uhr 59 das Programm `doex
 
 Jetzt können wir daran gehen, das System zu testen:
 
-```
+```console
 news@white:~$ inews -n white.test -t "Testing" -d local
 Yummy Yummy Yummy
 ^D
@@ -352,7 +352,7 @@ news@white:~$
 
 Dies sollte eine Datei in in.coming erzeugen:
 
-```
+```console
 news@white:~$ cd /usr/spool/news/in.coming/
 news@white:/usr/spool/news/in.coming$ ls
 0.1435483580.t  bad
@@ -376,7 +376,7 @@ Die `Path:`-Zeile sollte nur den Namen des Absender enthalten. Die Absenderadres
 
 Wenn das alles stimmt, kann der Benutzer `news` (und nur `news`, *niemals* ein anderer!) das Kommando `newsrun` aufrufen. Das dauert in etwa eine Minute, weil in `newsrun` ein "`sleep 45`" enthalten ist.
 
-```
+```console
 news@white:/usr/spool/news/in.coming$ which newsrun
 /usr/lib/newsbin/input/newsrun
 news@white:/usr/spool/news/in.coming$ newsrun
@@ -389,7 +389,7 @@ news@white:/usr/spool/news/in.coming$ bg
 Im Logbuch muß jetzt ein Eintrag zu finden sein:
 
 
-```
+```console
 news@white:/usr/spool/news/in.coming$ cd
 news@white:~$ tail -2 log
 Jul 20 16:39:50.000 nuki.NetUSE.de + <3uljtj$fb4@picard.toppoint.de>
@@ -399,7 +399,7 @@ Jul 20 17:35:52.000 white.schulung.netuse.de + <DC0tuC.70H@white.schulung.netuse
 Der letzte Eintrag zeigt an, daß der Artikel erfaßt und akzeptiert worden ist. Wir sehen ihn uns an:
 
 
-```
+```console
 news@white:~$ ls -l /usr/spool/news/white/test/
 total 1
 -rw-r--r--   1 news     news          237 Jul  9 23:10 1
@@ -407,7 +407,7 @@ total 1
 
 Das ist er. Durch das Einspielen in das Newssystem haben sich einige Headerzeilen (zum Beispiel der `Path:`) etwas verändert. Das ist normal. Der nächste Schritt im Test ist es, einen Artikel zu erzeugen, der den unseren Feed weitergegeben wird:
 
-```
+```console
 news@white:~$ inews -n nuki.test -t "Testing"
 Yummy Yummy Yummy
 ^D
@@ -415,7 +415,7 @@ Yummy Yummy Yummy
 
 Dies ist kein Artikel mit der Distribution "`local`" und er ist nicht in einer lokalen Gruppe. Also sollte er an `nuki` weitergegeben werden:
 
-```
+```console
 news@white:~$ newsrun &
 [1] 9177
 news@white:~$ cd /usr/spool/news/out.going/nuki/
@@ -428,7 +428,7 @@ nuki/test/1 264
 
 Das `newsrun` hat den Artikel wieder in das Newssystem übernommen. Außer der Installation der Artikeldatei in `/usr/spool/news/nuki/test` ist aber noch etwas anderes passiert: In `.../out.going/nuki` ist eine Datei `togo` angelegt worden. Sie enthält ein Logbuch der noch zu packenden Artikel für das System `nuki`. Die Zahl hinter dem Artikelnamen ist die Länge des Artikels in Byte. Das Programm `sendbatches` wird die Datei togo einlesen und einen UUCP-Job für nuki erzeugen:
 
-```
+```console
 news@white:/usr/spool/news/out.going/nuki$ sendbatches
 ^Z
 [2]+  Stopped                 sendbatches
@@ -458,7 +458,7 @@ Wenn beide Pakete installiert sind, sollte es genügen, im entsprechenden Verzei
 
 Die resultierenden Postscript-Dateien können ausgedruckt werden oder mit `ghostview` oder Ghostscript angesehen werden. Die wichtigen Informationen stehen in der Datei `guide.ps`.
 
-```
+```console
 root@white:/usr/doc/cnews/docs# ls -l *ps
 -rw-r--r--   1 root     root       310197 Jul 21 11:42 guide.ps
 -rw-r--r--   1 root     root        29305 Jul 21 11:43 index.ps
@@ -467,7 +467,7 @@ root@white:/usr/doc/cnews/docs# ls -l *ps
 
 Es ist auch möglich, eine ASCII-Version der `guide`-Datei zu erzeugen. Dazu ist das Kommando
 
-```
+```console
 root@white:/usr/doc/cnews/docs# pmake guide.out
 root@white:/usr/doc/cnews/docs# ls -l guide.out
 -rw-r--r--   1 root     root       223706 Jul 21 11:47 guide.out

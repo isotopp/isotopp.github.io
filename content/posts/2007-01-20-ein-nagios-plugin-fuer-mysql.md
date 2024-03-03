@@ -331,7 +331,7 @@ Oder Slave-IO und Slave-SQL testen:
 
 Oder eben die Anzahl der Threads_connected prüfen und ggf. anmeckern:
 
-```
+```console
   if (mode == connections) {
     char *p;
     int   conn = 0;

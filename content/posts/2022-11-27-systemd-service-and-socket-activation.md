@@ -127,7 +127,7 @@ $ ps axuwww | grep system[d] | grep user
 kris      327983  0.1  0.0  20144 11948 ?        Ss   Nov06  31:11 /lib/systemd/systemd --user
 gdm      2419957  0.1  0.0  18768 10884 ?        Ss   Nov21  13:03 /lib/systemd/systemd --user
 
-```
+```console
 
 So we define a `service` unit using `systemctl --user --full --force kris.service` and then do the same for a `socket` unit:
 

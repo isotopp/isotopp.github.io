@@ -10,7 +10,7 @@ tags:
 - internet
 ---
 
-```
+```console
 'tis night
 while I am
 with the green glow

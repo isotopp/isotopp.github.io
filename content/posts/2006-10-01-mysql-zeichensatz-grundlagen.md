@@ -299,7 +299,7 @@ linux:/export/data/charset # od -t x1a kris.sql
           v   '   )   ;  nl   U   N   L   O   C   K  sp   T   A   B   L
 ...
 
-```
+```console
 
 
 Wir können nun leicht dieses Dumpfile um ein "CREATE DATABASE kris CHARSET

@@ -47,7 +47,7 @@ Natürlich muß nicht nur der Webserver geschützt werden: Auch alle anderen Mas
 
 ## nmap-Scan (http://www.insecure.org/nmap/)
 
-```
+```console
 # nmap -sS -T Agressive -p 1-10000 www.beispiel1.de| grep open
 Port    State       Protocol  Service
 21      open        tcp       ftp
@@ -68,7 +68,7 @@ Manchmal findet man einen offenen Port, kann aber nicht sagen, welches Programm 
 Hier ist ein Tool wie `lsof` sehr nützlich.
 Alle lokal offenen Ports und die dazugehörigen Programme kann man mit dem Kommando `lsof -P -n -i` auflisten.
 
-```
+```console
 # lsof -P -n -i
 COMMAND    PID USER   FD   TYPE DEVICE SIZE NODE NAME
 xfstt       46 root    4u  IPv4     30       TCP *:7100 (LISTEN)
@@ -80,7 +80,7 @@ smbd     11741 root    6u  IPv4  28689       TCP 193.102.57.3:139->193.102.57.2:
 
 Durch die Angabe von Suchoptionen kann man gezielt nach Protokoll und Port suchen:
 
-```
+```console
 # lsof -P -n -i tcp:139
 COMMAND   PID USER   FD   TYPE DEVICE SIZE NODE NAME
 smbd      276 root    5u  IPv4    175       TCP *:139 (LISTEN)
@@ -94,7 +94,7 @@ Alternativ kann man sich auch die Daten im DNS ansehen, die ein Serverbetreiber 
 
 Am Beispiel der Domain `beispiel1.de`:
 
-```
+```console
 # nslookup
 
 > set type=ns
@@ -162,7 +162,7 @@ Das Programm kann auch eingesetzt werden, um Portscans von Rechnern durchzuführ
 Mit Hilfe der Tools `rpcinfo` und `showmount` (Linux: auch `kshowmount`) kann man abfragen, welche Dienste der `sunrpc`-Dienst  erbringt.
 Falls das SUN Network Filesystem (NFS) zu diesen Diensten gehört, kann man weiterfragen, welche Dateisysteme und für wen exportiert werden.
 
-```
+```console
 # rpcinfo -p www.beispiel1.de
    program vers proto   port
     100000    4   tcp    111  portmapper
@@ -179,7 +179,7 @@ Das ist nicht notwendig und der Dienst kann blockiert werden, etwa durch eine Fi
 Eine sehr häufige Fehlkonfiguration besteht darin, Verzeichnisse mit NFS weltweit les- und schreibbar freizugeben. 
 Beispielhaft unsicher die Server von `beispiel2.de`:
 
-```
+```console
 # /usr/sbin/kshowmount -e rzserv2.beispiel2.de
 Export list for rzserv2.beispiel2.de:
 /usr/lib/cobol       (everyone)
@@ -211,7 +211,7 @@ Daher taucht der Dienst auf dem Radar vieler Systemadministratoren nicht auf.
 
 Wieder dienen die Server von `beispiel2.de` als abschreckendes Beispiel:
 
-```
+```console
 # snmpwalk rzserv2.beispiel2.de public
 system.sysDescr.0 = OCTET STRING: "Fore Systems ATM Host (AIX 1 000005016600)"
 system.sysObjectID.0 = OBJECT IDENTIFIER: enterprises.326.2.1
@@ -251,7 +251,7 @@ Da diese Verzeichnisse über das Wartungs-FTP, nicht aber mit HTTP zugänglich s
 Alternativ legt man Verzeichnisse unterhalb der Document Root an und verbietet den Zugriff per HTTP auf das Verzeichnis durch Anlegen einer `.htaccess`-Datei (Apache-Webserver).
 Die Datei sollte den Zugriff von überall verbieten:
 
-```
+```console
 $ cat /shop/.htaccess
 order deny, allow
 deny from all

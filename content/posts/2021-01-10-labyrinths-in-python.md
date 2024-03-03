@@ -121,7 +121,7 @@ So let's make one:
 
         return s
 
-```
+```console
 
 Our `Labyrinth` is mostly a container for these integers representing cells, with a bit of sugar on top. Let's make the cells directly accessible:
 
@@ -332,7 +332,7 @@ class LabyrinthPainter:
 
         return
 
-```
+```console
 
 We start pygame, and make us a surface in a window:
 

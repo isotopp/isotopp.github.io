@@ -32,7 +32,7 @@ init erzwingt nicht, daß bestimmte Run-Level (ausgenommen S) bestimmte Bedeutun
 
 Eine Zeile der `inittab` hat dabei das folgende Format:
 
-```
+```console
 	id:runlevels:action:process
 ```
 
@@ -70,13 +70,13 @@ Dabei sollte man auf jeden Fall darauf achten, daß die `rc.local`-Datei beendet
 
 Der Fehler tritt zum Beispiel gerne dann auf, wenn man in `rc.local` einen Dämon startet (es ist ein Characteristikum von Dämonen, daß sie sich nach Möglichkeit nicht beenden), der sich nicht automatisch selbst in den Hintergrund schiebt. Zum Beispiel schiebt sich der `nnmaster`-Aufruf
 
-```
+```console
 	/usr/lib/nn/nnmaster -l -r -C
 ```
 
 automatisch in den Hintergrund, während
 
-```
+```console
 	/usr/lib/nn/nnmaster -f -l -r -C
 ```
 
@@ -104,7 +104,7 @@ Das folgende Listing zeigt den inittab-Eintrag und ein Listing von `/etc/rc5`.
 
 Der Eintrag in der `/etc/inittab`:
 
-```
+```console
 r5:5:once:/etc/rc5
 ```
 Das zugehörige Script:
@@ -149,7 +149,7 @@ fi
 
 ## Slackware inittab
 
-```
+```console
 #
 # inittab       This file describes how the INIT process should set up
 #               the system in a certain Run-Level.

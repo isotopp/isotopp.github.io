@@ -66,7 +66,7 @@ kris@localhost [kris]> select * from t;
 +----+------------+
 4 rows in set (0.00 sec)
 
-```
+```console
 
 You can also use `\G` (note the upper case "G") to terminate a command.
 This will output results as Key-Value pairs.

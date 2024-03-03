@@ -22,7 +22,7 @@ geführt, die Signed Integer als ID für Flickr-Bilder verwendet hat.
 
 Hier sind ein paar simple Abfragen von `INFORMATION_SCHEMA`, mit denen man offensichtliche Designdummheiten bei Datenbankschemata finden kann: 
 
-```
+```console
 mysql> select table_schema, table_name, column_name, column_type 
 from information_schema.columns 
 where table_schema not in ("information_schema", "mysql") 

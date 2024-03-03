@@ -40,7 +40,7 @@ def setup_tables():
         except MySQLdb.OperationalError as e:
             click.echo(f"setup_tables: failed {e} with {cmd}.")
 
-```
+```console
 
 For one year, each day and for each of our 11 (0-10) sensors, 1001 values will be collected.
 We insert a random time within the day, and a random measured value, an integer between 0 and 1000.

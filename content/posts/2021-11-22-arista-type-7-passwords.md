@@ -14,7 +14,7 @@ A friend of mine wanted to provision BGP passwords for their Arista switch confi
 
 So a config stanza such as
 
-```
+```console
 router bgp 65001
    router-id 10.1.1.1
    neighbor mydevices peer-group
@@ -289,7 +289,7 @@ Encrypting and decrypting BGP passwords requires a passphrase. In EOS,
 this passphrase is not static, but depends on the neighbor where the
 BGP password is configured.
 
-```
+```console
 router bgp 65001
    router-id 10.1.1.1
    neighbor mydevices peer-group

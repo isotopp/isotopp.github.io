@@ -674,7 +674,7 @@ mitteilen muß, wo und auf welche Weise die Session-Daten zu
 speichern sind.
 
 
-```
+```console
   +---------+           enthält Code zur Verwaltung von Session-IDs,
   | Session |           zur Serialisierung von Variablen und
   +---------+           zum Abräumen alter Sessions

@@ -337,7 +337,7 @@ Die Methode:
             self.alles_updaten()
 }
 
-```
+```console
 
 Wir lesen die Benutzeringabe aus dem Antwortfeld mit `text()` aus. Sie kann leer sein, dann ignorieren wir sie.
 

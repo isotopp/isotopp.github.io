@@ -47,7 +47,7 @@ In InnoDB ist das nicht ACID, weil die `WriteFile()`-Aufrufe die Daten nur vom M
 
 Spielt man dasselbe Spiel mit einem DB/2 auf Windows, sieht man
 
-```
+```console
 408     15:05:10        db2syscs.exe:2020       WRITE   D:\Daten\Filis\DB2log\S0007531.LOG     SUCCESS Offset: 970752 Length: 4096
 409     15:05:10        db2syscs.exe:2020       WRITE   D:\Daten\Filis\DB2log\S0007531.LOG     SUCCESS Offset: 970752 Length: 4096
 ```
@@ -64,7 +64,7 @@ Uns sollen hier in erster Linie die Flags interessieren.
 
 Normalerweise öffnet MySQL seine InnoDB-Daten- und Logfiles so: 
 
-```
+```console
 Sequence:       12795
 Date & Time:    25.10.2007 11:01:33
 Event Class:    File System
@@ -118,7 +118,7 @@ Also patched man
  #endif
         } else {
 
-```
+```console
 
 Wenn ich mich nicht sehr täusche ist `innodb_flush_log_on_trx_commit = 2` jetzt ACID und sehr viel schneller als die Write/Flush-Sequenz - sechs bis siebenmal schneller.
 Das Blinken meiner Platten-LED sieht auch plausibel aus.
@@ -130,7 +130,7 @@ Besser wäre es, das `CreateFile()` für das Binlog zu finden und dort ebenfalls
 Versucht man denselben Benchmark mit Linux, kriege ich auf meinen Testsystemen übrigens vollkommene Unsinns-Zeiten raus.
 Das liegt daran, weil
 
-```
+```console
 linux:~ # hdparm -I /dev/sda
 ...
         Enabled Supported:
@@ -147,7 +147,7 @@ Für so einen ACID-Commit ist das eher nicht so gut.
 
 Mit 
 
-```
+```console
 linux:~ # hdparm -W0 /dev/sda
 
 /dev/sda:

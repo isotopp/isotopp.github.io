@@ -490,7 +490,7 @@ We run
 {"tst":1605459438,"topic":"zigbee2mqtt/westside/SENSOR","qos":0,"retain":0,"payloadlen":100,"payload":{"battery":91,"voltage":2985,"temperature":10.63,"humidity":83.12,"pressure":997.5,"linkquality":97}}
 {"tst":1605459438,"topic":"zigbee2mqtt/westside/SENSOR","qos":0,"retain":0,"payloadlen":100,"payload":{"battery":91,"voltage":2985,"temperature":10.63,"humidity":83.12,"pressure":997.8,"linkquality":97}}
 
-```
+```console
 
 in one window, and `tail -f /export/iot/z2m/log/*/log.txt` in a second window. When log messages appear in `log.txt`, we should also see JSON payloads being dumped by `mosquitto_sub`.
 

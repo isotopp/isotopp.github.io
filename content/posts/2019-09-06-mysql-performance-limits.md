@@ -108,7 +108,7 @@ root@localhost [kristest]> select count(*) from t;
 
 ### Testmodes 1
 
-```
+```console
 testmodes = [ 1 ]
 
 VSZ 421G
@@ -119,7 +119,7 @@ QPS 384k
 
 ### Testmodes 1, 2
 
-```
+```console
 testmodes = [ 1, 2 ]
 
 VSZ 421G
@@ -130,7 +130,7 @@ QPS 270k-320k
 
 ### Testmodes 1, 2, 3
 
-```
+```console
 testmodes = [ 1, 2, 3 ]
 
 VSZ 421G
@@ -146,7 +146,7 @@ QPS ratings are achieved.
 
 ### Testmodes 1, 2, 3, 4
 
-```
+```console
 testmodes = [ 1, 2, 3, 4 ]
 
 VSZ 421G
@@ -242,7 +242,7 @@ do get proper memory sizes as well.
 
 ### Testmodes 1
 
-```
+```console
 testmodes = [ 1 ]
 
 VSZ 421G
@@ -253,7 +253,7 @@ QPS 360k-420k
 
 ### Testmodes 1, 2
 
-```
+```console
 testmodes = [ 1, 2 ]
 
 VSZ 421G
@@ -264,7 +264,7 @@ QPS 280k-330k
 
 ### Testmodes 1, 2, 3
 
-```
+```console
 testmodes = [ 1, 2, 3 ]
 
 VSZ 421G
@@ -278,7 +278,7 @@ Some i2 queries can return 0 rows, might be the cause?
 
 ### Testmodes 1, 2, 3, 4
 
-```
+```console
 testmodes = [ 1, 2, 3, 4 ]
 
 VSZ 421G

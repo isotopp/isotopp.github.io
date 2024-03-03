@@ -159,7 +159,7 @@ We can use the Jinja2 default filter `product` to create a cross product:
 
 But this produces the list of lists mentioned in the beginning.
 
-```
+```console
 PLAY [Keks] ********************************************************************
 
 TASK [keks] ********************************************************************
@@ -181,7 +181,7 @@ ok: [localhost] => {
 
 We can use `z: "{{ x|product(y)|map('join') }}"` to produce the pairs we want:
 
-```
+```console
 TASK [Keks] ********************************************************************
 ok: [localhost] => {
     "msg": [
@@ -204,7 +204,7 @@ So we need `z: "{{ x|product(y)|map('join','.') }}"` for our solution.
 
 The run results in 
 
-```
+```console
 TASK [Keks] ********************************************************************
 ok: [localhost] => {
     "msg": [
@@ -227,7 +227,7 @@ which is what we wanted.
 
 The actual problem looks like this, but in a single line:
 
-```
+```console
 {%- for host in hosts -%}
   {%- for domain in domains -%}
     {{proto}}://{{ host }}.{{ domain }}:{{port}}{{ ", " if not loop.last }}
@@ -238,7 +238,7 @@ The actual problem looks like this, but in a single line:
 
 The replacement with native functions looks like this, again in a single line:
 
-```
+```console
 {{ [proto] | 
     product(hosts |
         product(domains) |
@@ -252,13 +252,13 @@ The replacement with native functions looks like this, again in a single line:
 
 Using `cross()` it is a lot less ugly:
 
-```
+```console
 proto | cross(hosts,'://') | cross(domains) | cross(port,':')
 ```
 
 If `proto` or `port` are scalar, write them as `[proto]` and `[port]` to keep the syntax.
 
-```
+```console
 - name: Keks
   hosts: localhost
   gather_facts: false
@@ -276,7 +276,7 @@ If `proto` or `port` are scalar, write them as `[proto]` and `[port]` to keep th
 
 yields
 
-```
+```console
 TASK [Keks] ********************************************************************
 ok: [localhost] => {
     "msg": [

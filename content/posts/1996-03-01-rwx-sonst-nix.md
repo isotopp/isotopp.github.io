@@ -48,7 +48,7 @@ Man kann das ls-Kommando zwingen, die Angaben numerisch zu machen, indem man die
 
 ## Experiment 1
 
-```
+```console
 root@white:~# ls -l /etc/passwd /etc/group
 -rw-r--r--   1 root     root          281 Jul 15 14:39 /etc/group
 -rw-r--r--   1 root     root         1163 Nov 28 15:30 /etc/passwd
@@ -77,7 +77,7 @@ Der Kernel entscheidet anhand der Rechtebits in der Inode der Datei einer Datei,
 Entscheidend für die Interpretation dieser Rechtebits ist noch, mit welcher UID und GID der Prozeß abläuft, der auf die Datei zugreifen möchte.
 Wie man in `/usr/include/linux/sched.h` nachlesen kann, hat ein `struct task_struct` in Linux die Felder
 
-```
+```console
 	#define NGROUPS 32
 
 	unsigned short uid,euid,suid,fsuid;
@@ -97,7 +97,7 @@ Die Zugriffe auf Dateien erfolgen also mit der sogenannten effektiven User-ID un
 
 ## Experiment 2
 
-```
+```console
 kris@white:~$ id
 uid=100(kris) gid=20(users) groups=20(users),11(floppy)
 kris@white:~$ su -
@@ -141,7 +141,7 @@ Der [Kasten](#experiment-3) zeigt den Quelltext von `permission()` und die Defin
 
 ## Experiment 3
 
-```
+```console
 /usr/src/linux/fs/namei.c:
     91  /*
     92   *      permission()
@@ -230,7 +230,7 @@ Am Ende des Pfades ist das Ergebnis dieser Operation genau die I-Node des Verzei
 Der Code von `lookup()` ist nicht ganz so einfach wie diese Erklärung, weil er so unschöne Dinge wie Mountpoints, ".."-Komponenten im Pfadnamen und ungültige Pfadnamen berücksichtigen muß, aber er ist auch nicht sonderlich kompliziert.
 Für unsere Zwecke sind jedoch nur wenige Zeilen von `lookup()` wesentlich:
 
-```
+```console
 /usr/src/linux/fs/namei.c:
    163          perm = permission(dir,MAY_EXEC);
 
@@ -252,7 +252,7 @@ Die Folgen können ziemlich fatal sein, wie [Experiment 4](#experiment-4) demons
 Dieses Experiment darf nur durchgeführt werden, wenn in einem zweiten Fenster noch eine weitere Rootshell aktiv ist.
 Andernfalls kann man sich so die Systeminstallation ruinieren.
 
-```
+```console
 kris@white:~$ ls -ld /
 drwxr-xr-x  20 root     root         1024 Nov 29 22:29 /
 kris@white:~$ su - 
@@ -268,7 +268,7 @@ csh: /bin/su: Permission denied
 
 In einem anderen Fenster mit einer aktiven Rootshell:
 
-```
+```console
 root@white:~# chmod 755 / 
 ```
 
@@ -298,7 +298,7 @@ Der Code von `do_open()` beschäftigt sich hauptsächlich mit der Verwaltung der
 Die eigentliche Arbeit des Öffnens der Datei überläßt er der Funktion `open_namei()`, die wie bereits erklärt, den filename in eine I-Node umwandelt.
 Der Aufruf findet sich in Zeile 442 in `open.c`:
 
-```
+```console
    442          error = open_namei(filename,flag,mode,&inode,NULL);
 ```
 
@@ -315,7 +315,7 @@ Der zweite Schritt ist dann leicht unterschiedlich, je nachdem, ob die die öffn
 
 In Zeile 342 von `namei.c` wird zunächst die I-Node des Verzeichnisses lokalisiert, in dem eine Datei geöffnet werden soll. Das ist der erste Schritt zum Öffnen der Datei.
 
-```
+```console
    342          error = dir_namei(pathname,&namelen,&basename,base,&dir);
 ```
 
@@ -335,7 +335,7 @@ Erst wenn alle diese Vorbedingungen erfüllt sind, darf die Datei wirklich angel
 
 Wir halten fest: Um eine Datei in einem Verzeichnis neu anlegen zu können, wird also das x-Recht an allen Verzeichnissen entlang des Pfades dieser Datei benötigt und das w- und das x-Recht an dem Verzeichnis, in dem die Datei neu anzulegen ist.
 
-```
+```console
    359          if (flag & O_CREAT) {
    361                  error = lookup(dir,basename,namelen,&inode);
    362                  if (!error) {
@@ -413,7 +413,7 @@ Nach diesen elementaren Überprüfungen folgt der Code, der *set user id/set gro
 
 ## Ausführungsrecht und SUID/SGID beim execve() Systemaufruf</h3>
 
-```
+```console
 /usr/src/linux/fs/exec.c:
    586          i = bprm.inode->i_mode;
    587          if (IS_NOSUID(bprm.inode) && (((i & S_ISUID)
@@ -472,7 +472,7 @@ Analog wird auch mit dem SGID-Bit verfahren.
 
 ## Experiment 5
 
-```
+```console
 root@white:/tmp# cat >> x
 #! /bin/sh --
 

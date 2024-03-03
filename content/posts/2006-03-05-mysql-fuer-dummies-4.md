@@ -183,7 +183,7 @@ Command: Query
    Info: create index i on t(i)
 ...
 
-```
+```console
 
 Das will ich genauer beobachten:
 

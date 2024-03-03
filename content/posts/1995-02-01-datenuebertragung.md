@@ -523,7 +523,7 @@ Geschwindigkeit von einem Baud entspricht einem Zustandswechsel pro
 Sekunde. Die Bitrate eines Modems ist gewöhnlich ein Vielfaches seiner 
 Baudrate.
 
-```
+```console
 Bezeichnung Geschwindigkeit
             in Bit/s  in Baud	Modulation  duplex  Verwendung
 V.17	    14400	2400	TCM	    halb	FAX
@@ -593,7 +593,7 @@ Für das neue V.34-Verfahren sind solche Chipsätze noch nicht
 verfügbar, sodaß diese Modems zur Zeit noch unverhältnismäßig teuer 
 sind.
 
-```
+```console
 Norm	Zweck
 V.24	Bedeutung der Signale an einer seriellen 
 	Schnittstelle.

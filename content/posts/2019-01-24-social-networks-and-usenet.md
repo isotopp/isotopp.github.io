@@ -45,7 +45,7 @@ Later additions tried to improve on that, but failed — more on that later.
 
 A somewhat basic usenet header would look somewhat like this:
 
-```
+```console
 From: user@host (User Name)
 Date: Thu, 24 Jan 2019 22:15:15 +0100
 Path: news.nntp.dca.giganews.com!news.koehntopp.de!kris

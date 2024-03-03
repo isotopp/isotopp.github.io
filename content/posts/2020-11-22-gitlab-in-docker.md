@@ -184,7 +184,7 @@ from src.main import my_name  # noqa
 
 and 
 
-```
+```console
 # cat src/main.py
 def my_name():
     return "Kris"

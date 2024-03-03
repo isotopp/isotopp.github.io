@@ -62,7 +62,7 @@ MySQL thread id 186615979, OS thread handle 140545428498176, query id 2978139105
 INSERT LOW_PRIORITY IGNORE INTO `schema`.`_table_new` (`id`, ...`) 
   SELECT `id`, ... FROM `schema`.`table` LOCK IN SHARE MODE /*pt-online-schema-change 63828 copy table*/
 
-```
+```console
 
 This is an `INSERT ... SELECT ...`, generated from Percona Online Schema Change.
 The transaction has some 2895 rows open, so in order for this to be a problem the average row length must be very large.
