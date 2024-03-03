@@ -21,7 +21,7 @@
 	 // Initialize lunrjs using our generated index file
 	 function initLunr() {
 	     var request = new XMLHttpRequest();
-         request.open('GET', 'https://blog.koehntopp.info/index.json', true);
+         request.open('GET', '{{ "index.json" | absURL }}', true);
 
 	     //request.onload = function () {
 	     request.onreadystatechange = function () {
