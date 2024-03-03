@@ -182,8 +182,7 @@ Command: Query
   State: copy to tmp table
    Info: create index i on t(i)
 ...
-
-```console
+```
 
 Das will ich genauer beobachten:
 

@@ -592,8 +592,7 @@ root@localhost > select * from t;
 | 1 |   | 
 +---+---+
 1 row in set (0.00 sec)
-
-```console
+```
 
 
 Durch das `NO_ZERO_DATE` haben wir die exzessive Verwendung von `DATE NOT NULL DEFAULT '0000-00-00'` als Überrest einer Migration von einer älteren Version von MySQL zur Disposition gestellt. Viele Entwickler fragen sich nun, was `SELECT * FROM t WHERE somedate = "0000-00-00"` wohl für eine Bedeutung haben mag, also was die dort gezeigten Zeilen wohl bedeuten mögen und gehen sorgfältiger mit Default-Werten um. Das hat ebenfalls eine Reihe von Bugs gekillt.

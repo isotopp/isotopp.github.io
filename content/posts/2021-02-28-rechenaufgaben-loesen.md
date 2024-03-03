@@ -336,10 +336,9 @@ Die Methode:
             self.aufgabe.ausdenken()
             self.alles_updaten()
 }
+```
 
-```console
-
-Wir lesen die Benutzeringabe aus dem Antwortfeld mit `text()` aus. Sie kann leer sein, dann ignorieren wir sie.
+Wir lesen die Benutzereingabe aus dem Antwortfeld mit `text()` aus. Sie kann leer sein, dann ignorieren wir sie.
 
 Danach versuchen wir diese Eingabe in eine ganze Zahl umzuwandeln. Wenn das nicht gelingt, ignorieren wir die Eingabe ebenfalls.
 

@@ -67,8 +67,7 @@ Successfully installed wheel-0.34.2
 ...
 Installing collected packages: click, attrs, pathspec, regex, toml, appdirs, typed-ast, black, mypy-extensions, typing-extensions, mypy, cfgv, filelock, six, zipp, importlib-metadata, distlib, virtualenv, nodeenv, pyyaml, identify, pre-commit
 Successfully installed appdirs-1.4.4 attrs-19.3.0 black-19.10b0 cfgv-3.1.0 click-7.1.2 distlib-0.3.1 filelock-3.0.12 identify-1.4.20 importlib-metadata-1.7.0 mypy-0.782 mypy-extensions-0.4.3 nodeenv-1.4.0 pathspec-0.8.0 pre-commit-2.5.1 pyyaml-5.3.1 regex-2020.6.8 six-1.15.0 toml-0.10.1 typed-ast-1.4.1 typing-extensions-3.7.4.2 virtualenv-20.0.25 zipp-3.1.0
-
-```console
+```
 
 The last three collect a large number of additional dev-dependencies.
 

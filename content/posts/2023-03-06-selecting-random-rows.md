@@ -229,8 +229,7 @@ mysql> select * from tbl as t1
 | 24765800 | dcabd753-a357-4f38-a255-e81b0675654f | 24765800 |
 +----------+--------------------------------------+----------+
 1 row in set (0.82 sec)
-
-```console
+```
 
 # Consuming rows
 

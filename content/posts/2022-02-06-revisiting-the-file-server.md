@@ -46,8 +46,7 @@ So we need to check if the `/dev/md126` PV is empty:
   --- Physical Segments ---
   Physical extent 1 to 9302:
     FREE
-
-```console
+```
 
 That's fine. We can remove the pair from the volume group again, remove the LVM2 label, and then stop and destroy the raid:
 

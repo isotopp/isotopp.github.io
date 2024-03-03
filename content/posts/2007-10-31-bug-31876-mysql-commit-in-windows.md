@@ -117,8 +117,7 @@ Also patched man
                 }
  #endif
         } else {
-
-```console
+```
 
 Wenn ich mich nicht sehr täusche ist `innodb_flush_log_on_trx_commit = 2` jetzt ACID und sehr viel schneller als die Write/Flush-Sequenz - sechs bis siebenmal schneller.
 Das Blinken meiner Platten-LED sieht auch plausibel aus.

@@ -330,8 +330,7 @@ We apply a cleanup filter, `fact_transform_cpu()` to it.
         self.fact_transform_cpu()
 
         logger.info("end fact_transform")
-
-```console
+```
 
 The filter looks like this:
 

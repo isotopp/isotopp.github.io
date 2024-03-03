@@ -610,8 +610,7 @@ root on mysql.sock [innodemo]> select * from kris;
 
 root on mysql.sock [innodemo]> commit;
 Query OK, 0 rows affected (0.00 sec)
-
-```console
+```
  
 ### Transaction Isolation Level Repeatable-Read
 

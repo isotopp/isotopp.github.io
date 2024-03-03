@@ -298,8 +298,7 @@ linux:/export/data/charset # od -t x1a kris.sql
 0001600 f6 27 29 3b 0a 55 4e 4c 4f 43 4b 20 54 41 42 4c
           v   '   )   ;  nl   U   N   L   O   C   K  sp   T   A   B   L
 ...
-
-```console
+```
 
 
 Wir können nun leicht dieses Dumpfile um ein "CREATE DATABASE kris CHARSET
