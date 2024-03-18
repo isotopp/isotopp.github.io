@@ -170,3 +170,13 @@ It needs extensions and language servers to become a useful editor with syntax s
 It can natively edit remote files.
 
 I am not comfortable using it, and have therefore not tested it.
+
+# Preference
+
+For my deployment scenarios, I prefer to work with the primary approach 
+of converting a local project to a remote deployment using the "rsync" approach.
+It is less sensitive to latency and less fragile than the "Gateway" approach, and offers much the same functionality for me.
+
+People using standard clouds more than I do might fare better with "Gateway," now that it is stable.
+
+People using multiple languages in the same project or dependent on LSP and language servers might like Fleet better.
