@@ -6,7 +6,230 @@
     <description>Recent content in Lang_en on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 03 Mar 2024 16:04:57 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 18 Mar 2024 19:33:17 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Editing Remotely in PyCharm</title>
+      <link>https://blog.koehntopp.info/2024/03/18/editing-remotely-in-pycharm.html</link>
+      <pubDate>Mon, 18 Mar 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/03/18/editing-remotely-in-pycharm.html</guid>
+      <description>&lt;p&gt;A friend asks me on IRC:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Do you happen to know how I can edit code locally on my PyCharm (MacOS, Professional)
+but run it remotely in a virtual environment?
+I know how to do that in VS Code, but I don&amp;rsquo;t know how to do it in PyCharm, even with ssh configured and tested.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The TL;DR is that this specific person has disabled the FTP/SFTP/Webdav Plugin in an attempt to configure PyCharm
+in a way that it doesn&amp;rsquo;t upload development data to Jetbrains Servers or similar.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-01.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The bundled FTP/SFTP/Webdav Plugin in Pycharm is required for the preferred deployment method.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Jetbrains has several options for editing code locally, but deploying and running it remotely.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Convert a local repository for remote deployment, and have it uploaded in an &amp;ldquo;rsync&amp;rdquo;-like fashion for each save to disk.
+This is not &amp;ldquo;rsync,&amp;rdquo; because it also provides remote debugging and other features that reach further than synchronisation.&lt;/li&gt;
+&lt;li&gt;Run a headless version of Pycharm remotely using &amp;ldquo;Jetbrains Gateway,&amp;rdquo;
+showing the display locally, but running the editor remotely over ssh.&lt;/li&gt;
+&lt;li&gt;Use Fleet, the VS Code imitation by Jetbrains.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;rsync-deployment&#34;&gt;
+    &lt;a href=&#34;#rsync-deployment&#34;&gt;
+	&amp;ldquo;Rsync Deployment&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;Create a new project locally, using a local interpreter of your choice.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-02.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Create a normal local project, not caring about remote edit.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Convert the project to a new interpreter, using &amp;ldquo;Add Interpreter&amp;rdquo; in Settings→Project→Python Interpreter.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-03.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Click on &amp;lsquo;Add Interpreter&amp;hellip;&amp;rsquo;, select &amp;lsquo;On SSH&amp;hellip;&amp;rsquo;&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Choose an existing SSH Server (or add a new one)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-04.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Here we select the remote box to work on. In our case, we are running on &lt;code&gt;server.local&lt;/code&gt; as the user &lt;code&gt;kris&lt;/code&gt;,
+using SSH agent authentication.
+If the configuration we want were not present, we&amp;rsquo;d select &amp;lsquo;SSH Connection: [ ] New&amp;rsquo; instead of an existing config.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;Let the probe complete.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-05.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Selecting a SSH interpreter will spawn a remote Python version probe. We need to let this run and complete.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;5&#34;&gt;
+&lt;li&gt;Trying to set a remote work directory is useless at this stage.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-06.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;In my version of PyCharm (PyCharm 2023.3.4), trying to edit the remote sync folder in the final set is possible,
+but is being ignored later.
+It will initially always use a random directory name in /tmp for remote execution, no matter how I configure it here.
+This is likely a bug.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;Review Remote Interpreter Setup&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-07.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Review the chosen interpreter. It should now say something about &amp;ldquo;Remote Python&amp;rdquo;,
+and show the version number as detected for the remote box.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;Fix the Mappings&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-08.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Go to Settings→Build, Execution, Deployment→Deployment, select your configuration, select the tab &amp;ldquo;Mappings&amp;rdquo; and
+check the &amp;ldquo;Deployment Path&amp;rdquo;.
+In my PyCharm, this is always a random path in &lt;code&gt;/tmp&lt;/code&gt;, no matter what I do in the previous step 3.
+I correct this to the directory I want this deployed in, here &lt;code&gt;/home/kris/Source/keks&lt;/code&gt;, then click &amp;ldquo;Ok&amp;rdquo;.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;8&#34;&gt;
+&lt;li&gt;Verify that it works&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-09.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Printing &lt;code&gt;sys.version_info&lt;/code&gt; shows us that we are indeed running on the Python Version of the remote host.
+We could also call &lt;code&gt;sys_info = os.uname()&lt;/code&gt;, and print &lt;code&gt;sys_info.nodename&lt;/code&gt; to check the name of the box.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;For my friend none of this worked. The entire SSH option was not shown,
+and the option to define SFTP upload was not offered.
+Further debugging showed that my friend had tried to secure his installation against unwanted data upload,
+disabling all remote AI functionality and also the
+&lt;a href=&#34;https://www.jetbrains.com/help/pycharm/2023.1/sharing-your-ide-settings.html#IDE_settings_sync&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jetbrains Settings Sync&lt;/a&gt;
+
+.
+In doing that, they also inadvertantly disabled the &amp;ldquo;SSH/SFTP/Webdav&amp;rdquo; bundled plugin.&lt;/p&gt;
+&lt;h1 id=&#34;using-jetbrains-gateway&#34;&gt;
+    &lt;a href=&#34;#using-jetbrains-gateway&#34;&gt;
+	Using &amp;ldquo;Jetbrains Gateway&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;When closing all project windows, PyCharm will default to the project selection screen.
+This will offer the creation of new local projects, and also access to &amp;ldquo;SSH&amp;rdquo; projects,
+&amp;ldquo;Jetbrains Space&amp;rdquo; projects, &amp;ldquo;Dev Containers&amp;rdquo;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-10.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;PyCharms project selection screen, &amp;ldquo;Welcome to PyCharm&amp;rdquo;.
+Choosing &amp;ldquo;SSH&amp;rdquo; sllows you to create remote projects directly.
+This will not use the synchronisation method above, but start a remote headless PyCharm.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Provide SSH connection information.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-11.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We are then being asked to provide SSH connection information, and can again choose from our default targets.
+Again, we use &lt;code&gt;kris@server.local&lt;/code&gt; with agent authentication.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Select IDE version and directory.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-12.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We are then being asked to choose an IDE version, and a directory.
+The directory must exist (and is ideally empty).&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This step can take some time to complete.
+It will make the remote host download a version of the IDE and run it headless,
+and will then configure Jetbrains Gateway locally.
+Ultimately, it will hand off development from PyCharm to the local Gateway and the remotely running PyCharm.&lt;/p&gt;
+&lt;p&gt;Gateway acts as the local display of the remote IDE, using SSH as a remote procedure call mechanism.
+Depending on the SSH connection latency, this can be quite laggy.
+In older versions of Gateway, it was also prone to losing synchronization – this version seems to behave better.&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;Validate functionality and hostname&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-13.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Writing a short test program and running it quickly validates that we are on the correct version of Python
+and on the correct host.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;5&#34;&gt;
+&lt;li&gt;Check processlist&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-14.jpg&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-14.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A quick glance at the processlist of the remote hosts shows us what is going on:
+A headless version of Pycharm has been downloaded to $HOME/.cache/JetBrains and is doing the work.
+Locally, Jetbrains Gateway is the display for the remote instance.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;Check connection and ressources&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-15.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Cloud development instances are sometimes optimized for cost, not for comfort.
+Gateway offers a way to check remote resources, including Ping and Memory.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;Other Providers&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-16.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Gateway also offers additional providers for remote development, which can be installed and configured.&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&#34;fleet&#34;&gt;
+    &lt;a href=&#34;#fleet&#34;&gt;
+	Fleet
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Fleet is a new editing environment from Jetbrains that tries to emulate VC Code in look and feel.
+Unlike PyCharm, it has no direct language support, but connects to one or more language servers.
+It needs extensions and language servers to become a useful editor with syntax support and analytics.&lt;/p&gt;
+&lt;p&gt;It can natively edit remote files.&lt;/p&gt;
+&lt;p&gt;I am not comfortable using it, and have therefore not tested it.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Dynamically loading Classes in Java</title>
       <link>https://blog.koehntopp.info/2024/03/03/dynamically-loading-classes-in-java.html</link>
@@ -2832,217 +3055,6 @@ As the service user, run &lt;code&gt;systemctl --user edit --full theservice.ser
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ git pull --rebase
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;$ systemctl --user start theservice.service
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or a script that does the same.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: InnoDB Fragmentation</title>
-      <link>https://blog.koehntopp.info/2023/07/06/mysql-innodb-fragmentation.html</link>
-      <pubDate>Thu, 06 Jul 2023 01:02:03 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2023/07/06/mysql-innodb-fragmentation.html</guid>
-      <description>&lt;p&gt;There is a really nice article by Pep Pla, over at
-&lt;a href=&#34;https://www.percona.com/blog/the-impacts-of-fragmentation-in-mysql/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the Percona blog&lt;/a&gt;
-
-
-about fragmentation in MySQL InnoDB tablespaces, which you should read.&lt;/p&gt;
-&lt;p&gt;The article discusses &amp;ldquo;fragmentation&amp;rdquo; of data in tables, which happens in a way similar to how it happens in filesystems.&lt;/p&gt;
-&lt;p&gt;InnoDB stores data by default in tablespaces, which by default are a file per table.
-These files are subject to the fragmentation and growth rules of your filesystem,
-but if you are smart, you are running MySQL on Linux on the XFS.
-In that case, filesystem fragmentation (and unexplained commit latency variance) are not an issue,
-because XFS takes care of handling this properly, and only database-internal fragmentation remains.&lt;/p&gt;
-&lt;h1 id=&#34;primary-keys-data-order-and-working-set-size&#34;&gt;
-    &lt;a href=&#34;#primary-keys-data-order-and-working-set-size&#34;&gt;
-	Primary keys, data order and working set size
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Data inside an InnoDB tablespace is placed in primary key order, and that used to matter a lot,
-because rows with closer primary keys used to be stored closer together on disk.
-Up to the point where rows with adjacent primary keys had a good chance of being on the same page.&lt;/p&gt;
-&lt;p&gt;In the past, it mattered more than today, because even if data was not stored on the same page,
-pages that were physically stored closely together (on the same HDD track or cylinder) could be loaded faster.
-That was the case, since &amp;ldquo;near&amp;rdquo; disk seeks were executed faster by an HDD than &amp;ldquo;far&amp;rdquo; disk seeks across the entire surface of a hard disk.&lt;/p&gt;
-&lt;p&gt;With flash, seek times are largely irrelevant:
-In fact, the internal Flash Translation Layer of flash storage will put data anywhere it sees fit,
-and then issue you a Logical Block Address (LBA) that has no bearing whatsoever on the actual physical location of the page on the flash drive.
-It may even move the actual physical data under you behind the scenes, and still refer to it by the same LBA.&lt;/p&gt;
-&lt;p&gt;What matters a lot as a concept, though, is the Working Set Size (WSS) of your database.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The Working Set is the set of pages your database is going to reference in the next future interval&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;This interval may be, for example, the next 1m, 10m or 1h.
-That is, it makes initially limited sense to speak of the WSS as an unqualified term.
-You&amp;rsquo;d have to use it with an interval instead, so the WSS-1m, WSS-10m, WSS-1h and so on.&lt;/p&gt;
-&lt;p&gt;If you could predict what pages will be needed in the WSS-10m, you could preload these pages and cache them.
-This would bring the disk reads to zero or close to zero for the coming 10 minutes.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Predicting the future is hard, though, especially if accuracy is required.
-What we do instead is look to the past and hope the future looks alike.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;So most people would want to look at the past 10 minutes,
-and the recorded page numbers requested from disk as a triple of &lt;code&gt;(timestamp, tablespace_id, page_number)&lt;/code&gt;.
-From this, we can build a histogram for a sliding 10m window, and we would know which pages have been in demand.
-From the height of the histogram counter, we would even know how much.&lt;/p&gt;
-&lt;p&gt;We can now size an InnoDB buffer pool, and calculate how large this pool would have to be to cache 95%, 99%, 99.99%, &amp;hellip;
-of all page read requests.
-Having a handle on the desired buffer pool size for a data set and a workload would be very useful to determine the amount
-of memory our database instance would need to perform adequately:
-It must be sized for – at least – the estimated buffer pool plus overhead plus some safety margin,
-rounded up to available instance types.&lt;/p&gt;
-&lt;p&gt;Unfortunately, we can only get aggregate statistics from an unpatched MySQL, and no page-read-request timeline as shown above.
-Neither can we get a page-request histogram from &lt;code&gt;P_S&lt;/code&gt;, or a properly precalculated WSS estimation.
-So it is necessary to patch MySQL to get this data, unfortunately.&lt;/p&gt;
-&lt;p&gt;When we do this, and math a bit on the results, we observe there is actually such a thing as a WSS without a time-interval:&lt;/p&gt;
-&lt;p&gt;As long as the workload is stable,
-we can identify with some confidence a set of pages that need to be cached in order to quench most of the reads.
-Adding buffer pool pages past this point will not improve performance substantially,
-and there might still be a certain number of residual random page reads due to random accesses in the workload.
-In order to also quench these, you&amp;rsquo;d have to be able to keep the entire database in memory.
-While this is sometimes possible, there are workloads where this is not economical, especially at cloud pricing structures.&lt;/p&gt;
-&lt;h2 id=&#34;designing-for-locality&#34;&gt;
-    &lt;a href=&#34;#designing-for-locality&#34;&gt;
-	Designing for locality
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Here Pep Pla comes in again, because he highlights in his article the principle of locality,
-which is exactly what the working set size is.
-Specifically, WSS is temporal locality – we cache the pages we will need in the future in memory,
-so that spatial locality does no longer matter.
-Even when using HDD.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;By choosing a primary key smartly, we can make sure that primary keys that are being accessed &amp;ldquo;together&amp;rdquo; have similar values,
-and each page is filled closely with many rows that we will be needing at the same time.&lt;/p&gt;
-&lt;p&gt;For a fixed data size, this lowers the number of pages active concurrently, bringing down WSS size,
-bringing down pool size, bringing down instance size, bringing down cloud cost.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;Also, it is important to keep the row size down, so many rows fit into the same page,
-and finally getting a handle on fragmentation inside a page – but this is actually the least important factor in design.&lt;/p&gt;
-&lt;p&gt;For the various MySQL flavors, exposing disk read request traces (as &lt;code&gt;(ts, tablespace_id, page#)&lt;/code&gt; triples)
-and deriving a histogram and a WSS metric from it remains an open TODO point.&lt;/p&gt;
-&lt;p&gt;Note how &amp;ldquo;Designing for locality&amp;rdquo; is not primarily a &amp;ldquo;fragmentation&amp;rdquo; issue – the amount of empty space per page,
-segment or tablespace does not matter in the first place.
-Packing rows that are needed together densely is what matters: data density matters.
-And empty space in a page can ultimately adversely affect that, but it is really the last item on the list.&lt;/p&gt;
-&lt;h1 id=&#34;fill-factors-and-you-do-not-need-to-optimize-table&#34;&gt;
-    &lt;a href=&#34;#fill-factors-and-you-do-not-need-to-optimize-table&#34;&gt;
-	Fill Factors, and you do not need to &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt;
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;&amp;ldquo;Empty space in a page&amp;rdquo; is a special kind of fragmentation, and in databases it is commonly called &amp;ldquo;fill factor.&amp;rdquo;
-Pep Pla has been testing the behavior of InnoDB with various workloads and page fill factor settings,
-and this is the first documented and systematic work in this area that I am aware of.&lt;/p&gt;
-&lt;p&gt;Using the &lt;code&gt;innodb_space&lt;/code&gt; tool from &lt;a href=&#34;https://github.com/jeremycole/innodb_ruby&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jeremy Cole&amp;rsquo;s Tooling&lt;/a&gt;
-
-,
-he observed the behavior of InnODB after a longer term mixed insert and delete workload.&lt;/p&gt;
-&lt;p&gt;The results are pretty encouraging.
-Basically, according to the results from his testing,
-it never made sense to run &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; to repack and re-order the data for flash storage.
-Disk seeks do not matter much any more on flash,
-and there will always be empty space in the pages of tables that see permanent random inserts and deletes.
-So running &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; will bring the table size down and repack it,
-only to create a wave of page splits immediately after when the DML workload continues and needs room to work.&lt;/p&gt;
-&lt;p&gt;Pep Pla shows fragmentation maps for the same table after 400 iterations of his DML workload using different fill factors,
-and it shows that the initial fill factor after an &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; is no longer visually identifiable.
-Instead, all tables look similarly fragmented, so their shape is dominated by the workload, not the
-&lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; and the fill factor parameters.&lt;/p&gt;
-&lt;p&gt;It may be useful to &lt;code&gt;OPTIMIZE&lt;/code&gt; (and compress) tables that are being archived, but as soon as they see DML,
-they will be reshaped by the workload again, and you might as well not &lt;code&gt;OPTIMIZE&lt;/code&gt;.&lt;/p&gt;
-&lt;h1 id=&#34;designing-for-locality-vs-uuid&#34;&gt;
-    &lt;a href=&#34;#designing-for-locality-vs-uuid&#34;&gt;
-	Designing for locality vs UUID
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;It is worth mentioning that very many tables have a row-access frequency that matches the rows primary key,
-if the rows&amp;rsquo; primary key is an &lt;code&gt;auto_increment&lt;/code&gt;.
-That is, very many applications frequently access rows that have recently been written,
-while older rows are being used much less frequently.&lt;/p&gt;
-&lt;p&gt;By using &lt;code&gt;auto_increment&lt;/code&gt; primary keys,
-data is automatically ordered physically so that &amp;ldquo;cold data&amp;rdquo; is at the front of the table and &amp;ldquo;hot data&amp;rdquo; is at the end.
-This also puts hot rows together into the same page or pages close by, at the end of the table.
-This is good for performance in InnoDB, and also keeps the WSS down.&lt;/p&gt;
-&lt;p&gt;Using a random primary key (a MD5 or a UUID v4) will not impose any order on the primary key.
-In InnoDB, where the primary key value determines the physical position of the row in the table,
-this essentially scatters rows across the entire table.
-This creates a very large working set, bloating required buffer space, and increasing instance size:
-There will be a hot row in any page with the same probability, so you&amp;rsquo;ll have to cache all pages to quench reads.&lt;/p&gt;
-&lt;p&gt;Using a UUID v1 is better because they have a temporal component,
-which can be used to leverage an &lt;code&gt;auto_increment&lt;/code&gt;-like ordering.
-Unfortunately, MySQL does not do this by providing a UUID v1 data type, which does the right thing automatically.
-Instead, we get to use a pair of functions &lt;code&gt;UUID_TO_BIN()&lt;/code&gt; and &lt;code&gt;BIN_TO_UUID()&lt;/code&gt;,
-which require you to manually cast the data every time you access it and remember to set the swap flag properly.
-This is very uncomfortable and error-prone,
-more so in large development organizations.&lt;/p&gt;
-&lt;p&gt;Try to use &lt;code&gt;auto_increment&lt;/code&gt; with MySQL InnoDB.
-If you can&amp;rsquo;t, try to go with UUID v1 and the &lt;code&gt;UUID_TO_BIN()&lt;/code&gt; functions, with the swap flag set.&lt;/p&gt;
-&lt;p&gt;For the various MySQL flavors, it remains an open TODO point to provide a UUID v1 and a UUID v4 data type.&lt;/p&gt;
-&lt;h1 id=&#34;row-fragmentation&#34;&gt;
-    &lt;a href=&#34;#row-fragmentation&#34;&gt;
-	Row Fragmentation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;MySQL InnoDB is famously bad at storing files, and Pep Pla discusses that cursory, too.
-In fact, the Percona Blog also provides
-&lt;a href=&#34;https://www.percona.com/blog/how-innodb-handles-text-blob-columns/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;another article on this&lt;/a&gt;
-
-
-with some more depth, which is a lot more opinionated than the official manual on the subject at hand.&lt;/p&gt;
-&lt;p&gt;Basically, when a row becomes too large (at 1/2 page size, 8 KB),
-InnoDB stores individual fields of a row &amp;ldquo;off-table&amp;rdquo; in overflow pages.
-The article does not discuss this, but to my knowledge, each overflow page holds only one field,
-so the overhead is statistically much larger than &amp;ldquo;on average 1/2 page&amp;rdquo; as stated in that article.
-This effect becomes stronger if you have tables with multiple BLOB/TEXT columns in a row,
-and each is just barely large enough to trigger off-table storage.&lt;/p&gt;
-&lt;p&gt;Accessing data that is stored in overflow pages uses up additional buffer pool pages to hold them,
-at a rate of at least one per overflowed field, increasing the working set size, and hence necessary instance size.
-In versions of MySQL before MySQL 8, such data also forced the use of on-disk temporary tables,
-which impacted query performance badly to a large extent,
-but this is now fortunately fixed.&lt;/p&gt;
-&lt;p&gt;So in the past, the general advice was to avoid TEXT/BLOB columns altogether,
-and if you must use them, do not use them as part of a join or any query that was marked as &amp;ldquo;using temporary.&amp;rdquo;
-Since MySQL 8, this is much better, but still be aware of the working set size increase.&lt;/p&gt;
-&lt;p&gt;For the various MySQL flavors remains an open TODO point to provide a more efficient (Postgres TOAST-like?) BLOB storage,
-in order to bring down storage overhead.&lt;/p&gt;
-&lt;p&gt;Another long-standing BLOB performance-related work item that is not linked to fragmentation
-would be to provide a &amp;ldquo;partial updates&amp;rdquo;/&amp;ldquo;BLOB streaming&amp;rdquo; API in the protocol,
-because this is another well-known point of inefficiency:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Try to store a BLOB larger than &lt;code&gt;max_allowed_packed&lt;/code&gt; in the database.&lt;/li&gt;
-&lt;li&gt;Try to change 4 bytes at offset 32M in a 64M BLOB efficiently using MySQL protocol.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;If you do, and observe what happens on the wire, in memory and on disk, you&amp;rsquo;d be scared.
-Until it is fixed, use the filesystem or S3 for this, and store filenames or URLs instead.&lt;/p&gt;
-&lt;h1 id=&#34;recommendations&#34;&gt;
-    &lt;a href=&#34;#recommendations&#34;&gt;
-	Recommendations?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;ul&gt;
-&lt;li&gt;You probably do not need to care much about fragmentation if your database uses flash-based storage.
-InnoDB is relatively stable for DML workload, and &lt;code&gt;OPTIMIZE TABLE&lt;/code&gt; is usually not worth the effort,
-unless you move a table to archive/read-only.&lt;/li&gt;
-&lt;li&gt;You would do well to design for data density and temporal locality, bringing down working set size.
-&lt;ul&gt;
-&lt;li&gt;Often this happens automatically when using &lt;code&gt;auto_increment&lt;/code&gt; as a primary key.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Even in MySQL 8, you would still do well to keep BLOB and TEXT fields out of main tables,
-or where it makes sense, out of the database completely.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Server Side improvements needed:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;MySQL has no good instrumentation that can trace disk read requests by &lt;code&gt;(ts, tablespace_id, page#)&lt;/code&gt;,
-making it hard to estimate working set size, and derive an optimal instance size from it.
-You will need to patch the database server in order to grab this data.
-This needs fixing in the mainline server source.&lt;/li&gt;
-&lt;li&gt;MySQL should have a UUID v1 and a UUID v4 data type, which would be a lot less error-prone that the
-current set of functions.
-This needs fixing in the mainline server source.&lt;/li&gt;
-&lt;li&gt;MySQL has an abysmally underdeveloped BLOB storage and long-standing gaps in its BLOB access API
-(efficient partial updates, BLOB streaming).
-This needs fixing in the mainline server source.&lt;/li&gt;
-&lt;/ul&gt;
 </description>
     </item>
     

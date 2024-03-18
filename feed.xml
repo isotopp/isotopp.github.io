@@ -6,7 +6,230 @@
     <description>Recent content on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 03 Mar 2024 16:04:57 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 18 Mar 2024 19:33:17 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Editing Remotely in PyCharm</title>
+      <link>https://blog.koehntopp.info/2024/03/18/editing-remotely-in-pycharm.html</link>
+      <pubDate>Mon, 18 Mar 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/03/18/editing-remotely-in-pycharm.html</guid>
+      <description>&lt;p&gt;A friend asks me on IRC:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Do you happen to know how I can edit code locally on my PyCharm (MacOS, Professional)
+but run it remotely in a virtual environment?
+I know how to do that in VS Code, but I don&amp;rsquo;t know how to do it in PyCharm, even with ssh configured and tested.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The TL;DR is that this specific person has disabled the FTP/SFTP/Webdav Plugin in an attempt to configure PyCharm
+in a way that it doesn&amp;rsquo;t upload development data to Jetbrains Servers or similar.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-01.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;The bundled FTP/SFTP/Webdav Plugin in Pycharm is required for the preferred deployment method.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Jetbrains has several options for editing code locally, but deploying and running it remotely.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Convert a local repository for remote deployment, and have it uploaded in an &amp;ldquo;rsync&amp;rdquo;-like fashion for each save to disk.
+This is not &amp;ldquo;rsync,&amp;rdquo; because it also provides remote debugging and other features that reach further than synchronisation.&lt;/li&gt;
+&lt;li&gt;Run a headless version of Pycharm remotely using &amp;ldquo;Jetbrains Gateway,&amp;rdquo;
+showing the display locally, but running the editor remotely over ssh.&lt;/li&gt;
+&lt;li&gt;Use Fleet, the VS Code imitation by Jetbrains.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;rsync-deployment&#34;&gt;
+    &lt;a href=&#34;#rsync-deployment&#34;&gt;
+	&amp;ldquo;Rsync Deployment&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;Create a new project locally, using a local interpreter of your choice.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-02.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Create a normal local project, not caring about remote edit.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Convert the project to a new interpreter, using &amp;ldquo;Add Interpreter&amp;rdquo; in Settings→Project→Python Interpreter.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-03.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Click on &amp;lsquo;Add Interpreter&amp;hellip;&amp;rsquo;, select &amp;lsquo;On SSH&amp;hellip;&amp;rsquo;&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Choose an existing SSH Server (or add a new one)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-04.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Here we select the remote box to work on. In our case, we are running on &lt;code&gt;server.local&lt;/code&gt; as the user &lt;code&gt;kris&lt;/code&gt;,
+using SSH agent authentication.
+If the configuration we want were not present, we&amp;rsquo;d select &amp;lsquo;SSH Connection: [ ] New&amp;rsquo; instead of an existing config.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;Let the probe complete.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-05.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Selecting a SSH interpreter will spawn a remote Python version probe. We need to let this run and complete.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;5&#34;&gt;
+&lt;li&gt;Trying to set a remote work directory is useless at this stage.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-06.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;In my version of PyCharm (PyCharm 2023.3.4), trying to edit the remote sync folder in the final set is possible,
+but is being ignored later.
+It will initially always use a random directory name in /tmp for remote execution, no matter how I configure it here.
+This is likely a bug.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;Review Remote Interpreter Setup&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-07.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Review the chosen interpreter. It should now say something about &amp;ldquo;Remote Python&amp;rdquo;,
+and show the version number as detected for the remote box.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;Fix the Mappings&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-08.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Go to Settings→Build, Execution, Deployment→Deployment, select your configuration, select the tab &amp;ldquo;Mappings&amp;rdquo; and
+check the &amp;ldquo;Deployment Path&amp;rdquo;.
+In my PyCharm, this is always a random path in &lt;code&gt;/tmp&lt;/code&gt;, no matter what I do in the previous step 3.
+I correct this to the directory I want this deployed in, here &lt;code&gt;/home/kris/Source/keks&lt;/code&gt;, then click &amp;ldquo;Ok&amp;rdquo;.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;8&#34;&gt;
+&lt;li&gt;Verify that it works&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-09.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Printing &lt;code&gt;sys.version_info&lt;/code&gt; shows us that we are indeed running on the Python Version of the remote host.
+We could also call &lt;code&gt;sys_info = os.uname()&lt;/code&gt;, and print &lt;code&gt;sys_info.nodename&lt;/code&gt; to check the name of the box.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;For my friend none of this worked. The entire SSH option was not shown,
+and the option to define SFTP upload was not offered.
+Further debugging showed that my friend had tried to secure his installation against unwanted data upload,
+disabling all remote AI functionality and also the
+&lt;a href=&#34;https://www.jetbrains.com/help/pycharm/2023.1/sharing-your-ide-settings.html#IDE_settings_sync&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jetbrains Settings Sync&lt;/a&gt;
+
+.
+In doing that, they also inadvertantly disabled the &amp;ldquo;SSH/SFTP/Webdav&amp;rdquo; bundled plugin.&lt;/p&gt;
+&lt;h1 id=&#34;using-jetbrains-gateway&#34;&gt;
+    &lt;a href=&#34;#using-jetbrains-gateway&#34;&gt;
+	Using &amp;ldquo;Jetbrains Gateway&amp;rdquo;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;When closing all project windows, PyCharm will default to the project selection screen.
+This will offer the creation of new local projects, and also access to &amp;ldquo;SSH&amp;rdquo; projects,
+&amp;ldquo;Jetbrains Space&amp;rdquo; projects, &amp;ldquo;Dev Containers&amp;rdquo;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-10.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;PyCharms project selection screen, &amp;ldquo;Welcome to PyCharm&amp;rdquo;.
+Choosing &amp;ldquo;SSH&amp;rdquo; sllows you to create remote projects directly.
+This will not use the synchronisation method above, but start a remote headless PyCharm.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Provide SSH connection information.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-11.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We are then being asked to provide SSH connection information, and can again choose from our default targets.
+Again, we use &lt;code&gt;kris@server.local&lt;/code&gt; with agent authentication.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;Select IDE version and directory.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-12.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;We are then being asked to choose an IDE version, and a directory.
+The directory must exist (and is ideally empty).&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This step can take some time to complete.
+It will make the remote host download a version of the IDE and run it headless,
+and will then configure Jetbrains Gateway locally.
+Ultimately, it will hand off development from PyCharm to the local Gateway and the remotely running PyCharm.&lt;/p&gt;
+&lt;p&gt;Gateway acts as the local display of the remote IDE, using SSH as a remote procedure call mechanism.
+Depending on the SSH connection latency, this can be quite laggy.
+In older versions of Gateway, it was also prone to losing synchronization – this version seems to behave better.&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;Validate functionality and hostname&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-13.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Writing a short test program and running it quickly validates that we are on the correct version of Python
+and on the correct host.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;5&#34;&gt;
+&lt;li&gt;Check processlist&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a href=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-14.jpg&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-14.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/a&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;A quick glance at the processlist of the remote hosts shows us what is going on:
+A headless version of Pycharm has been downloaded to $HOME/.cache/JetBrains and is doing the work.
+Locally, Jetbrains Gateway is the display for the remote instance.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;6&#34;&gt;
+&lt;li&gt;Check connection and ressources&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-15.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Cloud development instances are sometimes optimized for cost, not for comfort.
+Gateway offers a way to check remote resources, including Ping and Memory.&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;7&#34;&gt;
+&lt;li&gt;Other Providers&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/03/pycharm-16.jpg&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Gateway also offers additional providers for remote development, which can be installed and configured.&lt;/em&gt;&lt;/p&gt;
+&lt;h1 id=&#34;fleet&#34;&gt;
+    &lt;a href=&#34;#fleet&#34;&gt;
+	Fleet
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Fleet is a new editing environment from Jetbrains that tries to emulate VC Code in look and feel.
+Unlike PyCharm, it has no direct language support, but connects to one or more language servers.
+It needs extensions and language servers to become a useful editor with syntax support and analytics.&lt;/p&gt;
+&lt;p&gt;It can natively edit remote files.&lt;/p&gt;
+&lt;p&gt;I am not comfortable using it, and have therefore not tested it.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Dynamically loading Classes in Java</title>
       <link>https://blog.koehntopp.info/2024/03/03/dynamically-loading-classes-in-java.html</link>
@@ -3892,62 +4115,6 @@ and at the same time manages to convey how something this vast and enormous can 
 &lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/Blue-Machine-Ocean-Shapes-English-ebook/dp/B0BCTPP3DH&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Blue Machine&lt;/a&gt;
 
 &amp;rdquo;, Helen Czerski, EUR 15.62&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Elite</title>
-      <link>https://blog.koehntopp.info/2023/09/20/elite.html</link>
-      <pubDate>Wed, 20 Sep 2023 01:02:03 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2023/09/20/elite.html</guid>
-      <description>&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=LhTTpV5qFrs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/elite.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=LhTTpV5qFrs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;C64 Elite (1983) Longplay&lt;/a&gt;
-
-&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Das ist Elite (1984).
-Das Spiel wird heute 39 Jahre alt.&lt;/p&gt;
-&lt;p&gt;Spiele zu jener Zeit waren nicht nur 2D,
-sie waren auch Arcade.
-Man spielt, und wenn man stirbt, ist das Spiel vorbei – die nächste Partie fängt man von vorne an.&lt;/p&gt;
-&lt;p&gt;Elite ist das erste Spiel mit animierter 3D-Grafik, und es ist auch das erste Spiel mit Savegames und Progression.
-Als solches hat es die Spieleentwicklung sehr umfassend beeinflusst.
-Wing Commander, EVE und No Man&amp;rsquo;s Sky haben ihre Quellen hier.&lt;/p&gt;
-&lt;p&gt;Elite war eine Idee von David Braben und Ian Bell,
-beides Engländer und daher kam das Spiel zunächst für den BBC Micro raus.
-Es wurde später auf viele andere 8-Bit Systeme portiert,
-darunter auch der C64.
-Es verkaufte sich rund 100.000 mal auf dem BBC Micro und weitere 600.000 mal für den C64.
-Insgesamt wurden rund 1 Million Exemplare umgesetzt.&lt;/p&gt;
-&lt;p&gt;Insgesamt gab es von Elite selbst noch drei Nachfolgespiele, die aktuelle Version ist Elite: Dangerous.
-Da sieht das Gameplay dann so aus:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=LPMVLk7dwfs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/elite-dangerous.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=LPMVLk7dwfs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Elite Dangerous&lt;/a&gt;
-
- Gameplay.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Mein Elite T-Shirt hat das C64 Elite Wireframe Model der Cobra und den Text &amp;ldquo;Keep Calm And Jump Onwards&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/elite-jump-retrowinder.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;T-Shirt Design &lt;a href=&#34;https://blog.koehntopp.info/uploads/2023/09/elite-jump-retrowinder.png&#34;&gt;mit schwarzem Hintergrund&lt;/a&gt;
-
- und &lt;a href=&#34;https://blog.koehntopp.info/uploads/2023/09/elite-jump-onwards-transparent.png&#34;&gt;in transparent&lt;/a&gt;
-
-.&lt;/em&gt;&lt;/p&gt;
 </description>
     </item>
     
