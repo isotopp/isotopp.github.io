@@ -21,14 +21,13 @@
 	 // Initialize lunrjs using our generated index file
 	 function initLunr() {
 	     var request = new XMLHttpRequest();
-         request.open('GET', '{{ "index.json" | absURL }}', true);
+         request.open('GET', '/index.json', true);
 
 	     //request.onload = function () {
 	     request.onreadystatechange = function () {
          if (request.status >= 200 && request.status < 400) {
-
            pagesIndex = JSON.parse(request.responseText);
-           //console.log("index:", pagesIndex);
+           // console.log("index:", pagesIndex.length);
 
            // Set up lunrjs by declaring the fields we use
            // Also provide their boost level for the ranking
