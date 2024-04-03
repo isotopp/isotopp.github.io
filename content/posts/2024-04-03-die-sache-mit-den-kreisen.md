@@ -118,9 +118,9 @@ also beliebig genaue Schätzungen.
 Die Mathematik dazu ist spannend, aber für uns heute nicht notwendig.
 
 Wir haben in Computern inzwischen Hardware-Sin und -Cos Funktionen, die recht schnell sind,
-und für bestimmte Winkel kann man außerdem die Ergebnisse mit Ganzzahl-Rechnung.
-In Spielen auf kleiner Hardware kann man auch mit Nachschlagetabellen schätzen. 
-Das ist genau genug, sodaß man das auf dem Bildschirm nicht sieht. 
+und für bestimmte Winkel kann man außerdem die Ergebnisse mit Ganzzahl-Rechnung abschätzen.
+In Spielen auf kleiner Hardware kann man auch mit Nachschlagetabellen arbeiten. 
+Das ist genau genug, sodass man das auf dem Bildschirm nicht sieht. 
 
 # Kreis zeichnen (Pygame)
 
