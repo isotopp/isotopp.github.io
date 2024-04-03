@@ -40,7 +40,7 @@ Dann muss man die übliche Umrechnung von Weltkoordinaten in Anzeigekoordinaten 
 
 Das Verhältnis von Umfang u des Kreises zu Durchmesser d ist immer genau gleich,
 und es ist π (Pi). 
-Das heißt, ein Kreis mit dem Durchmesser `d=2` (dem Radius `r=1`) hat den Umgang von `u/d = math.Pi`.
+Das heißt, ein Kreis mit dem Durchmesser `d=2` (dem Radius `r=1`) hat den Umfang von `u/d = math.Pi`.
 
 ```python
 >>> import math
@@ -62,7 +62,7 @@ Für das Rechnen im täglichen Gebrauch reicht es "22/7" und 3.1415926 auswendig
 Der Umfang eines Kreises ist also `u = π*d = 2*π*r`.
 Das (`u = 2πr`) muss man auswendig wissen. 
 
-Wenn wir also eine kreisförmige Bahnstrecke mit dem Radius 1m (Durchmesser 2m) bauen,
+Wenn wir also eine kreisförmige Bahnstrecke mit dem Radius 1 m (Durchmesser 2 m) bauen,
 und die Bahn von links aus linksrum im Kreis fahren lassen, 
 dann hat sie, nachdem sie einmal im Kreis gefahren ist,
 eine Entfernung von genau 2π Meter zurückgelegt.
