@@ -199,7 +199,7 @@ Die Länge der Linie beträgt: 0.6180339887498948
 
 Als Zeichnung:
 
-![](/uploads/2024/04/kreis-06.png))
+![](/uploads/2024/04/kreis-06.png)
 
 ```python
 import numpy as np
