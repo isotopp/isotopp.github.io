@@ -18,7 +18,7 @@ Ich habe ihm ein paar Notizen gemacht.
 
 ![](/uploads/2024/04/kreis-01.png)
 
-Der Kreis hat einen Durchmesser von 2, das heißt, er belegt das Quadrat von `(-1, -1)` bis `(1, 1)`.
+Der Kreis hat einen Radius 1, einen Durchmesser von 2, das heißt, er belegt das Quadrat von `(-1, -1)` bis `(1, 1)`.
 Der Mittelpunkt **M** ist in der Mitte vom Koordinatensystem, bei `(0,0)`.
 Das nennt man einen Einheitskreis.
 
