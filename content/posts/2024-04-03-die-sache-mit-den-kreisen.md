@@ -100,13 +100,13 @@ Wenn wir jetzt eine Linie vom Mittelpunkt des Kreises M zum Rand zeichnen,
 dann ist die Länge dieser Linie immer genau r, 
 und der Winkel von der Startposition ist 𝛂 (alpha).
 
-Die Koordinaten des Punktes auf dem Rand des Kreises sind definiert als `x = sin(𝛂`)` und` `y = cos(𝛂)`. 
+Die Koordinaten des Punktes auf dem Rand des Kreises sind definiert als `x = cos(𝛂)` und `y = sin(𝛂)`. 
 Das heißt, die Mathematiker sagen: 
 "Wir wollen zwei Funktionen haben, die zusammen die Punkte des Randes eines Kreises mit dem Radius 1 beschreiben, 
 sodaß 
 
 ```python
-points: list = [ (math.sin(alpha), math.cos(alpha)) for alpha in range(0, 2*math.pi, math.pi/180)]
+points: list = [ (math.cos(alpha), math.sin(alpha)) for alpha in range(0, 2*math.pi, math.pi/180)]
  ```
 
 genau die Koordinaten dieser Punkte sind.
@@ -125,8 +125,11 @@ Das ist genau genug, sodass man das auf dem Bildschirm nicht sieht.
 # Kreis zeichnen (Pygame)
 
 ```python
-import pygame
 import math
+import sys
+import time
+
+import pygame
 
 pygame.init()
 
@@ -140,22 +143,23 @@ center = (width // 2, height // 2)
 radius = 250  # Durchmesser = 500
 
 points = []
-for angle in range(0, 360, 45):  # 45 ist die Schrittweite, probiere auch 10
+for angle in range(0, 360, 10):
+    # Das Pygame Koordinatensystem ist x nach Rechts, aber y nach Unten.
     x = int(math.cos(math.radians(angle)) * radius) + center[0]
-    y = int(math.sin(math.radians(angle)) * radius) + center[1]
+    y = -int(math.sin(math.radians(angle)) * radius) + center[1]
     points.append((x, y))
 
-
-running = True
-while running:
+for i in range(2, len(points)):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            pygame.quit()
+            sys.exit(0)
 
     screen.fill(black)
 
-    pygame.draw.lines(screen, white, True, points, 2)
+    pygame.draw.lines(screen, white, True, points[0:i], 2)
     pygame.display.flip()
+    time.sleep(1)
 
 pygame.quit()
 ```
@@ -172,8 +176,8 @@ Das Resultat mit der Schrittweite 10 sieht schon recht rund aus:
 
 ![](/uploads/2024/04/kreis-05.png)
 
-Gegeben die Position der Punkte bei 0 Grad (1,0) (die Startposition) und bei 𝛂 Grad `(sin(𝛂),cos(𝛂))`,
-können wir nun die Linie zwischen diesen beiden Punkten zeichnen `line(start=(0,1), end=(sin(𝛂), cos(𝛂))`
+Gegeben die Position der Punkte bei 0 Grad (1,0) (die Startposition) und bei 𝛂 Grad `(cos(𝛂),sin(𝛂))`,
+können wir nun die Linie zwischen diesen beiden Punkten zeichnen `line(start=(0,1), end=(cos(𝛂), sin(𝛂))`
 und ihre Länge ausrechnen.
 
 ```python
@@ -186,7 +190,7 @@ def linelength(start=(1.0, 0.0), end=(0.0, 0.0)):
     return length
 
 alpha=0.3 * math.pi
-length = linelength(end=(math.sin(alpha), math.cos(alpha)))
+length = linelength(end=(math.cos(alpha), math.sin(alpha)))
 print(f"Die Länge der Linie beträgt: {length}")
 ```
 
@@ -202,6 +206,7 @@ Als Zeichnung:
 ![](/uploads/2024/04/kreis-06.png)
 
 ```python
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 import math
@@ -214,23 +219,21 @@ endstr = f"({end[0]:.2f}, {end[1]:.2f})"
 
 right_angle = np.array([end[0], start[1]])
 
-# Das Dreieck
 plt.plot([start[0], end[0]], [start[1], end[1]], 'k-', label='Hypotenuse: d')
 plt.plot([start[0], right_angle[0]], [start[1], right_angle[1]], 'r--', label='Gegenkathete: Δy')
 plt.plot([right_angle[0], end[0]], [right_angle[1], end[1]], 'b--', label='Ankathete: Δx')
 
-# Die beiden Punkte in Rot und Grün
 plt.plot(*start, 'go', label=f'Start {startstr}')
 plt.plot(*end, 'ro', label=f'Ende {endstr}')
 
-# Legende
+
 plt.text(start[0], start[1]-0.2, f'{startstr}', horizontalalignment='center')
 plt.text(end[0], end[1]+0.2, f'{endstr}', horizontalalignment='center')
 plt.text((start[0]+right_angle[0])/2, start[1]+0.05, 'Δx', horizontalalignment='center')
 plt.text(end[0]-0.05, (start[1]+end[1])/2, 'Δy', verticalalignment='center')
 plt.text((start[0]+end[0])/2, (start[1]+end[1])/2, 'd', verticalalignment='center', horizontalalignment='left')
 
-# Koordinatensystem
+
 plt.axis('equal')
 plt.grid(True)
 plt.xlabel('X')
@@ -239,6 +242,7 @@ plt.legend()
 plt.title('Illustration des Satzes von Pythagoras')
 
 plt.show()
+sys.exit(0)
 ```
 
 Damit kannst Du für einen Kameraöffnungswinkel und eine Entfernung ausrechnen, 
