@@ -6,7 +6,240 @@
     <description>Recent content in Mysqldev on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 07 Apr 2024 13:48:25 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 24 Apr 2024 13:57:47 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysqldev/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Latency and IOPS</title>
+      <link>https://blog.koehntopp.info/2024/04/21/mysql-latency-and-iops.html</link>
+      <pubDate>Sun, 21 Apr 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/04/21/mysql-latency-and-iops.html</guid>
+      <description>&lt;p&gt;When talking about storage performance, we often her three terms that are important in describing storage performance.
+They are&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;bandwidth&lt;/li&gt;
+&lt;li&gt;latency&lt;/li&gt;
+&lt;li&gt;I/O operations per second (IOPS)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When you talk to storage vendors and cloud providers,
+they will gladly provide you with numbers on bandwidth and IOPS,
+but latency numbers will be hard to come by.
+To evaluate storage, especially for MySQL, you need just one number,
+and that is the 99.5 percentile commit latency for a random 16 KB disk write.
+But let&amp;rsquo;s start at the beginning.&lt;/p&gt;
+&lt;h1 id=&#34;bandwidth&#34;&gt;
+    &lt;a href=&#34;#bandwidth&#34;&gt;
+	Bandwidth
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The bandwidth of an IO subsystem is the amount of data it can read or write per second.
+For good benchmarking numbers, this is usually measured while doing large sequential writes.
+A benchmark would, for example, write and read megabyte sized blocks sequentially to a benchmark files,
+and then later read them back.&lt;/p&gt;
+&lt;p&gt;Many disk subsystems have caches, and caches have capacities.
+The benchmark will exercise the cache and measure cache speed,
+unless you manage to disable the caches.
+Or deplete them, by creating a system workload large enough to exceed the cache limit.
+For example, on a server with 128 GB of memory,
+your benchmark will either have to disable these caches,
+or benchmark with a file of 384 GB or larger to actually measure storage system performance.&lt;/p&gt;
+&lt;p&gt;Writes can be forced to disk, at the filesystem level, by using the means of &lt;code&gt;fdatasync()&lt;/code&gt;, &lt;code&gt;O_DIRECT&lt;/code&gt; or &lt;code&gt;O_SYNC&lt;/code&gt;,
+depending on what you want to measure and what your operating system and drivers provide.
+But if the storage itself provides caches, it may be that these are persistent (such as battery backed memory),
+and while that counts as persistent, it may not be the storage performance we want to measure.
+It could be that this is what we get until the cache is full,
+and then we get different numbers from the next tier of storage.
+Depending on what we need for our evaluation,
+we might need to deplete or disable this cache layer to get numbers from the tier we care about.&lt;/p&gt;
+&lt;p&gt;Strangely, read benchmarking is harder – we often can easily bypass writes caches by asking for write-though behavior.
+But if data is in memory, our read request will never reach the actual storage under test.
+Instead it will be served by some higher, faster tier of the storage subsystem.
+That&amp;rsquo;s good in normal operations, but bad if we want to find out worst-case performance guarantees.&lt;/p&gt;
+&lt;p&gt;From an uncached enterprise harddisk you would expect on the upside of 200 MB/sec streaming write bandwidth,
+from an uncached enterprise flash twice that, around 400 MB/sec written.
+For short time or from specialized storage you can get up to 10x that, but sustained it is often disappointingly low.&lt;/p&gt;
+&lt;p&gt;By bundling storage in a striped RAID-0 variant, you can get a lot more.
+By providing an abundance of battery-backed memory,
+you can get speeds that saturate your local bus speed or whatever network is in the path.&lt;/p&gt;
+&lt;h1 id=&#34;latency&#34;&gt;
+    &lt;a href=&#34;#latency&#34;&gt;
+	Latency
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Write and read latency is the amount of time it takes to write a piece of data.
+For a database application developer,
+write latency usually amounts to &amp;ldquo;how long to I have to wait for a reasonably sized COMMIT to return&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;To better understand database write latency, we need to understand database writes.
+The long version of that is in explained in
+&lt;a href=&#34;https://blog.koehntopp.info/2020/07/27/mysql-transactions.html%3e&#34;&gt;MySQL Transactions - the physical side&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;The short version is that MySQL prepares a transaction in memory in the log buffer,
+and on commit writes the log buffer to the redo log.
+This is a sequentially structured, on-disk ring buffer that accepts the write.
+A commit will return once data is in there (plus replication shenanigans, if applicable).
+For a fast database, it is mandatory for the redo log to be on fast, persistent storage.
+Writes to the database happen in relatively tiny blocks, much smaller than actual database pages.&lt;/p&gt;
+&lt;p&gt;Later, out of the critical path, the database writes out the actual modified data pages as 16 KB random writes.
+This is important,
+but it happens a long time after the commit in a batched fashion, often minutes after the actual commit.&lt;/p&gt;
+&lt;p&gt;Still, a filesystem benchmark that uses randomly written 16 KB pages
+usually characterizes the behavior of a storage subsystem in a way
+that good predictions of its real world performance can be made.
+So run a&lt;code&gt;fio&lt;/code&gt; benchmark that writes single-threadedly to a very large test file,
+doing random-writes with a 16 KB block size,
+and look for the &lt;code&gt;clat&lt;/code&gt; numbers and the latency histogram in the benchmark.&lt;/p&gt;
+&lt;p&gt;It might look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  write: IOPS=2454, BW=38.4MiB/s (40.2MB/s)(11.2GiB/300001msec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    clat percentiles (usec):
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     |  1.00th=[  202],  5.00th=[  237], 10.00th=[  249], 20.00th=[  269],
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 30.00th=[  285], 40.00th=[  302], 50.00th=[  314], 60.00th=[  330],
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 70.00th=[  347], 80.00th=[  396], 90.00th=[  482], 95.00th=[  570],
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 99.00th=[ 2212], 99.50th=[ 2966], 99.90th=[ 6915], 99.95th=[ 7832],
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;     | 99.99th=[ 9503]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Be sure to check the units, here &lt;code&gt;usec&lt;/code&gt; (µs, microseconds, 1E-06 sec).
+&lt;code&gt;fio&lt;/code&gt; changes them around as needed.
+Then look at the numbers in the clat histogram.&lt;/p&gt;
+&lt;p&gt;You will see relatively linear numbers, here up to the 95th percentile,
+and then a sudden and steep increase.
+Most storages are bimodal, and you will see &amp;ldquo;good&amp;rdquo; behavior and numbers in the low percentiles,
+and then numbers from the &amp;ldquo;bad&amp;rdquo; writes above.
+It is important to treat both numbers as differently and remember the cutoff percentile as well.
+This storage has a clat of about 0.57 ms, until the 95th percentile,
+and then 2.0 ms or more for about 5% of all writes.
+That&amp;rsquo;s not good, but these numbers are from a specific multithreaded test, not single-threaded writing,
+and I just included them to show what they would look like.&lt;/p&gt;
+&lt;p&gt;For reference, a local NVME disk should give you &amp;lt;100 µs for the good writes,&lt;br&gt;
+and present a cutoff at the 99.90th percentile
+(&lt;a href=&#34;https://blog.koehntopp.info/2019/06/13/adventures-in-storageland.html#some-nvme&#34;&gt;data from 2019&lt;/a&gt;
+
+).&lt;/p&gt;
+&lt;p&gt;A good disk-based NetApp filer connected with FC/AL, as sold in 2012,
+would present itself at ~500 µs write latency,
+and with a very high cutoff at the 99.5th or 99.9th percentile
+You would be mostly talking to the battery backed storage in that unit,
+so even with hard disks in it, it would be decent enough to run a busy database on it.
+If your storage is worse, latency-wise, than this 12-year-old piece of hardware,
+you will probably not be happy with it under load for database workloads.&lt;/p&gt;
+&lt;h1 id=&#34;iops&#34;&gt;
+    &lt;a href=&#34;#iops&#34;&gt;
+	IOPS
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&amp;ldquo;I/O Operations Per Second&amp;rdquo; sounds a lot like latency, but is not.
+It is the total I/O budget of your storage.
+For old enterprise harddisks with a 5 ms seek time, you get around 200 IOPS from a single hard-disk.
+With a disk array, a multiple of that – more if you have more spindles.
+That is why in the old times before flash,
+DBAs strongly preferred arrays from many tiny disks over arrays from few large disks.
+That is also why disk-based database write-performance is completely dependent on the presence of battery backed storage.&lt;/p&gt;
+&lt;p&gt;With modern flash and NVME, paths to the actual storage in the flash chips are parallel.
+This is one of the big advantages of NVME over SSD or SATA, in fact.
+A single enterprise NVME flash drive can provide you with up to 800.000 IOPS.&lt;/p&gt;
+&lt;p&gt;But that is not a latency number.
+A single commit will still take around 1/20.000 sec, around 50µs.
+So if you execute single row insert/commit pairs in a loop, you will not see more than 20.000 commit/s,
+even if the single NVME drive can do 40x that.
+To leverage the full potential of the drive, you will need to access it 40-way parallel.
+Most databases cannot do that.&lt;/p&gt;
+&lt;p&gt;That is, because the workload itself that a database executes is inherently dependent on the order of commits.&lt;/p&gt;
+&lt;p&gt;Each transaction creates a number of locks that are necessary for the transaction to be executed correctly.
+Rows that are being written to are exclusively locked (X-locked),
+rows that are being referenced by foreign key constraints can be share-locked (S-locked),
+and additional locks may be taken out explicitly.
+Most people are running MySQL in a simplified model (for example using group replication) where only X-locks matter,
+and the set of primary keys that are written to (and hence get X-locked) is the write-set.&lt;/p&gt;
+&lt;p&gt;Two transactions are potentially parallel-executable when the intersection of their write-set is empty,
+that is, when they write to row sets that are non-overlapping.
+Most execution models for MySQL (expecially regarding
+&lt;a href=&#34;https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html&#34;&gt;parallel replication&lt;/a&gt;
+
+)
+will try to execute transactions in parallel until they find an overlap.
+Then they will block until all transactions are done, and start the next batch of parallel transactions.
+This is not optimal, but simple, and prevents re-ordering of transactions in a way that is easy for developers to understand.
+It will also not break heartbeat writes that are often used to check for replication delay.&lt;/p&gt;
+&lt;p&gt;In reality,
+the execution-width of such a transaction stream varies wildly and is completely subject to what the applications do.
+For execution guarantees and service-level objectives,
+when using MySQL,
+the IOPS budget of the storage is immaterial.
+We can only make guarantees for the database based on storage latency.
+That is not a number you will find in the AWS catalog.
+So go, measure.&lt;/p&gt;
+&lt;p&gt;In the workloads I have seen, over a longer stretch of time I have often seen a degree of parallel execution hovering around 3-5.
+So your 2012 Netapp filer with 500 µs commit latency will, if the IOPS budget is big enough,
+execute around 2000 sequential commits/s, and will perform with around 6000-10.000 IOPS.
+You can guarantee only 2000 commit/s, because that is worst case performance,
+and as a DBA you do not control application workload.&lt;/p&gt;
+&lt;h1 id=&#34;jitter&#34;&gt;
+    &lt;a href=&#34;#jitter&#34;&gt;
+	Jitter
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Jitter is the amount of variance you get in latency.
+Most of the time, we care a lot about jitter, especially with transactional workloads.&lt;/p&gt;
+&lt;p&gt;Jitter matters, because if we hum along with 10.000 write-commit/s, and we get a hiccup of 1/10 s (100ms),
+we are likely looking at 1000 stalled processes in &lt;code&gt;SHOW PROCESSLIST&lt;/code&gt;.
+That is, if our &lt;code&gt;max_connections&lt;/code&gt; is too low, we die.
+Also, even if we don&amp;rsquo;t die, the applications people will hate us.&lt;/p&gt;
+&lt;p&gt;You can see the effect of jitter or lock pileups, for example by running &lt;code&gt;innotop -m Q -d 0.1&lt;/code&gt; for a minute.
+If things are fine, the number of shown active, non-idle connections will be relatively constant
+and smaller than the number of CPU threads available to your machine.&lt;/p&gt;
+&lt;h1 id=&#34;tldr&#34;&gt;
+    &lt;a href=&#34;#tldr&#34;&gt;
+	TL;DR
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Bandwidth is the MB/s you get from your storage.
+&lt;ul&gt;
+&lt;li&gt;Work with 200 MB/s for disk, 400 MB/s for bulk flash, and celebrate burst speeds of 4 GB/s for a short time.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Latency, for MySQL, is how long you wait for a 16 KB random-write to happen in fio.
+&lt;ul&gt;
+&lt;li&gt;2012&amp;rsquo;s NetApp gives you 500 µs, 0.5 ms. Today&amp;rsquo;s NVME gives you 100 µs, 0.1 ms.&lt;/li&gt;
+&lt;li&gt;The cloud with very remote storage often gives you 1-2 ms.&lt;/li&gt;
+&lt;li&gt;commit-rate = 1/latency is the number of turns per second you get from a for-loop running &amp;ldquo;insert-commit&amp;rdquo;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;IOPS is the total, parallel IO budget for your database.
+&lt;ul&gt;
+&lt;li&gt;IOPS/commit-rate is the required degree of parallelism needed to eat the whole buffet, that is, use up all IOPS.&lt;/li&gt;
+&lt;li&gt;Transaction parallelism in MySQL is application-dependent,
+and is usually defined by how long a run of intersection-free write-sets you can find.&lt;/li&gt;
+&lt;li&gt;For the cases and workloads I have seen (webshops), it varies wildly over time, and is often 4-ish.&lt;/li&gt;
+&lt;li&gt;A single MySQL instance will usually not be able
+to consume all IOPS offered by even a single enterprise NVME drive (800k IOPS).
+This would require a 40-wide parallel path, 10x more than what workloads typically can offer.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Jitter matters.
+&lt;ul&gt;
+&lt;li&gt;That is why we look at 99th percentile and higher for completion latency (clat) in fio.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Cloud storage often sucks.
+&lt;ul&gt;
+&lt;li&gt;1 ms or even 3 ms clat give you 300-1000 commit/s, in a loop.
+Often that is borderline insufficient.
+You can weaken persistence guarantees (&lt;code&gt;innodb_flush_log_at_trx_commit&lt;/code&gt;),
+complicate your model by introducing other technologies (that are faster, because they have weaker persistence guarantees),
+or run MySQL yourself on i3 instances with local storage (but that is not why you chose the cloud).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Guarantees can be made only on things you control, and that may be bandwidth and latency, but never parallelism.
+&lt;ul&gt;
+&lt;li&gt;Parallelism is controlled by the application, not by the DBA.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Selecting random rows</title>
       <link>https://blog.koehntopp.info/2023/03/06/selecting-random-rows.html</link>
@@ -4438,122 +4671,6 @@ It will produce the following output, which is worthless for debugging:&lt;/p&gt
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Technically, an &lt;code&gt;and&lt;/code&gt; is possible and legal, if you wanted to produce a &lt;code&gt;boolean&lt;/code&gt;.
 Most people do not want this at this point in the statement, though.
 The error message is particularly unhelpful if you have no access to the literal raw SQL string for whatever reason.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Databases: How large is too large?</title>
-      <link>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</link>
-      <pubDate>Wed, 16 Feb 2022 14:35:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/02/16/databases-how-large-is-too-large.html</guid>
-      <description>&lt;p&gt;A database is a special kind of structured, persistent, global variable with concurrent access over the network.&lt;/p&gt;
-&lt;p&gt;You write data to a cell of a row of a table in a schema in the server, and it is being kept around for you, with a lifetime longer than the runtime of your program.
-The database takes care of making sure of ordering access to that data, so there is a clearly defined series of changes to the data – locking, transactions, isolation are things that make databases popular.&lt;/p&gt;
-&lt;p&gt;And so one gets to have a lot of database schemas in server instances, and they grow.
-Sometimes that becomes a problem.&lt;/p&gt;
-&lt;h1 id=&#34;databases-dont-scale-even-when-they-scale&#34;&gt;
-    &lt;a href=&#34;#databases-dont-scale-even-when-they-scale&#34;&gt;
-	Databases don&amp;rsquo;t scale, even when they scale
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;These days, the MySQL server can easily utilize the resources even of very large servers.
-At work, we have taken instances easily up to 400.000 queries per second on AMD EPYC servers with 64 cores and one terabyte of memory, without special tuning.
-With careful tuning, more than a million QPS is achievable.
-MySQL scales extremely well these days.&lt;/p&gt;
-&lt;p&gt;For a long time, MySQL also has been a very low latency/high connection database:
-since it uses a multithreading approach with a pre-generated thread pool, it can handle up to around 10k connections comfortably, and three times more at cost.
-It can handle disconnect and reconnect situations in a way that is more reminiscent of an LDAP server than a database.&lt;/p&gt;
-&lt;p&gt;And it can answer single point primary key lookups from memory – the workload a &lt;code&gt;memcached&lt;/code&gt; handles – at &lt;code&gt;memcached&lt;/code&gt; speeds:
-We see query resolution times including SQL parsing that are as low as 0.12ms (120µs).&lt;/p&gt;
-&lt;h1 id=&#34;what-doesnt-scale-_server-creation-time_&#34;&gt;
-    &lt;a href=&#34;#what-doesnt-scale-_server-creation-time_&#34;&gt;
-	What doesn&amp;rsquo;t scale: &lt;em&gt;server creation time&lt;/em&gt;
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;MySQL replication hierarchies are designed as shared-nothing architectures.
-Creating a new server means you have to copy the data for the server into place, and then let replication catch up.&lt;/p&gt;
-&lt;p&gt;There are storage trickeries that can be played, but they have long term consequences that need mitigation.
-They also tie their user to very costly and very specific storage architectures and that is not a thing anybody can afford to have as a technical debt item on their sheet.&lt;/p&gt;
-&lt;h1 id=&#34;a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
-    &lt;a href=&#34;#a-relativity-theory-of-databases-for-data-space-is-time&#34;&gt;
-	A Relativity Theory of databases: For data, space is time.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;When we create new databases, we copy the data over.
-In the end, the network is very fast:
-At 10  Gbit/s, we are looking at a stream of 1.25 GB/s coming in that we need to be able to persist at the receiving end, and that we need to provide at the sending end.&lt;/p&gt;
-&lt;p&gt;Looking at storage, we can see that in all but one situation, the bottleneck is not the network:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;A conventional HDD with rotating rust can serve reliably around 200 MB/s in a linear read or write (&lt;a href=&#34;https://toshiba.semicon-storage.com/ap-en/storage/product/data-center-enterprise/cloud-scale-capacity/articles/mg07acaxxx.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Toshiba HDD specs&lt;/a&gt;
-
- provide some reference).&lt;/li&gt;
-&lt;li&gt;A SSD usually gives us twice this, so we see streams of around 400-500 MB/s (&lt;a href=&#34;https://www.micron.com/-/media/client/global/documents/products/product-flyer/5300_product_brief.pdf?la=en&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron SSD specs&lt;/a&gt;
-
- provide some reference).&lt;/li&gt;
-&lt;li&gt;Openstack instances are quota&amp;rsquo;ed, and often get something like 400 MB/s quota again, which nicely matches expectations of SSD users.&lt;/li&gt;
-&lt;li&gt;A NVME flash device can provide on the upside of 3000 MB/s (3 GB/s) sustained data rate when enterprise grade hardware is purchased (&lt;a href=&#34;http://brochure.stebis.nl/Micron9300.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Micron NVME specs&lt;/a&gt;
-
- provide some reference).
-This is the one single case where a 10 GBit/s network interface actually is becoming a bottleneck, but of course more network is available if you have the coin.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;How long does it take to copy one Terabyte of data, assuming linear streaming access?&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;At 200 MB/s, we get 12000 MB/min = ~12 GB/min, or around 85.3 minutes for 1024 GB.&lt;/li&gt;
-&lt;li&gt;At 400 MB/s, that is twice the speed or half the time, 42.6 minutes.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Add time for replication to catch up, and round up to a nice round number for rule of thumb estimates:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;At 400 MB/s, copying one Terabyte of data takes 45 minutes to copy and 15 minutes for replication catchup, for a total of &lt;strong&gt;one hour per Terabyte of data size&lt;/strong&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h1 id=&#34;size-constraints-for-databases&#34;&gt;
-    &lt;a href=&#34;#size-constraints-for-databases&#34;&gt;
-	Size constraints for databases
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In database land, we copy databases all the time:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;To make backups.&lt;/li&gt;
-&lt;li&gt;To make more replicas in order to scale a pool up.&lt;/li&gt;
-&lt;li&gt;To replace replicas that have left the pool to go into maintenance.&lt;/li&gt;
-&lt;li&gt;To create special purpose replicas that may or may not be useful after having served their special purpose.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Each replica we make needs a donor instance, and often a donor instance can donate only to one receiver at a single point in time.&lt;/p&gt;
-&lt;p&gt;All taken together means that asking for more replicas is not instantaneous.
-You will have to wait one hour per TB of data size, and longer if there is need to clone up some donors to be able to parallelize cloning.&lt;/p&gt;
-&lt;p&gt;Here are some good numbers:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Typical HPE or Dell blades at work have a single or two internal drives of 1.92 TB (&amp;ldquo;two TB&amp;rdquo;) each.
-If the instances make full use of them, preparing a blade takes slightly under 2h or 4h.&lt;/li&gt;
-&lt;li&gt;In a single workday of 8h, you can probably expect one attempt per day to do &amp;ldquo;a thing&amp;rdquo;  to a database of ~10 TB size.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;From this we get a few very strong recommendations:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;200-250 GB&lt;/strong&gt; databases can be replicated in intervals that fit into K8s readiness probes.
-That is why Vitess and also many Postgres based clustering products recommend small instance sizes of 250 GB or less.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;2-4 TB&lt;/strong&gt; data size give you &amp;ldquo;several attempts at maintenance per day&amp;rdquo;, and also fit standard blade on premises or i3.2xl and i3.4xl instances in EC2.
-They are probably the upper end of supportable database size in terms of wait times due to data copies.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;10 TB&lt;/strong&gt; data size is where toil explodes, because they are in the &amp;ldquo;a single attempt per day&amp;rdquo; class.
-If you have databases that are larger than this, you need to have a long and hard look at your life and architecture choices, and the implications of them.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;reactive-autoscaling-is-not-a-thing&#34;&gt;
-    &lt;a href=&#34;#reactive-autoscaling-is-not-a-thing&#34;&gt;
-	Reactive autoscaling is not a thing
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;It also means that reactive autoscaling of database instances does not work at all:
-By the time you have scaled up, the demand is already handled by existing capacity or you have died.&lt;/p&gt;
-&lt;p&gt;You will need ongoing capacity testing and predictive autoscaling that gives you some headroom  for the unexpected.&lt;/p&gt;
-&lt;p&gt;Using spot instances is also very likely to make you very unhappy or very offline or both.&lt;/p&gt;
-&lt;h1 id=&#34;tldr&#34;&gt;
-    &lt;a href=&#34;#tldr&#34;&gt;
-	TL;DR
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;There is a soft 2 TB boundary and a hard 10 TB boundary.
-They are defined by physics, so they are not negotiable and cannot be removed by throwing money at it.&lt;/p&gt;
-&lt;p&gt;When you reach these sizes, talk to your DBA about alternatives.
-Treat the 2TB boundary as a complexity inflection point, and use the remaining time as runway to branch out into alternative solutions.&lt;/p&gt;
 </description>
     </item>
     

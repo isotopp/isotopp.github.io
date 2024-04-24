@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+<title>MySQL: Latency and IOPS | Die wunderbare Welt von Isotopp</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="favicon.ico" rel="icon" type="image/ico">
+<link rel="shortcut icon" href="favicon.ico">
+<link rel="canonical" href="https://blog.koehntopp.info/2024/04/21/mysql-latency-and-iops.html">
+
+
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/feed.xml' title="Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/mysql/feed.xml' title="Feed: mysql Articles for Die wunderbare Welt von Isotopp">
+<link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
+
+
+
+
+<meta name="generator" content="Hugo 0.125.3">
+<meta property="og:title" content='MySQL: Latency and IOPS' />
+<meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
+
+
+<meta property="og:locale" content="en_US" />
+
+
+<meta name="description" content='' />
+<meta property="og:description" content='' />
+
+<meta property="og:url" content="https://blog.koehntopp.info/" />
+
+
+<meta property="og:type" content="article" />
+<meta name="article:published_time" content='2024-04-21T05:06:07Z' />
+
+
+
+<meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content='@isotopp' />
+<meta name="twitter:creator" content='@isotopp' />
+<meta property="twitter:title" content='MySQL: Latency and IOPS' />
+<meta property="twitter:description" content='' />
+<meta property="twitter:image" content='https://blog.koehntopp.info/assets/img/background/mysql.jpg' />
+
+<script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","description":null,"headline":"MySQL: Latency and IOPS","image":"/assets/img/background/mysql.jpg","name":"Die wunderbare Welt von Isotopp","url":"https://blog.koehntopp.info/"}
+</script>
+
+    
+
+
+
+<link rel="stylesheet" href="https://blog.koehntopp.info/style.min.c633d67ea69accc92e157b3bbbfff14c50111ba56cd6d012f7908af439b86163.css">
+
+
+    </head>
+    <body>
+        
+
+        <nav class="navbar navbar-expand-lg navbar-light px-lg-4 pt-lg-4">
+    <div class="container-fluid">
+        <a class="navbar-brand justify-content-center" href="https://blog.koehntopp.info/" rel="home" title="Die wunderbare Welt von Isotopp">
+            <img alt="Kris" height='48' width='48' src='/assets/img/avatars/isotopp.jpg' class='p-0 me-3 d-block d-lg-inline'>
+            <span class='h4 d-block d-lg-inline'>Die wunderbare Welt von Isotopp</span>
+        </a>
+
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item ">
+                    <a class="nav-link" href="/about/">
+                        <span class="">About</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/contribute/">
+                        <span class="">Contribute</span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/search/">
+                        <span class=""><svg class='bi' height='1.5rem' width='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#search'/></svg></span>
+                        
+                    </a>
+                </li>
+                <li class="nav-item ">
+                    <a class="nav-link" href="/tags/">
+                        <span class=""><svg class='bi' width='1.5rem' height='1.5rem' fill='currentColor'><use xlink:href='/bootstrap-icons.svg#tags-fill'/></svg></span>
+                        
+                    </a>
+                </li>
+                
+            </ul>
+            
+        </div>
+
+    </div>
+</nav>
+
+
+        <main role="main" class="container-fluid p-0">
+
+            
+
+
+
+
+<div class="page">
+	<article class="mysql-latency-and-iops-page">
+		<div class='row  justify-content-center text-center my-4 mx-0'>
+			<header class="headerbanner">
+				<div class='col'>
+					<h1 class="title mb-lg-4 text-white">
+						MySQL: Latency and IOPS
+					</h1>
+					<div class='text-uppercase text-light' style='letter-spacing: 0.1rem;'>
+						<img alt='isotopp image' src='/assets/img/avatars/isotopp.jpg' class='me-1 p-0'
+						     style='width: 1.9rem; border-radius: 1rem;'>
+						<a href="https://chaos.social/@isotopp" class='text-light text-decoration-none'>
+							Kristian Köhntopp
+						</a>
+
+						
+						<span class='d-none d-lg-inline'>-</span>
+						<div class='d-block d-lg-inline'>April 21, 2024</div>
+						
+
+					</div>
+				</div>
+				
+				<img alt='a featured image' src="/assets/img/background/mysql.jpg">
+				
+			</header>
+		</div>
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/04/03/die-sache-mit-den-kreisen.html">Die Sache mit den Kreisen</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+			</div>
+		</div>
+
+		<div class='row justify-content-center mx-0 mt-3 mb-5'>
+			<div class="col-lg-8 mb-3">
+				
+				<header class="toc bg-light">
+					<nav id="TableOfContents">
+  <ul>
+    <li><a href="#bandwidth">Bandwidth</a></li>
+    <li><a href="#latency">Latency</a></li>
+    <li><a href="#iops">IOPS</a></li>
+    <li><a href="#jitter">Jitter</a></li>
+    <li><a href="#tldr">TL;DR</a></li>
+  </ul>
+</nav>
+				</header>
+				
+			</div>
+			<div class='col-lg-8'>
+				<p>When talking about storage performance, we often her three terms that are important in describing storage performance.
+They are</p>
+<ul>
+<li>bandwidth</li>
+<li>latency</li>
+<li>I/O operations per second (IOPS)</li>
+</ul>
+<p>When you talk to storage vendors and cloud providers,
+they will gladly provide you with numbers on bandwidth and IOPS,
+but latency numbers will be hard to come by.
+To evaluate storage, especially for MySQL, you need just one number,
+and that is the 99.5 percentile commit latency for a random 16 KB disk write.
+But let&rsquo;s start at the beginning.</p>
+<h1 id="bandwidth">
+    <a href="#bandwidth">
+	Bandwidth
+    </a>
+</h1>
+<p>The bandwidth of an IO subsystem is the amount of data it can read or write per second.
+For good benchmarking numbers, this is usually measured while doing large sequential writes.
+A benchmark would, for example, write and read megabyte sized blocks sequentially to a benchmark files,
+and then later read them back.</p>
+<p>Many disk subsystems have caches, and caches have capacities.
+The benchmark will exercise the cache and measure cache speed,
+unless you manage to disable the caches.
+Or deplete them, by creating a system workload large enough to exceed the cache limit.
+For example, on a server with 128 GB of memory,
+your benchmark will either have to disable these caches,
+or benchmark with a file of 384 GB or larger to actually measure storage system performance.</p>
+<p>Writes can be forced to disk, at the filesystem level, by using the means of <code>fdatasync()</code>, <code>O_DIRECT</code> or <code>O_SYNC</code>,
+depending on what you want to measure and what your operating system and drivers provide.
+But if the storage itself provides caches, it may be that these are persistent (such as battery backed memory),
+and while that counts as persistent, it may not be the storage performance we want to measure.
+It could be that this is what we get until the cache is full,
+and then we get different numbers from the next tier of storage.
+Depending on what we need for our evaluation,
+we might need to deplete or disable this cache layer to get numbers from the tier we care about.</p>
+<p>Strangely, read benchmarking is harder – we often can easily bypass writes caches by asking for write-though behavior.
+But if data is in memory, our read request will never reach the actual storage under test.
+Instead it will be served by some higher, faster tier of the storage subsystem.
+That&rsquo;s good in normal operations, but bad if we want to find out worst-case performance guarantees.</p>
+<p>From an uncached enterprise harddisk you would expect on the upside of 200 MB/sec streaming write bandwidth,
+from an uncached enterprise flash twice that, around 400 MB/sec written.
+For short time or from specialized storage you can get up to 10x that, but sustained it is often disappointingly low.</p>
+<p>By bundling storage in a striped RAID-0 variant, you can get a lot more.
+By providing an abundance of battery-backed memory,
+you can get speeds that saturate your local bus speed or whatever network is in the path.</p>
+<h1 id="latency">
+    <a href="#latency">
+	Latency
+    </a>
+</h1>
+<p>Write and read latency is the amount of time it takes to write a piece of data.
+For a database application developer,
+write latency usually amounts to &ldquo;how long to I have to wait for a reasonably sized COMMIT to return&rdquo;.</p>
+<p>To better understand database write latency, we need to understand database writes.
+The long version of that is in explained in
+<a href="/2020/07/27/mysql-transactions.html%3e">MySQL Transactions - the physical side</a>
+
+.</p>
+<p>The short version is that MySQL prepares a transaction in memory in the log buffer,
+and on commit writes the log buffer to the redo log.
+This is a sequentially structured, on-disk ring buffer that accepts the write.
+A commit will return once data is in there (plus replication shenanigans, if applicable).
+For a fast database, it is mandatory for the redo log to be on fast, persistent storage.
+Writes to the database happen in relatively tiny blocks, much smaller than actual database pages.</p>
+<p>Later, out of the critical path, the database writes out the actual modified data pages as 16 KB random writes.
+This is important,
+but it happens a long time after the commit in a batched fashion, often minutes after the actual commit.</p>
+<p>Still, a filesystem benchmark that uses randomly written 16 KB pages
+usually characterizes the behavior of a storage subsystem in a way
+that good predictions of its real world performance can be made.
+So run a<code>fio</code> benchmark that writes single-threadedly to a very large test file,
+doing random-writes with a 16 KB block size,
+and look for the <code>clat</code> numbers and the latency histogram in the benchmark.</p>
+<p>It might look like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">  write: IOPS=2454, BW=38.4MiB/s (40.2MB/s)(11.2GiB/300001msec)
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span><span class="line"><span class="cl"><span class="go">    clat percentiles (usec):
+</span></span></span><span class="line"><span class="cl"><span class="go">     |  1.00th=[  202],  5.00th=[  237], 10.00th=[  249], 20.00th=[  269],
+</span></span></span><span class="line"><span class="cl"><span class="go">     | 30.00th=[  285], 40.00th=[  302], 50.00th=[  314], 60.00th=[  330],
+</span></span></span><span class="line"><span class="cl"><span class="go">     | 70.00th=[  347], 80.00th=[  396], 90.00th=[  482], 95.00th=[  570],
+</span></span></span><span class="line"><span class="cl"><span class="go">     | 99.00th=[ 2212], 99.50th=[ 2966], 99.90th=[ 6915], 99.95th=[ 7832],
+</span></span></span><span class="line"><span class="cl"><span class="go">     | 99.99th=[ 9503]
+</span></span></span><span class="line"><span class="cl"><span class="go">...
+</span></span></span></code></pre></div><p>Be sure to check the units, here <code>usec</code> (µs, microseconds, 1E-06 sec).
+<code>fio</code> changes them around as needed.
+Then look at the numbers in the clat histogram.</p>
+<p>You will see relatively linear numbers, here up to the 95th percentile,
+and then a sudden and steep increase.
+Most storages are bimodal, and you will see &ldquo;good&rdquo; behavior and numbers in the low percentiles,
+and then numbers from the &ldquo;bad&rdquo; writes above.
+It is important to treat both numbers as differently and remember the cutoff percentile as well.
+This storage has a clat of about 0.57 ms, until the 95th percentile,
+and then 2.0 ms or more for about 5% of all writes.
+That&rsquo;s not good, but these numbers are from a specific multithreaded test, not single-threaded writing,
+and I just included them to show what they would look like.</p>
+<p>For reference, a local NVME disk should give you &lt;100 µs for the good writes,<br>
+and present a cutoff at the 99.90th percentile
+(<a href="/2019/06/13/adventures-in-storageland.html#some-nvme">data from 2019</a>
+
+).</p>
+<p>A good disk-based NetApp filer connected with FC/AL, as sold in 2012,
+would present itself at ~500 µs write latency,
+and with a very high cutoff at the 99.5th or 99.9th percentile
+You would be mostly talking to the battery backed storage in that unit,
+so even with hard disks in it, it would be decent enough to run a busy database on it.
+If your storage is worse, latency-wise, than this 12-year-old piece of hardware,
+you will probably not be happy with it under load for database workloads.</p>
+<h1 id="iops">
+    <a href="#iops">
+	IOPS
+    </a>
+</h1>
+<p>&ldquo;I/O Operations Per Second&rdquo; sounds a lot like latency, but is not.
+It is the total I/O budget of your storage.
+For old enterprise harddisks with a 5 ms seek time, you get around 200 IOPS from a single hard-disk.
+With a disk array, a multiple of that – more if you have more spindles.
+That is why in the old times before flash,
+DBAs strongly preferred arrays from many tiny disks over arrays from few large disks.
+That is also why disk-based database write-performance is completely dependent on the presence of battery backed storage.</p>
+<p>With modern flash and NVME, paths to the actual storage in the flash chips are parallel.
+This is one of the big advantages of NVME over SSD or SATA, in fact.
+A single enterprise NVME flash drive can provide you with up to 800.000 IOPS.</p>
+<p>But that is not a latency number.
+A single commit will still take around 1/20.000 sec, around 50µs.
+So if you execute single row insert/commit pairs in a loop, you will not see more than 20.000 commit/s,
+even if the single NVME drive can do 40x that.
+To leverage the full potential of the drive, you will need to access it 40-way parallel.
+Most databases cannot do that.</p>
+<p>That is, because the workload itself that a database executes is inherently dependent on the order of commits.</p>
+<p>Each transaction creates a number of locks that are necessary for the transaction to be executed correctly.
+Rows that are being written to are exclusively locked (X-locked),
+rows that are being referenced by foreign key constraints can be share-locked (S-locked),
+and additional locks may be taken out explicitly.
+Most people are running MySQL in a simplified model (for example using group replication) where only X-locks matter,
+and the set of primary keys that are written to (and hence get X-locked) is the write-set.</p>
+<p>Two transactions are potentially parallel-executable when the intersection of their write-set is empty,
+that is, when they write to row sets that are non-overlapping.
+Most execution models for MySQL (expecially regarding
+<a href="/2021/11/08/mysql-parallel-replication.html">parallel replication</a>
+
+)
+will try to execute transactions in parallel until they find an overlap.
+Then they will block until all transactions are done, and start the next batch of parallel transactions.
+This is not optimal, but simple, and prevents re-ordering of transactions in a way that is easy for developers to understand.
+It will also not break heartbeat writes that are often used to check for replication delay.</p>
+<p>In reality,
+the execution-width of such a transaction stream varies wildly and is completely subject to what the applications do.
+For execution guarantees and service-level objectives,
+when using MySQL,
+the IOPS budget of the storage is immaterial.
+We can only make guarantees for the database based on storage latency.
+That is not a number you will find in the AWS catalog.
+So go, measure.</p>
+<p>In the workloads I have seen, over a longer stretch of time I have often seen a degree of parallel execution hovering around 3-5.
+So your 2012 Netapp filer with 500 µs commit latency will, if the IOPS budget is big enough,
+execute around 2000 sequential commits/s, and will perform with around 6000-10.000 IOPS.
+You can guarantee only 2000 commit/s, because that is worst case performance,
+and as a DBA you do not control application workload.</p>
+<h1 id="jitter">
+    <a href="#jitter">
+	Jitter
+    </a>
+</h1>
+<p>Jitter is the amount of variance you get in latency.
+Most of the time, we care a lot about jitter, especially with transactional workloads.</p>
+<p>Jitter matters, because if we hum along with 10.000 write-commit/s, and we get a hiccup of 1/10 s (100ms),
+we are likely looking at 1000 stalled processes in <code>SHOW PROCESSLIST</code>.
+That is, if our <code>max_connections</code> is too low, we die.
+Also, even if we don&rsquo;t die, the applications people will hate us.</p>
+<p>You can see the effect of jitter or lock pileups, for example by running <code>innotop -m Q -d 0.1</code> for a minute.
+If things are fine, the number of shown active, non-idle connections will be relatively constant
+and smaller than the number of CPU threads available to your machine.</p>
+<h1 id="tldr">
+    <a href="#tldr">
+	TL;DR
+    </a>
+</h1>
+<ul>
+<li>Bandwidth is the MB/s you get from your storage.
+<ul>
+<li>Work with 200 MB/s for disk, 400 MB/s for bulk flash, and celebrate burst speeds of 4 GB/s for a short time.</li>
+</ul>
+</li>
+<li>Latency, for MySQL, is how long you wait for a 16 KB random-write to happen in fio.
+<ul>
+<li>2012&rsquo;s NetApp gives you 500 µs, 0.5 ms. Today&rsquo;s NVME gives you 100 µs, 0.1 ms.</li>
+<li>The cloud with very remote storage often gives you 1-2 ms.</li>
+<li>commit-rate = 1/latency is the number of turns per second you get from a for-loop running &ldquo;insert-commit&rdquo;.</li>
+</ul>
+</li>
+<li>IOPS is the total, parallel IO budget for your database.
+<ul>
+<li>IOPS/commit-rate is the required degree of parallelism needed to eat the whole buffet, that is, use up all IOPS.</li>
+<li>Transaction parallelism in MySQL is application-dependent,
+and is usually defined by how long a run of intersection-free write-sets you can find.</li>
+<li>For the cases and workloads I have seen (webshops), it varies wildly over time, and is often 4-ish.</li>
+<li>A single MySQL instance will usually not be able
+to consume all IOPS offered by even a single enterprise NVME drive (800k IOPS).
+This would require a 40-wide parallel path, 10x more than what workloads typically can offer.</li>
+</ul>
+</li>
+<li>Jitter matters.
+<ul>
+<li>That is why we look at 99th percentile and higher for completion latency (clat) in fio.</li>
+</ul>
+</li>
+<li>Cloud storage often sucks.
+<ul>
+<li>1 ms or even 3 ms clat give you 300-1000 commit/s, in a loop.
+Often that is borderline insufficient.
+You can weaken persistence guarantees (<code>innodb_flush_log_at_trx_commit</code>),
+complicate your model by introducing other technologies (that are faster, because they have weaker persistence guarantees),
+or run MySQL yourself on i3 instances with local storage (but that is not why you chose the cloud).</li>
+</ul>
+</li>
+<li>Guarantees can be made only on things you control, and that may be bandwidth and latency, but never parallelism.
+<ul>
+<li>Parallelism is controlled by the application, not by the DBA.</li>
+</ul>
+</li>
+</ul>
+
+			</div>
+		</div>
+
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Tags</span>
+				
+				<a href="/tags/#lang_en" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				lang_en
+				</a>
+				
+				<a href="/tags/#database" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				database
+				</a>
+				
+				<a href="/tags/#mysql" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysql
+				</a>
+				
+				<a href="/tags/#mysqldev" class='btn btn-sm btn-outline-primary mb-1'>
+				<svg class="bi" width="1rem" height="1rem" fill="currentColor">
+					<use xlink:href="/bootstrap-icons.svg#tag-fill"></use>
+				</svg>
+				mysqldev
+				</a>
+				
+			</div>
+		</div>
+
+		
+		
+		
+		
+		<div class='row justify-content-center py-3 mb-3 mx-0'>
+			<div class='col-lg-8 text-center'>
+				<a href="https://github.com/isotopp/isotopp.github.io/edit/main/content/posts/2024-04-21-mysql-latency-and-iops.md"
+				   rel="noopener noreferrer" target="_blank">
+					<span class='letter-spacing-01 text-uppercase text-secondary me-2'>Suggest Changes</span>
+				</a>
+			</div>
+		</div>
+		
+
+		<div class='row justify-content-center mx-0'>
+			<div class='col-lg-4 text-center text-lg-start'>
+				
+				<div>
+					<div class='letter-spacing-01 text-uppercase text-secondary'>
+						Previous Post
+					</div>
+					<a class='text-decoration-none' href="https://blog.koehntopp.info/2024/04/03/die-sache-mit-den-kreisen.html">Die Sache mit den Kreisen</a>
+				</div>
+				
+			</div>
+
+			<div class='col-lg-4 text-lg-end mt-5 mt-lg-0 text-center'>
+				
+			</div>
+		</div>
+
+
+		
+	</article>
+</div>
+
+
+
+            <footer class='row justify-content-center mb-4 pb-4 mx-0'>
+  <div class='col-8 text-center'>
+    <div>
+      A collection of old stuff, new stuff and random stuff.
+    </div>
+    <div class='row text-primary mt-4'>
+      <div class='col'>
+
+        <a href='/feed.xml' title='Follow RSS feed' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#rss-fill'/>
+          </svg>
+        </a>
+
+        <a href='mailto:kristian.koehntopp@gmail.com' title='Email' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#envelope'/>
+          </svg>
+        </a>
+
+        <a href='https://github.com/isotopp' title='Follow on GitHub' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#github'/>
+          </svg>
+        </a>
+
+        <a rel="me" href="https://chaos.social/@isotopp" title='Follow on Mastodon' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#mastodon'/>
+          </svg>
+        </a>
+
+        
+        <a href='http://steamcommunity.com/id/ixotopp' title='Follow on Steam' class='me-3 text-decoration-none'>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#steam'/>
+          </svg>
+        </a>
+
+        
+
+        <a href='https://www.youtube.com/user/isotopp' title='Follow on YouTube' class=''>
+          <svg class='bi' height='2.5rem' width='2.5rem' fill='currentColor'>
+            <use xlink:href='/bootstrap-icons.svg#youtube'/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+        </main>
+
+	
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/bootstrap.js"></script>
+
+
+
+
+<script src="https://blog.koehntopp.info/js/lunr.js"></script>
+
+
+
+
+
+<script src="https://blog.koehntopp.info/js/app.js"></script>
+
+
+    </body>
+</html>
