@@ -86,7 +86,7 @@ but it happens a long time after the commit in a batched fashion, often minutes 
 Still, a filesystem benchmark that uses randomly written 16 KB pages
 usually characterizes the behavior of a storage subsystem in a way
 that good predictions of its real world performance can be made.
-So run a`fio` benchmark that writes single-threadedly to a very large test file,
+So run a `fio` benchmark that writes single-threadedly to a very large test file,
 doing random-writes with a 16 KB block size, 
 and look for the `clat` numbers and the latency histogram in the benchmark.
 
