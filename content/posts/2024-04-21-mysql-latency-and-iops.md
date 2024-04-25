@@ -70,7 +70,7 @@ write latency usually amounts to "how long to I have to wait for a reasonably si
 
 To better understand database write latency, we need to understand database writes.
 The long version of that is in explained in
-[MySQL Transactions - the physical side]({{< relref "/2020-07-27-mysql-transactions.md" >}}>).
+[MySQL Transactions - the physical side]({{< relref "/2020-07-27-mysql-transactions.md" >}}).
 
 The short version is that MySQL prepares a transaction in memory in the log buffer,
 and on commit writes the log buffer to the redo log.
