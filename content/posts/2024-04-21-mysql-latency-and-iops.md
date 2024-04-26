@@ -11,7 +11,7 @@ tags:
 - mysqldev
 ---
 
-When talking about storage performance, we often her three terms that are important in describing storage performance.
+When talking about storage performance, we often hear three terms that are important in describing storage performance.
 They are
 
 - bandwidth
