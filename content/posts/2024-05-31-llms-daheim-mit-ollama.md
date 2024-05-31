@@ -11,38 +11,38 @@ tags:
 - ai
 ---
 
-Dieser Text ist eine Art Followup für [Wie ChatGPT funktioniert]({{< relref "/2024-02-06-wie-chatgpt-funktioniert.md" >}}).
+Dieser Text ist eine Art Follow-up für [Wie ChatGPT funktioniert]({{< relref "/2024-02-06-wie-chatgpt-funktioniert.md" >}}).
 Es geht darum, ein LLM lokal auszuführen und damit zu experimentieren.
 
 Wer mit LLMs daheim experimentieren möchte, der steht vor dem Problem, 
 einen Haufen furchtbar empfindlicher und schlecht zu aktualisierender Abhängigkeiten in Python zu installieren,
 monströse Downloads zu verwalten und die Ausführung für die eigene Maschine zu optimieren.
-Das wird ein bischen verbessert mit [llama.cpp](https://github.com/ggerganov/llama.cpp),
+Das wird ein bisschen verbessert mit [llama.cpp](https://github.com/ggerganov/llama.cpp),
 einer C++/C Bibliothek, die einem einen Teil der Arbeit abnimmt, 
 aber man hat immer noch kein Paket, mit dem man einfach Ergebnisse bekommt.
 
 Abhilfe schafft hier [Ollama](https://github.com/ollama/ollama),
 eine in Golang geschriebene Anwendung, 
-die llama.cpp integeriert und den Download, die Verwaltung und die Ausführung von LLMs automatisiert.
+die llama.cpp integriert und den Download, die Verwaltung und die Ausführung von LLMs automatisiert.
 Die [Website](https://ollama.com/) verweist auf das Blog, 
 den Discord und das Github von Ollama, und hat eine Suche,
-mit der man auf Ollama angepaßte LLms finden und herunterladen kann.
+mit der man auf Ollama angepasste LLms finden und herunterladen kann.
 
 # Installation
 
 LLMs sind rechenintensive Monster, die eine große Maschine zur Ausführung brauchen.
 Aber eingedampfte Spezialversionen kann man schon auf einem großen Raspi ausführen.
 Größe ist jedoch ein qualitativer Unterschied: 
-Ein LLM mit 0.3 Mrd Parameters verhält sich ganz anders als eines mit 8 Mrd. Parametern,
+Ein LLM mit 0.3 Mrd. Parameters verhält sich ganz anders als eines mit 8 Mrd. Parametern,
 und dieses wiederum wird von einem LLM mit 70 Mrd. Parameters vollkommen deklassiert.
 Ersteres kann man auf einem Raspi ausführen, 
-die 8 Mrd Parameter-Modelle oft auf einem Mac oder Windows-Rechner mit 32 GB RAM oder 12 GB VRAM in der Grafikkarte,
-und die 70 Mrd. Parameter-Modelle brauchen in der Regel Spezialrechner mit 128 GB RAM und zwei 24 GB NVidia-Karten kombiniert.
+die 8 Mrd. Parameter-Modelle oft auf einem Mac oder Windows-Rechner mit 32 GB RAM oder 12 GB VRAM in der Grafikkarte,
+und die 70 Mrd. Parameter-Modelle brauchen in der Regel Spezialrechner mit 128 GB RAM und zwei 24 GB Nvidia-Karten kombiniert.
 
 In meinem Fall steht mir
 
 - ein Mac mini M2pro mit 32 GB RAM und 8+4 Cores
-- ein Windows 11 Rechner mit 64 GB RAM und NVidia 4070Ti (12 GB VRAM)
+- ein Windows 11 Rechner mit 64 GB RAM und Nvidia 4070Ti (12 GB VRAM)
 
 zur Verfügung. Beide Maschinen haben ausreichend Plattenplatz auf NVME.
 
@@ -50,14 +50,14 @@ Man kann sich Ollama von der Website herunterladen und installieren,
 oder das Golang Projekt selbst clonen und compilieren,
 aber die einfachste Weise der Installation sind Paketmanager für MacOS und Windows.
 
-Auf dem Mac habe ich Homebrow, und `brew install ollama` ist die schnellste und einfachste Methode,
+Auf dem Mac habe ich Homebrew, und `brew install ollama` ist die schnellste und einfachste Methode,
 Ollama zu installieren und aktuell zu halten.
 Auf Windows geht dasselbe mit [Scoop](https://scoop.sh/), `scoop install ollama` regelt die Details.
 
 # `ollama serve` ausführen
 
 Ollama wird als Server ausgeführt. 
-Dazu muß man `ollama serve` starten.
+Dazu muss man `ollama serve` starten.
 
 Alle weiteren Operationen setzen voraus, daß in einem Fenster irgendwo `ollama serve` aktiv ist,
 denn alle weiteren Operationen tun nichts anderes als REST-Requests an `ollama serve` zu senden.
@@ -112,7 +112,7 @@ $ kk:~ kris$ mkdir /Volumes/Ablage/Torch/ollama-models/
 $ OLLAMA_MODELS=/Volumes/Ablage/Torch/ollama-models/ ollama serve
 ```
 
-Der Speicher dort sollte schnell sein und ausreichend Raum bereit stellen:
+Der Speicher dort sollte schnell sein und ausreichend Raum bereitstellen:
 
 ```console
 kk:~ kris$ df -h /Volumes/Ablage
@@ -138,14 +138,14 @@ Diese können dazu führen, daß ein Model geladen und ausgeführt wird.
 Das kann beim ersten Mal einige Zeit dauern, da viele Gigabyte Daten geladen werden müssen.
 
 Der Server hält das Model einige Zeit im Speicher, `OLLAMA_KEEP_ALIVE` viele Minuten.
-Der Default ist 5m.
-Danach wird der Speicher wieder frei gegeben.
+Der Default ist 5 m.
+Danach wird der Speicher wieder freigegeben.
 
 # Modelle aus dem Internet laden
 
 LLMs sind recht komplizierte Konstrukte mit der eigentlichen Parameter-Datei, die den Großteil der Daten aus macht,
 einem Systemprompt und weiteren Layers, die meist eher nicht so groß sind.
-Auf einem handelsüblichen Desktop-Rechner kann man meist erwarten, ein "7B" oder "8B"-Modell auszuführen.
+Auf einem handelsüblichen Desktop-Rechner kann man erwarten, ein "7B" oder "8B"-Modell auszuführen.
 Dies belegt zwischen 5 GB und 9 GB an Speicher, im RAM oder auf der Grafikkarte.
 
 Richtig große Modelle, 70B-Modelle, brauchen wesentlich mehr Speicher und eine Hardware, 
@@ -198,7 +198,7 @@ eval duration:        1.245361s
 eval rate:            32.92 tokens/s
 ```
 
-Wir sehen hier, daß mein M2pro mini 32 GB 1.56 Sekunden gebraucht hat, um diese Antwort zu generieren.
+Wir sehen hier, daß mein M2 pro mini 32 GB 1.56 Sekunden gebraucht hat, um diese Antwort zu generieren.
 Die Frage hat "23 Token" belegt, die mit 75 Token/s analysiert worden sind.
 
 Die Generierung der Ausgabe hat 41 Token erzeugt, 1.25s gedauert und ist mit 33 Token/s gelaufen.
@@ -212,7 +212,7 @@ Der Rechner hat dabei ca. 50 Watt gezogen. Normal verbraucht er circa 7 Watt, al
 
 *Ausgabe der MacOS App Stats, hier: GPU Auslastung. Dies ist die einzige Anwendung, die die Mac mini GPU an den Anschlag bringt.*
 
-Die NVidia 4070Ti kommt auf mehr als 70 Token/s, zieht aber über 400 W.
+Die Nvidia 4070Ti kommt auf mehr als 70 Token/s, zieht aber über 400 W.
 
 Der `ollama run`-Prompt kann mit `/bye` verlassen werden.
 
@@ -228,18 +228,18 @@ deleted 'llama3:instruct'
 # Arbeiten mit `ollama run`: Texte zusammenfassen
 
 Für das folgende Beispiel ist ein laufender Server `ollama serve` erforderlich,
-das Modell `mistral:instruct` muß bereit stehen (d.h. `ollama list` zeigt es an),
+das Modell `mistral:instruct` muss bereitstehen (d.h. `ollama list` zeigt es an),
 und wir verwenden den Text [The 64-Square Madhouse](https://www.gutenberg.org/files/61213/61213.txt) von Fritz Leiber.
 
-Das Ziel ist es, Ollama diesen Text mit Hilfe von Llama 3 zusammenfassen zu lassen.
+Das Ziel ist es, Ollama diesen Text mithilfe von Llama 3 zusammenfassen zu lassen.
 
 1. Den Text von Fritz Leiber vom Projekt Gutenberg herunterladen.
-   Es ist hilfreich, allen Copyright-Text am Anfang und am Ende weg zu schneiden,
+   Es ist hilfreich, allen Copyright-Text am Anfang und am Ende wegzuschneiden,
    um dem Modell nur die Story selbst zu füttern. 
 2. Server starten: `ollama serve`.
    Dabei sind ggf. die notwendigen Parameter als Umgebungsvariablen zu setzen, damit die Modelle gefunden werden.
 3. Modell prüfen: `ollama list` zeigt das Modell `mistral:instruct` als vorhanden an. 
-   Ansonsten muss es mit `ollama mistral llama3:instruct` herunter geladen werden.
+   Ansonsten muss es mit `ollama mistral llama3:instruct` heruntergeladen werden.
 4. Den Prompt mit `ollama run mistral:instruct` starten.
 
 Wir verwenden hier das Modell `mistral:instruct` von [Mistral AI](https://en.wikipedia.org/wiki/Mistral_AI).
@@ -384,7 +384,7 @@ eval duration:        1m14.263155s
 eval rate:            8.54 tokens/s
 ```
 
-Wir haben eine recht gute Prompt Eval Rate: 190 Token/s.
+Wir haben eine recht gute Evaluation Rate: 190 Token/s.
 Die Generierung der Antwort ist langsamer, auch wegen des großen Kontexts, den wir gesetzt haben: 8.5 Token/s.
 
 Eine Laufzeit von 3 Minuten bei einem Mehrverbrauch von 43 Watt entspricht einem Energieaufwand von 2.15 Wh.
@@ -396,7 +396,7 @@ Es gibt eine Ollama Python Bibliothek.
 Diese tut nicht mehr, als Requests an `ollama serve` zu senden:
 
 - [ollama-python](https://github.com/ollama/ollama-python)
-- [ollama API Dokumentation][https://github.com/ollama/ollama/tree/main/docs], api.md
+- [ollama API Dokumentation](https://github.com/ollama/ollama/tree/main/docs), api.md
 - [Mistral Model Documentation](https://docs.mistral.ai/), die Code-Beispiele dort gehen davon aus, 
   daß man deren Server verwendet. Das tun wir nicht, wir verwenden Ollama und eine lokale Instanz. 
 
@@ -406,7 +406,7 @@ Die `ollama.chat()`-Funktion (und auch die gleichnamige Funktion der Mistral API
 hat einen Parameter `messages` (Plural, eine Liste).
 Das LLM ist stateless.
 Es kann sich nicht an vorhergehende Nachrichten erinnern.
-Daher muss man dem Modell bei jedem Request alle vorhergehenden Fragen und Antworten und auch den Systemprompt  mitsenden.
+Daher muss man dem Modell bei jedem Request alle vorhergehenden Fragen und Antworten und auch den Systemprompt mitsenden.
 
 ```python
     o = ollama.Client(host="127.0.0.1")
@@ -434,7 +434,7 @@ Daher muss man dem Modell bei jedem Request alle vorhergehenden Fragen und Antwo
     )
 ```
 
-Genauso muß man `options={}` mitsenden, wenn man zum Beispiel mehr Kontext braucht.
+Genauso muss man `options={}` mitsenden, wenn man zum Beispiel mehr Kontext braucht.
 
 Die Anleitung zu Mistral gibt bessere 
 [Summarization Prompts](https://docs.mistral.ai/guides/prompting_capabilities/#summarization)
