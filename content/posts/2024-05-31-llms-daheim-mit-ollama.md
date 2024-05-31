@@ -202,7 +202,7 @@ Wir sehen hier, daß mein M2pro mini 32 GB 1.56 Sekunden gebraucht hat, um diese
 Die Frage hat "23 Token" belegt, die mit 75 Token/s analysiert worden sind.
 
 Die Generierung der Ausgabe hat 41 Token erzeugt, 1.25s gedauert und ist mit 33 Token/s gelaufen.
-Der Rechner hat dabei ca. 50 Watt gezogen.
+Der Rechner hat dabei ca. 50 Watt gezogen. Normal verbraucht er circa 7 Watt, also werden 43 Watt mehr verbraucht.
 
 ![](/uploads/2024/05/ollama-3.png)
 
@@ -386,6 +386,9 @@ eval rate:            8.54 tokens/s
 
 Wir haben eine recht gute Prompt Eval Rate: 190 Token/s.
 Die Generierung der Antwort ist langsamer, auch wegen des großen Kontexts, den wir gesetzt haben: 8.5 Token/s.
+
+Eine Laufzeit von 3 Minuten bei einem Mehrverbrauch von 43 Watt entspricht einem Energieaufwand von 2.15 Wh.
+Bei einem Preis von 32 Cent pro 1000 Wh (1 kWh) sind das 2.15/1000 * 32 = .0672 Cent zur Generierung der Ausgabe.
 
 # Selbst coden
 
