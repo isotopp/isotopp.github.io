@@ -6,7 +6,381 @@
     <description>Recent content in Posts on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 26 Apr 2024 09:14:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 31 May 2024 09:52:37 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/posts/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LLMs daheim mit Ollama</title>
+      <link>https://blog.koehntopp.info/2024/05/31/llms-daheim-mit-ollama.html</link>
+      <pubDate>Fri, 31 May 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/05/31/llms-daheim-mit-ollama.html</guid>
+      <description>&lt;p&gt;Dieser Text ist eine Art Followup für &lt;a href=&#34;https://blog.koehntopp.info/2024/02/06/wie-chatgpt-funktioniert.html&#34;&gt;Wie ChatGPT funktioniert&lt;/a&gt;
+
+.
+Es geht darum, ein LLM lokal auszuführen und damit zu experimentieren.&lt;/p&gt;
+&lt;p&gt;Wer mit LLMs daheim experimentieren möchte, der steht vor dem Problem,
+einen Haufen furchtbar empfindlicher und schlecht zu aktualisierender Abhängigkeiten in Python zu installieren,
+monströse Downloads zu verwalten und die Ausführung für die eigene Maschine zu optimieren.
+Das wird ein bischen verbessert mit &lt;a href=&#34;https://github.com/ggerganov/llama.cpp&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;llama.cpp&lt;/a&gt;
+
+,
+einer C++/C Bibliothek, die einem einen Teil der Arbeit abnimmt,
+aber man hat immer noch kein Paket, mit dem man einfach Ergebnisse bekommt.&lt;/p&gt;
+&lt;p&gt;Abhilfe schafft hier &lt;a href=&#34;https://github.com/ollama/ollama&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Ollama&lt;/a&gt;
+
+,
+eine in Golang geschriebene Anwendung,
+die llama.cpp integeriert und den Download, die Verwaltung und die Ausführung von LLMs automatisiert.
+Die &lt;a href=&#34;https://ollama.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Website&lt;/a&gt;
+
+ verweist auf das Blog,
+den Discord und das Github von Ollama, und hat eine Suche,
+mit der man auf Ollama angepaßte LLms finden und herunterladen kann.&lt;/p&gt;
+&lt;h1 id=&#34;installation&#34;&gt;
+    &lt;a href=&#34;#installation&#34;&gt;
+	Installation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;LLMs sind rechenintensive Monster, die eine große Maschine zur Ausführung brauchen.
+Aber eingedampfte Spezialversionen kann man schon auf einem großen Raspi ausführen.
+Größe ist jedoch ein qualitativer Unterschied:
+Ein LLM mit 0.3 Mrd Parameters verhält sich ganz anders als eines mit 8 Mrd. Parametern,
+und dieses wiederum wird von einem LLM mit 70 Mrd. Parameters vollkommen deklassiert.
+Ersteres kann man auf einem Raspi ausführen,
+die 8 Mrd Parameter-Modelle oft auf einem Mac oder Windows-Rechner mit 32 GB RAM oder 12 GB VRAM in der Grafikkarte,
+und die 70 Mrd. Parameter-Modelle brauchen in der Regel Spezialrechner mit 128 GB RAM und zwei 24 GB NVidia-Karten kombiniert.&lt;/p&gt;
+&lt;p&gt;In meinem Fall steht mir&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ein Mac mini M2pro mit 32 GB RAM und 8+4 Cores&lt;/li&gt;
+&lt;li&gt;ein Windows 11 Rechner mit 64 GB RAM und NVidia 4070Ti (12 GB VRAM)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;zur Verfügung. Beide Maschinen haben ausreichend Plattenplatz auf NVME.&lt;/p&gt;
+&lt;p&gt;Man kann sich Ollama von der Website herunterladen und installieren,
+oder das Golang Projekt selbst clonen und compilieren,
+aber die einfachste Weise der Installation sind Paketmanager für MacOS und Windows.&lt;/p&gt;
+&lt;p&gt;Auf dem Mac habe ich Homebrow, und &lt;code&gt;brew install ollama&lt;/code&gt; ist die schnellste und einfachste Methode,
+Ollama zu installieren und aktuell zu halten.
+Auf Windows geht dasselbe mit &lt;a href=&#34;https://scoop.sh/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Scoop&lt;/a&gt;
+
+, &lt;code&gt;scoop install ollama&lt;/code&gt; regelt die Details.&lt;/p&gt;
+&lt;h1 id=&#34;ollama-serve-ausführen&#34;&gt;
+    &lt;a href=&#34;#ollama-serve-ausf%c3%bchren&#34;&gt;
+	&lt;code&gt;ollama serve&lt;/code&gt; ausführen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Ollama wird als Server ausgeführt.
+Dazu muß man &lt;code&gt;ollama serve&lt;/code&gt; starten.&lt;/p&gt;
+&lt;p&gt;Alle weiteren Operationen setzen voraus, daß in einem Fenster irgendwo &lt;code&gt;ollama serve&lt;/code&gt; aktiv ist,
+denn alle weiteren Operationen tun nichts anderes als REST-Requests an &lt;code&gt;ollama serve&lt;/code&gt; zu senden.
+Dies kann mit der &lt;code&gt;ollama&lt;/code&gt;-Kommandozeile passieren, oder man schreibt sich eigene Python-Programme, die das tun&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; ollama serve
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ ollama serve
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024/05/31 09:52:25 routes.go:1008: INFO server config 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  env=&amp;#34;map[OLLAMA_DEBUG:false OLLAMA_LLM_LIBRARY: OLLAMA_MAX_LOADED_MODELS:1 OLLAMA_MAX_QUEUE:512
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   OLLAMA_MAX_VRAM:0 OLLAMA_NOPRUNE:false OLLAMA_NUM_PARALLEL:1 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   OLLAMA_ORIGINS:[http://localhost ... https://0.0.0.0:*] 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   OLLAMA_RUNNERS_DIR: OLLAMA_TMPDIR:]&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;time=2024-05-31T09:52:25.124+02:00 level=INFO source=images.go:704 msg=&amp;#34;total blobs: 28&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;time=2024-05-31T09:52:25.131+02:00 level=INFO source=images.go:711 msg=&amp;#34;total unused blobs removed: 0&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;time=2024-05-31T10:02:15.032+02:00 level=INFO source=payload.go:44 msg=&amp;#34;Dynamic LLM libraries [metal]&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;time=2024-05-31T10:02:15.090+02:00 level=INFO source=types.go:71 msg=&amp;#34;inference compute&amp;#34; 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  id=0 library=metal compute=&amp;#34;&amp;#34; driver=0.0 name=&amp;#34;&amp;#34; total=&amp;#34;21.3 GiB&amp;#34; available=&amp;#34;21.3 GiB&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ollama lädt später Parameterdaten für die LLMs herunter. Diese nehmen einige Gigabyte Plattenplatz ein.
+Per Default legt das MacOS Ollama dies im Home des Benutzers ab, in &lt;code&gt;$HOME/.ollama/models&lt;/code&gt;.
+Man kann dies mit einer Umgebungsvariable umstellen.&lt;/p&gt;
+&lt;p&gt;In diesem Fall muss man &lt;code&gt;OLLAMA_MODELS&lt;/code&gt; setzen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ ollama serve --help
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Start ollama
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Usage:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  ollama serve [flags]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Aliases:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  serve, start
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Flags:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  -h, --help   help for serve
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;Environment Variables:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;    OLLAMA_HOST         The host:port to bind to (default &amp;#34;127.0.0.1:11434&amp;#34;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    OLLAMA_ORIGINS      A comma separated list of allowed origins
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    OLLAMA_MODELS       The path to the models directory (default &amp;#34;~/.ollama/models&amp;#34;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    OLLAMA_KEEP_ALIVE   The duration that models stay loaded in memory (default &amp;#34;5m&amp;#34;)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    OLLAMA_DEBUG        Set to 1 to enable additional debug logging
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; kk:~ kris$ mkdir /Volumes/Ablage/Torch/ollama-models/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;$&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;OLLAMA_MODELS&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;/Volumes/Ablage/Torch/ollama-models/ ollama serve
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Der Speicher dort sollte schnell sein und ausreichend Raum bereit stellen:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ df -h /Volumes/Ablage
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/dev/disk9s1   3.6Ti   804Gi   2.9Ti    22%    360k   31G    0%   /Volumes/Ablage
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ du -sh /Volumes/Ablage/Torch/ollama-models
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; 54G	/Volumes/Ablage/Torch/ollama-models
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ ollama list
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;NAME                    	ID          	SIZE  	MODIFIED
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;llama3:70b-instruct-q2_K	693db6efd8f9	26 GB 	6 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;llama3:instruct         	365c0bd3c000	4.7 GB	6 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mistral:instruct        	2ae6f6dd7a3d	4.1 GB	6 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;gemma:instruct          	a72c7f4d0a15	5.0 GB	6 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;llama3-gradient:instruct	5d1398df5b8b	4.7 GB	6 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;phi3:14b                	1e67dff39209	7.9 GB	7 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;llava-llama3:latest     	44c161b1f465	5.5 GB	7 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;llama3-gradient:latest  	5d1398df5b8b	4.7 GB	7 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;phi3:14b-instruct       	1e67dff39209	7.9 GB	7 days ago
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Der Ollama-Server bindet sich an localhost, Port 11434 und lauscht nun auf eingehende REST-Requests.
+Diese können dazu führen, daß ein Model geladen und ausgeführt wird.
+Das kann beim ersten Mal einige Zeit dauern, da viele Gigabyte Daten geladen werden müssen.&lt;/p&gt;
+&lt;p&gt;Der Server hält das Model einige Zeit im Speicher, &lt;code&gt;OLLAMA_KEEP_ALIVE&lt;/code&gt; viele Minuten.
+Der Default ist 5m.
+Danach wird der Speicher wieder frei gegeben.&lt;/p&gt;
+&lt;h1 id=&#34;modelle-aus-dem-internet-laden&#34;&gt;
+    &lt;a href=&#34;#modelle-aus-dem-internet-laden&#34;&gt;
+	Modelle aus dem Internet laden
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;LLMs sind recht komplizierte Konstrukte mit der eigentlichen Parameter-Datei, die den Großteil der Daten aus macht,
+einem Systemprompt und weiteren Layers, die meist eher nicht so groß sind.
+Auf einem handelsüblichen Desktop-Rechner kann man meist erwarten, ein &amp;ldquo;7B&amp;rdquo; oder &amp;ldquo;8B&amp;rdquo;-Modell auszuführen.
+Dies belegt zwischen 5 GB und 9 GB an Speicher, im RAM oder auf der Grafikkarte.&lt;/p&gt;
+&lt;p&gt;Richtig große Modelle, 70B-Modelle, brauchen wesentlich mehr Speicher und eine Hardware,
+die für die Ausführung von LLMs auf mehreren Grafikkarten vorbereitet ist.&lt;/p&gt;
+&lt;p&gt;Ein guter Startpunkt ist das Mistral AI-Model &lt;a href=&#34;https://ollama.com/library/mistral&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mistral&lt;/a&gt;
+
+.
+Man lädt es mit &lt;code&gt;ollama pull mistral:instruct&lt;/code&gt; herunter.
+Das wird Zeit lang dauern und das Model-Directory entsprechend voll machen.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;HINWEIS:&lt;/strong&gt; Noch einmal die Erklärung, daß alle Arbeit von &lt;code&gt;ollama serve&lt;/code&gt; erledigt wird.
+Wenn dieses Kommando nicht aktiv ist, funktioniert keines der anderen Kommandos.
+&lt;code&gt;ollama pull&lt;/code&gt;, &lt;code&gt;ollama run&lt;/code&gt; und auch &lt;code&gt;ollama rm&lt;/code&gt; senden lediglich REST-Requests an den Server,
+der dann die Arbeit macht.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ ollama pull mistral:instruct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pulling manifest
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pulling ff82381e2bea... 100% ▕████████████████▏ 4.1 GB
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pulling 43070e2d4e53... 100% ▕████████████████▏  11 KB
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pulling c43332387573... 100% ▕████████████████▏   67 B
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pulling ed11eda7790d... 100% ▕████████████████▏   30 B
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;pulling 42347cd80dc8... 100% ▕████████████████▏  485 B
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;verifying sha256 digest
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;writing manifest
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;removing any unused layers
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;success
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;modelle-ausführen&#34;&gt;
+    &lt;a href=&#34;#modelle-ausf%c3%bchren&#34;&gt;
+	Modelle ausführen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Das Modell kann man mit &lt;code&gt;ollama run mistral:instruct&lt;/code&gt; testen.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;&amp;gt;&amp;gt; /set verbose
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Set &amp;#39;verbose&amp;#39; mode.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;&amp;gt;&amp;gt; Explain in a single sentence &lt;span class=&#34;s2&#34;&gt;&amp;#34;Why is the sky blue?&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt; The sky appears blue because molecules in the Earth&amp;#39;s atmosphere scatter
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sunlight in all directions, and blue light is scattered more because it
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;travels in shorter, smaller waves.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;total duration:       1.559908875s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;load duration:        2.719417ms
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;prompt eval count:    23 token(s)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;prompt eval duration: 303.421ms
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;prompt eval rate:     75.80 tokens/s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;eval count:           41 token(s)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;eval duration:        1.245361s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;eval rate:            32.92 tokens/s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir sehen hier, daß mein M2pro mini 32 GB 1.56 Sekunden gebraucht hat, um diese Antwort zu generieren.
+Die Frage hat &amp;ldquo;23 Token&amp;rdquo; belegt, die mit 75 Token/s analysiert worden sind.&lt;/p&gt;
+&lt;p&gt;Die Generierung der Ausgabe hat 41 Token erzeugt, 1.25s gedauert und ist mit 33 Token/s gelaufen.
+Der Rechner hat dabei ca. 50 Watt gezogen.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/05/ollama-3.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Ausgabe der MacOS App Stats (&lt;code&gt;brew install stats&lt;/code&gt;), der Rechner verbraucht normal ca. 7 Watt, mit dem LLM aktiv 50 Watt.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/05/ollama-1.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Ausgabe der MacOS App Stats, hier: GPU Auslastung. Dies ist die einzige Anwendung, die die Mac mini GPU an den Anschlag bringt.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Die NVidia 4070Ti kommt auf mehr als 70 Token/s, zieht aber über 400 W.&lt;/p&gt;
+&lt;p&gt;Der &lt;code&gt;ollama run&lt;/code&gt;-Prompt kann mit &lt;code&gt;/bye&lt;/code&gt; verlassen werden.&lt;/p&gt;
+&lt;p&gt;Die vorhandenen Modelle können mit &lt;code&gt;ollama list&lt;/code&gt; aufgelistet werden.
+Mit &lt;code&gt;ollama rm&lt;/code&gt; löscht man ein lokales Modell und gibt den Plattenplatz frei.
+Es muss dann neu heruntergeladen werden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ ollama rm llama3:instruct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;deleted &amp;#39;llama3:instruct&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;arbeiten-mit-ollama-run-texte-zusammenfassen&#34;&gt;
+    &lt;a href=&#34;#arbeiten-mit-ollama-run-texte-zusammenfassen&#34;&gt;
+	Arbeiten mit &lt;code&gt;ollama run&lt;/code&gt;: Texte zusammenfassen
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Für das folgende Beispiel ist ein laufender Server &lt;code&gt;ollama serve&lt;/code&gt; erforderlich,
+das Modell &lt;code&gt;mistral:instruct&lt;/code&gt; muß bereit stehen (d.h. &lt;code&gt;ollama list&lt;/code&gt; zeigt es an),
+und wir verwenden den Text &lt;a href=&#34;https://www.gutenberg.org/files/61213/61213.txt&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The 64-Square Madhouse&lt;/a&gt;
+
+ von Fritz Leiber.&lt;/p&gt;
+&lt;p&gt;Das Ziel ist es, Ollama diesen Text mit Hilfe von Llama 3 zusammenfassen zu lassen.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Den Text von Fritz Leiber vom Projekt Gutenberg herunterladen.
+Es ist hilfreich, allen Copyright-Text am Anfang und am Ende weg zu schneiden,
+um dem Modell nur die Story selbst zu füttern.&lt;/li&gt;
+&lt;li&gt;Server starten: &lt;code&gt;ollama serve&lt;/code&gt;.
+Dabei sind ggf. die notwendigen Parameter als Umgebungsvariablen zu setzen, damit die Modelle gefunden werden.&lt;/li&gt;
+&lt;li&gt;Modell prüfen: &lt;code&gt;ollama list&lt;/code&gt; zeigt das Modell &lt;code&gt;mistral:instruct&lt;/code&gt; als vorhanden an.
+Ansonsten muss es mit &lt;code&gt;ollama mistral llama3:instruct&lt;/code&gt; herunter geladen werden.&lt;/li&gt;
+&lt;li&gt;Den Prompt mit &lt;code&gt;ollama run mistral:instruct&lt;/code&gt; starten.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Wir verwenden hier das Modell &lt;code&gt;mistral:instruct&lt;/code&gt; von &lt;a href=&#34;https://en.wikipedia.org/wiki/Mistral_AI&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mistral AI&lt;/a&gt;
+
+.
+Das ist eine Firma von ehemaligen Google und Meta/Facebook Mitarbeitern, die vor einem Jahr in Paris gegründet wurde.&lt;/p&gt;
+&lt;p&gt;Auf dem Prompt erfolgt die Kommunikation mit dem Modell in Englisch.
+Manche Modelle sind ausdrücklich mehrsprachig trainiert (zum Beispiel &lt;a href=&#34;https://ollama.com/library/mixtral&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mixtral&lt;/a&gt;
+
+),
+aber wenn dies in der Anleitung zum Modell nicht angegeben ist, ist Englisch zu verwenden.&lt;/p&gt;
+&lt;p&gt;Wir können dem Modell eine Anfrage in einer Zeile stellen.
+Mehrzeilige Anweisungen werden mit &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; eingeleitet und genau so beendet.&lt;/p&gt;
+&lt;p&gt;Es ist ein &lt;code&gt;instruct&lt;/code&gt;-Modell, es wird also keine Annahmen machen, sondern wir müssen Arbeitsanwendungen geben.&lt;/p&gt;
+&lt;p&gt;Wir können dem Client Parameter setzen.
+Dies erfolgt mit &lt;code&gt;/&lt;/code&gt;-Kommandos, &lt;code&gt;/help&lt;/code&gt; für eine Übersicht.&lt;/p&gt;
+&lt;p&gt;Modelle haben Parameter.
+Ein wichtiger Parameter ist &lt;code&gt;num_ctx&lt;/code&gt; (manchmal auch n_ctx).
+Er bestimmt die Anzahl der Token, die das Modell als Kontextspeicher für die Antwortgenerierung verwendet.&lt;/p&gt;
+&lt;p&gt;Ein Embedding ist ein vieldimensionaler Vektor, der Bedeutung von Worten codiert.
+Es belegt etwa 1 Kilobyte an Speicher.
+Ein Token ist ein Zeiger auf ein Embedding, aber im Kontext der Antwortgenerierung wird das Token kopiert.
+Ein Kontext von 65536 belegt also in etwa 64 MB Speicher.
+In englischer Sprache entspricht ein Wort in etwa 1.3 Tokens.&lt;/p&gt;
+&lt;p&gt;Unser Beispieltext hat, nachdem wir vorne und hinten alles das wegschneiden,
+was Projekt Gutenberg als Disclaimer hinzugefügt hat,
+eine Größe von circa 14.000 Worten:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ wc leiber-64-square.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;    1824   13853   84236 leiber-64-square.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wenn wir dem Modell einen Kontext von 65536 Token geben, dann sollte es mit der Geschichte gut zurechtkommen.
+&lt;strong&gt;HINWEIS:&lt;/strong&gt;* Es heißt &lt;code&gt;/set parameter num_ctx 65536&lt;/code&gt;, nicht &lt;code&gt;/set num_ctx 65536&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kk:~ kris$ ollama run mistral:instruct
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;&amp;gt;&amp;gt; /set verbose
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Set &amp;#39;verbose&amp;#39; mode.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;&amp;gt;&amp;gt; /set parameter num_ctx &lt;span class=&#34;m&#34;&gt;65536&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Set parameter &amp;#39;num_ctx&amp;#39; to &amp;#39;65536&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;&amp;gt;&lt;/span&gt;&amp;gt;&amp;gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;s2&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;... You are an english teacher, summarising a text.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... Who are the main characters?
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... What happens?
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... The text:
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... [Use &amp;#34;&amp;#34;&amp;#34; to end multi-line input]
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir setzen also &lt;code&gt;/set verbose&lt;/code&gt;, um Statistiken zu bekommen.
+Wir setzen dann den Parameter &lt;code&gt;/set parameter num_ctx 65536&lt;/code&gt;, um dem Modell genug Arbeitskontext zu geben.
+Danach leiten wir mit &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; einen mehrzeiligen Input ein.
+Dieser wird durch &lt;code&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/code&gt; auf einer neuen Zeile genau so abgeschlossen.&lt;/p&gt;
+&lt;p&gt;In einem anderen Fenster laden wir nun die Story in den Paste-Buffer:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kk:keks kris$ cat leiber-64-square.txt | pbcopy
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;(venv) kk:keks kris$
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Diese kann nun in den Ollama-Prompt gepasted werden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... Sandra said, &amp;#34;Well, there&amp;#39;s something you can&amp;#39;t build into a
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... machine--ego.&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... &amp;#34;Oh, I don&amp;#39;t know about that,&amp;#34; said Simon Great.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;... &amp;#34;&amp;#34;&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die generierte Antwort des Modells lautet:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Who are the main characters in this text? The main characters in the
+story are Sandra Lea Grayling, a journalist who is covering the first
+international grandmaster chess tournament where an electronic computing
+machine is entered, Dr. Savilly Krakatower (also known as Dirty Old
+Krakatower), a retired grandmaster who is now special correspondent for
+the &lt;em&gt;London Times&lt;/em&gt;, and Simon Great, the psychologist who programmed the
+chess-playing computer called &amp;ldquo;The Machine&amp;rdquo;. Other characters include
+several other chess players, such as William Angler, Bela Grabo, Igor
+Jandorf, Vassily Lysmov, Moses Sherevsky, Maxim Serek, Ivan Jal, and
+Mikhail Votbinnik. Additionally, there are several unnamed officials,
+waiters, and other people who appear in the story but do not have
+significant roles.&lt;/p&gt;
+&lt;p&gt;What happens? The story is about the first international grandmaster chess
+tournament where an electronic computing machine is entered. Sandra Lea
+Grayling, a journalist who is covering the event, struggles to understand
+the game of chess and the complexities of the competition, especially as
+it relates to the Machine. She interviews several of the players,
+including Dr. Savilly Krakatower and Simon Great, the psychologist who
+programmed the Machine. The Machine initially struggles against the human
+players but eventually starts to dominate the tournament and becomes the
+clear favorite to win. Sandra follows the competition closely, watching as
+the players try to outsmart the Machine using various strategies. In the
+end, the Machine wins the tournament, marking a significant milestone in
+the development of artificial intelligence.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;und&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;total duration:       2m43.311123417s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;load duration:        2.162927375s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;prompt eval count:    22546 token(s)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;prompt eval duration: 1m58.965654s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;prompt eval rate:     189.52 tokens/s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;eval count:           350 token(s)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;eval duration:        42.123853s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;eval rate:            8.31 tokens/s
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir haben eine recht gute Prompt Eval Rate: 190 Token/s.
+Die Generierung der Antwort ist langsamer, auch wegen des großen Kontexts, den wir gesetzt haben: 8.3 Token/s.&lt;/p&gt;
+&lt;h1 id=&#34;selbst-coden&#34;&gt;
+    &lt;a href=&#34;#selbst-coden&#34;&gt;
+	Selbst coden
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Es gibt eine Ollama Python Bibliothek.
+Diese tut nicht mehr, als Requests an &lt;code&gt;ollama serve&lt;/code&gt; zu senden:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/ollama/ollama-python&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ollama-python&lt;/a&gt;
+
+&lt;/li&gt;
+&lt;li&gt;[ollama API Dokumentation][https://github.com/ollama/ollama/tree/main/docs], api.md&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.mistral.ai/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mistral Model Documentation&lt;/a&gt;
+
+, die Code-Beispiele dort gehen davon aus,
+daß man deren Server verwendet. Das tun wir nicht, wir verwenden Ollama und eine lokale Instanz.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Die REST API ist in &lt;code&gt;api.md&lt;/code&gt; im Ollama Quelltext-Tree auf Github dokumentiert.&lt;/p&gt;
+&lt;p&gt;Die &lt;code&gt;ollama.chat()&lt;/code&gt;-Funktion (und auch die gleichnamige Funktion der Mistral API, die gegen deren Instanz arbeitet),
+hat einen Parameter &lt;code&gt;messages&lt;/code&gt; (Plural, eine Liste).
+Das LLM ist stateless.
+Es kann sich nicht an vorhergehende Nachrichten erinnern.
+Daher muss man dem Modell bei jedem Request alle vorhergehenden Fragen und Antworten und auch den Systemprompt  mitsenden.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;o&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ollama&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Client&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;host&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;127.0.0.1&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;chat&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;model&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;mistral:instruct&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;messages&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;system&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;instructions&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_message&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;assistant&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;old_answer&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;role&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;user&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;s2&#34;&gt;&amp;#34;content&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;message&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;p&#34;&gt;},&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;],&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Genauso muß man &lt;code&gt;options={}&lt;/code&gt; mitsenden, wenn man zum Beispiel mehr Kontext braucht.&lt;/p&gt;
+&lt;p&gt;Die Anleitung zu Mistral gibt bessere
+&lt;a href=&#34;https://docs.mistral.ai/guides/prompting_capabilities/#summarization&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Summarization Prompts&lt;/a&gt;
+
+
+als Beispiel und erklärt im hinteren Teil mehr zu Tokens, Tokenization und zum direkten Umgang mit dem LLM.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Latency and IOPS</title>
       <link>https://blog.koehntopp.info/2024/04/21/mysql-latency-and-iops.html</link>
@@ -4430,47 +4804,6 @@ leading up to the emotional farewell that occurred long before his physical pass
 &lt;p&gt;&amp;ldquo;&lt;a href=&#34;https://www.amazon.de/gp/product/B09R2B8J17&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terry Pratchett: A Life With Footnotes&lt;/a&gt;
 
 &amp;rdquo;, Rob Wilkins, EUR 9,49.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Fertig gelesen: Combat Ready Kitchen</title>
-      <link>https://blog.koehntopp.info/2023/09/29/fertig-gelesen-combat-ready-kitchen.html</link>
-      <pubDate>Fri, 29 Sep 2023 01:02:03 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2023/09/29/fertig-gelesen-combat-ready-kitchen.html</guid>
-      <description>&lt;p&gt;In &lt;a href=&#34;https://www.amazon.de/gp/product/B00TY3ZOQE&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Combat Ready Kitchen&lt;/a&gt;
-
-,
-Anastacia Marx de Salcedo traces the history of food preservation from an american point of view,
-and demonstrates the co-development of combat rations and modern U.S. supermarket food.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2023/09/combat-ready.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The book takes us through the history of U.S. combat rations, from before the invention of the tin can, through canned,
-better preserved, but incredibly heavy food to what soldiers have today.
-It shows how these military innovations have been seeded, purposefully, into the civilian food industry,
-in order to enable the military to source food from civilian companies for their purposes, in formats that suit them.
-This also had influence on how the industry preserves food for civilian consumption and enabled a multitude of convenience foods.&lt;/p&gt;
-&lt;p&gt;While the development of food preservation for military and civilian needs was somewhat systematic,
-the book is not.
-It goes through the history not chronologically, but anecdotally, roughly ordered by kind of food,
-but with plenty of sidelines, side stories and other distractions.
-It still is an entertaining read, but it makes it hard to put down the book and take stock of what you just learned.&lt;/p&gt;
-&lt;p&gt;One thing I took away is that food preservation as we understand it today is much more recent than most people think.
-It is a thing humanity only learned in the late 80ies and early 90ies, and even today fundamental progress is being made.
-Also, a lot of the stuff we do is not actually bad for the food, the nutrients or the taste,
-it is in fact perfectly fine.
-Still, other things amount to basically breaking down the food to constituent parts, and then reassembling something
-from the parts, and that&amp;rsquo;s maybe less good, given how little we actually understand what makes a meal nourishing or healthy,
-even today.&lt;/p&gt;
-&lt;p&gt;Entertaining and interesting, but structured in a way that makes it harder than necessary for me to pull value out of it.&lt;/p&gt;
-&lt;p&gt;&amp;ldquo;&lt;a href=&#34;%28https://www.amazon.de/gp/product/B00TY3ZOQE%29&#34;&gt;Combat Ready Kitchen: How the U.S. Military Shapes The Way You Eat&lt;/a&gt;
-
-&amp;rdquo;,
-Anastacia Marx de Salcedo, EUR 5.25.&lt;/p&gt;
 </description>
     </item>
     
