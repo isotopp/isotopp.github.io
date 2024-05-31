@@ -286,12 +286,14 @@ Set 'verbose' mode.
 >>> /set parameter num_ctx 65536
 Set parameter 'num_ctx' to '65536'
 >>> """
-... You are an english teacher, summarising a text.
-... Who are the main characters?
-... What happens?
-...
-... The text:
-... [Use """ to end multi-line input]
+... You are an english teacher.
+... Summarize the following story,
+... providing an overview over the main characters of the story,
+... and a paragraph for each scene or major event that happens in the course of
+... the story.
+... As a conclusion, provide context: What is the story about?
+... 
+... The story:
 ```
 
 Wir setzen also `/set verbose`, um Statistiken zu bekommen.
@@ -320,47 +322,70 @@ Diese kann nun in den Ollama-Prompt gepasted werden.
 
 Die generierte Antwort des Modells lautet:
 
-> Who are the main characters in this text? The main characters in the
-story are Sandra Lea Grayling, a journalist who is covering the first
-international grandmaster chess tournament where an electronic computing
-machine is entered, Dr. Savilly Krakatower (also known as Dirty Old
-Krakatower), a retired grandmaster who is now special correspondent for
-the _London Times_, and Simon Great, the psychologist who programmed the
-chess-playing computer called "The Machine". Other characters include
-several other chess players, such as William Angler, Bela Grabo, Igor
-Jandorf, Vassily Lysmov, Moses Sherevsky, Maxim Serek, Ivan Jal, and
-Mikhail Votbinnik. Additionally, there are several unnamed officials,
-waiters, and other people who appear in the story but do not have
-significant roles.
+> This story is about a chess tournament featuring an electronic computing
+machine named the Machine. The Machine is entering its first international
+grandmaster chess tournament, and the large hall where the event takes
+place is filled with energetic dark-suited men who are either playing
+chess or discussing it. There are signs featuring various combinations of
+letters such as FIDE, WBM, USCF, USSF, USSR, and UNESCO, and many clocks
+bedside table size with red flags and wheels on their faces are present to
+keep track of each player's moves. The Machine is programmed by a
+psychologist named Simon Great, who has been out of tournament chess for
+twenty years but is now making a comeback.
 > 
-> What happens? The story is about the first international grandmaster chess
-tournament where an electronic computing machine is entered. Sandra Lea
-Grayling, a journalist who is covering the event, struggles to understand
-the game of chess and the complexities of the competition, especially as
-it relates to the Machine. She interviews several of the players,
-including Dr. Savilly Krakatower and Simon Great, the psychologist who
-programmed the Machine. The Machine initially struggles against the human
-players but eventually starts to dominate the tournament and becomes the
-clear favorite to win. Sandra follows the competition closely, watching as
-the players try to outsmart the Machine using various strategies. In the
-end, the Machine wins the tournament, marking a significant milestone in
-the development of artificial intelligence.
+> The main characters in the story are Sandra Lea Grayling, a journalist for
+the _Chicago Space Mirror_, and Dr. Krakatower, a former grandmaster of
+chess who is also a special correspondent for the London Times. The
+Machine is also a character, as it plays against various human opponents
+throughout the tournament.
+> 
+> The story unfolds over the course of several days, with each scene or
+major event taking place during one of the nine rounds of the tournament.
+In the first round, the Machine plays against Bela Grabo and wins the
+game. This causes a stir among the players and spectators, as many believe
+that the Machine is too good to be true. In the second round, the Machine
+faces off against Votbinnik and again emerges victorious. This pattern
+continues throughout the tournament, with the Machine consistently
+outplaying its human opponents.
+> 
+> Dr. Krakatower struggles throughout the tournament, losing several games
+and finding himself in last place. However, he manages to draw his game
+against Sherevsky in the next to last round, which gives him a small
+glimmer of hope. In the final round, the Machine plays against Willie
+Angler, who has been consistently strong throughout the tournament. The
+outcome of this match will determine the winner of the tournament.
+> 
+> As the story reaches its conclusion, it is revealed that Angler had
+intentionally played a flawed move in his game against the Machine, as he
+had discovered an error in the programming of the Machine's opening moves.
+This tactic pays off, and Angler wins the game and the tournament. The
+final standing shows that Angler and Votbinnik are tied for first place,
+with the Machine in second.
+> 
+> The story concludes with a discussion between Simon Great, Willie Angler,
+and Dr. Krakatower about the future of chess and computer programming. It
+is suggested that grandmaster chess without computers will become less
+popular, as players will increasingly rely on computers to aid them in
+their games. The story also touches on the idea of man-machine symbiosis,
+with the implication that future grandmasters may be a combination of
+human and machine. The story serves as a commentary on the changing nature
+of chess and the role of technology in society.
 
 und
 
 ```console
-total duration:       2m43.311123417s
-load duration:        2.162927375s
-prompt eval count:    22546 token(s)
-prompt eval duration: 1m58.965654s
-prompt eval rate:     189.52 tokens/s
-eval count:           350 token(s)
-eval duration:        42.123853s
-eval rate:            8.31 tokens/s
+total duration:       3m33.240299458s
+load duration:        20.467748958s
+prompt eval count:    22580 token(s)
+prompt eval duration: 1m58.450477s
+prompt eval rate:     190.63 tokens/s
+eval count:           634 token(s)
+eval duration:        1m14.263155s
+eval rate:            8.54 tokens/s
 ```
 
 Wir haben eine recht gute Prompt Eval Rate: 190 Token/s.
-Die Generierung der Antwort ist langsamer, auch wegen des großen Kontexts, den wir gesetzt haben: 8.3 Token/s.
+Die Generierung der Antwort ist langsamer, auch wegen des großen Kontexts, den wir gesetzt haben: 8.5 Token/s.
 
 # Selbst coden
 
