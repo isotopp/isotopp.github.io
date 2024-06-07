@@ -356,7 +356,7 @@ _zwei_ ACLs:
 
 Werte für die Default-ACL werden festgelegt, indem man sie beim
 "setfacl" mit "d:" prefixed, also "d:u:kris:rwx",
-"d:g:video:rwx" und "d:m::rwx".
+"d:g:video:rwx" und "d\:m::rwx".
 
 ## TL;DR
 
