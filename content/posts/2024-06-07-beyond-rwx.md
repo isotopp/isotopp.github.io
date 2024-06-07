@@ -99,7 +99,7 @@ If access is not granted, an error is returned instead.
 
 An error from insufficient permissions usually is an `EPERM` (error code 13),
 but Linux has become complicated.
-`EPERM` may also come from other subsystems (such as AppArmer or SELinux),
+`EPERM` may also come from other subsystems (such as AppArmor or SELinux),
 and there may be other error codes that ultimately have permissions as a root cause.
 
 In any case, here is what a process can declare that it wants to do with a file:
@@ -141,7 +141,7 @@ or [RDF triples](https://en.wikipedia.org/wiki/Semantic_triple):
 - "Kris" "can read" "/etc/passwd"
 
 For storage, we need to cut these triples along the subject axis or the object axis.
-That is, we either with each file which user can do things with the file,
+That is, we either store with each file which user can do things with the file,
 or we store with each user what files that user can work on. 
 
 Storing the data in the object yields a **permission system** as we have in Unix:
