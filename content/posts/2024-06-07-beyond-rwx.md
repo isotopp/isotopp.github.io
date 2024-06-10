@@ -603,7 +603,7 @@ total 1
 
 When I create files in a directory, the file will inherit the group of the directory.
 That makes it easier for a group of people working together in a group,
-because shared group directories will not automatically behave properly.
+because shared group directories will now automatically behave properly.
 
 - Normal users are being created with a group after them, and ideally with the name GID and UID.
   Effectively, they do no longer need to care about groups because they are the only members of their own group.
