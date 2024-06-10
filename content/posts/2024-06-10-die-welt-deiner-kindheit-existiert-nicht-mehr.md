@@ -158,12 +158,15 @@ Das ist ein Problem.
 
 Man muss sich selbst da aktiv einbringen und aktualisieren.
 
-![](/uploads/2024/06/welt-08.jpg
-)
-Ich habe, wie viele Kinder meiner Generation, 
+![](/uploads/2024/06/welt-08.jpg)
+
+*Ich hatte, wie viele Kinder meiner Generation, 
 in meinem Regal hier gut 50 Was-ist-Was-Bücher aus den 1980er Jahren stehen.
-Man kann die Dinger nehmen und mit einem großen orangen Textmarker durchgehen und veraltete, 
-falsche oder überholte Informationen markieren, gelöste Probleme anstreichen.
+Hier sind die überlebenden Bände zu sehen.*
+
+Man kann sich diese Was-ist-Was Bände nehmen und mit einem großen orangen Textmarker durchgehen.
+Markiert man veraltete, falsche oder überholte Informationen, kommt da schon eine ganze Menge zusammen.
+Markiert man auch inzwischen gelöste Probleme, noch weitaus mehr.
 Die Teile sind nicht falsch per se, aber sie sind 40 oder 50 Jahre alt, und wir haben seit damals viel gelernt.
 
 Das Problem ist, daß das lebendige Geschichte ist.
