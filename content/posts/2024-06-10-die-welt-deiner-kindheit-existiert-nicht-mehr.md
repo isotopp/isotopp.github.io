@@ -177,4 +177,4 @@ Und machen da gefährlichen Quatsch, der auf falschen oder veralteten Daten beru
 Das ist schlecht.
 
 Wenn Stephen Colbert scherzhaft sagt "Reality has a well-known liberal bias", dann bezeichnet das auch genau das:
-Leute mit konserativem, veraltetem Weltbild scheitern an einer sich ändernden, progressiven Realität.
+Leute mit konservativem, veraltetem Weltbild scheitern an einer sich ändernden, progressiven Realität.
