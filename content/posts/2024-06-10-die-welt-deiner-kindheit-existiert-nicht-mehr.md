@@ -169,7 +169,12 @@ Markiert man veraltete, falsche oder überholte Informationen, kommt da schon ei
 Markiert man auch inzwischen gelöste Probleme, noch weitaus mehr.
 Die Teile sind nicht falsch per se, aber sie sind 40 oder 50 Jahre alt, und wir haben seit damals viel gelernt.
 
+[Reality has a well-known liberal bias](https://www.youtube.com/watch?v=UwLjK9LFpeo)
+
 Das Problem ist, daß das lebendige Geschichte ist.
 Die Leute, die mit diesen Informationen groß geworden sind, leben noch und sind heute in Entscheidungspositionen.
 Und machen da gefährlichen Quatsch, der auf falschen oder veralteten Daten beruht.
 Das ist schlecht.
+
+Wenn Stephen Colbert scherzhaft sagt "Reality has a well-known liberal bias", dann bezeichnet das auch genau das:
+Leute mit konserativem, veraltetem Weltbild scheitern an einer sich ändernden, progressiven Realität.
