@@ -10,7 +10,7 @@ tags:
 - politik
 ---
 
-Ich schrieb einige Dinge im Fedi, und wurde gebeten, die hier in ein Blogpost zu kippen.
+Ich schrieb einige Dinge im Fedi, und wurde gebeten, die hier in einen Blogpost zu kippen.
 Dies ist größtenteils eine unbearbeitete Kopie der Postings, und nicht die übliche Form Fließtext für das Blog.
 Das tut mir leid.
 
@@ -21,7 +21,7 @@ die Abwesenheit von Veränderung in der Politik.
 Aber die Welt hat sich verändert. Sehr.
 
 Zum Beispiel:
-Die Anzahl der PKW in Deutschland hat sich seit 1985 von 25 Mio auf 50 Mio verdoppelt.
+Die Anzahl der PKW in Deutschland hat sich seit 1985 von 25 Millionen auf 50 Millionen verdoppelt.
 
 [![](/uploads/2024/06/welt-01.png)](https://de.statista.com/statistik/daten/studie/12131/umfrage/pkw-bestand-in-deutschland/)
 *[Quelle](https://de.statista.com/statistik/daten/studie/12131/umfrage/pkw-bestand-in-deutschland/)*
@@ -40,12 +40,12 @@ Und die Autos selbst haben sich auch verdoppelt.
 *[Quelle](https://www.carsized.com/en/cars/compare/mini-cooper-1990-3-door-hatchback-vs-mini-cooper-2013-3-door-hatchback/rear/) Mini vs. Mini*
 
 
-CO2-Level haben sich von einer vorindustriellen Baseline von 285 ppm auf 420 ppm in 2024 erhöht.
-Das ist eine Veränderung von 135 ppm, und eine Verdoppelung des menschlichen CO2-Eintrages seit 1985,
+CO₂-Level haben sich von einer vorindustriellen Baseline von 285 ppm auf 420 ppm in 2024 erhöht.
+Das ist eine Veränderung von 135 ppm, und eine Verdoppelung des menschlichen CO₂-Eintrages seit 1985,
 von 352 ppm auf 420 ppm.
 
 Das mit der Klimakatastrophe waren wir, nicht unsere Eltern oder Großeltern.
-Wir haben das menschengemachte CO2 in der Atmosphäre seit 1985 verdoppelt.
+Wir haben das menschengemachte CO₂ in der Atmosphäre seit 1985 verdoppelt.
 Im vollen Wissen um die Folgen.
 
 [![](/uploads/2024/06/welt-04.png)](https://ourworldindata.org/grapher/co2-long-term-concentration?time=1800..latest)
@@ -76,26 +76,26 @@ Aber das werden wir jetzt im Detail ausprobieren.
 
 Teile der Welt verändern sich übrigens noch schneller.
 
-So hat sich die installierte Solarleistung zwischen 2019 und 2022 mal eben verdoppelt
+So hat sich die installierte Solarleistung zwischen 2019 und 2022 einfach mal eben so verdoppelt
 *und der Trend beschleunigt sich*.
 
 [![](/uploads/2024/06/welt-06.png)](https://ourworldindata.org/grapher/installed-solar-pv-capacity)
 
-*[Quelle](https://ourworldindata.org/grapher/installed-solar-pv-capacity), PV Installation in der Welt, Summe über Zeit.*
+*[Quelle](https://ourworldindata.org/grapher/installed-solar-pv-capacity). PV Installation in der Welt, Summe über Zeit.*
 
 Die Kosten haben sich seit 2012 geviertelt, und seit 2017 halbiert.
 
 [![](/uploads/2024/06/welt-07.png)](https://ourworldindata.org/grapher/solar-pv-prices)
 
-*[Quelle](https://ourworldindata.org/grapher/solar-pv-prices), Die PV Kosten sinken linear seit 1975, 
-und bisher ist das Ende noch nicht in Ssicht.*
+*[Quelle](https://ourworldindata.org/grapher/solar-pv-prices). 
+Die PV Kosten sinken linear seit 1975, und bisher ist das Ende noch nicht in Sicht.*
 
 Für Batterien sieht es genauso aus:
-Die Kosten für LiIon Batterien sind in 30 Jahren um 97% auf 3% gefallen, 
+Die Kosten für LiIon Batterien sind in 30 Jahren um 97 % auf 3 % gefallen, 
 aber wir brauchen inzwischen kein Lithium mehr in Batterien, sondern können Natrium verwenden.
 Das ist aber genau überhaupt kein kritischer Rohstoff, sondern in Massen verfügbar.
 
-Genau wird auch Kobalt nicht mehr gebraucht und viele andere seltene oder schwierige Rohstoffe sind ersetztbar geworden.
+Genau wird auch Kobalt nicht mehr gebraucht und viele andere seltene oder schwierige Rohstoffe sind ersetzbar geworden.
 [Quelle](https://www.weltderphysik.de/gebiet/technik/nachrichten/2023/energiespeicher-lithium-ionen-batterie-ohne-kobalt/)
 
 Entsprechend hat sich die Anzahl der installierten PV Batteriesysteme in einem Jahr, in 2023, mehr als verdoppelt,
@@ -124,10 +124,10 @@ bis zur Endstation wie Jahresringe Querstraße um Querstraße immer jünger.
 Auch damals hatte man eine Menge "Probleme":
 
 Die Dienstbotenfrage zum Beispiel ist eine Folge dieser Landflucht–Haushaltsführung war weitgehend manuell, 
-und auf das vorhandensein großer Mengen abhängiger und niedrig ausgebildeter Arbeitskräfte angwiesen.
+und auf das vorhandensein großer Mengen abhängiger und niedrig ausgebildeter Arbeitskräfte angewiesen.
 Die waren dann aber schlagartig nicht zu kriegen.
 
-Während die Politk das Problem noch diskutierte, 
+Während die Politik das Problem noch diskutierte, 
 hatte man den Haushalt automatisiert–Waschmaschinen und Staubsauger, 
 basierend auf dem Siemens-Elektromotor,
 haben sehr große Teile der anfallenden Arbeiten maschinisiert.
@@ -138,7 +138,7 @@ Aber auf einmal gab es Traktoren und eine mechanisierte Landwirtschaft.
 
 Um 1900 herum schien es,
 als ob dieselbe Landwirtschaft auf der vorhandenen Fläche die wachsende Bevölkerung nicht ernähren würde können.
-Aber auf einmal gab es chemische Düngemittel und das Haber-Bosch Verfahren (1913).
+Aber auf einmal gab es chemische Düngemittel und das Haber-Bosch-Verfahren (1913).
 
 Die Politik hat dennoch bis in den 2. Weltkrieg rein von notwendigem Lebensraum für das Volk geschwafelt.
 Das ist auch ein Fall von Leuten, 
@@ -150,7 +150,7 @@ Vermutlich sind Menschen nicht gut gemacht für Veränderungen, die schneller al
 Oder wir haben noch keine funktional wirksamen Kulturtechniken entwickelt und Prozesse etabliert,
 mit denen wir solche Veränderungen zuverlässig kommunizieren und managen können.
 
-Wie gesagt, zur Zeit sind wir bei 3 Jahren Zykluszeit mit Leuten, 
+Wie gesagt, gegenwärtig sind wir bei 3 Jahren Zykluszeit mit Leuten, 
 deren Weltbild 30 Jahre und länger in Bernstein konserviert worden ist. 
 Das ist ein Problem.
 
