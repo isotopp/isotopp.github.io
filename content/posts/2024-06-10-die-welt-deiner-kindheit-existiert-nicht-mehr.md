@@ -138,7 +138,9 @@ Aber auf einmal gab es Traktoren und eine mechanisierte Landwirtschaft.
 
 Um 1900 herum schien es,
 als ob dieselbe Landwirtschaft auf der vorhandenen Fläche die wachsende Bevölkerung nicht ernähren würde können.
-Aber auf einmal gab es chemische Düngemittel und das Haber-Bosch-Verfahren (1913).
+Aber auf einmal gab es chemische Düngemittel und das Haber-Bosch-Verfahren (1913), und etwa um dieselbe Zeit
+entwickelte Bayer Pestizide und Herbizide (Dinitrol und andere), 
+sodass Ernteausfälle und Hungernöte aus anderen Gründen als Krieg in Europa der Vergangenheit angehörten.  
 
 Die Politik hat dennoch bis in den 2. Weltkrieg rein von notwendigem Lebensraum für das Volk geschwafelt.
 Das ist auch ein Fall von Leuten, 
