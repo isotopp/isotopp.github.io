@@ -113,6 +113,7 @@ Auch zur Zeit der industriellen Revolution kam es zu gravierenden Veränderungen
 und damit einhergehenden echten und eingebildeten Problemen.
 
 Die Stadt Kiel, meine Heimatstadt, ist damals zum Beispiel in 30 Jahren um den Faktor 10 gewachsen.
+
 Berlin ebenso. 
 Ich habe in Berlin in einer Wohnung nahe der U6 Kaiserin-Augusta-Straße gewohnt. 
 Die Wohnung war von 1908, und man kann dort durch die Straßen gehen stadtauswärts bis Mariendorf, 
@@ -155,6 +156,8 @@ Das ist ein Problem.
 
 Man muss sich selbst da aktiv einbringen und aktualisieren.
 
+![](/uploads/2024/06/welt-08.jpg
+)
 Ich habe, wie viele Kinder meiner Generation, 
 in meinem Regal hier gut 50 Was-ist-Was-Bücher aus den 1980er Jahren stehen.
 Man kann die Dinger nehmen und mit einem großen orangen Textmarker durchgehen und veraltete, 
