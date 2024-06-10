@@ -27,6 +27,8 @@ Die Anzahl der PKW in Deutschland hat sich seit 1985 von 25 Mio auf 50 Mio verdo
 *[Quelle](https://de.statista.com/statistik/daten/studie/12131/umfrage/pkw-bestand-in-deutschland/)*
 
 Und die Autos selbst haben sich auch verdoppelt.
+- 700 kg Mini vs. 1200 kg Mini,
+- 800 kg Golf vs. 1700 kg ID.3
 
 [![](/uploads/2024/06/welt-02.png)](https://www.carsized.com/en/cars/compare/volkswagen-golf-1983-5-door-hatchback-vs-volkswagen-id3-2019-5-door-hatchback/rear/)
 
