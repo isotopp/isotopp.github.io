@@ -124,13 +124,13 @@ bis zur Endstation wie Jahresringe Querstraße um Querstraße immer jünger.
 Auch damals hatte man eine Menge "Probleme":
 
 Die Dienstbotenfrage zum Beispiel ist eine Folge dieser Landflucht–Haushaltsführung war weitgehend manuell, 
-und auf das vorhandensein großer Mengen abhängiger und niedrig ausgebildeter Arbeitskräfte angewiesen.
+und auf das Vorhandensein großer Mengen abhängiger und niedrig ausgebildeter Arbeitskräfte angewiesen.
 Die waren dann aber schlagartig nicht zu kriegen.
 
 Während die Politik das Problem noch diskutierte, 
 hatte man den Haushalt automatisiert–Waschmaschinen und Staubsauger, 
 basierend auf dem Siemens-Elektromotor,
-haben sehr große Teile der anfallenden Arbeiten maschinisiert.
+haben sehr große Teile der anfallenden Arbeiten mechanisiert.
 
 Genau dasselbe Problem hatte man in der Landwirtschaft: 
 Durch die Landflucht hatte man ein Personalproblem.
@@ -140,7 +140,7 @@ Um 1900 herum schien es,
 als ob dieselbe Landwirtschaft auf der vorhandenen Fläche die wachsende Bevölkerung nicht ernähren würde können.
 Aber auf einmal gab es chemische Düngemittel und das Haber-Bosch-Verfahren (1913), und etwa um dieselbe Zeit
 entwickelte Bayer Pestizide und Herbizide (Dinitrol und andere), 
-sodass Ernteausfälle und Hungernöte aus anderen Gründen als Krieg in Europa der Vergangenheit angehörten.  
+sodass Ernteausfälle und Hungersnöte aus anderen Gründen als Krieg in Europa der Vergangenheit angehörten.  
 
 Die Politik hat dennoch bis in den 2. Weltkrieg rein von notwendigem Lebensraum für das Volk geschwafelt.
 Das ist auch ein Fall von Leuten, 
@@ -171,7 +171,7 @@ Die Teile sind nicht falsch per se, aber sie sind 40 oder 50 Jahre alt, und wir 
 
 [Reality has a well-known liberal bias](https://www.youtube.com/watch?v=UwLjK9LFpeo)
 
-Das Problem ist, daß das lebendige Geschichte ist.
+Das Problem ist: Es handelt sich um lebendige Geschichte.
 Die Leute, die mit diesen Informationen groß geworden sind, leben noch und sind heute in Entscheidungspositionen.
 Und machen da gefährlichen Quatsch, der auf falschen oder veralteten Daten beruht.
 Das ist schlecht.
