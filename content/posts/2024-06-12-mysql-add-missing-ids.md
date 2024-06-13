@@ -81,6 +81,7 @@ mysql> select * from b;
 ```
 
 While this still worked, not only is it butt ugly, it is also deprecated and will stop to work in the future.
+But it is fast, and with an index on `id` can profit from that for a speedup.
 
 # Using Window Functions
 
