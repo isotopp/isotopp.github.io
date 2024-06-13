@@ -140,7 +140,7 @@ SET b.id = subquery.new_id;
 
 This defines a `WITH` statement (a common table expression) defining a single row,
 single column query that holds the maximum id value `max_id_cte.max_id`,
-and a second column that olds all rows with `id=0` with a row number `rows_with_id_zero.rn` using window functions.
+and a second column that holds all rows with `id=0` with a row number `rows_with_id_zero.rn` using window functions.
 
 These values are used in a `UPDATE` statement, with a join against a subquery containing `rows_with_id_zero`.
 This has to do a full row comparison for the join (`ON b.col = subquery.col` for all columns),
