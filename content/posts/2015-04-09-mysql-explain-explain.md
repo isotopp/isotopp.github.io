@@ -416,7 +416,7 @@ index_merge
 
 ![](/uploads/2015/04/explain-045.jpg)
 
-The `type` can also by, from worse to really bad:
+The `type` can also be, from worse to really bad:
 
 range
 : using a part of the index to select values.
@@ -595,7 +595,7 @@ Examples:
 More Examples:
 
 `WHERE a<10 AND b = 10`
-: uses (a). This can only use the `a` prefix of `INDEX(a,b,c), because this is a range query.
+: uses (a). This can only use the `a` prefix of `INDEX(a,b,c)`, because this is a range query.
   The `b=10` part is being resolved `using where`.
 
 `WHERE a<10 AND b<10`
