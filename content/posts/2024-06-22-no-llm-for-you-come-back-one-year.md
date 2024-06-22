@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "No LLM for you, come back one year"
-date: "2024-06-10T05:06:07Z"
+date: "2024-06-22T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
 tags:
