@@ -22,14 +22,14 @@ Hier ist der Aufschrieb davon:
 > wie Apple am Freitagabend überraschend in einer Stellungnahme mitteilte.
 
 Dieser Seitenhieb auf den Marktregulator ist amüsant, 
-aber Apple könnte "Apple Intelligence" nicht weltweit zeitlich einführen, selbst wenn Apple das wollte.
+aber Apple könnte "Apple Intelligence" nicht weltweit zeitgleich einführen, selbst wenn Apple das wollte.
 
-# Keine Apple Intellicence in der EU
+# Keine Apple Intelligence in der EU
 
 Der wahre Grund ist: Die Features sind unfertig.
 Normalerweise liefern iOS Betaversionen relativ vollständige Blicke auf das Release,
-alle Features sind vorhanden und funktionieren modulo noch existierende Fehler, 
-so wie man das im Produkt-Release später erwarten können wird.
+alle Features sind vorhanden und funktionieren modulo noch existierende Fehler auf eine Weise, 
+wie man sie im Produkt-Release später erwarten können wird.
 [In der iOS 18 Beta ist das nicht der Fall.](https://www.lifewire.com/apple-betas-missing-cool-features-8662016)
 
 > But this year, there's less incentive to hop on early because none of the AI tools are there,
@@ -38,7 +38,7 @@ so wie man das im Produkt-Release später erwarten können wird.
 > perhaps not until after the OS updates have actually launched in the fall.
 
 Das ist einerseits so, weil diese Features nicht auf eine Weise funktionieren können, 
-daß sie Apples Ansprüchen an Qualität genügen.
+dass sie Apples Ansprüchen an Qualität genügen.
 [McDonalds hat das schon mal ausprobiert.](https://techinformed.com/mcdonalds-ditches-ai-order-system-after-bacon-ice-cream-mix-up/)
 
 > In one TikTok video –
@@ -46,8 +46,11 @@ daß sie Apples Ansprüchen an Qualität genügen.
 > a woman is seen struggling to order vanilla ice cream and a bottle of water,
 > and instead ends up with multiple sundaes, ketchup sachets, and two portions of butter.
 
-Aber das ist nur die oberste Lage Probleme.
-Ein wichtiger Werbepunkt von Apple ist, daß die KI-Features "on device" laufen, statt Daten in eine Cloud zu pumpen.
+Nun war das keine Apple-KI, aber diese Sorte Problem ist systematisch die Sorte Fehler, die LLMs machen,
+und es gibt keinen Grund, warum es bei Apple besser sein sollte.
+
+Und das ist nur die oberste Lage Probleme.
+Ein wichtiger Werbepunkt von Apple ist, dass die KI-Features "on device" laufen, statt Daten in eine Cloud zu pumpen.
 Das geht auch nicht, jedenfalls nicht so, wie der Kunde es erwartet.
 
 Der aktuelle KI-Hype basiert auf LLMs,
@@ -56,7 +59,7 @@ Das sind Haufen von Zahlen, die als Vektoren mit tausenden Dimensionen angeordne
 und in der Berechnung von Antworten auf Benutzeranfragen verwendet werden.
 
 Nun, jeder dieser Vektoren braucht eine gewisse Menge Speicherplatz und wenn man "Milliarden von Parametern" haben will,
-dann brauch man schnell auch einmal zweistellige Mengen an Gigabyte RAM zum Ausrechnen der Antwort.
+dann braucht man schnell auch einmal zweistellige Mengen an Gigabyte RAM zum Ausrechnen der Antwort.
 
 ![](/uploads/2024/06/apple-01.png)
 
@@ -68,6 +71,9 @@ dann brauch man schnell auch einmal zweistellige Mengen an Gigabyte RAM zum Ausr
 
 Ein Modell mit 8 Milliarden Parametern braucht ca. 5 GB RAM, ein Modell mit 14 Milliarden Parametern ca. 8 GB,
 und ein Modell mit 70 Milliarden Parametern je nach Quantisierung zwischen 26 GB und 40 GB.
+
+Dazu kommt noch einmal Speicher für den Kontext, 
+der bei großen Kontext-Definitionen schnell noch einmal die Größenordnung des Modells erreicht.
 
 Apple selbst dokumentiert in 
 [Introducing Apple’s On-Device and Server Foundation Models](https://machinelearning.apple.com/research/introducing-apple-foundation-models)
@@ -86,21 +92,21 @@ Ein 3b-Modell kann schlicht nicht mit einem 70b- oder gar noch größeren Modell
 Das ist aber das, was Benutzer von Online-GPTs wie ChatGPT gewohnt sind.
 
 Es ist also eher davon auszugehen, 
-daß wenig Inferenz (das Ausrechnen von Antworten mit einem austrainierten LLM) "on device" geht, 
+dass wenig Inferenz (das Ausrechnen von Antworten mit einem austrainierten LLM) "on device" geht, 
 und viel in die Cloud ausgelagert wird.
 Die Rechenzentren dazu gibt es noch nicht, und das Bauen von Rechenzentren dauert in der Regel einige Zeit.
-Wir können davon ausgehen, daß die Vorlaufzeit circa 2 Jahre beträgt:
+Wir können davon ausgehen, dass die Vorlaufzeit circa 2 Jahre beträgt:
 Das Rechenzentrum wird vermutlich sehr uniform bestückt sein, was die Planung vereinfacht.
 Die Energiedichte wird sehr hoch sein, und die Hardware wird schwer zu beschaffen sein, was die Planung verkompliziert.
 
-Die Hardware, die in dieses Rechenzentrum herein kann, wird derzeit meist von NVidia hergestellt.
-Wer Apple kennt, der weiß, wie sehr es die Firma schmerzt, einer Firma wie NVidia Geld zu geben.
+Die Hardware, die in dieses Rechenzentrum herein kann, wird derzeit meist von Nvidia hergestellt.
+Wer Apple kennt, der weiß, wie sehr es die Firma schmerzt, einer Firma wie Nvidia Geld zu geben.
 Viel lieber würde Apple den Kram auf eigenen, selbst entworfenen, auf Inferenz spezialisierten Chip laufen lassen.
 Auch diese existieren nicht und es würde jedermann überraschen, 
 wenn es solche Chips vor 2026 gäbe (oder nach 2028 noch nicht gäbe).
 
 Wir können an dieser Stelle vermutlich glaubhaft herleiten, 
-daß "Apple Intelligence" zu diesem Zeitpunkt lediglich lanciert wird, um den Kurs von AAPL zu stabilisieren.
+dass "Apple Intelligence" zu diesem Zeitpunkt lediglich lanciert wird, um den Kurs von AAPL zu stabilisieren.
 Aber natürlich ist es billig, da noch einmal FOMO gegenüber Kunden in Europa zu pflegen und die EU zu dissen.
 
 # Warum die Hardware und warum so viel Speicher?
@@ -111,9 +117,11 @@ Sie implementieren die benötigte Operation sehr flink, in Hardware und parallel
 
 [![](/uploads/2024/06/apple-03.jpg)](https://www.youtube.com/watch?v=-P28LKWTzrI)
 
-*[Mythbusters Werbevideo](https://www.youtube.com/watch?v=-P28LKWTzrI), das die Parallelität von Grafikkarten korrekt veranschaulicht.*
+*[Nvidia Werbevideo mit den Mythbusters](https://www.youtube.com/watch?v=-P28LKWTzrI),
+das die Parallelität von Grafikkarten korrekt veranschaulicht.*
 
-Die Mythbusters haben die Wirkmächtigkeit der parallelen Ausführung für ein NVidia Werbevideo einmal korrekt visualisiert.
+Die Mythbusters haben die Wirkmächtigkeit der parallelen Ausführung für ein Nvidia Werbevideo einmal korrekt visualisiert.
+
 Zur Geschichte und dem Aufbau von Grafikkarten habe ich vor sieben Jahren einen Link-Artikel geschrieben:
 [d = a*b+c at scale]({{< relref "/2017-11-25-d-abc-at-scale.md" >}}),
 der die Entwicklung von Grafik-Hardware in den 20 Jahren vor 2017 beschreibt, 
@@ -130,15 +138,15 @@ Wikipedia erklärt
 Wir berechnen die Position Zeile 1, Spalte 2 der Ergebnis-Matrix 
 also durch Multiplikation des Zeilenvektors 1 der Matrix A 
 mit dem Spaltenvektor 2 der Matrix B,
-sodaß sich im Beispiel
+sodass sich im Beispiel
 
 ```console
 (3, 2, 1) * (2, 1, 0) = (3*2 + 2*1 + 1*0) = 8
 ```
 
 ergibt. In `d = a*b + c` ist die Zwischensumme `c` zunächst 0, und es wird `3*2` berechnet.
-Das Ergebnis, `d = 6` wird im nächsten Schritt als `c` verwendet, sodaß wir `d = 2*1 + 6` erhalten.
-Im letzten Schritt wird dies wieder als `c` verwendet, sodaß wir das Endergebnis `d = 1*0 + 8` bekommen.
+Das Ergebnis, `d = 6` wird im nächsten Schritt als `c` verwendet, sodass wir `d = 2*1 + 6` erhalten.
+Im letzten Schritt wird dies wieder als `c` verwendet, sodass wir das Endergebnis `d = 1*0 + 8` bekommen.
 
 Grafikkarten haben spezielle Hardware, die mit einer bestimmten Hardware-Darstellung von Zahlen solche Berechnungen
 auf rechteckigen Zahlenfeldern beliebige Größe parallel durchführen können.
@@ -161,7 +169,7 @@ Wir können uns einmal Fließkommazahlen im Computer angucken:
 Stellt man eine beliebte Näherung der Zahl Pi als `double` dar, bekommt man dies:
 - 1 Bit Vorzeichen
 - 10 Bit Exponenten
-- 53 Bit "Mantisse" oder "Signifikand"
+- 53 Bit "Mantisse" oder "Significand"
 
 und die Zahl ist nicht der gewünschte Wert, sondern der dichteste Wert, der dargestellt werden kann:
 3.14159260000000006841.
@@ -219,7 +227,7 @@ Hier werden
 verwendet. Je nach Anwendungsfall kann das vorteilhaft sein.
 
 Ist es schlimm, ein LLM mit weniger Auflösung zu trainieren oder zu benutzen?
-Artikel ûber "Quantisierung" von LLMs diskutieren das, und auch *wann* im Herstellungsprozeß das Modell eingekürzt wird.
+Artikel über "Quantisierung" von LLMs diskutieren das, und auch *wann* im Herstellungsprozeß das Modell eingekürzt wird.
 
 - [What is Quantization in LLM](https://medium.com/@techresearchspace/what-is-quantization-in-llm-01ba61968a51) 
   diskutiert ganz allgemein was Quantisierung bei LLMs ist – also mit welchen Zahlen beim Training gerechnet wird 
@@ -231,22 +239,23 @@ Quantisierung hat mitunter Auswirkungen auf die Qualität der Antworten, die das
 aber sie spart Speicher und ermöglicht oft erst die Ausführung von LLMs auf Rechnern, 
 die man im Haus oder gar in der Hand hat.
 
-Wenn man zig Milliarden Parameter in den verfügbaren Speicher einer NVidia 4070 Ti quetschen will,
-dann braucht man halt kürzere Zahlendarstellungen.
+Wenn man zig Milliarden Parameter in den verfügbaren Speicher einer Nvidia 4070 Ti quetschen will,
+dann braucht man nun einmal kürzere Zahlendarstellungen.
 Und wenn es im iPhone passieren soll, dann noch kürzer.
 
-Damit man von der Beschleunigung einer NVidia profitiert kann man aber nur Darstellungen nehmen,
-die die NVidia kennt, also in Hardware beschleunigt parallel rechnen kann.
+Damit man von der Beschleunigung einer Nvidia profitiert kann man aber nur Darstellungen nehmen,
+die die Nvidia kennt, also in Hardware beschleunigt parallel rechnen kann.
 Sonst kann man auch "zu Fuß", also mit der CPU, rechnen.
 
 Das ist das Problem mit dem M1 Apple Silicon, das `bfloat16` nicht in Hardware kann, und das ab M2 korrigiert ist.
-Ich würde erwarten, daß neuere Apple CPUs auch andere, noch härtere Quantisierungen parallel in Hardware rechnen können,
-aber ich habe nicht nachgesehen, was ab wann wie realisiert wird.
+Ich würde erwarten, dass neuere Apple CPUs auch andere, noch härtere Quantisierungen parallel in Hardware rechnen können,
+aber ich habe nicht nachgesehen, was ab wann das wie realisiert wird.
 
 # Qualität von kleinen LLMs
 
 Apple behauptet, dass ihre 3B Modelle in Benchmarks besser sind als die Konkurrenz:
-[Introducing Apple’s On-Device and Server Foundation Models](https://machinelearning.apple.com/research/introducing-apple-foundation-models)
+[Introducing Apple’s On-Device and Server Foundation Models](https://machinelearning.apple.com/research/introducing-apple-foundation-models),
+die Benchmarks am Ende.
 
 Aber 3 Milliarden Parameter sind sehr klein.
 Das ist jedoch das, was Apple lokal rechnen kann.
@@ -266,5 +275,5 @@ Eine falsche Antwort und eine andere, ebenfalls falsche Antwort sind für einen 
 Bei einer würde er eine kleine Summe Geld verlieren, bei der anderen sterben.
 Im Benchmark aber sind beide gleich "falsch".
 
-Der Effekt ist, daß ein schlechtes Modell im Benchmark in der Realität eventuell als besser empfunden werden kann,
+Der Effekt ist, dass ein schlechtes Modell im Benchmark in der Realität eventuell als besser empfunden werden kann,
 weil es nie mörderische Antworten liefert.
