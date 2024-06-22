@@ -239,7 +239,7 @@ Das Ziel ist es, Ollama diesen Text mithilfe von Llama 3 zusammenfassen zu lasse
 2. Server starten: `ollama serve`.
    Dabei sind ggf. die notwendigen Parameter als Umgebungsvariablen zu setzen, damit die Modelle gefunden werden.
 3. Modell prüfen: `ollama list` zeigt das Modell `mistral:instruct` als vorhanden an. 
-   Ansonsten muss es mit `ollama mistral llama3:instruct` heruntergeladen werden.
+   Ansonsten muss es mit `ollama pull mistral:instruct` heruntergeladen werden.
 4. Den Prompt mit `ollama run mistral:instruct` starten.
 
 Wir verwenden hier das Modell `mistral:instruct` von [Mistral AI](https://en.wikipedia.org/wiki/Mistral_AI).
