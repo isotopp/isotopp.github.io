@@ -28,8 +28,8 @@ aber Apple könnte "Apple Intelligence" nicht weltweit zeitlich einführen, selb
 
 Der wahre Grund ist: Die Features sind unfertig.
 Normalerweise liefern iOS Betaversionen relativ vollständige Blicke auf das Release,
-alle Features sind vorhanden und funktionieren module noch existierende Fehler so, 
-wie man das im Produkt-Release später erwarten können wird.
+alle Features sind vorhanden und funktionieren modulo noch existierende Fehler, 
+so wie man das im Produkt-Release später erwarten können wird.
 [In der iOS 18 Beta ist das nicht der Fall.](https://www.lifewire.com/apple-betas-missing-cool-features-8662016)
 
 > But this year, there's less incentive to hop on early because none of the AI tools are there,
@@ -245,7 +245,7 @@ aber ich habe nicht nachgesehen, was ab wann wie realisiert wird.
 
 # Qualität von kleinen LLMs
 
-Apple behauptet, ihre 3B Modelle in Benchmarks besser als die Konkurrenz:
+Apple behauptet, dass ihre 3B Modelle in Benchmarks besser sind als die Konkurrenz:
 [Introducing Apple’s On-Device and Server Foundation Models](https://machinelearning.apple.com/research/introducing-apple-foundation-models)
 
 Aber 3 Milliarden Parameter sind sehr klein.
