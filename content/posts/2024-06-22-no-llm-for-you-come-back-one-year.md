@@ -277,3 +277,15 @@ Im Benchmark aber sind beide gleich "falsch".
 
 Der Effekt ist, dass ein schlechtes Modell im Benchmark in der Realität eventuell als besser empfunden werden kann,
 weil es nie mörderische Antworten liefert.
+
+# Apple mit mehr RAM
+
+Wenig überraschend beginnt Apple nun Rechner mit mehr RAM zu bauen,
+oder für LLM-Features Geräte mit mehr RAM zu verlangen:
+
+[Golem: 8 GByte RAM im Macbook reichen nicht mehr](https://www.golem.de/news/apple-8-gbyte-ram-im-macbook-reichen-nicht-mehr-2406-186433.html)
+
+> Das Unternehmen stellte die Beta der Entwicklungsumgebung XCode 16 vor.
+> In ihr enthalten ist ein neues Feature: Predictive Code Completion: 
+> Diese nutzt KI, um Codeschnipsel zu analysieren und passende Vorschläge in Echtzeit auszugeben.
+> Allerdings wird dafür laut Apple ein Mac mit mindestens 16 GByte Arbeitsspeicher benötigt.
