@@ -88,7 +88,7 @@ Die Kosten haben sich seit 2012 geviertelt, und seit 2017 halbiert.
 [![](/uploads/2024/06/welt-07.png)](https://ourworldindata.org/grapher/solar-pv-prices)
 
 *[Quelle](https://ourworldindata.org/grapher/solar-pv-prices). 
-Die PV Kosten sinken linear seit 1975, und bisher ist das Ende noch nicht in Sicht.*
+Die PV Kosten sinken exponentiell (gerade Linie in einem Log-Y Graphen) seit 1975, und bisher ist das Ende noch nicht in Sicht.*
 
 Für Batterien sieht es genauso aus:
 Die Kosten für LiIon Batterien sind in 30 Jahren um 97 % auf 3 % gefallen, 
