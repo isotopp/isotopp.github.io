@@ -74,7 +74,7 @@ Unfortunately, there are no unique transaction identifiers, so I can't define a 
 Instead, I use a `UNIQUE INDEX`, which may be overly specific.
 
 When exporting account statements, I must specify start and end dates,
-which sometimes results in duplicate records at the end of one statement and the beginning of the next.
+which sometimes result in duplicate records at the end of one statement and the beginning of the next.
 
 To avoid loading the same line twice if it appears in multiple CSV files, this unique index should be adequate.
 
@@ -340,7 +340,7 @@ A data warehouse centers around one or more fact tables, always including a time
 
 ### Literal Attribute Values, Resolve IDs
 
-Fact tables contain snapshot data that isn't normalized, featuring literal values.
+Fact tables contain snapshot data not normalized, featuring literal values.
 
 For example, in a sales warehouse,
 we record the actual sale price and the shipping address at the time of sale, not the current price or address.
@@ -354,7 +354,7 @@ For our data size, this doesn't matter much.
 Even in larger data sets,
 encoding can be deferred until there's infrastructure for online schema changes and sufficient disk space.
 
-Even in the one million rows example in
+Even in the one-million-row example in
 [Coding fields for great profit]({{< relref "/2020-09-18-mysql-encoding-fields-for-great-profit.md" >}})
 the gain is not critical,
 though substantial.
@@ -364,7 +364,7 @@ as long as there is infrastructure in place for online schema change, and suffic
 
 ### The Star and the Snowflake
 
-For OLTP databases, normalization to the 3rd normal form is ideal.
+For OLTP databases, normalization to the third normal form is ideal.
 However, in data warehousing, where we are interested in historical data, normalization isn't as crucial.
 The logged data usually doesn't change much after the fact.
 Any necessary changes, such as backfilling or corrections, are managed within a specific time window.
@@ -392,7 +392,7 @@ Identifying these unbounded tables helps manage data growth.
 >
 > Which tables grow without bounds?
 >
-> Solution: The orders table.
+> Solution: The `orders` table.
 
 Recognizing these structures and establishing an
 *Extract, Transform, Load (ETL) cycle*
