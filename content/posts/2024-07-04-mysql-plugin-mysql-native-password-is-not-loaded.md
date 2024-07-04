@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Plugin 'mysql_native_password' is not loaded"
-description: "A user lost login to their database instance, which has been accidentally upgraded to 9.0. They had mysql_native_password active on the root account, with has been deprecated since 8.0 and has been removed in 9.0. Due to the upgrade they have lost access to their database. Here is how to recover this."
+description: "A user lost login to their database instance, which has been accidentally upgraded to 9.0. They had mysql_native_password active on the root account, which has been deprecated since 8.0 and has been removed in 9.0. Due to the upgrade they have lost access to their database. Here is how to recover this."
 date: "2024-07-04T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
