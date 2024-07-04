@@ -22,11 +22,11 @@ We recreate the problem from scratch, using docker, and then recover the instanc
 
 # Creating a test setup
 
-On my system, I am using LVM2 and I am routinely using the XFS file system.
+On my system, I am using LVM2, and I am routinely using the XFS file system.
 I am creating a 10 GB sized test filesystem, which I mount to `/a`.
 In that, we create a `mysql` and a `conf` directory.
 
-The official `mysql` image is running as UID 999 and that is visible outside of the container.
+The official `mysql` image is running as UID 999, and that is visible outside the container.
 There are ways around that, but for a short test we do not care.
 
 ```console
@@ -56,7 +56,7 @@ root@server:~# chown 999:999 /a/{mysql,conf}
 # Recreating the original setup using MySQL 5.7
 
 As `mysql_native_password` has been deprecated since 8.0,
-we need to install a 5.7 image in order to reproduce the problem.
+we need to install a 5.7 image to reproduce the problem.
 
 ```console
 root@server:~# docker pull mysql:5.7
@@ -175,7 +175,7 @@ root@server:~# docker run -v/a/mysql:/var/lib/mysql --name mysqltest -e MYSQL_RO
 698e26254761711ee7bfff158adff9b6272bba1ce6171d68a18aab8367a8373f
 ```
 
-Checking the log we see the upgrade to 8.4 happening successfully.
+Checking the log, we see the upgrade to 8.4 happening successfully.
 
 ```console
 root@server:~# docker logs mysqltest
@@ -221,7 +221,7 @@ We modify the `my.cnf` file as follows:
 This is the procedure documented in 
 [the manual](https://dev.mysql.com/doc/refman/8.4/en/resetting-permissions.html),
 **B.3.3.2 How to Reset the Root Password**, last subsection.
-We use this approach, because it works fine interactively,
+We use this approach because it works fine interactively,
 and we can debug things as we go along.
 
 We proceed to run the server with our modified `my.cnf` mapped into the image as a volume.
@@ -293,7 +293,7 @@ mysql> select user, host, plugin from mysql.user;
 5 rows in set (0.01 sec)
 ```
 
-Note how in the 5th row it now says "caching_sha2_password".
+Note how in the fifth row it now says "caching_sha2_password".
 We apply the same change to `root@%`:
 
 Finally, we create a new user "newroot@localhost", and make it another root user.
@@ -359,7 +359,7 @@ mysql> select current_user();
 ```
 
 Note that we did start the server with `-p 3307:3306`,
-making the containters mysql at `3306` available on the host as port `3307`.
+making the containers mysql at `3306` available on the host as port `3307`.
 
 That means we can also try to use it from the host, using `root@%`.
 
@@ -382,12 +382,12 @@ root@172.17.0.1 [mysql]> select current_user();
 
 We created a MySQL 5.7 in docker, and ran it with a persistent external volume.
 We performed a series of upgrades to 8.0 and 8.4,
-until we ran into a situation where the `mysql_native_password` authenticaiton method no longer was recognized.
+until we ran into a situation where the `mysql_native_password` authentication method no longer was recognized.
 
 We then crafted a recovery `my.cnf` file with a `skip_grant_tables` config, mapped that into the container, and performed a recovery.
 
 We have demonstrated the `ALTER USER` statements to upgrade the authentication method to `caching_sha2_password`.
 We have also demonstrated how to create more users with a complete set of privileges.
 
-We have demonstrated that the container is now reacable as root,
-from inside the container and with an experted port from the outside.
+We have demonstrated that the container is now reachable as root,
+from inside the container and with an exported port from the outside.
