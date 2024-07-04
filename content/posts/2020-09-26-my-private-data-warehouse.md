@@ -21,7 +21,7 @@ which were available as CSV files.
 
 ## The initial data load
 
-The data looked like this:
+The data appeared as follows:
 
 ```console
 $ head -2 /home/kris/Documents/banking/umsatz-22758031-29122004.csv
@@ -35,12 +35,14 @@ $ head -2 /home/kris/Documents/banking/umsatz-22758031-29122004.csv
 "-39,00";"EUR";"Direct Debit booked"
 ```
 
-Because I want to know how I spend my money, I am loading the data into MySQL. Here is how:
+Because I want to know how I spend my money, I am loading the data into MySQL.
+Here is how:
+To understand my spending habits, I decided to load the data into MySQL.
+Here’s how:
 
-As a first step we are defining a table into which to load the data.
-The table has columns whose primary purpose it to hold the data.
-We still have to clean and adjust the data to be able to do things with the data,
-so we are not looking at the final fields or types at all.
+First, we define a table to load the data.
+The table has columns to hold the raw data.
+We still need to clean and adjust the data, so we are not concerned with the final fields or types yet.
 
 ```sql
 -- load data
@@ -68,16 +70,15 @@ CREATE TABLE transactions (
 truncate table transactions;
 ```
 
-Sadly, we have no unique transaction identifiers, so I cannot really define a proper primary key.
-I am trying to make do with a `UNIQUE INDEX`, but it is likely overly specific. 
+Unfortunately, there are no unique transaction identifiers, so I can't define a proper primary key.
+Instead, I use a `UNIQUE INDEX`, which may be overly specific.
 
-The failure scenario is that I have to specify start and end dates when exporting the account statements,
-and sometimes a few records are exported twice: At the end of the one statement file,
-and at the beginning of the next statement file again.
+When exporting account statements, I must specify start and end dates,
+which sometimes results in duplicate records at the end of one statement and the beginning of the next.
 
-To prevent loading the same line twice if it happens to appear in multiple CSV files this unique index is probably okay.
+To avoid loading the same line twice if it appears in multiple CSV files, this unique index should be adequate.
 
-I load can load the various CSV files into this table:
+I can load the various CSV files into this table:
 
 ```sql
 load data infile  
@@ -95,7 +96,8 @@ ignore 1 lines;
 ...
 ```
 
-Now it is time to clean up the data. For this we create a target table, and add a primary key to it.
+Next, it’s time to clean the data.
+We create a target table and add a primary key.
 
 ```sql
 -- prepare conversion stage
@@ -107,15 +109,16 @@ alter table b change column id
   id integer unsigned not null auto_increment;
 ```
 
-## Cleaning and changing the data
+## Cleaning and Transforming Data
 
 We can now copy the data over, and in the process clean it up.
 
-- The `amount` field has to be changed from "xxx.xxx,yy"
-  (german monetary notation with dots between the thousands, and a comma before the cents) to "xxxxxxx.yy".
-- We also have to turn the date fields `valutadate_text` and `bookdate_text` into iso date syntax. 
-- We need to add a year to bookdate_text, taking it from the valutadate_text.
-- The `info` column is useless.
+We can now copy and clean the data during the process.
+
+- Change the `amount` field from `xxx.xxx,yy` (German notation) to `xxxxxxx.yy`.
+- Convert the date fields `valutadate_text` and `bookdate_text` to ISO date format.
+- Add a year to `bookdate_text` from `valutadate_text`.
+- The `info` column is not useful.
 
 ```sql
 -- load data into conversion stage
@@ -152,21 +155,21 @@ alter table b change column bookdate_text
 alter table b drop column info;
 ```
 
-## Preparing binning categories
+## Preparing Binning Categories
 
-I now want to aggregate my expenses.
-In the raw data, spent money is listed together with the remote account it went to.
-To aggregate, we need to assign each of these accounts to a category,
-for example we would assign all gas stations to the "fuel" category or all supermarkets to the "food" category.
+I want to aggregate my expenses.
+The raw data lists spent money with the corresponding remote account.
+To aggregate, we assign each of these accounts to a category,
+e.g., assigning all gas stations to the "fuel" category or all supermarkets to the "food" category.
 
-I can have a table "moneysinks" that does this account to category assignment.
+We can have a table, `moneysinks` for this account-to-category assignment.
 
 ```sql
 -- add category
 alter table b add column category varchar(20) not null;
 ```
 
-And here is the `moneysinks` table, which needed manual population (I had to assign a category to each pattern by hand):
+Here is the `moneysinks` table, which needed manual population (assigning a category to each pattern by hand):
 
 ```sql
 DROP TABLE IF EXISTS `moneysinks`;
@@ -245,7 +248,7 @@ UNLOCK TABLES;
 
 ## Asking Questions
 
-Using the mapping in `moneysinks` and the query below I can now permanently assign the `category` field in `b`:
+Using the mapping in `moneysinks` and the query below, I can permanently assign the `category` field in `b`:
 
 ```sql
 update b set category = ( 
@@ -256,7 +259,7 @@ update b set category = (
     limit 1) where b.amount < 0;
 ```
 
-As I complete my list of patterns I get a `category` assigned to everything.
+As I complete my list of patterns, each transaction gets a `category`.
 
 That enables me to ask questions:
 
@@ -299,8 +302,7 @@ order by payments desc;
 ...
 ```
 
-Using the `category` I can also group this and make group totals.
-
+Using the `category`, I can also group and sum expenses.
 ```sql
 select category, 
          count(amount) as payments, 
@@ -311,50 +313,46 @@ group by category
 order by total;
 ```
 
-This will tell me how I spend my money.
+This shows how I spend my money.
 
-Often I want to observe how my spending habits change over time,
-so I would not just use the categories from the moneysinks table as grouping criterion,
-but also group over some time dimension
+I often want to observe how my spending habits change over time.
+So,
+I group not only by categories from the `moneysinks` table but also by time dimension
 (`GROUP BY year(bookdate) as year, category`).
 
 As my data warehouse grows,
-it may be useful to run the aggregation query and save the result in some pre-aggregated table (by day or month),
-as a kind of materialized view of the aggregates.
-I can use these to create coarser grained aggregates faster
-(take daily sums and counts, and create monthly or yearly aggregates, fast).
+it may be useful to run the aggregation query and save the result in a pre-aggregated table (daily or monthly),
+serving as a materialized view of the aggregates.
+These can be used to create coarser-grained aggregates faster.
 
-## Summary and outlook
+## Summary and Outlook
 
-Using account statements from a bank, we have built a basic data warehouse.
-We demonstrated data import, staging and cleaning processes.
+Using bank account statements, we built a basic data warehouse.
+We demonstrated data import, staging, and cleaning processes.
 Using category tables,
-we demonstrated how bin individual records into larger sets that can be useful in statistical analysis,
-and we looked at how we could materialize these aggregations into pre-aggregated tables.
+we showed how to bin individual records into larger sets for statistical analysis and how to materialize these aggregations into pre-aggregated tables.
 
-This is a toy data warehouse, and it poses no challenges in data management due to the small size.
-Still, it has many properties that are also present in larger structures.
-Let's look at this in a more generalized way:
+This is a toy data warehouse, posing no significant data management challenges due to its small size.
+Still, it shares many properties with larger structures.
+Let's generalize:
 
-A data warehouse is centered around one or more fact tables.
-Fact tables always have a time dimension, they have log-like nature.
+A data warehouse centers around one or more fact tables, always including a time dimension and having a log-like nature.
 
-### Literal attribute values, resolve id's
+### Literal Attribute Values, Resolve IDs
 
-Fact tables contain snapshot data that is not normalized, but contains literal values.
-In our example: actual account holder names, and account numbers. 
+Fact tables contain snapshot data that isn't normalized, featuring literal values.
 
-For example in a sales warehouse from a web shop,
-we are never interested in the current price of an item in a sales-fact table,
-but always in what we sold it for back then, for each individual sale.
-We are never interested where the customer lives now, but where we sent the article. 
-Hence, we log literal attributes, never ids pointing to the current article or customer record.
+For example, in a sales warehouse,
+we record the actual sale price and the shipping address at the time of sale, not the current price or address.
+We log literal attributes, not current IDs.
 
-### Encoding can shrink tables, but do only what is necessary
+### Encoding Can Shrink Tables, But Only Do What Is Necessary
 
 This often leads to data duplication.
 In our example, the string "SCHECK IN CENTER KA DURLACH" is repeated 36 times.
-For the amount of data shown in our example this does not matter.
+For our data size, this doesn't matter much.
+Even in larger data sets,
+encoding can be deferred until there's infrastructure for online schema changes and sufficient disk space.
 
 Even in the one million rows example in
 [Coding fields for great profit]({{< relref "/2020-09-18-mysql-encoding-fields-for-great-profit.md" >}})
@@ -366,125 +364,75 @@ as long as there is infrastructure in place for online schema change, and suffic
 
 ### The Star and the Snowflake
 
-When we talk about OLTP databases, we often talk about normalization,
-and aiming for the 3rd normal form as an idealized schema to work from.
-For transactional data that is a good model and a good goal.
+For OLTP databases, normalization to the 3rd normal form is ideal.
+However, in data warehousing, where we are interested in historical data, normalization isn't as crucial.
+The logged data usually doesn't change much after the fact.
+Any necessary changes, such as backfilling or corrections, are managed within a specific time window.
+Once this window closes, the data becomes immutable.
 
-In data warehousing, this is obviously not the case - our data has a time dimension,
-and unlike OLTP, in a data warehouse we are interested in how things were then, not what they are like now.
-In our example, we are interested in how much we spent for the fuel back then,
-and not what the same amount would cost us now.
+The classical structure of a data warehouse is the star schema,
+with a central fact table surrounded by category tables and pre-aggregated outputs.
+In our example, we have the `b` fact table and a single binning input table, `moneysinks`.
+Larger warehouses may have more auxiliary tables.
 
-Conversely, in a data warehouse the logged data usually does not change much after the fact: there can be 
+We don't have materialized output tables in this example due to the small data set(`expenses per days` or similar),
+but larger warehouses benefit from materializing aggregates for faster reporting.
+Adding categories of categories or multidimensional aggregates turns a Star into a Snowflake Schema.
 
-- back filling, due to data arriving late, 
-- backpropagation of newly added attributes,
--  or there can be corrections due to transactions changed after the fact at the business level
+> The Star and Snowflake are the normal forms for Data Warehouses.
+> Normalization as practiced in transactional databases is not helpful; 3NF is not a thing here.
 
-All of these require us to be able to rewrite our logs for some time window.
-But eventually that window closes and the data becomes immutable, and we can seal it
-(run `OPTIMIZE TABLE`, and apply encoding and page level compression).
+### Time Dimensional Tables in OLTP Schemas
 
-In our example, once money is spent, it would not come back (or if, in a second corrective reverse booking),
-and the amounts booked would never change.
-The log records are immutable from the outset.
+Many OLTP schemas have tables with a time dimension, either in the table name (`shop.sales_202009`) or primary key.
+Identifying these unbounded tables helps manage data growth.
 
-Things that OLTP structures need to avoid by normalizing - insert,
-update and delete paradox - do not happen to us in the same way.
-Also, because our data does not change much (if ever), but grows a lot over time, it is useful to invest the CPU cycles for data compression (using encoding at the data model level, and using page compression at the database engine level, in this order) once the data can be sealed.
 
-The classical structure of a data warehouse is therefore the star,
-in which we have a fact table, and a number of category tables aiding binning,
-plus a number of generated daily/weekly/monthly pre-aggregates as outputs.
-All of these auxiliary tables group around the fact table, linked to it in some way, hence the "Star Schema".
-
-In our example, we have the `b` fact table, and only a single binning input table, `moneysinks`.
-More complicated warehouses can have many more of these.
-
-We have no materialized output tables (`expenses per days` or similar),
-because our data set is small enough to do all of this ad-hoc.
-In larger warehouses, materializing aggregates that help to speed up reports is useful.
-
-If you add categories of categories, or produce multidimensional aggregates, you go from Star to Snowflake Schema. 
-
-> The Star and the Snowflake are the normal forms for Data Warehouses,
-> Normalization as practiced in transactional databases is not helpful, 3NF is not a thing.
-
-### Time Dimensional Tables in OLTP schemas
-
-Almost every OLTP schema earning money has some tables in it that have a time dimension.
-It is often visible either in the table name (`shop.sales_202009`) or in the tables primary key -
-often a compound primary key which contains a pair of an id and a date.
-
-It will be visible in any case, if you think about each tables' growth.
-
-> Assume unchanging conditions - a webshop with a mostly fixed number of articles,
-> and a mostly fixed number of customers buying at a fixed rate,
-> which tables will stay at a fixed size, and which tables will grow without bounds?
+> Assume unchanging conditions: a webshop with fixed articles and customers.
 >
-> Solution: It is the `orders` table.
+> Which tables grow without bounds?
 >
-> Find these unbounded structures in your schema.
+> Solution: The orders table.
 
-At the heart of every OLTP schema there is a data warehouse that is struggling to get out.
-You get it out by completing the data lifecycle for the OLTP phase of things and establishing an *Extract,
-Transform and Load cycle
-(ETL cycle)*.
+Recognizing these structures and establishing an
+*Extract, Transform, Load (ETL) cycle*
+is crucial for managing data lifecycle and isolating transactional and non-transactional concerns.
 
-In planning a data warehouse, you identify tables without growth boundaries,
-and decide which data attributes you want to record as literal data for the warehouse.
-
-In the Extract phase you create a monster join you resolve all id values present in your normalized data,
-extract the literal attributes of interest, and push them into a CSV or some staging table.
+In the Extract phase, resolve IDs and extract literal attributes into a staging table.
+This is usually done using a monster join in which we resolve all id values present in the normalized data,
+extract the literal attributes of interest, and push them into a staging area.
+This isolation allows the OLTP system to manage its data lifecycle without affecting non-transactional functions,
+which are handled by the data warehouse.
 
 Data in the OLTP system can now be deleted by the OLTP systems data lifecycle management
 without concern for other, non-transactional business functions: 
 we have isolated the non-transactional concerns and confined them to the extraction process 
-(which will have to be adjusted when the OLTP schema changes, 
-so we are a stakeholder in the OLTP schema evolution).
 
-This isolation of concerns means
-that the OLTP system of our shop can now delete or archive orders at will after fulfillment or whatever other concerns
-the transactional system has to serve.
-Our non-transactional needs are all served from the data gathered in the Extract phase of the ETL process.
+The staged data can then be cleaned, categorized,
+and aggregated based on non-transactional needs like statistics and business intelligence.
 
-The staged extracted values can now be cleaned,
-categorized and aggregated, depending on the demands from the non-transactional business concerns
-(statistics, business intelligence, decision-making and so on).
-
-Identifying data warehousey tables in OLTP systems,
-and isolating the transactional and non-transactional business concerns is important to keep the OLTP system small and agile.
-
-Without taking the non-transactional, long term business functions out the OLTP system will grow without bounds,
+Without taking the non-transactional, long-term business functions out the OLTP system will grow without bounds,
 and ultimately transactional performance will suffer - the system will choke on itself.
 The non-transactional concerns not being isolated and bundled will also impede OLTP schema evolution
 and choke the development process on the money-earning side.
 
 ### Data Lifecycle Management at the Warehouse
 
-Fact tables in the data warehouse have a time dimension, and as time passes, they will accumulate more data.
-In order to manage our data warehouse,
-we will also have to complete the data lifecycle on this side of the ETL boundary,
-and establish some deletion policy.
-
-Queries to the data warehouse table are often time bounded ("How did sales change in the last 2 years") and binned by -
-among other things - a time dimension
-("How did demand change month-over-month", "Which of our products are seasonal?").
+Fact tables with a time dimension accumulate more data over time.
+Managing this requires a deletion policy.
+Queries to the data warehouse are often time-bounded.
 
 Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL
 [when using partitions]({{< relref "/2020-09-24-mysql-deleting-data.md" >}}).
 
 In data warehouses, partitions are usually on a time value as the first dimension.
 That is, we partition our data set by year, month or day, and we delete data by dropping old partitions.
-This leaves all internal B-Trees in all the partitions sub-tables untouched and as they have been after the import,
-optimization and compression.
 
 As queries also have a time dimension, the optimizer profits from this structure as well.
 It can exclude entire partitions from consideration, making the subset of data to look at much smaller.
 
 ### Daily Snapshots are slow, but simple
 
-A daily snapshot ETL import is slow -
-you do not get realtime data updates - but simple to implement retroactively on existing structures.
-Realtime structures require more engineering, but can be crafted on top of existing architectures as well.
-We are going to look at them in some later examples.
+A daily snapshot ETL import is slow but simple to implement retroactively.
+Realtime structures require more engineering but can be built on existing architectures,
+which we will explore in later examples.
