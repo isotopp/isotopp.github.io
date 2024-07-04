@@ -7,6 +7,7 @@ tags:
 - lang_en
 - mysql
 - database
+- data warehouse
 - erklaerbaer
 - mysqldev
 title: Importing account statements and building a data warehouse
