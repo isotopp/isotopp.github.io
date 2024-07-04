@@ -378,6 +378,38 @@ root@172.17.0.1 [mysql]> select current_user();
 
 ```
 
+# Cleanup
+
+```console
+root@server:~# docker kill mysqltest
+Error response from daemon: Cannot kill container: mysqltest: container 42434a73138a PID 1403647 is zombie and can not be killed. Use the --init option when creating containers to run an init inside the container that forwards signals and reaps processes
+root@server:~# docker rm mysqltest
+Error response from daemon: No such container: mysqltest
+
+root@server:~# umount /a
+
+root@server:~# lvremove /dev/data/mysqltest
+Do you really want to remove and DISCARD active logical volume data/mysqltest? [y/n]: y
+  Logical volume "mysqltest" successfully removed.
+```
+
+To clean up, we kill the container `mysqltest`, and make sure it is removed.
+We then unmount the test filesystem, and destroy the volume to regain out 10 GB of disk space.
+
+We could then proceed to `docker images -a | grep mysql`, and then `docker rmi ...` the `mysql` images,
+if we cared.
+
+```console
+root@server:~# docker images -a | grep mysql
+mysql                                               8.4             736ced9665e8   2 days ago      583MB
+mysql                                               8.0             0b60ddd8609d   2 days ago      572MB
+mysql                                               5.7             5107333e08a8   6 months ago    501MB
+```
+
+To gain back these 1.5 GB, `docker rmi mysql:{5.7,8.0,8.4}`.
+Unlike `docker pull`, which accepts only a single image tag, `docker rmi` accepts a list of image tags.
+That means we do not have to wrap the bash brace expansion `{}` into a bash `for; do done` loop.
+
 # Summary
 
 We created a MySQL 5.7 in docker, and ran it with a persistent external volume.
