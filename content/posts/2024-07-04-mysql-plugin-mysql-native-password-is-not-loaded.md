@@ -124,10 +124,10 @@ This has upgraded datadir, `/a/mysql`.
 
 ```console
 root@server:~# docker logs mysqltest
-2024-07-04T10:55:22.614834Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.38) starting as process 1
+0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.38) starting as process 1
 ...
-2024-07-04T10:55:27.248791Z 5 [System] [MY-013381] [Server] Server upgrade from '50700' to '80038' started.
-2024-07-04T10:55:40.684280Z 5 [System] [MY-013381] [Server] Server upgrade from '50700' to '80038' completed.
+5 [System] [MY-013381] [Server] Server upgrade from '50700' to '80038' started.
+5 [System] [MY-013381] [Server] Server upgrade from '50700' to '80038' completed.
 ...
 ```
 
@@ -179,11 +179,11 @@ Checking the log, we see the upgrade to 8.4 happening successfully.
 
 ```console
 root@server:~# docker logs mysqltest
-2024-07-04 11:02:46+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.1-1.el9 started.
-2024-07-04T11:02:47.391266Z 1 [System] [MY-011090] [Server] Data dictionary upgrading from version '80023' to '80300'.
-2024-07-04T11:02:47.828202Z 1 [System] [MY-013413] [Server] Data dictionary upgrade from version '80023' to '80300' completed.
-2024-07-04T11:02:50.812570Z 4 [System] [MY-013381] [Server] Server upgrade from '80038' to '80401' started.
-2024-07-04T11:02:58.720925Z 4 [System] [MY-013381] [Server] Server upgrade from '80038' to '80401' completed.
+1 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.1-1.el9 started.
+1 [System] [MY-011090] [Server] Data dictionary upgrading from version '80023' to '80300'.
+1 [System] [MY-013413] [Server] Data dictionary upgrade from version '80023' to '80300' completed.
+4 [System] [MY-013381] [Server] Server upgrade from '80038' to '80401' started.
+4 [System] [MY-013381] [Server] Server upgrade from '80038' to '80401' completed.
 ```
 
 Trying to login new already fails:
