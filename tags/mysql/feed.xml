@@ -6,7 +6,340 @@
     <description>Recent content in Mysql on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Jul 2024 09:27:23 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 04 Jul 2024 11:33:31 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Plugin &#39;mysql_native_password&#39; is not loaded</title>
+      <link>https://blog.koehntopp.info/2024/07/04/mysql-plugin-mysql-native-password-is-not-loaded.html</link>
+      <pubDate>Thu, 04 Jul 2024 05:06:07 +0000</pubDate>
+      
+      <guid>https://blog.koehntopp.info/2024/07/04/mysql-plugin-mysql-native-password-is-not-loaded.html</guid>
+      <description>&lt;p&gt;In &lt;code&gt;libera:#mysql&lt;/code&gt; a user has been running MySQL in a docker container with &lt;code&gt;mysql:latest&lt;/code&gt;.
+This container got automatically upgraded to MySQL 9.0.0, an innovation release.&lt;/p&gt;
+&lt;p&gt;Part of the 9.0 release is the removal of the &lt;code&gt;mysql_native_password&lt;/code&gt; plugin, which has been deprecated since 8.0.
+The user now can no longer login to their database.
+They have no backup and no replica.&lt;/p&gt;
+&lt;p&gt;We recreate the problem from scratch, using docker, and then recover the instance.&lt;/p&gt;
+&lt;h1 id=&#34;creating-a-test-setup&#34;&gt;
+    &lt;a href=&#34;#creating-a-test-setup&#34;&gt;
+	Creating a test setup
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;On my system, I am using LVM2 and I am routinely using the XFS file system.
+I am creating a 10 GB sized test filesystem, which I mount to &lt;code&gt;/a&lt;/code&gt;.
+In that, we create a &lt;code&gt;mysql&lt;/code&gt; and a &lt;code&gt;conf&lt;/code&gt; directory.&lt;/p&gt;
+&lt;p&gt;The official &lt;code&gt;mysql&lt;/code&gt; image is running as UID 999 and that is visible outside of the container.
+There are ways around that, but for a short test we do not care.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# lvcreate -n mysqltest -L 10G data
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  Logical volume &amp;#34;mysqltest&amp;#34; created.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# mkfs -t xfs -f /dev/data/mysqltest
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;meta-data=/dev/data/mysqltest    isize=512    agcount=4, agsize=655360 blks
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         =                       sectsz=512   attr=2, projid32bit=1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         =                       crc=1        finobt=1, sparse=1, rmapbt=1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         =                       reflink=1    bigtime=1 inobtcount=1 nrext64=0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;data     =                       bsize=4096   blocks=2621440, imaxpct=25
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         =                       sunit=0      swidth=0 blks
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;naming   =version 2              bsize=4096   ascii-ci=0, ftype=1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;log      =internal log           bsize=4096   blocks=16384, version=2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;         =                       sectsz=512   sunit=0 blks, lazy-count=1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;realtime =none                   extsz=4096   blocks=0, rtextents=0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Discarding blocks...Done.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# mount /dev/data/mysqltest /a
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# mkdir /a/{mysql,conf}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# chown 999:999 /a/{mysql,conf}
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;recreating-the-original-setup-using-mysql-57&#34;&gt;
+    &lt;a href=&#34;#recreating-the-original-setup-using-mysql-57&#34;&gt;
+	Recreating the original setup using MySQL 5.7
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;As &lt;code&gt;mysql_native_password&lt;/code&gt; has been deprecated since 8.0,
+we need to install a 5.7 image in order to reproduce the problem.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker pull mysql:5.7
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;5.7: Pulling from library/mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Digest: sha256:4bc6bc963e6d8443453676cae56536f4b8156d78bae03c0145cbe47c2aad73bb
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Status: Image is up to date for mysql:5.7
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;docker.io/library/mysql:5.7
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We run this image with datadir in &lt;code&gt;/a/mysql&lt;/code&gt;, and we want a root password &lt;code&gt;cookie&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker run -v/a/mysql:/var/lib/mysql --name mysqltest -e MYSQL_ROOT_PASSWORD=cookie --rm -d mysql:5.7
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;d16ab1076a328d91562970ed2870a273a2cdffd0eace263002c72fd360a7b4a4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We verify that the plugin used is indeed the to-be-deprecated &lt;code&gt;mysql_native_password&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker exec -ti mysqltest bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-4.2# mysql -u root -pcookie mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Server version: 5.7.44 MySQL Community Server (GPL)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; select user, host, plugin from mysql.user;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+---------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| user          | host      | plugin                |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+---------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root          | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.session | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.sys     | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root          | %         | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+---------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;4 rows in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; ^DBye
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-4.2# kill 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-4.2# root@server:~#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We have two &lt;code&gt;root&lt;/code&gt; users, one &lt;code&gt;root@localhost&lt;/code&gt;, the other &lt;code&gt;root@%&lt;/code&gt;.
+All four users are on &lt;code&gt;mysql_native_password&lt;/code&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;upgrade-to-80&#34;&gt;
+    &lt;a href=&#34;#upgrade-to-80&#34;&gt;
+	Upgrade to 8.0
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Since we did &lt;code&gt;docker run ... -n mysqltest --rm&lt;/code&gt;, the container was destroyed when it ended.
+We ended it with &lt;code&gt;kill 1&lt;/code&gt;, killing the init process inside the container.
+This shuts down the database cleanly and drops us back to the host.&lt;/p&gt;
+&lt;p&gt;We pull 8.0 and run it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker pull mysql:8.0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;8.0: Pulling from library/mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Digest: sha256:134e2d1c7c517d05e5328a77aa5a165a314dc4c4116503e7e089494f4e398ab1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Status: Image is up to date for mysql:8.0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;docker.io/library/mysql:8.0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker run -v/a/mysql:/var/lib/mysql --name mysqltest -e MYSQL_ROOT_PASSWORD=cookie --rm -d mysql:8.0
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;10379b753d6a997b2f27b5d419ed84c083131d7ec95d3e3aa278ab858c77aa53
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This has upgraded datadir, &lt;code&gt;/a/mysql&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker logs mysqltest
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T10:55:22.614834Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.38) starting as process 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T10:55:27.248791Z 5 [System] [MY-013381] [Server] Server upgrade from &amp;#39;50700&amp;#39; to &amp;#39;80038&amp;#39; started.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T10:55:40.684280Z 5 [System] [MY-013381] [Server] Server upgrade from &amp;#39;50700&amp;#39; to &amp;#39;80038&amp;#39; completed.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can still access the server.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker exec -ti mysqltest bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# mysql -u root -pcookie mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Server version: 8.0.38 MySQL Community Server - GPL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; select user, host, plugin from mysql.user;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| user             | host      | plugin                |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | %         | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.infoschema | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.session    | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.sys        | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;5 rows in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; ^DBye
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# kill 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# root@server:~#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;An additional account, &lt;code&gt;mysql.infoschema&lt;/code&gt;, as been created.
+This account already uses &lt;code&gt;caching_sha2_password&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;It is at this point where an upgrade to &lt;code&gt;caching_sha2_password&lt;/code&gt; for all accounts should have happened.&lt;/p&gt;
+&lt;h1 id=&#34;upgrading-to-84-and-breaking-the-installation&#34;&gt;
+    &lt;a href=&#34;#upgrading-to-84-and-breaking-the-installation&#34;&gt;
+	Upgrading to 8.4 and breaking the installation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We pull 8.4 and run it.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker pull mysql:8.4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;8.4: Pulling from library/mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Digest: sha256:d26a69e1ef146c77ecfddf3128134e3a0f4c6123133725835818107037649827
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Status: Image is up to date for mysql:8.4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;docker.io/library/mysql:8.4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker run -v/a/mysql:/var/lib/mysql --name mysqltest -e MYSQL_ROOT_PASSWORD=cookie --rm -d mysql:8.4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;698e26254761711ee7bfff158adff9b6272bba1ce6171d68a18aab8367a8373f
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Checking the log we see the upgrade to 8.4 happening successfully.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker logs mysqltest
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04 11:02:46+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.4.1-1.el9 started.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T11:02:47.391266Z 1 [System] [MY-011090] [Server] Data dictionary upgrading from version &amp;#39;80023&amp;#39; to &amp;#39;80300&amp;#39;.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T11:02:47.828202Z 1 [System] [MY-013413] [Server] Data dictionary upgrade from version &amp;#39;80023&amp;#39; to &amp;#39;80300&amp;#39; completed.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T11:02:50.812570Z 4 [System] [MY-013381] [Server] Server upgrade from &amp;#39;80038&amp;#39; to &amp;#39;80401&amp;#39; started.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;2024-07-04T11:02:58.720925Z 4 [System] [MY-013381] [Server] Server upgrade from &amp;#39;80038&amp;#39; to &amp;#39;80401&amp;#39; completed.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Trying to login new already fails:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# mysql -u root -pcookie
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql: [Warning] Using a password on the command line interface can be insecure.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;ERROR 1524 (HY000): Plugin &amp;#39;mysql_native_password&amp;#39; is not loaded
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;recovering-the-server&#34;&gt;
+    &lt;a href=&#34;#recovering-the-server&#34;&gt;
+	Recovering the server
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We copy &lt;code&gt;/etc/my.cnf&lt;/code&gt; to datadir, and modify it:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# cp /etc/my.cnf /var/lib/mysql/my.cnf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# kill 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# root@server:~# tail -3 /a/mysql/my.cnf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;socket=/var/run/mysqld/mysqld.sock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;!includedir /etc/mysql/conf.d/
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We modify the &lt;code&gt;my.cnf&lt;/code&gt; file as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mv&lt;/code&gt; it to &lt;code&gt;/a/conf/my.cnf&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;remove the &lt;code&gt;!includedir&lt;/code&gt; section.&lt;/li&gt;
+&lt;li&gt;put a &lt;code&gt;skip_grant_tables&lt;/code&gt; into the &lt;code&gt;[mysqld]&lt;/code&gt; section.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/07/recover-root-01.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Putting &lt;code&gt;skip_grant_tables&lt;/code&gt; into the &lt;code&gt;[mysqld]&lt;/code&gt; section of the &lt;code&gt;my.cnf&lt;/code&gt;.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;This is the procedure documented in
+&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.4/en/resetting-permissions.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the manual&lt;/a&gt;
+
+,
+&lt;strong&gt;B.3.3.2 How to Reset the Root Password&lt;/strong&gt;, last subsection.
+We use this approach, because it works fine interactively,
+and we can debug things as we go along.&lt;/p&gt;
+&lt;p&gt;We proceed to run the server with our modified &lt;code&gt;my.cnf&lt;/code&gt; mapped into the image as a volume.
+This will be layered over the existing &lt;code&gt;/etc/my.cnf&lt;/code&gt; inside the image.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker run -v/a/conf/my.cnf:/etc/my.cnf  -v/a/mysql:/var/lib/mysql --name mysqltest -e MYSQL_ROOT_PASSWORD=cookie --rm -d mysql:8.4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;6a5bb298fcdd7eb670b8d1403ab285a4492ad012ee659c1157579a37d127b739
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker exec -ti mysqltest bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# grep skip /etc/my.cnf
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;skip-name-resolve
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;skip_grant_tables
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can now get into the server without any password at all.
+We check the accounts present and their plugins.&lt;/p&gt;
+&lt;p&gt;After running &lt;code&gt;FLUSH PRIVILEGES;&lt;/code&gt; the server is initialized enough
+to allow us to run &lt;code&gt;GRANT&lt;/code&gt; or &lt;code&gt;ALTER USER&lt;/code&gt; statements.&lt;/p&gt;
+&lt;p&gt;We then start to fix accounts.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Welcome to the MySQL monitor.  Commands end with ; or \g.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Your MySQL connection id is 7
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Server version: 8.4.1 MySQL Community Server - GPL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; select user, host, plugin from mysql.user;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| user             | host      | plugin                |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | %         | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.infoschema | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.session    | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.sys        | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;5 rows in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; flush privileges;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query OK, 0 rows affected (0.02 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We need to fix &lt;code&gt;root@localhost&lt;/code&gt;, &lt;code&gt;root@%&lt;/code&gt;
+and for good measure also want to create another root account named &lt;code&gt;newroot@localhost&lt;/code&gt;,
+just to show how that can be done.&lt;/p&gt;
+&lt;h1 id=&#34;upgrading-the-existing-accounts-and-making-a-new-one&#34;&gt;
+    &lt;a href=&#34;#upgrading-the-existing-accounts-and-making-a-new-one&#34;&gt;
+	Upgrading the existing accounts and making a new one
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Using the
+&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.4/en/alter-user.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ALTER USER&lt;/a&gt;
+
+
+statement, we can modify existing accounts:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; alter user &amp;#34;root&amp;#34;@&amp;#34;localhost&amp;#34; identified with &amp;#34;caching_sha2_password&amp;#34; by &amp;#34;cookie&amp;#34;;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query OK, 0 rows affected (0.01 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; select user, host, plugin from mysql.user;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| user             | host      | plugin                |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | %         | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.infoschema | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.session    | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.sys        | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;5 rows in set (0.01 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note how in the 5th row it now says &amp;ldquo;caching_sha2_password&amp;rdquo;.
+We apply the same change to &lt;code&gt;root@%&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;Finally, we create a new user &amp;ldquo;newroot@localhost&amp;rdquo;, and make it another root user.
+We check the &lt;code&gt;mysql.user&lt;/code&gt; table to verify.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; alter user &amp;#34;root&amp;#34;@&amp;#34;%&amp;#34; identified with &amp;#34;caching_sha2_password&amp;#34; by &amp;#34;cookie&amp;#34;;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query OK, 0 rows affected (0.02 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; create user &amp;#34;newroot&amp;#34;@&amp;#34;localhost&amp;#34; identified with &amp;#34;caching_sha2_password&amp;#34; by &amp;#34;cookie&amp;#34;;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query OK, 0 rows affected (0.03 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; grant all on *.* to &amp;#34;newroot&amp;#34;@&amp;#34;localhost&amp;#34; with grant option;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Query OK, 0 rows affected, 1 warning (0.01 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; select user, host, plugin from mysql.user;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| user             | host      | plugin                |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | %         | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.infoschema | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.session    | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| mysql.sys        | localhost | mysql_native_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| newroot          | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root             | localhost | caching_sha2_password |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+------------------+-----------+-----------------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;6 rows in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Some things to note:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We did have to quote &lt;code&gt;&amp;quot;root&amp;quot;@&amp;quot;%&amp;quot;&lt;/code&gt;, because it contained special characters.
+We got away with not quoting &lt;code&gt;root@localhost&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;We did have to quote &lt;code&gt;&amp;quot;root&amp;quot;&lt;/code&gt; and &lt;code&gt;&amp;quot;%&amp;quot;&lt;/code&gt; separately.
+The &lt;code&gt;@&lt;/code&gt; is unquoted, it is a keyword, just as &lt;code&gt;ALTER&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;We create a new user &lt;code&gt;newroot@localhost&lt;/code&gt;.
+We then grant it the same privileges as &lt;code&gt;root&lt;/code&gt;.
+We include &lt;code&gt;WITH GRANT OPTION&lt;/code&gt;, so that &lt;code&gt;newroot&lt;/code&gt; can pass these privileges on to other users.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This is now complete.
+We can kill the server, and restart it with the original config by just leaving our overlay &lt;code&gt;my.cnf&lt;/code&gt; off.&lt;/p&gt;
+&lt;h1 id=&#34;validation&#34;&gt;
+    &lt;a href=&#34;#validation&#34;&gt;
+	Validation
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; ^DBye
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# kill 1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# root@server:~#
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker run -v/a/mysql:/var/lib/mysql --name mysqltest -e MYSQL_ROOT_PASSWORD=cookie --rm -p 3307:3306 -d mysql:8.4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;f4c58332e5875bbb5e3040ac084b7da5dedbaf58ca8a3f3e3674e24aa2067194
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# docker exec -ti mysqltest bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash-5.1# mysql -u root -pcookie mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Server version: 8.4.1 MySQL Community Server - GPL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; select current_user();
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| current_user() |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root@localhost |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1 row in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Note that we did start the server with &lt;code&gt;-p 3307:3306&lt;/code&gt;,
+making the containters mysql at &lt;code&gt;3306&lt;/code&gt; available on the host as port &lt;code&gt;3307&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;That means we can also try to use it from the host, using &lt;code&gt;root@%&lt;/code&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@server:~# mysql -h 127.0.0.1 --port 3307 -u root -pcookie mysql
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Server version: 8.4.1 MySQL Community Server - GPL
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;root@172.17.0.1 [mysql]&amp;gt; select current_user();
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| current_user() |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| root@%         |
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+----------------+
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1 row in set (0.00 sec)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;summary&#34;&gt;
+    &lt;a href=&#34;#summary&#34;&gt;
+	Summary
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We created a MySQL 5.7 in docker, and ran it with a persistent external volume.
+We performed a series of upgrades to 8.0 and 8.4,
+until we ran into a situation where the &lt;code&gt;mysql_native_password&lt;/code&gt; authenticaiton method no longer was recognized.&lt;/p&gt;
+&lt;p&gt;We then crafted a recovery &lt;code&gt;my.cnf&lt;/code&gt; file with a &lt;code&gt;skip_grant_tables&lt;/code&gt; config, mapped that into the container, and performed a recovery.&lt;/p&gt;
+&lt;p&gt;We have demonstrated the &lt;code&gt;ALTER USER&lt;/code&gt; statements to upgrade the authentication method to &lt;code&gt;caching_sha2_password&lt;/code&gt;.
+We have also demonstrated how to create more users with a complete set of privileges.&lt;/p&gt;
+&lt;p&gt;We have demonstrated that the container is now reacable as root,
+from inside the container and with an experted port from the outside.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: Add missing IDs</title>
       <link>https://blog.koehntopp.info/2024/06/12/mysql-add-missing-ids.html</link>
@@ -3770,144 +4103,6 @@ To properly estimate the impact, multiply the effect by 3-4, and then by the num
 &lt;/h1&gt;
 &lt;p&gt;From the database point of view, this is as good as it gets.
 The database is not currently a stability item or scalability limit, the current config could even be scaled back to a cheap standard Blade.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Straight lines</title>
-      <link>https://blog.koehntopp.info/2022/09/08/mysql-straight-lines.html</link>
-      <pubDate>Thu, 08 Sep 2022 12:13:00 +0000</pubDate>
-      
-      <guid>https://blog.koehntopp.info/2022/09/08/mysql-straight-lines.html</guid>
-      <description>&lt;p&gt;A database is showing replication delay, and so are all the other instances of the same replication hierarchy, all of which reside in Openstack.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-01.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Shortly before 21:30 the database begins to lag, until around 23:45, when it starts to catch up, slowly. After 00:30, we gain delay again, plateau and then around 01:45, we catch up.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The database is moving deep into replication delay sometimes.
-It does not do that on bare metal.&lt;/p&gt;
-&lt;h1 id=&#34;ground-truth&#34;&gt;
-    &lt;a href=&#34;#ground-truth&#34;&gt;
-	Ground Truth
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The VM is a nice hardware blade simulation, 16C/32T, 128 GB of memory.&lt;/p&gt;
-&lt;p&gt;The data is on persistent volume backed by Ceph.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; df -Th /mysql/&amp;lt;hierarchyname&amp;gt;/
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Filesystem                Type  Size  Used Avail Use% Mounted on
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;/dev/mapper/vg00-mysqlVol xfs   1.8T  1.1T  766G  58% /mysql/&amp;lt;hierarchyname&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; vgs
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  VG    #PV #LV #SN Attr   VSize VFree
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;  sysvm   1   8   0 wz--n- 1.75t 121.27g
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; du -sh /mysql/&amp;lt;hierarchyname&amp;gt;/*
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;0       /mysql/&amp;lt;hierarchyname&amp;gt;/coredumps
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;1017G   /mysql/&amp;lt;hierarchyname&amp;gt;/data
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;24G     /mysql/&amp;lt;hierarchyname&amp;gt;/log
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;0       /mysql/&amp;lt;hierarchyname&amp;gt;/tmp
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This database does not fit into the buffer pools:
-The working set is too large.
-We see read traffic in a warmed up database, at a rate of several dozen MB/s.&lt;/p&gt;
-&lt;p&gt;Checking in on &lt;code&gt;information_schema.tables&lt;/code&gt;, the two largest tables of this database are around 200 GB in size, each.
-They seem to be accessed in full, there is little or no exploitable locality of reference.
-So in order to quench these reads, we would need to supply three times the memory, 384 GB.
-Since we can&amp;rsquo;t, we need to handle the I/O instead.&lt;/p&gt;
-&lt;p&gt;Let&amp;rsquo;s have a look at the I/O:
-When you run iostat, use &lt;code&gt;iostat -x -k 10&lt;/code&gt;, and discard the first output.
-It contains the data collected since system boot, a very large average interval.
-We want a clean 10s sample instead.&lt;/p&gt;
-&lt;p&gt;The paste:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Device            r/s     w/s     rMB/s     wMB/s   rrqm/s   wrqm/s  %rrqm  %wrqm r_await w_await aqu-sz rareq-sz wareq-sz  svctm  %util
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sdc           4302.00  348.00     67.22      1.22     0.00     0.00   0.00   0.00    1.24    1.91   6.00    16.00     3.58   0.21  99.70
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sdb              0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;sda              0.00    4.00      0.00      0.02     0.00     0.00   0.00   0.00    0.00    2.50   0.01     0.00     4.00   2.75   1.10
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;loop0            0.00    0.00      0.00      0.00     0.00     0.00   0.00   0.00    0.00    0.00   0.00     0.00     0.00   0.00   0.00
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;dm-0          4304.00  347.00     67.25      1.21     0.00     0.00   0.00   0.00    1.24    1.93   6.02    16.00     3.58   0.21  99.70
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see the busy drive being sdc, the persistent volume.
-We see increased service times (&lt;code&gt;r_await&lt;/code&gt;, unit ms), and queues (&lt;code&gt;aqu-sz&lt;/code&gt;, unit is &amp;ldquo;average number of requests in  queue, during the observation interval&amp;rdquo;, which is 10s).&lt;/p&gt;
-&lt;p&gt;We also see around 4300 read requests/s and 67 MB/s read traffic.&lt;/p&gt;
-&lt;h1 id=&#34;i-know-that-smell&#34;&gt;
-    &lt;a href=&#34;#i-know-that-smell&#34;&gt;
-	I know that smell
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Some previous experience in other projects suggests that a crucial piece of information may be missing.
-This replication chain is no longer on bare metal, but is running on Openstack.
-All traffic to disk in Openstack is quota-ed.&lt;/p&gt;
-&lt;p&gt;Any I/O problem on Openstack is undebuggable, unless you know the Quota affecting you.
-Indeed:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt; openstack volume qos show &amp;lt;uuid&amp;gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| Field        | Value                                              |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| associations | standard-iops                                      |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| consumer     | front-end                                          |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| id           | &amp;lt;uuid&amp;gt;                                             |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| name         | 200MB/s-3000iops                                   |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| properties   | total_bytes_sec=&amp;#39;209715200&amp;#39;, total_iops_sec=&amp;#39;3000&amp;#39; |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;+--------------+----------------------------------------------------+
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We have an allowance for a maximum of 200 MB/s and a maximum of 3000 IOPS.
-Measured in the system we see an ok bandwidth of 67 MB/s, but the IOPS hit the roof.&lt;/p&gt;
-&lt;p&gt;When we zoom in on a phase of replication delay in the Single Instance Info Panel of our grafana, we get to the bottom of that straight away.&lt;/p&gt;
-&lt;p&gt;Replication delay interval:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-01.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;At the same time:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-02.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;When we have replication delay, we see a straight line in the sum of dm-reads for 70-ish MB/s.
-This is well below quota.&lt;/p&gt;
-&lt;p&gt;Looking at the IOPS:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-03.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;This is the sum of all dm-Reads, and we only are interested in the reads for our device.
-But we do see a straight line, and that suggests some kind of limit or resource exhaustion.
-Also, the line is at around 4000 read/s versus a Quota of 3000 IOPS.
-Together that suggest we run into resource depletion in the IOPS dept here.&lt;/p&gt;
-&lt;p&gt;Is that bad?&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/straight-04.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The observed statement latency for the production user goes up from a minimum 348 ms to a max of 37100 ms (37.1s).
-That is approximately 100x worse than normal.&lt;/p&gt;
-&lt;p&gt;The observed statement latency is also jumping rapidly up and down.
-System performance is not only bad, but also wildly unpredictable, with high frequency swings across a wide corridor.&lt;/p&gt;
-&lt;p&gt;This is often indicative of a token bucket quota mechanism getting into resonance with the evaluation cycle of the token bucket itself:&lt;/p&gt;
-&lt;p&gt;Load is running away and then then Quota eval check cycle comes and bites down hard on the system over quota, essentially halting it.
-The system stops, because a database without I/O is doing nothing.
-It then accumulates new performance tokens in the token bucket, and in the next cycle executes, immediately draining the token pool and running over Quota.
-Then the cycle repeats.&lt;/p&gt;
-&lt;p&gt;Maybe it is less noisy if the quota is applied with &lt;code&gt;consumer=backend&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;All expectations the user may have on performance are broken and the system may as well be offline.
-Also, the variance in performance may create input signal spikes on dependent systems, affecting their performance if there is resonance.&lt;/p&gt;
-&lt;p&gt;Without being aware of Quota limits and checking for them this is nearly undebuggable, and sometimes you may be looking at secondary effects downstream of the affected system.
-With proper metrics and knowledge of the Quota it is plain obvious.&lt;/p&gt;
-&lt;h1 id=&#34;be-wary-of-straight-lines-in-performance-graphs&#34;&gt;
-    &lt;a href=&#34;#be-wary-of-straight-lines-in-performance-graphs&#34;&gt;
-	Be wary of straight lines in performance graphs
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Load is spiky, straight lines do not exist&lt;/p&gt;
-&lt;p&gt;This is a general truth for our systems:
-In general our load is spiky.
-It has peaks and valleys, and there are no plateaus or straight lines (outside of Kafka and other Queues and the systems fed by them).&lt;/p&gt;
-&lt;p&gt;That is, if you see a straight line, I see a resource being exhausted and limiting system performance.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;In this case, the exhausted resource is IOPS quota.&lt;/p&gt;
-&lt;p&gt;In other cases in the past, a straight line in dirty buffer pool pages graph was signaling exhaustion of the redo log space, or similar performance choke points.&lt;/p&gt;
 </description>
     </item>
     
