@@ -12,7 +12,7 @@ title: What are the problems with POSIX?
 ---
 Every once in a while there is the IT news article that kind of triggers me. This time it was ["Object-Storage-Protokoll könnte Posix ablösen"](https://www.golem.de/news/object-storage-object-storage-protokoll-koennte-posix-abloesen-2010-151294.html) in german computer news site [Golem](https://golem.de). The article speaks about mmap(), NVMEoF and object storage and how it could revolutionize or complete object storages, but does not link to an original article, names no persons and no paper. Also, what do these things - mmap, NVMEoF, object storage and Posix, even have in common? It is not explained anywhere in the article.
 
-In another article [But is it atomic?]({{< relref "/2018-11-29-but-is-it-atomic.md" >}}) we dive into the internals of the old UNIX V7 kernel, and how design decisions and technical realities from the late 1970ies became immortialized as technical requirements for filesystems in the Posix standard.
+In another article [But is it atomic?]({{< relref "2018-11-29-but-is-it-atomic.md" >}}) we dive into the internals of the old UNIX V7 kernel, and how design decisions and technical realities from the late 1970ies became immortialized as technical requirements for filesystems in the Posix standard.
 
 So Unix is historically grown, and a lot of things have changed since that time. The original file system (for Linux users: "mkfs -t minix" is the closest thing to that which you might have) is not even used any more anywhere in a modern system. But it is basically what Posix means when we speak about "Posix File System Semantics".
 

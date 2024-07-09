@@ -14,7 +14,7 @@ Specifically, I wanted to test how it could be used as a coding assistant, and w
 # Code Generation
 
 I have been using the
-[Labyrinths]({{< relref "/2021-01-10-labyrinths-in-python.md" >}})
+[Labyrinths]({{< relref "2021-01-10-labyrinths-in-python.md" >}})
 example as a base. My goal was to have ChatGPT write the 
 [Labyrinth](https://github.com/isotopp/labyrinths/blob/master/src/labyrinth.py)
 class for me.

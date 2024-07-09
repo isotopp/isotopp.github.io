@@ -16,7 +16,7 @@ title: 'Fertig gelesen: Alastair Reynolds: "Pushing Ice"'
 *Pushing Ice" ist der neuste Roman von Alastair Reynolds.*
 
 "Pushing Ice" beginnt ganz klein, nach den Maßstäben einer 
-[Alastair Reynolds]({{< relref "/2004-12-30-alastair-reynolds.md" >}}) 
+[Alastair Reynolds]({{< relref "2004-12-30-alastair-reynolds.md" >}}) 
 
 Der zehnte Mond von Saturn, 
 [Janus](http://en.wikipedia.org/wiki/Janus_(moon)), 

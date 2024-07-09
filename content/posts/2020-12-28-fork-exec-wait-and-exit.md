@@ -10,7 +10,7 @@ tags:
 - lang_en
 title: fork, exec, wait and exit
 ---
-This is the [english version of a 2007 article]({{< relref "/2007-01-07-fork-exec-wait-und-exit.md" >}}).
+This is the [english version of a 2007 article]({{< relref "2007-01-07-fork-exec-wait-und-exit.md" >}}).
 
 In [de.comp.os.unix.linux.misc](news:de.comp.os.unix.linux.misc) somebody asked:
 > - Are commands in a script executed strictly sequentially, that is,
@@ -340,6 +340,6 @@ This text is based on [a USENET article](http://groups.google.com/group/de.comp.
 
 Also, check out the programming style of Mr. Bourne - this is C, even if it does not look like it.
 
-The [original 2007 blog article]({{< relref "/2007-01-07-fork-exec-wait-und-exit.md" >}}), has a followup article [on Windows CreateProcess()]({{< relref "/2007-01-07-fork-und-exec-vs-createprocess.md" >}}), which has not been translated.
+The [original 2007 blog article]({{< relref "2007-01-07-fork-exec-wait-und-exit.md" >}}), has a followup article [on Windows CreateProcess()]({{< relref "2007-01-07-fork-und-exec-vs-createprocess.md" >}}), which has not been translated.
 
 When implementing `fork()` in Windows as part of the WSL 1, Microsoft ran into a lot of problems with the syscall, and wrote an article about how they hate it, and why they think their `CreateProcessEx()` (in Unix: `spawn()`) would be better. The [PDF](https://www.microsoft.com/en-us/research/uploads/prod/2019/04/fork-hotos19.pdf) makes a number of good points, but is still wrong. :-)

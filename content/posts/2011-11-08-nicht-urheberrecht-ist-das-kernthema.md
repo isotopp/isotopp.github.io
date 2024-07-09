@@ -45,7 +45,7 @@ ich habe den Artikel auf Google Plus weiter geshared, um noch ein paar
 relevante Personen mehr darauf aufmerksam zu machen, und so hat sich mit 81
 Kommentaren dort auch ein sehr spannender Diskussionsfaden entwickelt. Er
 selbst verweist auf meinen Artikel 
-[Falscher Planet, falsches Jahrtausend]({{< relref "/2009-06-23-falscher-planet-falsches-jahrtausend.md" >}}),
+[Falscher Planet, falsches Jahrtausend]({{< relref "2009-06-23-falscher-planet-falsches-jahrtausend.md" >}}),
 und zitiert 
 
 > Das Wesen aller IT ist die Kopie. [..]
@@ -101,10 +101,10 @@ etwas weiter aus (redaktionell überarbeitet):
 > [Kindle Direct Publishing](http://kdp.amazon.com/), 
 > und zu den typischen Kindle-Only Preisen von $0.99, $1.99 oder $3.99
 > bekommt man eine Menge Zeugs, von dem nicht mal die Hälfte schlecht ist.
-> [Out of the Black]({{< relref "/2011-05-08-fertig-gelesen-out-of-the-black.md" >}})
+> [Out of the Black]({{< relref "2011-05-08-fertig-gelesen-out-of-the-black.md" >}})
 > zum Beispiel waren gut angelegte drei Dollar für eine Art
 > World-of-Darkness Story, und 
-> [The Rho Agenda: The Second Ship und Immune]({{< relref "/2011-05-08-fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.md" >}})
+> [The Rho Agenda: The Second Ship und Immune]({{< relref "2011-05-08-fertig-gelesen-the-rho-agenda-the-second-ship-und-immune.md" >}})
 > war feine Scifi Jugendliteratur, zwei Bücher für ca. vier Dollar.
 >
 > Ob mit oder ohne Urheberrecht - das alleine ist genug, um die Luft aus den
@@ -148,7 +148,7 @@ etwas weiter aus (redaktionell überarbeitet):
 > Schund-Spezialisten aus dem Neuerscheinungsregal einen Arm voll
 > Scifi/Fantasy im Monat. Stattdessen geht das Geld andere Wege - aber es
 > ist nicht weniger, deucht mich: 
-> [Anonyme Amazoniker]({{< relref "/2011-06-20-anonyme-amazoniker.md" >}})
+> [Anonyme Amazoniker]({{< relref "2011-06-20-anonyme-amazoniker.md" >}})
 > zeigt das recht deutlich.
 >
 > <em>Um das Urheber-**Recht** würde ich mich dabei an Deiner Stelle wenig
@@ -177,12 +177,12 @@ weiteres kostenfrei publizieren können.
 
 In einem weiteren Kommentar habe ich dazu Beispiele gebracht: 
 
-> [Kostenloskultur]({{< relref "/2010-06-30-kostenloskultur.md" >}}):
+> [Kostenloskultur]({{< relref "2010-06-30-kostenloskultur.md" >}}):
 > Autoren von Lehrmaterial treten gegen Sal Khan an, der auf Youtube
 > unglaubliche Mengen unglaublich guter Lehrvideos zu den wildesten Themen
 > einstellt - und diesen Autoren vielfach die Geschäftsgrundlage entzieht.
 >
-> [Poltik, Polemik und eine Agenda]({{< relref "/2009-04-27-politik-polemik-und-eine-agenda.md" >}}): 
+> [Poltik, Polemik und eine Agenda]({{< relref "2009-04-27-politik-polemik-und-eine-agenda.md" >}}): 
 > Ich hatte eine spannende Unterhaltung mit der Katze und Dirk Remmecke über
 > Anime und Anime Fansubs - gute Fansubs machen Anime-Vertrieben zu
 > schaffen. Ein Problem dabei: Die Geschwindigkeit von Aktionen wie Harry
@@ -237,7 +237,7 @@ In einem weiteren Kommentar habe ich dazu Beispiele gebracht:
 > Aber inzwischen ist es so,
 > daß ich persönlich meine Artikel lieber kostenlos ins Blog stelle als etwa
 > einem Verlag zu verkaufen: 
-> [Warum alle meine Texte frei im Netz zu lesen sind]({{< relref "/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md" >}}).
+> [Warum alle meine Texte frei im Netz zu lesen sind]({{< relref "2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md" >}}).
 > 
 > Der Return für mich ist besser, wen der Artikel dauernd frei im Netz steht
 > als wenn mir ein Verlag was dafür bezahlt, UND ich habe keinen Nerv mit

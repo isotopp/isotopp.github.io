@@ -13,7 +13,7 @@ tags:
 title: An abundance of IOPS and Zero Jitter
 ---
 Two weeks ago, I wrote about 
-[The Data Center in the Age of Abundance]({{< relref "/2017-07-07-the-data-center-in-the-age-of-abundance.md" >}})
+[The Data Center in the Age of Abundance]({{< relref "2017-07-07-the-data-center-in-the-age-of-abundance.md" >}})
 and claimed that IOPS are - among other things - a solved problem. 
 
 What does a solved problem look like?

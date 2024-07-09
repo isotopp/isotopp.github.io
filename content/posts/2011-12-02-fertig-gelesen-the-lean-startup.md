@@ -50,7 +50,7 @@ nicht funktioniert haben. Fehler sind um so leichter, schneller und billiger
 zu korrigieren, je früher die Phase der Produktentwicklung ist, in der sie
 erkannt werden. In unsicheren oder unreifen Märkten ist es daher wichtig,
 als _Erstes_ mit dem Kunden zusammen das Produkt zu testen und es
-dann erst mit traditionellen Methoden fertig zu stellen ([Testing in Production]({{< relref "/2011-12-02-testing-in-production.md" >}})
+dann erst mit traditionellen Methoden fertig zu stellen ([Testing in Production]({{< relref "2011-12-02-testing-in-production.md" >}})
 kann dabei helfen). So kann man sicherstellen, daß die
 begrenzten Engineering-Kapazitäten des Startups nur auf
 Produktiveränderungen angewendet werden von denen schon bewiesen ist, daß

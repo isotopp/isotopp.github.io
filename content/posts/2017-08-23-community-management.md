@@ -40,7 +40,7 @@ de.comp.lang.php. As the name suggests, it was a german language newsgroup
 about the PHP programming language. It wasn't the first communication
 project I started, and I also had been online and in USENET quite some time,
 and so I did it with an agenda and a plan
-([longer article]({{< relref "/2008-07-23-inhaltliche-und-kulturelle-steuerung-von-foren.md" >}}))
+([longer article]({{< relref "2008-07-23-inhaltliche-und-kulturelle-steuerung-von-foren.md" >}}))
 with German introduction and english language content about this). 
 
 At that point in time the German Linux newsgroups (and the German Firewall

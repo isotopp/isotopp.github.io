@@ -37,7 +37,7 @@ den
 (in der 1980er Ausgabe) gezogen habe und noch ohne eigenen Computer oder
 Zugang zu einem mit Papier und Bleistift Programme schreiben und ausführen
 gelernt habe.  Ganz wie Buddy in 
-[Whatever happened to the world of tomorrow]({{< relref "/2012-08-29-fertig-gelesen-whatever-happened-to-the-world-of-tomorrow.md" >}})
+[Whatever happened to the world of tomorrow]({{< relref "2012-08-29-fertig-gelesen-whatever-happened-to-the-world-of-tomorrow.md" >}})
 seinem Vater aufgeregt Orbits von Raketen vorgerechnet hat, habe ich meinem
 Vater versucht, Programmierung von Rechnern vorzuführen…
 

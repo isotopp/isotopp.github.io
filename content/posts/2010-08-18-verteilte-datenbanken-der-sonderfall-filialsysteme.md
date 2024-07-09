@@ -9,7 +9,7 @@ tags:
 - lang_de
 title: 'Verteilte Datenbanken: Der Sonderfall Filialsysteme'
 ---
-In einem Kommentar zu [Master-Master]({{< relref "/2010-08-16-master-master-und-distributed-transactions.md" >}}) schrieb
+In einem Kommentar zu [Master-Master]({{< relref "2010-08-16-master-master-und-distributed-transactions.md" >}}) schrieb
 ich:
 
 > Für den von Dir genannten Sonderfall der Filialsysteme habe ich noch einen

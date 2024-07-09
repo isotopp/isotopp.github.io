@@ -13,7 +13,7 @@ tags:
 ---
 
 This text also has a version in 
-[english language]({{< relref "/2024-02-10-snake-oil.md" >}}).
+[english language]({{< relref "2024-02-10-snake-oil.md" >}}).
 
 Diese Woche war "Kaputte Security Software Werbewoche".
 
@@ -129,9 +129,9 @@ sondern Hersteller von Security Software setzen fröhlich auf
 "Security-Relevante Software mit Privilegien, und Programmiermethoden aus den 90er Jahren des letzten Jahrtausends".
 
 Beispiele aus diesem Blog:
-- [ASLR]({{< relref "/2017-10-20-aslr.md" >}}): MacOS Trend Micro Binary mit ohne ASLR, jeder Exploit 
+- [ASLR]({{< relref "2017-10-20-aslr.md" >}}): MacOS Trend Micro Binary mit ohne ASLR, jeder Exploit 
   (ja, es gibt welche) ist automatisch stabil über die ganze Flotte.
-- [Websense DLP gives instant root]({{< relref "/2018-06-18-websense-dlp-gives-instant-root.md" >}}):
+- [Websense DLP gives instant root]({{< relref "2018-06-18-websense-dlp-gives-instant-root.md" >}}):
   WebSense DLP veraltete Softwareversionen und exploitbares Kernelmodul, vermutlich fehlende QA und defekter Shipping Prozess.
 
 Das ist bei Endpoint Security so verbreitet, daß zum Beispiel 
@@ -249,7 +249,7 @@ Das kann man auch mit "Besserung ist nicht erkennbar" zusammenfassen.
 
 "Security ist ein Prozess" heißt es.
 Für Business Continuity Management habe ich einmal aufgeschrieben, was das bedeutet:
-[This is not a Drill. This is just Tuesday]({{< relref "/2023-02-18-this-is-not-a-drill.md" >}}).
+[This is not a Drill. This is just Tuesday]({{< relref "2023-02-18-this-is-not-a-drill.md" >}}).
 
 Analoge Überlegungen kann man auch für sichere Software-Entwicklungsprozesse anstellen,
 und es gibt sogar fertige Prozess-Blueprints dafür.

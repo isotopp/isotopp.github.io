@@ -14,7 +14,7 @@ Google teilt mit, daß sie nun
 
 Das ist sicher nur vorübergehend, ich bin sicher, daß die nächsten Versionen von Google Toolbar und Chrome dem Benutzer auch anbieten werden, die Änderung an seiner Stelle zu machen und zu kontrollieren, daß diese Einstellungen so bleiben. Ich bin mir auch sicher, daß Google Wege finden wird, die Kommunikation zwischen dem Rechner des Anwenders und Google so abzusichern, daß es nicht mehr möglich sein wird, DNS-Queries zwischen dem Client Rechner und Google durch einen transparenten DNS-Proxy abzufangen und auf die providereigenen DNS-Server zu fälschen - ich rechne da mit einer stufenweisen Eskalation zwischen lokalen Providern und Google, die am Ende auf einen weiteren Aspekt der Netzneutralitätsdebatte hinausläuft.
 
-Mit dem Google DNS tut Google einen weiteren wichtigen Schritt, um sich von [anderer Leute Infrastruktur unabhängig zu machen]({{< relref "/2009-11-07-das-google-missverstaendnis.md" >}}), und er ist damit voll konsistent mit der beobachteten Google-Strategie.
+Mit dem Google DNS tut Google einen weiteren wichtigen Schritt, um sich von [anderer Leute Infrastruktur unabhängig zu machen]({{< relref "2009-11-07-das-google-missverstaendnis.md" >}}), und er ist damit voll konsistent mit der beobachteten Google-Strategie.
 
 Die Aufgabe des Google DNS-Dienstes ist nach Aussage von Google ein Experiment in Performance-Verbesserung. Google will mit ihrem DNS-Server Muster in DNS-Anfragen erkennen und durch geeignetes Clustering und Prefetchen die Antwortzeiten verbessern. Dadurch soll der Aufbau von Webseiten schneller werden.
 

@@ -21,7 +21,7 @@ Going for a written culture helps, going for storytelling will help even more.
 # Storytelling
 
 Almost 15 years ago, I wrote about an experience with the roleplaying game *Primetime Adventures*.
-If you are reading German, [check it out]({{< relref "/2008-10-05-drsrm-2008-primetime-adventures.md" >}}).
+If you are reading German, [check it out]({{< relref "2008-10-05-drsrm-2008-primetime-adventures.md" >}}).
 
 One of the things to take away from Primetime Adventures is that "on screen" nothing happens without reason, all interactions serve the story.
 And the story is always about conflict:

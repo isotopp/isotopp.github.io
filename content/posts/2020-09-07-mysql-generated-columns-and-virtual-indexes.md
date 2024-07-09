@@ -10,7 +10,7 @@ tags:
 - erklaerbaer
 title: 'MySQL: Generated Columns and virtual indexes'
 ---
-We have had a look at [how MySQL 8 handles JSON]({{< relref "/2020-09-04-mysql-json-data-type.md" >}}) recently, but with all those JSON functions and expressions it is clear that many JSON accesses cannot be fast. To grab data from a JSON column, you will use a lot of `$->>field` expressions and similar, and without indexes nothing of this will be fast.
+We have had a look at [how MySQL 8 handles JSON]({{< relref "2020-09-04-mysql-json-data-type.md" >}}) recently, but with all those JSON functions and expressions it is clear that many JSON accesses cannot be fast. To grab data from a JSON column, you will use a lot of `$->>field` expressions and similar, and without indexes nothing of this will be fast.
 
 JSON cannot be indexed.
 

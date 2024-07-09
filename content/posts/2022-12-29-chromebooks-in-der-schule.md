@@ -11,9 +11,9 @@ tags:
 ---
 
 In
-[Mein Sohn sitzt vor dem Computer]({{< relref "/2020-01-28-mein-sohn-sitzt-vor-dem-computer.md" >}})
+[Mein Sohn sitzt vor dem Computer]({{< relref "2020-01-28-mein-sohn-sitzt-vor-dem-computer.md" >}})
 und in
-[Schulen digitalisieren]({{< relref "/2020-06-23-schulen-digitalisieren.md" >}})
+[Schulen digitalisieren]({{< relref "2020-06-23-schulen-digitalisieren.md" >}})
 ging es schon einmal um den Einsatz von Computern in der Schule, in Deutschland und in den Niederlanden.
 
 # VWO
@@ -84,7 +84,7 @@ IAM steht dabei für "Identitäts- und Access-Management".
 
 Das ist die Struktur, die der Schule "Logindienste" und "Rechteverwaltung" bereitstellt.
 In
-[Identität, Authentisierung, Autorisierung, Auditing und Accounting]({{< relref "/2021-11-16-a01-2021-broken-access-control.md" >}})
+[Identität, Authentisierung, Autorisierung, Auditing und Accounting]({{< relref "2021-11-16-a01-2021-broken-access-control.md" >}})
 definiere ich eben diese Begriffe.
 Die Kurzform:
 

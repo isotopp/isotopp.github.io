@@ -74,12 +74,12 @@ und weiter
 > LSR?
 
 Siehe auch die Gedanken in 
-[Kostenloskultur]({{< relref "/2010-06-30-kostenloskultur.md" >}})
+[Kostenloskultur]({{< relref "2010-06-30-kostenloskultur.md" >}})
 und ähnliche Überlegungen damals zum 
-[JMStV]({{< relref "/2010-01-26-ab-18.md" >}}).  Es ist
+[JMStV]({{< relref "2010-01-26-ab-18.md" >}}).  Es ist
 ein wesentliches Merkmal des Internet, daß es Interaktion und Kooperation zu
 minimalen Transaktionskosten zuläßt - Leute können Dinge im Vorübergehen
 verbessern und zu einer Verbesserung der Welt beitragen.  Dies ist 
-[die Quelle für alle disruptiven Eigenschaften des Internet]({{< relref "/2009-07-01-dir-fehlen-die-worte-oder-die-position-der-piratenpartei-zum-urheberrecht-in-einer-flatrategesellschaft.md" >}}) - 
+[die Quelle für alle disruptiven Eigenschaften des Internet]({{< relref "2009-07-01-dir-fehlen-die-worte-oder-die-position-der-piratenpartei-zum-urheberrecht-in-einer-flatrategesellschaft.md" >}}) - 
 und daher werden wir auch immer wieder Angriffe auf diese Eigenschaft sehen.  
 Das LSR ist nur ein weiterer Versuch, kostenlos teurer zu machen.

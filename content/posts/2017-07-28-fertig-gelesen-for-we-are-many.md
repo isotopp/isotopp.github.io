@@ -21,7 +21,7 @@ strange new worlds, going where nothing has gone before and make
 more of himself. 
 
 You can read more of his Genesis in
-[We Are Legion]({{< relref "/2017-03-02-fertig-gelesen-we-are-legion-we-are-bob.md" >}})
+[We Are Legion]({{< relref "2017-03-02-fertig-gelesen-we-are-legion-we-are-bob.md" >}})
 Part 1 of the 
 [Bobiverse series](https://www.amazon.de/gp/product/B073DCB98Y/ref=series_rw_dp_sw).
 

@@ -13,7 +13,7 @@ tags:
 title: CSO vs. Sony
 ---
 Update zu 
-[Nützliche Kombinationen]({{< relref "/2005-11-04-nuetzliche-kombinationen.md" >}}):
+[Nützliche Kombinationen]({{< relref "2005-11-04-nuetzliche-kombinationen.md" >}}):
 
 Als Chief Security Officer ist man natürlich verantwortlich dafür
 festzulegen, welche Software auf den Rechnern einer Firma installiert werden

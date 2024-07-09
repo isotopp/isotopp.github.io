@@ -70,7 +70,7 @@ write latency usually amounts to "how long to I have to wait for a reasonably si
 
 To better understand database write latency, we need to understand database writes.
 The long version of that is in explained in
-[MySQL Transactions - the physical side]({{< relref "/2020-07-27-mysql-transactions.md" >}}).
+[MySQL Transactions - the physical side]({{< relref "2020-07-27-mysql-transactions.md" >}}).
 
 The short version is that MySQL prepares a transaction in memory in the log buffer,
 and on commit writes the log buffer to the redo log.
@@ -121,7 +121,7 @@ and I just included them to show what they would look like.
 
 For reference, a local NVME disk should give you <100 µs for the good writes,  
 and present a cutoff at the 99.90th percentile
-([data from 2019]({{< relref "/2019-06-13-adventures-in-storageland.md#some-nvme" >}})).
+([data from 2019]({{< relref "2019-06-13-adventures-in-storageland.md#some-nvme" >}})).
 
 A good disk-based NetApp filer connected with FC/AL, as sold in 2012,
 would present itself at ~500 µs write latency,
@@ -164,7 +164,7 @@ and the set of primary keys that are written to (and hence get X-locked) is the 
 Two transactions are potentially parallel-executable when the intersection of their write-set is empty,
 that is, when they write to row sets that are non-overlapping.
 Most execution models for MySQL (expecially regarding 
-[parallel replication]({{< relref "/2021-11-08-mysql-parallel-replication.md" >}})) 
+[parallel replication]({{< relref "2021-11-08-mysql-parallel-replication.md" >}})) 
 will try to execute transactions in parallel until they find an overlap.
 Then they will block until all transactions are done, and start the next batch of parallel transactions.
 This is not optimal, but simple, and prevents re-ordering of transactions in a way that is easy for developers to understand.

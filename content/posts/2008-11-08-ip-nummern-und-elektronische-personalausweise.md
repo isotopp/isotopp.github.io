@@ -14,7 +14,7 @@ title: IP-Nummern und elektronische Personalausweise
 
 Ich hatte es ja schon mal angesprochen:
 
-[IP-Nummern sind wichtig]({{< relref "/2005-05-23-identifizierung-durch-ip.md" >}})
+[IP-Nummern sind wichtig]({{< relref "2005-05-23-identifizierung-durch-ip.md" >}})
 für Ermittler. Dabei galten in der Anfangszeit zwei Annahmen: 
 
 1. Eine Internet-Adresse kann einem Benutzer zugeordnet werden, jedenfalls

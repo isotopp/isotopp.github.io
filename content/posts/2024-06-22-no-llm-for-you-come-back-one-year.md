@@ -123,7 +123,7 @@ das die Parallelität von Grafikkarten korrekt veranschaulicht.*
 Die Mythbusters haben die Wirkmächtigkeit der parallelen Ausführung für ein Nvidia Werbevideo einmal korrekt visualisiert.
 
 Zur Geschichte und dem Aufbau von Grafikkarten habe ich vor sieben Jahren einen Link-Artikel geschrieben:
-[d = a*b+c at scale]({{< relref "/2017-11-25-d-abc-at-scale.md" >}}),
+[d = a*b+c at scale]({{< relref "2017-11-25-d-abc-at-scale.md" >}}),
 der die Entwicklung von Grafik-Hardware in den 20 Jahren vor 2017 beschreibt, 
 weil ich beruflich Anlass hatte, das herauszufinden. 
 Es ist ein Link-Artikel, ihr müßt die blauen Dinger auch anklicken.

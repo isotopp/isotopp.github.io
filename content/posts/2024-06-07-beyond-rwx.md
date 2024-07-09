@@ -12,9 +12,9 @@ tags:
 ---
 
 I wrote this article before, in 1996, in german:
-[rwx–sonst nix?]({{< relref "/1996-03-01-rwx-sonst-nix.md" >}}),
+[rwx–sonst nix?]({{< relref "1996-03-01-rwx-sonst-nix.md" >}}),
 and in 2005, in german:
-[User und Gruppen, Prozesse und Dateien]({{< relref "/2005-11-01-user-und-gruppen-prozesse-und-dateien.md" >}}).
+[User und Gruppen, Prozesse und Dateien]({{< relref "2005-11-01-user-und-gruppen-prozesse-und-dateien.md" >}}).
 This is not a translation because some things changed. 
 
 A file in Linux has three permissions, `rwx`,
@@ -39,7 +39,7 @@ a token that represents your identity in the system for permission management.
 
 This token is assigned to initially one single process that can perform actions on the system on your behalf.
 The process can also create more processes with 
-[fork and exec]({{< relref "/2020-12-28-fork-exec-wait-and-exit.md" >}}), which inherit the UID.
+[fork and exec]({{< relref "2020-12-28-fork-exec-wait-and-exit.md" >}}), which inherit the UID.
 
 So, strictly speaking, you do not open files.
 

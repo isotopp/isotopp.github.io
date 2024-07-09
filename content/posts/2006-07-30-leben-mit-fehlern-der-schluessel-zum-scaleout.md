@@ -15,9 +15,9 @@ title: Leben mit Fehlern - der Schlüssel zum Scaleout
 Scaling Patterns
 
 In 2004 habe ich auf dem Linuxtag einen kleinen Vortrag zum Thema 
-[Skalierbarkeit]({{< relref "/2004-06-23-von-10-hoch-3-nach-10-hoch-7.md" >}})
+[Skalierbarkeit]({{< relref "2004-06-23-von-10-hoch-3-nach-10-hoch-7.md" >}})
 gehalten. Schon damals war
-[die Message]({{< relref "/2004-06-23-von-10-hoch-3-nach-10-hoch-7.md#reaktionen-auf-wachstum" >}}) an
+[die Message]({{< relref "2004-06-23-von-10-hoch-3-nach-10-hoch-7.md#reaktionen-auf-wachstum" >}}) an
 verschiedenen Stellen im Vortrag "Jedes Readproblem ist ein Caching-Problem,
 jedes Schreibproblem ist ein Verteilungs- und Batchproblem":
 

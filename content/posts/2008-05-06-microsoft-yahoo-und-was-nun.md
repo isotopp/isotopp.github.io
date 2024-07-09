@@ -11,7 +11,7 @@ title: Microsoft, Yahoo! und was nun?
 ---
 Microsoft will Yahoo! kaufen, aber Yahoo! will nicht. 
 
-[Microsoft lernt, daß Yahoo! vielleicht gar keine so gute Idee ist]({{< relref "/2008-04-20-steve-ballmer-lernt-etwas.md" >}}).
+[Microsoft lernt, daß Yahoo! vielleicht gar keine so gute Idee ist]({{< relref "2008-04-20-steve-ballmer-lernt-etwas.md" >}}).
 
 Und außerdem zu teuer -
 [Microsoft geht weg](http://www.spiegel.de/wirtschaft/0,1518,551300,00.html).

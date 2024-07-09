@@ -33,7 +33,7 @@ Unheil anzurichten (Die Geschichte enthält einige Backreferenzen auf einen
 Virus erschaffen hat, der dann mal grad 1/4 der Weltbevölkerung ausgelöscht
 hat).  Arbiter des Spiels ist eine KI, plus einige selbstreferentielle
 Mechanismen, die die Arbeitsweise der KI verändern können - auf eine Weise
-kann man MetaGame auch als "[Daemon/Freedom]({{< relref "/2011-05-08-fertig-gelesen-daemon-freedom.md" >}})
+kann man MetaGame auch als "[Daemon/Freedom]({{< relref "2011-05-08-fertig-gelesen-daemon-freedom.md" >}})
 200 Jahre später" lesen und auffassen.
 
 In der Geschichte wird eine Gruppe aus wirtschaftlich Unabhängigen

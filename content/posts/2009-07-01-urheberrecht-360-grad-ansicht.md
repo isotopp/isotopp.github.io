@@ -20,11 +20,11 @@ Ein zentrales Argument: <em>Je interessanter, je wichtiger, je welterschütternd
 Netzwertig setzt mit einem zweiten Artikel zum Thema nach: Andreas Göldi erklärt in <a href='http://netzwertig.com/2009/06/10/medienrevolution-was-werden-die-newsmedien-der-zukunft-kosten/'>Was werden die Newsmedien der Zukunft kosten?</a> das ökonomische Modell, das hinter der aktuellen, durchaus instabilen Situation im Zeitungs- und Onlinezeitungsmarkt steht. Er macht auch klar, daß dieses Modell langfristig nicht tragfähig ist und daher absehbar zusammenbrechen muß: <blockquote>Das von Internet-Radikalisten oft gehörte Argument, dass Verlage niemals Geld für ihre Internet-Ausgaben verlangen sollten, ist also letzlich recht naiv: Die Rechnung geht nur auf, so lange es ein gesundes traditionelles (Print-)Geschäft gibt. Und ganz offensichtlich bröckelt das immer mehr.</blockquote> Abschließend resümiert er, daß die Welt nach dem Abschluß des durch das Internet bewirkten Strukturwandels wahrscheinlich stark bipolar sein wird: Auf der einen Seite gigantische Großanbieter, die Nachrichten und Artikel direkt an Endverbraucher verkaufen, auf der anderen Seite eine große Menge von <a href='http://de.wikipedia.org/wiki/Dilettant'>Dilettanten</a>, die ihr Zeugs wahrscheinlich meistenteils kostenfrei raushauen werden. Dazwischen wird es sehr eng werden.
 
 Einer dieser Dilettanten bin sicherlich ich selbst: Ich schrieb schon vor langer Zeit eine Erklärung zum Thema 
-[Warum alle meine Texte frei im Netz zu lesen sind]({{< relref "/2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md" >}}).
+[Warum alle meine Texte frei im Netz zu lesen sind]({{< relref "2007-03-18-warum-alle-meine-texte-frei-im-netz-zu-lesen-sind.md" >}}).
 Es ist ziemlich klar, daß es für mich als Dilettanten von größerem Wert ist, meine Texte im Netz frei verfügbar zu machen als sie gewinnmaximiert zu verkaufen.
 
 Die Idee dahinter war immer, daß Spieler im 
-[kooperativen Universum]({{< relref "/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}})
+[kooperativen Universum]({{< relref "2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}})
 mein Zeugs möglichst umstandsfrei Nutzen können und sich dadurch mein Karma vergrößert, während ich Spielern im kompetitiven Universum einen angemessenen Preis mache, jedoch nie exklusive oder sich selbst erweiternde Rechte vergebe. Als Dilettant, also jemand, der nicht von seinem Schreiben leben muß, kann ich mir das erlauben. Es ist ja nur ein optionales, wenn auch mitunter ansehnliches Zubrot.
 
 Die bipolare Welt dort oben wird sicher auch eine solche Trennlinie zwischen kompetitivem und kooperativem Universum enthalten, wobei unklar ist, wie stark sie erkennbar ist bzw. wie undurchlässig sie ist. Das hängt sicher auch davon ab, wie stark die kompetitive Welt ihre zahlenden Kunden zu kriminalisieren versucht bzw. wie aggressiv sie versucht, die kooperative Welt - zugleich zahlende Kunden - auszubeuten.
@@ -58,7 +58,7 @@ Es ist klar, daß das aktuelle Urheberrecht etwas fördert, das bei Harvard Busi
 Hätten wir ein Urheberrecht, das Urheber belohnte, wäre das Grey Album legal, denn es schafft etwas neues und produziert. Aber in unserer Zombie Economy haben wir ein Urheberrecht, das Distributoren und Rechteverwalter belohnt und das Statizität fördert. Hätten wir ein Urheberrecht, daß die Existenz der kooperativen Sphäre wahrnähme und ihr Raum einräumte, dann wäre ein Grey Album als kostenfreier Download gar kein Thema, sondern schlicht legal und guter Ton.
 
 Oder, wie 
-[Gwenn]({{< relref "/2009-06-23-falscher-planet-falsches-jahrtausend.md" >}}))
+[Gwenn]({{< relref "2009-06-23-falscher-planet-falsches-jahrtausend.md" >}}))
 es in einem Kommentar zu 'Falscher Planet, falsches Jahrtausend</a> notiert: <blockquote>Wenn das "Wesen" des Internets die Kopie ist, dann ist ein "Copyright", also das Recht auf die Kopie und die damit verbundene Einschränkung, immer zugleich ein Angriff auf das Wesen, und damit auf die gesamte Kultur.
 
 Man muss dann zwischen Kopie als Kulturbestandteil und Nutzung zur wirtschaftlichen Ausbeute (wirtschaftliche Nutzung) unterscheiden. Das heißt im Folgeschluss, dass der Besitz der Kopie sowie der Vorgang des Kopierens nicht Ausgangspunkt der Regulierung sein kann.

@@ -16,4 +16,4 @@ title: Cat5-o-Nine-Tails von uschebit
 
 ![](/uploads/cat5onine2.jpg)
 
-*Much more stylish than a [blunt clue bat]({{< relref "/2008-09-18-the-clue-bat.md" >}})*
+*Much more stylish than a [blunt clue bat]({{< relref "2008-09-18-the-clue-bat.md" >}})*

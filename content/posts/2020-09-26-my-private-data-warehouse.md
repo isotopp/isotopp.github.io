@@ -14,7 +14,7 @@ title: Importing account statements and building a data warehouse
 ---
 
 This is an update and translation of a
-[much older article]({{< relref "/2006-07-23-mein-privates-datawarehouse-sparen-mit-mysql.md" >}}),
+[much older article]({{< relref "2006-07-23-mein-privates-datawarehouse-sparen-mit-mysql.md" >}}),
 which I originally wrote in German.
 Back then, I was experimenting with importing account statements from my German Sparkasse,
 which were available as CSV files.
@@ -355,7 +355,7 @@ Even in larger data sets,
 encoding can be deferred until there's infrastructure for online schema changes and sufficient disk space.
 
 Even in the one-million-row example in
-[Coding fields for great profit]({{< relref "/2020-09-18-mysql-encoding-fields-for-great-profit.md" >}})
+[Coding fields for great profit]({{< relref "2020-09-18-mysql-encoding-fields-for-great-profit.md" >}})
 the gain is not critical,
 though substantial.
 A data warehouse starting out can often skip encoding the values and just take the hit from the duplication.
@@ -423,7 +423,7 @@ Managing this requires a deletion policy.
 Queries to the data warehouse are often time-bounded.
 
 Handling data at volume, and getting rid of data no longer needed, is much easier in MySQL
-[when using partitions]({{< relref "/2020-09-24-mysql-deleting-data.md" >}}).
+[when using partitions]({{< relref "2020-09-24-mysql-deleting-data.md" >}}).
 
 In data warehouses, partitions are usually on a time value as the first dimension.
 That is, we partition our data set by year, month or day, and we delete data by dropping old partitions.

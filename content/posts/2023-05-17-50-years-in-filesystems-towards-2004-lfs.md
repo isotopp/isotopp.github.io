@@ -11,10 +11,10 @@ tags:
 ---
 
 This is part 5 of a series.
-1. "[1974]({{< relref "/2023-05-05-50-years-in-filesystems-1974.md" >}})" on the traditional Unix Filesystem.
-2. "[1984]({{< relref "/2023-05-06-50-years-in-filesystems-1984.md" >}})" on the BSD Fast File System.
-3. "[1994]({{< relref "/2023-05-12-50-years-in-filesystems-1994.md" >}})" on SGI XFS.
-4. "[Vnodes]({{< relref "/2023-05-15-50-years-in-filesystems-vnodes.md" >}})" on how to have multiple filesystems in Unix. 
+1. "[1974]({{< relref "2023-05-05-50-years-in-filesystems-1974.md" >}})" on the traditional Unix Filesystem.
+2. "[1984]({{< relref "2023-05-06-50-years-in-filesystems-1984.md" >}})" on the BSD Fast File System.
+3. "[1994]({{< relref "2023-05-12-50-years-in-filesystems-1994.md" >}})" on SGI XFS.
+4. "[Vnodes]({{< relref "2023-05-15-50-years-in-filesystems-vnodes.md" >}})" on how to have multiple filesystems in Unix. 
 
 Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
 Often, it is easier to see by comparing modern educational material and the problems discussed with older material.

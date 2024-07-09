@@ -26,7 +26,7 @@ Trying to run `mysqldump -vvv ...` on the broken binlog fails and produces no ou
 
 # Using the flight recorder
 
-We do know the statement failed at 14:42 and we run a copy of [MySQL Flight Recorder]({{< relref "/2021-04-22-a-mysql-flight-recorder.md" >}}) on every box, even this one.
+We do know the statement failed at 14:42 and we run a copy of [MySQL Flight Recorder]({{< relref "2021-04-22-a-mysql-flight-recorder.md" >}}) on every box, even this one.
 
 Among the many things the flight recorder records is the processlist and also the output of `SHOW ENGINE INNODB STATUS`.
 Indeed we find a long running transaction.
@@ -69,7 +69,7 @@ They would break group replication, they would take ages to roll back, and they 
 
 So we learn:
 
-- Avoid large transactions. [1000 to 10.000 rows]({{< relref "/2020-07-27-mysql-commit-size-and-speed.md" >}}) are probably something you should aim for.
+- Avoid large transactions. [1000 to 10.000 rows]({{< relref "2020-07-27-mysql-commit-size-and-speed.md" >}}) are probably something you should aim for.
 - Configure [max_binlog_cache_size](https://dev.mysql.com/doc/refman/8.0/en/replication-options-binary-log.html#sysvar_max_binlog_cache_size) to under 1 GB. The server will then reject the large transaction instead of committing it to the binlog. This will prevent breaking the replication hierarchy.
   - Maybe similar or a small multiple of `max_allowed_packet`?
   - The default is wrong: `18446744073709547520`, and the manual itself recommends 4 GB, but the product does not set the default to this.

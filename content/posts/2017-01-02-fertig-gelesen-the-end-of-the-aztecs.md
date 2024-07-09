@@ -10,7 +10,7 @@ tags:
 - review
 title: 'Fertig gelesen: The End of The Aztecs'
 ---
-Ein Geschichtsbuch, das ich ursprünglich irrtümlich der Reihe "Turning Points in History" zugeordnet habe (siehe [1177BC]({{< relref "/2014-10-04-fertig-gelesen-1177-bc-the-year-civilization-collapsed.md" >}})). Weil es das nicht ist, fehlt die historische Einordnung und die Beschreibung der Bedeutung der Ereignisse im geschichtlichen Umfeld.
+Ein Geschichtsbuch, das ich ursprünglich irrtümlich der Reihe "Turning Points in History" zugeordnet habe (siehe [1177BC]({{< relref "2014-10-04-fertig-gelesen-1177-bc-the-year-civilization-collapsed.md" >}})). Weil es das nicht ist, fehlt die historische Einordnung und die Beschreibung der Bedeutung der Ereignisse im geschichtlichen Umfeld.
 
 Dennoch ist das Buch eine unterhaltsame Beschreibung eines Raub- und Eroberungsfeldzuges, der am Ende zu einem Genozid wurde - ja, das klingt so kraß wie es erzählt wird.
 

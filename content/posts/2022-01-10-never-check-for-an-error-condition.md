@@ -10,7 +10,7 @@ tags:
 title: "Never check for an error condition you don't know how to handle"
 ---
 
-This is the english version of an [older text in German]({{< relref "/2009-08-21-was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.md" >}})
+This is the english version of an [older text in German]({{< relref "2009-08-21-was-bedeutet-eigentlich-never-check-for-an-error-condition-you-don-t-know-how-to-handle.md" >}})
 
 Computer scientists are weird.
 In their science there are a few rules that sound wrong when you hear them first, but make a lot of sense if you think about them.

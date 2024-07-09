@@ -52,7 +52,7 @@ Eine andere Sache, die man sich frühzeitig bewußt machen muß ist die Überleg
 Datenbanken, die überwiegend Reads sehen und wenig Schreiboperationen haben sind sehr leicht zu skalieren: Wir ersticken das Problem nach Möglichkeit erst einmal mit Speicher und wenn das nicht mehr reicht, setzen wir eine ausreichende Anzahl von Replication-Slaves auf. Die Reads verteilen wir dann gleichmäßig über die Slaves. Das können wir je nach Problemgröße leicht bis auf 1000 Slaves pro Master ausdehnen, wenn wir wollen.
 
 Writes dagegen sind sehr viel unhandlicher. Wir können Schreibzugriffe zwar Delayen, Batchen und Sortieren, aber am Ende muß der Write auf irgendein persistentes Medium. Wenn wir mehr Schreibzugriffe haben als eine Platte wegstecken kann, dann müssen wir ein Array hinstellen. Wenn wir mehr Schreibzugriffe haben als man sinnvoll über ein Array verteilen kann, dann müssen wir die Datenbank partitionieren mit all den unangenehmen Designentscheidungen, die mit solchen 
-[verteilten, lose gekoppelten Systemen]({{< relref "/2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}) einher gehen.
+[verteilten, lose gekoppelten Systemen]({{< relref "2006-07-30-leben-mit-fehlern-der-schluessel-zum-scaleout.md" >}}) einher gehen.
 
 ### Folgerung 3: Locality erzeugen um Schreibzugriffe zu minimieren
 

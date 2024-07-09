@@ -33,10 +33,10 @@ einmal offline nehmen, als das herauskam).
 Caspars Kritik an Google Analytics zog sich unter anderem daran hoch, daß
 die Verarbeitung der Daten durch Google außerhalb von Deutschland oder
 Europa erfolgte. Wie schon in dem Artikel über die 
-[IVW Zählpixel]({{< relref "/2011-08-10-ivw-jetzt-datenschutzkonform-updated.md" >}})
+[IVW Zählpixel]({{< relref "2011-08-10-ivw-jetzt-datenschutzkonform-updated.md" >}})
 erwähnt, versteifen sich die Datenschützer außerdem auf die IP-Adresse als
 personenbezogenes Datum (der Artikel und 
-[C is for Cookie]({{< relref "/2011-02-05-c-is-for-cookie.md" >}})
+[C is for Cookie]({{< relref "2011-02-05-c-is-for-cookie.md" >}})
 erklären wieso das einerseits Unsinn und andererseits Datenschutztheater
 ist).
 

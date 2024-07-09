@@ -31,9 +31,9 @@ wenn das Label ("_latin1" oder "_utf8") und die Datencodierung von Umlauten
 (0xF6 vs.  0xC3 0xB6) nicht übereinstimmen.
 
 Zum besseren Verständnis gibt es die Artikel 
-[Zeichensatzärger]({{< relref "/2006-08-06-zeichensatzaerger.md" >}})
+[Zeichensatzärger]({{< relref "2006-08-06-zeichensatzaerger.md" >}})
 und 
-[MySQL Zeichensatz Grundlagen]({{< relref "/2006-10-01-mysql-zeichensatz-grundlagen.md" >}})
+[MySQL Zeichensatz Grundlagen]({{< relref "2006-10-01-mysql-zeichensatz-grundlagen.md" >}})
 hier im Blog.
 
 ## Wie man den Fehler erzeugt

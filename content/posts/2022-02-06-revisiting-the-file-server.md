@@ -19,7 +19,7 @@ The new disks in the file server had synchronized nicely, and that resulted in a
 While watching, I decided on a whim that I wanted to convert the entire setup from using Linux `mdraid` to `dmraid`, the LVM2 implementation of RAID1.
 It is essentially the same code, but integrated into LVM2 instead of using `mdadm` for control.
 
-I had already experimented with `dmraid` before, as documented in [an earlier article]({{< relref "/2019-12-02-cloning-and-splitting-logical-volumes.md" >}}), and that was [not without problems]({{< relref "/2019-12-03-trying-lvmraid-for-real.md">}}).
+I had already experimented with `dmraid` before, as documented in [an earlier article]({{< relref "2019-12-02-cloning-and-splitting-logical-volumes.md" >}}), and that was [not without problems]({{< relref "2019-12-03-trying-lvmraid-for-real.md">}}).
 But since the array would contain no original data, only backups, I decided to give it a try.
 
 So here we go:
@@ -123,7 +123,7 @@ This was relatively easy, and worked immediately -- it just took a few hours for
 ```
 
 For the Time Machine and Acronis targets, I decided to `lvconvert` them to `raid1`.
-[As stated before]({{< relref "/2019-12-02-cloning-and-splitting-logical-volumes.md" >}}), there are two competing implementations of of RAID in LVM2, `--type mirror` and `--type raid1`.
+[As stated before]({{< relref "2019-12-02-cloning-and-splitting-logical-volumes.md" >}}), there are two competing implementations of of RAID in LVM2, `--type mirror` and `--type raid1`.
 The `mirror` implementation is very extremely strongly deprecated, the `raid1` implementation is okay, because it uses the same code as  `mdraid` internally.
 
 We need to make sure to specify `--type raid1` in the `lvconvert` command to ensure the proper type is being used.

@@ -65,7 +65,7 @@ sys     0m0.037s
 14.4 seconds for 1000 commits are 14ms per commit, to an old SATA SSD - not
 very fast at all, but this is 10 years old hardware. This is slow, because
 the `db.commit()` issues a single fsync to the Redo-Log, waiting for it to
-return - we have shown this [in an earlier article]({{< relref "/2020-07-27-mysql-transactions.md" >}}).
+return - we have shown this [in an earlier article]({{< relref "2020-07-27-mysql-transactions.md" >}}).
 
 We can globally reconfigure MySQL to write to disk unsafely:
 

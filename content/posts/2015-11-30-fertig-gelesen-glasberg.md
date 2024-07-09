@@ -11,7 +11,7 @@ tags:
 - steampunk
 title: 'Fertig gelesen: Glasberg'
 ---
-Nach den drei Büchern um Annabelle Rosenherz hat Anja Bagus mit Falk und Minerva ein zweites Paar in ihrem Ætherwelt-Universum angesiedelt. "[Waldesruh]({{< relref "/2014-12-01-fertig-gelesen-waldesruh.md" >}})" war der erste Band, "Glasberg" setzt die Geschichte fort.
+Nach den drei Büchern um Annabelle Rosenherz hat Anja Bagus mit Falk und Minerva ein zweites Paar in ihrem Ætherwelt-Universum angesiedelt. "[Waldesruh]({{< relref "2014-12-01-fertig-gelesen-waldesruh.md" >}})" war der erste Band, "Glasberg" setzt die Geschichte fort.
 
 [![](/uploads/2015/11/glasberg.jpg)](https://www.amazon.de/dp/B00X3LK2JW)
 

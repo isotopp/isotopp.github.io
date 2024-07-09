@@ -25,7 +25,7 @@ This is never a problem with a command line client, even if that client is used 
 
 Finally, many GUI clients disconnect and reconnect between queries, and this is hardly documented.
 This makes it impossible to use 
-[connection scoped state]({{< relref "/2020-07-28-mysql-connection-scoped-state.md" >}}),
+[connection scoped state]({{< relref "2020-07-28-mysql-connection-scoped-state.md" >}}),
 such as transactions, @variables or per-session config.
 Specifically, by construction, phpMyAdmin cannot handle this at all.
 

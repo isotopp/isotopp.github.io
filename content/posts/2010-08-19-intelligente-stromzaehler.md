@@ -11,9 +11,9 @@ title: '"Intelligente" Stromzähler'
 ---
 
 Ich habe letztes Jahr 
-[hier]({{< relref "/2009-06-05-wie-viel-strom-verbraucht-ein-stromzaehler.md" >}})
+[hier]({{< relref "2009-06-05-wie-viel-strom-verbraucht-ein-stromzaehler.md" >}})
 und
-[hier]({{< relref "/2009-07-06-stromzaehler-revisited.md" >}})
+[hier]({{< relref "2009-07-06-stromzaehler-revisited.md" >}})
 ja schon mal was über "intelligente" Stromzähler geschrieben, zu deren Einbau wir ja nun alle verpflichtet sind, wenn wir renovieren oder neu bauen.
 
 Das Thema rollt nun auch langsam in das Licht der Öffentlichkeit, etwa schreibt der Spiegel in [Teure Ersparnis](http://www.spiegel.de/spiegel/0,1518,711967,00.html):

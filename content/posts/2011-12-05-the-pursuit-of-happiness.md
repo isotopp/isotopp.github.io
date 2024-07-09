@@ -76,7 +76,7 @@ sinnvoll zu steuern.
 
 Zwei andere, dringend empfehlenswerte Bücher, die Hintergründe und
 Mechanismen ohne Story, aber nicht minder spannend vermitteln, habe ich in
-[Fertig gelesen: The Origin of Wealth]({{< relref "/2007-05-15-the-origin-of-wealth.md" >}})
+[Fertig gelesen: The Origin of Wealth]({{< relref "2007-05-15-the-origin-of-wealth.md" >}})
 rezensiert: 
 [The Origin of Wealth](http://www.amazon.de/Origin-Wealth-Evolution-Complexity-Economics/dp/0712676619)
 und 

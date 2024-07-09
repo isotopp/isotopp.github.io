@@ -38,20 +38,20 @@ Piratenpartei und - durchaus absichtlich so konstruiert - die
 [EIDG](http://de.wikipedia.org/wiki/Enquete-Kommission_Internet_und_digitale_Gesellschaft).
 
 In meinem Folienset zum Thema
-[Flames]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md" >}}) versuche ich zu
+[Flames]({{< relref "2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md" >}}) versuche ich zu
 erklären, was genau der failure mode "Flame" in einem Onlineforum ist und
 wie er entsteht. Ich behaupte, daß man 
-[eine Onlinekultur]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#foren-als-soziales-system" >}}) erschaffen
+[eine Onlinekultur]({{< relref "2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#foren-als-soziales-system" >}}) erschaffen
 kann, die Flames verhindert und in konstruktives Verhalten umwandeln kann.
 In einem offenen System wie dem USENET 
-[fehlen repressive Instrumente]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#foren-als-soziales-system-iii" >}}) und man muß
+[fehlen repressive Instrumente]({{< relref "2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#foren-als-soziales-system-iii" >}}) und man muß
 ausschließlich positiv und appellativ arbeiten. Das erscheint anfangs
 mühsam, ist aber eine Form von respektbasierter Kommunikation (im Gegensatz
 zu angstbasierter Kommunikation), und daher weitaus nachhaltiger.
 
 Ich zeige an zwei Beispielen,
-[de.comp.lang.php]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-dclp" >}}) und
-[de.rec.spiele.rpg.misc]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-drsrm" >}})
+[de.comp.lang.php]({{< relref "2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-dclp" >}}) und
+[de.rec.spiele.rpg.misc]({{< relref "2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-drsrm" >}})
 zwei Methoden zur Organisation einer Community. Beide Verfahren basieren auf
 der Bildung einer FAQ zur Bildung von Erinnerungsvermögen und zur
 Kondensation eines Satzes von Regeln und Erkenntnissen der Gemeinschaft und
@@ -60,7 +60,7 @@ sich Mechanismen, an denen Neulinge akzeptables Verhalten lernen können und
 an denen die Gemeinschaft ihre Verhaltensnormen weiterentwickelt.
 
 An einem dritten Beispiel
-[de.talk.bizarre]({{< relref "/2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-dtb" >}}) zeige
+[de.talk.bizarre]({{< relref "2007-02-11-flames-kommunikationszusammenbrueche-im-netz.md#experiment-dtb" >}}) zeige
 ich, wie eine kleine Gruppe mit guter Kommunikation ("Der Hohe Rath Der
 Dreizehn Weisen Vom Feed" und "Die Allianz Wieder Den Hohen Rath" als deren
 scheinbarer Gegner, in Wahrheit eine zweite Marke des Rathes) und dem Willen

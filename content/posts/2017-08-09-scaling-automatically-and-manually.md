@@ -49,7 +49,7 @@ or other system metrics.
 In a conversation with Tobias Klausmann, he suggested application level
 latencies as a signal. I agree in that these are the best indicator to
 signal the existence of a problem. In [Load, Load Testing and
-Benchmarking]({{< relref "/2017-02-16-load-load-testing-and-benchmarking.md" >}}), 
+Benchmarking]({{< relref "2017-02-16-load-load-testing-and-benchmarking.md" >}}), 
 there is the hockey stick: 
 
 ![](/uploads/2017/02/benchmark2.png) 

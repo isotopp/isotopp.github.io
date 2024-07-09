@@ -8,7 +8,7 @@ tags:
 - security
 ---
 
-Translation by Lenz Grimmer, German version [here]({{<relref "/2021-11-16-a01-2021-broken-access-control.md" >}}).
+Translation by Lenz Grimmer, German version [here]({{<relref "2021-11-16-a01-2021-broken-access-control.md" >}}).
 
 A 
 [twitter thread by Christian Basl](https://twitter.com/ChristianBasl/status/1459851276817158151)

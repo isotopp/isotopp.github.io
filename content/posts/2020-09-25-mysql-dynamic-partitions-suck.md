@@ -12,7 +12,7 @@ tags:
 title: 'MySQL: automatic partitions surely would be nice'
 ---
 
-In [Deleting data]({{< relref "/2020-09-24-mysql-deleting-data.md" >}}) we have been looking at a process that loads data into MySQL, leveraging partitions to make it easier and faster to later get rid of the data again. For this, we created three processes, a data loader process, and two observers - one for creating partitions, and one for deleting them.
+In [Deleting data]({{< relref "2020-09-24-mysql-deleting-data.md" >}}) we have been looking at a process that loads data into MySQL, leveraging partitions to make it easier and faster to later get rid of the data again. For this, we created three processes, a data loader process, and two observers - one for creating partitions, and one for deleting them.
 
 The observer processes have been running `ANALYZE TABLES` and then polling `INFORMATION_SCHEMA.PARTITIONS` every 1/10th of a second to check if intervention is needed. They then have been dynamically generating the necessary `ALTER TABLE` statements maintaining the proper partitioning of the table by adding and dropping additional partitions.
 

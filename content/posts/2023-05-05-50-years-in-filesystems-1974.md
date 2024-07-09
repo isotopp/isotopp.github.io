@@ -52,7 +52,7 @@ and a lot of structures are a lot simpler.
 Sometimes even archaic.
 But this is what defines the behavior of Unix File Systems, to this day, because the accidental behavior of V7 Unix became immortalized in the POSIX standard,
 and every file system after had to conform to it.
-Check [But Is It Atomic?]({{< relref "/2018-11-29-but-is-it-atomic.md" >}}#source-dive-why-are-writes-atomic) for an example.
+Check [But Is It Atomic?]({{< relref "2018-11-29-but-is-it-atomic.md" >}}#source-dive-why-are-writes-atomic) for an example.
 
 # Core Concepts
 
@@ -145,7 +145,7 @@ How this scales is dependent on the block size (512 bytes back then, 4096 bytes 
 
 Writes to files happen under a lock, so they are always atomic.
 This is true even for long writes, which span multiple block boundaries, and is discussed at length in
-[But Is It Atomic?]({{< relref "/2018-11-29-but-is-it-atomic.md" >}}#source-dive-why-are-writes-atomic).
+[But Is It Atomic?]({{< relref "2018-11-29-but-is-it-atomic.md" >}}#source-dive-why-are-writes-atomic).
 
 This also means that even with multiple writer processes, on a single file there can be only ever one disk write active at any point in time.
 This is very inconvenient for authors of database systems.

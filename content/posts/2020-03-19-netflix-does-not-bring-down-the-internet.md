@@ -8,7 +8,7 @@ tags:
 - internet
 title: Netflix does not bring down the Internet
 ---
-It's Coronavirus Crisis and Netflix is killing us all, again. This time it's not their [excessive energy use]({{< relref "/2019-12-28-streaming-and-energy.md" >}}), but their dreaded HD videos that are overloading the Internet. Or is it?
+It's Coronavirus Crisis and Netflix is killing us all, again. This time it's not their [excessive energy use]({{< relref "2019-12-28-streaming-and-energy.md" >}}), but their dreaded HD videos that are overloading the Internet. Or is it?
 
 ## It's only Swisscom
 
@@ -36,7 +36,7 @@ So I am getting my content from content cache in Amsterdam that is extremely clo
 
 ## Videostreaming already is dynamic bandwidth
 
-In [Data Centers and Energy]({{< relref "/2019-12-28-streaming-and-energy.md" >}}) I already explained that video streaming is dynamic bandwidth and dynamic resolution, pointing to [Chunking](https://www.netmanias.com/en/post/blog/5923/google-http-adaptive-streaming-iptv-video-streaming-youtube/youtube-changing-the-way-of-delivering-videos-chunking-and-adaptive-streaming-are-in-progressive-download-is-out). All video streamers sense the bandwidth of the relevant part of the delivery pipeline and automatically and gracefully degrade the experience as necessary if bandwidth is becoming tight.
+In [Data Centers and Energy]({{< relref "2019-12-28-streaming-and-energy.md" >}}) I already explained that video streaming is dynamic bandwidth and dynamic resolution, pointing to [Chunking](https://www.netmanias.com/en/post/blog/5923/google-http-adaptive-streaming-iptv-video-streaming-youtube/youtube-changing-the-way-of-delivering-videos-chunking-and-adaptive-streaming-are-in-progressive-download-is-out). All video streamers sense the bandwidth of the relevant part of the delivery pipeline and automatically and gracefully degrade the experience as necessary if bandwidth is becoming tight.
 
 Doing this manually is not going to improve anybodies experience.
 

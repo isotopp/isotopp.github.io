@@ -11,7 +11,7 @@ tags:
 title: "Von der GPL"
 ---
 
-Trolltech hat seine [Qt Bibliothek ab der Version 4 komplett unter GPL]({{< relref "/2005-02-07-qt4-wird-vollstaendig-gpl.md" >}})
+Trolltech hat seine [Qt Bibliothek ab der Version 4 komplett unter GPL]({{< relref "2005-02-07-qt4-wird-vollstaendig-gpl.md" >}})
 gestellt. Das bedeutet, daß nicht nur die Unix-Version der Bibliothek unter
 der GPL verfügbar ist, sondern auch die Windows-Version. Grund genug einmal
 nachzulesen, was denn in der GPL drinsteht, und wieso das so ist.
@@ -190,7 +190,7 @@ integriert, modifiziert und dann verschluckt wurde - die Änderungen waren
 für alle anderen Anwender verloren.
 
 In gewisser Weise ist die GPL also eine Lizenz der kooperativen Sphäre (siehe 
-[Ein paar ideologische Steine ins Rollen bringen]({{< relref "/2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}})), 
+[Ein paar ideologische Steine ins Rollen bringen]({{< relref "2005-01-05-ein-paar-ideologische-steine-ins-rollen-bringen.md" >}})), 
 aber eine wehrhafte solche. Sie zwingt die Nutzer der GPL dazu, nach den
 Regeln der kooperativen Sphäre zu spielen. Verstößt ein Spieler gegen diese
 Regeln, wird er bestraft 
@@ -210,7 +210,7 @@ Nein.
 
 ![](/uploads/accesspoint.jpg)
 
-[GNU GPL in Deutschland]({{< relref "/2004-04-15-gnu-gpl-in-deutschland.md" >}})
+[GNU GPL in Deutschland]({{< relref "2004-04-15-gnu-gpl-in-deutschland.md" >}})
 zeigt, was passiert, wenn ein Hersteller gegen die GPL verstößt. Ihm kann
 die Weiterverbreitung seines Produktes so lange untersagt werden, wie er
 gegen die GPL verstößt. Er kann diesen Zustand abstellen, indem er entweder

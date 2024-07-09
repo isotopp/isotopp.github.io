@@ -12,8 +12,8 @@ tags:
 
 Just like your work computer is being infested with corporate malware as to prevent it from being taken over from other people's malware,
 your account is also being spammed with corporate malware spam as to prevent it from being taken over by other malware spam.
-And just like corporate malware [increases your machine's attack surface]({{< relref "/2018-06-18-websense-dlp-gives-instant-root.md" >}}),
-because it is [badly written]({{< relref "/2017-10-20-aslr.md" >}}) and running with privileges,
+And just like corporate malware [increases your machine's attack surface]({{< relref "2018-06-18-websense-dlp-gives-instant-root.md" >}}),
+because it is [badly written]({{< relref "2017-10-20-aslr.md" >}}) and running with privileges,
 corporate spam is a useless [nuisance](https://publikationen.bibliothek.kit.edu/1000119662) that 
 [doesn't do what it is supposed to do](https://blog.lukaszolejnik.com/solving-phishing-is-not-simple-can-anti-phishing-training-make-it-even-worse/).
 

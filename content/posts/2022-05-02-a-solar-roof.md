@@ -104,7 +104,7 @@ That also means I get no direct access to the Modbus in the Inverter without int
 
 I can access the electricity counter of our house, though, through the Dutch P1 interface.
 This is done, for example, with a [P1 reader ethernet](https://www.zuidwijk.com/product/p1-reader-ethernet/) by Marcel Zuidwijk, connecting the P1 interface from the counter to a free power on the DSL modem.
-The data is put onto the [house MQTT bus]({{< relref "/2020-11-15-my-home-sensor-network.md" >}}), using [software](https://github.com/Lalufu/p1-mqtt) written by a friend and colleague.
+The data is put onto the [house MQTT bus]({{< relref "2020-11-15-my-home-sensor-network.md" >}}), using [software](https://github.com/Lalufu/p1-mqtt) written by a friend and colleague.
 
 Reading the counters, I get a good overview of what happens during the day:
 

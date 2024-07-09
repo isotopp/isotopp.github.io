@@ -52,7 +52,7 @@ Do not use it.
 SQL systems are stateful systems, so your application can be stateless.
 That means there is state in a lot of unexpected places in SQL, and you have to be aware of it.
 
-- [Connection Scoped State]({{< relref "/2020-07-28-mysql-connection-scoped-state.md" >}})
+- [Connection Scoped State]({{< relref "2020-07-28-mysql-connection-scoped-state.md" >}})
 - COMMIT can fail, and you must be able to retry
 
 Databases store data for a long time.
@@ -79,7 +79,7 @@ On top of that there are other limits that will affect you, based on physics, op
 
 ### Size
 
-Are you running out of disk space? Know what to monitor, and how to handle the situation and [absolute size limits]({{< relref "/2022-02-16-databases-how-large-is-too-large.md" >}}).
+Are you running out of disk space? Know what to monitor, and how to handle the situation and [absolute size limits]({{< relref "2022-02-16-databases-how-large-is-too-large.md" >}}).
 
 **Deleting data costs disk space.**
 MySQL is running in a replication hierarchy, and in order to replicate MySQL stores a pre- and post-change image of each changed row in the binlog.
@@ -204,7 +204,7 @@ The following rules have been proven to be useful guidance in the past:
 ### Normalization
 
 - **Understand database normal forms and aim for a relaxed third normal form.**
-  Try to [normalize]({{< relref "/2005-09-11-nermalisation.md" >}}) properly until you run into weirdness.
+  Try to [normalize]({{< relref "2005-09-11-nermalisation.md" >}}) properly until you run into weirdness.
   Only denormalize when you actually experience performance problems.
 
 ### Keys
@@ -245,7 +245,7 @@ The following rules have been proven to be useful guidance in the past:
         - UUIDs can have advantages for high insert rates, because they can be created independently in different clients in parallel.
         - MySQL stores data physically in primary key order, but the way UUIDs order is not advantageous to that.
           MySQL provides the `UUID_TO_BIN(string_uuid, 1)` function to fix this.
-          Consider using it, it unlocks many performance advantages. [UUID discussion]({{< relref "/2021-04-06-mysql-and-uuids.md" >}}), [Another UUID discussion]({{< relref "/2020-09-22-alter-table-for-uuid.md" >}}).
+          Consider using it, it unlocks many performance advantages. [UUID discussion]({{< relref "2021-04-06-mysql-and-uuids.md" >}}), [Another UUID discussion]({{< relref "2020-09-22-alter-table-for-uuid.md" >}}).
         - The datatype produced by `UUID_TO_BIN()` is a `VARBINARY(16)`.
 - **When using `integer` or `bigint` primary keys, consider making it `unsigned`.**
     - It will double the key range.
@@ -259,7 +259,7 @@ The following rules have been proven to be useful guidance in the past:
 
 - **Define columns as `NOT NULL`.**
     - If a column is nullable, the NULL value must have exactly one meaning, and it must be documented (e.g. in a COMMENT clause in the CREATE TABLE statement).
-      More on [NULL values]({{< relref "/2020-08-25-null-is-null.md" >}}).
+      More on [NULL values]({{< relref "2020-08-25-null-is-null.md" >}}).
     - If you are using `LEFT JOIN` or access columns that can be nullable, consider the SQL functions [`COALESCE()`](https://dev.mysql.com/doc/refman/8.0/en/comparison-operators.html#function_coalesce), `IFNULL()` and the comparison operator `IS NULL`.
       NULL values do not compare normally, so wrap nullables into one of these functions.
 
@@ -312,13 +312,13 @@ The following rules have been proven to be useful guidance in the past:
 - **Use the default `utf8mb4` charset, it is the utf-8 you want.**
     - `VARCHAR` and the various `TEXT` fields have a character set associated to them.
       Always use `utf8mb4` as the character set (it should be the default, but check).
-      Read up on [Why utf8mb4?]({{< relref "/2022-01-12-utf8mb4.md" >}})
+      Read up on [Why utf8mb4?]({{< relref "2022-01-12-utf8mb4.md" >}})
 
 - **Avoid `ENUM`, use lookup tables.**
     - MySQL offers an `ENUM` data type, and we have used this a lot in the past.
       We found that removing values from an `ENUM` is a very costly table change.
       We recommend you use a lookup table.
-    - [Encoding columns for great profit]({{< relref "/2020-09-18-mysql-encoding-fields-for-great-profit.md" >}}) explains how converting string columns with low cardinality can pay off in shrinking the data size.
+    - [Encoding columns for great profit]({{< relref "2020-09-18-mysql-encoding-fields-for-great-profit.md" >}}) explains how converting string columns with low cardinality can pay off in shrinking the data size.
 
 ### BLOBs and files in the database
 
@@ -364,7 +364,7 @@ The following rules have been proven to be useful guidance in the past:
     - But only if the timezone tables in the mysql.* schema are initialized.
     - The current timezone you are in is defined as a default for the server, and can be overridden as a connection property.
       It is likely not a good idea to do that.
-    - You can shoot yourself in the foot with timezones, DST boundaries and interval arithmetic. [How that happens]({{< relref "/2021-04-02-making-an-unexpected-leap-with-interval-syntax.md" >}}).
+    - You can shoot yourself in the foot with timezones, DST boundaries and interval arithmetic. [How that happens]({{< relref "2021-04-02-making-an-unexpected-leap-with-interval-syntax.md" >}}).
 - **Prefer `DATETIME`, not `TIMESTAMP`, unless it's `changed_at`.**
     - The range of `TIMESTAMP` is limited and has a year 2038 problem.
 - **DATETIME, TIME and TIMESTAMP can have microsecond resolution if desired.** In MySQL, `DATETIME`, `TIME`, `TIMESTAMP` can have fractional resolutions up to microsecond resolution. To get that, specify a precision such as `DATETIME(6)`, `TIME(6)` or `TIMESTAMP(6)`.
@@ -377,7 +377,7 @@ The following rules have been proven to be useful guidance in the past:
   They are a bit clunky, but work very well.
   When using JSON functions, also learn about generated columns and virtual indexes.
   This is new functionality in MySQL 8, and that means it is less tested than other code.
-  [JSON basics]({{< relref "/2020-09-04-mysql-json-data-type.md" >}}), [Generated columns and virtual indexes]({{< relref "/2020-09-07-mysql-generated-columns-and-virtual-indexes.md" >}}).
+  [JSON basics]({{< relref "2020-09-04-mysql-json-data-type.md" >}}), [Generated columns and virtual indexes]({{< relref "2020-09-07-mysql-generated-columns-and-virtual-indexes.md" >}}).
 - `JSON` in MySQL always uses the `utf8` character set.
   This is a bug, it should be using `utf8mb4`, but currently not fixed.
   The effect is that Emoji and other letters with 4-byte UTF-8 encodings cannot be used there.
@@ -415,17 +415,17 @@ The following rules have been proven to be useful guidance in the past:
       They usually provide a lot of toil and little benefit.
     - Exceptions exist. Check your departments engineering guides.
 
-- [What are Foreign Keys, and Foreign Key Constraints]({{< relref "/2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}), [Foreign Key Constraints and Locking]({{< relref "/2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}).
+- [What are Foreign Keys, and Foreign Key Constraints]({{< relref "2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}), [Foreign Key Constraints and Locking]({{< relref "2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}).
 
 ## Transactions
 
 - **Keep transaction runtime short.** Long-running transactions will build a large Undo log and slow down the database for everyone.
-  A transaction taking fractions of a second is fast, a transaction being kept open for minutes or even hours is not. [The effect of long-running transactions on performance]({{< relref "/2019-11-18-a-blast-from-the-past.md" >}}).
+  A transaction taking fractions of a second is fast, a transaction being kept open for minutes or even hours is not. [The effect of long-running transactions on performance]({{< relref "2019-11-18-a-blast-from-the-past.md" >}}).
 - **Keep transaction size in the range of 1000 to 10000 rows for batch loading.**
   Larger transactions are incompatible with group replication, and also will not provide speedup.
-  Smaller transactions cause excessive sync to disk, and are not fast. [Commit size and write speed]({{< relref "/2020-07-27-mysql-commit-size-and-speed.md" >}}).
+  Smaller transactions cause excessive sync to disk, and are not fast. [Commit size and write speed]({{< relref "2020-07-27-mysql-commit-size-and-speed.md" >}}).
 - **Use the default transaction isolation level REPEATABLE READ.**
-  There were use-cases for READ COMMITTED in the past, but with [`SELECT ... SKIP LOCKED`](https://dev.mysql.com/blog-archive/mysql-8-0-1-using-skip-locked-and-nowait-to-handle-hot-rows/) in MySQL 8 and row based replication, most of these are gone. [What are isolation levels?]({{< relref "/2020-07-29-mysql-transactions-the-logical-view.md" >}}),  [Proper counters with locking]({{< relref "/2020-07-30-mysql-transactions---writing-data.md" >}}).
+  There were use-cases for READ COMMITTED in the past, but with [`SELECT ... SKIP LOCKED`](https://dev.mysql.com/blog-archive/mysql-8-0-1-using-skip-locked-and-nowait-to-handle-hot-rows/) in MySQL 8 and row based replication, most of these are gone. [What are isolation levels?]({{< relref "2020-07-29-mysql-transactions-the-logical-view.md" >}}),  [Proper counters with locking]({{< relref "2020-07-30-mysql-transactions---writing-data.md" >}}).
 - To start a transaction, MySQL offers several semi-equivalent syntax variants: `BEGIN`, `BEGIN WORK` and `START TRANSACTION READ WRITE`. Check what your ORM is using.
     - **Only `START TRANSACTION READ WRITE` should be used.** It is the only syntax that signals write-intent or read-intent (`START TRANSACTION READ ONLY`) in the opening statement, and hence the only statement that load balances properly in ProxySQL.
 
@@ -458,7 +458,7 @@ You need to find out how your ORM creates RMW transactions.
 
 Some notes:
 
-- This is discussed at length in [MySQL Transactions (Read-Modify-Write)]({{< relref "/2020-07-30-mysql-transactions---writing-data.md" >}}).
+- This is discussed at length in [MySQL Transactions (Read-Modify-Write)]({{< relref "2020-07-30-mysql-transactions---writing-data.md" >}}).
 - Make sure `START TRANSACTION` syntax is being used, not `BEGIN` syntax.
 - `COMMIT` can fail, you must check success and be prepared to re-run the entire transaction.
 - A transaction must not extend across a user interaction. You must not `SELECT ... FOR UPDATE` and then wait for user input. A transaction must be finished in fractions of a second.
@@ -479,9 +479,9 @@ There are two common ways to solve this, which are collectively called "optimist
 
 MySQL is not actually a queueing system. **Talk to Kafka about queues and do not use MySQL as one.** Using MySQL as a queue will deliver "exactly once delivery" of jobs, at the cost of at least one disk write per enqueue and dequeue, which translates into fantastic monetary values in a cloud environment by the way of very high IOPS values.
 
-MySQL has been used as a queue [in some scenarios on bare metal]({{< relref "/2021-01-28-database-as-a-queue.md" >}}), because it is so obvious and convenient. Looking at the cloud, avoid that and use a proper queue service for your problem.
+MySQL has been used as a queue [in some scenarios on bare metal]({{< relref "2021-01-28-database-as-a-queue.md" >}}), because it is so obvious and convenient. Looking at the cloud, avoid that and use a proper queue service for your problem.
 
-If you must use MySQL as a queue, at least [do it right]({{< relref "/2021-07-13-mysql-a-job-queue-in-python.md" >}}), and lock properly using `SKIP LOCKED`.
+If you must use MySQL as a queue, at least [do it right]({{< relref "2021-07-13-mysql-a-job-queue-in-python.md" >}}), and lock properly using `SKIP LOCKED`.
 
 For writing to MySQL and Kafka, consider the Outbox pattern ([Outbox pattern](https://developers.redhat.com/articles/2021/09/01/outbox-pattern-apache-kafka-and-debezium)) and talk to the Kafka team.
 
@@ -527,7 +527,7 @@ Talk to a DBA about planning proper partitioning, taking your workload and acces
 
 ## Using MySQL in a replication environment
 
-- Our MySQL is always [in a treelike replication structure]({{< relref "/2021-03-24-a-lot-of-mysql.md" >}}) to place read copies of the data close to the application. This provides low latency data access.
+- Our MySQL is always [in a treelike replication structure]({{< relref "2021-03-24-a-lot-of-mysql.md" >}}) to place read copies of the data close to the application. This provides low latency data access.
 - **Writes always go to the root of the replication tree, the current primary.**
 - Your application has access to segregated read and write handles for database access.
   **Make sure you are using the proper handle.**
@@ -638,13 +638,13 @@ and so on.
 - As a developer using Python, I want to be able to hand a `list` to SQL with a `WHERE id IN (…)` clause, and it should do the right thing.
   This can be done by using a prepared statement like ``SELECT .... WHERE `foo` IN %s ...`` and passing in a `list` or a `tuple`
   for the placeholder variable.
-  - Full discussion in [Python: WHERE ... IN (...)]({{< relref "/2021-10-28-python-where-in.md" >}})
+  - Full discussion in [Python: WHERE ... IN (...)]({{< relref "2021-10-28-python-where-in.md" >}})
 - Important caveats:
     - There are no `()` in the prepared statement after the `IN`
     - Only `list` and `tuple` will work, no other iterables
 
 - As a developer using Python, I want to be able to trace the SQL.
-  - Full discussion in [Python: Debug SQL]({{< relref "/2022-03-24-debugging-sql-in-python.md" >}})
+  - Full discussion in [Python: Debug SQL]({{< relref "2022-03-24-debugging-sql-in-python.md" >}})
 
 # Support
 

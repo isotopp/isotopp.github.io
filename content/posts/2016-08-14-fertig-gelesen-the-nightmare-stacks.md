@@ -13,7 +13,7 @@ title: 'Fertig gelesen: The Nightmare Stacks'
 ---
 [Die Laundry Files Series](https://www.amazon.de/gp/product/B01C8R8TK0)
 
-Charles Stross schrieb in seinem Blog ja schon, daß der Bob View of the world zu zynisch geworden ist, und daß Bob zu mächtig geworden ist ([Crib Sheet Annihilation Score](http://www.antipope.org/charlie/blog-static/2016/06/crib-sheet-the-annihilation-sc.html)). Und so war Buch 6 ([Annihilation Score]({{< relref "/2015-11-30-fertig-gelesen-the-annihilation-score.md" >}})) über Mo als Figur und als Person, und wie verzerrt unsere Wahrnehmung von ihr durch die Brille von Bob war.
+Charles Stross schrieb in seinem Blog ja schon, daß der Bob View of the world zu zynisch geworden ist, und daß Bob zu mächtig geworden ist ([Crib Sheet Annihilation Score](http://www.antipope.org/charlie/blog-static/2016/06/crib-sheet-the-annihilation-sc.html)). Und so war Buch 6 ([Annihilation Score]({{< relref "2015-11-30-fertig-gelesen-the-annihilation-score.md" >}})) über Mo als Figur und als Person, und wie verzerrt unsere Wahrnehmung von ihr durch die Brille von Bob war.
 
 Buch 7 gibt uns eine weitere Sicht auf die Welt, denn wir erleben sie aus der Sicht von Alex, jedem frisch zum Vampir mutierten Quant, einem Softwarentwickler aus der Welt der High Frequency Trader, der nun für die Laundry zwangsverpflichtet wurde. Und nun mehr oder weniger nichtsahnend in eine Elfeninvasion gerät. Wobei Stross-Elfen noch viel unappetitlicher sind als man sich eine normale Wilde Jagd schon so vorstellt. Und spätestens wenn die Regierung einen Atomschlag genehmigt ist auch klar, daß es ein Ende damit hat, den Krieg gegen das Eindringen alternativer Realitäten in unsere Wirklichkeit heimlich zu führen.
 

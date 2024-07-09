@@ -44,7 +44,7 @@ As you grow even older, you learn:
 > Interactions between people are mediated through code and automated.
 > That can be good, but requires that you understand the process and why it is what it is.
 
-[Pizza, People, Projects and Processes]({{< relref "/2020-06-15-pizza-people-projects-and-processes.md" >}}) has some fundamental things about processes.
+[Pizza, People, Projects and Processes]({{< relref "2020-06-15-pizza-people-projects-and-processes.md" >}}) has some fundamental things about processes.
 
 "The german government fails at digitization" means from this point of view that the system has lost the ability to understand its own processes and to change them in a controlled way.
 

@@ -31,7 +31,7 @@ Most people want this because they attached a server-side action to a commit, a 
 
 # This is wrong
 
-This is wrong in the same way [writing Shell Scripts]({{< relref "/2021-01-05-using-python-to-bash.md" >}}) is wrong:
+This is wrong in the same way [writing Shell Scripts]({{< relref "2021-01-05-using-python-to-bash.md" >}}) is wrong:
 It kind of works, but now you have another, worse problem and still no solution to the original problem.
 
 You need to stop and question your life choices, and most importantly, wake up the engineer in you.

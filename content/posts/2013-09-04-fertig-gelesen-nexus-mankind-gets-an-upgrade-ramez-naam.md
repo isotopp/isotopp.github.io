@@ -33,4 +33,4 @@ Nexus ist ein Near Future SciFi mit glaubhafter Technik und einer guten und acti
 
 Der Roman bekommt von mir alle verfügbaren Punkte und eine dicke Leseempfehlung.
 
-Der Roman [Crux]({{< relref "/2013-09-27-fertig-gelesen-crux-ramez-naam.md" >}}) spielt 3 Monate nach Nexus im selben Universum. Ich habe auch den halb durch und bisher ist er eine würdige Fortsetzung.
+Der Roman [Crux]({{< relref "2013-09-27-fertig-gelesen-crux-ramez-naam.md" >}}) spielt 3 Monate nach Nexus im selben Universum. Ich habe auch den halb durch und bisher ist er eine würdige Fortsetzung.

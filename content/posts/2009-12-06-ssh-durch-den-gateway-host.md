@@ -99,7 +99,7 @@ Die LocalForward-Anweisungen bauen weitere Tunnel auf. Der Port 6667 auf dem
 Netbook verbindet einen also mit dem Irc-Bouncer auf dem Desktop-Rechner,
 die Ports 127.0.0.1:1993 und 127.0.0.1:1587 auf dem Netbook verbinden einen
 mit den imaps- und
-[submission]({{< relref "/2004-10-29-submission-port-587.md" >}})-Ports
+[submission]({{< relref "2004-10-29-submission-port-587.md" >}})-Ports
 des Desktop-Rechners und der Port 1999 des Netbook gibt nun eine Verbindung
 zum NNTP-Server von news.mein-freund.de. Dabei sieht es für
 news.mein-freund.de so aus, als käme die Verbindung vom Desktop-Rechner und
@@ -115,7 +115,7 @@ keine URLs an einen Firmenproxy weiter, sondern greift, egal wo man ist,
 durch sein heimisches Desktop-DSL auf das Web zu.
 
 Im Zusammenhang mit einem Dedi irgendwo und einem 
-[passenden openvpn-Server]({{< relref "/2009-08-10-einen-openvpn-server-aufsetzen.md" >}})
+[passenden openvpn-Server]({{< relref "2009-08-10-einen-openvpn-server-aufsetzen.md" >}})
 sollte man außerdem aus jedem Firmennetz eine Verbindung nach draußen
 bekommen und sich so in jedem Fall freischwimmen können, egal wie restriktiv
 das Firmennetz konfiguriert ist.

@@ -100,7 +100,7 @@ Beide Hinweise waren recht dringend, weil die Texte auf der Site und die FAQ wei
 Zusammenfassend kann ich also sagen:
 Meiner persönlichen Erfahrung nach kann ich von der Veröffentlichung von Texten in Zeitschriften oder Büchern ganz gut leben.
 Aber diese Texte sind viel effektiver genutzt,
-[indem ich sie als Werbung benutze]({{< relref "/2005-05-23-internetpiraten-in-der-netzwerk-konomie.md" >}})
+[indem ich sie als Werbung benutze]({{< relref "2005-05-23-internetpiraten-in-der-netzwerk-konomie.md" >}})
 die die Marke "Kristian Köhntopp" positionieren, um Aufträge für mich oder meinen Arbeitgeber hereinzuholen: 
 die c't zahlt gut, aber nur ein Tag Consulting generiert mehr Umsatz als selbst ein großer c't-Artikel.
 Die Artikel sind auch gut genutzt, um die Marke "Kristian Köhntopp" bei einem zukünftigen Arbeitgeber oder Auftraggeber zu positionieren und zu legitimieren.

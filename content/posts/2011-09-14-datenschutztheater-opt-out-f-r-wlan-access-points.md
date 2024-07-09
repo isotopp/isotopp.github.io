@@ -30,9 +30,9 @@ Schauen wir uns das Stück einmal an
 > damit den Forderungen europäischer Datenschützer.
 
 Was ist passiert? Das habe ich in einem 
-[älteren Artikel]({{< relref "/2010-05-17-wlans-mappen.md" >}}) 
+[älteren Artikel]({{< relref "2010-05-17-wlans-mappen.md" >}}) 
 bereits einmal in lang erklärt, auch 
-[wie es dazu kommen konnte]({{< relref "/2010-05-16-wie-man-aus-versehen-wlan-daten-mitschneidet.md" >}}).
+[wie es dazu kommen konnte]({{< relref "2010-05-16-wie-man-aus-versehen-wlan-daten-mitschneidet.md" >}}).
 
 Die Zusammenfassung des Sachverhaltes ist:
 

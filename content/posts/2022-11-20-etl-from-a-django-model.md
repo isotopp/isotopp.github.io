@@ -10,7 +10,7 @@ tags:
 - data warehouse
 ---
 
-Continued from [last weeks article]({{< relref "/2022-11-16-of-stars-and-snowflakes.md" >}}) on data warehouses.
+Continued from [last weeks article]({{< relref "2022-11-16-of-stars-and-snowflakes.md" >}}) on data warehouses.
 
 At work, I was tasked with building a capacity model for data center growth.
 The basic assumption of these things is often that the future behaves similarly to the past, so the future predicted capacity model is somehow an extension of past growth.

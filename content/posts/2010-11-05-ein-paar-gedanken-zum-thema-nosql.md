@@ -73,7 +73,7 @@ zum Cluster hinzu fügt.
 Der automatische Ansatz hat auch einen Preis:
 
 Von den anderswo erklärten 
-[Operationen der  Relationenalgebra]({{< relref "/2010-04-28-was-bedeutet-eigentlich-relationale-algebra.md" >}})
+[Operationen der  Relationenalgebra]({{< relref "2010-04-28-was-bedeutet-eigentlich-relationale-algebra.md" >}})
 sind einige nun recht teuer geworden - der SQL-Join und die SQL-Aggregation.
 
 Für den Join stellt sich das Problem, daß man zwischen Tabellen eine

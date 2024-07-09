@@ -35,7 +35,7 @@ Website.
 
 Das Ergebnis ist weitgehend witzlos, wie man sich leicht überlegen kann,
 wenn man 
-[C is for Cookie]({{< relref "/2011-02-05-c-is-for-cookie.md" >}})
+[C is for Cookie]({{< relref "2011-02-05-c-is-for-cookie.md" >}})
 gelesen und verstanden hat - Caspar hat gar nichts bewirkt.
 
 Das Zählsystem der IVW beruht nur am Rande auf IP-Adressen: Es gibt eine
@@ -55,7 +55,7 @@ Auch die IVW arbeitet mit Cookies, genau genommen mit einem Cookie i00, der
 für die Domain \*.ivwbox.de mit einer Lebensdauer von einem Jahr gesetzt
 wird. Dieser Cookie bekommt eine eindeutige Kennung, mit der ein User von
 allen anderen Usern unterscheidbar wird (siehe auch 
-[C is for Cookie]({{< relref "/2011-02-05-c-is-for-cookie.md" >}})
+[C is for Cookie]({{< relref "2011-02-05-c-is-for-cookie.md" >}})
 und suche nach i00).
 
 Das Ziel der IVW ist erklärtermaßen, Page Impressions auf der Site eines

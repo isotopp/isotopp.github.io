@@ -10,7 +10,7 @@ tags:
 - filesystems
 ---
 
-This is part 2 of a series. The first part is "[1974]({{< relref "/2023-05-05-50-years-in-filesystems-1974.md" >}})".
+This is part 2 of a series. The first part is "[1974]({{< relref "2023-05-05-50-years-in-filesystems-1974.md" >}})".
 
 Progress is sometimes hard to see, especially when you have been part of it or otherwise lived through it.
 Often, it is easier to see if you compare modern educational material, and the problems discussed with older material.

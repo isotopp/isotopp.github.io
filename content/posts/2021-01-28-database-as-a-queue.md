@@ -67,7 +67,7 @@ Your state machine would be eating one item from the input, perform the associat
 
 ### Undo-Log woes
 
-In [A Blast From The Past]({{< relref "/2019-11-18-a-blast-from-the-past.md" >}}) we see what happens to MySQL with long-running transactions, and in [MySQL Transactions]({{< relref "/2020-07-27-mysql-transactions.md" >}}) we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long-running.
+In [A Blast From The Past]({{< relref "2019-11-18-a-blast-from-the-past.md" >}}) we see what happens to MySQL with long-running transactions, and in [MySQL Transactions]({{< relref "2020-07-27-mysql-transactions.md" >}}) we discuss what goes on internally in the database when we do transactions, and especially how that can be painful if these transactions are long-running.
 
 Note that any database will at some point in time have long-running transactions, even if your code does not. Database maintenance operations such as cloning replicas or making backups can do that without interruption only by maintaining a read view, which leads to Undo-Log explosion.
 

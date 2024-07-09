@@ -39,7 +39,7 @@ haben. Zweitens: Inzwischen ist bei Mobiltelefonen das System wichtiger als
 das Netz. Benutzer kaufen Telefone nach Betriebssystem und Version und legen
 Wert darauf, Updates unverfälscht und zeitnah zu bekommen.
 
-[Die Strategie]({{< relref "/2009-12-15-google-baut-ein-telefon.md" >}})
+[Die Strategie]({{< relref "2009-12-15-google-baut-ein-telefon.md" >}})
 zeigt Wirkung?
 
 **Update:** Tut sie. [Golem](http://www.golem.de/1008/77377.html) schreibt: 

@@ -11,7 +11,7 @@ tags:
 - ai
 ---
 
-Dieser Text ist eine Art Follow-up für [Wie ChatGPT funktioniert]({{< relref "/2024-02-06-wie-chatgpt-funktioniert.md" >}}).
+Dieser Text ist eine Art Follow-up für [Wie ChatGPT funktioniert]({{< relref "2024-02-06-wie-chatgpt-funktioniert.md" >}}).
 Es geht darum, ein LLM lokal auszuführen und damit zu experimentieren.
 
 Wer mit LLMs daheim experimentieren möchte, der steht vor dem Problem, 

@@ -63,7 +63,7 @@ oder einen Facebook-Like-Button (technisch im Prinzip dasselbe) hier
 einbinden, sondern ich kann 11 Seiten Papier an Google oder Facebook senden,
 also einen Vertrag über Auftragsdatenverarbeitung schließen, und dann
 einfach die entsprechenden Buttons wie gehabt hier einbinden (hatten wir 
-[hier]({{< relref "/2011-09-15-datenschutztheater-google-analytics-ist-amtlich-datenschutzkonform.md" >}})
+[hier]({{< relref "2011-09-15-datenschutztheater-google-analytics-ist-amtlich-datenschutzkonform.md" >}})
 in ausführlicherer Form).
 
 Wie man sieht geht es also beim Datenschutz nicht wirklich um den Schutz

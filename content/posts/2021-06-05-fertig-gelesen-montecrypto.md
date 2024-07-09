@@ -13,7 +13,7 @@ title: 'Fertig gelesen: Montecrypto'
 
 Wir hatten hier in 
 [den Reviews](https://blog.koehntopp.info/tags/#review) 
-schon eine ganze Menge Tom Hillenbrand: [Drachenväter]({{< relref "/2014-08-11-fertig-gelesen-drachenvater.md" >}}), [Drohnenland]({{< relref "/2014-08-17-fertig-gelesen-drohnenland.md" >}}), und [Die Drohnen des Monsieur Leclerq]({{< relref "/2015-11-29-fertig-gelesen-die-drohnen-des-monsieur-leclerq.md" >}}).
+schon eine ganze Menge Tom Hillenbrand: [Drachenväter]({{< relref "2014-08-11-fertig-gelesen-drachenvater.md" >}}), [Drohnenland]({{< relref "2014-08-17-fertig-gelesen-drohnenland.md" >}}), und [Die Drohnen des Monsieur Leclerq]({{< relref "2015-11-29-fertig-gelesen-die-drohnen-des-monsieur-leclerq.md" >}}).
 
 Das aktuelle Buch von Tom Hillenbrand ist [Montecrypto](https://www.amazon.de/dp/3462001574), das sich mit dem Hype um Cryptocurrencies beschäftigt und eine Art "Der Graf von Monte Cristo"-Geschichte erzählt.
 

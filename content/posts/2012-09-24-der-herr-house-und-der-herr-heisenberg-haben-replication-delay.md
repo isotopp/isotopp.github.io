@@ -120,7 +120,7 @@ des Activity Patterns hier:
 
 Die Causa: Der InnoDB Purge Thread hat seine Arbeit Mitte des 20-Sep
 eingestellt, zuckt noch einmal kurz und idled dann lustig weiter.  Sollte
-[Captain Undo-Log]({{< relref "/2011-04-28-mysql-undo-log.md" >}})
+[Captain Undo-Log]({{< relref "2011-04-28-mysql-undo-log.md" >}})
 wieder unterwegs sein und mit dem Baseballschläger ausgeloggt
 werden wollen?
 

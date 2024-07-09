@@ -115,7 +115,7 @@ The process is named after the phased, "ETL" -- extract, transform, load:
 
 ## An ETL example
 
-In [My Private Data Warehouse]({{< relref "/2020-09-26-my-private-data-warehouse.md" >}}) we have an example of such a process, using my bank account statements from a German Sparkasse.
+In [My Private Data Warehouse]({{< relref "2020-09-26-my-private-data-warehouse.md" >}}) we have an example of such a process, using my bank account statements from a German Sparkasse.
 
 Data arrives from a Sparkasse system in CSV format.
 In a first step we load the data into a loader table, `transactions` table.
@@ -151,7 +151,7 @@ Instead, we store the literal value of an attribute for a given date as a fact a
 
 Sometimes, the literal values are rather long strings, and they are repeating quite often.
 We then, as part of the data load, also perform a string compression with a lookup table.
-In [Encoding fields for great profit]({{< relref "/2020-09-18-mysql-encoding-fields-for-great-profit.md" >}}) I am giving an example of how that works.
+In [Encoding fields for great profit]({{< relref "2020-09-18-mysql-encoding-fields-for-great-profit.md" >}}) I am giving an example of how that works.
 
 Sometimes we aggregate along more than one dimension.
 If, for example, in our reservations fact table we would record the country of origin for each user, and the color of each thing, we could aggregate "daily reservations per country and color" to identify conceivable national color preferences.

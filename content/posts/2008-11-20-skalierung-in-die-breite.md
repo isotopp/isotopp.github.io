@@ -12,7 +12,7 @@ title: Skalierung in die Breite
 ---
 
 Dies ist quasi der 2. Teil zum 
-[MySQL-Sun-Dilemma]({{< relref "/2008-11-17-das-mysql-sun-dilemma.md" >}}): 
+[MySQL-Sun-Dilemma]({{< relref "2008-11-17-das-mysql-sun-dilemma.md" >}}): 
 
 [In diesem Kommentar](http://www.theregister.co.uk/2008/11/20/many_cored_processors_and_software/) 
 bei El Reg sehen wir dasselbe Problem in einigen Jahren auf Intel zu kommen. 

@@ -82,7 +82,7 @@ dann im Hintergrund an, und zwar dann, wenn die Seite sowieso geändert wird
 (zurückhaltener Algorithmus).
 
 Meine Anfrage in 
-[dem ersten Artikel]({{< relref "/2011-04-19-schemaless.md" >}})
+[dem ersten Artikel]({{< relref "2011-04-19-schemaless.md" >}})
 zum Thema brachte das Ergebnis, daß bei schemalosen Datenbanken die Optionen
 ähnlich sind: 
 

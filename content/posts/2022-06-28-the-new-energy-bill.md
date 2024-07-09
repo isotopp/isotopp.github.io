@@ -12,7 +12,7 @@ tags:
 ---
 
 We got our solar roof around 1st of April.
-I am describing our setup [here]({{< relref "/2022-05-02-a-solar-roof.md" >}}).
+I am describing our setup [here]({{< relref "2022-05-02-a-solar-roof.md" >}}).
 Today we got the bill for Summer 2021 to Summer 2022.
 
 # What I measured

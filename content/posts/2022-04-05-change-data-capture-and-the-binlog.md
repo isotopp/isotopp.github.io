@@ -11,7 +11,7 @@ tags:
 ---
 
 MySQL uses replication to do an ongoing life restore of a primary server to any number of replicas.
-How replication came to be I have discussed previously [in another article]({{< relref "/2020-11-27-backups-and-replication.md" >}}).
+How replication came to be I have discussed previously [in another article]({{< relref "2020-11-27-backups-and-replication.md" >}}).
 
 Modern replication uses row based replication, with a minimal row image and compression. What is that?
 

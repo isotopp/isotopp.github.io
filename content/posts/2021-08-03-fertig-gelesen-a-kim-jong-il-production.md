@@ -23,4 +23,4 @@ The book uses [this true story](https://en.wikipedia.org/wiki/Abduction_of_Shin_
 
 The seventh film of Choi and Shin, [Pulgasari](https://www.youtube.com/watch?v=eCKSR0JArUQ), can be found on Youtube with english subtitles. It is a Godzilla-like monster tale, in which a rice toy of a blacksmiths daugther comes to life and turns into a giant metal-eating monster fighting for the rights of poor farmers in feudal Korea. When the monster eventually turns aganst the farmers, the blacksmiths daugther sacrifices herself killing the monster.
 
-Goes well with [88 Names]({{< relref "/2021-08-03-fertig-gelesen-88-names.md" >}})
+Goes well with [88 Names]({{< relref "2021-08-03-fertig-gelesen-88-names.md" >}})

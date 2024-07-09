@@ -24,7 +24,7 @@ Ok, ich hab es nicht fertig gelesen, sondern große Strecken Murty-Schwanzvergle
 
 "[Cibola burn](http://www.amazon.de/dp/B00GFHFZY8)", James S.A. Corey, EUR 5.99
 
-- [Leviathan Wakes]({{< relref "/2016-02-28-fertig-gelesen-leviathan-wakes.md" >}})
-- [Caliban's War]({{< relref "/2016-02-28-fertig-gelesen-calibans-war.md" >}})
-- [Abbadon's Gate]({{< relref "/2016-02-28-fertig-gelesen-abbadons-gate.md" >}})
-- [Cibola Burn]({{< relref "/2016-02-28-fertig-gelesen-cibola-burn.md" >}})
+- [Leviathan Wakes]({{< relref "2016-02-28-fertig-gelesen-leviathan-wakes.md" >}})
+- [Caliban's War]({{< relref "2016-02-28-fertig-gelesen-calibans-war.md" >}})
+- [Abbadon's Gate]({{< relref "2016-02-28-fertig-gelesen-abbadons-gate.md" >}})
+- [Cibola Burn]({{< relref "2016-02-28-fertig-gelesen-cibola-burn.md" >}})

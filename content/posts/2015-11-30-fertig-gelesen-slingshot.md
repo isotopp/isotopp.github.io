@@ -24,5 +24,5 @@ Klausmanns erstes Buch. Ein zweiter Teil ist auf dem Weg. Ich werde ihn kaufen.
 "[Slingshot](https://www.amazon.de/dp/B00WBZFHTG)", Tobias Klausmann, EUR 2.99
 
 Mehr Reviews:
-- [Slingshot]({{< relref "/2015-11-30-fertig-gelesen-slingshot.md" >}})
-- [Retaliation]({{< relref "/2017-01-02-fertig-gelesen-retaliation.md" >}})
+- [Slingshot]({{< relref "2015-11-30-fertig-gelesen-slingshot.md" >}})
+- [Retaliation]({{< relref "2017-01-02-fertig-gelesen-retaliation.md" >}})

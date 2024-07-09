@@ -12,7 +12,7 @@ tags:
 title: WLANs mappen
 ---
 Als Nachtrag zu 
-[Wie man aus Versehen WLAN Daten mitschneidet]({{< relref "/2010-05-16-wie-man-aus-versehen-wlan-daten-mitschneidet.md" >}})
+[Wie man aus Versehen WLAN Daten mitschneidet]({{< relref "2010-05-16-wie-man-aus-versehen-wlan-daten-mitschneidet.md" >}})
 hier die Erklärung zu "*Weswegen fahren Leute eigentlich systematisch durch
 die Straßen der Großstädte der Welt und zeichnen die Kennungen von WLAN
 Access Points und vermutlich auch GSM Basisstationen auf?*"

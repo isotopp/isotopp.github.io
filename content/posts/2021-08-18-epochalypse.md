@@ -54,4 +54,4 @@ I was triggered by [draft-peabody-dispatch-new-uuid-format-01](https://datatrack
 
 The string 2038 appears nowhere in this document.
 
-It's a draft, it contains obvious typos in several place, but generally speaking UUID v7 and UUID v8 look underspecified, with different implementation variants, and have the look of untested ideas. I agree [on the general idea]({{< relref "/2020-09-22-alter-table-for-uuid.md" >}}) of sort-ordering UUID values PK friendly, but [having a proper UUIDv1]({{< relref "/2021-04-06-mysql-and-uuids.md" >}}) looks like the safer option to me.
+It's a draft, it contains obvious typos in several place, but generally speaking UUID v7 and UUID v8 look underspecified, with different implementation variants, and have the look of untested ideas. I agree [on the general idea]({{< relref "2020-09-22-alter-table-for-uuid.md" >}}) of sort-ordering UUID values PK friendly, but [having a proper UUIDv1]({{< relref "2021-04-06-mysql-and-uuids.md" >}}) looks like the safer option to me.

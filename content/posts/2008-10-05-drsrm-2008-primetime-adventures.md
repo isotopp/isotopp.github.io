@@ -19,7 +19,7 @@ Das Genre habe ich gewählt, weil PtA bestimmte Schwächen beim Spielstart hat: 
 
 Plot spielt in PtA nur eine untergeordnete Rolle. Es ist Fluff, Hintergrund vor dem die Charactere agieren oder Auslöser für eine Krise, aber nie die Ursache für eine solche. Spielern, insbesondere PtA-unerfahrenen Spielern, ist dies mitunter schwer zu vermitteln und so kommt es am Start einer neuen PtA-Runde oft zu recht langen Verhandlungen darüber, was man spielen wolle und was genau dort passieren soll. Erst im Laufe einer Session zeigt sich dann, daß das mehr oder weniger irrelevant ist.
 
-Durch die Vorgabe von "Shadowrun" und "über 30" ("für Erwachsene, Variante dreckig und gemein") wollte ich das abkürzen: Einmal ist das Universum dem erwarteten Con-Publikum wohlbekannt und zum anderen stehen so die [Genrekonventionen und Erwartungen]({{< relref "/2005-07-06-regeln-vs-genrekonventionen.md" >}}) schon fest.
+Durch die Vorgabe von "Shadowrun" und "über 30" ("für Erwachsene, Variante dreckig und gemein") wollte ich das abkürzen: Einmal ist das Universum dem erwarteten Con-Publikum wohlbekannt und zum anderen stehen so die [Genrekonventionen und Erwartungen]({{< relref "2005-07-06-regeln-vs-genrekonventionen.md" >}}) schon fest.
 
 Die unausweichliche Startdiskussion stellte also zwei bis drei mögliche Szenarien ins den Raum:
 

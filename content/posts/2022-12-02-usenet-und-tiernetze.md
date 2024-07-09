@@ -10,7 +10,7 @@ tags:
 ---
 
 Vor ziemlich genau 30 Jahren gab es in Deutschland die 
-[Anfangsgründe des Internet]({{< relref "/2012-02-23-opa-erz-hlt-vom-krieg.md" >}}),
+[Anfangsgründe des Internet]({{< relref "2012-02-23-opa-erz-hlt-vom-krieg.md" >}}),
 aber es gab auch Netze, die auf anderer, viel älterer Technologie betrieben wurden -- die Mailboxnetze.
 Das sind dezentrale Netze, bei denen denen lokale Rechner mit Modems ausgestattet wurden, bei denen man anrufen und dann Nachrichten a la Mastodon online lesen konnte. 
 Oder man hatte Software daheim, die bei der Mailbox anrief, die Nachrichten heruntergeladen hat.

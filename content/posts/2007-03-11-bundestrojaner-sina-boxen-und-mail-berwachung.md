@@ -10,7 +10,7 @@ tags:
 title: Bundestrojaner, Sina-Boxen und Mailüberwachung
 ---
 Der Artikel 
-[Der Bundestrojaner durchdekliniert]({{< relref "/2007-02-26-der-bundestrojaner-durchdekliniert.md" >}})
+[Der Bundestrojaner durchdekliniert]({{< relref "2007-02-26-der-bundestrojaner-durchdekliniert.md" >}})
 hat, wenn man nach den Trackbacks und den Kommentaren geht, einiges Echo
 hervorgerufen.
 

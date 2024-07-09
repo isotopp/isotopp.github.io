@@ -52,7 +52,7 @@ Benchmarking tools will give you a completion time histogram (or clat histo) for
      | 99.99th=[ 2343]
 ```
 
-*fio Benchmark clat histogram from [Adventures in Storageland]({{< relref "/2019-06-13-adventures-in-storageland.md" >}}).*
+*fio Benchmark clat histogram from [Adventures in Storageland]({{< relref "2019-06-13-adventures-in-storageland.md" >}}).*
 
 Here we see a Benchmark result from a typical database blade in use at work, a Dell M630 with a PERC controller and a 1.92TB SSD.
 
@@ -70,7 +70,7 @@ This is the performance we get from bare metal, for around 100 Euro/TB and 9W-25
 
 ![](/uploads/2022/09/local-storage-09.jpg)
 
-*Write Completion Latency comparison between Local Storage (above) and Ceph (below) from [Database Workload and Storage]({{< relref "/2022-09-27-mysql-local-and-distributed-storage.md" >}}).*
+*Write Completion Latency comparison between Local Storage (above) and Ceph (below) from [Database Workload and Storage]({{< relref "2022-09-27-mysql-local-and-distributed-storage.md" >}}).*
 
 The graph above compares two kinds of storages.
 We are looking at how long it takes to wait for a write to the medium, and draw a histogram of write times.
@@ -90,7 +90,7 @@ At the P99 scale Ceph is 20x slower, but on top of that the variance makes it re
 
 The word IOPS expands to "**I**/O **O**perations **P**er **S**econd".
 It is not the inverse of Latency.
-This is discussed at length in [Adventures in Storageland]({{< relref "/2019-06-13-adventures-in-storageland.md" >}}).
+This is discussed at length in [Adventures in Storageland]({{< relref "2019-06-13-adventures-in-storageland.md" >}}).
 The distinction is extremely important for Flash Storage with NVME interfaces.
 
 ![](/uploads/2022/11/db-metrics-02.png)
@@ -141,7 +141,7 @@ Transactions are independent when they have non-overlapping sets of primary key 
 The average run length of non-overlapping wsets we call the "width of the binlog of that database at that point in time".
 It is the number of parallel writes inherent to the workload of this database at that point in time.
 
-We have measured it, and I have documented that in [Parallel Replication]({{< relref "/2021-11-08-mysql-parallel-replication.md" >}}).
+We have measured it, and I have documented that in [Parallel Replication]({{< relref "2021-11-08-mysql-parallel-replication.md" >}}).
 
 It is important to remember:
 
@@ -187,7 +187,7 @@ Actual MySQL performance will be largely described by the results of this benchm
 
 ![](/uploads/2021/02/class-200-lba.png)
 
-*Oakgate Workload Analytics shows what a database does with the disk when it is writing (Image from [MySQL from Below]({{< relref "/2021-02-25-mysql-from-below.md" >}})).*
+*Oakgate Workload Analytics shows what a database does with the disk when it is writing (Image from [MySQL from Below]({{< relref "2021-02-25-mysql-from-below.md" >}})).*
 
 The above graph is the result of a blktrace command recording real world disk write activity to a ramdisk, and then plotting it.
 The diagram plots block number (LBA, linear block address) over time, that is, we see where on the disk we are writing.

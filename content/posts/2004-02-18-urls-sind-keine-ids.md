@@ -9,7 +9,7 @@ tags:
 title: URLs sind keine IDs
 ---
 Ich habe mich an 
-[anderer Stelle]({{< relref "/2004-02-12-wir-sind-so-geil.md" >}})
+[anderer Stelle]({{< relref "2004-02-12-wir-sind-so-geil.md" >}})
 bereits über Blogs und ihre Technik aufgeregt. Hier eine etwas
 besser geordnete Präsentation meiner Gedanken zu diesem Thema:
 
@@ -220,7 +220,7 @@ sein.
 Haarspalterei? Nein.
 
 Blogs bezeichnen derzeit Artikel mit URLs. Aber eine URL wie 
-[die von diesem Artikel]({{< relref "/2004-02-18-urls-sind-keine-ids.md" >}})
+[die von diesem Artikel]({{< relref "2004-02-18-urls-sind-keine-ids.md" >}})
 bezeichnet genau *nicht* meinen Artikel "Wir sind so geil, wir
 können XML", sondern eine Webseite, auf der sich neben meinem
 Artikel auch mehr als ein Dutzend weitere Beiträge befinden, auf

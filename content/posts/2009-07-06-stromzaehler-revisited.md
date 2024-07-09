@@ -11,7 +11,7 @@ title: Stromzähler revisited
 ---
 
 Neulich fragte ich noch 
-[Wieviel Strom verbraucht ein Stromzähler?]({{< relref "/2009-06-05-wie-viel-strom-verbraucht-ein-stromzaehler.md" >}}): 
+[Wieviel Strom verbraucht ein Stromzähler?]({{< relref "2009-06-05-wie-viel-strom-verbraucht-ein-stromzaehler.md" >}}): 
 
 > Von den Sicherheits- und Datenschutzaspekten mal abgesehen…
 

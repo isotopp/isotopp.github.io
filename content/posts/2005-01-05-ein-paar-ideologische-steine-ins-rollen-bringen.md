@@ -12,7 +12,7 @@ tags:
 title: Ein paar ideologische Steine ins Rollen bringen
 ---
 Im Nachbeben zu
-[Rumble in the Jungle]({{< relref "/2005-01-04-rumble-in-the-jungle.md" >}})
+[Rumble in the Jungle]({{< relref "2005-01-04-rumble-in-the-jungle.md" >}})
 analysiert
 [Malte Diedrich](http://www.treehugginpussy.de/index.php?p=1013): 
 
@@ -63,16 +63,16 @@ sehr unterschiedlichen Lizenzen nur selten zu gegenseitiger Blockierung und
 im Grunde niemals zu einer rechtlichen Auseinandersetzung. Eher setzt man
 sich zusammen, diskutiert das Problem aus und findet eine gemeinsame Lösung.
 Ein Beispiel dafür ist der Dialog um die MySQL Lizenzen, wie ich ihn in
-[MySQL und die Lizenzen]({{< relref "/2004-03-14-mysql-und-die-lizenzen.md" >}})
+[MySQL und die Lizenzen]({{< relref "2004-03-14-mysql-und-die-lizenzen.md" >}})
 auseinanderdividiert habe, und dessen Ende dann in
-[MySQL FLOSS Exception]({{< relref "/2004-07-19-mysql-floss-exception.md" >}})
+[MySQL FLOSS Exception]({{< relref "2004-07-19-mysql-floss-exception.md" >}})
 nachzulesen ist.
 
 ![](/uploads/punch.jpg)
 
 Mit Vertretern des kompetetiven Lagers wird weniger nett umgesprungen:
 
-[GNU GPL in Deutschland]({{< relref "/2004-04-15-gnu-gpl-in-deutschland.md" >}})
+[GNU GPL in Deutschland]({{< relref "2004-04-15-gnu-gpl-in-deutschland.md" >}})
 demonstriert hier die Vorgehensweise - letztendlich erkennt das kooperative
 Lager solche Vorfälle als Mißbrauch der Allmende und straft die betreffenden
 Parteien ab - und zwar durch Ausschluß aus der Welt der kooperativen

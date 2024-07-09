@@ -12,8 +12,8 @@ tags:
 title: Checkpoint Blues
 ---
 Wer 
-[dies]({{< relref "/2008-01-30-die-innodb-storage-engine.md" >}}) und
-[dies]({{< relref "/2008-02-03-die-innodb-storage-engine-konfiguration.md" >}}) gelesen hat, versteht mehr.
+[dies]({{< relref "2008-01-30-die-innodb-storage-engine.md" >}}) und
+[dies]({{< relref "2008-02-03-die-innodb-storage-engine-konfiguration.md" >}}) gelesen hat, versteht mehr.
 
 InnoDB ist eine Storage Engine, die mit Hilfe von
 [MVCC](http://en.wikipedia.org/wiki/Multiversion_concurrency_control)

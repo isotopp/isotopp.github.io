@@ -19,7 +19,7 @@ Markus fragt:
 
 Die Frage habe ich ihm schon beantwortet, aber versprochen, das Thema noch
 einmal im Blog "in groß" durchzudeklinieren. Hier also der
-[Zeichensatz-Artikel]({{< relref "/2006-08-06-zeichensatzaerger.md" >}})
+[Zeichensatz-Artikel]({{< relref "2006-08-06-zeichensatzaerger.md" >}})
 redone.
 
 

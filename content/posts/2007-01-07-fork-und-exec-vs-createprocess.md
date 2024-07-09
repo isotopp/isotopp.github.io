@@ -13,7 +13,7 @@ title: fork und exec vs. CreateProcess
 ---
 **Disclaimer:** Meine Windows-Kenntnisse sind beschränkt, veraltet und ausschließlich theoretischer Natur. Im Zweifel erzählt dieser Artikel Unsinn nach Hörensagen.
 
-Nach dem Artikel [form, exec, wait und exit]({{< relref "/2007-01-07-fork-exec-wait-und-exit.md" >}}) habe ich mir aber einmal meine Kopie von Jeffrey Richters [Windows - Programmierung für Experten (Advanced Windows)](http://www.amazon.de/Microsoft-Windows-Programmierung-fuer-Experten/dp/3860633899/) (1997) gegriffen und dort nachgeschlagen, wie man sich das mit den Prozessen und Programmen unter Windows vorstellt (oder jedenfalls vor 10 Jahren vorgestellt hat).
+Nach dem Artikel [form, exec, wait und exit]({{< relref "2007-01-07-fork-exec-wait-und-exit.md" >}}) habe ich mir aber einmal meine Kopie von Jeffrey Richters [Windows - Programmierung für Experten (Advanced Windows)](http://www.amazon.de/Microsoft-Windows-Programmierung-fuer-Experten/dp/3860633899/) (1997) gegriffen und dort nachgeschlagen, wie man sich das mit den Prozessen und Programmen unter Windows vorstellt (oder jedenfalls vor 10 Jahren vorgestellt hat).
 
 Windows hat zu diesem Zweck die Systemfunktion [CreateProcess](http://msdn.microsoft.com/library/default.asp?url=/library/en-us/dllproc/base/createprocess.asp)(10 Parameters). Die liest sich so:
 

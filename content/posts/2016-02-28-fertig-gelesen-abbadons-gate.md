@@ -21,7 +21,7 @@ Auf eine Weise ist dies wie Band 2, nur ohne die Mädels um ihn zu retten. Ein H
 
 "[Abbadon's Gate](http://www.amazon.de/dp/B009SQ018I)", James S.A. Corey, EUR 8.99
 
-- [Leviathan Wakes]({{< relref "/2016-02-28-fertig-gelesen-leviathan-wakes.md" >}})
-- [Caliban's War]({{< relref "/2016-02-28-fertig-gelesen-calibans-war.md" >}})
-- [Abbadon's Gate]({{< relref "/2016-02-28-fertig-gelesen-abbadons-gate.md" >}})
-- [Cibola Burn]({{< relref "/2016-02-28-fertig-gelesen-cibola-burn.md" >}})
+- [Leviathan Wakes]({{< relref "2016-02-28-fertig-gelesen-leviathan-wakes.md" >}})
+- [Caliban's War]({{< relref "2016-02-28-fertig-gelesen-calibans-war.md" >}})
+- [Abbadon's Gate]({{< relref "2016-02-28-fertig-gelesen-abbadons-gate.md" >}})
+- [Cibola Burn]({{< relref "2016-02-28-fertig-gelesen-cibola-burn.md" >}})

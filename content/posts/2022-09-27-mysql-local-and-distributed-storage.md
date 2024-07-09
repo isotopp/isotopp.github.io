@@ -222,7 +222,7 @@ So many parallel writes should work well:
 Each write takes 0.9-ish ms, but you can do many of them in flight at the same time.
 
 Unfortunately, transactional workloads do not have that shape. 
-[Parallel replication]({{< relref "/2021-11-08-mysql-parallel-replication.md" >}}) is subject to a number of constraints regarding reordering, and also subject to limitations that result from implementation details.
+[Parallel replication]({{< relref "2021-11-08-mysql-parallel-replication.md" >}}) is subject to a number of constraints regarding reordering, and also subject to limitations that result from implementation details.
 
 ![](/uploads/2022/09/local-storage-10.jpg)
 
