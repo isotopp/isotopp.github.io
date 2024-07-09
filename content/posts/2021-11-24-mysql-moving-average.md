@@ -10,7 +10,7 @@ tags:
 ---
 
 MySQL window functions can be used to calculate daily averages or moving averages for a 24h time window relatively easily.
-In an [earlier article]({{< ref "2020-06-21-mysql-window-functions.md" >}}) basic window functions were already discussed.
+In an [earlier article]({{< relref "2020-06-21-mysql-window-functions.md" >}}) basic window functions were already discussed.
 In this article, we want to see how we can get daily buckets and moving averages.
 
 A sample program is available, as usual, [on GitHub](https://github.com/isotopp/mysql-dev-examples/blob/master/mysql-rolling-window/rolling-window.py).
