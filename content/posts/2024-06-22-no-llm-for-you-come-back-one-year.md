@@ -289,3 +289,12 @@ oder für LLM-Features Geräte mit mehr RAM zu verlangen:
 > In ihr enthalten ist ein neues Feature: Predictive Code Completion: 
 > Diese nutzt KI, um Codeschnipsel zu analysieren und passende Vorschläge in Echtzeit auszugeben.
 > Allerdings wird dafür laut Apple ein Mac mit mindestens 16 GByte Arbeitsspeicher benötigt.
+
+# Apple mit ohne Intelligenz
+
+Stellt sich raus, auch der Rest der Welt bekommt zunächst einmal keine Apple Intelligence:
+
+[Apple Intelligence: Kommt die KI-Siri erst mit iOS 18.4?](https://www.heise.de/news/Apple-Intelligence-Kommt-die-KI-Siri-erst-mit-iOS-18-4-9793852.html)
+
+> Neuen Informationen zufolge soll etwa der mit Künstlicher Intelligenz runderneuerte Sprachassistent Siri 
+> deshalb erst im nächsten Frühjahr in den USA sein Debüt feiern.
