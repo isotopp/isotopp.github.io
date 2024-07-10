@@ -1,6 +1,6 @@
 ---
 author: isotopp
-title: "Operations Review Meeting"
+title: "Operations Review Meeting (english)"
 date: "2024-04-18T05:06:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 toc: true
@@ -9,6 +9,8 @@ tags:
 - erklaerbaer
 - work
 ---
+
+[In Deutsch]({{< relref "2024-04-18-operations-review-meeting-deutsch.md" >}})
 
 Monday Afternoon, "Operations Review Meeting".
 
