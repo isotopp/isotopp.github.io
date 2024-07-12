@@ -96,9 +96,11 @@ und die Tonausgänge diverser Mac und Windows-Rechner.
 
 Als ich das im Netz fragte, nannte man mir die folgenden Dinge zum Ansehen:
 
+
+- Yamaha Musiccast, [z.B. WX-021](https://nl.yamaha.com/nl/products/audio_visual/desktop_audio/musiccast_20/index.html)
 - [Bluesound](https://bluesound-deutschland.de/kabellose-lautsprecher/).
 - [Roon](https://roon.app/en/pricing) – unklar, was das genau ist, und eine Subscription?
 - [Teufel Raumfeld](https://teufelaudio.nl/wifi-speakers/raumfeld-multiroom), aber das ist [abgekündigt](https://support.teufel.de/hc/de/articles/16194516593042-Teufel-Raumfeld-Wird-die-Technologie-weiterentwickelt).
 - [Russsound](https://www.russound.com/products/audio-systems/multi-room-controllers/caa66-system-and-kits/caa66-controller-amplifier) – fernsteuerbare Verstärker für Boxen, mit langen Analog-Kabeln?
 
-Das scheinen alles andere Geräte und Lösungen zu sein, als ich brauche oder will?
+Von diesen Vorschlägen scheint das Yamaha Musiccast-Zeugs noch am ehesten dort zu sein, wo ich es brauchen kann.
