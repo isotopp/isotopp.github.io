@@ -96,7 +96,7 @@ und die Tonausgänge diverser Mac und Windows-Rechner.
 
 Als ich das im Netz fragte, nannte man mir die folgenden Dinge zum Ansehen:
 
-- [BlueOS](https://bluos.io/).
+- [Bluesound](https://bluesound-deutschland.de/kabellose-lautsprecher/).
 - [Roon](https://roon.app/en/pricing) – unklar, was das genau ist, und eine Subscription?
 - [Teufel Raumfeld](https://teufelaudio.nl/wifi-speakers/raumfeld-multiroom), aber das ist [abgekündigt](https://support.teufel.de/hc/de/articles/16194516593042-Teufel-Raumfeld-Wird-die-Technologie-weiterentwickelt).
 - [Russsound](https://www.russound.com/products/audio-systems/multi-room-controllers/caa66-system-and-kits/caa66-controller-amplifier) – fernsteuerbare Verstärker für Boxen, mit langen Analog-Kabeln?
