@@ -298,3 +298,20 @@ Stellt sich raus, auch der Rest der Welt bekommt zunächst einmal keine Apple In
 
 > Neuen Informationen zufolge soll etwa der mit Künstlicher Intelligenz runderneuerte Sprachassistent Siri 
 > deshalb erst im nächsten Frühjahr in den USA sein Debüt feiern.
+
+# Nicht Nvidia, sondern Google
+
+Sierk Bornemann weist mich darauf hin, daß Apple in der Tat nicht sehr an Nvidia interessiert ist,
+aber augenscheinlich sehr eng mit Google verbandelt ist:
+
+- Business Insider: [Apple's new AI is made in Google data centers](https://www.businessinsider.com/apple-ai-google-data-centers-2024-6?international=true&r=US&IR=T).
+  Der Artikel behauptet, daß Apple Google's Rechenzentrum-Hardware und TPUs nutzt, um Modelle zu trainieren.
+  Dabei scheint der Konsum von TPU-Kapazität Google vor einige technische Probleme gestellt zu haben.
+- Ein [Tweet](https://x.com/WholeMarsBlog/status/1800317499222921235) benennt dabei das "axlearn" Framework,
+  und zitiert dabei [Apple's eigene Dokumentation](https://machinelearning.apple.com/research/introducing-apple-foundation-models).
+- Und [axlearn](https://github.com/apple/axlearn/blob/main/docs/04-infrastructure.md) ist Open Source
+  und scheint sehr auf Google TPUs hin optimiert zu sein.
+- Auch [Trail of Bits](https://blog.trailofbits.com/2024/06/14/understanding-apples-on-device-and-server-foundations-model-release/)
+  stellt heraus, daß Apple ohne "Nvidia/CUDA Tax" käme, weil das Training mit axlearn auf Google TPUs liefe.
+
+Inferenz ist einfacher und verwendet Apple Silicon (also M1-M4).
