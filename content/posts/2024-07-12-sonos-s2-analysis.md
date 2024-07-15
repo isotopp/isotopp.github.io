@@ -34,7 +34,7 @@ Das war anstrengend, um neue Features zu realisieren,
 weil es effektiv viermal gemacht werden mußte (Windows Desktop, Mac Desktop, Android und Mac Phone),
 aber es war sehr performant.
 
-Die neue App verwendet ein Javascript Framework für die Implementierung (angeblich Flutter).
+Die neue App verwendet ein Multiplattform-Framework für die Implementierung (angeblich Flutter).
 Sie ist Mobile only und verwendet mDNS, um Geräte zu finden.
 Das scheint weitaus weniger zuverlässig zu funktionieren, als SSDP.
 
