@@ -151,6 +151,10 @@ So, what can we learn, not having a proper Root Cause Analysis from the vendor, 
 - Enterprises roll out such updates in an uncontrolled way.
   No local testing, no staggered rollouts.
   Complete absence of a proper Change Management process.
+- The fact
+  that large Enterprises operating KRITIS have fired thousands of employees within the last 12 months also contributed,
+  for example, by the inability to implement proper testing and staggered rollout.
+  Non-functional decisions have functional consequences.
 - Enterprises use such software in the critical path of KRITIS systems.
   While not directly in regulated OT, the outage did affect the proper functioning of KRITIS systems,
   and is therefore in scope.
