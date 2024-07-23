@@ -18,6 +18,8 @@ when Crowdstrike took out a good 1% of all Windows machines worldwide with a bot
 
 # Some Takes
 
+![](/uploads/2024/07/crowdstroke-01.png)
+
 ## Crowdstrike
 The company did release a statement with 
 "[Technical Details](https://www.crowdstrike.com/blog/falcon-update-for-windows-hosts-technical-details/)".
@@ -117,6 +119,9 @@ Here is how he [describes the update](https://chaos.social/@icing/11282937017707
 This is what Crowdstrike did not do, in the client.
 
 So, what can we learn, not having a proper Root Cause Analysis from the vendor, four days later?
+
+
+
 
 # Learnings
 
