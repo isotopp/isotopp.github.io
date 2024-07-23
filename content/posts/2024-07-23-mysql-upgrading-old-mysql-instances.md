@@ -138,6 +138,42 @@ Note that this is different from
 [sort_buffer_size](https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_sort_buffer_size)
 (a variable used in ORDER BY optimization, but not in InnoDB bulk index builds).
 
+# Beheading
+
+No matter what you do, you can upgrade the database using replicas with minimal operations impact and downtime.
+
+![](/uploads/2024/07/upgrade-01.png)
+
+*A database client writes to a MySQL 5.5 primary, and reads from a MySQL 5.5.
+replica.
+An additional replica for upgrades has been created from a backup. It is also MySQL 5.5.*
+
+![](/uploads/2024/07/upgrade-02.png)
+
+*The additional replica has been upgraded to MYSQL 5.6,
+following the upgrade procedure for this specific version in the manual.
+If the replication keeps up, it means the SQL you write is probably good (using SBR).
+RBR will simply work.*
+
+![](/uploads/2024/07/upgrade-03.png)
+
+*The replication hierarchy has been extended to one additional replica of MySQL 5.6.
+We also have moved the reads from MySQL 5.5 to MySQL 5.6.
+At this point in time we can test our reading SQL with the new version, and if that fails, cut back to the old version.
+After fixing the problem we try again.*
+
+![](/uploads/2024/07/upgrade-04.png)
+
+*Once we are confident the reads work, we can try the same with the write traffic.
+This is the point of no return: The old primary is now idle, and is missing writes.
+We can only fail forward, that is, fix the problematic write SQL, as we are committed to the new version.*
+
+![](/uploads/2024/07/upgrade-05.png)
+
+*We can now delete all old version instances, that is, we behead the replication tree.
+We can then start over and move to the next version in our upgrade sequence.*
+
+
 # TL;DR
 
 - If your MySQL instance does not have at least one replica more than you are going to need, you are holding it wrong.
