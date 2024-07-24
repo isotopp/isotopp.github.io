@@ -86,22 +86,27 @@ Use the version-specific upgrade process as documented in the manual,
 and test each upgrade before proceeding to the next.
 
 MySQL 8.1, 8.2 and 8.3 have been innovation releases and are not "major stable versions".
-Don't use them in production.
-Also, while MySQL 9.0 may one time be a long term support release of MySQL once a General Availbility Version is out,
-the current version is **not** GA and should not be used in production.
+So is MySQL 9.0.
+Don't use any of them in production.
 
 > **Note on Non-GA Versions of MySQL:**
-> It is useful to run new versions of MySQL and innovation releases as replicas in production.
+> It is useful to run new versions of MySQL and innovation releases as replicas *for testing* in production.
 > Doing this helps you to stay on top of current developments and get familiar with new features and quirks early.
-> An idle replica will check your write-transactions (using SBR) or keep up with the replication stream (using RBR).
+>
+> An idle replica will check your write-transactions, using SBR. 
 > If you feel adventurous, divert a minimal amount of read-transactions to it from the database load balancer to
 > check how reads perform.
 > 
-> Do not use 8.1, 8.2, 8.3 or pre-GA in a productive context or for a primary. 
+> Do not use 8.1, 8.2, 8.3 or 9.0 in a productive context or for a primary. 
 > They are called "Innovation Releases" for a reason.
 > 
 > Do use them to experiment and innovate, in a safe way.
-> That is what replication is for, and why we still have SBR.
+
+> **Note on SBR in MySQL replication:**
+> SBR has a lot of limitations and quirks, but it does transport original SQL to a replica.
+> It is useful to test write-transactions on a replica.
+> 
+> It is not recommended to use SBR in production replication. Use RBR or group-replication.
 
 Upgrading in place changes the on-disk format of the database,
 the valid syntax of some queries you may use, and the behavior of some data types.
