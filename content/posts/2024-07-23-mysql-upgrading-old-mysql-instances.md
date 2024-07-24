@@ -197,6 +197,10 @@ We can then start over and move to the next version in our upgrade sequence.*
 # TL;DR
 
 - If your MySQL instance does not have at least one replica more than you are going to need, you are holding it wrong.
+  - You must be operationally capable of casually creating new MySQL replicas from a backup or a donor instance at will.
+    This must be an operational procedure, a day-to-day task, not a project.
+    If you can't do this, you can't move.
+    Solve this problem first, then return to the upgrade task.
 - Upgrade MySQL from one major version to the next one, using in-place upgrades – on a replica.
   - When done, behead the replication tree. That is, point the writes from the old version primary to the new database,
     promoting the replica to the new primary.
