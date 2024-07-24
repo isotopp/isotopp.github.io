@@ -204,3 +204,5 @@ We can then start over and move to the next version in our upgrade sequence.*
 - If you must upgrade using a dump, plan this.
   - Dumps are slow because they rebuild indexes.
   - Try this out and time it, optimize it by playing with `innodb_sort_buffer_size`.
+
+**Note:** This article has been edited on 24-Jul-2024 to include additional input from Simon Mudd. Thank you, Simon!
