@@ -2,11 +2,19 @@
 author: isotopp
 date: "2015-03-27T09:12:22Z"
 feature-img: assets/img/background/rijksmuseum.jpg
+description: |
+  Talk writeup "Go away, or I will replace you with a very little shell script".
+  A talk I have given initially in german for the GUUG FFG 2015, and later at Froscon.
+  This is the english language writeup.
+  The talk looks at how the systems we work with have changed in the last 10 years, 
+  and what other practice-changing pressures were at work, and how that led to the birth of Devops as a practice.
+  But despite Devs and Operations people using the same tools now, their mindset is still differennt – by necessity,
+  and that leads to tension.
 tags:
 - lang_en
 - devops
 - talk
-title: Go away, or I will replace you with a very small shell script
+title: "Go away, or I will replace you with a very small shell script"
 ---
 
 This is the writeup for the english variant of the talk "Go away or I will replace you with a very small Shell script". The original version of the talk was given in German at [GUUG FFG 2015](https://guug.de/veranstaltungen/ffg2015/abstracts.html#3_1_1) in Stuttgart. [A recorded version in german language](https://www.youtube.com/watch?v=e0CCv7pSK4s) has been made at Froscon in August 2015.
