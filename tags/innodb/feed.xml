@@ -6,7 +6,7 @@
     <description>Recent content in Innodb on Die wunderbare Welt von Isotopp</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 24 Jul 2024 10:41:51 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/innodb/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 15 Aug 2024 08:20:54 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/innodb/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: automatic partitions surely would be nice</title>
       <link>https://blog.koehntopp.info/2020/09/25/mysql-dynamic-partitions-suck.html</link>
@@ -3509,24 +3509,22 @@ leicht vergleichbar.&lt;/p&gt;
 
 &lt;/p&gt;
 &lt;p&gt;&amp;ldquo;Kris, kannst Du bitte mal gucken?&amp;rdquo;&lt;/p&gt;
-&lt;p&gt;Seit heute morgen, 10:00 Uhr, wächst das Undo-Log immer weiter an.&lt;/p&gt;
-&lt;p&gt;Immer wenn InnoDB Daten schreibt wird die alte Version einer Zeile aus der
-Tabelle in das Undo-Log verschoben, also physikalisch von der ibd-Datei der
-Tabelle in die ibdata1 im Datadir von MySQL. In der Tabelle wird in der
-veränderten Zeile ein Zeiger von der neuen Version auf die alte Version der
-Zeile im Undo-Log installiert, der Roll(back)-Pointer. Die alte Version im
-Undo-Log zeigt mit ihrem eigenen Roll-Pointer auf eine noch ältere Version
-derselben Zeile und so weiter - es entsteht für jede Zeile in der Datenbank
+&lt;p&gt;Seit heute Morgen, 10:00 Uhr, wächst das Undo-Log immer weiter an.&lt;/p&gt;
+&lt;p&gt;Immer wenn InnoDB Daten schreibt wird die alte Version einer Zeile aus der Tabelle in das Undo-Log verschoben,
+also physikalisch von der ibd-Datei der Tabelle in die ibdata1 im Datadir von MySQL.
+In der Tabelle wird in der veränderten Zeile ein Zeiger von der neuen Version auf die alte Version der Zeile
+im Undo-Log installiert, der Roll(back)-Pointer.
+Die alte Version im Undo-Log zeigt mit ihrem eigenen Roll-Pointer auf eine noch ältere Version derselben Zeile
+und so weiter–es entsteht für jede Zeile in der Datenbank
 eine lineare Liste von Versionen in die Vergangenheit einer Row.&lt;/p&gt;
-&lt;p&gt;Der InnoDB Purge Thread hat die Aufgabe, das Undo-Log zu verkürzen. Wenn er
-das nicht tut, dann sieht das so aus wie oben im Graphen gezeigt. Dafür kann
-es zwei Gründe geben: Purge Lag - also mehr Writes als der Purge Thread
-wegschaffen kann. Oder lang laufende Transaktionen. Denn der Purge Thread
-kann nur dann eine Zeile aus dem Undo-Log streichen, wenn es keine aktive
-Transaktion mehr im ganzen System gibt, die älter ist als die zu streichende
-Zeile.&lt;/p&gt;
-&lt;p&gt;Das ist die weitaus wahrscheinlichere Fehlerquelle. Wie also finden wir den
-Schuldigen?&lt;/p&gt;
+&lt;p&gt;Der InnoDB Purge Thread hat die Aufgabe, das Undo-Log zu verkürzen.
+Wenn er das nicht tut, dann sieht das so aus wie oben im Graphen gezeigt.
+Dafür kann es zwei Gründe geben: Purge Lag–also mehr Writes als der Purge Thread wegschaffen kann.
+Oder lang laufende Transaktionen.
+Denn der Purge Thread kann nur dann eine Zeile aus dem Undo-Log streichen,
+wenn es keine aktive Transaktion mehr im ganzen System gibt, die älter ist als die zu streichende Zeile.&lt;/p&gt;
+&lt;p&gt;Das ist die weitaus wahrscheinlichere Fehlerquelle.
+Wie also finden wir den Schuldigen?&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pager&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;grep&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ACTIVE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;show&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;engine&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;innodb&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;\&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;G&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -3544,22 +3542,20 @@ Schuldigen?&lt;/p&gt;
 Mehr Informationen bekommen wir aus der Prozeßliste:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; pager grep cron
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysql&amp;gt; show processlist;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;…
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;| 146473882 | cron_bp       | mc02cronapp-01:50154 | bp   | Sleep       |   16434 |
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ein Login auf der mc02cronapp-01 und ein &amp;ldquo;lsof -i -n -P | grep 50154&amp;rdquo; zeigt
-schnell: Mitnichten ein Cronjob. Ein User hat einen MySQL
-Kommandozeilenclient gestartet und eine manuelle Verbindung und Transaktion
-offen gelassen. Ein &amp;ldquo;KILL 146473882&amp;rdquo; auf den Thread in MySQL trennt die
-Verbindung und der Purge Thread kann seine Arbeit fortsetzen, ein Sysadmin
-mit einem Cluebat kann zu dem User dispatched werden.&lt;/p&gt;
-&lt;p&gt;Das Undo-Log ist Teil der ibdata1-Datei. Diese startet mit einer Größe von
-10M und wächst per Default in Schritten von 8M im autoextend-Modus. Lang
-laufende Transaktionen, die den Purge Thread anhalten, führen zu einem
-Wachstum der ibdata1. InnoDB schrumpft Dateien niemals, und es gibt auch
-keine Methode, das zu tun - zwar wird der Platz &lt;em&gt;in&lt;/em&gt; der Datei
-freigegeben und später wieder genutzt, aber für das Betriebssystem ist der
-Platz verloren.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;…
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Ein Login auf der mc02cronapp-01 und ein &amp;ldquo;lsof -i -n -P | grep 50154&amp;rdquo; zeigt schnell:
+Mitnichten ein Cronjob.
+Ein User hat einen MySQL Kommandozeilenclient gestartet und eine manuelle Verbindung und Transaktion offen gelassen.
+Ein &lt;code&gt;KILL 146473882&lt;/code&gt; auf den Thread in MySQL trennt die Verbindung und der Purge Thread kann seine Arbeit fortsetzen,
+ein Sysadmin mit einem Cluebat kann zu dem User dispatched werden.&lt;/p&gt;
+&lt;p&gt;Das Undo-Log ist Teil der &lt;code&gt;ibdata1&lt;/code&gt;-Datei.
+Diese startet mit einer Größe von 10M und wächst per Default in Schritten von 8M im autoextend-Modus.
+Lang laufende Transaktionen, die den Purge Thread anhalten, führen zu einem Wachstum der &lt;code&gt;ibdata1&lt;/code&gt;.
+InnoDB schrumpft Dateien niemals, und es gibt auch keine Methode, das zu tun –
+zwar wird der Platz &lt;em&gt;in&lt;/em&gt; der Datei freigegeben und später wieder genutzt,
+aber für das Betriebssystem ist der Platz verloren.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;[root@mc01bpmdb-01 ~]#&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;cd&lt;/span&gt; /mysql/bp/data
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gp&#34;&gt;[root@mc01bpmdb-01 data]#&lt;/span&gt; ls -lh ibdata*
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rw-rw---- 1 mysql mysql 1.3G Apr 28 14:50 ibdata1
