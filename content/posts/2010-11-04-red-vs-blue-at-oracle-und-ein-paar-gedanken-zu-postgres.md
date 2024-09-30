@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-11-04T18:00:57Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - mysql
 - postgres

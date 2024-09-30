@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-05-02T08:42:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "A solar roof"
-published: true
 tags:
 - lang_en
 - netherlands

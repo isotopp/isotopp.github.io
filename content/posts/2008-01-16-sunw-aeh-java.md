@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-01-16T15:35:41Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - mysql
 - sun

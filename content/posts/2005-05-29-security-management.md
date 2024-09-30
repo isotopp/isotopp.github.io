@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-05-29T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 title: "Security Management - was ist das eigentlich?"
 tags:
 - lang_de

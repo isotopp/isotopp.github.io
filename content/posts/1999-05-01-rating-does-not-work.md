@@ -2,7 +2,6 @@
 author: isotopp
 date: "1999-05-02T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Rating does not work"
 tags:
 - lang_de

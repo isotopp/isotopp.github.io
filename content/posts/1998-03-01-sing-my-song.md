@@ -2,7 +2,6 @@
 author: isotopp
 date: "1998-03-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Sing my song"
 tags:
 - lang_en

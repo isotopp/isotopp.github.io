@@ -3,7 +3,6 @@ author: isotopp
 title: "Service Mesh"
 date: "2018-11-28T20:57:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 - lang_de

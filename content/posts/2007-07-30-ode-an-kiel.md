@@ -2,7 +2,6 @@
 author: isotopp
 date: "2007-07-30T05:28:44Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - kiel
 - anderswo

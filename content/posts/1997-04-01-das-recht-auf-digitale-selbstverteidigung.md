@@ -2,7 +2,6 @@
 author: isotopp
 date: "1999-04-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Das Recht auf Kryptographie ist das Recht auf digitale Selbstverteidigung"
 tags:
 - lang_de

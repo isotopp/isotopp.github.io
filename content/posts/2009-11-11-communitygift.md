@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-11-11T18:11:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - wikipedia

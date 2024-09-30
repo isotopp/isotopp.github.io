@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-05-17T11:21:00Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - internet
 - privacy

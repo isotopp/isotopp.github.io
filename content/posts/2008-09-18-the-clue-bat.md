@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-09-18T10:10:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - devops
 - amsterdam

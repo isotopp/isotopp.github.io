@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-11-08T08:16:27Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - identity
 - politik

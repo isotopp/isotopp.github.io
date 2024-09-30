@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-10-08T08:43:57Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - bash
 - computer

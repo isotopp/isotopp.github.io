@@ -2,7 +2,6 @@
 author: isotopp
 date: "2004-06-23T09:00:00Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - publication
 - talk

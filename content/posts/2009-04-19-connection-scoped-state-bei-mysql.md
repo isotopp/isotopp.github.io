@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-04-19T11:14:27Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - erklaerbaer
 - database

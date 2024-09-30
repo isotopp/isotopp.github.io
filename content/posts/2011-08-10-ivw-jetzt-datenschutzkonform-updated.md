@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-08-10T19:45:27Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - cookie
 - privacy

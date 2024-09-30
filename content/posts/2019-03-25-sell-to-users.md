@@ -3,7 +3,6 @@ author: isotopp
 title: "Sell your users, or sell to your users"
 date: "2019-03-25T09:12:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 - lang_en

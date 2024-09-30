@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-07-06T10:52:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - free software
 - lizenz

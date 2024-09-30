@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-03-19T20:08:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - usenet

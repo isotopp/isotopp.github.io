@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-05-29T05:11:51Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - computer

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-11-24T14:43:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - social networking

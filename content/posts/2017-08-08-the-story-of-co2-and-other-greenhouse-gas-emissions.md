@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-08-08T10:35:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - science

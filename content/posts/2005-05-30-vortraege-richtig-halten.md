@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-05-30T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Vorträge halten"
 tags:
 - lang_de

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-08-06T09:10:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Jugendschutzfilter saugen und dafür gibt es einen Grund"
 tags:
 - internet

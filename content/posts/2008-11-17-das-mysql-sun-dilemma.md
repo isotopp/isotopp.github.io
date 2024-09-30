@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-11-17T19:52:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - architektur
 - mysql

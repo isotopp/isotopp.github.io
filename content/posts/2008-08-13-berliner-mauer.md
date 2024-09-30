@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-08-13T08:30:13Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - berlin
 - politik

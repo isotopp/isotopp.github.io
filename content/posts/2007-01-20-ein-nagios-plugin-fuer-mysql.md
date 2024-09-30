@@ -2,7 +2,6 @@
 author: isotopp
 date: "2007-01-20T04:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - monitoring
 - mysql

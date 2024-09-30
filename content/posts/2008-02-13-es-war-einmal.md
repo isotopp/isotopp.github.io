@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-02-13T11:42:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - hardware
 - karlsruhe

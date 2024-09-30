@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-08-23T08:31:50Z"
 feature-img: assets/img/background/book.jpg
-published: true
 tags:
 - kultur
 - media

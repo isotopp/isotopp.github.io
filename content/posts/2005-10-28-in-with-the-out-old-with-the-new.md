@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-10-28T18:18:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - karlsruhe
 - mysql

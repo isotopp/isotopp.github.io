@@ -4,7 +4,6 @@ date: "2022-07-30T05:06:07Z"
 
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "MacOS: How to prevent screen blanker"
-published: true
 tags:
 - lang_en
 - apple

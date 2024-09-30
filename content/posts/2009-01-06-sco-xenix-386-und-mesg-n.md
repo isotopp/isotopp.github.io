@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-01-06T13:06:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - hack

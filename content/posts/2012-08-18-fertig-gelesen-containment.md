@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-08-18T07:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - book
 - review

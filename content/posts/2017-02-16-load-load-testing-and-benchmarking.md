@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-02-16T21:13:28Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 status: publish
 tags:
 - erklaerbaer

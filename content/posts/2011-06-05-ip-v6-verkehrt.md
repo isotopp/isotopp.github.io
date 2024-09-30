@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-06-05T12:41:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - privacy
 - identity

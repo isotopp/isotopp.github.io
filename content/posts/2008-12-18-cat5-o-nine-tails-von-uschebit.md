@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-12-18T08:46:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - berlin
 - work

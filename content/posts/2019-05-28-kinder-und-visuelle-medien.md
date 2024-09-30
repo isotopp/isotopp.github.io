@@ -3,7 +3,6 @@ author: isotopp
 title: Kinder und visuelle Medien
 date: "2019-05-28T11:25:12Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 ---

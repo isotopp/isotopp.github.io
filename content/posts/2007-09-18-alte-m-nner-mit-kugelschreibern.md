@@ -2,7 +2,6 @@
 author: isotopp
 date: "2007-09-18T04:52:15Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - politik
 - security

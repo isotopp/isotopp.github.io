@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-09-02T07:00:00Z"
 feature-img: assets/img/background/book.jpg
-published: true
 tags:
 - lang_de
 title: 'Fertig gelesen: Kill Decision'

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2022-02-16T14:35:00Z"
 feature-img: assets/img/background/mysql.jpg 
-published: true
 tags:
 - mysql
 - mysqldev

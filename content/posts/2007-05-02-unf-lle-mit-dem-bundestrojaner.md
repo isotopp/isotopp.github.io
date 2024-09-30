@@ -2,7 +2,6 @@
 author: isotopp
 date: "2007-05-02T17:50:03Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - security
 - überwachung

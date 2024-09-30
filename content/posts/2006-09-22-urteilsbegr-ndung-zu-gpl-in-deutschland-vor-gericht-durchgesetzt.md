@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-09-22T12:57:39Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - copyright
 - free software

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-10-09T17:05:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - kernel

@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-03-24T08:40:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Truncated incorrect DOUBLE value"
-published: true
 tags:
 - mysql
 - mysqldev

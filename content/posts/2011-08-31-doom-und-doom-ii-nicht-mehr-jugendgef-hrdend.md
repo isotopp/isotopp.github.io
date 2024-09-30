@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-08-31T19:47:02Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - jugendschutz
 - media

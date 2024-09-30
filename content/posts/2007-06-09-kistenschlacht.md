@@ -2,7 +2,6 @@
 author: isotopp
 date: "2007-06-09T07:16:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - berlin
 - lang_de

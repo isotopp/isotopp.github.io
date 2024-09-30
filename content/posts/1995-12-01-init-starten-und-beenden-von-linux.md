@@ -2,7 +2,6 @@
 author: isotopp
 date: "1995-12-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "init - Starten und Beenden von Linux"
 tags:
 - lang_de

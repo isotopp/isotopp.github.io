@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-12-26T19:09:59Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - filesystems
 - erklaerbaer

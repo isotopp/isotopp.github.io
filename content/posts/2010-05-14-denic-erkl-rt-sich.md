@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-05-14T15:14:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - devops
 - internet

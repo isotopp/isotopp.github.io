@@ -3,7 +3,6 @@ author: isotopp
 title: What has Kubernetes ever done for us?
 date: "2019-04-25T13:28:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 - lang_en

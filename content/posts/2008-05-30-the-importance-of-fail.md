@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-05-30T07:47:55Z"
 feature-img: assets/img/background/baellebad.jpg
-published: true
 tags:
 - architektur
 - computer

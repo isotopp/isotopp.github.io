@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-09-19T20:00:00Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - database
 - innodb

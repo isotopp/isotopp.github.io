@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-02-19T14:17:04Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - apple
 - computer

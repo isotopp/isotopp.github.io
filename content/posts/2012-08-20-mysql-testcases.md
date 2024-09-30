@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-08-20T13:41:55Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - free software
 - mysql

@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-06-28T12:42:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "Energieverbrauch in Deutschland"
-published: true
 tags:
 - lang_de
 - energy

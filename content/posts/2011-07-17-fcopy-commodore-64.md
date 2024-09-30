@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-07-17T04:23:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - damals
 - commodore

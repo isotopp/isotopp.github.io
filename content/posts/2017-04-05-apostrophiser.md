@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-04-05T06:17:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - fluffy fluff

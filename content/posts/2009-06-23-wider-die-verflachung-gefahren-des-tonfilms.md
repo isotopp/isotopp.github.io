@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-06-23T11:15:31Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - film
 - internet

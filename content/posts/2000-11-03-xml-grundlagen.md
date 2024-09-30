@@ -2,7 +2,6 @@
 author: isotopp
 date: "2000-11-03T09:02:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "XML Grundlagen"
 tags:
 - lang_de

@@ -3,7 +3,6 @@ author: isotopp
 title: "Social Networks and USENET"
 date: "2019-01-24T14:58:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - lang_de
 - social networking

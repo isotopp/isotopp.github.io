@@ -1,7 +1,6 @@
 ---
 author: isotopp
 date: "2017-02-01T10:01:17Z"
-published: true
 status: publish
 tags:
 - fluffy fluff

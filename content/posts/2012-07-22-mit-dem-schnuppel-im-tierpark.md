@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-07-22T11:26:00Z"
 feature-img: assets/img/background/baby-schlaeft.jpg
-published: true
 tags:
 - berlin
 - image

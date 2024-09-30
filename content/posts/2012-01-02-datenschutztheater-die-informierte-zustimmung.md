@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-01-02T20:34:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - privacy
 - politik

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-08-22T15:02:38Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - lang_de
 title: links for 2009-08-22

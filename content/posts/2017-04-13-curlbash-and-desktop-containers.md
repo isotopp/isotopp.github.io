@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-04-13T10:05:43Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 status: publish
 tags:
 - security

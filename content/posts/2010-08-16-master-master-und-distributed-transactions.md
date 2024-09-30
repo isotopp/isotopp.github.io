@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-08-16T14:59:00Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - mysql
 - replication

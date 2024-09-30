@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-05-29T19:56:48Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - damals
 - php

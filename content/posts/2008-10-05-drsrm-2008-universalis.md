@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-10-05T17:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - drsrm
 - roleplay

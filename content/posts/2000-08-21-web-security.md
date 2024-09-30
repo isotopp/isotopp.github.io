@@ -2,7 +2,6 @@
 author: isotopp
 date: "2000-08-21T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 title: "Web Security"
 tags:
 - lang_de

@@ -2,7 +2,6 @@
 author: isotopp
 date: "1999-10-15T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 title: "Webserver verstehen und tunen"
 tags:
 - lang_de

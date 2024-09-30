@@ -4,7 +4,6 @@ author: isotopp
 title: "Some Elite: Dangerous Braindumping"
 date: "2019-02-21T09:10:15Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 - lang_de

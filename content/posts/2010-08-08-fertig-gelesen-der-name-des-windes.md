@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-08-08T06:15:00Z"
 feature-img: assets/img/background/book.jpg
-published: true
 tags:
 - book
 - media

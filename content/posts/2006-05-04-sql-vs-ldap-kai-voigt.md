@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-05-04T03:02:01Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "SQL vs. LDAP (Kai Voigt)"
 tags:
 - lang_en

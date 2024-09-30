@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-05-31T15:36:31Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 status: publish
 tags:
 - mysql

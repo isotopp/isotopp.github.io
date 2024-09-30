@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-07-06T08:23:30Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - energy

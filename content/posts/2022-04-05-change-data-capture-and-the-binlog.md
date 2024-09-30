@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-04-04T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Change Data Capture and the Binlog"
-published: true
 tags:
 - database
 - mysql

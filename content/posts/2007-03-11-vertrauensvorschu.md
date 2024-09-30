@@ -2,7 +2,6 @@
 author: isotopp
 date: "2007-03-11T15:01:32Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - security
 - terror

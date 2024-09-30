@@ -2,7 +2,6 @@
 author: isotopp
 date: "2024-01-16T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "JusProg ist nur der Anfang"
 toc: true
 tags:

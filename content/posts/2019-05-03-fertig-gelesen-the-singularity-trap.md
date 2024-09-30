@@ -3,7 +3,6 @@ title: "Fertig gelesen: The Singularity Trap"
 author: isotopp
 date: "2019-05-03T10:25:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: false
 tags:
 - pluspora_import
 - media

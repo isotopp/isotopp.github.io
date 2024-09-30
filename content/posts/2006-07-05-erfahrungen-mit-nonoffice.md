@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-07-05T14:35:20Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - mysql
 - remote first

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2009-06-24T07:21:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - identity
 - internet

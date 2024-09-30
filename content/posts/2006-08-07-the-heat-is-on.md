@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-08-07T18:24:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - data center

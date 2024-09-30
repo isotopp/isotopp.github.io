@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-07-21T13:09:07Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - lang_de
 title: Die Query schlägt zurück

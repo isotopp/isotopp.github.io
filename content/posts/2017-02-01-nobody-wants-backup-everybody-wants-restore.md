@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-02-01T09:54:27Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 title: "Nobody wants backup. Everybody wants restore."
 tags:

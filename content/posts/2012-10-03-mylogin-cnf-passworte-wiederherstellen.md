@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-10-03T10:37:53Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - mysql
 - security

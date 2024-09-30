@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-09-27T16:44:46Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - netherlands

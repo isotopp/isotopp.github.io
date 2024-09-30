@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-11-06T13:11:35Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - hack
 - sony

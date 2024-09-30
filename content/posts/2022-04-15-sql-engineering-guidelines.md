@@ -4,7 +4,6 @@ date: "2022-04-15T08:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "SQL Engineering Guidelines"
 toc: true
-published: true
 tags:
 - database
 - mysql

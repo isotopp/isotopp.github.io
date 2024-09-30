@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-02-05T18:52:45Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - cookie
 - privacy

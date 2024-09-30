@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-12-02T18:55:45Z"
 feature-img: assets/img/background/baellebad.jpg
-published: true
 tags:
 - computer
 - development

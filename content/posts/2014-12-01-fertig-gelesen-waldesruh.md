@@ -2,7 +2,6 @@
 author: isotopp
 date: "2014-12-01T20:33:10Z"
 feature-img: assets/img/background/book.jpg
-published: true
 tags:
 - lang_de
 - book

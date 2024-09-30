@@ -2,7 +2,6 @@
 author: isotopp
 date: "1995-11-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Cnews in Betrieb nehmen"
 tags:
 - lang_de

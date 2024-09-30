@@ -2,7 +2,6 @@
 author: isotopp
 date: "2022-06-27T04:48:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Jetbrains Remote Development"
 tags:
 - lang_en

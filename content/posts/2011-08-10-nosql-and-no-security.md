@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-08-10T19:30:40Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - database
 - security

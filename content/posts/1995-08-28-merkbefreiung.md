@@ -2,7 +2,6 @@
 author: isotopp
 date: "1995-08-28T18:13:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - lang_de
 - detebe

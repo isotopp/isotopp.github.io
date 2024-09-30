@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-11-05T06:41:00Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - mysql
 - nosql

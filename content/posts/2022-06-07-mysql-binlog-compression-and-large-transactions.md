@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-06-07T09:42:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Binlog Compression and Large Transactions"
-published: true
 tags:
 - database
 - mysql

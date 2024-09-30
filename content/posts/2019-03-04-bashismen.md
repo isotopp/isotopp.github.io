@@ -3,7 +3,6 @@ author: isotopp
 title: Bashismen
 date: "2019-03-04T11:36:29Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 - lang_de

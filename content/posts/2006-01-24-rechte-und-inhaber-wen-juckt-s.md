@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-01-24T18:01:08Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - copyright
 - hack

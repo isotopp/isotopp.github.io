@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-02-16T14:53:04Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - damals
 - hack

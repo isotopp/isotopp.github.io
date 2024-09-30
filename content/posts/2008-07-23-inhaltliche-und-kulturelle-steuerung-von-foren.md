@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-07-23T13:47:35Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - community
 - publication

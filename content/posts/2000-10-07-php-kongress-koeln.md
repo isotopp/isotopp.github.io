@@ -2,7 +2,6 @@
 author: isotopp
 date: "2000-10-07T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 title: "PHP Kongress Köln"
 tags:
 - lang_de

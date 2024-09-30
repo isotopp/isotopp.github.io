@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-03-27T19:02:21Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - damals

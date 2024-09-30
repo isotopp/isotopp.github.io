@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-08-18T13:04:00Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - mysql
 - database

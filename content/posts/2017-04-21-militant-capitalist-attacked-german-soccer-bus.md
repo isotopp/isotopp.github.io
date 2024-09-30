@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-04-21T13:52:42Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - germany

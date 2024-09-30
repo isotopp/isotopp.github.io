@@ -2,7 +2,6 @@
 author: isotopp
 date: "2020-12-28T18:25:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - linux
 - erklaerbaer

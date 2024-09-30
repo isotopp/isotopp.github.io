@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-05-23T15:39:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - mobility

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-07-25T13:15:37Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - media
 - musik

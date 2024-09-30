@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-08-23T21:58:52Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - erklaerbaer

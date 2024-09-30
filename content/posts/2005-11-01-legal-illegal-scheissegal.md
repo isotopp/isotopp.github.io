@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-11-01T12:35:56Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 tags:
 - hack
 - media

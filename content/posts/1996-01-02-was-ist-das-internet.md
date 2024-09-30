@@ -2,7 +2,6 @@
 author: isotopp
 date: "1996-03-02T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Was ist das Internet?"
 tags:
 - lang_de

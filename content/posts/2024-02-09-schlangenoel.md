@@ -2,7 +2,6 @@
 author: isotopp
 date: "2024-02-09T01:02:03Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 title: "Schlangenöl"
 toc: true
 tags:

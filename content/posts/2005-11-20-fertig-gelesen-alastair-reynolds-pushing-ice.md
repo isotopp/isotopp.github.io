@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-11-20T18:29:42Z"
 feature-img: assets/img/background/book.jpg
-published: true
 tags:
 - review
 - book

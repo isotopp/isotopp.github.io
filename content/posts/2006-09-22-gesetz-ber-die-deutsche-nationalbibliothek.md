@@ -2,7 +2,6 @@
 author: isotopp
 date: "2006-09-22T07:10:33Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - media
 - politik

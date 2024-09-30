@@ -2,7 +2,6 @@
 author: isotopp
 date: "2012-08-17T07:26:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - internet
 - politik

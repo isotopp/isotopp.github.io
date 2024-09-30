@@ -2,7 +2,6 @@
 author: isotopp
 date: "2024-02-06T01:02:03Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Wie ChatGPT funktioniert"
 toc: true
 tags:

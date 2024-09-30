@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-06-20T15:20:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "Breaking replication with ALGORITHM = INSTANT"
-published: true
 tags:
 - database
 - mysql

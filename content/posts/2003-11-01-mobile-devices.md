@@ -2,7 +2,6 @@
 author: isotopp
 date: "2003-11-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Mobile Devices - Der Feind in meiner Tasche"
 tags:
 - lang_de

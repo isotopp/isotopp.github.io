@@ -2,7 +2,6 @@
 author_login: kris
 date: "2017-01-26T06:37:55Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - mobility

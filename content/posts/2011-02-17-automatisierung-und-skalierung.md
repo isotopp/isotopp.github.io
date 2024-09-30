@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-02-17T17:09:00Z"
 feature-img: assets/img/background/mysql.jpg
-published: true
 tags:
 - architektur
 - mysql

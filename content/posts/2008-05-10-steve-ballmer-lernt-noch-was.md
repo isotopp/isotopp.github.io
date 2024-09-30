@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-05-10T16:51:11Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - microsoft

@@ -3,7 +3,6 @@ author: isotopp
 date: "2022-07-01T14:30:00Z"
 feature-img: assets/img/background/mysql.jpg
 title: "I have met the enemy, and they are us"
-published: true
 tags:
 - database
 - mysql

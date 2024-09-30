@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-03-17T18:39:04Z"
 feature-img: assets/img/background/book.jpg
-published: true
 tags:
 - media
 - roleplay

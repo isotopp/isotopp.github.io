@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-08-06T17:48:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - piraten
 - politik

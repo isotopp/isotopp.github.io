@@ -2,7 +2,6 @@
 author: isotopp
 date: "2000-04-14T09:00:00Z"
 feature-img: assets/img/background/schloss.jpg
-published: true
 title: "Neu auf einem fremden System"
 tags:
 - lang_de

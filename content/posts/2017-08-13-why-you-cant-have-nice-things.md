@@ -2,7 +2,6 @@
 author: isotopp
 date: "2017-08-13T10:07:10Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 status: publish
 tags:
 - media

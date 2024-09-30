@@ -3,7 +3,6 @@ author: isotopp
 title: "Du weisst nichts von Homeoffice"
 date: "2019-01-07T09:14:19Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - pluspora_import
 - remote first

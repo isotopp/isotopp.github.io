@@ -2,7 +2,6 @@
 author: isotopp
 date: "1999-01-01T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "Kryptographie tötet - na und?"
 tags:
 - lang_de

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2004-07-24T10:22:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - karlsruhe
 - lang_de

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-07-26T10:55:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - free software
 - karlsruhe

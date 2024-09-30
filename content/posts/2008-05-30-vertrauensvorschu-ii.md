@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-05-30T05:22:56Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - politik
 - lang_de

@@ -5,7 +5,6 @@ feature-img: assets/img/background/schloss.jpg
 description: "What can we learn from the Crowdstroke fail?"
 title: "Crowdstroke"
 toc: true
-published: true
 tags:
 - lang_en
 - security

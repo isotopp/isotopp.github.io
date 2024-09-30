@@ -2,7 +2,6 @@
 author: isotopp
 date: "2008-11-20T10:59:41Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - computer
 - distributed computing

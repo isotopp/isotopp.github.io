@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-08-13T10:10:43Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - kiel
 - lang_de

@@ -2,7 +2,6 @@
 author: isotopp
 date: "2004-07-19T14:14:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - php
 - lang_de

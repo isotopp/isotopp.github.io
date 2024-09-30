@@ -2,7 +2,6 @@
 author: isotopp
 date: "2005-06-07T18:44:05Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - kiel
 - php

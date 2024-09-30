@@ -2,7 +2,6 @@
 author: isotopp
 date: "2002-01-31T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 title: "LDAP vs. SQL"
 tags:
 - lang_de

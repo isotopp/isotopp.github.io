@@ -2,7 +2,6 @@
 author: isotopp
 date: "2010-03-07T12:42:40Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - identity
 - piraten

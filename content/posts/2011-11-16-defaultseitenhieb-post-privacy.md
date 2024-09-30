@@ -2,7 +2,6 @@
 author: isotopp
 date: "2011-11-16T16:49:01Z"
 feature-img: assets/img/background/rijksmuseum.jpg
-published: true
 tags:
 - privacy
 - gaming
