@@ -12,7 +12,227 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Tue, 03 Sep 2024 10:38:09 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_de/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 30 Sep 2024 20:25:59 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_de/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cloud Cost vs. On-Premises Cost</title>
+      <link>https://blog.koehntopp.info/2024/09/30/cloud-cost-vs-on-premises-cost.html</link>
+      <pubDate>Mon, 30 Sep 2024 04:05:06 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
+
+      <guid>https://blog.koehntopp.info/2024/09/30/cloud-cost-vs-on-premises-cost.html</guid>
+      <description>&lt;p&gt;Ich wurde gefragt:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Hast Du eine Idee, wie ich seriös die Kosten für Cloud, reguläres und selbst Hosting vergleichen kann?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Seriös nicht, weil das ein Problem mit mehreren Schichten ist und keine dieser Schichten irgendwie schön ist.&lt;/p&gt;
+&lt;h2 id=&#34;rahmenbedingungen&#34;&gt;
+    &lt;a href=&#34;#rahmenbedingungen&#34;&gt;
+	Rahmenbedingungen
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Der Haupttreiber bei der ganzen Sache ist die simple Tatsache, dass wir immer mehr Transistoren auf einen Chip bekommen.
+Der Chip wird zwar nicht mehr schneller, weil bei circa 3 GHz Takt Dauerleistung Schluss ist,
+aber weil die Strukturen immer noch kleiner werden bekommen wir immer mehr Cores und Cache.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/09/01-cloud-on-prem.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Fortschritte bei der Chipentwicklung über Zeit.
+Die y-Ache ist logarithmisch. Wir sehen, wie die Anzahl der Transistoren pro Chip ungebrochen hoch geht.
+Circa 2005 haben wir jedoch ein Taktlimit erreicht – bei 3 GHz Dauertakt ist bei Silizium Schluss.
+Die Performance pro Core geht noch durch Verlagerung gewisser Funktionen in Hardware
+und effizientere Prozessor-Architekturen langsam weiter hoch.
+Stattdessen steigt seit 2005 die Anzahl der Cores pro Chip an – die
+Gewinne an Transistoren gehen also an mehr Cores, nicht in schnellere Cores.
+Zugleich sinkt der Energieverbrauch pro Core, während der Energieverbrauch pro Chip bei 100-200W stagniert.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Und oft auch Features, die die meiste Zeit gar nicht gebraucht werden,
+sodass Teile des Chips die meiste Zeit ausgeschaltet sind, um Energie zu sparen.
+Denn Energieverbrauch erzeugt Abwärme, und die Abwärme setzt dem Chip ein (weiches) Leistungslimit.
+Wenn wir also Dinge, die viel Energie verbrauchen (die FPU und die Vektoreinheiten) nicht verwenden,
+dann können wir den Takt bei dem Teil des Chips, der benutzt wird hochdrehen,
+und bekommen so ein wenig mehr Leistung für viel mehr Energieverbrauch und Abwärme.&lt;/p&gt;
+&lt;p&gt;Prozessoren von 2024 haben auf einem Chip bis zu 128 oder gar 192 Cores und die doppelte Anzahl von vCores (Threads).&lt;/p&gt;
+&lt;h2 id=&#34;hardwarekosten&#34;&gt;
+    &lt;a href=&#34;#hardwarekosten&#34;&gt;
+	Hardwarekosten
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Gehen wir 5 Jahre zurück, kommen wir zu konkreten Kosten.&lt;/p&gt;
+&lt;p&gt;Die kleinsten sinnvoll kaufbaren Intel Xeon CPUs von 2019 wären die
+&lt;a href=&#34;https://www.intel.com/content/www/us/en/products/sku/123547/intel-xeon-silver-4110-processor-11m-cache-2-10-ghz/specifications.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Xeon Silver 4110&lt;/a&gt;
+
+
+gewesen.
+Auf einer typischen Blade von Dell oder HP gibt uns das 2 Sockets, 16 Cores mit 32 Hyperthreads,
+128 GB RAM (8 GB RAM pro Core), eine lokale Micron 1.92 TB NVME mit 800k IOPS,
+und einen dedizierten 10 GBit/s Port direkt zum Top-of-Rack Switch (luxuriöse 625 MBit/s pro Core).&lt;/p&gt;
+&lt;p&gt;Was ist das für eine Rechnung?&lt;/p&gt;
+&lt;p&gt;Ein System muss, damit es funktioniert, balanciert sein.
+Manche Workloads sind selbst unbalanciert und brauchen exzessiv CPU oder exzessiv Speicher oder Netz.
+Aber die meisten Enterprise-Anwendungen brauchen pro Core mit 3 GHz 4-8 GB RAM und 100-400 MBit/s Netz.
+Wenn wir unsere Hardware so proportionieren, dann können wir recht sicher sein, dass sie vielseitig einsetzbar ist.&lt;/p&gt;
+&lt;p&gt;Preislich kommen wir mit solchen schwachbrüstigen Klein-Blades auf Kosten von etwa 120-150 Euro im Monat,
+für eine geplante Lebensdauer von fünf Jahren. Das ist der Kaufpreis für die Blade,
+Platz im Rechenzentrum und anteilig Strom, Netzwerk und Blade-Chassis.&lt;/p&gt;
+&lt;p&gt;Die Blade ist dann noch nicht inventarisiert, noch nicht an,
+nichts installiert ein Betriebssystem oder die Anwendung – das ist Arbeit, und die rechnen wir hier nicht mit rein.&lt;/p&gt;
+&lt;h2 id=&#34;aws-kosten-im-vergleich&#34;&gt;
+    &lt;a href=&#34;#aws-kosten-im-vergleich&#34;&gt;
+	AWS Kosten im Vergleich
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Wir können das mit einer AWS m5.8xl vergleichen: 32 vCPU, 128 GB, 10 GBit/s und kein lokaler Speicher (EBS kostet extra).
+Die kostet 1232 USD/Monat, also schmale 10x mehr, plus Netzwerk, plus EBS.&lt;/p&gt;
+&lt;p&gt;Alternativ schauen wir auf eine AWS i3.4xl: 16 vCPU, 122 GB Speicher, und zwei lokale 1.92 TB NVME,
+sowie ein 10 GBit/s Link.
+Die kostet 990 USD/Monat, plus Netz, aber wir haben zwei lokale Volumes.&lt;/p&gt;
+&lt;p&gt;Anders als unsere Blade im Rechenzentrum ist diese VM bereits Teil einer gemanagten Umgebung,
+wir können sie also provisionieren, und haben sie im Inventory.&lt;/p&gt;
+&lt;h2 id=&#34;cloud-vs-baremetal-on-premises&#34;&gt;
+    &lt;a href=&#34;#cloud-vs-baremetal-on-premises&#34;&gt;
+	Cloud vs. Baremetal On-Premises
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ein früherer Arbeitgeber von mir hatte circa 50.000 von solchen Blades.
+Die meisten davon waren die kleinen 4110, und einige größere Einheiten mit &lt;a href=&#34;https://ark.intel.com/content/www/us/en/ark/products/123541/intel-xeon-gold-6132-processor-19-25m-cache-2-60-ghz.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dual Gold 6132&lt;/a&gt;
+
+ an drei Standorten.
+In Summe mag das auf etwa 1.000.000 Cores kommen, und dazu passend ausbalanciert Speicher.&lt;/p&gt;
+&lt;p&gt;Bei diesem Arbeitgeber hat man um 2010 herum angefangen, Software zu schreiben, um diese Hardware zu verwalten,
+automatisch zu provisionieren und Betriebssystem-Images und Anwendungen automatisch zu verteilen.
+Ich kann mir also ein Script schreiben, das 200 Blades vom Typ x in RZ y anfordert.
+Ich bekomme diese dann binnen 20 Minuten automatisch provisioniert, meiner Team-Abrechnung belastet,
+und mit Partitionierung, Betriebssystem und Puppet-Klassen laufend zugewiesen.
+Die ssh-Keys meines Teams erlauben mir einen Zugriff.&lt;/p&gt;
+&lt;p&gt;In 2019 waren wir soweit, dass kein Rechner eine Uptime von mehr als 90 Tagen hatte.
+Das heißt, alle Teams hatten ihre Software so verpackt,
+dass sie vollkommen ohne manuelle Eingriffe installiert werden konnte,
+keine Single Points of Failures existierten und alle produktiven Maschinen reihum reinstalliert werden konnten.
+Dadurch haben wir Betriebssystem-Images und Anwendungen laufend neu deployed und aktuell gehalten.&lt;/p&gt;
+&lt;p&gt;Automatisierung hat natürlich auch vorher schon funktioniert,
+aber für die Vollautomatisierung war Arbeit und Druck notwendig.
+Ich habe in
+&lt;a href=&#34;https://blog.koehntopp.info/2023/02/18/this-is-not-a-drill.html&#34;&gt;This is not a Drill, this is just Tuesday&lt;/a&gt;
+
+
+ausführlicher dazu geschreiben.&lt;/p&gt;
+&lt;p&gt;Jedenfalls war viel Arbeit und es waren viele Leute notwendig,
+denn ein Produkt, das so etwas für die lokale Firma passend auf Bare Metal Hardware macht, kann man nicht kaufen,
+und schon gar nicht herstellerunabhängig.
+Man muss also auf die Kosten für Hardware noch die Kosten für die Entwicklung dieser Stücke Software drauf rechnen.&lt;/p&gt;
+&lt;p&gt;Am Ende hat sich dieser Arbeitgeber dafür entscheiden, seine Installation in die Cloud zu verschieben,
+weil Operations dann jemand anderes Problem sind.
+Das geht natürlich nicht von heute auf morgen,
+Und soweit ich weiß, betreibt man auch jetzt, 5 Jahre später,
+noch on-premises und Cloud parallel, und bezahlt beides.&lt;/p&gt;
+&lt;p&gt;Würde das Projekt abgeschlossen sein, wäre man theoretisch nicht nur das Core.Infrastructure Team los,
+sondern auch das Staffing für dieses Team.
+Denn Menschen zu finden,
+die mit Hardware umgehen können und einen sinnvollen Operations Mindset haben wird zunehmend schwieriger.
+Entsprechend war das für das Management ein totaler No-Brainer, selbst bei einem Kostenfaktor von 10x.&lt;/p&gt;
+&lt;p&gt;Denn der Aufwand, solche Personen zu finden, zu halten und so zu steuern,
+dass sie dann sinnvolle Automation bauen, ist groß.
+Das sind nicht nur Geldkosten, sondern schlimmer, das ist auch kognitive Load auf der Organisation.&lt;/p&gt;
+&lt;h2 id=&#34;es-wird-nicht-einfacher&#34;&gt;
+    &lt;a href=&#34;#es-wird-nicht-einfacher&#34;&gt;
+	Es wird nicht einfacher
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Allgemeiner gesagt:
+Damit Du in 2024 eine Firma haben kannst, die eigene Hardware am Start hat,
+muss Deine Firma erst einmal eine Mindestgröße haben.&lt;/p&gt;
+&lt;p&gt;Idealerweise kauft man aus Kostengründen immer die zweigrößte Sorte Rechner, die zu haben ist.
+Man kann das genau ausrechnen und dann ist es manchmal die zweigrößte und manchmal die drittgrößte Sorte CPU,
+die hergestellt wird, bei der der Bumms pro Dollar am Besten ist.&lt;/p&gt;
+&lt;p&gt;Das heißt, man hat dann etwas mit – sagen wir – 128 Cores pro Socket und Single Socket.
+Bei 8 GB pro Core und 100-300 MBit/s pro Core landen wir bei
+128 * 8 GB = 1024 GB = 1 TB RAM und bei 128 * 200 Mbit/s = 25600 MBit/s = 25 GBit/s.
+Bei einer Dual Socket entsprechend das Doppelte, also 2 TB RAM und 2x 25 MBit/s oder ein 100 GBit/s Interface.&lt;/p&gt;
+&lt;p&gt;Die typische Java-Anwendung kann man in der Regel so bis 8 Cores und 16 GB RAM skalieren,
+danach haucht die JVM ihr Leben aus.
+Wir haben also 16-32 Instanzen (Anwendungen) pro Socket.
+Die meisten werden nicht am oberen Ende der Skala sein, also rechnen wir eher 50-100 Anwendungen pro Socket.&lt;/p&gt;
+&lt;p&gt;Für viele Firmen ist also eine einzige Maschine schon zu groß.
+Wir wollen aber aus Gründen der Verfügbarkeit nicht eine Maschine haben, sondern mindestens drei.&lt;/p&gt;
+&lt;p&gt;Wenn eine solche Maschine aus welchen Gründen umfällt oder neu starten muss,
+dann sind mal eben 100 Anwendungen offline – wir haben also ein Blast Radius Problem.&lt;/p&gt;
+&lt;p&gt;Wir können dagegen in der Public Cloud VMs in der passenden Größe kaufen,
+und weil der Cloud-Anbieter viele solcher Maschinen hat, wird jede unserer VMs &amp;ldquo;anti-affin&amp;rdquo; scheduled.
+Das heißt, der Cloud-Anbieter versucht unsere Anwendungen über so viele Stücke Hardware als möglich zu verteilen,
+und uns mit so vielen anderen Kunden als möglich auf einer Kiste zu hosten.
+Wenn dann ein Stück Hardware umfällt, verliert jeder Kunde eine Instanz, aber nicht ein Kunde alle.&lt;/p&gt;
+&lt;h2 id=&#34;on-premises-ist-auch-nicht-unabhängig&#34;&gt;
+    &lt;a href=&#34;#on-premises-ist-auch-nicht-unabh%c3%a4ngig&#34;&gt;
+	On-Premises ist auch nicht unabhängig
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Zurück On-Premises: Wir müssen jetzt aus unserer Hardware Stücke in passender Größe schneiden,
+um sie in Pods oder virtuelle Maschinen zu verwandeln.
+Für virtuelle Maschinen haben wir die Wahl zwischen VMware und Openstack.
+Es gibt noch andere Lösungen, aber für die finden wir in der Regel keine Menschen mit Kenntnissen zur Anstellung.
+Wir haben also die Wahl zwischen lebenslanger Schuldknechtschaft zu Broadcom,
+oder wir müssen 3 oder mehr Spezialisten einstellen, die dem Openstack hinterher wischen,
+wenn es mal wieder die Windel voll gemacht hat.&lt;/p&gt;
+&lt;p&gt;Nun können wir VMs provisionieren, aber wir müssen aus den VMs noch immer Dienste machen.
+Dort wiederholt sich das Spiel von der VM-Ebene.
+Am Ende haben wir eine unserer Firmengröße angemesene &amp;ldquo;Core Infra&amp;rdquo; Abteilung, die unsere On-Prem Cloud betreibt.
+Das sind dann vielleicht keine 50.000 Maschinen mit zusamnen 1.000.000.Cores mehr,
+sondern nur noch 8000 Maschinen mit 1.000.000 Cores, aber es sind trotzdem 10-30 Leute, die dafür da sind,
+darauf Services zu implementieren.&lt;/p&gt;
+&lt;p&gt;Wir haben also die Wahl, erschreckend kostengünstige Hardware, die viel zu groß für alles ist, zu kaufen.
+Dann müssen wir Leute finden und anzustellen.
+Diese sind dann vielleicht in der Lage (oder vielleicht auch nicht), daraus eine brauchbare Plattform zu bauen.&lt;/p&gt;
+&lt;p&gt;Alternativ können wir dem Bezos Kohle in den Rachen schaufel.&lt;/p&gt;
+&lt;p&gt;Die Antwort ist für wirklich jede Firma mit weniger als einer dreistelligen Anzahl von Rechnern absolut offensichtlich,
+und besteht nicht darin, Hardware zu kaufen.
+Das Staffing, die lokale Betriebs-Entwicklung und alles, was damit einher geht, will sich niemand ans Bein binden.
+Sobald man dann größer ist, ist es teuer, aber zu spät.&lt;/p&gt;
+&lt;p&gt;Folgerichtig findet man auch immer weniger Leute, die sich mit solchem lokalen Betrieb auskennen,
+und Dir so etwas bauen können.
+Dagegen kannst Du Dich mit Leuten tot werfen, die Dir Instanzen bei AWS klicken und für 60k-75k im Jahr zu Dir kommen.&lt;/p&gt;
+&lt;h2 id=&#34;die-ganze-logik-kaskade&#34;&gt;
+    &lt;a href=&#34;#die-ganze-logik-kaskade&#34;&gt;
+	Die ganze Logik-Kaskade
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Wir haben zu viele Transistoren pro Chip.
+Die Hersteller von Chips wissen nicht, was die damit tun sollen.
+Du bekommst absurde Features, die nicht auf allen Chips gebraucht werden (KI-Inferenz,
+dutzende FPUs und Vektoreinheiten) in den Performance-Cores, oder riesige Menschen Efficiency Cores pro Socket.
+Im Consumer Bereich bekommst Du statt eines Computers ein System-on-a-Chip, bei dem Grafikbeschleuniger,
+RAM, RAM-Controller und NVME-Controller mit auf der CPU sitzen, zusammen mit 4E+8P Cores oder ähnlich.&lt;/li&gt;
+&lt;li&gt;Wir haben daher im Enterprise-Bereich viel zu viele Cores pro Socket (128+ Cores).&lt;/li&gt;
+&lt;li&gt;Als Kunde habe ich dadurch das Problem, dass ich kein Bare Metal mehr fahren kann.
+Ich brauche also K8s oder einen Hypervisor zum Kleinschneiden der Systeme in brauchbare Stücke.&lt;/li&gt;
+&lt;li&gt;Als Kunde habe ich dann auch ein Blast-Radius Problem.
+Wenn so ein großer Host umfällt, dann nimmt er die ganze Firma offline.&lt;/li&gt;
+&lt;li&gt;Als Kunde will ich also eine VM auf vielen Hosts haben und auf einem Host mit vielen anderen Kunden cohosted werden.
+Ich gehe also lieber zu einer Public Cloud und miete mir da die passenden VMs.&lt;/li&gt;
+&lt;li&gt;Ich brauche dann auch keine Hardware-Kundigen mehr.&lt;/li&gt;
+&lt;li&gt;Als Hoster von so etwas kann ich die Hardware veredeln und Operations übernehmen,
+indem ich statt VMs Dienste &amp;ldquo;as-a-Service&amp;rdquo; verkaufe.&lt;/li&gt;
+&lt;li&gt;Als Kunde kann ich so nicht nur meine Hardware-Kundigen los werden,
+sondern für den Dienst x (jetzt xaaS) auch meine x-Kundigen.&lt;/li&gt;
+&lt;li&gt;Als Kunde von so einem Anbieter habe ich nun reine Entwickler,
+die in komplett abstrakten Layers Dinge zusammenstecken,
+low-code und nahe an Business Problemen.&lt;/li&gt;
+&lt;li&gt;Dadurch habe ich niemanden nirgendwo mehr, der auch nur einen Hauch einer Ahnung hat, was das alles bedeutet,
+lastmäßig und ob der getriebene Aufwand dem Problem angemessen ist.&lt;/li&gt;
+&lt;li&gt;Ich kann solche Einschätzungen aber als Beratung einkaufen,
+entweder von lokalen Drittanbieter Consultants oder vom Hoster, als &amp;ldquo;Well-Architected&amp;rdquo; Beratung nach Schema F.&lt;/li&gt;
+&lt;li&gt;Das Bruttosozialprodukt steigt, weil das ja jetzt alles Transaktionen mit Echtgeld zwischen Firmen sind,
+statt Verrechnung mit Spielgeld innerhalb einer Firma.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Und am Ende spielen die Kosten im Vergleich keine Rolle mehr, weil andere, größere Vektoren auf die Firmen einwirken.&lt;/p&gt;
+&lt;p&gt;Einer dieser Vektoren sind auch immer größere Regulierungsverpflichtungen,
+die den Betrieb eigener Rechner On-Premises unmöglich machen,
+weil eine ISO 27k, eine NIS-2 und eine PCI-Zertifizierung ja auch Aufwand und Geld kosten.
+Kauft man dagegen eine vorzertifizierte Cloudlösung hat man mindestens drei Viertel des Schmerzes nicht,
+wird einem versprochen.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Sonos S2 Analysis</title>
       <link>https://blog.koehntopp.info/2024/07/12/sonos-s2-analysis.html</link>
@@ -3965,141 +4185,6 @@ sobald nur genügend elektrische Autos auf der Straße sind.
 Niemand in so einer Kiste hat dauerhaft das Bedürfnis,
 sinnlos Akku durchzubladen ohne Effekt.
 Die Verbrenner-Raser sitzen dann zwischen den ganzen e-Mobilen fest.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Kein Homeoffice, keine Kekse</title>
-      <link>https://blog.koehntopp.info/2023/09/12/kein-homeoffice-keine-kekse.html</link>
-      <pubDate>Tue, 12 Sep 2023 01:02:03 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
-
-      <guid>https://blog.koehntopp.info/2023/09/12/kein-homeoffice-keine-kekse.html</guid>
-      <description>&lt;p&gt;Heise schreibt:
-&lt;a href=&#34;https://www.heise.de/meinung/Kommentar-Massenexodus-bei-Grindr-von-den-Un-Schoenheiten-des-Homeoffice-9301244.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kommentar: Massenexodus bei Grindr – von den (Un-)Schönheiten des Homeoffice &lt;/a&gt;
-
-
-Ein Kommentar, der sich am Massenexodus bei Grindr abarbeitet, aber nicht weiß, was er will.&lt;/p&gt;
-&lt;p&gt;Bei Grindr bildet sich eine Gewerkschaft, und viele Mitarbeiter werden Mitglied.
-Aus Rache führt die Firma Hybrid mit mindestens 2 Tagen pro Woche Anwesenheit ein.
-Daraufhin kündigen mehr als 50 % der Mitarbeiter.&lt;/p&gt;
-&lt;p&gt;Der Artikel sieht das nicht als collective action der Mitarbeiter,
-sondern als eine Folge von Individualentscheidungen.
-Er sieht auch irgendwie Vorteile für die Firma (&amp;ldquo;Geringere Kosten&amp;rdquo; und magische &amp;ldquo;höhere Produktivität&amp;rdquo;),
-und versucht dann eine Art Brücke zu schlagen (&amp;ldquo;Firmen sollten auf Mitarbeiter hören.&amp;rdquo;).&lt;/p&gt;
-&lt;p&gt;Das ist in Summe aussagelos und von der wirtschaftlichen Analyse her Quatsch.&lt;/p&gt;
-&lt;h2 id=&#34;auftragstaktik&#34;&gt;
-    &lt;a href=&#34;#auftragstaktik&#34;&gt;
-	Auftragstaktik
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In den drei Covid-Jahren haben sich in allen Firmen sehr stabile und produktive Remote-First Strukturen ausgebildet.
-Sehr viele Mitarbeiter haben sehr schnell gelernt,
-dass zweimal eine Stunde Commute pro Tag mehr Belastung waren, als sie bewusst bemerkt haben.
-Sie waren sehr froh, diese Lebenszeit zurückzubekommen.&lt;/p&gt;
-&lt;p&gt;Zudem haben sie gemerkt, daß Management by Objectives – nahezu die einzige Methode, die Remote First funktioniert –
-viel sinnvoller ist als fast alles andere.&lt;/p&gt;
-&lt;p&gt;Wer mehr wissen will:
-&lt;a href=&#34;https://mastodon.social/@xahteiwi&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Florian Haas&lt;/a&gt;
-
-
-hat darüber ja auch schon unter Referenz auf die
-&lt;a href=&#34;https://de.wikipedia.org/wiki/F%C3%BChren_mit_Auftrag&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Auftragstaktik&lt;/a&gt;
-
- nachgedacht
-und in
-&lt;a href=&#34;https://www.amazon.de/Art-Action-Leaders-between-Actions-ebook/dp/B01HPVHLHG&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Art of Action&lt;/a&gt;
-
-
-beschäftigt sich quasi ein ganzes Buch mit dem Thema &amp;ldquo;Auftragstaktik in der Unternehmensführung umsetzen&amp;rdquo;
-und Clausewitz &amp;ldquo;Vom Kriege&amp;rdquo; in der Wirtschaft.&lt;/p&gt;
-&lt;p&gt;Wenn Unternehmen nun – aus welchem Grund auch immer – versuchen,
-das zurückzudrehen, dann erzeugen sie damit eine große Unzufriedenheit bei ihren Mitarbeitern
-und drehen die Fluktuation hoch bis zum Anschlag.
-Sie machen dabei keinen Gewinn, denn sie verlieren genau die Mitarbeiter, die sie behalten müssen und wollen.
-Unternehmen bluten vom Kopfe her.&lt;/p&gt;
-&lt;h2 id=&#34;arbeitsmarkt&#34;&gt;
-    &lt;a href=&#34;#arbeitsmarkt&#34;&gt;
-	Arbeitsmarkt
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Und sie schneiden sich von einem Arbeitsmarkt ab.&lt;/p&gt;
-&lt;p&gt;In dem wegweisenden Essay
-&lt;a href=&#34;https://blog.pragmaticengineer.com/software-engineering-salaries-in-the-netherlands-and-europe/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The Trimodal Nature of Software Engineering Salaries in the Netherlands and Europe&lt;/a&gt;
-
-
-beschreibt Gergely Orosz die Struktur des Arbeitsmarktes bei Wissensarbeitern.&lt;/p&gt;
-&lt;p&gt;Er tut das am Beispiel von Amsterdam,
-aber meiner Erfahrung nach ist das weltweit so, mit unterschiedlichen Limits bei den lokalen Märkten.
-Unternehmen müssen wissen, aus welchem Pool sie Personen ansprechen und einstellen wollen,
-und sie müssen wissen, wie man mit der entsprechenden Gruppe Leute arbeitet.
-Der Vorteil von Remote First Unternehmen ist, daß sie aus dem globalen Markt einstellen können,
-aber oft zu Preisen aus einem nationalen Markt.&lt;/p&gt;
-&lt;p&gt;Ein frühes Beispiel dafür war MySQL AB, die mit 500 Leuten in 26 Ländern ein extremes Beispiel für eine verteilte Firma waren,
-und die weltweit eingestellt hat, aber keinen Umzug gefordert hat.&lt;/p&gt;
-&lt;p&gt;Stattdessen hat man bewusst Strukturen geschaffen, in denen ein verteiltes Team Gemeinschaft bildet,
-sich 4x im Jahr getroffen (in Ländern, die unproblematisch mit Visa umgingen),
-und man hat diese Treffen systematisch vorbereitet, damit sie effektiv waren.
-Und ja, jede Menge MbO/Auftragstaktik.&lt;/p&gt;
-&lt;p&gt;Eine moderne Beschreibung solcher Methoden findet man in
-&lt;a href=&#34;https://www.amazon.de/Effective-Remote-English-James-Stanier-ebook/dp/B09Z5F678G&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Effective Remote Work&lt;/a&gt;
-
- von James Stanier.&lt;/p&gt;
-&lt;h2 id=&#34;die-folgen-von-rto&#34;&gt;
-    &lt;a href=&#34;#die-folgen-von-rto&#34;&gt;
-	Die Folgen von RTO
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;In den drei Covid-Jahren sind in vielen Firmen ebenfalls solche Strukturen entstanden,
-aber oft zufällig, partiell, nicht gesteuert und unverstanden.&lt;/p&gt;
-&lt;p&gt;Wenn ein solcher Laden jetzt aus welchem Grund auch immer &amp;ldquo;Return to Office&amp;rdquo; ausruft, dann passieren mehrere Dinge:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Die Firma schneidet sich vom weitweiten Staffing Pool (zu nationalen Preisen) ab, Hiring wird schwierig.
-Denn neue Mitarbeitys müssen umziehen und dem stehen Verpflichtungen vor Ort,
-Visa und Arbeitserlaubnisse und viele andere Dinge im Weg.&lt;/li&gt;
-&lt;li&gt;Die Firma erzeugt ohne Not die Situation oben für alle existierenden Mitarbeiter,
-die in den drei Covid-Jahren dazu gekommen sind, aber nicht umgezogen sind.
-&lt;em&gt;Alle&lt;/em&gt; die werden gehen.&lt;/li&gt;
-&lt;li&gt;Die Firma bringt den Commute zurück zu Menschen, die begriffen haben,
-dass der Commute notlose Verschlechterung der Lebensqualität ist.
-Auch hier Kündigungswelle.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Welche Leute werden gehen?&lt;/p&gt;
-&lt;p&gt;Zuerst immer die, die Optionen haben.
-Also die hoch qualifizierten, deren Recruiter-Spam in der Inbox am größten ist.
-Der Pull-Faktor ist ja schon da, den Push und den Anlass hat die Firma eben geliefert.&lt;/p&gt;
-&lt;p&gt;Es sind also gerade die Leute, bei denen der Arbeitgeber einen Anlass hat, Retention zu fahren,
-die der Arbeitgeber zuerst verliert.
-Das ist immer und für jede Firma ein sehr großer Nettoverlust, und noch dazu ein schlecht gesteuerter.&lt;/p&gt;
-&lt;p&gt;Wenige Läden können einen Verlust von 50 % der Belegschaft verkraften,
-ohne dass es zu einem massiven Verlust an Qualität, Produktivität, organisatorischem Wissen und Prozeßreife kommt.&lt;/p&gt;
-&lt;p&gt;Neben dem Verlust an Know-How und nicht verschriftlichtem Wissen,
-der erhöhten Arbeitslast für die verbleibenden Mitarbeiter kommt noch der Druck auf alle für Interviews
-und Training neuer Kollegen dazu.
-Das erzeugt eine Delle in Qualität und Produktivität von 1 bis 2 Jahren, Stagnation oder gar Regress.
-Es gibt kein Wertmodell für eine Firma, in der so etwas positive Auswirkungen hat.&lt;/p&gt;
-&lt;h2 id=&#34;auch-entlassungen-fördern-ungesteuerte-verluste&#34;&gt;
-    &lt;a href=&#34;#auch-entlassungen-f%c3%b6rdern-ungesteuerte-verluste&#34;&gt;
-	Auch Entlassungen fördern ungesteuerte Verluste
-    &lt;/a&gt;
-&lt;/h2&gt;
-&lt;p&gt;Etwas Ähnliches passiert bei Entlassungen:
-Neben den Leuten, die man entläßt (gesteuert und nach Ansicht der Firma am unteren Ende)
-wird man gewiss noch 2x mehr Leute verlieren,
-aber am oberen Ende.
-Für diese Menschen ist der zweite, ungeschriebene Vertrag gebrochen worden,
-und sie nehmen die resultierende Unsicherheit als Anstoß, Pull-Faktoren nachzugeben.&lt;/p&gt;
-&lt;p&gt;In jedem Fall bluten Firmen bei solchen Änderungen.
-Sogar dann, wenn sich nicht aus billiger Rache erfolgen,
-sondern gesteuert und mit Unterstützung des Managements sanft durchgeführt werden,
-kommt es leicht mit großen zweistelligen prozentualen Verlusten und jahrelangen Folgen.&lt;/p&gt;
-&lt;p&gt;Firmen lernen gerade, wie wichtig Personen als Individuen sind.
-Viele Organisationen sind mit dieser, der kapitalistischer Ideologie widersprechenden Erfahrung sehr unzufrieden und tief in Denial.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Companies forcing their employees back into the office will lose talent and keep wage serfs.
-&amp;ndash; Volker Weber (&lt;a href=&#34;https://social.heise.de/@vowe&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;@vowe@social.heise.de&lt;/a&gt;
-
-)&lt;/p&gt;
-&lt;/blockquote&gt;
 </description>
     </item>
     
