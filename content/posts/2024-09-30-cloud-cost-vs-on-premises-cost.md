@@ -60,7 +60,8 @@ Manche Workloads sind selbst unbalanciert und brauchen exzessiv CPU oder exzessi
 Aber die meisten Enterprise-Anwendungen brauchen pro Core mit 3 GHz 4-8 GB RAM und 100-400 MBit/s Netz.
 Wenn wir unsere Hardware so proportionieren, dann können wir recht sicher sein, dass sie vielseitig einsetzbar ist.
 
-Preislich kommen wir mit solchen schwachbrüstigen Klein-Blades auf Kosten von etwa 120-150 Euro im Monat, 
+Preislich kommen wir (die Umgebung, in der ich gearbeitet habe – Eure Preise können variieren) 
+mit solchen schwachbrüstigen Klein-Blades auf Kosten von etwa 120-150 Euro im Monat, 
 für eine geplante Lebensdauer von fünf Jahren. Das ist der Kaufpreis für die Blade, 
 Platz im Rechenzentrum und anteilig Strom, Netzwerk und Blade-Chassis.
 
@@ -69,15 +70,25 @@ nichts installiert ein Betriebssystem oder die Anwendung – das ist Arbeit, und
 
 ## AWS Kosten im Vergleich
 
-Wir können das mit einer AWS m5.8xl vergleichen: 32 vCPU, 128 GB, 10 GBit/s und kein lokaler Speicher (EBS kostet extra).
+Wir können das mit einer AWS `m5.8xl` vergleichen: 32 vCPU, 128 GB, 10 GBit/s und kein lokaler Speicher (EBS kostet extra).
 Die kostet 1232 USD/Monat, also schmale 10x mehr, plus Netzwerk, plus EBS.
 
-Alternativ schauen wir auf eine AWS i3.4xl: 16 vCPU, 122 GB Speicher, und zwei lokale 1.92 TB NVME, 
+Alternativ schauen wir auf eine AWS `i3.4xl`: 16 vCPU, 122 GB Speicher, und zwei lokale 1.92 TB NVME, 
 sowie ein 10 GBit/s Link. 
 Die kostet 990 USD/Monat, plus Netz, aber wir haben zwei lokale Volumes.
 
 Anders als unsere Blade im Rechenzentrum ist diese VM bereits Teil einer gemanagten Umgebung, 
 wir können sie also provisionieren, und haben sie im Inventory.
+
+Anders als unsere Blade im Rechenzentrum ist diese VM auch eine VM, also ein Teil einer anderen, größeren CPU.
+Die Silver 4110 ist eine weiche CPU: [Unter Last geht ihr Takt runter](https://en.wikichip.org/wiki/intel/xeon_silver/4110#Frequencies).
+Größere CPUs sind je nach Auswahl auch oft härter, 
+sie kommen (zumindest bei `Normal` Workloads) oft mit viel weniger Taktverlust.
+Einige Hyperscaler, speziell AWS, lassen bei Intel besondere Typen nach Maß fertigen, 
+die nicht im normalen Portfolio für gewöhnliche Endkunden enthalten sind.
+Sie haben einen festen Clock, also weder boosten sie, noch gehen sie unter Last runter,
+und sie brauchen eine speziell gestaltete und genau spezifizierte Kühlung um das leisten.
+Wenn man als einziger Kunde etwa die Hälfte der gesamten Jahresproduktion Xeons abnimmt bekommt man das.
 
 ## Cloud vs. Baremetal On-Premises
 
@@ -121,7 +132,7 @@ Denn Menschen zu finden,
 die mit Hardware umgehen können und einen sinnvollen Operations Mindset haben wird zunehmend schwieriger.
 Entsprechend war das für das Management ein totaler No-Brainer, selbst bei einem Kostenfaktor von 10x.
 
-Denn der Aufwand, solche Personen zu finden, zu halten und so zu steuern, 
+Der Aufwand, solche Personen zu finden, zu halten und so zu steuern, 
 dass sie dann sinnvolle Automation bauen, ist groß.
 Das sind nicht nur Geldkosten, sondern schlimmer, das ist auch kognitive Load auf der Organisation.
 
@@ -131,14 +142,15 @@ Allgemeiner gesagt:
 Damit Du in 2024 eine Firma haben kannst, die eigene Hardware am Start hat,
 muss Deine Firma erst einmal eine Mindestgröße haben.
 
-Idealerweise kauft man aus Kostengründen immer die zweigrößte Sorte Rechner, die zu haben ist.
-Man kann das genau ausrechnen und dann ist es manchmal die zweigrößte und manchmal die drittgrößte Sorte CPU,
-die hergestellt wird, bei der der Bumms pro Dollar am Besten ist.
+Idealerweise kauft man aus Kostengründen immer die zweitgrößte Sorte Rechner, die zu haben ist.
+Man kann das genau ausrechnen und dann ist es manchmal die zweitgrößte und manchmal die drittgrößte Sorte CPU,
+die hergestellt wird, bei der der Bumms pro Dollar am besten ist.
 
 Das heißt, man hat dann etwas mit – sagen wir – 128 Cores pro Socket und Single Socket.
 Bei 8 GB pro Core und 100-300 MBit/s pro Core landen wir bei
 128 * 8 GB = 1024 GB = 1 TB RAM und bei 128 * 200 Mbit/s = 25600 MBit/s = 25 GBit/s.
-Bei einer Dual Socket entsprechend das Doppelte, also 2 TB RAM und 2x 25 MBit/s oder ein 100 GBit/s Interface.
+Bei einer Dual Socket entsprechend das Doppelte, 
+also 2 TB RAM und 2x 25 GBit/s oder schlicht ein 100 GBit/s Interface (überprovisioniert, aber eventuell einfacher).
 
 Die typische Java-Anwendung kann man in der Regel so bis 8 Cores und 16 GB RAM skalieren, 
 danach haucht die JVM ihr Leben aus.
@@ -170,7 +182,7 @@ wenn es mal wieder die Windel voll gemacht hat.
 Nun können wir VMs provisionieren, aber wir müssen aus den VMs noch immer Dienste machen.
 Dort wiederholt sich das Spiel von der VM-Ebene.
 Am Ende haben wir eine unserer Firmengröße angemesene "Core Infra" Abteilung, die unsere On-Prem Cloud betreibt.
-Das sind dann vielleicht keine 50.000 Maschinen mit zusamnen 1.000.000.Cores mehr,
+Das sind dann vielleicht keine 50.000 Maschinen mit zusammen 1.000.000 Cores mehr,
 sondern nur noch 8000 Maschinen mit 1.000.000 Cores, aber es sind trotzdem 10-30 Leute, die dafür da sind, 
 darauf Services zu implementieren.
 
@@ -178,11 +190,11 @@ Wir haben also die Wahl, erschreckend kostengünstige Hardware, die viel zu gro�
 Dann müssen wir Leute finden und anzustellen.
 Diese sind dann vielleicht in der Lage (oder vielleicht auch nicht), daraus eine brauchbare Plattform zu bauen.
 
-Alternativ können wir dem Bezos Kohle in den Rachen schaufel.
+Alternativ können wir dem Bezos Kohle in den Rachen schaufeln.
 
 Die Antwort ist für wirklich jede Firma mit weniger als einer dreistelligen Anzahl von Rechnern absolut offensichtlich,
 und besteht nicht darin, Hardware zu kaufen.
-Das Staffing, die lokale Betriebs-Entwicklung und alles, was damit einher geht, will sich niemand ans Bein binden.
+Das Staffing, die lokale Betriebs-Entwicklung und alles, was damit einhergeht, will sich niemand ans Bein binden.
 Sobald man dann größer ist, ist es teuer, aber zu spät.
 
 Folgerichtig findet man auch immer weniger Leute, die sich mit solchem lokalen Betrieb auskennen,
@@ -194,7 +206,7 @@ Dagegen kannst Du Dich mit Leuten tot werfen, die Dir Instanzen bei AWS klicken 
 - Wir haben zu viele Transistoren pro Chip.
   Die Hersteller von Chips wissen nicht, was die damit tun sollen.
   Du bekommst absurde Features, die nicht auf allen Chips gebraucht werden (KI-Inferenz,
-  dutzende FPUs und Vektoreinheiten) in den Performance-Cores, oder riesige Menschen Efficiency Cores pro Socket.
+  dutzende FPUs und Vektoreinheiten) in den Performance-Cores, oder riesige Mengen Efficiency Cores pro Socket.
   Im Consumer Bereich bekommst Du statt eines Computers ein System-on-a-Chip, bei dem Grafikbeschleuniger,
   RAM, RAM-Controller und NVME-Controller mit auf der CPU sitzen, zusammen mit 4E+8P Cores oder ähnlich.
 - Wir haben daher im Enterprise-Bereich viel zu viele Cores pro Socket (128+ Cores).
@@ -213,9 +225,9 @@ Dagegen kannst Du Dich mit Leuten tot werfen, die Dir Instanzen bei AWS klicken 
   die in komplett abstrakten Layers Dinge zusammenstecken, 
   low-code und nahe an Business Problemen. 
 - Dadurch habe ich niemanden nirgendwo mehr, der auch nur einen Hauch einer Ahnung hat, was das alles bedeutet,
-  lastmäßig und ob der getriebene Aufwand dem Problem angemessen ist.
+  lastmäßig, und ob der getriebene Aufwand dem Problem angemessen ist.
 - Ich kann solche Einschätzungen aber als Beratung einkaufen, 
-  entweder von lokalen Drittanbieter Consultants oder vom Hoster, als "Well-Architected" Beratung nach Schema F.
+  entweder von lokalen Drittanbieter-Consultants oder vom Hoster, als "Well-Architected" Beratung nach Schema F.
 - Das Bruttosozialprodukt steigt, weil das ja jetzt alles Transaktionen mit Echtgeld zwischen Firmen sind,
   statt Verrechnung mit Spielgeld innerhalb einer Firma.
 
@@ -224,5 +236,5 @@ Und am Ende spielen die Kosten im Vergleich keine Rolle mehr, weil andere, grö�
 Einer dieser Vektoren sind auch immer größere Regulierungsverpflichtungen, 
 die den Betrieb eigener Rechner On-Premises unmöglich machen, 
 weil eine ISO 27k, eine NIS-2 und eine PCI-Zertifizierung ja auch Aufwand und Geld kosten.
-Kauft man dagegen eine vorzertifizierte Cloudlösung hat man mindestens drei Viertel des Schmerzes nicht, 
+Kauft man dagegen eine vorab zertifizierte Cloudlösung hat man mindestens drei Viertel des Schmerzes nicht, 
 wird einem versprochen.
