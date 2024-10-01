@@ -16,7 +16,7 @@ Ich wurde gefragt:
 
 Seriös nicht, weil das ein Problem mit mehreren Schichten ist und keine dieser Schichten irgendwie schön ist.
 
-## Rahmenbedingungen
+# Rahmenbedingungen
 
 Der Haupttreiber bei der ganzen Sache ist die simple Tatsache, dass wir immer mehr Transistoren auf einen Chip bekommen.
 Der Chip wird zwar nicht mehr schneller, weil bei circa 3 GHz Takt Dauerleistung Schluss ist,
@@ -42,7 +42,7 @@ und bekommen so ein wenig mehr Leistung für viel mehr Energieverbrauch und Abw�
 
 Prozessoren von 2024 haben auf einem Chip bis zu 128 oder gar 192 Cores und die doppelte Anzahl von vCores (Threads).
 
-## Hardwarekosten
+# Hardwarekosten
 
 Gehen wir 5 Jahre zurück, kommen wir zu konkreten Kosten.
 
@@ -68,7 +68,7 @@ Platz im Rechenzentrum und anteilig Strom, Netzwerk und Blade-Chassis.
 Die Blade ist dann noch nicht inventarisiert, noch nicht an, 
 nichts installiert ein Betriebssystem oder die Anwendung – das ist Arbeit, und die rechnen wir hier nicht mit rein.
 
-## AWS Kosten im Vergleich
+# AWS Kosten im Vergleich
 
 Wir können das mit einer AWS `m5.8xl` vergleichen: 32 vCPU, 128 GB, 10 GBit/s und kein lokaler Speicher (EBS kostet extra).
 Die kostet 1232 USD/Monat, also schmale 10x mehr, plus Netzwerk, plus EBS.
@@ -90,7 +90,7 @@ Sie haben einen festen Clock, also weder boosten sie, noch gehen sie unter Last 
 und sie brauchen eine speziell gestaltete und genau spezifizierte Kühlung um das leisten.
 Wenn man als einziger Kunde etwa die Hälfte der gesamten Jahresproduktion Xeons abnimmt bekommt man das.
 
-## Cloud vs. Baremetal On-Premises
+# Cloud vs. Baremetal On-Premises
 
 Ein früherer Arbeitgeber von mir hatte circa 50.000 von solchen Blades.
 Die meisten davon waren die kleinen 4110, und einige größere Einheiten mit [Dual Gold 6132](https://ark.intel.com/content/www/us/en/ark/products/123541/intel-xeon-gold-6132-processor-19-25m-cache-2-60-ghz.html) an drei Standorten.
@@ -136,7 +136,7 @@ Der Aufwand, solche Personen zu finden, zu halten und so zu steuern,
 dass sie dann sinnvolle Automation bauen, ist groß.
 Das sind nicht nur Geldkosten, sondern schlimmer, das ist auch kognitive Load auf der Organisation.
 
-## Es wird nicht einfacher
+# Es wird nicht einfacher
 
 Allgemeiner gesagt: 
 Damit Du in 2024 eine Firma haben kannst, die eigene Hardware am Start hat,
@@ -169,7 +169,7 @@ Das heißt, der Cloud-Anbieter versucht unsere Anwendungen über so viele Stück
 und uns mit so vielen anderen Kunden als möglich auf einer Kiste zu hosten.
 Wenn dann ein Stück Hardware umfällt, verliert jeder Kunde eine Instanz, aber nicht ein Kunde alle.
 
-## On-Premises ist auch nicht unabhängig
+# On-Premises ist auch nicht unabhängig
 
 Zurück On-Premises: Wir müssen jetzt aus unserer Hardware Stücke in passender Größe schneiden, 
 um sie in Pods oder virtuelle Maschinen zu verwandeln.
@@ -201,7 +201,7 @@ Folgerichtig findet man auch immer weniger Leute, die sich mit solchem lokalen B
 und Dir so etwas bauen können.
 Dagegen kannst Du Dich mit Leuten tot werfen, die Dir Instanzen bei AWS klicken und für 60k-75k im Jahr zu Dir kommen.
 
-## Die ganze Logik-Kaskade
+# Die ganze Logik-Kaskade
 
 - Wir haben zu viele Transistoren pro Chip.
   Die Hersteller von Chips wissen nicht, was die damit tun sollen.
