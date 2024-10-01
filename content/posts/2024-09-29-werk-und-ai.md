@@ -16,7 +16,7 @@ Jemand fragt im Kontext
 
 und das ist ziemlich kompliziert.
 
-## Werke und Werkzeuge
+# Werke und Werkzeuge
 
 Du kannst ein Bild auf Leinwand malen und dann ist es ein Werk und durch das Urheberrecht geschützt.
 
@@ -40,7 +40,7 @@ oder nur noch Ausschnitte des Werkes sind von einem Menschen gemacht.
 Es ist offen, und darum geht es in diesem Prozeß, ab wieviel menschlichem Anteil etwas ein Werk ist.
 Und ob dann das Gesamtbild ein Werk ist, oder nur die Teile, die von einem Menschen gemacht sind.
 
-## Bildgebende Werkzeuge
+# Bildgebende Werkzeuge
 
 Es ist damit im Grunde auch offen, welche bildgebenden Werkzeuge, die durch einen Menschen benutzt werden,
 ein menschliches Werk erzeugen und welche nicht.
@@ -68,7 +68,7 @@ mit dem Werkscharacter eines Bildes macht.
 Offenbar ist das Recht derzeit der Ansicht, dass es irgendwo eine Grenze zwischen Werk und Nichtwerk gibt, 
 aber es ist absolut unklar, in Gesetz und Anwendung, wo diese liegt.
 
-## Auch für Texte
+# Auch für Texte
 
 Dasselbe gilt auch für Texte:
 
