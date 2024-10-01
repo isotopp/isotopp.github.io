@@ -72,7 +72,7 @@ aber es ist absolut unklar, in Gesetz und Anwendung, wo diese liegt.
 
 Dasselbe gilt auch für Texte:
 
-Du kannst ChatGPT bitten, "erzeuge mir eine Kurzgeschichte mit ..." und DALL-E macht eine solche Kurzgeschichte.
+Du kannst ChatGPT bitten, "erzeuge mir eine Kurzgeschichte mit ..." und ChatGPT macht eine solche Kurzgeschichte.
 Abgesehen davon, dass die langweilig ist, ist es auch nach aktuellem Recht kein Werk.
 
 Du kannst aber auch eine Reihe von Prompts schreiben, in denen Du mit ChatGPT eine Geschichte entwickelst, 
