@@ -120,9 +120,9 @@ $ mysqldump ... --single-transaction --source-data=2
 ## Dumping code in the database
 
 By default, `mysqldump` will not dump all non-table objects in the database.
-You need to pass `--routines`, `--trigger` and `--events` to get all the code from the database as well.
+You need to pass `--routines`, `--triggers` and `--events` to get all the code from the database as well.
 
-On newer versions of MySQL, `--trigger` is enabled by default, so they are dumped.
+On newer versions of MySQL, `--triggers` is enabled by default, so they are dumped.
 On older versions, you would have to manually mention it on the command line.
 
 Even on the most recent versions of MySQL, stored functions, stored procedures and events are not dumped automatically.
@@ -137,7 +137,7 @@ Using these options is now mandatory, if you want this code to be part of the du
 So in order to also dump code in the database, our command becomes now
 
 ```console
-$ mysqldump ... --single-transaction --source-data=2 --trigger --routines --events
+$ mysqldump ... --single-transaction --source-data=2 --triggers --routines --events
 ```
 
 ## `--opt` is a set of options enabled by default
@@ -203,7 +203,7 @@ We get
 
 ```console
 $ mysqldump ... --single-transaction --source-data=2 \
->     --trigger --routines --events \
+>     --triggers --routines --events \
 >     --no-data
 ```
 
