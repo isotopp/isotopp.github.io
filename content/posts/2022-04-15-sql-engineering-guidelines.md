@@ -415,7 +415,7 @@ The following rules have been proven to be useful guidance in the past:
       They usually provide a lot of toil and little benefit.
     - Exceptions exist. Check your departments engineering guides.
 
-- [What are Foreign Keys, and Foreign Key Constraints]({{< relref "2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}), [Foreign Key Constraints and Locking]({{< relref "2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}).
+- [What are Foreign Keys, and Foreign Key Constraints]({{< relref "2020-08-03-mysql-foreign-keys-and-foreign-key-constraints.md" >}}), [Foreign Key Constraints and Locking]({{< relref "2020-08-04-mysql-foreign-key-constraints-and-locking.html" >}}).
 
 ## Transactions
 
