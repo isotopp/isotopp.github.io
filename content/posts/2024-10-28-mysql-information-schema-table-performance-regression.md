@@ -283,3 +283,7 @@ Some queries against the DD do not scale well, in my case against 313k tables in
 Queries are being run against DD very often and often implicitly.
 Not only are explicit queries against `I_S.TABLES` and `SHOW TABLES LIKE` statements slow,
 a `drop database` on a schema with 313k tables will never terminate.
+
+# See Also
+
+- [Disabling InnoDB Redo Logging for Creating Tables as Fast as Possible](https://jfg-mysql.blogspot.com/2024/10/impressed-by-disabling-innodb-redo-logs.html) by J-F Gagné
