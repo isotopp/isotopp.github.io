@@ -34,3 +34,19 @@ Less than ideal, and also not good feature planning.
 I mean, if you implement such a feature, you'd would ask yourself "What for?", and,
 if it is a security feature, you'd also always ask "How can I prove that it is working as intended?"
 Somehow that has not happened, yet, for this particular feature – for almost two years now?
+
+Until then, my advice would be doing things the Booking way, and rotate accounts for machine logins.
+It is much easier to account for,
+you are generating machine accounts automatically anyway and
+use a mechanism such as vault or similar to distribute login information to client applications.
+
+Rotating accounts should be a no-brainer and simple logins are very easy to track.
+
+Check if outdated accounts are still used.
+Once usage stops, drop them.
+If usage does not stop within a week, alert on that, 
+and grab the application owner for a talk because somebody is illegally caching credentials.
+
+If accounts are no longer used at all, 
+after some timeout check with the application owner if the application is still needed,
+and block the creds.
