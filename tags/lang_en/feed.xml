@@ -12,7 +12,38 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Wed, 30 Oct 2024 12:45:33 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 31 Oct 2024 15:12:14 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: dual passwords</title>
+      <link>https://blog.koehntopp.info/2024/10/31/mysql-dual-passwords.html</link>
+      <pubDate>Mon, 28 Oct 2024 05:06:07 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
+
+      <guid>https://blog.koehntopp.info/2024/10/31/mysql-dual-passwords.html</guid>
+      <description>&lt;p&gt;Account password rotation is often a regulatory requirement.
+For that very reason, MySQL allows you to have multiple passwords on a single account.&lt;/p&gt;
+&lt;p&gt;I have written about this in
+&lt;a href=&#34;https://blog.koehntopp.info/2023/02/20/rotating-accounts-or-passwords.html&#34;&gt;Rotating Accounts or Passwords?&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;Of course, if something is a regulartory requirement, you also need to prove that you are meeting it.&lt;/p&gt;
+&lt;p&gt;So Percona has a nice article
+&lt;a href=&#34;https://www.percona.com/blog/tracking-dual-passwords-in-mysql/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tracking Dual Passwords in MySQL&lt;/a&gt;
+
+
+which shows how can (not) track dual password usage.&lt;/p&gt;
+&lt;p&gt;While it is somewhat possible to generate a report that shows you which accounts have dual passwords,
+finding out which accounts have used what password last or
+if an old account password is still being used (and from what machine) is either painful or downright impossible.
+There is no native view or reporting query that can give you an overview over all accounts,
+when they logged in last time with password1 or password2.
+Instead, painful log analysis with elevated log levels.&lt;/p&gt;
+&lt;p&gt;Less than ideal, and also not good feature planning.
+I mean, if you implement such a feature, you&amp;rsquo;d would ask yourself &amp;ldquo;What for?&amp;rdquo;, and,
+if it is a security feature, you&amp;rsquo;d also always ask &amp;ldquo;How can I prove that it is working as intended?&amp;rdquo;
+Somehow that has not happened, yet, for this particular feature – for almost two years now?&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: information_schema.tables performance regression</title>
       <link>https://blog.koehntopp.info/2024/10/28/mysql-information-schema-table-performance-regression.html</link>
@@ -4576,140 +4607,6 @@ Something to think about.&lt;/p&gt;
 
 &lt;/p&gt;
 &lt;p&gt;&lt;em&gt;Some things can only be made bearable with cute guinea pig photos.&lt;/em&gt;&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Deploying websites - an escalation</title>
-      <link>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</link>
-      <pubDate>Tue, 09 Jan 2024 05:06:07 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
-
-      <guid>https://blog.koehntopp.info/2024/01/09/deploying-websites.html</guid>
-      <description>&lt;p&gt;We are still playing minecraft.
-This time it is a highly modded Fabric server, which requires more memory than the old box had.
-The new box has 12 cores, 128 GB of memory, and two nice SSD.
-It is pretty nifty.&lt;/p&gt;
-&lt;h1 id=&#34;a-simple-problem-easily-solved-by-ansible&#34;&gt;
-    &lt;a href=&#34;#a-simple-problem-easily-solved-by-ansible&#34;&gt;
-	A simple problem, easily solved by Ansible.
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;The machine also needs some kind of webserver to run websites.
-An easy problem to solve, naturally.&lt;/p&gt;
-&lt;p&gt;A bit of Ansible, deploy a few config files into the system and be done with it.&lt;/p&gt;
-&lt;p&gt;Only, these are different types of websites, and over time additional sites are being added.
-When a new website is being added, we need to collect all website names
-and generate an
-&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html#mdomain&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;MDomain&lt;/code&gt;&lt;/a&gt;
-
-
-statement in the config for Apache&amp;rsquo;s
-&lt;a href=&#34;https://httpd.apache.org/docs/2.4/mod/mod_md.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;mod_md&lt;/code&gt;&lt;/a&gt;
-
-.
-This module will then automatically request the necessary certificates for the webserver&amp;rsquo;s TLS.&lt;/p&gt;
-&lt;p&gt;Collecting all domain names from the configuration files can be done in Ansible, but it kind of hurts.
-Ansible works best when you run it to deploy a few templated config files, and then have services doing the actual work.&lt;/p&gt;
-&lt;p&gt;It is also more complicated than this, because we have different types of websites.
-Initially we had only&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;static sites&lt;/code&gt; (&lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;We also needed &lt;code&gt;redirect_sites&lt;/code&gt; (&lt;code&gt;https://www.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://example.com&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;We also needed reverse proxies for applications (&lt;code&gt;https://grafana.example.com&lt;/code&gt; -&amp;gt; &lt;code&gt;https://localhost:3000&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;We also need a Discord bot.&lt;/li&gt;
-&lt;li&gt;Then we also needed the &lt;code&gt;wsgi_site&lt;/code&gt; deployed.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;But a &lt;code&gt;wsgi_site&lt;/code&gt; needs to be redeployed when the code has changed on GitHub.
-Also, initial deployment of a &lt;code&gt;wsgi_site&lt;/code&gt; needs to create a user,
-and initial checkout of the code into the users home,
-and installation of the requirements.&lt;/p&gt;
-&lt;p&gt;After a code update, the server needs to be restarted.&lt;/p&gt;
-&lt;h1 id=&#34;this-actually-needs-a-shell-script&#34;&gt;
-    &lt;a href=&#34;#this-actually-needs-a-shell-script&#34;&gt;
-	This actually needs a shell script
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Okay, let&amp;rsquo;s not do this in Ansible.
-Let&amp;rsquo;s write a simple and easy shell script for this.&lt;/p&gt;
-&lt;p&gt;That kind of worked, initially, but quickly fell apart when the number of variants grew,
-also error checking became complicated.&lt;/p&gt;
-&lt;p&gt;Ultimately, it broke when we needed to collect and store per-site config parameters as a JSON, and act on it.
-The moment you write shell functions with parameters, traps and other bells and whistles,
-it is time to cut your losses and start over differently.
-In this case, in Python.&lt;/p&gt;
-&lt;h1 id=&#34;enter-deploy-a-python-cli-application&#34;&gt;
-    &lt;a href=&#34;#enter-deploy-a-python-cli-application&#34;&gt;
-	Enter &lt;code&gt;deploy&lt;/code&gt;, a Python CLI application
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;In the current intermediate stage, this is a Python script of 32 KB and around 1000 lines.&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;# wc -l Source/deploy/deploy &lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;951&lt;/span&gt; Source/deploy/deploy
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;and&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;root@bigbox ~&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;#  ls -l Source/deploy/deploy&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;-rwxr-xr-x. &lt;span class=&#34;m&#34;&gt;1&lt;/span&gt; root root &lt;span class=&#34;m&#34;&gt;31428&lt;/span&gt; Jan  &lt;span class=&#34;m&#34;&gt;8&lt;/span&gt; 18:42 Source/deploy/deploy
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It understands the five types of server outlined above, and can handle a number of different operations for them.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;create&lt;/code&gt; makes a new server-config.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;delete&lt;/code&gt; throws it away.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We store them in a central directory, &lt;code&gt;/etc/projects&lt;/code&gt;, as JSON files.
-For each site type, we accept a number of parameters:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;--type&lt;/code&gt;, the five types above.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--username&lt;/code&gt;, a Unix User we create for the site.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--github&lt;/code&gt; The source code repository URL.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--hostname&lt;/code&gt; If necessary, this is inferred from the username and the default domain.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--projectdir&lt;/code&gt; Only necessary for anomalously structured Python code.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--to_host&lt;/code&gt; Only for redirects.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--port&lt;/code&gt; Only for proxies.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We now can do&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show projects&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- grafana
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- learn
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show grafana&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/grafana
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : None
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : grafana.example.com
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- port      : &lt;span class=&#34;m&#34;&gt;3000&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : grafana
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : proxy
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;code&gt;deploy create --type proxy --hostname grafana.example.com --port 3000&lt;/code&gt; has created an apache configuration,
-built the TLS configuration and restarted the &lt;code&gt;httpd.service&lt;/code&gt; to update things.&lt;/p&gt;
-&lt;p&gt;We can also do more complicated things:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy create --type wsgi_site --user learn --github ... learn&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;... creates /etc/project/learn
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# deploy show learn&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;*** PROJECT /etc/projects/learn
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- github    : git@github.com:.../learn.git
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- home      : /home/learn
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- hostname  : learn.example.com
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- project   : learn
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- projectdir: learn
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- pubkey    : ssh-rsa AAAAB3...cfudtTQ&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; root@bigbox
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- &lt;span class=&#34;nb&#34;&gt;type&lt;/span&gt;      : wsgi_site
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;- username  : learn
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will create a Linux user, set up a checkout of the GitHub, install requirements, set up a WSGI Apache configuration,
-configure TLS, and restart the server as needed.&lt;/p&gt;
-&lt;p&gt;We can now &lt;code&gt;deploy update learn&lt;/code&gt; or &lt;code&gt;deploy restart learn&lt;/code&gt; to check out a new version and restart the server,
-and we can also &lt;code&gt;deploy logs learn&lt;/code&gt; to tail the server logs for this site.&lt;/p&gt;
-&lt;h1 id=&#34;it-is-still-ugly&#34;&gt;
-    &lt;a href=&#34;#it-is-still-ugly&#34;&gt;
-	It is still ugly
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Because this started out as a shell script, it still is ugly.
-There are multiple levels of giant case-branches in this.
-To become a proper solution, it needs a cleaner structure, in a more object-oriented fashion.&lt;/p&gt;
-&lt;p&gt;But already it works better than the shell script it initially was,
-has better error handling and can handle borderline cases more safely.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/isotopp/deploy&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Github&lt;/a&gt;
-
-.&lt;/p&gt;
 </description>
     </item>
     

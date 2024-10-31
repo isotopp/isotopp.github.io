@@ -112,6 +112,48 @@
   
   <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
     <div class='col-lg-8'>
+        <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2021/03/29/mysql-date-time-dst.html" class='text-decoration-none text-dark'>Things you didn&#39;t know about MySQL and Date and Time and DST</a></h1>
+        <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
+          <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@chaos.social" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+          <a href="https://chaos.social/@isotopp" class='text-secondary text-decoration-none'>Kristian Köhntopp</a>
+          -
+          March 29, 2021
+        </div>
+
+        <div class='mt-3'><p>(based on a conversation with a colleague, and <a href="https://twitter.com/isotopp/status/1376436003129462784" target="_blank" rel="noopener">a bit of Twitter</a>
+
+)</p>
+<h2 id="a-conundrum">
+    <a href="#a-conundrum">
+	A Conundrum
+    </a>
+</h2>
+<p>A developer colleague paged me with this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 03:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">YEAR</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 02:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="k">YEAR</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">delta</span><span class="err">\</span><span class="k">G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">delta</span><span class="p">:</span><span class="w"> </span><span class="mi">420</span><span class="w">
+</span></span></span></code></pre></div><p>It is obviously wrong, and weirdly so. It only works for &ldquo;2 year&rdquo;, not with other values:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 03:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">11</span><span class="w"> </span><span class="n">year_month</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 02:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">11</span><span class="w"> </span><span class="n">year_month</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">delta</span><span class="err">\</span><span class="k">G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">delta</span><span class="p">:</span><span class="w"> </span><span class="mi">3600</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 03:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="n">year_month</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 02:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">12</span><span class="w"> </span><span class="n">year_month</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">delta</span><span class="err">\</span><span class="k">G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">delta</span><span class="p">:</span><span class="w"> </span><span class="mi">3600</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 03:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">13</span><span class="w"> </span><span class="n">year_month</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">UNIX_TIMESTAMP</span><span class="p">(</span><span class="s2">&#34;2021-03-26 02:07:00&#34;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">INTERVAL</span><span class="w"> </span><span class="mi">1</span><span class="o">-</span><span class="mi">13</span><span class="w"> </span><span class="n">year_month</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">delta</span><span class="err">\</span><span class="k">G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="n">delta</span><span class="p">:</span><span class="w"> </span><span class="mi">3600</span><span class="w">
+</span></span></span></code></pre></div><p>It has to be exactly 730 days (2 * 365 days, 2 years):</p></div>
+
+    </div>
+  </div>
+  <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
+    <div class='col-lg-8'>
         <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2021/03/24/a-lot-of-mysql.html" class='text-decoration-none text-dark'>That&#39;s a lot of databases</a></h1>
         <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
           <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@chaos.social" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
@@ -301,27 +343,6 @@
 </span></span><span class="line"><span class="cl">    <span class="n">height</span><span class="p">:</span> <span class="nb">int</span>
 </span></span><span class="line"><span class="cl">    <span class="n">grid</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
 </span></span></code></pre></div><p>The integer Zero will indicate an unused cell. We then use bits to store passages to the four cardinal directions: 1 for a passage to the North, 2 for a passage to the East, 4 for a passage to the South, and 8 for a passage to the West.</p></div>
-
-    </div>
-  </div>
-  <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
-    <div class='col-lg-8'>
-        <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2021/01/05/using-python-to-bash.html" class='text-decoration-none text-dark'>Using Python to bash</a></h1>
-        <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
-          <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@chaos.social" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
-          <a href="https://chaos.social/@isotopp" class='text-secondary text-decoration-none'>Kristian Köhntopp</a>
-          -
-          January 5, 2021
-        </div>
-
-        <div class='mt-3'><p>Heise writes <a href="https://www.heise.de/hintergrund/Einfuehrung-in-die-Bash-Programmierung-Minesweeper-in-der-Linux-Shell-entwickeln-5002358.html" target="_blank" rel="noopener">an introduction to bash programming (in german)</a>
-
-:</p>
-<blockquote>
-<p>Bash ist eine vollwertige Programmiersprache, mit der Sie alltägliche Aufgaben leicht automatisieren.</p>
-<p>Bash is a fully featured programming language that you can use to automate everyday tasks.</p>
-</blockquote>
-<p>Bash is not a fully featured programming language at all, and nothing in bash is ever easy. You are advised to use a proper programming language early on in development, and if possible never put bash commands into a file.</p></div>
 
     </div>
   </div>
