@@ -11,7 +11,8 @@ tags:
 - mysqldev
 ---
 
-Account password rotation is often a regulatory requirement.
+Account password rotation is often a regulatory requirement, despite now being a valid finding in security audits based on NIST.["Verifiers and CSPs SHALL NOT require users to change passwords periodically."](https://pages.nist.gov/800-63-4/sp800-63b/authenticators/#passwordver).
+
 For that very reason, MySQL allows you to have multiple passwords on a single account.
 
 I have written about this in
