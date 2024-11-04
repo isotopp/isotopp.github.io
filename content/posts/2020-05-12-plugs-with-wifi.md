@@ -14,7 +14,7 @@ So we are baking bread, and for that we have a Wiesheu minimat oven that comes i
 
 *Wiesheu minimat with condenser hood. Convection oven with 3 trays (for buns) or a single layer of stone plate for bread. Can do 3x12 buns (20 min) or 2-3 loaves of bread (1h). Power draw 3kW + 0.5kW for the hood. Intended use is a show oven in the sales room of a bakery, or as PoS oven in a gas station or supermarket.*
 
-So Sammy wanted to know what is cheaper to use: The Wiesheu or the Neff. And for that I needed a way to measure and report power dram of a wall plug. I [asked Twitter](https://twitter.com/isotopp/status/1258765170219892736) for solutions that can do
+So Sammy wanted to know what is cheaper to use: The Wiesheu or the Neff. And for that I needed a way to measure and report power draw of a wall plug. I [asked Twitter](https://twitter.com/isotopp/status/1258765170219892736) for solutions that can do
 
 - 16A (some solutions do only 10A)
 - no cloud account or cloud reporting
