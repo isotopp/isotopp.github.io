@@ -10,7 +10,7 @@ tags:
 title: Alte Männer mit Kugelschreibern
 ---
 Bov Bjerg schreibt in 
-[Alte Männer mit Kugelschreibern](http://jungle-world.com/seiten/2007/36/10551.php) für die Jungle World: 
+[Alte Männer mit Kugelschreibern](https://jungle.world/artikel/2007/36/alte-maenner-mit-kugelschreibern) für die Jungle World: 
 
 > Machen wir uns nichts vor: In den vergangenen Jahren ist, nicht nur in
 > Deutschland, eine gefährliche Parallelgesellschaft entstanden. Eine
