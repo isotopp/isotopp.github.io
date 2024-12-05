@@ -3,6 +3,7 @@ author: isotopp
 date: "1996-03-02T09:00:00Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 title: "PHPLIB"
+toc: true
 tags:
 - lang_de
 - publication
