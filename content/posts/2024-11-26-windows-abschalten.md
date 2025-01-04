@@ -67,7 +67,7 @@ Dann ist es so:
 
 Beachte, dass das nicht per User ist, sondern Shared für alle User, die in `Administrators` sind.
 
-Nun gut, ist ja eine Personal Workstation, gibt also nur einen User und der ist immer Administrator, also muß das immer nach da und nie nach `%HOME%\.ssh`.
+Nun gut, ist ja eine Personal Workstation, gibt also nur einen User und der ist immer Administrator, also muß das immer nach da und nie nach `%HOME%\.ssh`. Seit Windows 10 + irgendein patchlevel hat Microsoft den `Administator` Account auf `inaktiv` gestellt - deshalb funktioniert ein Einloggen mit dem nicht mehr. Stattdessen muss man einen aktiven Account des Windows verwenden. Der kann widerum Leerzeichen enthalten, wenn bei der Neuanlage diese Abhängigkeit noch nicht klar war.
 
 ```console
 # Get the public key file generated previously on your client
@@ -78,6 +78,14 @@ $remotePowershell = "powershell Add-Content -Force -Path $env:ProgramData\ssh\ad
 
 # Connect to your server and run the PowerShell using the $remotePowerShell variable
 ssh username@domain1@contoso.com $remotePowershell
+```
+also mit dem User dann:
+```
+ssh kris@windowsmoehre
+```
+oder
+```
+ssh joe\ user@windowsmoehre
 ```
 
 # Localization
