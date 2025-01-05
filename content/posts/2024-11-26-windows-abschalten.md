@@ -88,7 +88,7 @@ Und dann, damit alle, alles zerbricht:
 For non-English localized versions of the operating system, the script will need to be modified to reflect group names accordingly. 
 ```
 
-Mein Windows ist English, also geht es, aber die armen Würste, die Windows scripten mussen.
+Mein Windows ist English, also geht es, aber die armen Würste, die Windows scripten müssen.
 
 Aber nein:
 
