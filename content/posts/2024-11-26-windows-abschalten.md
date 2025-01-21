@@ -10,7 +10,6 @@ tags:
 title: "Windows abschalten"
 ---
 
-# Keks
 # An
 
 Ich kann meinen Windows-Rechner anschalten.
@@ -83,7 +82,7 @@ ssh username@domain1@contoso.com $remotePowershell
 
 # Localization
 
-Und dann, damit alles, alles zerbricht:
+Und dann, damit alle, alles zerbricht:
 
 ```console
 For non-English localized versions of the operating system, the script will need to be modified to reflect group names accordingly. 
