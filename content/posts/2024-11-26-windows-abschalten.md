@@ -10,8 +10,6 @@ tags:
 title: "Windows abschalten"
 ---
 
-# Keks
-
 # An
 
 Ich kann meinen Windows-Rechner anschalten.
