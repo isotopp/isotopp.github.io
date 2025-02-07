@@ -12,7 +12,7 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Tue, 21 Jan 2025 12:20:50 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/innodb/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 07 Feb 2025 11:16:02 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/innodb/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>MySQL: automatic partitions surely would be nice</title>
       <link>https://blog.koehntopp.info/2020/09/25/mysql-dynamic-partitions-suck.html</link>
@@ -1397,8 +1397,7 @@ After some back and forth it becomes clear that the Dev experiences deadlocks an
 :&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;SERIALIZABLE&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;This level is like &lt;code&gt;REPEATABLE READ&lt;/code&gt;, but InnoDB implicitly converts all plain &lt;code&gt;SELECT&lt;/code&gt;  statements to &lt;code&gt;SELECT ... FOR SHARE&lt;/code&gt; if autocommit is disabled.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;This level is like &lt;code&gt;REPEATABLE READ&lt;/code&gt;, but InnoDB implicitly converts all plain &lt;code&gt;SELECT&lt;/code&gt;  statements to &lt;code&gt;SELECT ... FOR SHARE&lt;/code&gt; if autocommit is disabled.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;It then goes on to explain how &lt;code&gt;SERIALIZABLE&lt;/code&gt; does nothing when there is no explicit transaction going on. It does not explain what it is good for (mostly: shooting yourself into the foot) and when you should use it (mostly: don&amp;rsquo;t).&lt;/p&gt;
 &lt;p&gt;It does answer the question of &amp;ldquo;Where to the S-Locks come from?&amp;rdquo;, though.&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;SERIALIZABLE&lt;/code&gt; isolation mode turns a normal &lt;code&gt;SELECT&lt;/code&gt; statement into a Medusa&amp;rsquo;s freeze ray that shoots S-Locks all over the tables onto everything it looks at, preventing other threads from changing these things until we end our transaction and drop our locks (And that is why you should not use it, and why I personally believe that your code is broken if it needs it).&lt;/p&gt;
@@ -2059,8 +2058,7 @@ operation.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt; is a read statement, but locks the rows it fetches
 as if it were a write statement. In doing that, it anticipates the
-&lt;code&gt;UPDATE&lt;/code&gt; operation that is to follow.&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;code&gt;UPDATE&lt;/code&gt; operation that is to follow.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;What happens is that the &lt;code&gt;SELECT ... FOR UPDATE&lt;/code&gt; creates X-locks on &lt;em&gt;at
 least&lt;/em&gt; the rows it returns. An X-lock or exclusive lock is a lock that
 guarantees that only one thread (us) can access the row while the lock is
@@ -2203,8 +2201,7 @@ been there - but still Session2 saw it.&lt;/p&gt;
 &lt;p&gt;At &lt;code&gt;TRANSACTION ISOLATION LEVEL READ UNCOMMITTED&lt;/code&gt; we are reading stuff
 directly from the tablespace file. This can contain data that is not yet
 committed, and due to &lt;code&gt;ROLLBACK&lt;/code&gt; never will be - mere phantasies.
-The Undo-Log is never consulted.&lt;/p&gt;
-&lt;/blockquote&gt;
+The Undo-Log is never consulted.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;transaction-isolation-level-read-committed&#34;&gt;
     &lt;a href=&#34;#transaction-isolation-level-read-committed&#34;&gt;
 	Transaction Isolation Level Read Committed
@@ -2229,8 +2226,7 @@ committed.&lt;/p&gt;
 the tablespace file, unless there is an ongoing transaction for a row. In
 that case, the reader will consult the Undo-Log one level deep and show us
 the previous, committed version of the data. We never get to see ephemeral
-data that can be rolled back.&lt;/p&gt;
-&lt;/blockquote&gt;
+data that can be rolled back.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;Now, let&amp;rsquo;s commit that change, and check:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;Session1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;commit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;Session2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;transaction&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;isolation&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;level&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;read&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;committed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -2254,8 +2250,7 @@ in Session2:&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;----+---------+
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;At &lt;code&gt;TRANSACTION ISOLATION LEVEL READ COMMITTED&lt;/code&gt;, if we read the same row
-twice, we can see it changing.&lt;/p&gt;
-&lt;/blockquote&gt;
+twice, we can see it changing.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;h3 id=&#34;transaction-isolation-level-repeatable-read&#34;&gt;
     &lt;a href=&#34;#transaction-isolation-level-repeatable-read&#34;&gt;
 	Transaction Isolation Level Repeatable Read
@@ -2316,8 +2311,7 @@ been made after we started the transaction.&lt;/p&gt;
 the tablespace, unless it has been changed after we started our
 transaction. In that case, the reader will consult the Undo-Log multiple
 levels deep, in order to present us the newest version of the row that is
-older than our read-only transaction.&lt;/p&gt;
-&lt;/blockquote&gt;
+older than our read-only transaction.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;As soon as we drop our read-only transaction with commit (nothing changed,
 so nothing is actually committed) our world jumps forward in time to the
 present, skipping any intermediate steps.&lt;/p&gt;
@@ -2378,8 +2372,7 @@ Undo-Log space.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;At no point in time a read operation is ever stalled by a writer and
 forced to wait. There are no write-locks ever stalling a reader. These two
-operations are completely independent.&lt;/p&gt;
-&lt;/blockquote&gt;
+operations are completely independent.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;For writers, this is quite different, and for good reason.&lt;/p&gt;
 </description>
     </item>
@@ -3099,8 +3092,7 @@ friends, and that is even
 such as MyISAM are not supported.  This is because updates to such tables
 mixed with updates to tables that use a transactional storage engine such
 as InnoDB can result in multiple GTIDs being assigned to the same
-transaction.&lt;/p&gt;
-&lt;/blockquote&gt;
+transaction.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;Also, this is supposed to work with GRANT and REVOKE, but not with INSERT
 and DELETE.  Now guess what mysql-install-db and friends are using?&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;~&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;#&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;less&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;usr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;share&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql_system_tables_data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;sql&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
@@ -3669,8 +3661,7 @@ connections still have an old consistent read view on the previous state
 of things.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;I understand that Postgres does not have covering indexes because of such
-index problems wrt to transactions. How does InnoDB work around this?&lt;/p&gt;
-&lt;/blockquote&gt;
+index problems wrt to transactions. How does InnoDB work around this?&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;Axel Schwenke von MySQL Support hat diese Frage beantwortet, und dabei Hilfe
 von Marko Mäkelä vom InnoDB Team bekommen:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -3684,8 +3675,7 @@ page. If this is newer than the required read snapshot, then InnoDB dives
 to the clustered index for each hit from that index page to check the row
 version and will also follow to UNDO if required.&lt;/p&gt;
 &lt;p&gt;That means covering index reads might degrade to full row reads on InnoDB,
-depending on write activity and isolation level.&lt;/p&gt;
-&lt;/blockquote&gt;
+depending on write activity and isolation level.&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;In Deutsch: Ein Index, der nicht der Primärschlüssel ist (und das ist bei
 InnoDB und Covering Indexes immer der Fall) hat Einträge für die neuste
 Version einer Zeile. Falls sich Felder einer Zeile verändern, die

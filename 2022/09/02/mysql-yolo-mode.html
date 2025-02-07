@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.141.0">
+<meta name="generator" content="Hugo 0.143.1">
 <meta property="og:title" content='MySQL: YOLO mode | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="en_US" />
@@ -163,8 +163,7 @@
 			<div class='col-lg-8'>
 				<p>OH:</p>
 <blockquote>
-<p>&ldquo;And now let&rsquo;s quickly push 2 billion rows into this database VM.&rdquo;</p>
-</blockquote>
+<p>&ldquo;And now let&rsquo;s quickly push 2 billion rows into this database VM.&rdquo;</p></blockquote>
 <p>That is best done in YOLO mode.
 This is a mode of operation for a database that minimizes disk writes in favor of batched bulk writes.</p>
 <p>It is not ACID, so if anything goes wrong during the load, the instance is lost.
@@ -177,8 +176,7 @@ If you are not having at least one more replica than needed in your MySQL deploy
     </a>
 </h1>
 <blockquote>
-<p>set global innodb_flush_log_at_trx_commit = 2;</p>
-</blockquote>
+<p>set global innodb_flush_log_at_trx_commit = 2;</p></blockquote>
 <p><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit" target="_blank" rel="noopener">This config variable</a>
 
  gives up ACID commits:
@@ -190,8 +188,7 @@ Instead, data is synced once per second.</p>
     </a>
 </h1>
 <blockquote>
-<p>set global innodb_doublewrite = OFF;</p>
-</blockquote>
+<p>set global innodb_doublewrite = OFF;</p></blockquote>
 <p><a href="https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_doublewrite" target="_blank" rel="noopener">This config variable</a>
 
  disables the InnoDB DoubleWrite Buffer.
@@ -208,8 +205,7 @@ That is, normal setups need this enabled all of the time, or risk torn pages (pa
 
 :</p>
 <blockquote>
-<p>alter instance disable innodb redo_log;</p>
-</blockquote>
+<p>alter instance disable innodb redo_log;</p></blockquote>
 <p>This replaces the preceding two config changes:</p>
 <ol>
 <li>The redo log will never be written in the first place, so the flush log setting is pointless.</li>
@@ -224,8 +220,7 @@ That is, normal setups need this enabled all of the time, or risk torn pages (pa
 Especially, MySQL 8 always has the binlog on by default.
 You may want to turn it off per session:</p>
 <blockquote>
-<p>set sql_log_bin = off;</p>
-</blockquote>
+<p>set sql_log_bin = off;</p></blockquote>
 <p>This will kill another source of disk writes and potential disk syncs during the load.</p>
 <h1 id="delay-secondary-index-generation">
     <a href="#delay-secondary-index-generation">
@@ -234,15 +229,13 @@ You may want to turn it off per session:</p>
 </h1>
 <p><code>mysqldump</code> will still generate a statement that tries to disable secondary index generation:</p>
 <blockquote>
-<p>alter table t disable keys;</p>
-</blockquote>
+<p>alter table t disable keys;</p></blockquote>
 <p>This command is accepted, but it only works in MyISAM, which nobody should use any more in 2022.
 You can</p>
 <blockquote>
 <p>set autocommit = 0;
 set unique_checks = 0;
-set foreign_key_checks = 0;</p>
-</blockquote>
+set foreign_key_checks = 0;</p></blockquote>
 <p>to YOLO the loading of InnoDB tables, but very large transactions can have their own challenges in MySQL.
 So best you commit every 1.000 to 10.000 rows loaded.
 Make sure no transaction is ever larger than 1 GB, it will break compressed binlogs, if enabled.
