@@ -113,7 +113,7 @@ And the log entry is done:
 
 ### Why does MySQL do this?
 
-Enterprise Grade hardeware usually guarantees atomic block
+Enterprise Grade hardware usually guarantees atomic block
 writes, even during catastrophic events. Blocks are, depending
 on the media, 512 bytes or 4096 bytes in size.
 
