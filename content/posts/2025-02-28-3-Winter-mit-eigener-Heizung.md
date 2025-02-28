@@ -44,8 +44,8 @@ Die Fakten sind:
    eine Internet-Anbindung über eine proprietäre App, die einfache Einstellungen
    ermöglicht und den Gasverbrauch für Warmwasser und Heizung ausweist.
  - Es ist überall (ausser im Keller) Fussbodenheizung in Trockenbauweise verlegt.
-   Die Raumthermostate zur Steuerung der Stellventile sind einfache Bimetall-
-   Thermometer (laut Hersteller mit einer Auflösung von ca. 0,5 Grad).
+   Die Raumthermostate zur Steuerung der Stellventile sind einfache Bimetall-Thermometer
+   (laut Hersteller mit einer Auflösung von ca. 0,5 Grad).
  - Das Haus steht dreifach unter Denkmalschutz: Einmal als Teil des
    Altstadt-Ensembles der Stadt Wismar, einmal von aussen, und einmal von
    innen. Das bedeutet: Das Denkmalschutzamt hat eine innige Beziehung zu dem Haus
