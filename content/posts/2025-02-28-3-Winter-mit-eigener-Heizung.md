@@ -8,6 +8,7 @@ tags:
   - heizung
   - homeassistant
 title: "Drei Winter mit eigener Heizung"
+draft: true
 ---
 
 # 2022
