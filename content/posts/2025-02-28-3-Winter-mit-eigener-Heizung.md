@@ -48,8 +48,8 @@ Die Fakten sind:
  - Das Haus steht dreifach unter Denkmalschutz: Einmal als Teil des
    Altstadt-Ensembles der Stadt Wismar, einmal von aussen, und einmal von
    innen. Das bedeutet: Das Denkmalschutzamt hat eine innige Beziehung zu dem Haus
-   und alle nicht rückbaufähigen Baumaßnahmen sind gehnemigungspflichtig (bis hin
-   zur Abgabe von Materialproben von Wandfarbe).
+   und alle nicht rückbaufähigen Baumaßnahmen sind genehmigungspflichtig (bis hin
+   zur Abgabe von Materialproben der Wandfarbe).
  - Die Altstadtlage bedeutet neben baulichen Details wie Verschattung durch die
    höheren Nachbarhäuser auch, dass eine Photovoltaikanlage auf dem Dach hohen
    bürokratischen Aufwand bei fraglicher Leistung für das Haus mit sich bringen
@@ -117,7 +117,7 @@ erkenne ich folgende Unzulänglichkeiten:
 
 Ändern kann ich auf Anhieb nur die Punkte 2 und 4: 
 
- - ich stelle das Heizprogramm auf 19,5 und 19 Grad um. Dadurch sinkt der
+ - Ich stelle das Heizprogramm auf 19,5 und 19 Grad um. Dadurch sinkt der
    Gasverbrauch für das Heizen um ca. 20%, bei deutlich verbessertem
    Wärmekomfort. 
  - Die Warmwassererzeugung beschränke ich auf zwei Zeitfenster morgens und
@@ -159,7 +159,7 @@ auf 9 Grad fallende Aussentemperaturen mit Verbrauchswerten zwischen drei und
 In diesem Winter versuche ich im Wesentlichen, meine Einstellungen aus dem
 vorigen Winter zu validieren. Ich verändere wenig an der Steuerung, aber ich
 beginne systematisch, das Haus mit Raumthermometern zu versorgen, um besser zu
-verstehen, wann und wo Wärme notwendig ist. im Januar 2024 kommt dann die
+verstehen, wann und wo Wärme notwendig ist. Im Januar 2024 kommt dann die
 Gasabrechnung für das Jahr 2023 und ... unser Gasverbrauch liegt bei ca. 50%
 des angenommenen Durchschnittswertes für ein Haus unserer Größe.
 Und die Energiemenge liegt deutlich unter der unserer alten, wesentlich kleineren Mietwohnung in Berlin.
@@ -198,7 +198,7 @@ Optimierungen des Heizsystems:
    weit auseinanderliegen, installiere ich noch einen Hall-Effekt-Zähler am Gaszähler.
  - Zunächst korrigiere ich die Einstellung der Zirkulationspumpe, die einfach
    auf Maximum steht, anstatt der notwendigen Förderpumpenhöhe entsprechend
-   eingestellt zu sein. da die Zirkulationspumpe zusätzlich zur Pumpe im Gasboiler
+   eingestellt zu sein. Da die Zirkulationspumpe zusätzlich zur Pumpe im Gasboiler
    läuft, kann ich auch die Leistung der internen Pumpe herunterstellen. 
  - Danach korrigiere ich die Einstellung der Raumthermostate. Da das Haus innen
    im Wesentlichen einen offenen Aufbau hat, ist eine raumspezifische Einstellung
@@ -278,7 +278,7 @@ Unterschreiten der Raumtemperatur wieder einzuschalten. Dadurch spare ich bei
 den Mitteltemperaturen zwischen 30 und 50 Prozent Heizenergie, und selbst bei den
 Tiefsttemperaturen in diesem Winter kommen noch 10% Abschaltzeiten dazu. Ob
 diese allerdings tatsächlich Energie-Einsparungen in entsprechender Höhe
-bedeuten, oder die Heizung in anderen Zeiten gegenan heizen muss, sei
+bedeuten, oder die Heizung in anderen Zeiten gegen heizen muss, sei
 dahingestellt.
 
 Mit den niedrigen Energieverbrauchszahlen für die Heizung drängt sich nun das
@@ -318,12 +318,12 @@ absolut dazu führen werden, dass Dritte sich meine Beschreibung durchlesen, und
 wenig bis nichts von meinen Maßnahmen direkt anwendbar ist. Wichtig ist aber
 die Methodik:
 
-a) Messen  
-b) Grösste Verbrauchsmomente identifizieren  
-c) Diese Verbrauchsmomente eliminieren oder reduzieren  
-d) Messen  
-e) Eigenes Verhalten überprüfen und anpassen  
-f) Messen  
+a) Messen
+b) Grösste Verbrauchsmomente identifizieren
+c) Diese Verbrauchsmomente eliminieren oder reduzieren
+d) Messen
+e) Eigenes Verhalten überprüfen und anpassen
+f) Messen
 
 Die Messbarkeit und Vergleichbarkeit mit vorherigen Einstellungen ist bei einem
 trägen System wie der Heizung extrem wichtig, um die Wirksamkeit über ein
