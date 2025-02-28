@@ -22,8 +22,8 @@ Heizung.
 Wie das bei neu gebackenen Hausbesitzern so ist, kollidieren eigene Wünsche zu
 Umbaumaßnahmen ("Photovoltaik!", "Wärmepumpe!") mit den Realitäten vor Ort. Und
 man hat erstmal das Gefühl verloren, wieviel bewegliches Kapital noch vorhanden
-ist, nachdem eine Immobilie angeschafft wurde. Dass setzt dem
-Investitionswillen eine mentale Bremse.
+ist, nachdem eine Immobilie angeschafft wurde. Das setzt dem Investitionswillen
+eine mentale Bremse.
 
 Die Fakten sind: 
 
@@ -75,7 +75,12 @@ wenn die Heizungssteuerung abstürzt, oder die Heizung während der Wartung eine
 Stunde stromlos geschaltet wird....
 
 
-![](/uploads/2025/02/mybuderus-first-look.png)
+[![](/uploads/2025/02/mybuderus-first-look.png)](/uploads/2025/02/mybuderus-first-look.png)
+
+*Ein Beispiel-Screenshot der MyBuderus App. In einer Wochenansicht Ende Oktober
+werden Tagesverbrauchswerte für die letzten beiden Tage angezeigt, darüber
+liegt eine Temperaturkurve. Die Tageswerte liegen bei 6 und 26 kWh, die
+Aussentemperatur schwankt im Tagesmittel zwischen 12 und 14 Grad Celsius)*
 
 Da die Heizung von Buderus ist, spricht sie sowohl für die Anbindung von
 Erweiterungen wie Funkmodul und Mischer, als auch für die Internetbox, das
@@ -111,7 +116,7 @@ erkenne ich folgende Unzulänglichkeiten:
     lange auf hohem Niveau zu halten.
  4. Die Warmwasserbereitung läuft kontinuierlich und verbraucht ca 12kWh am Tag.
 
-Ändern kann ich auf Anhieb nur die Punkte 2. und 4: 
+Ändern kann ich auf Anhieb nur die Punkte 2 und 4: 
 
  - ich stelle das Heizprogramm auf 19,5 und 19 Grad um. Dadurch sinkt der
    Gasverbrauch für das Heizen um ca. 20%, bei deutlich verbessertem
@@ -121,8 +126,15 @@ erkenne ich folgende Unzulänglichkeiten:
    viel, aber ich nehme erstmal was ich kriegen kann).
 
 
-![](/uploads/2025/02/taktung.png)
+[![](/uploads/2025/02/taktung.png)](/uploads/2025/02/taktung.png)
 
+*Verlaufskurve der Temperatur im Heizkreislauf über drei Tage. Man erkennt ein
+Sägezahnmuster, das auf Taktung hindeutet. Unterstützt wird die Hypothese durch
+einen darüberliegenden Balken in dem mit Gelb angezeigt wird, wenn die Heizung
+an ist, und mit grau, wenn sie aus ist. In den ersten 60% der Kurve wechselt
+dieser Balken regelmässig zwischen grau und gelb. In den letzten 40% ist die
+Sägezahnkurve durch eine weitestgehend gerade Linie ersetzt, und der Balken ist
+durchgehend gelb*
 
 Mit den neu eingestellten Werten ergibt sich nun ein neues Problem: Die Heizung
 fängt an zu "takten": Dadurch, dass die Raumthermostate niedrig eingestellt
@@ -138,7 +150,12 @@ hierfür ist mir aber noch nicht klar. Auch dazu später mehr.
 
 # 2023/2024
 
-![](/uploads/2025/02/beginn-heizperiode-23.png)
+[![](/uploads/2025/02/beginn-heizperiode-23.png)](/uploads/2025/02/beginn-heizperiode-23.png)
+
+*Im Winter 2023/2024 beginnt die Heizperiode bereits Anfang Oktober. In der
+MyBuderus-App sieht man wieder die beginnenden Heiztage, dieses mal bei von 12
+auf 9 Grad fallende Aussentemperaturen mit Verbrauchswerten zwischen drei und
+15 kWh*
 
 In diesem Winter versuche ich im wesentlichen, meine Einstellungen aus dem
 vorigen Winter zu validieren. Ich verändere wenig an der Steuerung, aber ich
@@ -212,7 +229,7 @@ weil bei bestimmten Stellgraden des Magneten am Zähler zum Hall-Effect-Sensor
 kein Debounce stattfindet. Ich mache also zusätzlich noch jeden Monat ein Foto
 vom Zähler ...
 
-#- 
+---
 
 In dieser Zeit beginne ich, meine Heizungserfahrungen im Fediverse zu verbloggen
 (zu Finden mit einer Suche nach `from:oliof@social.treehouse.systems #heizung`),
@@ -227,6 +244,15 @@ den Unterhaltungen zu meinen Posts lerne ich unter anderem zu Volumenstrom,
 voll geöffneten Heizthermostaten, Heizkurve, alternativen Steuerungsansätzen
 wie der Bajorath-Steuerung, und mein Verständnis dessen was ich tue entwickelt
 sich von steuern, beobachten, messen, nachsteuern, zu gezielteren Experimenten. 
+
+[![](/uploads/2025/02/ha-panel.png)](/uploads/2025/02/ha-panel.png)
+
+*Ein komplexes Panel aus HomeAssistant, das viele verschiedene Heizungswerte
+und Diagramme zeigt: Aktuelle Einstellung des Thermostats, Raumtemperaturen,
+Raumeinfluss auf die Vorlauftemperatur, Warmwassertemperatur, Betriebszustände
+von Boiler, Warmwasserbereitung, Aussentemperaturkurven,
+Heizkreislauftemperaturauswertung, und vieles mehr. Dieses Panel braucht seine
+eigene Artikelserie ...*
 
 Ich schaue mir auch andere Optionen zur Heizungssteuerung an, zum Beispiel
 [Smart Autotune Thermostat](https://github.com/Alexwijn/SAT), das eine bessere
@@ -264,7 +290,11 @@ Verlust der Wärme im Wasserspeicher pro Stunde. Wenn ich die
 Zirkulationsleitung sperre, fällt der Wärmeverlust auf eher den Umständen
 entsprechende Wärmeverluste von 0,4 Grad pro Stunde.
 
-![](/uploads/2025/02/wwverlust.png)
+[![](/uploads/2025/02/wwverlust.png)](/uploads/2025/02/wwverlust.png)
+
+*Ein Temperaturgraph, der einen stetigen Temperaturverlust anzeigt: Erst steil,
+dann weniger steil, dann wieder steil. Zum Zeitpunkt des weniger steilen
+Temperaturverlusts war die Zirkulationsleitung gesperrt.* 
 
 Hier offenbart sich der Nachteil der EMS-ESP Lösung -- viele der Werte sind
 nicht gut dokumentiert. Ich brauche mehrere Anläufe bis ich wirklich die
@@ -274,7 +304,6 @@ vermeiden, läuft die Warmwasserzirkulation nun jedes Mal einmal, wenn die
 Warmwasseraufbereitung läuft, sobald die Zieltemperatur erreicht wird. Damit
 reduziere ich den Kaltwasservorlauf von ca 10l auf im Mittel 5. Ich tausche
 effektiv 10% Gesamtjahresenergieaufwand gegen 3% mehr Wasserverbrauch.
-
 
 # Vorläufiges Fazit
 
@@ -292,12 +321,12 @@ absolut dazu führen werden, dass Dritte sich meine Beschreibung durchlesen, und
 wenig bis nichts von meinen Maßnahmen direkt anwendbar ist. Wichtig ist aber
 die Methodik:
 
-a) Messen
-b) Grösste Verbrauchsmomente identifizieren
-c) Diese Verbrauchsmomente eliminieren oder reduzieren
-d) Messen
-e) Eigenes Verhalten überprüfen und anpassen
-e) Messen
+a) Messen  
+b) Grösste Verbrauchsmomente identifizieren  
+c) Diese Verbrauchsmomente eliminieren oder reduzieren  
+d) Messen  
+e) Eigenes Verhalten überprüfen und anpassen  
+f) Messen  
 
 Die Messbarkeit und Vergleichbarkeit mit vorherigen Einstellungen ist bei einem
 trägen System wie der Heizung extrem wichtig, um die Wirksamkeit über ein
@@ -306,9 +335,13 @@ Beispiel kann man den Effekt zweier warmer Körper und eines grossen
 Flachbildschirms auf die Raumtemperatur sehen -- die Raumtemperatur geht um
 0.25 Grad nach oben. Ist ja auch kein Wunder, schliesslich entspricht die
 Wärmeentwicklung dieser drei Dinge in etwa 20% des Wärmebedarfs des fraglichen
-Raumes ....
+Raumes ...
 
 ![](/uploads/2025/02/humanheating.png)
+
+*Ausschnitt aus einer Temperaturkurve, die in kurzer Zeit einen steilen Anstieg
+der gemessenen Temperatur verzeichnet.*
+
 
 # 2025 und später
 
