@@ -73,6 +73,9 @@ vergisst die Internetbox die historischen Werte auch gerne mal, zum Beispiel
 wenn die Heizungssteuerung abstürzt, oder die Heizung während der Wartung eine
 Stunde stromlos geschaltet wird....
 
+
+![](/uploads/2025/02/mybuderus-first-look.png)
+
 Da die Heizung von Buderus ist, spricht sie sowohl für die Anbindung von
 Erweiterungen wie Funkmodul und Mischer, als auch für die Internetbox, das
 Protokoll EMS (genauer EMS+). Genau wie alle anderen Hersteller macht Buderus
@@ -116,6 +119,10 @@ erkenne ich folgende Unzulänglichkeiten:
    abends, und senke hier den Verbrauch auf 7-8kWh am Tag (immer noch viel zu
    viel, aber ich nehme erstmal was ich kriegen kann).
 
+
+![](/uploads/2025/02/taktung.png)
+
+
 Mit den neu eingestellten Werten ergibt sich nun ein neues Problem: Die Heizung
 fängt an zu "takten": Dadurch, dass die Raumthermostate niedrig eingestellt
 sind ist die Wärmeanforderung so gering, dass die Heizung sich schnell
@@ -129,6 +136,8 @@ Warmwasserspeicher tagsüber zuviel Temperatur verliert, die Ursache
 hierfür ist mir aber noch nicht klar. Auch dazu später mehr.
 
 # 2023/2024
+
+![](/uploads/2025/02/beginn-heizperiode-23.png)
 
 In diesem Winter versuche ich im wesentlichen, meine Einstellungen aus dem
 vorigen Winter zu validieren. Ich verändere wenig an der Steuerung, aber ich
@@ -254,6 +263,8 @@ Verlust der Wärme im Wasserspeicher pro Stunde. Wenn ich die
 Zirkulationsleitung sperre, fällt der Wärmeverlust auf eher den Umständen
 entsprechende Wärmeverluste von 0,4 Grad pro Stunde.
 
+![](/uploads/2025/02/wwverlust.png)
+
 Hier offenbart sich der Nachteil der EMS-ESP Lösung -- viele der Werte sind
 nicht gut dokumentiert. Ich brauche mehrere Anläufe bis ich wirklich die
 Entität finde, mit der ich den Betrieb der Zirkulationspumpe effektiv
@@ -284,12 +295,19 @@ a) Messen
 b) Grösste Verbrauchsmomente identifizieren
 c) Diese Verbrauchsmomente eliminieren oder reduzieren
 d) Messen
-e) Eigenes Verhalten überprüfen
+e) Eigenes Verhalten überprüfen und anpassen
 e) Messen
 
 Die Messbarkeit und Vergleichbarkeit mit vorherigen Einstellungen ist bei einem
 trägen System wie der Heizung extrem wichtig, um die Wirksamkeit über ein
-persönliches Bauchgefühl hinaus nachweisen zu können.
+persönliches Bauchgefühl hinaus nachweisen zu können. Im folgenden Bild zum
+Beispiel kann man den Effekt zweier warmer Körper und eines grossen
+Flachbildschirms auf die Raumtemperatur sehen -- die Raumtemperatur geht um
+0.25 Grad nach oben. Ist ja auch kein Wunder, schliesslich entspricht die
+Wärmeentwicklung dieser drei Dinge in etwa 20% des Wärmebedarfs des fraglichen
+Raumes ....
+
+![](/uploads/2025/02/humanheating.png)
 
 # 2025 und später
 
