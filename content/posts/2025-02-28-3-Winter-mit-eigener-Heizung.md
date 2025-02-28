@@ -264,10 +264,11 @@ anderes Thermostat als Hauptsteuerung anmelden kann.
 
 Was ich aber durch die Auseinandersetzung mit SAT lerne: Meine Raumthermometer
 sind zu träge für effektive Heizungssteuerung und ich ersetze die stabil
-funktionierenden, aber langsam aktualisierenden Sonoff SN-02ZB im Referenzraum
-durch MHO-C401 -- die sprechen mit einer [alternativen
-Firmware](https://pvvx.github.io/MHO_C401/) BTHome oder Zigbee und
-aktualisieren häufiger als einmal pro Minute.
+funktionierenden, aber langsam aktualisierenden Sonoff
+[SNZB-02D](https://www.amazon.de/dp/B0BZCV658S) im Referenzraum durch
+[MHO-C401](https://blakadder.com/xiaomi-mho-c401-zigbee/) -- die sprechen mit
+einer [alternativen Firmware](https://pvvx.github.io/MHO_C401/) BTHome oder
+Zigbee und aktualisieren häufiger als einmal pro Minute.
 
 Als Alternative zu SAT zur Kompensation des hohen Verbrauchs bei Niedriglast
 implementiere ich in Home Assistant eine [einfache
