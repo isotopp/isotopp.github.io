@@ -318,12 +318,12 @@ absolut dazu führen werden, dass Dritte sich meine Beschreibung durchlesen, und
 wenig bis nichts von meinen Maßnahmen direkt anwendbar ist. Wichtig ist aber
 die Methodik:
 
-a) Messen
-b) Grösste Verbrauchsmomente identifizieren
-c) Diese Verbrauchsmomente eliminieren oder reduzieren
-d) Messen
-e) Eigenes Verhalten überprüfen und anpassen
-f) Messen
+a) Messen  
+b) Grösste Verbrauchsmomente identifizieren  
+c) Diese Verbrauchsmomente eliminieren oder reduzieren  
+d) Messen  
+e) Eigenes Verhalten überprüfen und anpassen  
+f) Messen  
 
 Die Messbarkeit und Vergleichbarkeit mit vorherigen Einstellungen ist bei einem
 trägen System wie der Heizung extrem wichtig, um die Wirksamkeit über ein
