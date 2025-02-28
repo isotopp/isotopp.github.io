@@ -287,7 +287,7 @@ Verlust der Wärme im Wasserspeicher pro Stunde. Wenn ich die
 Zirkulationsleitung sperre, fällt der Wärmeverlust auf eher den Umständen
 entsprechende Wärmeverluste von 0,4 Grad pro Stunde.
 
-[![](/uploads/2025/02/wwverlust.png)](/uploads/2025/02/wwverlust.png)
+[![](/uploads/2025/02/wwwverlust.png)](/uploads/2025/02/wwwverlust.png)
 
 *Ein Temperaturgraph, der einen stetigen Temperaturverlust anzeigt: Erst steil,
 dann weniger steil, dann wieder steil. Zum Zeitpunkt des weniger steilen
