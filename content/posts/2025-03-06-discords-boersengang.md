@@ -33,7 +33,7 @@ Sie kann Umgebungen für Streaming und Audiochat genau so realisieren wie solche
 die lang laufende Text-Unterhaltungen realisieren – 
 und zwar lineare wie auch solche, die stark strukturiert in Threads oder FAQ/Support-Cases aufgebaut sind.
 
-Discord beherrscht Markdown-Text mit Syntax-Highlighting 
+Discord beherrscht Markdown-Text mit Syntax-Highlighting,
 kann Bilder und Emojis einbetten,
 und der Chat kann auch als Filesharing/Dateitransport-Dienst verwendet werden.
 
@@ -46,7 +46,7 @@ Außerdem gibt so genau eine offizielle Timeline, und es gibt keinen Lag durch N
 Und während es nicht-offizielle Discord Clients oder Patches für die originale Electron-App gibt,
 sind die alle inoffiziell, können also den Dienstleister nicht daran hindern,
 den Featureset zentral weiterzuentwickeln.
-Bei Systemen ohne bindebd offiziellen Client gibt es oft Gejammer von Menschen,
+Bei Systemen ohne bindend offiziellen Client gibt es oft Gejammer von Menschen,
 deren Client das neue Feature noch nicht kann, oder nie können wird,
 und die deswegen unbedingt wollen, dass wir alle das Feature dann nicht haben.
 
@@ -65,13 +65,13 @@ oder ein Frauenhaus und eine Abtreibungsberatung organisieren,
 sondern einen öffentlichen Guild-Server für ihre Gilde haben oder über ihre 3D-Drucker chatten.
 Und das tut um mindestens drei Größenordnungen weniger weh, 
 wenn man sich Föderation und E2EE schenkt, 
-um sich auf Client-Features zu konzentrieren–und weil der DIenst dann einfach und immer tut.
+um sich auf Client-Features zu konzentrieren – und weil der Dienst dann einfach und immer tut.
 
 Mit Föderation hat man, wie oben schon angedeutet,
 
 - unterschiedliche Server-Versionsstände und entsprechend nicht einheitlich funktionierende Features.
 - Propagation-Delay, und damit einen Chat, der nicht mehr kontrollierbare Lags hat.
-  Es entsteht eoine nicht-einheitliche Sicht auf die Timeline.
+  Es entsteht eine nicht-einheitliche Sicht auf die Timeline.
   Da kann man gegenan arbeiten, indem man pro Channel deförderiert 
   (es gibt einen führenden Server pro Channel, und alle Clients müssen da hinschreiben, 
   und da gibt es die authoritative Timeline für den Channel).
