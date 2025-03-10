@@ -47,7 +47,7 @@ Warm water would be supplied by a heat pump boiler.
 *A Panasonic indoor unit, wall mounted under the roof of the room.*
 
 The indoor units get wall mounted on either the north or south wall of the house.
-They require a two insulated copper pipes for the refrigerant, a power cable and a plastic hose for condensate water
+They require two insulated copper pipes for the refrigerant, a power cable and a plastic hose for condensate water
 to the passed to the outside, through the wall.
 
 For that, an 80 mm hole is being drilled into the wall to pass the connectors to the outside.
