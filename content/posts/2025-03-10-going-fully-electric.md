@@ -211,3 +211,7 @@ I do not expect to overshoot this,
 but it may be that we actually end up with considerably less energy usage in the coming year.
 
 All in all the solution works, and performs at least as well as projected.
+
+![](/uploads/2025/03/electric-14.jpg)
+*NE-roof: Solar Array, the outside air-ducts for the warm water boiler, and the gas boiler is active.
+It's the final day of natural gas usage for heating.*
