@@ -192,7 +192,7 @@ The resulting patch is tiny, and the work is being documented in
 [Extent-like Performance from a UNIX File System](https://people.freebsd.org/~pfg/docs/fs/ExtentlikePerformanceforUFS.pdf).
 
 To Seltzers chagrin, EFS often and consistently outperforms LFS, requires little to no tuning.
-In [File System Logging Versus Clustering: A Performance Comparison](https://people.freebsd.org/~pfg/docs/fs/ExtentlikePerformanceforUFS.pdf)
+In [File System Logging Versus Clustering: A Performance Comparison](https://www.usenix.org/legacy/publications/library/proceedings/neworl/full_papers/seltzer.pdf)
 this is confirmed, even if it takes a long paper with many benchmarks to arrive at this finding.
 The problem is mostly with the disk seeks induced from running the cleaner.
 
