@@ -148,7 +148,7 @@ Again, the class is a `struct super_operations *s_op`, defined
 
 As an added complexity, there is no finite list of filesystems.
 It is instead extensible through loadable modules, so we also have a `struct file_system_type`,
-[here](https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L1886-L1918).
+[here](https://github.com/torvalds/linux/blob/v6.3/include/linux/fs.h#L2189-L2217).
 This is basically a class with only one class method as a factory for superblocks, `mount`.
 
 # Summary
