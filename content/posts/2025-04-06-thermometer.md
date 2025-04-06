@@ -215,11 +215,14 @@ Protokolle und Implementierungen wie ESPHome, Matter, etc. sind hier nicht
 berücksichtigt, weil ich zu ihnen nichts sagen kann. Es soll aber nicht
 ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
 
- - Zigbee: Meiner Erfahrung nach ist ein Gutteil der als Zigbee-kompatibel
+ Zigbee
+: Meiner Erfahrung nach ist ein Gutteil der als Zigbee-kompatibel
    ausgewiesenen Thermometer leider dergestalt, dass die Hersteller ihre
    eigenen Protokollvarianten fahren, die es erschweren bis verunmöglichen,
    diese Thermostate in einer offenen Umgebung wie Home Assistant zuverlässig
-   einzubinden oder dauerhaft zu betreiben. Home Assistant bringt für hunderte
+   einzubinden oder dauerhaft zu betreiben. 
+
+   Home Assistant bringt für hunderte
    von Zigbee Geräten "Quirks" Definitionen mit, also gerätespezifische
    Anpassungen, damit das Gerät auch funktioniert. Leider sind die
    Gerätehersteller nicht in der Lage, ein Gerät mit einer Ausführung von
@@ -228,15 +231,19 @@ ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
    "möglicherweise" zu beantworten. Das ganze ist insofern besonders
    verstörend, weil die meisten Thermometer, egal wie sie gebranded sind,
    entweder von Xiaomi oder Aqara hergestellt werden. Das ganze Theater ist
-   also konsumentenfeindliche Marktzersplitterung. Bei HomeAssistant kommt noch
+   also konsumentenfeindliche Marktzersplitterung. 
+
+   Bei HomeAssistant kommt noch
    dazu, dass es unterschiedliche Implementierungen von Zigbee gibt: ZHA und
    Z2M. ZHA kommt von NabuCasa, der Firma hinter HomeAssistant, Z2M bindet den
    ganzen Zigbee-Kram über MQTT an HomeAssistant an. Die oben erwähnten Quirks
    unterscheiden sich, und so unterscheidet sich auch, ob ein Gerät mit
    HomeAssistant gut funktioniert, hin und wieder aufgrund einer Entscheidung
-   für ZHA oder Z2M. Man kann theoretisch beides parallel fahren wenn man zwei
+   für ZHA oder Z2M. Man kann theoretisch beides parallel fahren, wenn man zwei
    Zigbee Coordinators hat, aber ob das eine Lösung ist? Für mich zumindest
-   nicht. Deswegen hier gleich die erste **Nicht-Empfehlung**: Finger weg von
+   nicht.
+
+   Deswegen hier gleich die erste **Nicht-Empfehlung**: Finger weg von
    allem, was Tuya in der Beschreibung hat! Viele der Tuya-Geräte sprechen
    nominell Zigbee, haben aber zum Beispiel proprietäre Kopplungsprozesse oder
    andere Eigenheiten, die eine Verwendung im HomeAssistant stark
@@ -246,7 +253,8 @@ ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
    ansonsten wirre Dinge tut, ist für mich Teil des Problems und nicht der
    Lösung.
 
- - BTHome: BTHome ist ein Protokoll aus dem Hause Shellly und Bestandteil der
+BTHome
+: BTHome ist ein Protokoll aus dem Hause Shellly und Bestandteil der
    [Open Home Foundation](https://www.openhomefoundation.org/). Ich muss gestehen, dass ich wenig Lust hatte, meinem
    Home Assistant einen weiteren Dongle für Bluetooth und eine weitere
    Integration anzutun, aber am Ende war es die richtige Entscheidung. Was ich
@@ -254,17 +262,19 @@ ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
    also weder das Gerät öffnen noch irgendwelche wilden Buildchains
    installieren.
 
- - Shelly: Shelly hat sein eigenes proprietäres Protokoll, aber die Integration
+Shelly
+: Shelly hat sein eigenes proprietäres Protokoll, aber die Integration
    mit HomeAssistant ist lokal und funktioniert im wesentlichen sehr gut. Als
    europäisches Produkt zahlt man für Shelly-Lösungen etwas mehr, aber
    insgesamt finde ich die Qualität stimmt. (Wer keine Lust auf einen eigenen
    lokalen Home Assistant hat, ist mit der Shelly Cloud Lösung vermutlich auch
    ganz gut bedient, ich verwende das nicht).
 
- - Tasmota: Tasmota verwendet MQTT und ist lokal, Wifi basiert, und für mich
-   zum Beispiel im Bereich Smart Plugs bereits das Protokoll meiner Wahl. Wer
-   Freude am Basteln hat, bekommt hier a) den Sensor in der Ausführung der Wahl
-   und b) eine Integration die keine weiteren Dongles benötigt.
+Tasmota
+: Tasmota verwendet MQTT und ist lokal, Wifi basiert, und für mich
+  zum Beispiel im Bereich Smart Plugs bereits das Protokoll meiner Wahl. Wer
+  Freude am Basteln hat, bekommt hier a) den Sensor in der Ausführung der Wahl
+  und b) eine Integration die keine weiteren Dongles benötigt.
 
 # Abschliessende Empfehlung
 
