@@ -64,7 +64,7 @@ Einige Beispiele:
 
 *Ein IKEA Vindstyrka in einem Bücherregal* 
 
- 1. Ein Shelly HT G3 liefert mir auf dem ePaper Display und Online
+ 2. Ein Shelly HT G3 liefert mir auf dem ePaper Display und Online
     Temperaturwerte mit einer Auflösung von 0.1 Grad Celsius, die angezeigten
     und über die Shelly API gelieferten Werte stimmen im wesentlichen überein.
 
@@ -77,24 +77,24 @@ Einige Beispiele:
     die BTHome API liefert es Werte mit einer Auflösung von 0.01 Grad Celsius.
 
 
-[![](/uploads/2025/04/MH0-C401.jpeg)](/uploads/2025/04/MH0-C401.jpeg)
+[![](/uploads/2025/04/MHO-C401.jpeg)](/uploads/2025/04/MHO-C401.jpeg)
 
-*Ein MHO-C401(N) mit der[ alternativen Firmware für BTHome
+*Ein MHO-C401(N) mit der [alternativen Firmware für BTHome
 Support](https://pvvx.github.io/MHO_C401/). Es sei angemerkt, dass es für C401
 und C401N unterschiedliche Firmware gibt. Wenn man die falsche verwendet hat,
 aktualisiert sich das Display nicht; man kann dann aber einfach die andere
 flashen.*
  
- 1. Ein Aqara Zigbee Thermostat liefert Werte mit einer Auflösung von 0.1 Grad
+ 4. Ein Aqara Zigbee Thermostat liefert Werte mit einer Auflösung von 0.1 Grad
     Celsius.
 
-[![](/uploads/2025/04/aqara-ths.jpeg)](/uploads/2025/04/aqara-ths.jpeg)
+[![](/uploads/2025/04/aqara_ths.jpeg)](/uploads/2025/04/aqara_ths.jpeg)
  
- 1. Ein Sonoff SNZB-02P liefert Werte mit einer Auflösung von 0.1 Grad Celsius.
+ 5. Ein Sonoff SNZB-02P liefert Werte mit einer Auflösung von 0.1 Grad Celsius.
 
 [![](/uploads/2025/04/sonoff-ths.jpeg)](/uploads/2025/04/sonoff-ths.jpeg)
 
- 2. Tasmota unterstützt verschiedene Thermostate von DHT22 bis BME820, die
+ 6. Tasmota unterstützt verschiedene Thermostate von DHT22 bis BME820, die
     jeweils entsprechend der technischen Kapazitäten Werte liefern.
  
 Ein weiterer Grund warum _Präzision_ und nicht _Genauigkeit_ relevant sind:
@@ -122,9 +122,9 @@ sich, den Messwert zu glätten, bevor man ihn zur Schaltung verwendet. Das
 verzögert den Steuerungsvorgang in der Regel, aber die Taktung wird
 vermieden.
 
-[![](/uploads/2025/04/aussentemp.jpeg)](/uploads/2025/04/aussentemp.jpeg)
+[![](/uploads/2025/04/Heizleistung12Gaeste.png)](/uploads/2025/04/Heizleistung12Gaeste.png)
 
-*Ein Graph aus Home Assistant mit Messwerten aus den Thermometern und geglätteten Werten* 
+*Die Heizleistung von 12 Personen auf einer Party.* 
 
 Es gibt noch zwei weitere Aspekten von Thermometern, die wichtig sind, um das
 richtige Thermometer für den richtigen Anwendungszweck auszuwählen:
