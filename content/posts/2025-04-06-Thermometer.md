@@ -266,7 +266,7 @@ ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
    Freude am Basteln hat, bekommt hier a) den Sensor in der Ausführung der Wahl
    und b) eine Integration die keine weiteren Dongles benötigt.
 
-# Abschliessende Empfehlung:
+# Abschliessende Empfehlung
 
 Die bisher besten Erfahrungen mit über einem halben Dutzend Thermometer-Modelle
 lässt für mich nur zwei Empfehlungen zu: Aqara Temp and Humidity Sensor für
