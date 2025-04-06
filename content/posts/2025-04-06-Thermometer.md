@@ -1,7 +1,7 @@
 ---
 author: oliof
 date: "2025-02-28T13:05:06Z"
-feature-img: assets/img/background/Stellventile.jpg
+feature-img: assets/img/background/aussentemp.jpg
 toc: true
 tags:
   - lang_de
@@ -59,28 +59,40 @@ Einige Beispiele:
     nach für Beobachtung: Ich schaue aufs Display und habe eine grobe Idee, wie
     sich die Umweltwerte in der aufgestellten Umgebung zueinander verhalten.
 
-TODO: VINDSTYRKA Bild
- 
+
+[![](/uploads/2025/04/vindstyrka.jpeg)](/uploads/2025/04/vindstyrka.jpeg)
+
+*Ein IKEA Vindstyrka in einem Bücherregal* 
+
  1. Ein Shelly HT G3 liefert mir auf dem ePaper Display und Online
     Temperaturwerte mit einer Auflösung von 0.1 Grad Celsius, die angezeigten
     und über die Shelly API gelieferten Werte stimmen im wesentlichen überein.
 
-TODO: Shelly HT G3 Bild
+[![](/uploads/2025/04/shelly-htg3.jpeg)](/uploads/2025/04/shelly-htg3.jpeg)
+
+*Shelly HT G3 mit externer Stromversorgung* 
     
  3. Ein mit freier Alternativfirmware bestücktes Xiaomi MMC MHO-C401(N) zeigt
     auf dem ePaper-Display eine Auflösung von 0.1 Grad Celsius an, aber über
     die BTHome API liefert es Werte mit einer Auflösung von 0.01 Grad Celsius.
 
-TODO: MH0-C401(N) Bild und Link auf Alternativ Firmware
+
+[![](/uploads/2025/04/MH0-C401.jpeg)](/uploads/2025/04/MH0-C401.jpeg)
+
+*Ein MHO-C401(N) mit der[ alternativen Firmware für BTHome
+Support](https://pvvx.github.io/MHO_C401/). Es sei angemerkt, dass es für C401
+und C401N unterschiedliche Firmware gibt. Wenn man die falsche verwendet hat,
+aktualisiert sich das Display nicht; man kann dann aber einfach die andere
+flashen.*
  
  1. Ein Aqara Zigbee Thermostat liefert Werte mit einer Auflösung von 0.1 Grad
     Celsius.
 
-TODO: Aqara Zigbee THS Foto. 
+[![](/uploads/2025/04/aqara-ths.jpeg)](/uploads/2025/04/aqara-ths.jpeg)
  
  1. Ein Sonoff SNZB-02P liefert Werte mit einer Auflösung von 0.1 Grad Celsius.
 
-TODO: Sonoff SNZB-02P
+[![](/uploads/2025/04/sonoff-ths.jpeg)](/uploads/2025/04/sonoff-ths.jpeg)
 
  2. Tasmota unterstützt verschiedene Thermostate von DHT22 bis BME820, die
     jeweils entsprechend der technischen Kapazitäten Werte liefern.
@@ -93,6 +105,12 @@ Raumtemperatur vielleicht angenehmer für mich als Kris' 21 Grad Raumtemperatur.
 Fussbodenheizungen mit Bimetall-Technik auch nur eine Genauigkeit von +-0,5
 Grad haben).
 
+[![](/uploads/2025/04/Raumregler.jpeg)](/uploads/2025/04/Raumregler.jpeg)
+
+*Ein temperaturgeführter Raumregler für Stellventile einer Flächenheizung. Im
+Inneren bewährte, unkaputtbare Bimetalltechnik. Leider nutzlos, weil die
+Heizung 'normally open' betrieben wird.* 
+
 Eine hohe Auflösung der Messwerte hat nicht nur Vorteile: Es bedeutet auch,
 dass kleinste Veränderungen in der Umwelt (zum Beispiel: Ein Mensch der 100W
 Abwärme erzeugt sitzt in der Nähe eines Raumthermometers) zu unmittelbaren
@@ -104,7 +122,9 @@ sich, den Messwert zu glätten, bevor man ihn zur Schaltung verwendet. Das
 verzögert den Steuerungsvorgang in der Regel, aber die Taktung wird
 vermieden.
 
-TODO: Screenshot Aussentemperatur/Geglättete Aussentemperatur
+[![](/uploads/2025/04/aussentemp.jpeg)](/uploads/2025/04/aussentemp.jpeg)
+
+*Ein Graph aus Home Assistant mit Messwerten aus den Thermometern und geglätteten Werten* 
 
 Es gibt noch zwei weitere Aspekten von Thermometern, die wichtig sind, um das
 richtige Thermometer für den richtigen Anwendungszweck auszuwählen:
@@ -114,7 +134,7 @@ richtige Thermometer für den richtigen Anwendungszweck auszuwählen:
 Beim Stromverbrauch gehört eigentlich noch die Art der Stromversorgung hinzu.
 Die gängigen Spielarten sind: Stromversorgug über USB (Vindstyrka, Shelly HT,
 Tasmota), CR2032 (Aqara Zigbee, Xiaomai MHO-C401(N), und Sonderformate wie
-CR2045 (Sonoff SNZB-02P). Batteriebetriebene Thermometer haben maximale
+CR2450 (Sonoff SNZB-02P). Batteriebetriebene Thermometer haben maximale
 Freiheitsgrade bei der Aufstellung, aber je nach Implementierung halten die
 Batterien nur wenige Monate. Gerade die Zigbee Thermometer optimieren ihren
 Stromverbrauch, indem sie Updates nur schicken, wenn sich die Temperatur um ein
@@ -122,7 +142,7 @@ bestimmtes Delta verändert haben, und dann noch alle X Minuten, auch wenn sich
 nichts geändert hat. Bei einigen Zigbee Sensoren sind die Schwellwerte über
 gewisse API Calls anpassbar -- bei mir hat das aber nie funktioniert.
 
-TODO: Fotos von CR2032 / CR2045 Batterien
+[![](/uploads/2025/04/batterien.png)](/uploads/2025/04/batterien.png)
 
 Wer Batterien vermeiden möchte, hat die Wahl zwischen
 
@@ -164,6 +184,16 @@ Minuten). Aqara THS aktualisieren sich ca einmal alle 3-5 Minuten (oder wenn
 die Temperatur sich um 0.1 Grad ändert), die SNZB-02P ca einmal alle 15 Minuten
 oder wenn die Temperatur sich um 0.2 Grad ändert. 
 
+[![](/uploads/2025/04/CheckinsThermometer.png)](/uploads/2025/04/CheckinsThermometer.png)
+
+*Vergleich der Aktualisierung der Werte in HomeAssistant von verschiedenen
+Thermometern, die direkt nebeneinander stehen. 'rettemp' ist ein DS18B20 an
+meinem EMS-ESP zur Referenz; Aqara, Shelly, und Sonoff sind die im weiteren
+Text erwähnten Geräte. Man sieht, dass der Shelly etwa alle drei Minuten ein
+Update schickt, und Sonoff und Aqara in den gezeigten 2 Stunden nur eine
+handvoll Updates liefert, während der DS18B20 unmittelbare Werte liefert,
+sobald sich die Temperatur ändert.* 
+
 Meiner Erfahrung nach eignen sich Geräte mit einer niedrigen
 Aktualisierungsfrequenz im wesentlichen nur für die Beobachtung: Also wenn ich
 grob wissen will, was Sache ist und mir Tages- oder Wochen-Trends ausreichen.
@@ -185,7 +215,7 @@ Protokolle und Implementierungen wie ESPHome, Matter, etc. sind hier nicht
 berücksichtigt, weil ich zu ihnen nichts sagen kann. Es soll aber nicht
 ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
 
- - Zigbee: Meiner Efahrung nach ist ein Gutteil der als Zigbee-kompatibel
+ - Zigbee: Meiner Erfahrung nach ist ein Gutteil der als Zigbee-kompatibel
    ausgewiesenen Thermometer leider dergestalt, dass die Hersteller ihre
    eigenen Protokollvarianten fahren, die es erschweren bis verunmöglichen,
    diese Thermostate in einer offenen Umgebung wie Home Assistant zuverlässig
@@ -217,7 +247,7 @@ ausschliessen, dass sie für verschiedenste Anwendungsfälle geeignet sind.
    Lösung.
 
  - BTHome: BTHome ist ein Protokoll aus dem Hause Shellly und Bestandteil der
-   Open Home Alliance. Ich muss gestehen, dass ich wenig Lust hatte, meinem
+   [Open Home Foundation](https://www.openhomefoundation.org/). Ich muss gestehen, dass ich wenig Lust hatte, meinem
    Home Assistant einen weiteren Dongle für Bluetooth und eine weitere
    Integration anzutun, aber am Ende war es die richtige Entscheidung. Was ich
    ganz elegant finde: Die Geräte werden über den Webbrowser geflasht, man muss
