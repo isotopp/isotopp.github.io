@@ -15,7 +15,8 @@ As discussed [previously]({{< relref "2025-03-10-going-fully-electric.md" >}}),
 we have replaced our home heating with Air-Air-Heatpumps,
 that is, air-conditioning units that have a reverse-mode.
 
-In our case, the indoor units are Panasonic CS-Z25ZKEW and CS-Z20ZKEW, which are connected to a multi-split outdoor unit,
+In our case, the indoor units are Panasonic Etherea Z (CS-Z25ZKEW and CS-Z20ZKEW), 
+which are connected to a multi-split outdoor unit,
 a 3x on the north side, and a 5x (one blind) on the south side, for a total of seven units.
 
 # Adding CS-ZxxZKEW units to Panasonic Comfort Cloud
