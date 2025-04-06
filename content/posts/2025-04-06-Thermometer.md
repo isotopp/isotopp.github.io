@@ -98,10 +98,10 @@ dass kleinste Veränderungen in der Umwelt (zum Beispiel: Ein Mensch der 100W
 Abwärme erzeugt sitzt in der Nähe eines Raumthermometers) zu unmittelbaren
 Veränderungen in den Messwerten führen. Wenn dies in der Nähe eines
 Schwellwertes geschieht, der zur Steuerung verwendet wird (zum Beispiel:
-Heizung an/aus); dann kann es zu Hysterese kommen: Das geschaltete Gerät wird
+Heizung an/aus); dann kann es zu Taktung kommen: Das geschaltete Gerät wird
 in (zu) schneller Folge ab und wieder angeschaltet. In diesem Fall empfiehlt es
 sich, den Messwert zu glätten, bevor man ihn zur Schaltung verwendet. Das
-verzögert den Steuerungsvorgang in der Regel, aber die Hysterese wird
+verzögert den Steuerungsvorgang in der Regel, aber die Taktung wird
 vermieden.
 
 TODO: Screenshot Aussentemperatur/Geglättete Aussentemperatur
@@ -171,7 +171,8 @@ Für Werte die ich innerhalb einer Stunde oder schneller mit anderen Dingen
 korrelieren möchte, brauche ich eine zügigere Aktualisierung. Und schliesslich,
 wenn ich Wärme- oder Kälte-Erzeugung aktiv steuern will, ist es unerlässlich,
 einen schnellen Sensor zu haben -- selbst wenn ich die Messwerte zur Vermeidung
-von Hysterese durch einen Tiefpassfilter schicke.
+von Taktung durch einen Tiefpassfilter schicke oder eine Zweipunktschaltung
+implementiere.
 
 Wir haben als über Genauigkeit, Präzision, Auflösung, Stromverbrauch, und
 Aktualisierungs-Frequenzen gesprochen. Für die praktische Anwendung im Home
