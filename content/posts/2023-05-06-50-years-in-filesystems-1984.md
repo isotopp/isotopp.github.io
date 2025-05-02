@@ -260,7 +260,7 @@ Hardlinks also reference the original inode of the file multiple times, so they 
 BSD introduces a new filetype (`l`, symlink), and places a "replacement filename" in the linked file, which determines the link target location.
 It can be an absolute or relative name (relative to the location of the symlink file).
 
-This creates a "soft" or "symbolic link.
+This creates a "soft" or "symbolic" link.
 Trying to access a symlink will kick off a reinterpretation of the filename in `namei()` using the replacement filename,
 resulting in the attempted `open()` system call being deflected to the link target location. 
 
