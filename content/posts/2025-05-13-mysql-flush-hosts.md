@@ -157,6 +157,9 @@ There will also be no blocking of hosts due to connection errors.
 
 # Recommendations for Proxy and K8s users
 
+**TIP:** Run `SHOW PROCESSLIST` multiple times, and check the visible connections. 
+If they are all always the same host, this recommendation applies to you. 
+
 You may be running MySQL in Kubernetes with a service mesh,
 or you may be running MySQL with MySQL Router or MySQL Proxy.
 In that case, all connections the server sees will originate from a single IP.
