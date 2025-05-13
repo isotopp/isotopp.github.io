@@ -12,7 +12,171 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Fri, 02 May 2025 15:18:07 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 13 May 2025 19:24:58 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/mysql/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: FLUSH HOSTS</title>
+      <link>https://blog.koehntopp.info/2025/05/13/mysql-flush-hosts.html</link>
+      <pubDate>Mon, 13 May 2024 05:06:07 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
+
+      <guid>https://blog.koehntopp.info/2025/05/13/mysql-flush-hosts.html</guid>
+      <description>&lt;p&gt;Sometimes, MySQL throws an error like this:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Host &amp;lsquo;&amp;hellip;&amp;rsquo; is blocked because of many connection errors&lt;/p&gt;
+&lt;p&gt;Unblock with &amp;lsquo;mysqladmin flush-hosts&amp;rsquo;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;This typically means that MySQL has blocked a host after too many connection errors. The usual fix is to run:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;mysqladmin flush-hosts
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;or&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FLUSH&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;HOSTS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* deprecated since 8.0.23; invalid in 8.4 */&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mysql&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;TRUNCATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;host_cache&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* recommended since 5.6.5 */&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;A host is blocked, because of many connection errors, specifically more connection errors than &lt;code&gt;max_connect_errors&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;So&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;what counts as a connection error?&lt;/li&gt;
+&lt;li&gt;what is counted per what?&lt;/li&gt;
+&lt;li&gt;and how is the error count cleared?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;max_connect_errors&#34;&gt;
+    &lt;a href=&#34;#max_connect_errors&#34;&gt;
+	&lt;code&gt;max_connect_errors&lt;/code&gt;
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;There is a configuration variable, &lt;code&gt;max_connect_errors&lt;/code&gt;.
+It is documented here:
+&lt;a href=&#34;https://dev.mysql.com/doc/refman/8.4/en/server-system-variables.html#sysvar_max_connect_errors&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MySQL 8.4: &lt;code&gt;max_connect_errors&lt;/code&gt;&lt;/a&gt;
+
+.&lt;/p&gt;
+&lt;p&gt;The variable is a 64 bit integer, so it can be set to very large values.
+It can be configured via command-line or config file (using dashes instead of underscores), or dynamically at runtime:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kt&#34;&gt;SET&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;GLOBAL&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;max_connect_errors&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;18446744073709551614&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Check it with&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;@@&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;global&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;max_connect_errors&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;By default, it’s set to 100.&lt;/p&gt;
+&lt;p&gt;According to MySQL’s documentation,
+a host is blocked after more than &lt;code&gt;max_connect_errors&lt;/code&gt; connection attempts from that host fail without a successful connection in between.&lt;/p&gt;
+&lt;p&gt;This means:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The error count is tracked per host.&lt;/li&gt;
+&lt;li&gt;A successful connection resets the counter, but only if it happens before the threshold is exceeded.&lt;/li&gt;
+&lt;li&gt;Once blocked, a host remains blocked indefinitely unless the cache is cleared.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;unblocking&#34;&gt;
+    &lt;a href=&#34;#unblocking&#34;&gt;
+	Unblocking
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;MySQL tracks blocked hosts using a structure called the host cache.&lt;/p&gt;
+&lt;p&gt;Before MySQL 5.6.5, there was no way to inspect the host cache.
+You could run &lt;code&gt;FLUSH HOSTS&lt;/code&gt; to reset it, but you couldn’t see which hosts were blocked or how many errors they had.&lt;/p&gt;
+&lt;p&gt;That was lamented by many people, among them yours truly &lt;a href=&#34;https://bugs.mysql.com/bug.php?id=24906&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in 2006&lt;/a&gt;
+
+.
+And Daniel van Eeden &lt;a href=&#34;https://bugs.mysql.com/bug.php?id=59404&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;in 2011&lt;/a&gt;
+
+, on behalf of Booking.com.
+That was converted into &lt;a href=&#34;https://dev.mysql.com/worklog/task/?id=5259&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ML#5259&lt;/a&gt;
+
+,
+the implementation of &lt;code&gt;PERFORMANCE_SCHEMA.HOST_CACHE&lt;/code&gt;.
+It was implemented by Marc Alff starting in 7e3ba778349e8e2bd01b60d6b22f44f7f098d731 in 2-Aug 2011
+(released in 5.6.5, after 29-Mar-2012).&lt;/p&gt;
+&lt;p&gt;Since then, you can query host cache details directly:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;host_cache&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You can also reset it with:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;TRUNCATE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;TABLE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;performance_schema&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;host_cache&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This works exactly like &lt;code&gt;FLUSH HOSTS&lt;/code&gt;, but uses different permissions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;FLUSH HOSTS&lt;/code&gt; requires the &lt;code&gt;RELOAD&lt;/code&gt; privilege.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;TRUNCATE TABLE performance_schema.host_cache&lt;/code&gt; requires &lt;code&gt;DROP&lt;/code&gt; privilege on that table.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; &lt;code&gt;FLUSH HOSTS&lt;/code&gt; has been &lt;strong&gt;deprecated as of MySQL 8.0.23 and is removed in MySQL 8.4.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;There is no way to unblock just one host—only clearing the entire host cache resets the counters and unblocks all hosts.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; Changing the host cache size using the &lt;code&gt;host_cache_size&lt;/code&gt; global dynamic variable also flushes the host cache.
+This requires the &lt;code&gt;SYSTEM_VARIABLES_ADMIN&lt;/code&gt; privilege (formerly &lt;code&gt;SUPER&lt;/code&gt;).&lt;/p&gt;
+&lt;h1 id=&#34;the-host-cache-is-not-a-cache&#34;&gt;
+    &lt;a href=&#34;#the-host-cache-is-not-a-cache&#34;&gt;
+	The Host Cache is not a cache
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Despite its name, the host cache does more than traditional caching.&lt;/p&gt;
+&lt;p&gt;A cache is a data structure that stores unchanging data locally, because retrieving the data again would be expensive.
+A cache can be expired or fully deleted at any time without losing information,
+because the original information can be (at cost) retrieved again.&lt;/p&gt;
+&lt;p&gt;But MySQL’s host cache stores stateful data—specifically, security-related error counters.
+Deleting a host cache entry removes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;the ip-to-hostname mapping (which can be rebuilt)&lt;/li&gt;
+&lt;li&gt;the host&amp;rsquo;s connection error history (which can&amp;rsquo;t)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This means that resetting the host cache has security implications.
+That is increasingly unimportant in modern environments
+such as K8s clusters or virtualized environments with a control plane and a service mesh.
+In other, more traditional environments it might not be.&lt;/p&gt;
+&lt;h1 id=&#34;what-happens-on-connection&#34;&gt;
+    &lt;a href=&#34;#what-happens-on-connection&#34;&gt;
+	What Happens on Connection
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;When a client connects, MySQL runs &lt;code&gt;sql_connect.cc:check_connection()&lt;/code&gt;, which checks the client’s IP address.&lt;/p&gt;
+&lt;p&gt;If &lt;code&gt;name-resolve&lt;/code&gt; is enabled, which it is unless you run with &lt;code&gt;skip-name-resolve&lt;/code&gt;,
+MySQL attempts a reverse DNS lookup via &lt;code&gt;hostname_cache.cc:ip_to_hostname()&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If the IP is already in the host cache and marked valid, DNS lookup is skipped.&lt;/li&gt;
+&lt;li&gt;Otherwise, MySQL tries to resolve the IP to a hostname (PTR record),
+then resolve the hostname back to an IP (A record).
+This is known as Forward Confirmed Reverse DNS (FCR).&lt;/li&gt;
+&lt;li&gt;Only hostnames that pass both lookups are marked as &amp;ldquo;validated&amp;rdquo;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The host cache keeps track of connection errors in &lt;code&gt;ip_to_hostname()&lt;/code&gt;
+and will block the host if it exceeds the threshold set in &lt;code&gt;max_connect_errors&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The function also uses the host cache itself, and will avoid DNS resolution if there is an entry that matches this IP.
+It maintains error counts and will perform host blocking, if the error count exceeds &lt;code&gt;max_connect_errors&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The cache uses LRU (Least Recently Used) eviction policy.
+If more IPs try to connect than the cache can hold, old entries are removed—including their error counters.
+This means that blocked hosts can become unblocked over time if they’re evicted.&lt;/p&gt;
+&lt;p&gt;Modern MySQL defaults host_cache_size to &lt;code&gt;-1&lt;/code&gt;, which means it auto-sizes between 128 and 2000 based on &lt;code&gt;max_connections&lt;/code&gt;.
+In older versions the size was fixed.&lt;/p&gt;
+&lt;p&gt;None of the above will happen if the server is running with &lt;code&gt;skip-name-resolve&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Specifically, the code in &lt;code&gt;sql_connect.cc:check_connection()&lt;/code&gt; will, among other things, not even call &lt;code&gt;ip_to_hostname()&lt;/code&gt;,
+thus there will be no usage of the host cache, as no DNS resolution happens.
+There will also be no blocking of hosts due to connection errors.&lt;/p&gt;
+&lt;h1 id=&#34;recommendations-for-proxy-and-k8s-users&#34;&gt;
+    &lt;a href=&#34;#recommendations-for-proxy-and-k8s-users&#34;&gt;
+	Recommendations for Proxy and K8s users
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;You may be running MySQL in Kubernetes with a service mesh,
+or you may be running MySQL with MySQL Router or MySQL Proxy.
+In that case, all connections the server sees will originate from a single IP.&lt;/p&gt;
+&lt;p&gt;That means any error by any client will be attributed to the only IP the server sees.
+Any single client running with a wrong password will block the only IP your system sees with failed login attempts.
+It will lock out all users for all applications with no timeout.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If the origin IP is &lt;code&gt;127.0.0.1&lt;/code&gt; or &lt;code&gt;[::1]&lt;/code&gt;, no entry in the host cache will be made,
+as these addresses are specifically checked for, and are exempt.&lt;br&gt;
+&lt;strong&gt;You do not need to act.&lt;/strong&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;If that IP number is fixed, but not one of these two special local addresses,
+you &lt;strong&gt;SHOULD&lt;/strong&gt; turn off &lt;code&gt;name-resolve&lt;/code&gt; by running with &lt;code&gt;skip-name-resolve&lt;/code&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This will disable the DNS resolution.&lt;/li&gt;
+&lt;li&gt;You now need to write access control entries with IP numbers
+(&lt;code&gt;GRANT ... TO user@32.16.8.4 ...&lt;/code&gt;),
+because names will no longer be resolved.&lt;/li&gt;
+&lt;li&gt;Your server will no longer make DNS queries.&lt;/li&gt;
+&lt;li&gt;No host blocking on IP will occur.
+You will be protected from clients hammering the server with a wrong password.&lt;/li&gt;
+&lt;li&gt;You are not losing anything security-wise, as the server has no useful IP information anyway.
+Security must be handled by the service mesh.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You &lt;strong&gt;COULD&lt;/strong&gt; also set the &lt;code&gt;host-cache-size=0&lt;/code&gt; for the same effect, but that will still generate DNS queries,
+and a lot of them (two, PTR and A, per connection attempt).
+They will always be for that single IP, so they are easily cacheable in external caches.&lt;/p&gt;
+&lt;p&gt;You &lt;strong&gt;SHOULD&lt;/strong&gt; set &lt;code&gt;max_connect_errors&lt;/code&gt; to a large value (&lt;code&gt;2^64-1&lt;/code&gt;) to prevent the host cache from locking out any host.
+This has no additional benefits over running with &lt;code&gt;skip-name-resolve&lt;/code&gt;: There will be only one host cache entry,
+and there will be no per-host error counters, as all connections are seemingly coming from a single host.&lt;/p&gt;
+&lt;p&gt;All these measures are compatible, and you can deploy all three of them.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>MySQL: dual passwords</title>
       <link>https://blog.koehntopp.info/2024/10/31/mysql-dual-passwords.html</link>
@@ -3799,231 +3963,6 @@ Once I have that, I can try to build a Pusher that takes data from that pool, tr
 Each span has their own &lt;code&gt;span-id&lt;/code&gt; and also states what the &lt;code&gt;parent-span-id&lt;/code&gt; is.
 Additional &lt;code&gt;flags&lt;/code&gt; control the annotations generated (&amp;ldquo;what gets traced&amp;rdquo;).&lt;/p&gt;
 &lt;p&gt;To protect the data against accidental interpretation and munging, Vitess wants you to base64 encode the thing and then put it into a &lt;code&gt;/*VT_SPAN_CONTEXT=...*/&lt;/code&gt; pseudo-comment as part of the query to be traced.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>MySQL: Local and distributed storage</title>
-      <link>https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html</link>
-      <pubDate>Tue, 27 Sep 2022 12:13:14 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
-
-      <guid>https://blog.koehntopp.info/2022/09/27/mysql-local-and-distributed-storage.html</guid>
-      <description>&lt;p&gt;Where I work, we are using MySQL in a scale-out configuration to handle our database needs.&lt;/p&gt;
-&lt;p&gt;That means, you write to a primary server, but reads generally go to a replica database further down in a replication tree.&lt;/p&gt;
-&lt;p&gt;A number of additional requirements that should not concern you as a developer make it a little bit more elaborate than a simple &amp;ldquo;primary and a number of replicas&amp;rdquo; configuration.
-But the gist of all that is:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;there is always a read-copy of the database very close to your application, latency wise&lt;/li&gt;
-&lt;li&gt;there are always sufficient copies of the data around so that we can afford to run our databases on unraided local storage.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The nature of our databases is such, that we drown all data reads with sufficient memory, where ever that is possible.
-Our databases are Memory Engines, when it comes to reads.&lt;/p&gt;
-&lt;p&gt;I joke about that:&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;You, too, can be a successful database performance consultant:
-Say “Buy more memory!” and “There is an index missing” as needed.
-Add “That’s going to be expensive”, if you work for SAP or Oracle.&lt;/p&gt;&lt;/blockquote&gt;
-&lt;p&gt;But it is true: Reads are really bad for databases.
-Here is what a database workload looks like when the database does not fit into memory:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-01.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Graph based on data recorded with &lt;code&gt;blktrace&lt;/code&gt;, analyzed by &lt;a href=&#34;https://www.oakgatetech.com/applications/analytics&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Workload Intelligence&lt;/a&gt;
-
- from Oakgate.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The workload shown here is too large to have its working set inside the InnoDB Buffer Pool provided.
-We do see a constant stream of reads over time, to the tune of several MB/s and up to ~1000 IO Operations per Second (IOPS).&lt;/p&gt;
-&lt;p&gt;Had this database more memory, the reads would instead hit cached blocks in memory and would eventually be served from RAM.
-We would see read requests at the database layer, but they would be satisfied from the database&amp;rsquo;s Buffer Pool and not hit the disk.
-Only the write load remains.&lt;/p&gt;
-&lt;h1 id=&#34;but-arent-writes-worse-then&#34;&gt;
-    &lt;a href=&#34;#but-arent-writes-worse-then&#34;&gt;
-	But aren&amp;rsquo;t writes worse, then?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;That is an interesting question.&lt;/p&gt;
-&lt;p&gt;We can drown reads with cache, but we can&amp;rsquo;t drown writes much.&lt;/p&gt;
-&lt;p&gt;They eventually have to go to the disk, and in order to be ACID compliant, we need to delay the COMMIT until the write has hit a persistent storage layer.&lt;/p&gt;
-&lt;p&gt;Depending on our persistence requirements, we demand that the write&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;hits a machine-local persistent storage (a disk, a NVME or a battery backed cache unit (BBU)),&lt;/li&gt;
-&lt;li&gt;hits at least a second machine or&lt;/li&gt;
-&lt;li&gt;hits a second machine in another availability zone.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Increasing the requirements introduces more latency, and brings down our maximum write rate due to increased wait time.&lt;/p&gt;
-&lt;p&gt;But uncached reads are worse.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-02.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Writes can build deep queues, but for reads that is hardly happening. This is a key observation.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;When we send writes to storage, we can do that asynchronously:
-We fire off the write, and while we delay the commit and wait for the write to complete, we can do other things.
-That is possible, because these other writes are – to a large extent – independent of the outcome of previous writes, as long as ordering guarantees are being held up.
-Writes are a stream that continuously flows and that can be queued.&lt;/p&gt;
-&lt;p&gt;Reads are not, at multiple levels.&lt;/p&gt;
-&lt;p&gt;Databases read data from indexes, and indexes are mostly data structures such as balanced trees, with a large fan-out.
-If you have more data than fits into memory and sensible indexes, the index is approximately four layers deep.
-You will need around four media accesses to get from the root to the desired data, assuming no caching.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Why approximately four layers?&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;In a tree, the depth of the tree is the logarithm of the number of records to the base of the fan-out.&lt;/p&gt;
-&lt;p&gt;For a billion records and a fan-out of 200 at each level, you get a tree depth of 3.91.&lt;/p&gt;
-&lt;p&gt;Fewer records will make it a bit more shallow: Depth 2.60 for a million records at a width of 200.&lt;/p&gt;
-&lt;p&gt;A smaller fan-out will make it a bit deeper:
-a million records with a fan-out of 20 instead of 200 will give you a depth of 4.61
-(Remember, we are working with pages of 16 KB size, so a fan-out of only 20 is incredibly small).&lt;/p&gt;
-&lt;p&gt;In practice, all balanced trees in our databases will be approximately 4 layers deep, because log(n)/log(fan-out) is practically a constant valued around 4.&lt;/p&gt;&lt;/blockquote&gt;
-&lt;p&gt;Most of the time, even for large data we can completely cache the inner tree, so this comes down to 4 disk read requests and one actual disk read.
-But: In such a lookup, each disk read is completely dependent on the outcome of the previous disk read.
-The reads are all serialized by disk accesses.&lt;/p&gt;
-&lt;p&gt;That, again, underlines the importance of memory in database operation.
-&amp;ldquo;Buy more memory, then invest into more memory&amp;rdquo; is an extremely sensible piece of advice.&lt;/p&gt;
-&lt;p&gt;Now, we actually do not just read data from a single table.
-Often we join two tables.
-In a loop join, we join two tables with SQL of the form&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sql&#34; data-lang=&#34;sql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;SELECT&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;somecolumn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;someothercolumn&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;  &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;FROM&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;JOIN&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;    &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;ON&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aid&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;WHERE&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;some&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;conditions&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This will grab rows from &lt;code&gt;a&lt;/code&gt;, hopefully using an index (see above for index reads), and then take the rows from &lt;code&gt;a&lt;/code&gt; as they are generated. It will use the &lt;code&gt;a.aid&lt;/code&gt; values emitted and apply them to look up &lt;code&gt;b.aid&lt;/code&gt; rows in table &lt;code&gt;b&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Again, we can&amp;rsquo;t know which rows in &lt;code&gt;b&lt;/code&gt; we are interested in before we haven&amp;rsquo;t completed the reads on &lt;code&gt;a&lt;/code&gt;.
-Read accesses on &lt;code&gt;b&lt;/code&gt; are dependent on the outcome and hence completion of our (indexed) reads on &lt;code&gt;a&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;That is not a good way to build deep queues:
-Work stalls until the previous reads are done – unless we provide sufficient memory for the reads to not happen in the first place.&lt;/p&gt;
-&lt;h1 id=&#34;what-do-reads-and-writes-look-like-in-reality&#34;&gt;
-    &lt;a href=&#34;#what-do-reads-and-writes-look-like-in-reality&#34;&gt;
-	What do reads and writes look like in reality?
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Meet our availability databases.
-They are holding hotel room availability information.
-This database is running on bare metal, 16C/32T, 128 GB memory and two SSD on a controller with a battery backed cache unit (BBU).&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-03.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;The box is serving mostly reads, 4746 in the last second, and as a replica sees writes only from upstream.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The box is currently holding a few TB of data, serving around between 6000 and 12000 queries per second.&lt;/p&gt;
-&lt;p&gt;The statement mix looks like Java: around 50% of the statements are &lt;code&gt;SELECT&lt;/code&gt;, the large percentage of &lt;code&gt;SET&lt;/code&gt; statements is indicative of the JDBC driver and the rest is DML and transaction management.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-04.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;The box is currently running at a load of 9, but it is early morning, and we have a load peak in the evening. At a load of 12, it has sufficient capacity to carry on, if we lose an AZ and have to fold the failing data centers load into the surviving machines.&lt;/p&gt;
-&lt;p&gt;This kind of hardware with this kind of workload will become uncomfortably jittery at a load of 24.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-05.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;We also observe variable read load of around 1000-ish IOPS, spiking into the 4000&amp;rsquo;s.&lt;/p&gt;
-&lt;p&gt;This works well. How well?&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-06.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;We observe read and write latencies on a µs scale, that is 10^-6, millionth seconds.i
-2000 µs are 2ms.&lt;/p&gt;
-&lt;p&gt;Read latencies are layered curtains with peaks at 0.2 ms, 0.26 ms, 0.33 ms, 0.45 ms and 0.58 ms.
-We could draw a large gauss curve over the entire thing, peaking at 0.33 ms.&lt;/p&gt;
-&lt;p&gt;Write latencies are&amp;hellip; nonexistent?&lt;/p&gt;
-&lt;p&gt;When we zoom in, we can see that disk writes seem to happen at a latency of 40 µs, 0.04 ms.
-That&amp;rsquo;s to the tune of a PCIe bus transfer – a 256 Byte bus transfer takes around 100 ns, 40 µs are good for about 12-ish KB worth of bus time, and for comparison, 16 KB is the size of a MySQL data page written out.
-The numbers check out.&lt;/p&gt;
-&lt;p&gt;This is the time it takes to transfer 16 KB of data from a MySQL Buffer Pool in RAM to the 4 GB worth BBU cache on the HP SmartArray controller card, which counts as locally persistent.
-The ARM CPU on the controller will then take all these writes, sort them, batch them and write them out to the SSD in the background.&lt;/p&gt;
-&lt;p&gt;All together that works very well:
-This blade costs around 150 Euro per month, per machine, over a reservation interval of 5 years.
-It stores 1 TB of logical data in 1 TB of physical disk space.
-And it performs at amazingly low and stable latency numbers.&lt;/p&gt;
-&lt;p&gt;It is not redundant at the machine level – we are using other, database level technologies to achieve that.
-Using replication, we make copies of the data on this machine on other machines and in other data centers.
-This allows us to utilize redundancy for capacity, but also for availability.&lt;/p&gt;
-&lt;p&gt;It does so at a cost that also allows us to completely eliminate additional cache layers such as memcached – also eliminating the entire class of cache incoherency bugs that came with memcached usage, until 2012, when we removed memcached.&lt;/p&gt;
-&lt;h1 id=&#34;changing-the-equation&#34;&gt;
-    &lt;a href=&#34;#changing-the-equation&#34;&gt;
-	Changing the Equation
-    &lt;/a&gt;
-&lt;/h1&gt;
-&lt;p&gt;Introducing distributed storage into the equation changes the properties of the underlying storage fundamentally.&lt;/p&gt;
-&lt;p&gt;Your storage is no longer machine local, and for reasons that are transcending the scope of this post, it is also always replicated – usually with a replication factory of n=3.
-That is, 1 TB of data in the database becomes 3 TB of data on disk, 1 TB on each of three different machines.&lt;/p&gt;
-&lt;p&gt;Traversing the datacenter in our on-premises data center takes around 60 µs, plus the time to write data to locally persistent storage makes it 100 µs, 0.1ms, for each hop.
-Multiple copies and coordination add up, and the end result is a write time distribution with a maximum of 0.9 ms for the storage tested here.&lt;/p&gt;
-&lt;p&gt;Read latencies have the same shape, but are somewhat lower – we need one copy of the data to read it, not all of them, so we come out at around 0.6ms.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-07.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Latency diagrams for read and write latencies of our Ceph storage are r=0.6 ms, w=0.9 ms. This is amazingly low for Ceph – a Ceph cluster in 2015 would have been around 5.0 ms.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Running a database with a comparable profile on top of this storage changes database behavior a lot:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-08.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Read latencies compared: Above, the graph from the local machine, below a comparable workload on Ceph volumes.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;We have reads, and read latencies are approximately twice as high as on a local SSD.
-We have discussed how reads don&amp;rsquo;t queue well, as the results of later reads are often dependent on the results of previous reads.&lt;/p&gt;
-&lt;p&gt;That means we have lowered the read capacity of an instance by 2, for the same number of connections.&lt;/p&gt;
-&lt;p&gt;We could, in increasing order of engineering and monetary cost&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;add memory to quench the reads in an increased buffer pool&lt;/li&gt;
-&lt;li&gt;add boxes to the pool, at the cost of additional instances&lt;/li&gt;
-&lt;li&gt;add connections and query the database with multiple parallel tasks, trying to engineer our workload to be more parallel shaped&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;For this hierarchy under test, the second thing happened:
-we scaled up the number of instances in order to deal with the query load under worsened read latency.
-And we should try the first thing:
-use instances with more memory to make the disk accesses go away.&lt;/p&gt;
-&lt;p&gt;For the writes, the picture changed completely:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-09.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Write latencies compared: Above, the graph from the local storage machine, below a comparable workload on Ceph volumes.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;Writes now take 0.9 ms instead of 0.04 ms.&lt;/p&gt;
-&lt;p&gt;Also, while the write latency histogram is nicely Gauss-shaped, it does have a considerable base width:
-The 0.9 ms is actually the base of a curve that goes from 0.6 ms to 1.6 ms on the other side.&lt;/p&gt;
-&lt;p&gt;Writes queue nicely, and the storage here is performing extremely well under parallel load in benchmarks.
-So many parallel writes should work well:
-Each write takes 0.9-ish ms, but you can do many of them in flight at the same time.&lt;/p&gt;
-&lt;p&gt;Unfortunately, transactional workloads do not have that shape.
-&lt;a href=&#34;https://blog.koehntopp.info/2021/11/08/mysql-parallel-replication.html&#34;&gt;Parallel replication&lt;/a&gt;
-
- is subject to a number of constraints regarding reordering, and also subject to limitations that result from implementation details.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-10.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Replication delay over time: Despite parallel replication being active, the instance cannot keep up with the write load. Only careful write modulation keeps the replica from delaying even more.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;And that is not even a high write load: The statement mix shown here did not even touch the 1000 inserts/s barrier.&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-11.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;Yet the storage statistics are absolutely devastating:&lt;/p&gt;
-&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2022/09/local-storage-12.jpg&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/p&gt;
-&lt;p&gt;We see somewhat over 1000 reads and 1000 writes per second on the volume, which are good considering the latencies we see above, but devoid of parallism.
-The I/O we see is good for an aggregate I/O of 22 MB/s, and results in complete saturation of the Disk I/O.&lt;/p&gt;
-&lt;p&gt;There is no easy way around this, except deep changes to the application to make it write differently.
-But we do not really want to spend application business unit developer time on &amp;ldquo;code around the intricacies of the storage solution we chose&amp;rdquo; instead of &amp;ldquo;solve business problems&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;The recommendation to use local storage in the virtualized environment still stands, as it performs better and does not provide storage-level redundancy for which we have no use, given that replication provides capacity &lt;em&gt;and&lt;/em&gt; redundancy at the database level.&lt;/p&gt;
 </description>
     </item>
     
