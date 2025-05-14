@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: FLUSH HOSTS"
-date: "2024-05-13T05:06:07Z"
+date: "2025-05-13T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
