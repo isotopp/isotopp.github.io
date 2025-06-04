@@ -1,7 +1,7 @@
 ---
-author: oliof
+author: isotopp
 date: "2025-06-04T04:05:06Z"
-feature-img: assets/img/background/aussentemp.jpg
+feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
   - lang_en
