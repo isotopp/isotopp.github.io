@@ -1,7 +1,5 @@
 ---
-author: isotopp
 date: "2025-06-04T04:05:06Z"
-feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
   - lang_en
@@ -80,18 +78,14 @@ and a modern recommender represents the user through a collection of vectors:
 These concepts may have other concepts nearby concepts in latent space.
 To the model this means they are conceptually related. 
 
-At the same time, the recommender classifies content using the same latent space,
-and can find content that lies close to one of the user’s sub-interests — or concepts that are new, but still compatible.
 
 A modern recommender separates a user’s various interests into distinct areas
 and can decide what the user is interested in right now —
 meaning,
 which of the various user interests is currently active.
-Then, this time, it might only serve "database" content, and next time only "bike" content.
 
 A modern recommender will also deliberately serve content that almost — but not quite —
 matches the user’s interests, to test how wide the bubble is around the center of that interest vector.
-So a "bike" session might also include "urbanism", "city development", and other nearby topics.
 The recommender will watch carefully to see what kind of response that triggers —
 refining its recommendations based on that feedback.
 
@@ -99,7 +93,6 @@ A modern recommender will also know where the available content clusters are,
 and prioritize content that is both relevant to the user and performs well or has current production capacity.
 In other words, where user interest and available content overlap well.
 
-And a modern recommender will re-evaluate every twenty minutes
 (“Pomodoro”, or “method shift” in educational theory) and attempt to shift the theme —
 to test whether another known interest can be reactivated.
 If that works, the recommender may manage to keep the user active for a longer time,
@@ -109,10 +102,8 @@ That’s how TikTok works.
 
 You can ban a hashtag on TikTok (`#skinnytok`).
 
-But **as long as related concepts are marketable and socially accepted** — or even demanded — that won’t prevent anything.
 
 As soon as you browse categories like “model,” “weight loss”, “fitness”, "thigh gap", "visible collarbone",
-or “slim”, TikTok will slowly and systematically pull you into the same region,
 and the end result will be the same.
 
 The actual language, the meaning,
