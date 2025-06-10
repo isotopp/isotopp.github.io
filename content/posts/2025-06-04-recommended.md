@@ -1,11 +1,13 @@
 ---
+author: isotopp
+title: "Recommended"
 date: "2025-06-04T04:05:06Z"
+feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
   - lang_en
   - ai
   - advertising
-title: "Recommended"
 ---
 
 [France forces TikTok to ban #SkinnyTok but harmful content still persists](https://www.europesays.com/uk/156725/).
