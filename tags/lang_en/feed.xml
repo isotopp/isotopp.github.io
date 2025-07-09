@@ -12,7 +12,56 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Thu, 03 Jul 2025 15:57:25 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 09 Jul 2025 19:03:14 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/lang_en/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>MySQL: Release Notes Database</title>
+      <link>https://blog.koehntopp.info/2025/07/09/mysql-release-notes-database.html</link>
+      <pubDate>Wed, 09 Jul 2025 05:06:07 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
+
+      <guid>https://blog.koehntopp.info/2025/07/09/mysql-release-notes-database.html</guid>
+      <description>&lt;p&gt;I’ve hacked together a horrible thing in Python, and made it available in
+&lt;a href=&#34;https://github.com/isotopp/mysql-release-notes&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mysql-release-notes&lt;/a&gt;
+
+
+on GitHub.&lt;/p&gt;
+&lt;p&gt;It’s a Python project (done with &lt;code&gt;uv&lt;/code&gt;) that downloads all MySQL release notes,
+dumps them into a release_notes folder, and then parses them,
+pushing everything into a database.&lt;/p&gt;
+&lt;p&gt;It uses SQLAlchemy and mysqlclient to connect to the database.&lt;/p&gt;
+&lt;p&gt;It generates a schema (not preserving any data),
+and fills it with all the release notes we have.&lt;/p&gt;
+&lt;p&gt;The schema is a simple star.&lt;/p&gt;
+&lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
+  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2025/07/mysql_releases.png&#34; alt=&#34;&#34;  /&gt;
+&lt;/p&gt;
+
+&lt;/p&gt;
+&lt;p&gt;For each release, we have many issues,
+and for each issue we store a number of properties.
+Properties aren’t stored as plain text — they’re encoded,
+and we only keep the property ID.&lt;/p&gt;
+&lt;p&gt;Sample queries like&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-mysql&#34; data-lang=&#34;mysql&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;select&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;contributor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;release_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;min&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;release_date&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;max&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;version&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;       &lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;text&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;as&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cnt&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;from&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;release&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;`&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;issue&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;release_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;issue_thanks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;it&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;it&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;issue_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;         &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;thanks&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;on&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;it&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;thanks_id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;group&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;contributor&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;w&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;order&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;by&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cnt&lt;/span&gt;&lt;span class=&#34;w&#34;&gt; &lt;/span&gt;&lt;span class=&#34;k&#34;&gt;desc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;w&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;can answer questions about issues —
+for example, who contributed the most fixes or changes.&lt;/p&gt;
+&lt;p&gt;The code is a lazy evening project,
+but it can already answer some useful questions.
+Like: “If I upgraded from version x to y, what bugs would be fixed?”&lt;/p&gt;
+&lt;p&gt;That said, since the data comes from free-text HTML release notes,  it’s messy.
+We’ll probably need fixer functions.&lt;/p&gt;
+&lt;p&gt;MRs welcome.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>Electricity, China, Coal and Solar</title>
       <link>https://blog.koehntopp.info/2025/06/27/electricity-china-coal-and-solar.html</link>
@@ -3827,71 +3876,6 @@ because that is how things go from here.
 All the time.&lt;/p&gt;
 &lt;p&gt;This happens in enterprises all around the world, and that is how the suck accumulates.
 This way or one of a gazillion ways that are actually isomorphic to this experience.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Support as a public performance</title>
-      <link>https://blog.koehntopp.info/2024/04/17/support-as-a-public-performance.html</link>
-      <pubDate>Wed, 17 Apr 2024 05:06:07 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
-
-      <guid>https://blog.koehntopp.info/2024/04/17/support-as-a-public-performance.html</guid>
-      <description>&lt;p&gt;Support has been working in Slack for years.&lt;/p&gt;
-&lt;p&gt;There&amp;rsquo;s a &lt;code&gt;#java&lt;/code&gt; channel where people can join and ask, a &lt;code&gt;#dba&lt;/code&gt; channel and a &lt;code&gt;#k8s&lt;/code&gt; channel, and there is of course &lt;code&gt;#live&lt;/code&gt;.
-Each has a small four digit number of people attending, with &lt;code&gt;#live&lt;/code&gt; not quite reaching five digits.&lt;/p&gt;
-&lt;p&gt;Some pretty old and clueful people sit in these channels.
-Often they just watch the questions scroll by.
-But sometimes one of the Great Old Ones stirs in their slumber and raises to the surface,
-stretching tentacles and grabbing a question or a support case that looks interesting or weird.&lt;/p&gt;
-&lt;p&gt;The Great Old Ones love their shinies.&lt;/p&gt;
-&lt;p&gt;Management is annoyed by this arrangement.
-They love their Jira, because Jira actually quantifies support, you know.
-It makes tracking KPIs so much easier,
-and then we can see if we managed to fulfill our critical TTR OKR for Q423 or not, instantly.&lt;/p&gt;
-&lt;p&gt;Unfortunately, the company does not earn money with bringing down the TTR OKR for support in any quarter at all.&lt;/p&gt;
-&lt;p&gt;Moving the support from Slack to Jira
-has turned a public interactive performance and discussion of operations and operational problems
-into a set of highly permissioned 1:1 interactions and carefully tracked escalations.
-They have carefully assigned priorities and have tracked resolution times.&lt;/p&gt;
-&lt;p&gt;The Great Old Ones are blindsided now, because no one,
-not even they with their unnatural ancient power beyond what is allowed for mere mortals,
-can read Jira horizontally across all tickets.
-And if they did, and rose and grabbed a ticket, maybe that ticket is resolved.
-But all the others would not have seen this spectacle of noneuclidic debugging
-and knowledge about systems from before the dawn of time,
-nor would they have been able to learn from this.&lt;/p&gt;
-&lt;p&gt;Probably for good,
-because people have been known to go insane from just reading the deploy scripts that drive these systems.
-And let&amp;rsquo;s not even speak about the abominations that these C++ JNI methods actually hold.
-As a mere Java coder you will never know,
-and you should be thankful for that and every second of your life that you do not know about this.&lt;/p&gt;
-&lt;p&gt;Anyway.&lt;/p&gt;
-&lt;p&gt;In Slack questions often triggered +1&amp;rsquo;s. Somebody asks about a problem,
-and others would chime in &amp;ldquo;That was me!&amp;rdquo;, &amp;ldquo;I am having the same problem,
-it&amp;rsquo;s company wide&amp;rdquo; or &amp;ldquo;We know this, and for us this workaround is helpful&amp;rdquo;.&lt;/p&gt;
-&lt;p&gt;Moving support from Slack to Jira cut that off.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Capability_Maturity_Model_Integration&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;p class=&#34;md__image&#34;&gt;
-  &lt;img src=&#34;https://blog.koehntopp.info/uploads/2024/04/support-01.png&#34; alt=&#34;&#34;  /&gt;
-&lt;/p&gt;
-
-&lt;/a&gt;
-
-&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;Is that bad?
-No, this was not a mature process, it was individual heroics, a 0 or 1 on the
-&lt;a href=&#34;https://en.wikipedia.org/wiki/Capability_Maturity_Model_Integration&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;process maturity scale&lt;/a&gt;
-
-.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;These days, the ticket correlation process corp set up would find the same correlations,
-reliably and with a maturity of 5
-(quantifiably tracked and continuously improved).
-Often, it takes only 4-8 weeks to get the same information as before with the immature process.
-And on top,
-it is now orderly documented and traceable as a KPI instead of happening coincidentally when the problem was current.&lt;/p&gt;
-&lt;p&gt;Also, the company now has architecture review boards,
-and a tech radar that manages these kinds of things pretty successfully.&lt;/p&gt;
-&lt;p&gt;A bunch of MBAs has been promoted on this.&lt;/p&gt;
-&lt;p&gt;This is how process and civilization work.&lt;/p&gt;
 </description>
     </item>
     
