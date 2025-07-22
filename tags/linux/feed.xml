@@ -12,7 +12,7 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Tue, 22 Jul 2025 14:27:55 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/linux/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 22 Jul 2025 14:45:44 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/linux/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Beyond rwx: Linux permissions</title>
       <link>https://blog.koehntopp.info/2024/06/07/beyond-rwx.html</link>
@@ -3001,50 +3001,54 @@ ohne das bestehende 30 Jahre alte Konzept von fork, exec und wait verändern zu 
       <description>&lt;p&gt;In
 &lt;a href=&#34;news:de.comp.os.unix.linux.misc&#34;&gt;de.comp.os.unix.linux.misc&lt;/a&gt;
 
- fragte jemand:&lt;/p&gt;
+
+fragte jemand:&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;Werden in einem Skript die Befehle streng sequentiell ausgeführt, d.h.
 der nächste erst bearbeitet, wenn der Vorgänger vollständig ausgeführt
 ist, oder wird &lt;strong&gt;automatisch&lt;/strong&gt; bei unvollständiger Auslastung des
 Systems bereits der nächste Befehl angefangen?&lt;/li&gt;
-&lt;li&gt;Läßt sich das Standardverhalten - wie auch immer es sein mag - bei
+&lt;li&gt;Lässt sich das Standardverhalten – wie auch immer es sein mag – bei
 Bedarf ändern?&lt;/li&gt;
 &lt;/ul&gt;&lt;/blockquote&gt;
-&lt;p&gt;Wenn man in ein Shellbuch schaut, wird einem an der einen oder anderen
-Stelle möglicherweise erläutert, daß die Shell jeden Befehl in einem eigenen
-Prozeß abarbeitet. Dann wiederum fängt man möglicherweise an zu denken und
-fragt sich, wie das alles zusammenhängt. Sobald man dort angekommen ist,
-kann man sich mit dem Unix-Prozeßzyklus beschäftigen.&lt;/p&gt;
-&lt;h2 id=&#34;prozeß-und-programm&#34;&gt;
-    &lt;a href=&#34;#proze%c3%9f-und-programm&#34;&gt;
-	Prozeß und Programm
+&lt;p&gt;Wenn man in ein Shellbuch schaut, wird einem an der einen oder anderen Stelle möglicherweise erläutert,
+dass die Shell jeden Befehl in einem eigenen Prozess abarbeitet.
+Dann wiederum fängt man möglicherweise an zu denken und fragt sich, wie das alles zusammenhängt.
+Sobald man dort angekommen ist, kann man sich mit dem Unix-Prozesszyklus beschäftigen.&lt;/p&gt;
+&lt;h2 id=&#34;prozess-und-programm&#34;&gt;
+    &lt;a href=&#34;#prozess-und-programm&#34;&gt;
+	Prozess und Programm
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Ein Programm ist in Unix eine Serie von ausführbaren Maschineninstruktionen
-auf der Platte. Man kann mit dem Befehl &lt;em&gt;size&lt;/em&gt; einen sehr oberflächlichen
-Blick auf die Struktur des Programmes werfen oder mit &lt;em&gt;objdump&lt;/em&gt; sehr viel
-mehr Detailinformation bekommen. Der Aspekt, der uns hier interessieren
-soll: Ein Programm ist eine Folge von Anweisungen und Daten (auf der
-Platte), die möglicherweise einmal ausgeführt werden.&lt;/p&gt;
-&lt;p&gt;Ein Prozeß ist ein in Ausführung befindliches Programm. Er besteht aus dem
-Programm selbst (also der Versammlung von Anweisungen und Daten) und dem
-aktuellen Zustand der Ausführung. Dazu gehört neben der Memory-Map, die sagt
-wie das Programm und seine Daten im Speicher angeordnet sind auch der
-Programmzähler, die Prozessorregister und der Stack des Prozesses, aber auch
-sein Root-Directory, sein aktuelles Verzeichnis, die Umgebungsvariablen und
-alle offenen Dateien sowie einigen weiteren Dingen.&lt;/p&gt;
-&lt;p&gt;Unix behandelt Prozesse und Programme als die verschiedenen Dinge, die es
-sind: Es ist möglich, ein Programm mehr als einmal auszuführen - es ist zum
-Beispiel möglich, mehr als eine Kopie des Texteditors vi offen zu haben, die
-zwei unterschiedliche Texte bearbeiten. Programm und (initiale) Daten beider
-Prozesse sind gleich, aber der Zustand beider Prozesse ist verschieden. Es
-ist auch möglich, im selben Prozeß nacheinander mehr als ein Programm
-auszuführen - dazu schmeißt sich das aktuelle Programm in dem Prozeß selbst
-weg und ersetzt sich durch ein zweites, in diesen Prozeß nachgeladene
-Programm.&lt;/p&gt;
-&lt;p&gt;Unix regelt all diese Dinge mit vier sehr einfachen Systemkonzepten -
-&lt;code&gt;fork()&lt;/code&gt;, &lt;code&gt;exec()&lt;/code&gt;, &lt;code&gt;wait()&lt;/code&gt; und &lt;code&gt;exit()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Ein Programm ist in Unix eine Serie von ausführbaren Maschineninstruktionen auf der Platte.
+Man kann mit dem Befehl &lt;em&gt;size&lt;/em&gt; einen sehr oberflächlichen Blick auf die Struktur des Programmes werfen
+oder mit &lt;em&gt;objdump&lt;/em&gt; sehr viel mehr Detailinformation bekommen.
+Der Aspekt, der uns hier interessieren soll:
+Ein Programm ist eine Folge von Anweisungen und Daten (auf der Platte),
+die möglicherweise einmal ausgeführt werden.&lt;/p&gt;
+&lt;p&gt;Ein Prozess ist ein in Ausführung befindliches Programm.
+Er besteht aus dem Programm selbst (also der Versammlung von Anweisungen und Daten)
+und dem aktuellen Zustand der Ausführung.
+Dazu gehört neben der Memory-Map, die sagt wie das Programm und seine Daten im Speicher angeordnet sind,
+auch der Programmzähler, die Prozessorregister und der Stack des Prozesses,
+aber auch sein Root-Directory, sein aktuelles Verzeichnis, die Umgebungsvariablen,
+und alle offenen Dateien sowie einige weitere Dinge.&lt;/p&gt;
+&lt;p&gt;Unix behandelt Prozesse und Programme als die verschiedenen Dinge, die es sind:
+Es ist möglich, ein Programm mehr als einmal auszuführen – es ist zum Beispiel möglich,
+mehr als eine Kopie des Texteditors vi offen zu haben, die zwei unterschiedliche Texte bearbeiten.
+Programm und (initiale) Daten beider Prozesse sind gleich,
+aber der Zustand beider Prozesse ist verschieden.
+Es ist auch möglich, im selben Prozess nacheinander mehr als ein Programm auszuführen:
+dazu wirft sich das aktuelle Programm in dem Prozess selbst weg
+und ersetzt sich durch ein zweites, in diesen Prozess nachgeladenes Programm.&lt;/p&gt;
+&lt;p&gt;Unix regelt all diese Dinge mit vier sehr einfachen Systemkonzepten:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;fork()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;exec()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;wait()&lt;/code&gt; und&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;exit()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;usermode-und-kernel&#34;&gt;
     &lt;a href=&#34;#usermode-und-kernel&#34;&gt;
 	Usermode und Kernel
@@ -3055,103 +3059,95 @@ Programm.&lt;/p&gt;
 &lt;/p&gt;
 
 &lt;/p&gt;
-&lt;p&gt;Prozeßwechsel: Es wird ein Stück Prozeß 1 abgearbeitet, dann (1) auf Prozeß
-2 umgeschaltet. Nach einer Weile wird (2) wieder auf Prozeß 1 zurück
-geschaltet. Die Ausführung von Prozeß 1 erscheint lückenlos, erfolgt aber in
-zeitlich nicht zusammenhängenden Intervallen.&lt;/p&gt;
-&lt;p&gt;Wenn ein Unix-Prozeß eine Systemfunktion aufruft (und noch bei ein paar
-anderen Gelegenheiten), dann verläßt der betreffende Prozeß seinen
-Userkontext und betritt den privilegierten Betriebsystemkern, den Kernel.
-Dort wird die aufgerufene Systemfunktion ausgeführt und danach landet jede
-dieser Funktionen im Scheduler. Der Scheduler entscheidet dann, welcher
-Prozeß als nächstes dran kommt und kehrt aus dem Kernel in diesen Prozeß
-zurück. Das kann unser Ausgangsprozeß oder nach Entscheidung des Schedulers
-ein anderer Prozeß sein.&lt;/p&gt;
-&lt;p&gt;Wir halten für die Zwecke diese Textes fest: Jeder Systemaufruf wechselt vom
-Userkontext in den Kernel. Der einzige Weg aus dem Kernel in einen
-Userkontext führt durch den Scheduler, und dann kehren wir unter Umständen
-nicht in den Ausgangsprozeß zurück. Bei jedem Systemaufruf kann ein Prozeß
-also seine CPU verlieren.&lt;/p&gt;
-&lt;p&gt;Das ist nicht schlimm, weil dieser andere Prozeß auch irgendwann einmal die
-CPU aufgeben muß und wir dann in unseren eigenen Prozeß zurück kehren als
-sei nichts gewesen.&lt;/p&gt;
-&lt;p&gt;Unser Programm wird also nicht linear abgearbeitet, sondern in kurzen
-linearen Segmenten, zwischen denen Pausen liegen können. In den Pausen
-arbeitet die CPU an den Segmenten der anderen Prozesse, die ebenfalls
-lauffähig sind.&lt;/p&gt;
+&lt;p&gt;Prozesswechsel: Es wird ein Stück Prozess 1 abgearbeitet,
+dann (1) auf Prozess 2 umgeschaltet.
+Nach einer Weile wird (2) wieder auf Prozess 1 zurück geschaltet.
+Die Ausführung von Prozess 1 erscheint lückenlos, erfolgt aber in zeitlich nicht zusammenhängenden Intervallen.&lt;/p&gt;
+&lt;p&gt;Wenn ein Unix-Prozess eine Systemfunktion aufruft (und noch bei ein paar anderen Gelegenheiten),
+verläßt der betreffende Prozess seinen Userkontext und betritt den privilegierten Betriebsystemkern,
+den Kernel.
+Dort wird die aufgerufene Systemfunktion ausgeführt, und danach landet jede dieser Funktionen im Scheduler.
+Der Scheduler entscheidet dann, welcher Prozess als Nächstes dran kommt,
+und kehrt aus dem Kernel in diesen Prozess zurück.
+Das kann unser Ausgangsprozess oder nach Entscheidung des Schedulers ein anderer Prozess sein.&lt;/p&gt;
+&lt;p&gt;Wir halten für die Zwecke dieses Textes fest:
+Jeder Systemaufruf wechselt vom Userkontext in den Kernel.
+Der einzige Weg aus dem Kernel in einen Userkontext führt durch den Scheduler,
+und dann kehren wir unter Umständen nicht in den Ausgangsprozess zurück.
+Bei jedem Systemaufruf kann ein Prozess also seine CPU verlieren.&lt;/p&gt;
+&lt;p&gt;Das ist nicht schlimm, weil dieser andere Prozess auch irgendwann einmal die CPU aufgeben muss
+und wir dann in unseren eigenen Prozess zurückkehren als sei nichts gewesen.&lt;/p&gt;
+&lt;p&gt;Unser Programm wird also nicht linear abgearbeitet, sondern in kurzen linearen Segmenten,
+zwischen denen Pausen liegen können.
+In den Pausen arbeitet die CPU an den Segmenten der anderen Prozesse, die ebenfalls lauffähig sind.&lt;/p&gt;
 &lt;h2 id=&#34;fork-und-exit&#34;&gt;
     &lt;a href=&#34;#fork-und-exit&#34;&gt;
 	fork() und exit()
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;In traditionellem Unix ist der Systemaufruf &lt;code&gt;fork()&lt;/code&gt; die einzige Methode,
-einen neuen Prozeß zu erzeugen. Der neue Prozeß enthält eine Kopie des
-laufenden Programmes. Er hat eine neue Prozeß-ID und die Prozeß-ID des
-Erzeugers ist als seine Parent Prozeß-ID (PPID) eingetragen.&lt;/p&gt;
-&lt;p&gt;Im Parent-Prozeß kehrt &lt;code&gt;fork()&lt;/code&gt; mit der PID des neuen Prozesses als Ergebnis
-zurück. Der neue Prozeß kehrt ebenfalls aus dem Systemaufruf &lt;code&gt;fork()&lt;/code&gt; zurück,
-liefert dort aber das Resultat 0.&lt;/p&gt;
-&lt;p&gt;Der Systemaufruf fork() ist also insofern besonders, als daß er einmal
-betreten wird, aber zweimal verlassen wird: Einmal im Elternprozeß und
-einmal im neu erzeugten Kindprozeß. &lt;code&gt;fork()&lt;/code&gt; erhöht die Anzahl der laufenden
-Prozesse im System um eins.&lt;/p&gt;
-&lt;p&gt;Jeder Unix-Prozeß beginnt seine Existenz also, indem er aus einem
-&lt;code&gt;fork()&lt;/code&gt;-Systemaufruf spontan zurückkehrt und ein Programm ausführt, daß
-eine Kopie des Elternprogrammes ist. Sein Schicksal unterscheidet sich vom
-Schicksal des Elternprozesses, weil das Ergebnis des &lt;code&gt;fork()&lt;/code&gt;-Aufrufes
-unterschiedlich ist (0 statt der PID des Kindes) und man dies zur
-Verzweigung nutzen kann.&lt;/p&gt;
+&lt;p&gt;In traditionellem Unix ist der Systemaufruf &lt;code&gt;fork()&lt;/code&gt; die einzige Methode, einen neuen Prozess zu erzeugen.
+Der neue Prozess enthält eine Kopie des laufenden Programmes.
+Er hat eine neue Prozess-ID und die Prozess-ID des Erzeugers ist als seine Parent Prozess-ID (PPID) eingetragen.&lt;/p&gt;
+&lt;p&gt;Im Parent-Prozess kehrt &lt;code&gt;fork()&lt;/code&gt; mit der PID des neuen Prozesses als Ergebnis zurück.
+Der neue Prozess kehrt ebenfalls aus dem Systemaufruf &lt;code&gt;fork()&lt;/code&gt; zurück, liefert dort aber das Resultat 0.&lt;/p&gt;
+&lt;p&gt;Der Systemaufruf fork() ist also insofern besonders, indem er einmal betreten wird,
+\aber zweimal verlassen wird:
+Einmal im Elternprozess und einmal im neu erzeugten Kindprozess.
+&lt;code&gt;fork()&lt;/code&gt; erhöht die Anzahl der laufenden Prozesse im System um eins.&lt;/p&gt;
+&lt;p&gt;Jeder Unix-Prozess beginnt seine Existenz also, indem er aus einem &lt;code&gt;fork()&lt;/code&gt;-Systemaufruf spontan zurückkehrt
+und ein Programm ausführt, dass eine Kopie des Elternprogrammes ist.
+Sein Schicksal unterscheidet sich vom Schicksal des Elternprozesses,
+weil das Ergebnis des &lt;code&gt;fork()&lt;/code&gt;-Aufrufes unterschiedlich ist (0 statt der PID des Kindes)
+und man dies zur Verzweigung nutzen kann.&lt;/p&gt;
 &lt;p&gt;In Code:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Elternprozess, das Kind ist %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In fork():&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Elternprozess, das Kind ist %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In fork():&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; make probe1
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cc     probe1.c   -o probe1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cc     probe1.c   -o probe1
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; ./probe1
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ich bin der Kindprozess.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ich bin der Elternprozess, das Kind ist 16959.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Wir vereinbaren also eine Variable &lt;code&gt;pid&lt;/code&gt; vom Typ &lt;code&gt;pid_t&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Diese Variable speichert das Ergebnis des Systemaufrufes &lt;code&gt;fork()&lt;/code&gt; und mit
-Hilfe dieses Wertes aktivieren wir entweder das eine (&amp;ldquo;Ich bin der
-Kindprozeß&amp;rdquo;) oder das andere (&amp;ldquo;Ich bin der Elternprozeß&amp;rdquo;) if().&lt;/p&gt;
-&lt;p&gt;Starten wir das Programm, erhalten wir zwei Ausgaben. Da innerhalb eines
-Prozesses nur ein Status existieren kann und nur eines der beiden if()
-betreten werden kann, wir aber zwei Ausgaben erhalten haben, müssen wir zwei
-Prozesse erzeugt haben.&lt;/p&gt;
-&lt;p&gt;Indem wir das Ergebnis von &lt;code&gt;getpid()&lt;/code&gt; druckten, könnten wir das sogar noch
-anschaulicher zeigen.&lt;/p&gt;
-&lt;p&gt;Der Systemaufruf &lt;code&gt;fork()&lt;/code&gt; wird einmal betreten, aber zweimal verlassen und
-erhöht die Anzahl der Prozesse im System um eins. Nach dem Ablauf unseres
-Programmes ist die Anzahl der Prozesse im System aber wieder genauso hoch
-wie vor dem Aufruf des Programmes. Es muß also einen weiteren Systemaufruf
-geben, der die Anzahl der Prozesse im System um eins erniedrigt.&lt;/p&gt;
+&lt;p&gt;Diese Variable speichert das Ergebnis des Systemaufrufs &lt;code&gt;fork()&lt;/code&gt;
+und mit Hilfe dieses Wertes aktivieren wir entweder das eine
+(&amp;ldquo;Ich bin der Kindprozess&amp;rdquo;) oder das andere (&amp;ldquo;Ich bin der Elternprozess&amp;rdquo;) &lt;code&gt;if()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Starten wir das Programm, erhalten wir zwei Ausgaben.
+Da innerhalb eines Prozesses nur ein Status existieren kann
+und nur eines der beiden &lt;code&gt;if()&lt;/code&gt; betreten werden kann,
+wir aber zwei Ausgaben erhalten haben, müssen wir zwei Prozesse erzeugt haben.&lt;/p&gt;
+&lt;p&gt;Indem wir das Ergebnis von &lt;code&gt;getpid()&lt;/code&gt; druckten, könnten wir das sogar noch anschaulicher zeigen.&lt;/p&gt;
+&lt;p&gt;Der Systemaufruf &lt;code&gt;fork()&lt;/code&gt; wird einmal betreten, aber zweimal verlassen
+und erhöht die Anzahl der Prozesse im System um eins.
+Nach dem Ablauf unseres Programms ist die Anzahl der Prozesse im System aber wieder genauso hoch
+wie vor dem Aufruf des Programms.
+Es muss also einen weiteren Systemaufruf geben, der die Anzahl der Prozesse im System um eins erniedrigt.&lt;/p&gt;
 &lt;p&gt;Dieser Aufruf ist &lt;code&gt;exit()&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;exit()&lt;/code&gt; wird einmal betreten und nie verlassen. Er verkleinert die Anzahl
-der Prozesse im System um eins. &lt;code&gt;exit()&lt;/code&gt; liefert außerdem einen Exitstatus,
-den der Elternprozeß abholen kann (oder gar muß) und der ihn über das
-Schicksal seines Kindes informiert.&lt;/p&gt;
-&lt;p&gt;In unserem Beispiel enden alle Varianten unseres Programmes mit &lt;code&gt;exit()&lt;/code&gt; -
-wir rufen &lt;code&gt;exit()&lt;/code&gt; also im Elternprozeß und im Kindprozeß auf, beenden also
-zwei Prozesse. Das können wir nur deswegen tun, weil unser Elternprozeß auch
-ein Kindprozeß ist und zwar ein Kind der Shell.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;exit()&lt;/code&gt; wird einmal betreten und nie verlassen.
+Er verkleinert die Anzahl der Prozesse im System um eins.
+&lt;code&gt;exit()&lt;/code&gt; liefert außerdem einen Exitstatus, den der Elternprozess abholen kann (oder gar muss)
+und der ihn über das Schicksal seines Kindes informiert.&lt;/p&gt;
+&lt;p&gt;In unserem Beispiel enden alle Varianten unseres Programmes mit &lt;code&gt;exit()&lt;/code&gt;.
+Wir rufen &lt;code&gt;exit()&lt;/code&gt; also im Elternprozess und im Kindprozess auf, beenden also zwei Prozesse.
+Das können wir nur deswegen tun, weil unser Elternprozess auch ein Kindprozess ist, und zwar ein Kind der Shell.&lt;/p&gt;
 &lt;p&gt;Die Shell arbeitet also genau wie wir:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;bash (16957) --- erzeugt durch fork() ---&amp;gt; bash (16958) --- wird zu ---&amp;gt; probe1 (16958)
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
@@ -3159,16 +3155,17 @@ ein Kindprozeß ist und zwar ein Kind der Shell.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   |
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;   +---&amp;gt; exit()
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;exit()&lt;/code&gt; schließt alle Dateien und Internetverbindungen eines Prozesses,
-gibt allen Speicher frei und beendet dann den Prozeß. Der Parameter von
-&lt;code&gt;exit()&lt;/code&gt;, der Exitstatus, wird an den Elternprozeß zurückgegeben.&lt;/p&gt;
+gibt allen Speicher frei, und beendet dann den Prozess.
+Der Parameter von &lt;code&gt;exit()&lt;/code&gt;, der Exitstatus, wird an den Elternprozess zurückgegeben.&lt;/p&gt;
 &lt;h2 id=&#34;wait&#34;&gt;
     &lt;a href=&#34;#wait&#34;&gt;
 	wait()
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Der Kindprozeß endet durch ein exit(0). Die 0 ist der Exitstatus unseres
-Programmes und steht nun zur Abholung bereit. Wir müssen im Elternprozeß den
-Exitstatus abholen. Dies geschieht mit der Systemfunktion &lt;code&gt;wait()&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Der Kindprozess endet durch ein exit(0).
+Die 0 ist der Exitstatus unseres Programmes und steht nun zur Abholung bereit.
+Wir müssen im Elternprozess den Exitstatus abholen.
+Dies geschieht mit der Systemfunktion &lt;code&gt;wait()&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;In Code:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -3178,78 +3175,72 @@ Exitstatus abholen. Dies geschieht mit der Systemfunktion &lt;code&gt;wait()&lt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/wait.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess 10 Sekunden spaeter.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Elternprozess, das Kind ist %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ende des Prozesses %d: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFEXITED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit exit(%d) beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WEXITSTATUS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFSIGNALED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit kill -%d beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WTERMSIG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In fork():&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;sleep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;10&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess 10 Sekunden spaeter.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Elternprozess, das Kind ist %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ende des Prozesses %d: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFEXITED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit exit(%d) beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WEXITSTATUS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFSIGNALED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit kill -%d beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WTERMSIG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In fork():&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;und&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; make probe2
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cc     probe2.c   -o probe2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cc     probe2.c   -o probe2
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; ./probe2
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ich bin der Kindprozess.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ich bin der Elternprozess, das Kind ist 17399.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ich bin der Kindprozess 10 Sekunden spaeter.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ende des Prozesses 17399: Der Prozess wurde mit exit(0) beendet.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Variable &lt;code&gt;status&lt;/code&gt; wird dem Systemaufruf &lt;code&gt;wait()&lt;/code&gt; als Referenzparameter
-mit übergeben und von diesem überschrieben. Neben dem Exitstatus finden wir
-dort auch noch weitere Informationen über den Grund des Programmendes
-hinterlegt. Zur Decodierung stellt das System eine Reihe von Prädikaten wie
-&lt;code&gt;WIFEXITED()&lt;/code&gt; oder &lt;code&gt;WIFSIGNALED()&lt;/code&gt; zur Abfrage bereit und Extraktoren wie
-&lt;code&gt;WEXITSTATUS()&lt;/code&gt; und &lt;code&gt;WTERMSIG()&lt;/code&gt;. &lt;code&gt;wait()&lt;/code&gt; gibt außerdem die Prozeß-ID des
-Prozesses zurück, der beendet wurde.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;wait()&lt;/code&gt; hängt im Elternprozeß so lange bis entweder ein Signal eintrifft
-oder ein Kindprozeß beendet wird.&lt;/p&gt;
-&lt;p&gt;Das Programm init mit der PID 1 macht übrigens den ganzen lieben langen Tag
-nix anderes: Es hängt im &lt;code&gt;wait()&lt;/code&gt; und frühstückt die ihm zugeworfenen
-Exitstati ab, um sie zu verwerfen. Außerdem liest es die &lt;code&gt;/etc/inittab&lt;/code&gt; und
-startet die dort konfigurierten Programme. Ist eines dieser Programme auf
-Respawn gesetzt und wird beendet, wird es von init neu gestartet.&lt;/p&gt;
-&lt;p&gt;Beendet sich ein Kindprozeß, ohne daß der Elternprozeß ein &lt;code&gt;wait()&lt;/code&gt; macht,
-zerstört &lt;code&gt;exit()&lt;/code&gt; schon einmal alle Datenstrukturen des Kindprozesses, kann
-jedoch den Prozeßlisteneintrag des Prozesses noch nicht wegwerfen, denn hier
-steht der Exitstatus des Kindes drin. Es könnte ja nun sein, daß der
-Elternprozeß sich irgendwann entschließt, ein &lt;code&gt;wait()&lt;/code&gt; auszuführen und dann
-muß der Exitstatus ja bereitstehen.&lt;/p&gt;
-&lt;p&gt;Der Kindprozeß ist also bereits tot - er hat &lt;code&gt;exit()&lt;/code&gt; ausgeführt und alle
-Ressourcen freigegeben, kann aber noch nicht sterben, weil ja der
-Elternprozeß den Status noch nicht abgeholt hat. Unix nennt so einen Prozeß
-einen Zombie-Prozeß. Zombies werden in der Prozeßliste sichtbar, wenn ein
-Prozeßerzeuger falsch programmiert ist und nicht ausreichend &lt;code&gt;wait()&lt;/code&gt; aufruft.&lt;/p&gt;
-&lt;p&gt;Anders herum ist es auch möglich, daß ein Kindprozeß weiter läuft, während
-ein Elternprozeß beendet wird. Dann wird die Parent Prozeß-ID (PPID) des
-Kindes von der PID des Elternprozesses auf die Konstante 1 geändert, oder in
-anderen Worten - init erbt den Prozeß.&lt;/p&gt;
-&lt;p&gt;Beendet sich das Kind, empfängt init den Exitstatus des Kindes, denn init
-hängt ja sowieso dauernd im wait. Dadurch wird die Entstehung eines Zombies
-in diesem Fall verhindert.&lt;/p&gt;
-&lt;p&gt;Wenn die Anzahl der Prozesse im System über die Laufzeit des System im
-Mittel konstant ist, dann ist die Anzahl der &lt;code&gt;fork()&lt;/code&gt;, &lt;code&gt;exit()&lt;/code&gt; und
-&lt;code&gt;wait()&lt;/code&gt;-Aufrufe im System ebenfalls im Mittel gleich, denn für jedes
-&lt;code&gt;fork()&lt;/code&gt; muß irgendwann einmal ein &lt;code&gt;exit()&lt;/code&gt; gemacht werden und für jedes
-&lt;code&gt;exit()&lt;/code&gt; muß der Elternprozeß einmal ein &lt;code&gt;wait()&lt;/code&gt; machen (In Wirklichkeit
-ist die Situation wegen einiger anderer Regeln noch ein wenig komplizierter,
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Die Variable &lt;code&gt;status&lt;/code&gt; wird dem Systemaufruf &lt;code&gt;wait()&lt;/code&gt; als Referenzparameter mit übergeben und von diesem überschrieben.
+Neben dem Exitstatus finden wir dort auch noch weitere Informationen über den Grund des Programmendes hinterlegt.
+Zur Decodierung stellt das System eine Reihe von Prädikaten wie &lt;code&gt;WIFEXITED()&lt;/code&gt; oder &lt;code&gt;WIFSIGNALED()&lt;/code&gt; zur Abfrage bereit
+und Extraktoren wie &lt;code&gt;WEXITSTATUS()&lt;/code&gt; und &lt;code&gt;WTERMSIG()&lt;/code&gt;.
+&lt;code&gt;wait()&lt;/code&gt; gibt außerdem die Prozess-ID des Prozesses zurück, der beendet wurde.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;wait()&lt;/code&gt; hängt im Elternprozess so lange bis entweder ein Signal eintrifft oder ein Kindprozess beendet wird.&lt;/p&gt;
+&lt;p&gt;Das Programm init mit der PID 1 macht übrigens den ganzen lieben langen Tag nichts anderes:
+Es hängt im &lt;code&gt;wait()&lt;/code&gt; und frühstückt die ihm zugeworfenen Exitstatus ab,
+um sie zu verwerfen.
+Außerdem liest es die &lt;code&gt;/etc/inittab&lt;/code&gt; und startet die dort konfigurierten Programme.
+Ist eines dieser Programme auf Respawn gesetzt und wird beendet, wird es von init neu gestartet.&lt;/p&gt;
+&lt;p&gt;Beendet sich ein Kindprozess, ohne dass der Elternprozess ein &lt;code&gt;wait()&lt;/code&gt; macht,
+zerstört &lt;code&gt;exit()&lt;/code&gt; schon einmal alle Datenstrukturen des Kindprozesses,
+kann jedoch den Prozesslisteneintrag des Prozesses noch nicht wegwerfen,
+denn hier steht der Exitstatus des Kindes drin.
+Es könnte ja nun sein, dass der Elternprozess sich irgendwann entschließt,
+ein &lt;code&gt;wait()&lt;/code&gt; auszuführen und dann muss der Exitstatus ja bereitstehen.&lt;/p&gt;
+&lt;p&gt;Der Kindprozess ist also bereits tot: er hat &lt;code&gt;exit()&lt;/code&gt; ausgeführt und alle Ressourcen freigegeben,
+kann aber noch nicht sterben, weil ja der Elternprozess den Status noch nicht abgeholt hat.
+Unix nennt so einen Prozess einen Zombie-Prozess.
+Zombies werden in der Prozessliste sichtbar, wenn ein Prozesserzeuger falsch programmiert ist
+und nicht ausreichend &lt;code&gt;wait()&lt;/code&gt; aufruft.&lt;/p&gt;
+&lt;p&gt;Andersherum ist es auch möglich, dass ein Kindprozess weiter läuft, während ein Elternprozess beendet wird.
+Dann wird die Parent Prozess-ID (PPID) des Kindes von der PID des Elternprozesses auf die Konstante 1 geändert,
+oder in anderen Worten: init erbt den Prozess.&lt;/p&gt;
+&lt;p&gt;Beendet sich das Kind, empfängt init den Exitstatus des Kindes, denn init hängt ja sowieso dauernd im wait.
+Dadurch wird die Entstehung eines Zombies in diesem Fall verhindert.&lt;/p&gt;
+&lt;p&gt;Wenn die Anzahl der Prozesse im System über die Laufzeit des Systems im Mittel konstant ist,
+dann ist die Anzahl der &lt;code&gt;fork()&lt;/code&gt;, &lt;code&gt;exit()&lt;/code&gt; und &lt;code&gt;wait()&lt;/code&gt;-Aufrufe im System ebenfalls im Mittel gleich,
+denn für jedes &lt;code&gt;fork()&lt;/code&gt; muss irgendwann einmal ein &lt;code&gt;exit()&lt;/code&gt; gemacht werden
+und für jedes &lt;code&gt;exit()&lt;/code&gt; muss der Elternprozess einmal ein &lt;code&gt;wait()&lt;/code&gt; machen
+(In Wirklichkeit ist die Situation wegen einiger anderer Regeln noch ein wenig komplizierter,
 aber erst einmal soll dies hier genügen).&lt;/p&gt;
 &lt;p&gt;Wir haben also ein sauberes fork-exit-wait-Dreieck.&lt;/p&gt;
 &lt;h2 id=&#34;exec&#34;&gt;
@@ -3257,7 +3248,7 @@ aber erst einmal soll dies hier genügen).&lt;/p&gt;
 	exec()
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;So wie &lt;code&gt;fork()&lt;/code&gt; Prozesse erzeugt, so lädt &lt;code&gt;exec()&lt;/code&gt; Programme in einen Prozeß.&lt;/p&gt;
+&lt;p&gt;So wie &lt;code&gt;fork()&lt;/code&gt; Prozesse erzeugt, so lädt &lt;code&gt;exec()&lt;/code&gt; Programme in einen Prozess.&lt;/p&gt;
 &lt;p&gt;In  Code:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
@@ -3267,34 +3258,34 @@ aber erst einmal soll dies hier genügen).&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;lt;sys/wait.h&amp;gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nf&#34;&gt;main&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;pid_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;   &lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;execl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/bin/ls&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;ls&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;-l&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;/tmp/kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In exec(): &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Elternprozess, das Kind ist %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ende des Prozesses %d: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFEXITED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit exit(%d) beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WEXITSTATUS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFSIGNALED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit kill -%d beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WTERMSIG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;                &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In fork():&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;fork&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Kindprozess.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;execl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;/bin/ls&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;ls&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;-l&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;/tmp/kris&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In exec(): &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ich bin der Elternprozess, das Kind ist %d.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;wait&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Ende des Prozesses %d: &amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFEXITED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit exit(%d) beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WEXITSTATUS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;WIFSIGNALED&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;nf&#34;&gt;printf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;Der Prozess wurde mit kill -%d beendet.&lt;/span&gt;&lt;span class=&#34;se&#34;&gt;\n&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;WTERMSIG&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;status&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;perror&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s&#34;&gt;&amp;#34;In fork():&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;nf&#34;&gt;exit&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; make probe3
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cc     probe3.c   -o probe3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;cc     probe3.c   -o probe3
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;&lt;/span&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; ./probe3
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ich bin der Kindprozess.
@@ -3307,16 +3298,17 @@ aber erst einmal soll dies hier genügen).&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rwxr-xr-x 1 kris users 7513 2007-01-05 13:42 probe3
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;-rw-r--r-- 1 kris users  728 2007-01-05 13:42 probe3.c
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;Ende des Prozesses 17690: Der Prozess wurde mit exit(0) beendet.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hier wird im Sohnprozeß der Code von probe3 weggeworfen (Das &lt;code&gt;perror(&amp;quot;In exec():&amp;quot;)&lt;/code&gt; wird niemals ausgeführt) und durch den angegebenen Aufruf von
-&lt;code&gt;ls&lt;/code&gt; ersetzt. In der Ausführung erkennen wir, daß probe3 wartet, bis das
-&lt;code&gt;ls&lt;/code&gt; sich mit &lt;code&gt;exit()&lt;/code&gt; beendet hat und dann seine eigene Ausführung danach
-fortsetzt.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hier wird im Sohnprozess der Code von probe3 weggeworfen (Das &lt;code&gt;perror(&amp;quot;In exec():&amp;quot;)&lt;/code&gt; wird niemals ausgeführt)
+und durch den angegebenen Aufruf von &lt;code&gt;ls&lt;/code&gt; ersetzt.
+In der Ausführung erkennen wir, dass &lt;code&gt;probe3&lt;/code&gt; wartet, bis das &lt;code&gt;ls&lt;/code&gt; sich mit &lt;code&gt;exit()&lt;/code&gt; beendet hat
+und dann seine eigene Ausführung danach fortsetzt.&lt;/p&gt;
 &lt;h2 id=&#34;als-shellscript&#34;&gt;
     &lt;a href=&#34;#als-shellscript&#34;&gt;
 	Als Shellscript
     &lt;/a&gt;
 &lt;/h2&gt;
-&lt;p&gt;Die Beispiele oben operieren in C. In bash sieht es so aus:&lt;/p&gt;
+&lt;p&gt;Die Beispiele oben operieren in C.
+In bash sieht es so aus:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;kris@linux:/tmp/kris&amp;gt; cat probe1.sh
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gp&#34;&gt;#&lt;/span&gt;! /bin/bash --
 &lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;err&#34;&gt;
@@ -3353,25 +3345,24 @@ fortsetzt.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;WCONTINUED) = 30048
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;--- SIGCHLD (Child exited) @ 0 (0) ---
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;go&#34;&gt;...
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Linux verwendet eine Verallgemeinerung von &lt;code&gt;fork()&lt;/code&gt; mit dem Namen &lt;code&gt;clone()&lt;/code&gt; um
-einen Kindprozeß zu erzeugen. Daher sehen wir keinen &lt;code&gt;fork()&lt;/code&gt;, sondern einen
-&lt;code&gt;clone()&lt;/code&gt;-Aufruf mit einigen Parametern.&lt;/p&gt;
-&lt;p&gt;Linux verwendet außerdem die Variante &lt;code&gt;waitpid()&lt;/code&gt; von &lt;code&gt;wait()&lt;/code&gt;, um auf eine
-bestimmte PID zu warten.&lt;/p&gt;
-&lt;p&gt;Linux startet außerdem das Programm mit &lt;code&gt;execve()&lt;/code&gt; statt mit &lt;code&gt;execl()&lt;/code&gt;, aber
-das ist nur eine andere Anordnung von Parametern. Nach dem Ende von &lt;code&gt;ls&lt;/code&gt;
-(PID 30048) wird der Prozeß 30025 aus dem &lt;code&gt;wait()&lt;/code&gt; erweckt und fortgesetzt.&lt;/p&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Linux verwendet eine Verallgemeinerung von &lt;code&gt;fork()&lt;/code&gt; mit dem Namen &lt;code&gt;clone()&lt;/code&gt; um einen Kindprozess zu erzeugen.
+Daher sehen wir keinen &lt;code&gt;fork()&lt;/code&gt;, sondern einen &lt;code&gt;clone()&lt;/code&gt;-Aufruf mit einigen Parametern.&lt;/p&gt;
+&lt;p&gt;Linux verwendet außerdem die Variante &lt;code&gt;waitpid()&lt;/code&gt; von &lt;code&gt;wait()&lt;/code&gt;, um auf eine bestimmte PID zu warten.&lt;/p&gt;
+&lt;p&gt;Linux startet außerdem das Programm mit &lt;code&gt;execve()&lt;/code&gt; statt mit &lt;code&gt;execl()&lt;/code&gt;,
+aber das ist nur eine andere Anordnung von Parametern.
+Nach dem Ende von &lt;code&gt;ls&lt;/code&gt; (PID 30048) wird der Prozess 30025 aus dem &lt;code&gt;wait()&lt;/code&gt; erweckt und fortgesetzt.&lt;/p&gt;
 &lt;p&gt;Und
 &lt;a href=&#34;http://minnie.tuhs.org/UnixTree/V7/usr/src/cmd/sh/xec.c.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;hier&lt;/a&gt;
 
- ist
-der C-Code der Originalshell aus dem Jahre 1979, mit dem &lt;code&gt;fork()&lt;/code&gt; (Man suche
-nach &amp;ldquo;case TFORK:&amp;rdquo; und wundere sich nicht über den Programmierstil von Herrn
-Bourne). Ja, bash ist schöner - GNU Code oder nicht.&lt;/p&gt;
+
+ist der C-Code der Originalshell aus dem Jahre 1979, mit dem &lt;code&gt;fork()&lt;/code&gt;
+(Man suche nach &amp;ldquo;case TFORK:&amp;rdquo; und wundere sich nicht über den Programmierstil von Herrn Bourne).
+Ja, bash ist schöner - GNU Code oder nicht.&lt;/p&gt;
 &lt;p&gt;(nach
 &lt;a href=&#34;http://groups.google.com/group/de.comp.os.unix.linux.misc/msg/4035c67415f9bc09&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;einem News-Artikel&lt;/a&gt;
 
- von mir)&lt;/p&gt;
+
+von mir)&lt;/p&gt;
 </description>
     </item>
     
