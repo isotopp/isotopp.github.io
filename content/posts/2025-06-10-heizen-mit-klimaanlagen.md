@@ -35,7 +35,7 @@ und pustet die Luft durch ein 2. Loch wieder raus.
 ![](/uploads/2025/03/electric-14.jpg)
 
 *Der Dachaufbau auf der Nordost-Seite: Solarzellen, die Öffnungen für die Brauchwasser-Wärmepumpe,
-und der Schornstein der Gas-Therme, an seinem letzten Tag.
+und der Schornstein der Gas-Therme, an seinem letzten Tag.*
 
 Die Brauchwasser-Wärmepumpe ist ein mannsgroßer Zylinder, der von oben die beiden massiven Luftzufuhr-Röhren bekommt,
 und der seitlich Anschlüsse für Kaltwasser-Zulauf und Warmwasser-Ablauf hat.
