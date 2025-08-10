@@ -378,7 +378,7 @@ Der Kindprozess 18071 hat den Exit-Status 0
 Fri Jan  5 13:50:06 CET 2007: Elternprozess ist aufgewacht.
 ```
 
-Und hier beobachten wie die Shell bei der Ausführung von Kommandos:
+Und hier beobachten wir die Shell bei der Ausführung von Kommandos:
 
 ```console
 kris@linux:~> strace -f -e execve,clone,fork,waitpid bash
