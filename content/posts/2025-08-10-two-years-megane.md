@@ -39,7 +39,8 @@ We paid around 0.32 EUR/kWh for that.
 ![](/uploads/2025/08/megane-08.jpg)
 *When charging, the display looks like this.
 This is at home, starting at 14% going up to 80%, at 11 kW.
-This is not what you normally do.*
+This is not what you normally do, you'd just plug in the car when you return home  and replace what has been used. 
+That means, normally you put in 6-12 kWh.*
 
 Since we got our own charge point the car is usually connected when arriving at home
 and is kept at 80% state of charge (SoC).
