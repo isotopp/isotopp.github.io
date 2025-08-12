@@ -8,12 +8,17 @@ tags:
 - home automation
 title: My home sensor network
 ---
-I have been asked to document my home sensor network. Being married to a person with a background in web security sets boundary conditions:
+
+I have been asked to document my home sensor network.
+Being married to a person with a background in web security sets boundary conditions:
 
 1. No cloud. We are running all services locally.
 2. No control, only metrics.
 
-I am collecting data from a number of plugs with power meters over Wi-Fi, using the MQTT protocol. I am also collecting data from a number of temperature sensors over Zigbee, and convert to MQTT. The MQTT data is ingested into Influx, and then read and plotted in Grafana. All of this is dockered and runs locally on an Ubuntu server.
+I am collecting data from a number of plugs with power meters over Wi-Fi, using the MQTT protocol.
+I am also collecting data from a number of temperature sensors over Zigbee, and convert to MQTT.
+The MQTT data is ingested into Influx, and then read and plotted in Grafana. 
+All of this is dockered and runs locally on an Ubuntu server.
 
 ## What happened so far
 
