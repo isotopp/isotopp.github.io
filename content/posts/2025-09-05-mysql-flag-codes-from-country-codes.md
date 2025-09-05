@@ -12,22 +12,23 @@ tags:
 
 [Regional Indicator Symbols](https://en.wikipedia.org/wiki/Regional_indicator_symbol) 
 in Unicode are the codes starting at `U+1F1E6 ` to `U+1F1FF`.
-If you combine two of them in a valid [ISO-3166-1 apha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) codee,
+If you combine two of them in a valid [ISO-3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) codes,
 they produce the flag corresponding to that code. 
 
-We want a function `flag_emoji()` that takes such a two letter code and emits the appropriate unicode codepoint:
+We want a function `flag_emoji()` that takes such a two-letter code and emits the appropriate Unicode codepoint:
 
 ```console
-mysql> SELECT flag_emoji('GB') AS gb, flag_emoji('us') AS us, flag_emoji('de') AS de \G
-*************************** 1. row ***************************
+SELECT flag_emoji('GB') AS gb, flag_emoji('us') AS us, flag_emoji('de') AS de \G
 gb: 🇬🇧
 us: 🇺🇸
 de: 🇩🇪
 1 row in set (0.00 sec)
 ```
 
-For that, we define a helper function `unichar()` that makes us a unicode character from a codepoint (`INT`),
-using the unicode algorithm and `UNHEX()` plus `CONVERT()`.
+# MySQL
+
+For that, we define a helper function `unichar()` that makes us a Unicode character from a codepoint (`INT`),
+using the Unicode algorithm and `UNHEX()` plus `CONVERT()`.
 
 ```mysql
 -- Make sure your session speaks utf8mb4
@@ -110,3 +111,40 @@ Test this code:
 -- test
 SELECT flag_emoji('GB') AS gb, flag_emoji('us') AS us, flag_emoji('de') AS de\G
 ```
+
+# Postgres
+
+```postgresql
+DELIMITER //
+
+CREATE FUNCTION flag_emoji_fast(code VARCHAR(8))
+RETURNS VARCHAR(2) CHARSET utf8mb4
+DETERMINISTIC
+SQL SECURITY INVOKER
+BEGIN
+  DECLARE a, b INT;
+  DECLARE c VARCHAR(2);
+  SET c = UPPER(code);
+  IF CHAR_LENGTH(c) = 2 THEN
+    SET a = ASCII(SUBSTRING(c,1,1));
+    SET b = ASCII(SUBSTRING(c,2,1));
+    IF a BETWEEN 65 AND 90 AND b BETWEEN 65 AND 90 THEN
+      RETURN CONCAT(
+        CHAR(127462 + a - 65 USING utf8mb4),
+        CHAR(127462 + b - 65 USING utf8mb4)
+      );
+    END IF;
+  END IF;
+  RETURN NULL;
+END//
+
+DELIMITER ;
+```
+
+and test with
+
+```postgresql
+SELECT flag_emoji('GB') AS gb, flag_emoji('us') AS us, flag_emoji('de') AS de;
+```
+
+Postgres does not need the helper function to work around the `CONVERT()` issues that MySQL has.
