@@ -153,7 +153,12 @@
 			<div class="col-lg-8 mb-3">
 				
 				<header class="toc bg-light">
-					<nav id="TableOfContents"></nav>
+					<nav id="TableOfContents">
+  <ul>
+    <li><a href="#mysql">MySQL</a></li>
+    <li><a href="#postgres">Postgres</a></li>
+  </ul>
+</nav>
 				</header>
 				
 			</div>
@@ -162,19 +167,23 @@
 
 
 in Unicode are the codes starting at <code>U+1F1E6 </code> to <code>U+1F1FF</code>.
-If you combine two of them in a valid <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank" rel="noopener">ISO-3166-1 apha-2</a>
+If you combine two of them in a valid <a href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2" target="_blank" rel="noopener">ISO-3166-1 alpha-2</a>
 
- codee,
+ codes,
 they produce the flag corresponding to that code.</p>
-<p>We want a function <code>flag_emoji()</code> that takes such a two letter code and emits the appropriate unicode codepoint:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">mysql&gt; SELECT flag_emoji(&#39;GB&#39;) AS gb, flag_emoji(&#39;us&#39;) AS us, flag_emoji(&#39;de&#39;) AS de \G
-</span></span></span><span class="line"><span class="cl"><span class="go">*************************** 1. row ***************************
+<p>We want a function <code>flag_emoji()</code> that takes such a two-letter code and emits the appropriate Unicode codepoint:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">SELECT flag_emoji(&#39;GB&#39;) AS gb, flag_emoji(&#39;us&#39;) AS us, flag_emoji(&#39;de&#39;) AS de \G
 </span></span></span><span class="line"><span class="cl"><span class="go">gb: 🇬🇧
 </span></span></span><span class="line"><span class="cl"><span class="go">us: 🇺🇸
 </span></span></span><span class="line"><span class="cl"><span class="go">de: 🇩🇪
 </span></span></span><span class="line"><span class="cl"><span class="go">1 row in set (0.00 sec)
-</span></span></span></code></pre></div><p>For that, we define a helper function <code>unichar()</code> that makes us a unicode character from a codepoint (<code>INT</code>),
-using the unicode algorithm and <code>UNHEX()</code> plus <code>CONVERT()</code>.</p>
+</span></span></span></code></pre></div><h1 id="mysql">
+    <a href="#mysql">
+	MySQL
+    </a>
+</h1>
+<p>For that, we define a helper function <code>unichar()</code> that makes us a Unicode character from a codepoint (<code>INT</code>),
+using the Unicode algorithm and <code>UNHEX()</code> plus <code>CONVERT()</code>.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="c1">-- Make sure your session speaks utf8mb4
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="kt">SET</span><span class="w"> </span><span class="n">NAMES</span><span class="w"> </span><span class="n">utf8mb4</span><span class="p">;</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">
@@ -246,7 +255,39 @@ using the unicode algorithm and <code>UNHEX()</code> plus <code>CONVERT()</code>
 </span></span></span></code></pre></div><p>Test this code:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-mysql" data-lang="mysql"><span class="line"><span class="cl"><span class="c1">-- test
 </span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="nf">flag_emoji</span><span class="p">(</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">gb</span><span class="p">,</span><span class="w"> </span><span class="nf">flag_emoji</span><span class="p">(</span><span class="s1">&#39;us&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">us</span><span class="p">,</span><span class="w"> </span><span class="nf">flag_emoji</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">de</span><span class="err">\</span><span class="n">G</span><span class="w">
-</span></span></span></code></pre></div>
+</span></span></span></code></pre></div><h1 id="postgres">
+    <a href="#postgres">
+	Postgres
+    </a>
+</h1>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-postgresql" data-lang="postgresql"><span class="line"><span class="cl"><span class="k">DELIMITER</span> <span class="o">//</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">flag_emoji_fast</span><span class="p">(</span><span class="n">code</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mf">8</span><span class="p">))</span>
+</span></span><span class="line"><span class="cl"><span class="k">RETURNS</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span> <span class="n">CHARSET</span> <span class="n">utf8mb4</span>
+</span></span><span class="line"><span class="cl"><span class="n">DETERMINISTIC</span>
+</span></span><span class="line"><span class="cl"><span class="n">SQL</span> <span class="k">SECURITY</span> <span class="k">INVOKER</span>
+</span></span><span class="line"><span class="cl"><span class="k">BEGIN</span>
+</span></span><span class="line"><span class="cl">  <span class="k">DECLARE</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="nb">INT</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">DECLARE</span> <span class="n">c</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mf">2</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">SET</span> <span class="n">c</span> <span class="o">=</span> <span class="n">UPPER</span><span class="p">(</span><span class="n">code</span><span class="p">);</span>
+</span></span><span class="line"><span class="cl">  <span class="k">IF</span> <span class="n">CHAR_LENGTH</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="mf">2</span> <span class="k">THEN</span>
+</span></span><span class="line"><span class="cl">    <span class="k">SET</span> <span class="n">a</span> <span class="o">=</span> <span class="n">ASCII</span><span class="p">(</span><span class="k">SUBSTRING</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="mf">1</span><span class="p">,</span><span class="mf">1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">SET</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ASCII</span><span class="p">(</span><span class="k">SUBSTRING</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="mf">2</span><span class="p">,</span><span class="mf">1</span><span class="p">));</span>
+</span></span><span class="line"><span class="cl">    <span class="k">IF</span> <span class="n">a</span> <span class="k">BETWEEN</span> <span class="mf">65</span> <span class="k">AND</span> <span class="mf">90</span> <span class="k">AND</span> <span class="n">b</span> <span class="k">BETWEEN</span> <span class="mf">65</span> <span class="k">AND</span> <span class="mf">90</span> <span class="k">THEN</span>
+</span></span><span class="line"><span class="cl">      <span class="n">RETURN</span> <span class="n">CONCAT</span><span class="p">(</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">CHAR</span><span class="p">(</span><span class="mf">127462</span> <span class="o">+</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">65</span> <span class="k">USING</span> <span class="n">utf8mb4</span><span class="p">),</span>
+</span></span><span class="line"><span class="cl">        <span class="nb">CHAR</span><span class="p">(</span><span class="mf">127462</span> <span class="o">+</span> <span class="n">b</span> <span class="o">-</span> <span class="mf">65</span> <span class="k">USING</span> <span class="n">utf8mb4</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">      <span class="p">);</span>
+</span></span><span class="line"><span class="cl">    <span class="k">END</span> <span class="k">IF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="k">END</span> <span class="k">IF</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl">  <span class="n">RETURN</span> <span class="k">NULL</span><span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="k">END</span><span class="o">//</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">DELIMITER</span> <span class="p">;</span>
+</span></span></code></pre></div><p>and test with</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-postgresql" data-lang="postgresql"><span class="line"><span class="cl"><span class="k">SELECT</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">gb</span><span class="p">,</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;us&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">us</span><span class="p">,</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">de</span><span class="p">;</span>
+</span></span></code></pre></div><p>Postgres does not need the helper function to work around the <code>CONVERT()</code> issues that MySQL has.</p>
+
 			</div>
 		</div>
 
