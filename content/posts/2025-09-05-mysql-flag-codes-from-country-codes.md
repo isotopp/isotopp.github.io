@@ -1,7 +1,7 @@
 ---
 author: isotopp
 title: "MySQL: Flag Codes from Country Codes"
-date: "2025-07-09T05:06:07Z"
+date: "2025-09-05T05:06:07Z"
 feature-img: assets/img/background/mysql.jpg
 toc: true
 tags:
