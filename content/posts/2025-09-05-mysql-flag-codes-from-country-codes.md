@@ -115,30 +115,28 @@ SELECT flag_emoji('GB') AS gb, flag_emoji('us') AS us, flag_emoji('de') AS de\G
 # Postgres
 
 ```postgresql
-DELIMITER //
+-- Requires database encoding UTF8
+CREATE OR REPLACE FUNCTION flag_emoji(code text)
+RETURNS text
+LANGUAGE sql
+IMMUTABLE
+STRICT
+PARALLEL SAFE
+AS $$
+  SELECT CASE
+    WHEN code ~ '^[A-Za-z]{2}$' THEN
+      -- U+1F1E6 (decimal 127462) is the Regional Indicator "A"
+      chr(127462 + ascii(upper(substr(code, 1, 1))) - 65) ||
+      chr(127462 + ascii(upper(substr(code, 2, 1))) - 65)
+    ELSE NULL
+  END;
+$$;
 
-CREATE FUNCTION flag_emoji_fast(code VARCHAR(8))
-RETURNS VARCHAR(2) CHARSET utf8mb4
-DETERMINISTIC
-SQL SECURITY INVOKER
-BEGIN
-  DECLARE a, b INT;
-  DECLARE c VARCHAR(2);
-  SET c = UPPER(code);
-  IF CHAR_LENGTH(c) = 2 THEN
-    SET a = ASCII(SUBSTRING(c,1,1));
-    SET b = ASCII(SUBSTRING(c,2,1));
-    IF a BETWEEN 65 AND 90 AND b BETWEEN 65 AND 90 THEN
-      RETURN CONCAT(
-        CHAR(127462 + a - 65 USING utf8mb4),
-        CHAR(127462 + b - 65 USING utf8mb4)
-      );
-    END IF;
-  END IF;
-  RETURN NULL;
-END//
-
-DELIMITER ;
+-- Example
+SELECT
+  flag_emoji('GB') AS gb,
+  flag_emoji('us') AS us,
+  flag_emoji('de') AS de;
 ```
 
 and test with
