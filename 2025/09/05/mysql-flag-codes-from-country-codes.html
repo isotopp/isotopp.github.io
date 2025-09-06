@@ -260,30 +260,28 @@ using the Unicode algorithm and <code>UNHEX()</code> plus <code>CONVERT()</code>
 	Postgres
     </a>
 </h1>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-postgresql" data-lang="postgresql"><span class="line"><span class="cl"><span class="k">DELIMITER</span> <span class="o">//</span>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-postgresql" data-lang="postgresql"><span class="line"><span class="cl"><span class="c1">-- Requires database encoding UTF8
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">CREATE</span> <span class="k">OR</span> <span class="k">REPLACE</span> <span class="k">FUNCTION</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="n">code</span> <span class="nb">text</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="k">RETURNS</span> <span class="nb">text</span>
+</span></span><span class="line"><span class="cl"><span class="k">LANGUAGE</span> <span class="n">sql</span>
+</span></span><span class="line"><span class="cl"><span class="k">IMMUTABLE</span>
+</span></span><span class="line"><span class="cl"><span class="k">STRICT</span>
+</span></span><span class="line"><span class="cl"><span class="n">PARALLEL</span> <span class="n">SAFE</span>
+</span></span><span class="line"><span class="cl"><span class="k">AS</span> <span class="sh">$$
+</span></span></span><span class="line"><span class="cl"><span class="sh">  SELECT CASE
+</span></span></span><span class="line"><span class="cl"><span class="sh">    WHEN code ~ &#39;^[A-Za-z]{2}$&#39; THEN
+</span></span></span><span class="line"><span class="cl"><span class="sh">      -- U+1F1E6 (decimal 127462) is the Regional Indicator &#34;A&#34;
+</span></span></span><span class="line"><span class="cl"><span class="sh">      chr(127462 + ascii(upper(substr(code, 1, 1))) - 65) ||
+</span></span></span><span class="line"><span class="cl"><span class="sh">      chr(127462 + ascii(upper(substr(code, 2, 1))) - 65)
+</span></span></span><span class="line"><span class="cl"><span class="sh">    ELSE NULL
+</span></span></span><span class="line"><span class="cl"><span class="sh">  END;
+</span></span></span><span class="line"><span class="cl"><span class="sh">$$</span><span class="p">;</span>
 </span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">CREATE</span> <span class="k">FUNCTION</span> <span class="n">flag_emoji_fast</span><span class="p">(</span><span class="n">code</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mf">8</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl"><span class="k">RETURNS</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mf">2</span><span class="p">)</span> <span class="n">CHARSET</span> <span class="n">utf8mb4</span>
-</span></span><span class="line"><span class="cl"><span class="n">DETERMINISTIC</span>
-</span></span><span class="line"><span class="cl"><span class="n">SQL</span> <span class="k">SECURITY</span> <span class="k">INVOKER</span>
-</span></span><span class="line"><span class="cl"><span class="k">BEGIN</span>
-</span></span><span class="line"><span class="cl">  <span class="k">DECLARE</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="nb">INT</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="k">DECLARE</span> <span class="n">c</span> <span class="nb">VARCHAR</span><span class="p">(</span><span class="mf">2</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="k">SET</span> <span class="n">c</span> <span class="o">=</span> <span class="n">UPPER</span><span class="p">(</span><span class="n">code</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">  <span class="k">IF</span> <span class="n">CHAR_LENGTH</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="mf">2</span> <span class="k">THEN</span>
-</span></span><span class="line"><span class="cl">    <span class="k">SET</span> <span class="n">a</span> <span class="o">=</span> <span class="n">ASCII</span><span class="p">(</span><span class="k">SUBSTRING</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="mf">1</span><span class="p">,</span><span class="mf">1</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">    <span class="k">SET</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ASCII</span><span class="p">(</span><span class="k">SUBSTRING</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="mf">2</span><span class="p">,</span><span class="mf">1</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">    <span class="k">IF</span> <span class="n">a</span> <span class="k">BETWEEN</span> <span class="mf">65</span> <span class="k">AND</span> <span class="mf">90</span> <span class="k">AND</span> <span class="n">b</span> <span class="k">BETWEEN</span> <span class="mf">65</span> <span class="k">AND</span> <span class="mf">90</span> <span class="k">THEN</span>
-</span></span><span class="line"><span class="cl">      <span class="n">RETURN</span> <span class="n">CONCAT</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">        <span class="nb">CHAR</span><span class="p">(</span><span class="mf">127462</span> <span class="o">+</span> <span class="n">a</span> <span class="o">-</span> <span class="mf">65</span> <span class="k">USING</span> <span class="n">utf8mb4</span><span class="p">),</span>
-</span></span><span class="line"><span class="cl">        <span class="nb">CHAR</span><span class="p">(</span><span class="mf">127462</span> <span class="o">+</span> <span class="n">b</span> <span class="o">-</span> <span class="mf">65</span> <span class="k">USING</span> <span class="n">utf8mb4</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">      <span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="k">END</span> <span class="k">IF</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="k">END</span> <span class="k">IF</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">  <span class="n">RETURN</span> <span class="k">NULL</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="k">END</span><span class="o">//</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">DELIMITER</span> <span class="p">;</span>
+</span></span><span class="line"><span class="cl"><span class="c1">-- Example
+</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="k">SELECT</span>
+</span></span><span class="line"><span class="cl">  <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">gb</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;us&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">us</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">  <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">de</span><span class="p">;</span>
 </span></span></code></pre></div><p>and test with</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-postgresql" data-lang="postgresql"><span class="line"><span class="cl"><span class="k">SELECT</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;GB&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">gb</span><span class="p">,</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;us&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">us</span><span class="p">,</span> <span class="n">flag_emoji</span><span class="p">(</span><span class="s1">&#39;de&#39;</span><span class="p">)</span> <span class="k">AS</span> <span class="n">de</span><span class="p">;</span>
 </span></span></code></pre></div><p>Postgres does not need the helper function to work around the <code>CONVERT()</code> issues that MySQL has.</p>
