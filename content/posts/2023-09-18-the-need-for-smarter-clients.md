@@ -6,7 +6,7 @@ feature-img: assets/img/background/rijksmuseum.jpg
 toc: false
 tags:
 - lang_en
-- mastdon
+- mastodon
 - usenet
 ---
 
