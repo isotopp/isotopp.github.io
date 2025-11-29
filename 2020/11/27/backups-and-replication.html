@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.151.0">
+<meta name="generator" content="Hugo 0.152.2">
 <meta property="og:title" content='MySQL: Backups and Replication | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="en_US" />
@@ -164,7 +164,8 @@
 				<p>There was a question at work about MySQL backups and restore. I needed to explain more.</p>
 <p>We use databases to make state persistent. That is: As a developer you can think of your database as a single giant, structured global variable with a weird access method, and to make things worse, concurrent access.</p>
 <blockquote>
-<p>A database is just a global variable to your code</p></blockquote>
+<p>A database is just a global variable to your code</p>
+</blockquote>
 <p>We can log statements that change the state of our database in a log. In MySQL, we call this <em>The Binlog</em>.</p>
 <p><p class="md__image">
   <img src="/uploads/2020/11/replication-01.png" alt=""  />
@@ -184,7 +185,8 @@
 <p><em>We can see the binlog position as the internal clock of the database: Whenever something changes in the database, it is written to the binlog. Each transaction is assigned a unique binlog position, and thus, transactions also have a total order.</em></p>
 <p>When we restore from a backup, we are at the backups binlog position of the past, and can then replay statements – beginning with the backups position – to roll forward, until we are at the desired position.</p>
 <blockquote>
-<p>We can use the binlog to replay history</p></blockquote>
+<p>We can use the binlog to replay history</p>
+</blockquote>
 <p>What the desired position exactly <em>is</em> depends a bit on the problem: If we issued a command we wish we had not, the desired position is, of course, exactly before this statement. We then skip the undesirable statement.</p>
 <p>How we continue after that statement depends on what that statement was. But if we are lucky we can simply continue to replay statements unchanged.</p>
 <p>In complicated cases (We might have changed a table definition wrongly) we might need to replace the content of the binlog with alternate, edited statements. In any case we create a new, different and edited timeline that does not contain the mistake we made.</p>
@@ -228,7 +230,8 @@
 <p>The main risk is the source going down due to a fault before the binlog has been copied  off. So one innovation is to make the source delay the commit until at least one copy exists on a replica.</p>
 <p>For that we need add a communication mechanism to the replica, in which it can signal that is has read a transaction from the binary log, and committed it to the local relay log. Only when the transaction is persisted to disk on the replica, in the relay log, we signal the source, which then lets the transaction commit finish so that the application can continue.</p>
 <blockquote>
-<p>Semi-Synchronous Replication is Asynchronous Replication with added delays on the commit.</p></blockquote>
+<p>Semi-Synchronous Replication is Asynchronous Replication with added delays on the commit.</p>
+</blockquote>
 <p>This is <em>Semi-Synchronous Replication</em>, <em>SSR</em>, in MySQL, and it comes with a number of caveats:</p>
 <ul>
 <li>SSR has a timeout. If a transaction is not acknowledged in time, a message is error logged and the server reverts to regular asynchronous replication. It will flip back to SSR once a replica responds within the timeout window.</li>
@@ -317,7 +320,8 @@
 </span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="p">...</span><span class="w">
 </span></span></span></code></pre></div><p>(You would need to run <code>mysqlbinlog -vvv</code> to have the mysqlbinlog command decode the BASE64 for you).</p>
 <blockquote>
-<p>Row Based Replication logs Row Events. <code>mysqlbinlog</code> presents them as a special <code>BINLOG</code> statement to make it possible to feed the output to another server.</p></blockquote>
+<p>Row Based Replication logs Row Events. <code>mysqlbinlog</code> presents them as a special <code>BINLOG</code> statement to make it possible to feed the output to another server.</p>
+</blockquote>
 <p>So in order to be able to represent a Row Events as a statement that can be replayed in another server, MySQL implemented a <code>BINLOG</code> statement, which takes a single parameter.
 The parameter is a BASE64 encoded pre- and post-image of the row, a kind of binary patch to the data in the table.</p>
 <p>Seeing this, I should be able to take this <code>BINLOG</code> statement and run it on the command line of my client:</p>

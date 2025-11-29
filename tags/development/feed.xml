@@ -12,7 +12,7 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Thu, 09 Oct 2025 14:03:54 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/development/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 29 Nov 2025 16:51:25 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/development/feed.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Editing Remotely in PyCharm</title>
       <link>https://blog.koehntopp.info/2024/03/18/editing-remotely-in-pycharm.html</link>
@@ -23,7 +23,8 @@
 &lt;blockquote&gt;
 &lt;p&gt;Do you happen to know how I can edit code locally on my PyCharm (MacOS, Professional)
 but run it remotely in a virtual environment?
-I know how to do that in VS Code, but I don&amp;rsquo;t know how to do it in PyCharm, even with ssh configured and tested.&lt;/p&gt;&lt;/blockquote&gt;
+I know how to do that in VS Code, but I don&amp;rsquo;t know how to do it in PyCharm, even with ssh configured and tested.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;The TL;DR is that this specific person has disabled the FTP/SFTP/Webdav Plugin in an attempt to configure PyCharm
 in a way that it doesn&amp;rsquo;t upload development data to Jetbrains Servers or similar.&lt;/p&gt;
 &lt;p&gt;&lt;p class=&#34;md__image&#34;&gt;
@@ -1394,7 +1395,8 @@ Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Usually they go into application code. You have to design the services to minimize the joins. Also, microservices often keep read-only copies of other data to minimize joins.&lt;/p&gt;
 &lt;p&gt;For reporting, you could have a big analytics DB that does the joins.&lt;/p&gt;
-&lt;p&gt;In your example, the order service might copy some details from the product service to know what&amp;rsquo;s shipped, and the customer name + address. These copies are read-only, and stay with the order even if the shipping addresses changes in the main customer service.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;In your example, the order service might copy some details from the product service to know what&amp;rsquo;s shipped, and the customer name + address. These copies are read-only, and stay with the order even if the shipping addresses changes in the main customer service.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;This is actually what a proper order application in a traditional database would do as well:&lt;/p&gt;
 &lt;p&gt;The &lt;code&gt;order&lt;/code&gt; table most likely would be an &lt;code&gt;orderlog&lt;/code&gt; table, and we would record not only the aid (keep the link to the source article) and cid, but would make copies of the price at the time of sale, the time of sale timestamp, and the address at the time of sale or the actual shipping address. Entries in the orderlog would stay there until fulfillment and maybe payment, and then can go from the OLTP system. We would also immediately emit a copy of the data that goes to our data warehouse as part of some kind of ETL setup.&lt;/p&gt;
 &lt;p&gt;There are multiple good things about this, which is why we are doing it like this in relational systems as well:&lt;/p&gt;
@@ -1409,7 +1411,8 @@ Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
 ) where it is consumed by other services.&lt;/p&gt;
 &lt;p&gt;These event stream consumers work as materialization engines: They do have state, and modify it whenever they consume a relevant event. For example, we could have a continous query running in some engine that builds the aggregation I asked about from a stream:&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Show me all top 10 articles by country, zipcode digit 1 by week over the last 52 weeks&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Show me all top 10 articles by country, zipcode digit 1 by week over the last 52 weeks&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;This reads almost directly like an Influx query. So this is a thing that you can answer from a stream.&lt;/p&gt;
 &lt;p&gt;If you have questions that arise at a later point in time, things become complicated without an image, though, because you are missing the start value. So the only option would be to start back in time at the big bang, and replay the event log for that new query, or to cut off at some other point in time and not have older data where possible.&lt;/p&gt;
 &lt;p&gt;For aggregations over intervals like in the example query above that is entirely possible: We work over individual weeks, going back a year and we either have data for older weeks or not. If not, we can still accurately determine weekly aggregates for newer weeks, because they are independent of each other.&lt;/p&gt;
@@ -1421,7 +1424,8 @@ Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
  is the problem that I still see (or not quite understand wrt to CQRS):&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;So if a service does not reign over a set of data, but it&amp;rsquo;s supposedly the authoritative data source for a thing where multiple copies can exist - how do you validate?&lt;/p&gt;
-&lt;p&gt;The authoritative source of the data is the event stream.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;The authoritative source of the data is the event stream.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;I will have to check out the linked talk. I think I get hung up because this is what databases do:&lt;/p&gt;
 &lt;p&gt;A database is a giant global persistent variable with a network interface. Datadir is full of schemas is full of tables is full of rows has multiple fields. We can stop all traffic to the database and make an image. That&amp;rsquo;s a backup.&lt;/p&gt;
 &lt;p&gt;We make changes to the database using grouped data modification language: transactions. Transactions are recorded in the binlog. We record and keep the binlog, and also the backups (and the binlog position we took the backups at).&lt;/p&gt;
@@ -1439,7 +1443,8 @@ Shoddy engineering begets pager calls, outages and suffering.&lt;/p&gt;
 
 To the JoinDataService, obviously.
 Aka &amp;ldquo;Data Lake&amp;rdquo;.
-aka The Data Monolith that secretly underpins all the service shit.&lt;/p&gt;&lt;/blockquote&gt;
+aka The Data Monolith that secretly underpins all the service shit.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;He&amp;rsquo;s not wrong. The Hadoop in the end is the global state where all the events get joined together again and it produces a giant global image of the current and all past states. That is why the big data is big (and you can go back to the big bang, it just eats Megawatthours to do so.)&lt;/p&gt;
 &lt;p&gt;At some point I was like:&lt;/p&gt;
 &lt;blockquote&gt;
@@ -1464,7 +1469,8 @@ Unless every change contains the entire previous state, or changes are distribut
 &lt;p&gt;K&amp;gt; In blockchains this is a voting problem. In git and the Linux kernel, this is literally Linus day job.
 …
 L&amp;gt; Right. Snapshot and replay from there. Like I said.&lt;/p&gt;
-&lt;p&gt;K&amp;gt; Yes. I do believe it does not get more complicated than mysql binlogs and binlog positions, but with JSON as a REST service.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;K&amp;gt; Yes. I do believe it does not get more complicated than mysql binlogs and binlog positions, but with JSON as a REST service.&lt;/p&gt;
+&lt;/blockquote&gt;
 </description>
     </item>
     
@@ -1664,7 +1670,8 @@ werden, daß man sicher in der Produktion testen kann.&lt;/p&gt;
 &lt;p&gt;For some TiP methodologies we can reduce risk by reducing the exposure of
 the new code under test.  This technique is called “Exposure Control” and
 limits risk by limiting the user base potentially impacted by the new
-code.&lt;/p&gt;&lt;/blockquote&gt;
+code.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;Was er damit meint, wird weiter unten klar, wenn er erläutert, welche Klassen von TIP er unterscheidet.&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -2000,7 +2007,8 @@ addressieren kann.&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;The meaning of the statement was that NoSQL systems (really the various
 map-reduce systems) are lacking a standard model for describing and
-querying and that developing one should be a high priority task for them.&lt;/p&gt;&lt;/blockquote&gt;
+querying and that developing one should be a high priority task for them.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;Unterdessen (nein: deswegen!) nähern sich SQL- und NoSQL auf eine Weise auch
 wieder einander an. Weil SQL eine sinnvolle Sache ist, gibt es
 &lt;a href=&#34;http://jaksprats.wordpress.com/2010/09/28/introducing-redisql-the-lightning-fast-polyglot/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Redisql&lt;/a&gt;
@@ -2065,7 +2073,8 @@ zu propagieren. Dabei werden oftmals
 
 gezogen:&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Avoiding schema changes and data migration are good reasons.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Avoiding schema changes and data migration are good reasons.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;Die Folgerung &amp;ldquo;Aus Schemalessness folgt, daß man Schema Changes und
 Datenmigration vermeiden kann&amp;rdquo; ist offensichtlicher Unsinn, wie jeder
 erkennen kann, der einmal reale Anwendungen entwickelt hat - die Migration
@@ -2118,7 +2127,8 @@ verborgen werden können.&lt;/li&gt;
 &lt;p&gt;heretic666 schrieb am 4. November 2010 12:11&lt;/p&gt;
 &lt;p&gt;&amp;hellip;das man nicht auch wahlweise mit PostgreSQL oder MS SQL erschlagen
 kann?&lt;/p&gt;
-&lt;p&gt;Mir fällt da im Moment kein Punkt ein&amp;hellip;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Mir fällt da im Moment kein Punkt ein&amp;hellip;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;Postgres ist ein Repräsentant der klassischen Datenbanken und fällt in
 dieselbe Kategorie wie Oracle, MS SQL oder DB/2.  MySQL ist eine Datenbank,
 die sich in vielen Punkten an den Erfordernissen des Webs orientiert und
@@ -2505,7 +2515,8 @@ schwärzen). Aber das ist eine Diskussion für ein anderes Mal.&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Dies scheitert nach dem ersten Insert, weil die &lt;code&gt;a.aid = 1&lt;/code&gt; noch nicht existiert, wenn ich die &lt;code&gt;b.aid = 1&lt;/code&gt; in die Tabelle einfüge. Technisch ist das eigentlich kein Problem, denn da dies alles in einer Transaktion geschieht tauchen beide Werte gleichzeitig erst zum COMMIT in der Datenbank auf, aber die Prüfung erfolgt leider per Statement und nicht per Transaktion. Ich muß also Entwickler als meinen Code passend strukturieren, egal ob das der Anwendungslogik gerecht wird oder nicht.&lt;/p&gt;
 &lt;p&gt;In SQLite darf man immerhin DEFERRABLE INITIALLY DEFERRED angeben, und das will man offenbar auch dringend. In diesem Fall wird die FK-Constraint nicht bei jedem Statement geprüft, sondern erst am Ende einer Transaktion beim COMMIT. Man kann sich also seine Strukturen nach Belieben zusammenbauen, und die Datenbank erzwingt dabei keine besondere Ordnung der Anweisungen im Code, sondern verlangt nur, daß in dem Moment, wenn man seine Änderungen für Dritte sichtbar publiziert, die FK-Constraints eingehalten werden.&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;Der Sinn von FK-Constraints ist es, gültige Datenstrukturen und insbesondere gültige Verknüpfungen zwischen Daten zu erzwingen, die auf verschiedene Tabellen desselben Schemas oder derselben Instanz verteilt sind. Die FK-Constraint macht diese Prüfung in der Datenbank, denn nur so ist sichergestellt, daß unterschiedliche Anwendungen, die unterschiedliche Bibliotheken und Programmiersprachen verwenden, denselben Bedingungen beim Schreiben hinsichtlich der Gültigkeit von Datenstrukturen unterliegen.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Der Sinn von FK-Constraints ist es, gültige Datenstrukturen und insbesondere gültige Verknüpfungen zwischen Daten zu erzwingen, die auf verschiedene Tabellen desselben Schemas oder derselben Instanz verteilt sind. Die FK-Constraint macht diese Prüfung in der Datenbank, denn nur so ist sichergestellt, daß unterschiedliche Anwendungen, die unterschiedliche Bibliotheken und Programmiersprachen verwenden, denselben Bedingungen beim Schreiben hinsichtlich der Gültigkeit von Datenstrukturen unterliegen.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;Bitte mal Anhalten und den vorhergehenden Satz ein zweites Mal lesen.&lt;/p&gt;
 &lt;p&gt;Im Netz findet man mitunter Diskussionen über Datenmodellierung und dort gibt es in der Regel eine Gruppe von Personen, die vehement die Auffassung vertritt, daß ein Datenmodell, das FK- und andere Constraints nicht im Modell definiert schlicht falsch (ersatzweise &amp;ldquo;Schrott&amp;rdquo;, &amp;ldquo;Müll&amp;rdquo;, &amp;ldquo;Gefrickel&amp;rdquo; und anderes) ist.&lt;/p&gt;
 &lt;h2 id=&#34;grenzen-und-probleme-von-fk-constraints&#34;&gt;
