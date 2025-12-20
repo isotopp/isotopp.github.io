@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.152.2">
+<meta name="generator" content="Hugo 0.153.0">
 <meta property="og:title" content='zigbee2mqtt in rootless podman | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="en_US" />
@@ -242,16 +242,16 @@ I should not have to do the supplemental group dance in the first place.</p>
 This needed to be a script, chained commands inside an <code>udev</code> rule did not work.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> ls -l /dev/ttyACM0
 </span></span><span class="line"><span class="cl"><span class="go">crw-rw---- 1 root dialout 166, 0 Sep  3 11:08 /dev/ttyACM0
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> cat /root/bin/create_ttyhass.sh
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> cat /root/bin/create_ttyhass.sh
 </span></span><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash --
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">if [ ! -e /dev/ttyHASS0 ]; then
+</span></span></span><span class="line"><span class="cl"><span class="go">if [ ! -e /dev/ttyHASS0 ]; then
 </span></span></span><span class="line"><span class="cl"><span class="go">    /bin/mknod /dev/ttyHASS0 c 166 0
 </span></span></span><span class="line"><span class="cl"><span class="go">    /bin/chown hass:hass /dev/ttyHASS0
 </span></span></span><span class="line"><span class="cl"><span class="go">    /bin/chmod 0660 /dev/ttyHASS0
 </span></span></span><span class="line"><span class="cl"><span class="go">fi
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> ls -l /root/bin/create_ttyhass.sh
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> ls -l /root/bin/create_ttyhass.sh
 </span></span><span class="line"><span class="cl"><span class="go">-rwxr-xr-x 1 root root 162 Sep  3 10:42 /root/bin/create_ttyhass.sh
 </span></span></span></code></pre></div><h2 id="create-a-device-rule-that-triggers-the-script">
     <a href="#create-a-device-rule-that-triggers-the-script">
@@ -260,11 +260,11 @@ This needed to be a script, chained commands inside an <code>udev</code> rule di
 </h2>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> lsusb <span class="p">|</span> grep -i dresd
 </span></span><span class="line"><span class="cl"><span class="go">Bus 001 Device 077: ID 1cf1:0030 Dresden Elektronik ZigBee gateway [ConBee II]
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> cat /etc/udev/rules.d/99-usb-dresden-electronics.rules
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> cat /etc/udev/rules.d/99-usb-dresden-electronics.rules
 </span></span><span class="line"><span class="cl"><span class="go">SUBSYSTEM==&#34;tty&#34;, ATTRS{idVendor}==&#34;1cf1&#34;, ATTRS{idProduct}==&#34;0030&#34;, ATTRS{serial}==&#34;DE2197315&#34;, RUN+=&#34;/root/bin/create_ttyhass.sh&#34;
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> udevadm control --reload-rules<span class="p">;</span> sleep 3<span class="p">;</span> udevadm trigger
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> udevadm control --reload-rules<span class="p">;</span> sleep 3<span class="p">;</span> udevadm trigger
 </span></span><span class="line"><span class="cl"><span class="gp">#</span> ls -l /dev/tty<span class="o">[</span>A-Z<span class="o">]</span>*
 </span></span><span class="line"><span class="cl"><span class="go">crw-rw---- 1 root dialout 166,  0 Sep  3 11:08 /dev/ttyACM0
 </span></span></span><span class="line"><span class="cl"><span class="go">crw-rw---- 1 hass hass    166,  0 Sep  3 11:44 /dev/ttyHASS0
@@ -282,17 +282,17 @@ As we can see, a <code>/dev/ttyHASS0</code> owned by <code>hass:hass</code> with
 <p>I then changed <code>~hass/z2m/configuration.yaml</code> to match.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-yaml" data-lang="yaml"><span class="line"><span class="cl"><span class="nt">homeassistant</span><span class="p">:</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">discovery_topic</span><span class="p">:</span><span class="w"> </span><span class="l">homeassistant</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">permit_join</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">mqtt</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">permit_join</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">mqtt</span><span class="p">:</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">base_topic</span><span class="p">:</span><span class="w"> </span><span class="l">zigbee2mqtt</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">server</span><span class="p">:</span><span class="w"> </span><span class="l">mqtt://mosquitto/</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">serial</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">serial</span><span class="p">:</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="l">/dev/ttyHASS0</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">adapter</span><span class="p">:</span><span class="w"> </span><span class="l">deconz</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">frontend</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">frontend</span><span class="p">:</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="nt">port</span><span class="p">:</span><span class="w"> </span><span class="m">8080</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nt">devices</span><span class="p">:</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="nn">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nt">devices</span><span class="p">:</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="nn">...</span><span class="w">
 </span></span></span></code></pre></div><p>The <code>serial: adapter: deconz</code> thing was actually necessary for this to work with a Conbee II.
 Otherwise the script dies with an obscure error message.
 What actually happens is that <code>z2m</code> tries to push a firmware onto the device and fails, then dies.

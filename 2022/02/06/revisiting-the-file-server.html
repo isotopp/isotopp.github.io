@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.152.2">
+<meta name="generator" content="Hugo 0.153.0">
 <meta property="og:title" content='Revisiting the file server | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="en_US" />
@@ -195,29 +195,29 @@ But since the array would contain no original data, only backups, I decided to g
 </span></span></span><span class="line"><span class="cl"><span class="go">  Free PE               9303
 </span></span></span><span class="line"><span class="cl"><span class="go">  Allocated PE          0
 </span></span></span><span class="line"><span class="cl"><span class="go">  PV UUID               ...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">  --- Physical Segments ---
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical Segments ---
 </span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 1 to 9302:
 </span></span></span><span class="line"><span class="cl"><span class="go">    FREE
 </span></span></span></code></pre></div><p>That&rsquo;s fine. We can remove the pair from the volume group again, remove the LVM2 label, and then stop and destroy the raid:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> vgreduce hdd /dev/md126
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> pvremove /dev/md126
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> pvremove /dev/md126
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> mdadm --stop /dev/md126
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> mdadm --stop /dev/md126
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> mdadm --remove /dev/md126
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> mdadm --remove /dev/md126
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> mdadm --zero-superblock /dev/sdb2 /dev/sdc2
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> mdadm --zero-superblock /dev/sdb2 /dev/sdc2
 </span></span></code></pre></div><p>That did not work: An Ubuntu Component, <code>os-prober</code>, took possession of the devices after removing the RAID-1. I had to actually uninstall the component and remove the <code>osprober</code> from devicemapper before I could continue:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> <span class="c1">### After uninstalling os-prober:</span>
 </span></span><span class="line"><span class="cl"><span class="gp">#</span> dmsetup ls
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> dmsetup remove osprober-linux-sdb2
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> dmsetup remove osprober-linux-sdb2
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> dmsetup remove osprober-linux-sdc2
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> dmsetup remove osprober-linux-sdc2
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> mdadm --zero-superblock /dev/sdb2 /dev/sdc2
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> mdadm --zero-superblock /dev/sdb2 /dev/sdc2
 </span></span><span class="line"><span class="cl"><span class="go">...
 </span></span></span></code></pre></div><h1 id="preparing-the-disks-individually-for-lvm2">
     <a href="#preparing-the-disks-individually-for-lvm2">
@@ -227,7 +227,7 @@ But since the array would contain no original data, only backups, I decided to g
 <p>Only then I could continue, add the disks to LVM2 and extend the <code>hdd</code> volume group:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> pvcreate /dev/sd<span class="o">{</span>b,c<span class="o">}</span><span class="m">2</span>
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> vgextend hdd /dev/sd<span class="o">{</span>b,c<span class="o">}</span><span class="m">2</span>
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> vgextend hdd /dev/sd<span class="o">{</span>b,c<span class="o">}</span><span class="m">2</span>
 </span></span><span class="line"><span class="cl"><span class="go">...
 </span></span></span></code></pre></div><p>We now have a very weird, asymmetric VG in which there is a single 9.09 TiB raid PV and two 9.09 TiB unraided PVs.
 Our next objective is to evacuate the raided PV, and then destroy this as well, adding the disks back unraided.
@@ -254,9 +254,9 @@ This was relatively easy, and worked immediately &ndash; it just took a few hour
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> umount /backup
 </span></span><span class="line"><span class="cl"><span class="gp">#</span> lvremove /dev/hdd/backup
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> lvcreate --type raid10 -i2 -m1 -n backup -L4T hdd
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> lvcreate --type raid10 -i2 -m1 -n backup -L4T hdd
 </span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> mkfs -t xfs -f /dev/hdd/backup
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> mkfs -t xfs -f /dev/hdd/backup
 </span></span><span class="line"><span class="cl"><span class="gp">#</span> mount /backup
 </span></span><span class="line"><span class="cl"><span class="gp">#</span> /root/bin/make-backup
 </span></span></code></pre></div><p>For the Time Machine and Acronis targets, I decided to <code>lvconvert</code> them to <code>raid1</code>.
@@ -275,7 +275,7 @@ The only option is to slow down all resyncs except one:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span> <span class="c1">### for all targets, slow them down to minimum</span>
 </span></span><span class="line"><span class="cl"><span class="gp">#</span>  lvchange --maxrecoveryspeed<span class="o">=</span>1k /dev/hdd/tm_...
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> <span class="c1">### for one target, set a very large max speed:</span>
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> <span class="c1">### for one target, set a very large max speed:</span>
 </span></span><span class="line"><span class="cl"><span class="gp">#</span> lvchange --maxrecoveryspeed<span class="o">=</span>100000k /dev/hdd/tm_...
 </span></span><span class="line"><span class="cl"><span class="go">...
 </span></span></span></code></pre></div><p>and then let one <code>tm_...</code> target finish.
@@ -380,8 +380,8 @@ And we want to see the <code>raid_mismatch_count</code> and <code>raid_sync_acti
 </span></span></span><span class="line"><span class="cl"><span class="go">  Free PE               4098
 </span></span></span><span class="line"><span class="cl"><span class="go">  Allocated PE          5205
 </span></span></span><span class="line"><span class="cl"><span class="go">  PV UUID               ...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">  --- Physical Segments ---
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">  --- Physical Segments ---
 </span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 0 to 0:
 </span></span></span><span class="line"><span class="cl"><span class="go">    Logical volume      /dev/hdd/win_kk_rmeta_0
 </span></span></span><span class="line"><span class="cl"><span class="go">    Logical extents     0 to 0
@@ -427,7 +427,7 @@ We could fix that as well, again with <code>pvmove</code>:</p>
 </span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 3597 to 4607:
 </span></span></span><span class="line"><span class="cl"><span class="go">    FREE
 </span></span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> pvmove -n keks --alloc anywhere /dev/sdc2:3587-3596 /dev/sdc2:4000-4009
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> pvmove -n keks --alloc anywhere /dev/sdc2:3587-3596 /dev/sdc2:4000-4009
 </span></span><span class="line"><span class="cl"><span class="go"> /dev/sdc2: Moved: 0.00%
 </span></span></span><span class="line"><span class="cl"><span class="go"> ...
 </span></span></span><span class="line"><span class="cl"><span class="go"> /dev/sdc2: Moved: 100.00%
@@ -445,7 +445,7 @@ The result looks like this:</p>
 </span></span></span><span class="line"><span class="cl"><span class="go">  Physical extent 4010 to 4607:
 </span></span></span><span class="line"><span class="cl"><span class="go">    FREE
 </span></span></span><span class="line"><span class="cl"><span class="go">...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> lvremove /dev/hdd/keks
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> lvremove /dev/hdd/keks
 </span></span><span class="line"><span class="cl"><span class="go">Do you really want to remove and DISCARD active logical volume hdd/keks? [y/n]: y
 </span></span></span><span class="line"><span class="cl"><span class="go">  Logical volume &#34;keks&#34; successfully removed
 </span></span></span></code></pre></div><p>And that concludes a largely pointless refactoring of my home storage, because I could.</p>

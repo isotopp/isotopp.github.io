@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.152.2">
+<meta name="generator" content="Hugo 0.153.0">
 <meta property="og:title" content='MySQL für Dummies (7) | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="de_DE" />
@@ -198,16 +198,16 @@ Dies sind &ldquo;PS-Daten&rdquo; und &ldquo;PS-Systeme&rdquo; (Production Suppor
 Legt man dort (oder eine Ebene höher) auch seine Konfiguration ab, kann man durch ein Sichern von Datadir (bzw. der Ebene höher) einen Komplettabzug aller seiner logischen Datenbankschemata bekommen.</p>
 <p>Damit meine Datenbank auch mit der <code>my.cnf</code> in meinem Datadir startet und NUR mit dieser Konfiguration läuft, verwende ich ein Startscript wie dieses hier:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">linux:/export/data/rootforum # cat start
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span>! /bin/bash --
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash --
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">MYSQL_CMD_DIR=/usr/local/mysql-max-5.0.18-linux-i686-glibc23
+</span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_CMD_DIR=/usr/local/mysql-max-5.0.18-linux-i686-glibc23
 </span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_DIR=/export/data/rootforum
 </span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_UNIX_PORT=$MYSQL_DIR/mysql.sock
 </span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_TCP_PORT=3340
 </span></span></span><span class="line"><span class="cl"><span class="go">export MYSQL_UNIX_PORT MYSQL_TCP_PORT MYSQL_DIR
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">cd $MYSQL_CMD_DIR
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">$</span>MYSQL_CMD_DIR/bin/mysqld_safe --defaults-file<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/my.cnf --datadir<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/data <span class="p">&amp;</span>
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">cd $MYSQL_CMD_DIR
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span>MYSQL_CMD_DIR/bin/mysqld_safe --defaults-file<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/my.cnf --datadir<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/data <span class="p">&amp;</span>
 </span></span></code></pre></div><p>Dieses Script startet den mysql_safe mit dem gegebenen Datadir und erzwingt dabei die Benutzung des korrekten Konfigurationsfiles.
 Es erzwingt auch die Verwendung eines alternativen Ports und Unix Domain Sockets, da ich auf meinem System eine ganze Reihe von MySQL-Instanzen laufen habe.</p>
 <p>Das Stopscript dazu findet einfach das PID-File in $MYSQL_DIR/data/*pid, und sendet ein &ldquo;kill -TERM&rdquo; an diesen Prozess.
@@ -215,24 +215,24 @@ MySQL schreibt dann seine Puffer geordnet auf Disk und beendet sich.
 Man kann verifizieren, ob MySQL sich beendet hat, indem man wartet bis das PID-File verschwunden ist.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash --
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">MYSQL_DIR=/export/data/rootforum
+</span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_DIR=/export/data/rootforum
 </span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_PID=$MYSQL_DIR/data/\*pid
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> No Pid, no process - we are <span class="k">done</span>
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> No Pid, no process - we are <span class="k">done</span>
 </span></span><span class="line"><span class="cl"><span class="go">[ ! -f $MYSQL_PID ] &amp;&amp; exit 0
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> No Pid in file, no process, we are <span class="k">done</span>
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> No Pid in file, no process, we are <span class="k">done</span>
 </span></span><span class="line"><span class="cl"><span class="go">pid=$(cat $MYSQL_DIR/data/\*pid)
 </span></span></span><span class="line"><span class="cl"><span class="go">if [ -z &#34;$pid&#34; ]
 </span></span></span><span class="line"><span class="cl"><span class="go">then
 </span></span></span><span class="line"><span class="cl"><span class="go">  rm $MYSQL_PID
 </span></span></span><span class="line"><span class="cl"><span class="go">  exit 0
 </span></span></span><span class="line"><span class="cl"><span class="go">fi
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Stop server
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> Stop server
 </span></span><span class="line"><span class="cl"><span class="go">kill -TERM $pid
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Wait <span class="k">for</span> server stop
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> Wait <span class="k">for</span> server stop
 </span></span><span class="line"><span class="cl"><span class="go">while [ -f $MYSQL_PID ]
 </span></span></span><span class="line"><span class="cl"><span class="go">do
 </span></span></span><span class="line"><span class="cl"><span class="go">  sleep 1
@@ -276,19 +276,19 @@ Neben den eigentlichen Queries findet man dann auch noch weitere Anweisungen, di
 Außerdem finden sich im Binlog die Resultcodes und Ausführungszeiten für diese Statements als Kommentar.</p>
 <p>Ein Beispiel:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">linux:/export/data/rootforum # cat mysqlbinlog-3340
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span>! /bin/bash --
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash --
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">MYSQL_CMD_DIR=/usr/local/mysql-max-5.0.18-linux-i686-glibc23
+</span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_CMD_DIR=/usr/local/mysql-max-5.0.18-linux-i686-glibc23
 </span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_DIR=/export/data/rootforum
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">$</span>MYSQL_CMD_DIR/bin/mysqlbinlog --defaults-file<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/my.cnf <span class="nv">$@</span>
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span>MYSQL_CMD_DIR/bin/mysqlbinlog --defaults-file<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/my.cnf <span class="nv">$@</span>
 </span></span><span class="line"><span class="cl"><span class="go">linux:/export/data/rootforum # ./mysqlbinlog-3340 data/linux-bin.000006
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40019 SET @@session.max_insert_delayed_threads=0\*/;
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0\*/;
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> at <span class="m">4</span>
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> at <span class="m">4</span>
 </span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">060220</span> 15:10:37 server id <span class="m">3340</span>  end_log_pos <span class="m">98</span>         Start: binlog v 4, server v 5.0.18-max-log created <span class="m">060220</span> 15:10:37 at startup
 </span></span><span class="line"><span class="cl"><span class="go">ROLLBACK;
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span> at <span class="m">98</span>
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> at <span class="m">98</span>
 </span></span><span class="line"><span class="cl"><span class="gp">#</span><span class="m">060220</span> 15:11:43 server id <span class="m">3340</span>  end_log_pos <span class="m">179</span>        Query   <span class="nv">thread_id</span><span class="o">=</span><span class="m">2</span>    <span class="nv">exec_time</span><span class="o">=</span><span class="m">0</span>      <span class="nv">error_code</span><span class="o">=</span><span class="m">0</span>
 </span></span><span class="line"><span class="cl"><span class="go">SET TIMESTAMP=1140444703;
 </span></span></span><span class="line"><span class="cl"><span class="go">SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=1, @@session.unique_checks=1;
@@ -309,8 +309,8 @@ Die vorbereitenden Kommandos sind immer <code>use &lt;datenbankname&gt;</code>, 
 Dabei besteht zurzeit ein wesentliches Problem mit MySQL 5.0 und der Funktion SYSDATE() - man sollte sich in MySQL 5.0 besser auf NOW() verlassen.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@localhost [(none)]&gt; SET TIMESTAMP=1;
 </span></span></span><span class="line"><span class="cl"><span class="go">Query OK, 0 rows affected (0.00 sec)
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@localhost [(none)]&gt; SELECT NOW(), SYSDATE();
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">root@localhost [(none)]&gt; SELECT NOW(), SYSDATE();
 </span></span></span><span class="line"><span class="cl"><span class="go">+---------------------+---------------------+
 </span></span></span><span class="line"><span class="cl"><span class="go">| NOW()               | SYSDATE()           |
 </span></span></span><span class="line"><span class="cl"><span class="go">+---------------------+---------------------+
@@ -353,8 +353,8 @@ Daher wäre es schön, wenn man das Binlog nicht nur auf einer lokalen Platte si
 Einen Slave setzt man auf, indem man ein Vollbackup des Masters auf einem anderen Rechner einspielt, und als Datenbankserver startet.
 Auf dem Master erlaubt man dem Slave jetzt das Login mit dem Recht das Binlog abzusaugen:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@master [rootforum]&gt; CREATE USER &#34;slave&#34; IDENTIFIED BY &#34;pukcab&#34;;
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">root@master [rootforum]&gt; GRANT REPLICATION SLAVE ON \*.\* TO &#34;slave&#34;;
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">root@master [rootforum]&gt; GRANT REPLICATION SLAVE ON \*.\* TO &#34;slave&#34;;
 </span></span></span></code></pre></div><p>Dem Slave teilt man mit, wo sich der Master befindet und wie man sich dort einloggen kann. Außerdem muss der Slave natürlich wissen, auf welchem Stand er gerade ist.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">root@slave [rootforum]&gt; CHANGE MASTER TO MASTER_HOST=&#34;master&#34;, 
 </span></span></span><span class="line"><span class="cl"><span class="go">    -&gt; MASTER_PORT=3306,
@@ -382,32 +382,32 @@ Nur so kann man sicher erreichen, daß auch alle Daten auf der Platte und konsis
 <p>Damit die Downtime der Datenbank möglichst klein ist, verwendet man am besten einen Volume Manager mit Snapshots.
 Das Backup kann dann so ausgeführt werden:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">! /bin/sh --
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">SNAPSIZE=4G
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">SNAPSIZE=4G
 </span></span></span><span class="line"><span class="cl"><span class="go">pass=geheim
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">cd /export/data/rootforum
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Optional: Neues Binlog anfangen
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">cd /export/data/rootforum
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> Optional: Neues Binlog anfangen
 </span></span><span class="line"><span class="cl"><span class="go">./mysql-3340 -u root -p$pass &#39;flush logs&#39;
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Snap database
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> Snap database
 </span></span><span class="line"><span class="cl"><span class="go">./stop
 </span></span></span><span class="line"><span class="cl"><span class="go">name=$(tail -1 /export/log/rootforum/linux-bin.index)
 </span></span></span><span class="line"><span class="cl"><span class="go">size=$(stat -c &#39;%s&#39; $name)
 </span></span></span><span class="line"><span class="cl"><span class="go">echo &#34;binlog position $name $size&#34; &gt; /export/data/rootforum/data/restore.info
 </span></span></span><span class="line"><span class="cl"><span class="go">lvcreate -s -L $SNAPSIZE -n snap /dev/system/data
 </span></span></span><span class="line"><span class="cl"><span class="go">./start
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Backup snapshot
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> Backup snapshot
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">mount /dev/system/snap /export/snap
+</span></span></span><span class="line"><span class="cl"><span class="go">mount /dev/system/snap /export/snap
 </span></span></span><span class="line"><span class="cl"><span class="go">dobackup /export/snap/rootforum
 </span></span></span><span class="line"><span class="cl"><span class="go">umount /export/snap
 </span></span></span><span class="line"><span class="cl"><span class="go">lvchange -a n /dev/system/snap
 </span></span></span><span class="line"><span class="cl"><span class="go">lvremove /dev/system/snap
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">#</span> Optional: Binlog kürzen
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span> Optional: Binlog kürzen
 </span></span><span class="line"><span class="cl"><span class="go">./mysql-3340 -u root -p$pass -e &#34;purge master logs to &#39;$name&#39;&#34;
 </span></span></span></code></pre></div><p>Das Script hält erzeugt erst einmal ein neues Binlog, indem es ein &ldquo;FLUSH LOGS&rdquo;-Kommando absetzt.</p>
 <p>Danach hält es die Datenbank mit dem Stopscript kurz an.
@@ -435,8 +435,8 @@ Setzt man <code>--master-data=2</code> wird dasselbe Statement auch generiert, a
 </span></span></span><span class="line"><span class="cl"><span class="go">-- Host: localhost    Database: rootforum
 </span></span></span><span class="line"><span class="cl"><span class="go">-- ------------------------------------------------------
 </span></span></span><span class="line"><span class="cl"><span class="go">-- Server version       5.0.18-max-log
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">/\*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT \*/;
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">/\*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT \*/;
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS \*/;
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION \*/;
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40101 SET NAMES utf8 \*/;
@@ -446,12 +446,12 @@ Setzt man <code>--master-data=2</code> wird dasselbe Statement auch generiert, a
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 \*/;
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE=&#39;NO_AUTO_VALUE_ON_ZERO&#39; \*/;
 </span></span></span><span class="line"><span class="cl"><span class="go">/\*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 \*/;
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">--
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">--
 </span></span></span><span class="line"><span class="cl"><span class="go">-- Position to start replication or point-in-time recovery from
 </span></span></span><span class="line"><span class="cl"><span class="go">--
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">CHANGE MASTER TO MASTER_LOG_FILE=&#39;linux-bin.000007&#39;, MASTER_LOG_POS=879;
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">CHANGE MASTER TO MASTER_LOG_FILE=&#39;linux-bin.000007&#39;, MASTER_LOG_POS=879;
 </span></span></span><span class="line"><span class="cl"><span class="go">...
 </span></span></span></code></pre></div><p>Damit das Backup konsistent ist, müssen außerdem die Optionen <code>--single-transaction</code> (wenn ausschließlich InnoDB verwendet wird) oder <code>--lock-all-tables</code> (geht für alle Tabellentypen, blockiert aber die Datenbank für die Dauer des Dumps) verwendet werden.
 Die beiden Optionen schließen sich gegenseitig aus.
@@ -460,12 +460,12 @@ Damit Trigger und Stored Functions/Stored Procedures auch mit gesichert werden, 
 <p>Verwendet man <code>--lock-all-tables</code>, kann man außerdem zusätzlich noch <code>--flush-logs</code> und <code>--delete-master-logs</code> mitgeben, um vor dem Backup ein <code>FLUSH LOGS</code>-Kommando laufen zu lassen und nach dem Backup die Binlogs, die älter als das Backup sind, zu löschen.</p>
 <p>Das komplette Kommando kann also so aussehen:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">linux:/export/data/rootforum # cat ./mysqldump-3340
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="gp">#</span>! /bin/bash --
+</span></span></span><span class="line"><span class="cl"><span class="gp">#</span>! /bin/bash --
 </span></span><span class="line"><span class="cl"><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">MYSQL_CMD_DIR=/usr/local/mysql-max-5.0.18-linux-i686-glibc23
+</span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_CMD_DIR=/usr/local/mysql-max-5.0.18-linux-i686-glibc23
 </span></span></span><span class="line"><span class="cl"><span class="go">MYSQL_DIR=/export/data/rootforum
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="gp">$</span>MYSQL_CMD_DIR/bin/mysqldump --defaults-file<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/my.cnf <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="gp">$</span>MYSQL_CMD_DIR/bin/mysqldump --defaults-file<span class="o">=</span><span class="nv">$MYSQL_DIR</span>/my.cnf <span class="s2">&#34;</span><span class="nv">$@</span><span class="s2">&#34;</span>
 </span></span><span class="line"><span class="cl"><span class="go">linux:/export/data/rootforum # ./mysqldump-3340 -u root --master-data --lock-all-tables --triggers --routines --all-databases --flush-logs --delete-master-logs | gzip -9 &gt; /export/backups/backup.sql.gz
 </span></span></span></code></pre></div><h1 id="inkrementelle-backups-erstellen">
     <a href="#inkrementelle-backups-erstellen">

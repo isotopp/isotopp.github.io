@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.152.2">
+<meta name="generator" content="Hugo 0.153.0">
 <meta property="og:title" content='Bug #31876: MySQL Commit in Windows | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="de_DE" />
@@ -222,30 +222,30 @@ DB/2 und MS SQL Server dagegen machen das so, daß außerdem noch <code>FILE_FLA
 Brächte man InnoDB dazu seine Daten- und Logfiles mit diesen Flags zu öffnen, wären die <code>FushFileBuffers()</code>-Aufrufe nicht mehr notwendig (und mit <code>innodb_flush_log_on_trx_commit = 2</code> wären sie auch weg).
 Also patched man</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-diff" data-lang="diff"><span class="line"><span class="cl"><span class="gh">===== innobase/os/os0file.c 1.121 vs edited =====
-</span></span></span><span class="line"><span class="cl"><span class="gh"></span><span class="gd">--- 1.121/innobase/os/os0file.c 2007-08-15 18:54:19 -04:00
-</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+++ edited/innobase/os/os0file.c        2007-10-25 17:34:01 -04:00
-</span></span></span><span class="line"><span class="cl"><span class="gi"></span><span class="gu">@@ -1218,9 +1218,13 @@ try_again:
-</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                        /* Do not use unbuffered i/o to log files because
+</span></span></span><span class="line"><span class="cl"><span class="gd">--- 1.121/innobase/os/os0file.c 2007-08-15 18:54:19 -04:00
+</span></span></span><span class="line"><span class="cl"><span class="gi">+++ edited/innobase/os/os0file.c        2007-10-25 17:34:01 -04:00
+</span></span></span><span class="line"><span class="cl"><span class="gu">@@ -1218,9 +1218,13 @@ try_again:
+</span></span></span><span class="line"><span class="cl">                        /* Do not use unbuffered i/o to log files because
 </span></span><span class="line"><span class="cl">                        value 2 denotes that we do not flush the log at every
 </span></span><span class="line"><span class="cl">                        commit, but only once per second */
 </span></span><span class="line"><span class="cl"><span class="gi">+                       attributes |= (FILE_FLAG_WRITE_THROUGH
 </span></span></span><span class="line"><span class="cl"><span class="gi">+                              | FILE_FLAG_RANDOM_ACCESS);
-</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                } else if (srv_win_file_flush_method ==  SRV_WIN_IO_UNBUFFERED) {
+</span></span></span><span class="line"><span class="cl">                } else if (srv_win_file_flush_method ==  SRV_WIN_IO_UNBUFFERED) {
 </span></span><span class="line"><span class="cl"><span class="gd">-                       attributes = attributes | FILE_FLAG_NO_BUFFERING;
-</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                       attributes |= (FILE_FLAG_NO_BUFFERING
+</span></span></span><span class="line"><span class="cl"><span class="gi">+                       attributes |= (FILE_FLAG_NO_BUFFERING
 </span></span></span><span class="line"><span class="cl"><span class="gi">+                              | FILE_FLAG_WRITE_THROUGH
 </span></span></span><span class="line"><span class="cl"><span class="gi">+                              | FILE_FLAG_RANDOM_ACCESS);
-</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                }
+</span></span></span><span class="line"><span class="cl">                }
 </span></span><span class="line"><span class="cl"> #endif
 </span></span><span class="line"><span class="cl">        } else if (purpose == OS_FILE_NORMAL) {
 </span></span><span class="line"><span class="cl"><span class="gu">@@ -1232,7 +1236,9 @@ try_again:
-</span></span></span><span class="line"><span class="cl"><span class="gu"></span>                        commit, but only once per second */
+</span></span></span><span class="line"><span class="cl">                        commit, but only once per second */
 </span></span><span class="line"><span class="cl">                } else if (srv_win_file_flush_method == SRV_WIN_IO_UNBUFFERED) {
 </span></span><span class="line"><span class="cl"><span class="gd">-                       attributes = attributes | FILE_FLAG_NO_BUFFERING;
-</span></span></span><span class="line"><span class="cl"><span class="gd"></span><span class="gi">+                       attributes |= (FILE_FLAG_NO_BUFFERING
+</span></span></span><span class="line"><span class="cl"><span class="gi">+                       attributes |= (FILE_FLAG_NO_BUFFERING
 </span></span></span><span class="line"><span class="cl"><span class="gi">+                              | FILE_FLAG_WRITE_THROUGH
 </span></span></span><span class="line"><span class="cl"><span class="gi">+                              | FILE_FLAG_RANDOM_ACCESS);
-</span></span></span><span class="line"><span class="cl"><span class="gi"></span>                }
+</span></span></span><span class="line"><span class="cl">                }
 </span></span><span class="line"><span class="cl"> #endif
 </span></span><span class="line"><span class="cl">        } else {
 </span></span></code></pre></div><p>Wenn ich mich nicht sehr täusche ist <code>innodb_flush_log_on_trx_commit = 2</code> jetzt ACID und sehr viel schneller als die Write/Flush-Sequenz - sechs bis siebenmal schneller.
@@ -268,8 +268,8 @@ Das liegt daran, weil</p>
 Für so einen ACID-Commit ist das eher nicht so gut.</p>
 <p>Mit</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">linux:~ # hdparm -W0 /dev/sda
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">/dev/sda:
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">/dev/sda:
 </span></span></span><span class="line"><span class="cl"><span class="go"> setting drive write-caching to 0 (off)
 </span></span></span></code></pre></div><p>ist Linux dann nicht nur genau so ACID wie Windows, sondern auch vergleichbar langsam.
 Und man bekommt auch bei einem <code>innodb_flush_method = fdatasync / O_DIRECT</code> plötzlich plausible Benchmark-Ergebnisse zurück.

@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.152.2">
+<meta name="generator" content="Hugo 0.153.0">
 <meta property="og:title" content='MySQL: A job queue in Python | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="en_US" />
@@ -303,7 +303,7 @@ For simplicity, we claim rows that start with a random character, for example &l
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;claimed&#39;</span><span class="p">,</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">owner_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">?</span><span class="p">,</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">owner_date</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">now</span><span class="p">()</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="k">WHERE</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">WHERE</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">status</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">&#39;unclaimed&#39;</span><span class="w"> </span><span class="k">AND</span><span class="w">
 </span></span></span><span class="line"><span class="cl"><span class="w">  </span><span class="n">d</span><span class="w"> </span><span class="k">LIKE</span><span class="w"> </span><span class="s1">&#39;a%&#39;</span><span class="w">
 </span></span></span></code></pre></div><p>But if we did it like this, we would run into two problems:</p>
@@ -456,13 +456,13 @@ This may take time, which we simulate with a tiny wait.</p>
 <p>Here is a short test run protocol:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-console" data-lang="console"><span class="line"><span class="cl"><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py --help
 </span></span></span><span class="line"><span class="cl"><span class="go">Usage: mysql-claim-jobs.py [OPTIONS] COMMAND [ARGS]...
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Generate and consume jobs concurrently
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Options:
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">Generate and consume jobs concurrently
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">Options:
 </span></span></span><span class="line"><span class="cl"><span class="go">--help  Show this message and exit.
-</span></span></span><span class="line"><span class="cl"><span class="go"></span><span class="err">
-</span></span></span><span class="line"><span class="cl"><span class="err"></span><span class="go">Commands:
+</span></span></span><span class="line"><span class="cl"><span class="err">
+</span></span></span><span class="line"><span class="cl"><span class="go">Commands:
 </span></span></span><span class="line"><span class="cl"><span class="go">setup-tables      Recreate jobs table
 </span></span></span><span class="line"><span class="cl"><span class="go">start-processing  Run job creation and consumer jobs
 </span></span></span><span class="line"><span class="cl"><span class="go">(venv) mysql-dev-examples/mysql-claim-jobs$ ./mysql-claim-jobs.py setup-tables
@@ -514,13 +514,13 @@ On resume, very many jobs are lingering in the queue, and initially the consumer
 This quickly goes back to normal levels after the number of jobs in the queue goes down to normal levels, too.</p>
 <p>We can check queue length and status in the database:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">kris</span><span class="o">@</span><span class="n">localhost</span><span class="w"> </span><span class="p">[</span><span class="n">kris</span><span class="p">]</span><span class="o">&gt;</span><span class="w"> </span><span class="k">select</span><span class="w"> </span><span class="n">status</span><span class="p">,</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">jobs</span><span class="w"> </span><span class="k">group</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">status</span><span class="p">;</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">status</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="o">|</span><span class="w"> </span><span class="n">unclaimed</span><span class="w"> </span><span class="o">|</span><span class="w">            </span><span class="mi">47</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">|</span><span class="w"> </span><span class="n">claimed</span><span class="w">   </span><span class="o">|</span><span class="w">            </span><span class="mi">23</span><span class="w"> </span><span class="o">|</span><span class="w">
-</span></span></span><span class="line"><span class="cl"><span class="w"></span><span class="o">+</span><span class="c1">-----------+---------------+
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">-----------+---------------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">status</span><span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="k">count</span><span class="p">(</span><span class="n">status</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">-----------+---------------+
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">unclaimed</span><span class="w"> </span><span class="o">|</span><span class="w">            </span><span class="mi">47</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">|</span><span class="w"> </span><span class="n">claimed</span><span class="w">   </span><span class="o">|</span><span class="w">            </span><span class="mi">23</span><span class="w"> </span><span class="o">|</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">+</span><span class="c1">-----------+---------------+
+</span></span></span><span class="line"><span class="cl"><span class="mi">2</span><span class="w"> </span><span class="k">rows</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span><span class="w"> </span><span class="n">sec</span><span class="p">)</span><span class="w">
 </span></span></span></code></pre></div><h2 id="summary">
     <a href="#summary">
 	Summary
