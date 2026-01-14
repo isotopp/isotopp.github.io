@@ -16,7 +16,7 @@
 <link rel="alternate" type="application/rss+xml" href='https://blog.koehntopp.info/tags/review/feed.xml' title="Feed: review Articles for Die wunderbare Welt von Isotopp">
 
 
-<meta name="generator" content="Hugo 0.153.0">
+<meta name="generator" content="Hugo 0.154.5">
 <meta property="og:title" content='Die wunderbare Welt von Isotopp | Die wunderbare Welt von Isotopp' />
 <meta property="og:site_name" content='Die wunderbare Welt von Isotopp' />
 <meta property="og:locale" content="en_US" />
@@ -24,7 +24,7 @@
 <meta property="og:description" content='Kris Köhntopp&#39;s blog (Fedi: @isotoppinfosec.exchange)' />
 <meta property="og:url" content="https://blog.koehntopp.info/index.html" />
 <meta property="og:type" content="article" />
-<meta name="article:published_time" content='2025-12-20T05:06:07Z' />
+<meta name="article:published_time" content='2026-01-14T05:06:07Z' />
 <meta name="fediverse:creator" content="">
 <meta property="og:image" content='https://blog.koehntopp.info/assets/img/background/rijksmuseum.jpg' />
 <meta name="twitter:card" content="summary_large_image" />
@@ -110,6 +110,31 @@
   </div>
 
   
+  <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
+    <div class='col-lg-8'>
+        <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2020/08/02/mysql-deadlocks-with-insert.html" class='text-decoration-none text-dark'>MySQL Deadlocks with INSERT</a></h1>
+        <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
+          <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@infosec.exchange" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
+          <a href="https://infosec.exchange/@isotopp" class='text-secondary text-decoration-none'>Kristian Köhntopp</a>
+          -
+          August 2, 2020
+        </div>
+
+        <div class='mt-3'><p>Support Channel. &ldquo;Hi, I am getting deadlocks in the database, and they occur when I have to roll back the transactions but if we don&rsquo;t have to roll back all transactions get executed.&rdquo;
+Wait, what?
+After some back and forth it becomes clear that the Dev experiences deadlocks and has data:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="n">pager</span><span class="w"> </span><span class="k">less</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">mysql</span><span class="o">&gt;</span><span class="w"> </span><span class="k">show</span><span class="w"> </span><span class="n">engine</span><span class="w"> </span><span class="n">innodb</span><span class="w"> </span><span class="n">status</span><span class="err">\</span><span class="k">G</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="p">...</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">MySQL</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="mi">142531</span><span class="p">,</span><span class="w"> </span><span class="n">OS</span><span class="w"> </span><span class="n">thread</span><span class="w"> </span><span class="n">handle</span><span class="w"> </span><span class="mi">139990258222848</span><span class="p">,</span><span class="w"> </span><span class="n">query</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="mi">4799571</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">somehost</span><span class="p">.</span><span class="n">somedomain</span><span class="w"> </span><span class="n">someuser</span><span class="w"> </span><span class="k">update</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="k">INSERT</span><span class="w"> </span><span class="k">into</span><span class="w"> </span><span class="n">sometable</span><span class="w"> </span><span class="p">(</span><span class="n">identifier_id</span><span class="p">,</span><span class="w"> </span><span class="n">currency</span><span class="p">,</span><span class="w"> </span><span class="n">balance</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span><span class="w"> </span><span class="p">(</span><span class="s1">&#39;d4e84cb1-4d56-4d67-9d16-1d548fd26b55&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;EUR&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;0&#39;</span><span class="p">)</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="o">***</span><span class="w"> </span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="w"> </span><span class="n">HOLDS</span><span class="w"> </span><span class="n">THE</span><span class="w"> </span><span class="k">LOCK</span><span class="p">(</span><span class="n">S</span><span class="p">):</span><span class="w">
+</span></span></span><span class="line"><span class="cl"><span class="n">RECORD</span><span class="w"> </span><span class="n">LOCKS</span><span class="w"> </span><span class="k">space</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="mi">3523</span><span class="w"> </span><span class="n">page</span><span class="w"> </span><span class="k">no</span><span class="w"> </span><span class="mi">1106463</span><span class="w"> </span><span class="n">n</span><span class="w"> </span><span class="n">bits</span><span class="w"> </span><span class="mi">224</span><span class="w"> </span><span class="k">index</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">of</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="o">`</span><span class="n">somedb</span><span class="o">`</span><span class="p">.</span><span class="o">`</span><span class="n">sometable</span><span class="o">`</span><span class="w"> </span><span class="n">trx</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="mi">9843342279</span><span class="w"> </span><span class="k">lock</span><span class="w"> </span><span class="k">mode</span><span class="w"> </span><span class="n">S</span><span class="w"> </span><span class="n">locks</span><span class="w"> </span><span class="n">gap</span><span class="w"> </span><span class="k">before</span><span class="w"> </span><span class="n">rec</span><span class="w">
+</span></span></span></code></pre></div><p>and that is weird because of the <code>lock mode S locks gap</code> in the last line. We get the exact same statement with the exact same value on the second thread, but with <code>lock mode X locks gap</code>.</p></div>
+
+    </div>
+  </div>
   <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
     <div class='col-lg-8'>
         <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2020/08/01/mysql-locks-and-deadlocks.html" class='text-decoration-none text-dark'>MySQL: Locks and Deadlocks</a></h1>
@@ -332,72 +357,6 @@ being tried with 10.000 rows of test data.</p></div>
 <p>Das liege daran, sagt der Artikel, daß für Mittel aus dem Digitalpakt eine Minimal-Ausstattung und Anbindung der Schulen gefordert ist, die so oft nicht realisierbar sei. Außerdem</p>
 <blockquote>
 <p>Auf kommunaler Ebene der Schulträger gebe &ldquo;es kaum IT-Kompetenz. Die Gebäude sind marode, insbesondere die Verkabelung. WLAN scheiterte an 100 MBit/s-Verkabelung und überlasteten Stromkreisen für Power-over-Ethernet-Switches&rdquo;.</p></div>
-
-    </div>
-  </div>
-  <div class='row justify-content-center mb-4 py-4 border-bottom mx-0'>
-    <div class='col-lg-8'>
-        <h1 style='font-weight: 700'><a href="https://blog.koehntopp.info/2020/06/21/mysql-window-functions.html" class='text-decoration-none text-dark'>MySQL Window Functions</a></h1>
-        <div class='text-uppercase text-secondary' style='letter-spacing: 0.1rem;'>
-          <img src='/assets/img/avatars/isotopp.jpg' alt="Avatar of @isotopp@infosec.exchange" class='me-1 p-0' style='width: 1.9rem; border-radius: 1rem;'>
-          <a href="https://infosec.exchange/@isotopp" class='text-secondary text-decoration-none'>Kristian Köhntopp</a>
-          -
-          June 21, 2020
-        </div>
-
-        <div class='mt-3'><p>Two questions from Reddit&rsquo;s /r/mysql related to Window Functions: <a href="https://www.reddit.com/r/mysql/comments/gue9ct/how_do_i_make_rownumbers_happen/" target="_blank" rel="noopener">How do I make row.numbers happen</a>
-
- and <a href="https://www.reddit.com/r/mysql/comments/hbx5kk/get_the_difference_between_two_values_in/" target="_blank" rel="noopener">Get the difference between two values in different recordings</a>
-
-.</p>
-<p>One of the new things in MySQL is the implementation of Window Functions. They are related to aggregates, but do not actually lump values together.</p>
-<p>To better understand what goes on, let&rsquo;s create some fake data to work with:</p>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="ch">#! /usr/bin/env python3</span>
-</span></span><span class="line"><span class="cl"><span class="c1"># -*- coding: utf-8 -*-</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb</span> <span class="k">as</span> <span class="nn">mdb</span>
-</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">MySQLdb.cursors</span> <span class="k">as</span> <span class="nn">cursors</span>
-</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
-</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span><span class="p">,</span> <span class="n">random</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># We have {sensors} sensors, each producing {values} values </span>
-</span></span><span class="line"><span class="cl"><span class="c1"># between {minvalue} and {maxvalue}, at a random time after {starttime} plus {delta}</span>
-</span></span><span class="line"><span class="cl"><span class="n">sensors</span> <span class="o">=</span> <span class="mi">3</span>
-</span></span><span class="line"><span class="cl"><span class="n">values</span> <span class="o">=</span> <span class="mi">10</span>
-</span></span><span class="line"><span class="cl"><span class="n">minvalue</span> <span class="o">=</span> <span class="mi">0</span>
-</span></span><span class="line"><span class="cl"><span class="n">maxvalue</span> <span class="o">=</span> <span class="mi">10</span>
-</span></span><span class="line"><span class="cl"><span class="n">starttime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&#34;2020-01-01 00:00:00&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">delta</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">script</span> <span class="o">=</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;drop table if exists series&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="s2">&#34;create table if not exists series ( id serial, sensor integer not null, checktime timestamp not null, value float )&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl"><span class="p">]</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">con</span> <span class="o">=</span> <span class="n">mdb</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">    <span class="n">host</span><span class="o">=</span><span class="s2">&#34;localhost&#34;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&#34;root&#34;</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="s2">&#34;kris&#34;</span><span class="p">,</span> <span class="n">cursorclass</span><span class="o">=</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span>
-</span></span><span class="line"><span class="cl"><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">cur</span> <span class="o">=</span> <span class="n">con</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># Create a table</span>
-</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">stmt</span> <span class="ow">in</span> <span class="n">script</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">    <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">cur</span><span class="o">.</span><span class="n">_last_executed</span><span class="si">}</span><span class="s2">&#34;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="c1"># insert values</span>
-</span></span><span class="line"><span class="cl"><span class="n">insert_stmt</span> <span class="o">=</span> <span class="s2">&#34;insert into series values ( </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sensors</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span>
-</span></span><span class="line"><span class="cl">        <span class="sa">f</span><span class="s2">&#34;Sensor </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">values</span><span class="si">}</span><span class="s2"> measurements (</span><span class="si">{</span><span class="n">minvalue</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">maxvalue</span><span class="si">}</span><span class="s2">), (</span><span class="si">{</span><span class="n">starttime</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">starttime</span><span class="o">+</span><span class="n">delta</span><span class="si">}</span><span class="s2">).&#34;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">        <span class="n">value</span> <span class="o">=</span> <span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="n">maxvalue</span> <span class="o">+</span> <span class="n">minvalue</span>
-</span></span><span class="line"><span class="cl">        <span class="n">t</span> <span class="o">=</span> <span class="n">starttime</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">delta</span><span class="o">.</span><span class="n">days</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">        <span class="n">cur</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">insert_stmt</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="n">con</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
-</span></span></code></pre></div><p>This will create test data for a number of fictional sensors <code>sensors</code>. For each sensor, there will be <code>values</code> many readings with a random float value between <code>minvalue</code> and <code>maxvalue</code>. The sensor readings will be taken at a random point in time between <code>starttime</code> and <code>delta</code> days later. In our sample config, that is 3 sensors with 10 readings each, values between 0 and 10, at some random point in time in January 2020.</p></div>
 
     </div>
   </div>

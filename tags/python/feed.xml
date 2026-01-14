@@ -12,7 +12,131 @@
     <webMaster>kris-blog@koehntopp.de (Kristian Köhntopp)</webMaster>
 
     
-    <lastBuildDate>Sat, 20 Dec 2025 18:16:11 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/python/feed.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 14 Jan 2026 11:18:01 +0000</lastBuildDate><atom:link href="https://blog.koehntopp.info/tags/python/feed.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BOFHLE</title>
+      <link>https://blog.koehntopp.info/2026/01/14/bofhle.html</link>
+      <pubDate>Wed, 14 Jan 2026 05:06:07 +0000</pubDate><author>kris-blog@koehntopp.de (Kristian Köhntopp)</author>
+
+      <guid>https://blog.koehntopp.info/2026/01/14/bofhle.html</guid>
+      <description>&lt;h1 id=&#34;bofhle&#34;&gt;
+    &lt;a href=&#34;#bofhle&#34;&gt;
+	BOFHLE
+    &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://sysarmy.com/bofhle/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BOFHLE&lt;/a&gt;
+
+ is a game of wordle with Unix commands.
+That is, you get to guess a 5 letter Unix command in 6 tries or less.
+After each try you get a hint:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;black: the letter is not present in the secret command.&lt;/li&gt;
+&lt;li&gt;yellow: the letter is present, but not in this position.&lt;/li&gt;
+&lt;li&gt;green: the letter is present and in this position.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;list-of-commands&#34;&gt;
+    &lt;a href=&#34;#list-of-commands&#34;&gt;
+	List of commands
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The set of commands is not Linux specific, and when you make a list of all installable commands in RedHat,
+and grab the list of commands from &lt;a href=&#34;https://sysarmy.com/bofhle/wordle.js&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;wordle.js&lt;/a&gt;
+
+ and compare,
+the overlap is at best 2/3.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dnf repoquery --available -l  2&amp;gt;/dev/null &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep -E &lt;span class=&#34;s1&#34;&gt;&amp;#39;(bin|exec)&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sed -e &lt;span class=&#34;s1&#34;&gt;&amp;#39;s#.*/##&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;grep -E &lt;span class=&#34;s1&#34;&gt;&amp;#39;^[a-zA-Z]{5}$&amp;#39;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sort -u &amp;gt; cmds.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;But when we compare &lt;code&gt;cmds.txt&lt;/code&gt; with &lt;code&gt;bofhle.txt&lt;/code&gt; (generated from wordle.js),
+we get:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ wc -l *txt
+1104 cmds.txt 
+338 bofhle.txt
+...
+$ join -v 2 cmds.txt bofhle.txt  | wc -l
+126
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;So there are 126 commands in their list that are not in our list.
+Well, the objective is to solve the game, so let&amp;rsquo;s just use their list.&lt;/p&gt;
+&lt;h2 id=&#34;best-start-word&#34;&gt;
+    &lt;a href=&#34;#best-start-word&#34;&gt;
+	Best start word
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ch&#34;&gt;#! /usr/bin/env python3&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# ./count.py&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;sys&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;collections&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Counter&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;from&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;pprint&lt;/span&gt; &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pprint&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;score_word&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;sum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;letter_counts&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ch&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;set&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#    print(f&amp;#34;{w=} {score=}&amp;#34;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;score&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sys&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;stdin&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;readlines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;strip&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;map&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nb&#34;&gt;str&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lower&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;list&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;letter_counts&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;join&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#for c, n in letter_counts.most_common():&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;#    print(c,n)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;scored&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;score_word&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;w&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;w&lt;/span&gt; &lt;span class=&#34;ow&#34;&gt;in&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lines&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;scored&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sort&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;lambda&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;n&#34;&gt;pprint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;scored&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;9&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;])&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We read &lt;code&gt;sys.stdin&lt;/code&gt; with &lt;code&gt;readlines()&lt;/code&gt; and get a list of lines.
+They need to be changed to lowercase and stripped, so we map the &lt;code&gt;str&lt;/code&gt; methods of this name on them.
+This yields an iterator, which we materialize (&lt;code&gt;lines = list(lines)&lt;/code&gt;).&lt;/p&gt;
+&lt;p&gt;We then use &lt;code&gt;collections.Counter&lt;/code&gt; to count the letter frequencies of all words.&lt;/p&gt;
+&lt;p&gt;We assign a score to each word: For the &lt;code&gt;set()&lt;/code&gt; of the words letters (eliminating duplicates)
+we assign the sum of the letter frequencies as the word score.&lt;/p&gt;
+&lt;p&gt;We sort that and print the top 10.&lt;/p&gt;
+&lt;p&gt;Best start words:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;$ cat bofhle.txt | ./count.py
+[(569, &amp;#39;paste&amp;#39;),
+ (569, &amp;#39;tapes&amp;#39;),
+ (553, &amp;#39;strip&amp;#39;),
+ (546, &amp;#39;parec&amp;#39;),
+ (543, &amp;#39;oscap&amp;#39;),
+ (541, &amp;#39;ports&amp;#39;),
+ (540, &amp;#39;plser&amp;#39;),
+ (536, &amp;#39;pargs&amp;#39;),
+ (535, &amp;#39;split&amp;#39;)]
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;guessing&#34;&gt;
+    &lt;a href=&#34;#guessing&#34;&gt;
+	Guessing
+    &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Starting with &lt;code&gt;paste&lt;/code&gt; we get &amp;ldquo;⬜⬜⬜⬜🟨&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;I am using this to eliminate things:&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# grep e wordle-cmds | grep -Ev [past] | ./count.py
+[(58, &amp;#39;gcore&amp;#39;),
+ (56, &amp;#39;xmore&amp;#39;),
+ (56, &amp;#39;zmore&amp;#39;),
+ (53, &amp;#39;gchem&amp;#39;),
+ (51, &amp;#39;gecho&amp;#39;),
+ (48, &amp;#39;gnice&amp;#39;),
+ (47, &amp;#39;rygel&amp;#39;),
+ (46, &amp;#39;gznew&amp;#39;),
+ (45, &amp;#39;chmem&amp;#39;)]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;I could and should also have &lt;code&gt;grep -v &amp;quot;e$&amp;quot;&lt;/code&gt;, but I did not stop to think.
+Next guess, &lt;code&gt;gcore&lt;/code&gt;.
+I get &amp;ldquo;🟩⬜⬜⬜🟨&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;We can additionally eliminate &lt;code&gt;cor&lt;/code&gt;, and we know &lt;code&gt;^g&lt;/code&gt;.&lt;/p&gt;
+&lt;pre tabindex=&#34;0&#34;&gt;&lt;code&gt;# grep e wordle-cmds | grep -Ev [pastcor] | grep &amp;#34;^g&amp;#34; | ./count.py
+[(13, &amp;#39;gznew&amp;#39;), (11, &amp;#39;gneqn&amp;#39;), (10, &amp;#39;gzexe&amp;#39;)]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Ok, &lt;code&gt;gznew&lt;/code&gt; it is: &amp;ldquo;🟩🟩🟩🟩🟩&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;The best result is that I never again have to play this.&lt;/p&gt;
+</description>
+    </item>
+    
     <item>
       <title>pysembr</title>
       <link>https://blog.koehntopp.info/2025/12/20/pysembr.html</link>
