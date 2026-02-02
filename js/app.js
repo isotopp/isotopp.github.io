@@ -71,11 +71,7 @@
            return;
        }
 
-       //add some fuzzyness to the string matching to help with spelling mistakes.
-       var fuzzLength = Math.round(Math.min(Math.max(query.length / 4, 1), 3));
-       var fuzzyQuery = query + '~' + fuzzLength;
-
-       var results = search(fuzzyQuery);
+       var results = search(query);
        renderResults(results);
        return false;
     }
