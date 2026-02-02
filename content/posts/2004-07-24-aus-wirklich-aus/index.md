@@ -10,7 +10,7 @@ aliases:
   - /2004/07/24/aus-wirklich-aus.html
 ---
 
-![](2004/07/notstrom.jpg)
+![](notstrom.jpg)
 
 *Zwei 1250 PS Schiffsdiesel powern das Rechenzentrum von web.de.*
 
@@ -39,4 +39,3 @@ Das ist fast wie ARRL Field Day, nur mit ganzen Rechenzentren.
 > Karlsruhe - Nach einem Brand im Schaltwerk Schinnrainstraße, waren gestern Abend gegen 20 Uhr die meisten Haushalte in Karlsruhe-Durlach, Aue und Wolfratsweier ohne Strom. Der Brand wurden durch einen Lichtbogen verursacht. Fachleute der Stadtwerke konnten bis 21.30 Uhr zumindest über drei Viertel des Stadtteils wieder mit Strom versorgen. Durch Provisorien mit fünf großen Notstromaggregaten und zahlreichen Notkabeln konnte dann am frühen Morgen alle Stadtteile wieder versorgt werden.
 > 
 > Das Schaltwerk in der Schinnrainstraße kann als Herz der Durlacher Stromversorgung bezeichnet werden. Durch den Brand wurde es aber stark bestätigt. Die Stadtwerke werden in den kommenden Tagen die Brandfolgen und die Kabel-Provisorien beseitigen und das Netz wieder in einen stabilen Zustand überführen. "Ich bitte die betroffenen Bürger herzlich um Verständnis. Unsere Mitarbeiter tun alles Menschenmögliche, um schnellstens alle Schäden zu beseitigen", entschuldigte sich Stadtwerke-Geschäftsführer Dr. Karl Roth für den Stromausfall. (tmr)
-

@@ -12,7 +12,7 @@ aliases:
   - /2023/09/20/elite.html
 ---
 
-[![](2023/09/elite.jpg)](https://www.youtube.com/watch?v=LhTTpV5qFrs)
+[![](elite.jpg)](https://www.youtube.com/watch?v=LhTTpV5qFrs)
 
 *[C64 Elite (1983) Longplay](https://www.youtube.com/watch?v=LhTTpV5qFrs)*
 
@@ -37,12 +37,12 @@ Insgesamt wurden rund 1 Million Exemplare umgesetzt.
 Insgesamt gab es von Elite selbst noch drei Nachfolgespiele, die aktuelle Version ist Elite: Dangerous.
 Da sieht das Gameplay dann so aus: 
 
-[![](2023/09/elite-dangerous.jpg)](https://www.youtube.com/watch?v=LPMVLk7dwfs)
+[![](elite-dangerous.jpg)](https://www.youtube.com/watch?v=LPMVLk7dwfs)
 
 *[Elite Dangerous](https://www.youtube.com/watch?v=LPMVLk7dwfs) Gameplay.*
 
 Mein Elite T-Shirt hat das C64 Elite Wireframe Model der Cobra und den Text "Keep Calm And Jump Onwards".
 
-![](2023/09/elite-jump-retrowinder.png)
+![](elite-jump-retrowinder.png)
 
-*T-Shirt Design [mit schwarzem Hintergrund](2023/09/elite-jump-retrowinder.png) und [in transparent](2023/09/elite-jump-onwards-transparent.png).*
+*T-Shirt Design [mit schwarzem Hintergrund](elite-jump-retrowinder.png) und [in transparent](elite-jump-onwards-transparent.png).*

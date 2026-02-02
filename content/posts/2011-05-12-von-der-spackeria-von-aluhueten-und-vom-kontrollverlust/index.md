@@ -4,7 +4,6 @@ date: "2011-05-12T19:10:47Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
 - ccc
-- privacy
 - identity
 - internet
 - politik

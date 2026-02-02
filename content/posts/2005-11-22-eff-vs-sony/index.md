@@ -13,6 +13,7 @@ title: EFF vs. Sony
 aliases:
   - /2005/11/22/eff-vs-sony.html
 ---
+
 ![](sonyelectronics.jpg)
 
 Fred schickt mir den folgenden Link:

@@ -3,7 +3,6 @@ author: isotopp
 date: "2011-09-14T17:59:34Z"
 feature-img: assets/img/background/rijksmuseum.jpg
 tags:
-- privacy
 - politik
 - privacy
 - spackeria

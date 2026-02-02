@@ -9,6 +9,7 @@ title: Über ENUM (und Fast Alter Table)
 aliases:
   - /2010/04/09/ber-enum-und-fast-alter-table.html
 ---
+
 On 2010-04-08 13:40:57 +0200, 
 
 [Karsten Wutzke said](http://groups.google.de/group/de.comp.datenbanken.mysql/msg/e58da1119a2bd53c?dmode=source&output=gplain):
@@ -90,11 +91,10 @@ In MySQL 5.1 und höher gilt jedoch
 > no temporary table is necessary:Alterations that modify only table
 > metadata and not table data can be made immediately by altering the
 > table's .frm file and not touching table contents. The following changes
-> are fast alterations that can be made this way: <ul><li>Renaming a column
-> or index. </li><li>Changing the default value of a column.
-> </li><li>Changing the definition of an ENUM or SET column by adding new
-> enumeration or set members to the end of the list of valid member
-> values.</li></ul>
+> are fast alterations that can be made this way: 
+> - Renaming a column or index.
+> - Changing the default value of a column. 
+> - Changing the definition of an ENUM or SET column by adding new enumeration or set members to the end of the list of valid member values.
 
 Die alten Bedenken gegen die Erweiterung eines ENUM- oder SET-Typen wegen
 lange dauernder ALTER TABLE-Statements gelten also NICHT mehr, vorausgesetzt

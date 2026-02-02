@@ -10,7 +10,7 @@ aliases:
   - /2017/02/01/exponential-fuck-off.html
 ---
 
-![](2017/02/Screen-Shot-2017-02-01-at-09.59.29.png)
+![](exponential-01.jpg)
 
 »Damian: The solution is to send emails with increasing frequency<br />
 @markzabaro: It's called exponential fuck-off.«<br />

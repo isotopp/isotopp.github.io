@@ -11,7 +11,7 @@ title: Watchman
 aliases:
   - /2018/02/01/watchman.html
 ---
-[![](2018/01/watchman-603x640.png)](https://facebook.github.io/watchman/)
+[![](watchman-603x640.jpg)](https://facebook.github.io/watchman/)
 
 Today I was looking for a way to subscribe to file changes in a directory in
 MacOS, in order to trigger automatically running commands whenever files
